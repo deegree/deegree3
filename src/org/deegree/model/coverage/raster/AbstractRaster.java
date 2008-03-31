@@ -1,0 +1,233 @@
+//$HeadURL$
+/*----------------    FILE HEADER  ------------------------------------------
+ This file is part of deegree.
+ Copyright (C) 2001-2007 by:
+ Department of Geography, University of Bonn
+ http://www.giub.uni-bonn.de/deegree/
+ lat/lon GmbH
+ http://www.lat-lon.de
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ Contact:
+
+ Andreas Poth
+ lat/lon GmbH
+ Aennchenstr. 19
+ 53177 Bonn
+ Germany
+ E-Mail: poth@lat-lon.de
+
+ Prof. Dr. Klaus Greve
+ Department of Geography
+ University of Bonn
+ Meckenheimer Allee 166
+ 53115 Bonn
+ Germany
+ E-Mail: greve@giub.uni-bonn.de
+ ---------------------------------------------------------------------------*/
+package org.deegree.model.coverage.raster;
+
+import org.deegree.model.geometry.primitive.Envelope;
+
+import org.deegree.model.coverage.AbstractCoverage;
+
+/**
+ * This class represents an abstract grid coverage.
+ * 
+ * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * @author last edited by: $Author$
+ *
+ * @version $Revision$, $Date$
+ */
+public abstract class AbstractRaster extends AbstractCoverage {
+
+    private RasterEnvelope rasterEnv = null;
+
+    protected AbstractRaster() {
+        super();
+    }
+
+    protected AbstractRaster( Envelope envelope ) {
+        super( envelope );
+    }
+
+    protected AbstractRaster( Envelope envelope, RasterEnvelope rasterEnv ) {
+        super( envelope );
+        this.rasterEnv = rasterEnv;
+    }
+
+    /**
+     * Returns columns of the raster.
+     * 
+     * @return width in pixel
+     */
+    public int getColumns() {
+        return getRasterEnvelope().getSize( getEnvelope() )[0];
+    }
+
+    /**
+     * Returns rows of the raster.
+     * 
+     * @return height in pixel
+     */
+    public int getRows() {
+        return getRasterEnvelope().getSize( getEnvelope() )[1];
+    }
+
+    /**
+     * Extends current RasterEnvelope with rasterEnv
+     */
+    protected void extendRasterEnvelope( RasterEnvelope rasterEnv ) {
+        if ( this.rasterEnv == null ) {
+            this.rasterEnv = rasterEnv;
+        } else {
+            this.rasterEnv = this.rasterEnv.merger( rasterEnv );
+        }
+    }
+
+    protected void checkBounds( int x, int y, int width, int height ) {
+        Envelope newEnvelope = getGeometryFactory().createEnvelope( new double[] { x, y },
+                                                                    new double[] { x + width, y + height },
+                                                                    getRasterEnvelope().getDelta(), null );
+        assert ( newEnvelope.getMin().getX() < newEnvelope.getMax().getX() );
+        assert ( newEnvelope.getMin().getY() < newEnvelope.getMax().getY() );
+        assert ( getEnvelope().getMin().getX() < getEnvelope().getMax().getX() );
+        assert ( getEnvelope().getMin().getY() < getEnvelope().getMax().getY() );
+        if ( getEnvelope().contains( newEnvelope ) ) {
+            return;
+        } else {
+            throw new IndexOutOfBoundsException();
+        }
+
+    }
+
+    protected void checkBounds( Envelope envelope ) {
+        assert ( envelope.getMin().getX() < envelope.getMax().getX() );
+        assert ( envelope.getMin().getY() < envelope.getMax().getY() );
+        assert ( getEnvelope().getMin().getX() < getEnvelope().getMax().getX() );
+        assert ( getEnvelope().getMin().getY() < getEnvelope().getMax().getY() );
+        if ( getEnvelope().contains( envelope ) ) {
+            return;
+        } else {
+            throw new IndexOutOfBoundsException();
+        }
+    }
+
+    /**
+     * Creates a copy of the raster with all the data.
+     */
+    public abstract AbstractRaster copy();
+
+    /**
+     * Returns a subset of the raster.
+     * 
+     * @param env
+     *            envelope of the subset
+     * @return subset of the raster
+     */
+    public abstract AbstractRaster getSubset( Envelope env );
+
+    /**
+     * Returns a subset of the raster.
+     * 
+     * @param x
+     *            left boundary
+     * @param y
+     *            upper boundary
+     * @param x2
+     *            right boundary
+     * @param y2
+     *            lower boundary
+     * @return subset of the raster
+     */
+    public AbstractRaster getSubset( double x, double y, double x2, double y2 ) {
+        Envelope env = getGeometryFactory().createEnvelope( new double[] { x, y }, new double[] { x2, y2 },
+                                                            getRasterEnvelope().getDelta(), null );
+        return getSubset( env );
+    }
+
+    /**
+     * Sets the raster with data from source. Source must overlap the raster (within the envelope).
+     * 
+     * @param source
+     *            data to copy
+     * @param env
+     *            Envelope with the destination area
+     */
+    public abstract void setSubset( Envelope env, AbstractRaster source );
+
+    /**
+     * Sets the raster with data from source.
+     * 
+     * @param x
+     *            left boundary
+     * @param y
+     *            upper boundary
+     * @param source
+     *            data to copy
+     */
+    public abstract void setSubset( double x, double y, AbstractRaster source );
+
+    /**
+     * Sets a single band with data from source.
+     * 
+     * Copies the first band of source into dstBand.
+     * 
+     * @param x
+     *            left boundary
+     * @param y
+     *            upper boundary
+     * @param dstBand
+     *            selected destination band
+     * @param source
+     *            data to copy
+     */
+    public abstract void setSubset( double x, double y, int dstBand, AbstractRaster source );
+
+    /**
+     * Sets a single band with data from source.
+     * 
+     * @param env
+     *            destination area
+     * @param dstBand
+     *            selected destination band
+     * @param source
+     *            data to copy
+     */
+    public abstract void setSubset( Envelope env, int dstBand, AbstractRaster source );
+
+    /**
+     * Returns the AbstractRaster as a SimpleRaster The data gets cropped (TiledRaster) or merged (MultiRange) if
+     * necessary.
+     */
+    public abstract SimpleRaster getAsSimpleRaster();
+
+    @Override
+    public String toString() {
+        return "AbstractRaster: " + envelopeString();
+    }
+
+    // TODO remove
+    protected String envelopeString() {
+        return "" + getEnvelope().getMin().getX() + " " + getEnvelope().getMin().getY() + " "
+               + getEnvelope().getMax().getX() + " " + getEnvelope().getMax().getY();
+    }
+
+    /**
+     * Retruns the RasterEnvelope
+     */
+    public RasterEnvelope getRasterEnvelope() {
+        return rasterEnv;
+    }
+
+}
