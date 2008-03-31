@@ -132,7 +132,7 @@ public class JAIRasterReader implements RasterReader {
     }
 
     private static RenderedImage openImageFile( String filename ) {
-        return (RenderedImage) JAI.create( "fileload", filename );
+        return JAI.create( "fileload", filename );
     }
 
     /**
