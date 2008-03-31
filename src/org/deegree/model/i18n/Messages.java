@@ -75,7 +75,7 @@ public class Messages {
 
     /* This definition allows Eclipse to display the content of referenced message keys. */
     @SuppressWarnings("unused")
-    private static final String BUNDLE_NAME = "org.deegree.i18n.messages_en";
+    private static final String BUNDLE_NAME = "org.deegree.model.i18n.messages_en";
 
     private static Properties defaultProps = new Properties();
 
@@ -88,7 +88,7 @@ public class Messages {
      */
     static {
         try {
-            // load all messages from default file ("org/deegree/i18n/message_en.properties")
+            // load all messages from default file ("org/deegree/model/i18n/message_en.properties")
             String fileName = "messages_en.properties";
             InputStream is = Messages.class.getResourceAsStream( fileName );
             if ( is == null ) {
@@ -151,9 +151,9 @@ public class Messages {
      *            to fill in the message
      * @return the localized message
      */
-    public static synchronized String get( Locale loc, String key, Object... arguments ) {
+    public static synchronized String getMessage( Locale loc, String key, Object... arguments ) {
         if ( loc.getLanguage().equals( lang ) ) {
-            return get( key, arguments );
+            return getMessage( key, arguments );
         }
 
         if ( !props.containsKey( loc ) ) {
@@ -184,19 +184,7 @@ public class Messages {
             props.put( loc, p );
         }
 
-        String s = get( props.get( loc ), key, arguments );
-        return s;
-    }
-
-    /**
-     * Alias for #getMessage.
-     * 
-     * @param key
-     * @param arguments
-     * @return the message
-     */
-    public static String get( String key, Object... arguments ) {
-        return getMessage( key, arguments );
+        return get( props.get( loc ), key, arguments );
     }
 
     /**
