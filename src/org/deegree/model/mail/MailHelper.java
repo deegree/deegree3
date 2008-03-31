@@ -202,7 +202,7 @@ public final class MailHelper {
             mbps.add( mbp );
             if ( attachment != null ) {
                 if ( attachment.length != mimeType.length ) {
-                    throw new SendMailException( Messages.getMessage( "FRAMEWORK_MAIL_ATTACH" ) );
+                    throw new SendMailException( Messages.getMessage( "MAIL_ATTACH" ) );
                 }
                 for ( int i = 0; i < attachment.length; i++ ) {
                     mbp = new MimeBodyPart();
@@ -222,7 +222,7 @@ public final class MailHelper {
             LOG.logDebug( "Mail sent successfully! Header=", eMess.getHeader() );
         } catch ( Exception e ) {
             LOG.logError( e.getMessage(), e );
-            String s = Messages.getMessage( "FRAMEWORK_MAIL_SEND_ERROR", eMess.getHeader() );
+            String s = Messages.getMessage( "MAIL_SEND_ERROR", eMess.getHeader() );
             throw new SendMailException( s, e );
         }
     }
@@ -265,7 +265,7 @@ public final class MailHelper {
             mbps.add( mbp );
             if ( files != null ) {
                 if ( files.length != mimeType.length ) {
-                    throw new SendMailException( Messages.getMessage( "FRAMEWORK_MAIL_ATTACH" ) );
+                    throw new SendMailException( Messages.getMessage( "MAIL_ATTACH" ) );
                 }
                 for ( int i = 0; i < files.length; i++ ) {
                     mbp = new MimeBodyPart();
@@ -285,7 +285,7 @@ public final class MailHelper {
             LOG.logDebug( "Mail sent successfully! Header=", eMess.getHeader() );
         } catch ( Exception e ) {
             LOG.logError( e.getMessage(), e );
-            String s = Messages.getMessage( "FRAMEWORK_MAIL_SEND_ERROR", eMess.getHeader() );
+            String s = Messages.getMessage( "MAIL_SEND_ERROR", eMess.getHeader() );
             throw new SendMailException( s, e );
         }
     }
