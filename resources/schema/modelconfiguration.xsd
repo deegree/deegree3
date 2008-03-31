@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.deegree.org/model/geometry" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:deegree="http://www.deegree.org/model/geometry" elementFormDefault="qualified">
+	<xs:element name="ModelConfiguration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="GeometryFactories" type="deegree:GeometryFactoriesType" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="GeometryFactoriesType">
+		<xs:sequence>
+		<xs:element name="GeometryFactory" type="deegree:GeometryFactoryType" maxOccurs="unbounded"/>
+		</xs:sequence>	
+	</xs:complexType>
+	<xs:complexType name="GeometryFactoryType">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string"/>
+			<xs:element name="ClassName" type="xs:string"/>
+			<xs:element name="Description" type="xs:string"/>
+			<xs:element name="Init-Param" type="deegree:Init-ParamType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="SupportedGeometries" type="deegree:SupportedGeometriesType"/>
+			<xs:element name="SupportedCurveInterpolation" type="deegree:SupportedCurveInterpolationType"/>
+			<xs:element name="SupportedSurfaceInterpolation" type="deegree:SupportedSurfaceInterpolationType"/>
+		</xs:sequence>
+		<xs:attribute name="isDefault" type="xs:boolean" use="optional" default="false"/>
+	</xs:complexType>
+	<xs:complexType name="SupportedGeometriesType">
+		<xs:sequence>
+			<xs:element name="GeometryType" maxOccurs="unbounded">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="Curve"/>
+						<xs:enumeration value="MultiCurve"/>
+						<xs:enumeration value="MultiGeometry"/>
+						<xs:enumeration value="MultiPoint"/>
+						<xs:enumeration value="MultiSurface"/>
+						<xs:enumeration value="Point"/>
+						<xs:enumeration value="Solid"/>
+						<xs:enumeration value="Surface"/>
+						<xs:enumeration value="ComplexCurve"/>
+						<xs:enumeration value="ComplexSolid"/>
+						<xs:enumeration value="ComplexSurface"/>
+						<xs:enumeration value="GeometricComplex"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SupportedCurveInterpolationType">
+		<xs:sequence>
+			<xs:element name="CurveInterpolation" maxOccurs="unbounded">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="linear"/>
+						<xs:enumeration value="geodesic"/>
+						<xs:enumeration value="circularArc3Points"/>
+						<xs:enumeration value="circularArc2PointWithBulge"/>
+						<xs:enumeration value="elliptical"/>
+						<xs:enumeration value="conic"/>
+						<xs:enumeration value="cubicSpline"/>
+						<xs:enumeration value="polynomialSpline"/>
+						<xs:enumeration value="rationalSpline"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SupportedSurfaceInterpolationType">
+		<xs:sequence>
+			<xs:element name="SurfaceInterpolation" maxOccurs="unbounded">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="none"/>
+						<xs:enumeration value="planar"/>
+						<xs:enumeration value="spherical"/>
+						<xs:enumeration value="elliptical"/>
+						<xs:enumeration value="conic"/>
+						<xs:enumeration value="tin"/>
+						<xs:enumeration value="bilinear"/>
+						<xs:enumeration value="biquadratic"/>
+						<xs:enumeration value="bicubic"/>
+						<xs:enumeration value="polynomialSpline"/>
+						<xs:enumeration value="rationalSpline"/>
+						<xs:enumeration value="triangulatedSpline"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Init-ParamType">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string"/>
+			<xs:element name="Value" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
