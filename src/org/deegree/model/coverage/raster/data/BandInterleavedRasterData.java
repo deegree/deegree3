@@ -45,7 +45,7 @@ import java.nio.FloatBuffer;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class BandInterleavedRasterData extends ByteBufferRasterData {
@@ -66,6 +66,29 @@ public class BandInterleavedRasterData extends ByteBufferRasterData {
         super( width, height, bands, type );
     }
 
+    /**
+     * Create a new {@link BandInterleavedRasterData} that represents a subset of a larger
+     * {@link BandInterleavedRasterData}.
+     * 
+     * @param x0
+     *            The x offset of the subset.
+     * @param y0
+     *            The y offset of the subset.
+     * @param subWidth
+     *            The width of the subset.
+     * @param subHeight
+     *            The height of the subset.
+     * @param width
+     *            The width of the original raster.
+     * @param height
+     *            The height of the original raster.
+     * @param bands
+     *            The number of bands of the raster.
+     * @param dataType
+     *            The {@link DataType} of the raster.
+     * @param data
+     *            The original raster data.
+     */
     protected BandInterleavedRasterData( int x0, int y0, int subWidth, int subHeight, int width, int height, int bands,
                                          DataType dataType, ByteBuffer data ) {
         super( x0, y0, subWidth, subHeight, width, height, bands, dataType, data );
@@ -96,6 +119,7 @@ public class BandInterleavedRasterData extends ByteBufferRasterData {
         return InterleaveType.BAND;
     }
 
+    @Override
     public BandInterleavedRasterData getSubset( int x0, int y0, int width, int height ) {
         int w = Math.min( width, subWidth - x0 );
         int h = Math.min( height, subHeight - y0 );
@@ -136,26 +160,6 @@ public class BandInterleavedRasterData extends ByteBufferRasterData {
         return result;
     }
 
-    // @Override
-    // public byte[][] getBytes(int x, int y, int width, int height, ByteBuffer buf, DataModel bufModel) {
-    // if (bufModel instanceof LineInterleavedRasterData) {
-    // return bufModel.getBytes(x, y, width, height, buf);
-    // } else {
-    //			
-    // checkBounds(x, y, width, height);
-    //			
-    // byte[][] result = new byte[height*bands][];
-    // byte[][] tmp = null;
-    // for (int b = 0; b < bands; b++) {
-    // tmp = bufModel.getBytes(x, y, width, height, b, buf);
-    // for (int i = 0; i < tmp.length; i++) {
-    // result[i*bands + b] = tmp[i];
-    // }
-    // }
-    // return result;
-    // }
-    // }
-
     @Override
     public float[][] getFloats( int x, int y, int width, int height, int band ) {
         float[][] result = new float[height][width];
@@ -188,14 +192,12 @@ public class BandInterleavedRasterData extends ByteBufferRasterData {
 
     @Override
     public byte[][] getBytes( int x, int y, int width, int height, InterleaveType interleaving ) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public float[][] getFloats( int x, int y, int width, int height, InterleaveType interleaving ) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -204,8 +206,7 @@ public class BandInterleavedRasterData extends ByteBufferRasterData {
      * @see raster.org.deegree.model.raster.RasterData#setBytes(int, int, int, int, int, byte[][])
      */
     public void setBytes( int x, int y, int width, int height, int band, byte[][] source ) {
-        // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
     }
 
     /*
@@ -214,45 +215,16 @@ public class BandInterleavedRasterData extends ByteBufferRasterData {
      * @see raster.org.deegree.model.raster.RasterData#setFloats(int, int, int, int, int, float[][])
      */
     public void setFloats( int x, int y, int width, int height, int band, float[][] source ) {
-        // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.model.coverage.raster.data.RasterData#getSubset(int, int)
+     */
     public RasterData getSubset( int outWidth, int outHeight ) {
         throw new UnsupportedOperationException();
     }
 
-    // @Override
-    // public float[][] getFloats(int x, int y, int width, int height, ByteBuffer buf, DataModel bufModel) {
-    // if (bufModel instanceof BandInterleavedRasterData) {
-    // return bufModel.getFloats(x, y, width, height, buf);
-    // } else {
-    // checkBounds(x, y, width, height);
-    //			
-    // float[][] result = new float[height*bands][];
-    // float[][] tmp = null;
-    // for (int b = 0; b < bands; b++) {
-    // tmp = bufModel.getFloats(x, y, width, height, b, buf);
-    // for (int i = 0; i < tmp.length; i++) {
-    // result[i*bands + b] = tmp[i];
-    // }
-    // }
-    // return result;
-    // }
-    // }
-
-    // public ByteBuffer getSubset(int x, int y, DataModel newModel, ByteBuffer buf) {
-    // int newBufferSize = newModel.getWidth() * newModel.getHeight() * bands * type.getSize();
-    // ByteBuffer result = ByteBuffer.allocate(newBufferSize);
-    // byte[] tmp = new byte[newModel.getWidth() * getPixelStride()];
-    // for (int b = 0; b < bands; b++) {
-    // for (int i = 0; i < newModel.getHeight(); i++) {
-    // result.position(newModel.calculatePos(0, i, b));
-    // buf.position(calculatePos(x, y+i, b));
-    // buf.get(tmp, 0, tmp.length);
-    // result.put(tmp, 0, tmp.length);
-    // }
-    // }
-    // return result;
-    // }
 }

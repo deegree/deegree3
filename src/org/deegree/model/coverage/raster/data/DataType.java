@@ -49,7 +49,35 @@ import java.awt.image.DataBuffer;
  * 
  */
 public enum DataType {
-    BYTE( 1 ), INT( 4 ), USHORT( 2 ), SHORT( 2 ), FLOAT( 4 ), DOUBLE( 8 ), UNDEFINED( 0 );
+
+    /**
+     * 
+     */
+    BYTE( 1 ), 
+    /**
+     * 
+     */
+    INT( 4 ), 
+    /**
+     * 
+     */
+    USHORT( 2 ), 
+    /**
+     * 
+     */
+    SHORT( 2 ), 
+    /**
+     * 
+     */
+    FLOAT( 4 ),
+    /**
+     * 
+     */
+    DOUBLE( 8 ), 
+    /**
+     * 
+     */
+    UNDEFINED( 0 );
 
     private final int size;
 
@@ -64,6 +92,12 @@ public enum DataType {
         return size;
     }
 
+    /**
+     * Convert from {@link DataBuffer}-Types to {@link DataType}s.
+     * 
+     * @param type The {@link DataBuffer}-Type (eg. TYPE_BYTE, etc.)
+     * @return The according DataType
+     */
     public static DataType fromDataBufferType( int type ) {
         switch ( type ) {
         case DataBuffer.TYPE_BYTE:
@@ -83,6 +117,12 @@ public enum DataType {
         }
     }
 
+    /**
+     * Convert from {@link DataType}s to {@link DataBuffer}-Types.
+     * 
+     * @param type The DataType.
+     * @return The according {@link DataBuffer}-Type (eg. TYPE_BYTE, etc.)
+     */
     public static int toDataBufferType( DataType type ) {
         if ( type == BYTE )
             return DataBuffer.TYPE_BYTE;

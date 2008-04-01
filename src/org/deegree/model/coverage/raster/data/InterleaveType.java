@@ -47,5 +47,16 @@ package org.deegree.model.coverage.raster.data;
  * 
  */
 public enum InterleaveType {
-    PIXEL, LINE, BAND;
+    /**
+     * pixel-interleaving. 
+     */
+    PIXEL,
+    /**
+     * line-interleaving
+     */
+    LINE,
+    /**
+     * band-interleaving
+     */
+    BAND;
 }

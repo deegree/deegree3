@@ -48,7 +48,7 @@ package org.deegree.model.coverage.raster.data;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  * 
  * @see DataType
@@ -381,6 +381,15 @@ public interface RasterData {
      */
     public RasterData getSubset( RasterRect rasterRect );
 
+    /**
+     * Scales the raster to given width and height.
+     * 
+     * @param outWidth
+     *            The output width in pixel.
+     * @param outHeight
+     *            The output height in pixel.
+     * @return The scaled raster data.
+     */
     public RasterData getSubset( int outWidth, int outHeight );
 
     /**
@@ -422,6 +431,8 @@ public interface RasterData {
      *            min x coordinate
      * @param y
      *            min y coordinate
+     * @param band
+     *            the index of the band
      * @param sourceRaster
      *            data source to copy
      */

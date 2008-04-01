@@ -66,6 +66,28 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
         super( width, height, bands, dataType );
     }
 
+    /**
+     * Create a new {@link PixelInterleavedRasterData} that represents a subset of a larger {@link PixelInterleavedRasterData}.
+     * 
+     * @param x0
+     *            The x offset of the subset.
+     * @param y0
+     *            The y offset of the subset.
+     * @param subWidth
+     *            The width of the subset.
+     * @param subHeight
+     *            The height of the subset.
+     * @param width
+     *            The width of the original raster.
+     * @param height
+     *            The height of the original raster.
+     * @param bands
+     *            The number of bands of the raster.
+     * @param dataType
+     *            The {@link DataType} of the raster.
+     * @param data
+     *            The original raster data.
+     */
     protected PixelInterleavedRasterData( int x0, int y0, int subWidth, int subHeight, int width, int height,
                                           int bands, DataType dataType, ByteBuffer data ) {
         super( x0, y0, subWidth, subHeight, width, height, bands, dataType, data );

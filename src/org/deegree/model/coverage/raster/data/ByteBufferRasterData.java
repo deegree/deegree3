@@ -42,53 +42,103 @@ import java.nio.ByteBuffer;
 /**
  * This abstract class implements the RasterData interface for ByteBuffer based raster.
  * 
- * It is based on java.nio.ByteBuffer and implements common get- and set-operations on the data. The different
+ * <p>It is based on java.nio.ByteBuffer and implements common get- and set-operations on the data. The different
  * InterleaveTypes are implemented by additional subclasses.
  * 
- * get- and set-operations are implemented naive and access all data sample-wise. For efficiency subclasses should
+ * <p>get- and set-operations are implemented naive and access all data sample-wise. For efficiency subclasses should
  * overwrite methods that access more than one sample and leverage the knowledge of the internal storage format
  * (interleaving).
  * 
- * TODO: Only implements access to byte and float data at the moment. Copy float methods for other data types and change
+ * <p>TODO: Only implements access to byte and float data at the moment. Copy float methods for other data types and change
  * 'Float/float' to short, int, long or double. These types are supported by ByteBuffer and the according methods only
  * differ in the name of the type (eg. getFloat, getInt, getDouble,...). Opposed to the methods for bytes, which lack
  * the type in the method names (eg. only get()).
  * 
+ * <p>Also this implementation is able to store a sub-view on another {@link ByteBufferRasterData}, resp. ByteBuffer. With
+ * this feature you are able to create subsets without copying the data. Though the current deegree SimpleRaster
+ * implementation makes no use of it.
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  * 
  */
 public abstract class ByteBufferRasterData implements RasterData {
 
+    /**
+     * the width of the raster
+     */
     protected int width;
 
+    /**
+     * the height of the raster
+     */
     protected int height;
 
-    // A ByteBufferRasterData can refer to a subset of another ByteBuffer
-    // so lazy evaluation/copying is possible. Though it is not effective at
-    // the moment, getSubset always returns a copy.
+    /**
+     * The width of the subset of the raster.
+     * 
+     * <p>
+     * A ByteBufferRasterData can refer to a subset of another ByteBuffer so lazy evaluation/copying is possible. Though
+     * it is not effective at the moment, getSubset always returns a copy.
+     * 
+     */
     protected int subWidth;
 
+    /**
+     * The height of the subset of the raster.
+     * 
+     * <p>
+     * A ByteBufferRasterData can refer to a subset of another ByteBuffer so lazy evaluation/copying is possible. Though
+     * it is not effective at the moment, getSubset always returns a copy.
+     * 
+     */
     protected int subHeight;
 
+    /**
+     * The x offset of the subset of the raster.
+     */
     protected int x0 = 0;
 
+    /**
+     * The y offset of the subset of the raster.
+     */
     protected int y0 = 0;
 
+    /**
+     * The index of the subband.
+     */
     protected int subBand = -1;
 
+    /**
+     * true if this raster is a single banded subview of the raster.
+     */
     protected boolean singleBand = false;
 
+    /**
+     * true if the raster is a subset of the original raster data.
+     */
     protected boolean subset = false;
 
+    /**
+     * The number of bands in this raster.
+     */
     protected int bands;
 
+    /**
+     * The {@link DataType} of this raster.
+     */
     protected DataType dataType;
 
+    /**
+     * The NODATA value.
+     */
     protected byte[] nodata;
 
+    /**
+     * The raster data itself.
+     */
     ByteBuffer data;
 
     /**
@@ -130,6 +180,28 @@ public abstract class ByteBufferRasterData implements RasterData {
         this.data = createByteBuffer();
     }
 
+    /**
+     * Create a new {@link ByteBufferRasterData} that represents a subset of a larger {@link ByteBufferRasterData}.
+     * 
+     * @param x0
+     *            The x offset of the subset.
+     * @param y0
+     *            The y offset of the subset.
+     * @param subWidth
+     *            The width of the subset.
+     * @param subHeight
+     *            The height of the subset.
+     * @param width
+     *            The width of the original raster.
+     * @param height
+     *            The height of the original raster.
+     * @param bands
+     *            The number of bands of the raster.
+     * @param dataType
+     *            The {@link DataType} of the raster.
+     * @param data
+     *            The original raster data.
+     */
     protected ByteBufferRasterData( int x0, int y0, int subWidth, int subHeight, int width, int height, int bands,
                                     DataType dataType, ByteBuffer data ) {
 
@@ -148,6 +220,12 @@ public abstract class ByteBufferRasterData implements RasterData {
         this.data = data;
     }
 
+    /**
+     * Set the raster to be a single banded subset.
+     * 
+     * @param band
+     *            The index of the subband.
+     */
     protected void setSubBand( int band ) {
         if ( band >= bands ) {
             throw new IndexOutOfBoundsException( "band not available" );
@@ -233,6 +311,9 @@ public abstract class ByteBufferRasterData implements RasterData {
         return subHeight;
     }
 
+    /**
+     * @return true if the raster is a subset.
+     */
     public boolean isSubset() {
         return subset;
     }
@@ -284,7 +365,7 @@ public abstract class ByteBufferRasterData implements RasterData {
     public abstract int getLineStride();
 
     /**
-     * Returns the internal ByteBuffer
+     * @return The internal ByteBuffer.
      */
     public ByteBuffer getByteBuffer() {
         return data;
@@ -292,6 +373,15 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     /**
      * Checks whether a given rect is inside the raster.
+     * 
+     * @param x
+     *            The x position of the rect.
+     * @param y
+     *            The y position of the rect.
+     * @param width
+     *            The width of the rect.
+     * @param height
+     *            The height of the rect.
      */
     protected void checkBounds( int x, int y, int width, int height ) {
         if ( ( ( this.subWidth - x ) < width ) || ( ( this.subHeight - y ) < height ) || ( x < 0 ) || ( y < 0 ) ) {

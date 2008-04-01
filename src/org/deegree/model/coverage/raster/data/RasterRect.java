@@ -46,12 +46,24 @@ package org.deegree.model.coverage.raster.data;
  * @version $Revision$, $Date$
  */
 public class RasterRect {
+    /**
+     * The x pixel position.
+     */
     public int x;
-
+    
+    /**
+     * The y pixel position.
+     */
     public int y;
 
+    /**
+     * The width in pixel.
+    */
     public int width;
 
+    /**
+     * The height in pixel.
+     */
     public int height;
 
     /**
@@ -73,6 +85,9 @@ public class RasterRect {
         this.height = height;
     }
 
+    /**
+     * Creates a new RasterRect with position 0, 0 and size 0, 0.
+     */
     public RasterRect() {
         this( 0, 0, 0, 0 );
     }
