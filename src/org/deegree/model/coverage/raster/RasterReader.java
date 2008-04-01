@@ -40,22 +40,31 @@ package org.deegree.model.coverage.raster;
 import org.deegree.model.coverage.raster.data.RasterData;
 
 /**
- * Simple interface to read RasterData
+ * Simple interface to read RasterData.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  * 
  */
 public interface RasterReader {
+
     /**
-     * Read RasterData
+     * Read the raster data.
+     * 
+     * @return Return the underlying raster data.
      */
     public RasterData read();
 
+    /**
+     * @return The width in pixel of the raster data.
+     */
     public int getWidth();
 
+    /**
+     * @return The height in pixel of the raster data.
+     */
     public int getHeight();
 
 }

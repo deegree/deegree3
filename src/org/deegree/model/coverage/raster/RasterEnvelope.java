@@ -42,7 +42,6 @@ import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.coverage.raster.data.RasterRect;
 
-
 import static java.lang.Math.abs;
 import static java.lang.Math.min;
 import static java.lang.Math.max;
@@ -53,7 +52,7 @@ import static java.lang.Math.signum;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class RasterEnvelope {
@@ -277,6 +276,9 @@ public class RasterEnvelope {
      * 
      * The calculation considers the origin and resolution of the raster.
      * 
+     * @param width
+     * @param height
+     * 
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height ) {
@@ -320,6 +322,13 @@ public class RasterEnvelope {
         return xRes;
     }
 
+    /**
+     * Returns the x-coordinate of the upper-left pixel.
+     * 
+     * @param type
+     *            Return the center or outer pixel coordinate.
+     * @return x coordinate
+     */
     public double getX0( Type type ) {
         if ( type == Type.CENTER ) {
             return x0 + xRes / 2;
@@ -328,6 +337,13 @@ public class RasterEnvelope {
         }
     }
 
+    /**
+     * Returns the y-coordinate of the upper-left pixel.
+     * 
+     * @param type
+     *            Return the center or outer pixel coordinate.
+     * @return y coordinate
+     */
     public double getY0( Type type ) {
         if ( type == Type.CENTER ) {
             return y0 + yRes / 2;
@@ -360,10 +376,16 @@ public class RasterEnvelope {
         return sb.toString();
     }
 
+    /**
+     * @param resolution
+     */
     public void setXRes( double resolution ) {
         this.xRes = resolution * signum( this.xRes );
     }
 
+    /**
+     * @param resolution
+     */
     public void setYRes( double resolution ) {
         this.yRes = resolution * signum( this.yRes );
     }

@@ -49,7 +49,7 @@ import org.deegree.model.geometry.primitive.Envelope;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public interface TileContainer {
@@ -59,16 +59,21 @@ public interface TileContainer {
      * 
      * @param env
      *            return List with tiles
+     * @return A <code>List</code> with all intersecting tiles.
      */
     public List<AbstractRaster> getTiles( Envelope env );
 
     /**
      * Returns the envelope of all tiles in this container.
+     * 
+     * @return The envelope of all tiles.
      */
     public Envelope getEnvelope();
 
     /**
      * Returns the RasterEnvelope of all tiles in this container.
+     * 
+     * @return The raster envelope of the tiles.
      */
     public RasterEnvelope getRasterEnvelope();
 

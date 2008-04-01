@@ -46,21 +46,38 @@ import org.deegree.model.coverage.AbstractCoverage;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public abstract class AbstractRaster extends AbstractCoverage {
 
     private RasterEnvelope rasterEnv = null;
 
+    /**
+     * Instantiate an AbstractRaster with no envelope.
+     */
     protected AbstractRaster() {
         super();
     }
 
+    /**
+     * Instantiate an AbstractRaster with given envelope.
+     * 
+     * @param envelope
+     *            The envelope of the raster.
+     */
     protected AbstractRaster( Envelope envelope ) {
         super( envelope );
     }
 
+    /**
+     * Instantiate an AbstractRaster with given envelope and raster envelope.
+     * 
+     * @param envelope
+     *            The envelope of the raster.
+     * @param rasterEnv
+     *            The raster envelope of the raster.
+     */
     protected AbstractRaster( Envelope envelope, RasterEnvelope rasterEnv ) {
         super( envelope );
         this.rasterEnv = rasterEnv;
@@ -85,7 +102,9 @@ public abstract class AbstractRaster extends AbstractCoverage {
     }
 
     /**
-     * Extends current RasterEnvelope with rasterEnv
+     * Extends current RasterEnvelope with rasterEnv. Useful for extending the raster, e.g. adding a tile.
+     * 
+     * @param rasterEnv The raster envelope to add to the current.
      */
     protected void extendRasterEnvelope( RasterEnvelope rasterEnv ) {
         if ( this.rasterEnv == null ) {
@@ -95,22 +114,12 @@ public abstract class AbstractRaster extends AbstractCoverage {
         }
     }
 
-    protected void checkBounds( int x, int y, int width, int height ) {
-        Envelope newEnvelope = getGeometryFactory().createEnvelope( new double[] { x, y },
-                                                                    new double[] { x + width, y + height },
-                                                                    getRasterEnvelope().getDelta(), null );
-        assert ( newEnvelope.getMin().getX() < newEnvelope.getMax().getX() );
-        assert ( newEnvelope.getMin().getY() < newEnvelope.getMax().getY() );
-        assert ( getEnvelope().getMin().getX() < getEnvelope().getMax().getX() );
-        assert ( getEnvelope().getMin().getY() < getEnvelope().getMax().getY() );
-        if ( getEnvelope().contains( newEnvelope ) ) {
-            return;
-        } else {
-            throw new IndexOutOfBoundsException();
-        }
-
-    }
-
+    /**
+     * Checks if the coverage contains the <code>envelope</code>.
+     * 
+     * @param envelope
+     *            The envelope to check for.
+     */
     protected void checkBounds( Envelope envelope ) {
         assert ( envelope.getMin().getX() < envelope.getMax().getX() );
         assert ( envelope.getMin().getY() < envelope.getMax().getY() );
@@ -125,6 +134,8 @@ public abstract class AbstractRaster extends AbstractCoverage {
 
     /**
      * Creates a copy of the raster with all the data.
+     * 
+     * @return A copy of the raster.
      */
     public abstract AbstractRaster copy();
 
@@ -207,8 +218,10 @@ public abstract class AbstractRaster extends AbstractCoverage {
     public abstract void setSubset( Envelope env, int dstBand, AbstractRaster source );
 
     /**
-     * Returns the AbstractRaster as a SimpleRaster The data gets cropped (TiledRaster) or merged (MultiRange) if
+     * Returns the AbstractRaster as a SimpleRaster. The data gets cropped (TiledRaster) or merged (MultiRange) if
      * necessary.
+     * 
+     * @return The raster data as SimpleRaster
      */
     public abstract SimpleRaster getAsSimpleRaster();
 
@@ -224,7 +237,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
     }
 
     /**
-     * Retruns the RasterEnvelope
+     * @return The raster envelope of the raster.
      */
     public RasterEnvelope getRasterEnvelope() {
         return rasterEnv;

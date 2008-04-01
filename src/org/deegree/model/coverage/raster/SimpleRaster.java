@@ -41,19 +41,26 @@ import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.coverage.raster.data.RasterData;
 import org.deegree.model.coverage.raster.data.RasterRect;
 
-
 /**
  * This class represents a single raster with multiple bands.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class SimpleRaster extends AbstractRaster {
 
     private RasterDataContainer rasterDataContainer;
 
+    /**
+     * Create a SimpleRaster with no raster data but with an envelope and raster envelope.
+     * 
+     * @param envelope
+     *            The envelope of the new raster.
+     * @param rasterEnv
+     *            The raster envelope of the new raster.
+     */
     protected SimpleRaster( Envelope envelope, RasterEnvelope rasterEnv ) {
         super( envelope, rasterEnv );
     }
@@ -64,9 +71,9 @@ public class SimpleRaster extends AbstractRaster {
      * @param raster
      *            content for the SimpleRaster
      * @param envelope
-     *            boundary of the new raster
+     *            The envelope of the new raster.
      * @param rasterEnv
-     *            RasterEnvelope for the new raster
+     *            The raster envelope of the new raster.
      */
     public SimpleRaster( RasterData raster, Envelope envelope, RasterEnvelope rasterEnv ) {
         this( envelope, rasterEnv );
@@ -117,9 +124,11 @@ public class SimpleRaster extends AbstractRaster {
     /**
      * Creates a new empty SimpleRaster with same DataType and InterleaveType. Size is determined by the given envelope.
      * 
+     * @param rEnv
+     *            The raster envelope of the new SimpleRaster.
      * @param env
-     *            boundary of the new SimpleRaster
-     * @return new empty SimpleRaster
+     *            The boundary of the new SimpleRaster.
+     * @return A new empty SimpleRaster.
      */
     public SimpleRaster createCompatibleSimpleRaster( RasterEnvelope rEnv, Envelope env ) {
         int[] size = rEnv.getSize( env );
@@ -142,6 +151,8 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Returns the RasterData of this SimpleRaster
+     * 
+     * @return The raster data of this SimpleRaster.
      */
     public RasterData getRasterData() {
         return rasterDataContainer.getRasterData();
@@ -251,11 +262,11 @@ public class SimpleRaster extends AbstractRaster {
     }
 
     /**
-     * Returns a single band of the raster. The result may share the same data with the source raster. [TODO
-     * isCopy/isShared method?]
+     * Returns a single band of the raster.
      * 
      * @param band
-     *            number of the selected band
+     *            Number of the selected band.
+     * @return A copy of the selected band.
      */
     public SimpleRaster getBand( int band ) {
         return new SimpleRaster( getRasterData().getSubset( 0, 0, getColumns(), getRows(), band ), getEnvelope(),
@@ -340,7 +351,7 @@ public class SimpleRaster extends AbstractRaster {
     }
 
     /**
-     * Returns the number of bands
+     * @return the number of bands in this raster.
      */
     public int getBands() {
         return getRasterData().getBands();

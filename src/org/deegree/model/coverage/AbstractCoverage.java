@@ -43,26 +43,40 @@ import org.deegree.model.geometry.primitive.Envelope;
 
 /**
  * 
+ * This class represents an abstract coverage.
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  * 
  */
-public class AbstractCoverage {
+public abstract class AbstractCoverage {
 
     private GeometryFactory geomFactory = null;
 
     private Envelope envelope;
 
+    /**
+     * Instantiate an AbstractCoverage with no envelope.
+     */
     public AbstractCoverage() {
         this( null );
     }
 
+    /**
+     * Instantiate an AbstractCoverage with given envelope.
+     * 
+     * @param envelope
+     *            The envelope of the coverage.
+     */
     public AbstractCoverage( Envelope envelope ) {
         this.envelope = envelope;
     }
 
+    /**
+     * @return GeometryFactory for creation of envelopes, etc.
+     */
     protected GeometryFactory getGeometryFactory() {
         if ( geomFactory == null ) {
             geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
@@ -70,14 +84,29 @@ public class AbstractCoverage {
         return geomFactory;
     }
 
+    /**
+     * @return The envelope of the coverage.
+     */
     public Envelope getEnvelope() {
         return envelope;
     }
 
+    /**
+     * @param envelope
+     *            New envelope for the coverage.
+     */
     protected void setEnvelope( Envelope envelope ) {
         this.envelope = envelope;
     }
 
+    /**
+     * Extend the envelope of the coverage.
+     * 
+     * The new envelope of the coverage will contain the old and the given envelope.
+     * 
+     * @param envelope
+     *            Envelope to add.
+     */
     protected void extendEnvelope( Envelope envelope ) {
         if ( this.envelope == null ) {
             this.envelope = envelope;

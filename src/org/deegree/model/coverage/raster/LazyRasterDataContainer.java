@@ -41,13 +41,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deegree.model.coverage.raster.data.RasterData;
 
-
 /**
  * This class implements a RasterDataContainer that loads the data on first access.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  * 
  */

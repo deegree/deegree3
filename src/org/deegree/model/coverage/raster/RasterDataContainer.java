@@ -44,7 +44,7 @@ import org.deegree.model.coverage.raster.data.RasterData;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public interface RasterDataContainer {

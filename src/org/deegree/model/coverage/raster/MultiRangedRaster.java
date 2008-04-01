@@ -47,7 +47,7 @@ import org.deegree.model.geometry.primitive.Envelope;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  * 
  */
@@ -55,6 +55,9 @@ public class MultiRangedRaster extends AbstractRaster {
 
     private List<AbstractRaster> multiRange = null;
 
+    /**
+     * Create an empty MultiRangedRaster.
+     */
     public MultiRangedRaster() {
         super();
         multiRange = new ArrayList<AbstractRaster>();

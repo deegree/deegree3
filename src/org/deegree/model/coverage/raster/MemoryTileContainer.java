@@ -40,6 +40,7 @@ package org.deegree.model.coverage.raster;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.model.coverage.raster.implementations.io.RasterFactory;
 import org.deegree.model.geometry.primitive.Envelope;
 
 /**
@@ -50,7 +51,7 @@ import org.deegree.model.geometry.primitive.Envelope;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class MemoryTileContainer implements TileContainer {
@@ -144,6 +145,9 @@ public class MemoryTileContainer implements TileContainer {
         for ( AbstractRaster r : tiles ) {
             result.append( r.toString() );
             result.append( "\n\t" );
+        }
+        if ( result.length() > 0 ) {
+            result.delete( result.length() - 3, result.length() );
         }
         return result.toString();
     }

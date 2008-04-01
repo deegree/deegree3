@@ -45,7 +45,6 @@ import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.coverage.raster.data.RasterData;
 
-
 /**
  * This class represents a tiled AbstractRaster.
  * 
@@ -53,7 +52,7 @@ import org.deegree.model.coverage.raster.data.RasterData;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  * 
  */
@@ -74,6 +73,8 @@ public class TiledRaster extends AbstractRaster {
 
     /**
      * Returns the wrapper for all tiles.
+     * 
+     * @return The container for all tiles.
      */
     public TileContainer getTileContainer() {
         return tileContainer;
