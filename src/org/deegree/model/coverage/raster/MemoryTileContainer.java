@@ -40,7 +40,7 @@ package org.deegree.model.coverage.raster;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.model.coverage.raster.implementations.io.RasterFactory;
+import org.deegree.model.coverage.raster.implementation.RasterFactory;
 import org.deegree.model.geometry.primitive.Envelope;
 
 /**

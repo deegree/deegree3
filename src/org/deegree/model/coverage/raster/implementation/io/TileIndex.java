@@ -35,7 +35,7 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster.io;
+package org.deegree.model.coverage.raster.implementation.io;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,13 +47,16 @@ import org.deegree.model.geometry.primitive.Envelope;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class TileIndex implements Iterable<String> {
 
     private Map<String, Envelope> tiles;
 
+    /**
+     * Create a new empty TileIndex.
+     */
     public TileIndex() {
         this.tiles = new HashMap<String, Envelope>();
     }
@@ -75,6 +78,7 @@ public class TileIndex implements Iterable<String> {
      * 
      * @param filename
      *            filename of the tile
+     * @return The envelope the named tile.
      */
     public Envelope getEnvelope( String filename ) {
         return tiles.get( filename );

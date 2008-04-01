@@ -35,7 +35,7 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster.io;
+package org.deegree.model.coverage.raster.implementation.io;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -65,6 +65,7 @@ import com.sun.media.jai.codec.FileSeekableStream;
  * @author last edited by: $Author$
  * 
  * @version Modified from Revision: 7587 $ Date: 2007-06-19 11:29:12 +0200 (Tue, 19 Jun 2007) $
+ * @version $Revision$, $Date$
  */
 public class WorldFileReader {
 
@@ -171,8 +172,8 @@ public class WorldFileReader {
         double d2 = 0;
         double d3 = 0;
         double d4 = 0;
-        double d7 = 0;
-        double d8 = 0;
+//        double d7 = 0;
+//        double d8 = 0;
         while ( ( s = br.readLine() ) != null ) {
             cnt++;
             s = s.trim();
@@ -183,11 +184,11 @@ public class WorldFileReader {
                 break;
             case 2:
                 // rotation1
-                d7 = Double.parseDouble( s.replace( ',', '.' ) );
+//                d7 = Double.parseDouble( s.replace( ',', '.' ) );
                 break;
             case 3:
                 // rotation2
-                d8 = Double.parseDouble( s.replace( ',', '.' ) );
+//                d8 = Double.parseDouble( s.replace( ',', '.' ) );
                 break;
             case 4:
                 // spatial resolution y direction

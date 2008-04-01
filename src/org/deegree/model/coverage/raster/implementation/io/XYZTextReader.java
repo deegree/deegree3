@@ -35,7 +35,7 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster.io;
+package org.deegree.model.coverage.raster.implementation.io;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -72,10 +72,17 @@ public class XYZTextReader {
 
     // saves a point in the raster grid (eg. each line becomes a GridPoint)
     private static class GridPoint {
+        /**
+         * x value
+         */
         public float x;
-
+        /**
+         * y value
+         */
         public float y;
-
+        /**
+         * the value
+         */
         public float value;
 
         GridPoint( float x, float y, float value ) {
@@ -91,10 +98,30 @@ public class XYZTextReader {
 
     // saves the extension of the raster grid
     private static class GridExtension {
-        public float minx = Float.MAX_VALUE, miny = Float.MAX_VALUE;
+        /**
+         * the min x value 
+         */
+        public float minx = Float.MAX_VALUE;
+        
+        /**
+         * the min y value
+         */
+        public float miny = Float.MAX_VALUE;
 
-        public float maxx = Float.MIN_VALUE, maxy = Float.MIN_VALUE;
+        /**
+         * the max x value
+         */
+        public float maxx = Float.MIN_VALUE;
+        
+        /**
+         * the max y value
+         */
+        public float maxy = Float.MIN_VALUE;
 
+        /**
+         * Extend the current extension to contain point <code>p</code>.
+         * @param p 
+         */
         public void extend( GridPoint p ) {
             minx = min( minx, p.x );
             miny = min( miny, p.y );

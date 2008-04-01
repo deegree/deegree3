@@ -35,7 +35,7 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster.io;
+package org.deegree.model.coverage.raster.implementation.io;
 
 import java.io.File;
 import java.io.IOException;

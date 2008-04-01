@@ -35,7 +35,7 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster.io;
+package org.deegree.model.coverage.raster.implementation.io;
 
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -90,7 +90,7 @@ public class JAIRasterReader implements RasterReader {
         getWidth(); // cache size
 
         RenderedImage img = this.img;
-        this.img = null; // free img
+        this.img = null; // remove reference to img
         return JAIRasterReader.rasterDataFromImage( img );
 
     }
@@ -121,7 +121,10 @@ public class JAIRasterReader implements RasterReader {
         return height;
     }
 
-    public void close() {
+    /**
+     * Removes the internal references to the loaded raster to allow garbage collection of the raster.
+     */
+    void close() {
         img = null;
     }
 
