@@ -50,8 +50,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.model.logging.ILogger;
-import org.deegree.model.logging.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deegree.model.types.QualifiedName;
 import org.deegree.model.util.StringTools;
 import org.jaxen.JaxenException;
@@ -66,8 +66,8 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
 /**
- * XML Tools based on JAXP 1.1 for parsing documents and retrieving node values/node attributes.
- * Furthermore this utility class provides node retrieval based on XPath expressions.
+ * XML Tools based on JAXP 1.1 for parsing documents and retrieving node values/node attributes. Furthermore this
+ * utility class provides node retrieval based on XPath expressions.
  * 
  * @author <a href="mailto:mschneider@lat-lon.de">Markus Schneider </a>
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth </a>
@@ -77,7 +77,7 @@ import org.w3c.dom.Text;
  */
 public final class XMLTools {
 
-    private static final ILogger LOG = LoggerFactory.getLogger( XMLTools.class );
+    private static final Log LOG = LogFactory.getLog( XMLTools.class );
 
     private XMLTools() {
         // hidden constructor to prevent instantiation
@@ -307,8 +307,8 @@ public final class XMLTools {
     /**
      * Parses the value of the submitted <code>Node</code> as a <code>QualifiedName</code>.
      * <p>
-     * To parse the text contents of an <code>Element</code> node, the actual text node must be
-     * given, not the <code>Element</code> node itself.
+     * To parse the text contents of an <code>Element</code> node, the actual text node must be given, not the
+     * <code>Element</code> node itself.
      * </p>
      * 
      * @param node
@@ -538,8 +538,7 @@ public final class XMLTools {
      *            the values that are valid for the required node
      * @return one of the String valid String values
      * @throws XMLParsingException
-     *             if no Node was found or the text of the Node was not present in the given valid
-     *             strings.
+     *             if no Node was found or the text of the Node was not present in the given valid strings.
      */
     public static String getRequiredNodeAsString( Node contextNode, String xPathQuery, NamespaceContext nsContext,
                                                   String[] validValues )
@@ -656,8 +655,8 @@ public final class XMLTools {
     }
 
     /**
-     * Returns the parts of the targeted node value which are separated by the specified regex. The
-     * string parts are converted to doubles.
+     * Returns the parts of the targeted node value which are separated by the specified regex. The string parts are
+     * converted to doubles.
      * 
      * @param contextNode
      * @param xPathQuery
@@ -779,8 +778,8 @@ public final class XMLTools {
     }
 
     /**
-     * Returns the content of the nodes matching the XPathQuery as a String array. At least one node
-     * must match the query otherwise an exception will be thrown.
+     * Returns the content of the nodes matching the XPathQuery as a String array. At least one node must match the
+     * query otherwise an exception will be thrown.
      * 
      * @param contextNode
      * @param xPathQuery
@@ -851,8 +850,8 @@ public final class XMLTools {
     // ------------------------------------------------------------------------
 
     /**
-     * Creates a new <code>Element</code> node from the given parameters and appends it to the
-     * also specified <code>Element</code>.
+     * Creates a new <code>Element</code> node from the given parameters and appends it to the also specified
+     * <code>Element</code>.
      * 
      * @param element
      *            <code>Element</code> that the new <code>Element</code> is appended to
@@ -867,9 +866,8 @@ public final class XMLTools {
     }
 
     /**
-     * Creates a new <code>Element</code> node from the given parameters and appends it to the
-     * also specified <code>Element</code>. Adds a text node to the newly generated
-     * <code>Element</code> as well.
+     * Creates a new <code>Element</code> node from the given parameters and appends it to the also specified
+     * <code>Element</code>. Adds a text node to the newly generated <code>Element</code> as well.
      * 
      * @param element
      *            <code>Element</code> that the new <code>Element</code> is appended to
@@ -891,8 +889,8 @@ public final class XMLTools {
     }
 
     /**
-     * Appends a namespace binding for the specified element that binds the given prefix to the
-     * given namespace using a special attribute: xmlns:prefix=namespace
+     * Appends a namespace binding for the specified element that binds the given prefix to the given namespace using a
+     * special attribute: xmlns:prefix=namespace
      * 
      * @param element
      * @param prefix
@@ -962,7 +960,7 @@ public final class XMLTools {
         }
         return sb.toString();
     }
-   
+
     /**
      * Returns the namespace URI that is bound to a given prefix at a certain node in the DOM tree.
      * 

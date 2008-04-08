@@ -116,7 +116,6 @@ public class NamespaceContext implements org.jaxen.NamespaceContext {
         }
     }
 
-    @Override
     public String translateNamespacePrefixToUri( String prefix ) {
         URI namespaceURI = this.namespaceMap.get( prefix );
         return namespaceURI == null ? null : namespaceURI.toString();
