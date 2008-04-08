@@ -1,32 +1,81 @@
+//$Header: /deegreerepository/deegree/resources/eclipse/svn_classfile_header_template.xml$
+/*----------------    FILE HEADER ------------------------------------------
+ This file is part of deegree.
+ Copyright (C) 2001-2008 by:
+ Department of Geography, University of Bonn
+ http://www.giub.uni-bonn.de/deegree/
+ lat/lon GmbH
+ http://www.lat-lon.de
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ Contact:
+
+ Andreas Poth
+ lat/lon GmbH
+ Aennchenstr. 19
+ 53177 Bonn
+ Germany
+ E-Mail: poth@lat-lon.de
+
+ Prof. Dr. Klaus Greve
+ Department of Geography
+ University of Bonn
+ Meckenheimer Allee 166
+ 53115 Bonn
+ Germany
+ E-Mail: greve@giub.uni-bonn.de
+
+ ---------------------------------------------------------------------------*/
+
 package org.deegree.core.processing;
 
 import java.util.Calendar;
 
 /**
+ * A CommandState encapsulates an enumeration of possible CommandStates (i.e. finished, cancelled,
+ * paused, processing) as well as getters to the most central portions of (@link STATE) information
+ * (e.g. timestamps, duration, etc.)
  * 
+ * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
+ * @author last edited by: $Author: kiehle$
  * 
- * 
- * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author: poth $
- * 
- * @version. $Revision: 6251 $, $Date: 2007-03-19 16:59:28 +0100 (Mo, 19 Mrz 2007) $
+ * @version $Revision: $, $Date: 08.04.2008 16:38:07$
  */
 public interface CommandState {
 
+    /**
+     * 
+     * Enumeration holding potential states of a (@link Command).
+     * 
+     * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
+     * @author last edited by: $Author: kiehle$
+     * 
+     * @version $Revision: $, $Date: 08.04.2008 17:06:47$
+     */
     public enum STATE {
         finished, cancelled, paused, processing
     };
 
     /**
      * 
-     * @return current command execution state
+     * @return current command execution (@link STATE)
      */
     public STATE getState();
 
     /**
      * 
-     * @return detailed descrition of the current state (should return an empts string instead of
-     *         <code>null</code> if no description is available
+     * @return detailed descrition of the current (@link STATE) (should return an empty string
+     *         instead of <code>null</code> if no description is available
      */
     public String getDescription();
 
@@ -49,8 +98,8 @@ public interface CommandState {
     public Calendar getExecutionFinishedTimestamp();
 
     /**
-     * This method returns the real duration required for processing a {@link Command}. This is the
-     * time between starting timestamp and finishing timestamp less pause times.
+     * Returns the real duration required for processing a {@link Command}. Real execution time
+     * means the time needed for execution without possible idle time.
      * 
      * @return duration (millis) of a {@link Command} execution.
      */

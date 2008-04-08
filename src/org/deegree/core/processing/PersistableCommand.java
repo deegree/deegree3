@@ -39,14 +39,34 @@
 
 package org.deegree.core.processing;
 
+import java.net.URL;
+
 /**
- * TODO describe function and usage of the class here.
- *
+ * A PersistableCommand extends a (@link Command) by adding information for (@link Command)
+ * persistency. Implement this interface if you need to rely on the (@Command) execution. The
+ * provided mailAddress or, alternatively, the provided URL will be notified upon (@Command) related
+ * events. This will even work if the server experiences a downtime (and registered listeners are
+ * not available anymore).
+ * 
+ * 
  * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
  * @author last edited by: $Author: kiehle$
- *
+ * 
  * @version $Revision: $, $Date: 08.04.2008 16:38:07$
  */
-public interface ExecutionPlan { 
+public interface PersistableCommand extends Command {
+
+    /**
+     * 
+     * @param mailAddress
+     */
+    public void setResponseHandler( String mailAddress );
+
+    /**
+     * 
+     * @param parameterName
+     * @param url
+     */
+    public void setResponseHandler( String parameterName, URL url );
 
 }

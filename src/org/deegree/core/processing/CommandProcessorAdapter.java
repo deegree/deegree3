@@ -40,13 +40,52 @@
 package org.deegree.core.processing;
 
 /**
- * TODO describe function and usage of the class here.
+ * The CommandProcessorAdapter is the default implementation of the {@link CommandProcessorListener} interface. 
  *
  * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
  * @author last edited by: $Author: kiehle$
  *
  * @version $Revision: $, $Date: 08.04.2008 16:38:07$
  */
-public interface ExecutionPlan { 
+public class CommandProcessorAdapter implements CommandProcessorListener {
+
+    /* (non-Javadoc)
+     * @see org.deegree.core.processing.CommandProcessorListener#commandCancelled(org.deegree.core.processing.CommandProcessorEvent)
+     */
+    public void commandCancelled( CommandProcessorEvent event ) {
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.core.processing.CommandProcessorListener#commandPerformed(org.deegree.core.processing.CommandProcessorEvent)
+     */
+    public void commandPerformed( CommandProcessorEvent event ) {
+
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.core.processing.CommandProcessorListener#commandResumed(org.deegree.core.processing.CommandProcessorEvent)
+     */
+    public void commandResumed( CommandProcessorEvent event ) {
+
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.core.processing.CommandProcessorListener#commandStarted(org.deegree.core.processing.CommandProcessorEvent)
+     */
+    public void commandStarted( CommandProcessorEvent event ) {
+
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.deegree.core.processing.CommandProcessorListener#commandStoped(org.deegree.core.processing.CommandProcessorEvent)
+     */
+    public void commandStoped( CommandProcessorEvent event ) {
+
+        
+    }
 
 }

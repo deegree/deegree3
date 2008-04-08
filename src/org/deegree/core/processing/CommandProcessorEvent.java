@@ -40,13 +40,32 @@
 package org.deegree.core.processing;
 
 /**
- * TODO describe function and usage of the class here.
- *
+ * The CommandProcessorEvent encapsulates an event to be triggered. Events will be acted upon by
+ * registered listeners, e.g. (@link CommandProcessorListener)
+ * 
  * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
  * @author last edited by: $Author: kiehle$
- *
+ * 
  * @version $Revision: $, $Date: 08.04.2008 16:38:07$
  */
-public interface ExecutionPlan { 
+public class CommandProcessorEvent {
+
+    private Command command;
+
+    /**
+     * 
+     * @param command
+     */
+    public CommandProcessorEvent( Command command ) {
+        this.command = command;
+    }
+
+    /**
+     * 
+     * @return
+     */
+    public Command getCommand() {
+        return this.command;
+    }
 
 }

@@ -40,13 +40,33 @@
 package org.deegree.core.processing;
 
 /**
- * TODO describe function and usage of the class here.
- *
+ * Common Exception class to be thrown by CommandProcessor-related objects.
+ * 
  * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
  * @author last edited by: $Author: kiehle$
- *
+ * 
  * @version $Revision: $, $Date: 08.04.2008 16:38:07$
  */
-public interface ExecutionPlan { 
+public class CommandProcessorException extends RuntimeException {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3925277486055473384L;
+
+    /**
+     * @param message
+     * @param e
+     */
+    CommandProcessorException( String message, Throwable e ) {
+        super( message, e );
+    }
+
+    /**
+     * @param message
+     */
+    CommandProcessorException( String message ) {
+        super( message );
+    }
 
 }

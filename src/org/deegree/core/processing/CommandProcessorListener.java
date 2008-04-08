@@ -40,13 +40,43 @@
 package org.deegree.core.processing;
 
 /**
- * TODO describe function and usage of the class here.
+ * A CommandProcessorListener acts upon specific (@link CommandProcessorEvent)s 
  *
  * @author <a href="mailto:kiehle@lat-lon.de">Christian Kiehle</a>
  * @author last edited by: $Author: kiehle$
  *
  * @version $Revision: $, $Date: 08.04.2008 16:38:07$
  */
-public interface ExecutionPlan { 
+public interface CommandProcessorListener {
+
+    /**
+     * 
+     * @param event
+     */
+    public void commandPerformed( CommandProcessorEvent event );
+
+    /**
+     * 
+     * @param event
+     */
+    public void commandStarted( CommandProcessorEvent event );
+
+    /**
+     * 
+     * @param event
+     */
+    public void commandStoped( CommandProcessorEvent event );
+
+    /**
+     * 
+     * @param event
+     */
+    public void commandResumed( CommandProcessorEvent event );
+
+    /**
+     * 
+     * @param event
+     */
+    public void commandCancelled( CommandProcessorEvent event );
 
 }
