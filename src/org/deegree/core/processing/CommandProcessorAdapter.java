@@ -52,16 +52,14 @@ public class CommandProcessorAdapter implements CommandProcessorListener {
     /* (non-Javadoc)
      * @see org.deegree.core.processing.CommandProcessorListener#commandCancelled(org.deegree.core.processing.CommandProcessorEvent)
      */
-    public void commandCancelled( CommandProcessorEvent event ) {
-        
+    public void commandCancelled( CommandProcessorEvent event ) {        
     }
 
     /* (non-Javadoc)
-     * @see org.deegree.core.processing.CommandProcessorListener#commandPerformed(org.deegree.core.processing.CommandProcessorEvent)
+     * @see org.deegree.core.processing.CommandProcessorListener#commandFinished(org.deegree.core.processing.CommandProcessorEvent)
      */
-    public void commandPerformed( CommandProcessorEvent event ) {
-
-        
+    public void commandFinished( CommandProcessorEvent event ) {
+   
     }
 
     /* (non-Javadoc)
@@ -76,16 +74,18 @@ public class CommandProcessorAdapter implements CommandProcessorListener {
      * @see org.deegree.core.processing.CommandProcessorListener#commandStarted(org.deegree.core.processing.CommandProcessorEvent)
      */
     public void commandStarted( CommandProcessorEvent event ) {
-
+  
         
     }
 
     /* (non-Javadoc)
-     * @see org.deegree.core.processing.CommandProcessorListener#commandStoped(org.deegree.core.processing.CommandProcessorEvent)
+     * @see org.deegree.core.processing.CommandProcessorListener#commandStopped(org.deegree.core.processing.CommandProcessorEvent)
      */
-    public void commandStoped( CommandProcessorEvent event ) {
+    public void commandStopped( CommandProcessorEvent event ) {
 
         
     }
+
+ 
 
 }

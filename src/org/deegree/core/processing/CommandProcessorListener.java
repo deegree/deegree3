@@ -50,10 +50,10 @@ package org.deegree.core.processing;
 public interface CommandProcessorListener {
 
     /**
-     * 
+     *   
      * @param event
      */
-    public void commandPerformed( CommandProcessorEvent event );
+    public void commandFinished( CommandProcessorEvent event );
 
     /**
      * 
@@ -65,7 +65,7 @@ public interface CommandProcessorListener {
      * 
      * @param event
      */
-    public void commandStoped( CommandProcessorEvent event );
+    public void commandStopped( CommandProcessorEvent event );
 
     /**
      * 

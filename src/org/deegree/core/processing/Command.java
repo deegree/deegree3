@@ -65,11 +65,11 @@ public interface Command {
      */
     public CommandResult getResult();
 
-    /**
-     * 
-     * @return current status of a {@link Command}
-     */
-    public CommandState getStatus();
+   /**
+    * 
+    * @return current (@link CommandState.STATE) of a {@link Command}
+    */
+    public CommandState.STATE getStatus();
 
     /**
      * executes a {@link Command}

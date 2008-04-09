@@ -63,7 +63,7 @@ public interface CommandState {
      * @version $Revision: $, $Date: 08.04.2008 17:06:47$
      */
     public enum STATE {
-        finished, cancelled, paused, processing
+        started, stopped, resumed, cancelled, finished
     };
 
     /**
