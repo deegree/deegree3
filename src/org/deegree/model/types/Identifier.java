@@ -52,5 +52,5 @@ package org.deegree.model.types;
  * @version. $Revision: 6251 $, $Date: 2007-03-19 16:59:28 +0100 (Mo, 19 Mrz 2007) $
  */
 public interface Identifier {
-
+// TODO
 }

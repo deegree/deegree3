@@ -55,6 +55,7 @@ import java.util.Properties;
  * @author last edited by: $Author: apoth $
  * 
  * @version $Revision: 10660 $, $Date: 2008-03-24 22:39:54 +0100 (Mo, 24 Mrz 2008) $
+ * @deprecated
  */
 public interface ILogger {
 

@@ -90,6 +90,7 @@ import org.deegree.model.version.Version;
  * 
  * @see LoggerFactory
  * @see org.deegree.framework.util.BootLogger
+ * @deprecated
  */
 abstract class LoggerService implements ILogger {
 

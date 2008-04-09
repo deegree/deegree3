@@ -58,6 +58,7 @@ import org.deegree.model.util.StringTools;
  * @author last edited by: $Author: apoth $
  * 
  * @version $Revision: 10522 $, $Date: 2008-03-07 12:09:06 +0100 (Fr, 07 Mrz 2008) $
+ * @deprecated
  */
 public class QualifiedName implements Serializable {
 

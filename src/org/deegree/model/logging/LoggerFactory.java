@@ -81,6 +81,7 @@ import java.util.Properties;
  * @version $Revision: 10596 $, $Date: 2008-03-17 14:47:25 +0100 (Mo, 17 Mrz 2008) $
  * 
  * @see ILogger
+ * @deprecated
  * 
  */
 public final class LoggerFactory {

@@ -90,6 +90,7 @@ public class StringTools {
      *            if it's true all occurences of the string to be replaced will be replaced. else
      *            only the first occurence will be replaced.
      * @return the changed target string
+     * @deprecated
      */
     public static String replace( String target, String from, String to, boolean all ) {
 
@@ -174,6 +175,7 @@ public class StringTools {
      *            if it's true all string that are already within the resulting array will be
      *            deleted, so that there will only be one copy of them.
      * @return list of strings
+     * @deprecated
      */
     public static List<String> toList( String s, String delimiter, boolean deleteDoubles ) {
         if ( s == null || s.equals( "" ) ) {
@@ -208,7 +210,7 @@ public class StringTools {
      * @return string created as concatination of passed string array
      */
     public static String arrayToString( String[] s, char delimiter ) {
-        StringBuffer res = new StringBuffer( s.length * 20 );
+        StringBuilder res = new StringBuilder( s.length * 20 );
 
         for ( int i = 0; i < s.length; i++ ) {
             res.append( s[i] );
@@ -230,7 +232,7 @@ public class StringTools {
      * @return string created as a concatination of passed list
      */
     public static String listToString( List s, char delimiter ) {
-        StringBuffer res = new StringBuffer( s.size() * 20 );
+        StringBuilder res = new StringBuilder( s.size() * 20 );
 
         for ( int i = 0; i < s.size(); i++ ) {
             res.append( s.get( i ) );
@@ -253,7 +255,7 @@ public class StringTools {
      * @return string created as concatination of passed double array
      */
     public static String arrayToString( double[] s, char delimiter ) {
-        StringBuffer res = new StringBuffer( s.length * 20 );
+        StringBuilder res = new StringBuilder( s.length * 20 );
 
         for ( int i = 0; i < s.length; i++ ) {
             res.append( Double.toString( s[i] ) );
@@ -276,7 +278,7 @@ public class StringTools {
      * @return string created as concatination of passed int array
      */
     public static String arrayToString( int[] s, char delimiter ) {
-        StringBuffer res = new StringBuffer( s.length * 20 );
+        StringBuilder res = new StringBuilder( s.length * 20 );
 
         for ( int i = 0; i < s.length; i++ ) {
             res.append( Integer.toString( s[i] ) );
@@ -297,6 +299,7 @@ public class StringTools {
      * @param mark
      *            string to remove from begin and end of <code>s</code>
      * @return string where <code>mark</code> has been removed from start and end
+     * @deprecated
      */
     public static String validateString( String s, String mark ) {
         if ( s == null ) {
@@ -373,10 +376,6 @@ public class StringTools {
             return false;
         }
 
-        if ( value.endsWith( "," ) ) {
-            value = value.substring( 0, value.length() - 1 );
-        }
-
         for ( int i = 0; i < target.length; i++ ) {
             if ( value.equalsIgnoreCase( target[i] ) ) {
                 return true;
@@ -394,6 +393,7 @@ public class StringTools {
      * @param delimiter
      * 
      * @return array of doubles
+     * @deprecated
      */
     public static double[] toArrayDouble( String s, String delimiter ) {
         if ( s == null ) {
@@ -433,6 +433,7 @@ public class StringTools {
      * @param delimiter
      * 
      * @return array of floats
+     * @deprecated
      */
     public static float[] toArrayFloat( String s, String delimiter ) {
         if ( s == null ) {

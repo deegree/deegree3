@@ -52,6 +52,7 @@ package org.deegree.model.logging;
  * @author last edited by $Author: apoth $
  * 
  * @version $Revision: 9339 $, $Date: 2007-12-27 13:31:52 +0100 (Do, 27 Dez 2007) $
+ * @deprecated
  * 
  */
 public class BootLogger {

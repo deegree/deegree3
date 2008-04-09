@@ -58,6 +58,7 @@ import org.apache.log4j.PropertyConfigurator;
  * @author last edited by: UID=$Author: apoth $
  * 
  * @version $Revision: 10660 $, $Date: 2008-03-24 22:39:54 +0100 (Mo, 24 Mrz 2008) $
+ * @deprecated
  */
 public class JCLLogger extends LoggerService {
 
