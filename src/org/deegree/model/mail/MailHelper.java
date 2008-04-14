@@ -59,9 +59,9 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deegree.model.i18n.Messages;
-import org.deegree.model.logging.ILogger;
-import org.deegree.model.logging.LoggerFactory;
 import org.deegree.model.util.StringTools;
 
 /**
@@ -78,7 +78,7 @@ import org.deegree.model.util.StringTools;
 
 public final class MailHelper {
 
-    private static final ILogger LOG = LoggerFactory.getLogger( MailHelper.class );
+    private static final Log LOG = LogFactory.getLog( MailHelper.class );
 
     /**
      * Creates a mail helper to send a message.
@@ -184,7 +184,7 @@ public final class MailHelper {
         }
         try {
             int k = eMess.getMessageBody().length() > 60 ? 60 : eMess.getMessageBody().length() - 1;
-            LOG.logDebug( StringTools.concat( 500, "Sending message, From: ", eMess.getSender(), "\nTo: ",
+            LOG.debug( StringTools.concat( 500, "Sending message, From: ", eMess.getSender(), "\nTo: ",
                                               eMess.getReceiver(), "\nSubject: ", eMess.getSubject(), "\nContents: ",
                                               eMess.getMessageBody().substring( 0, k ), "..." ) );
             // construct the message
@@ -219,9 +219,9 @@ public final class MailHelper {
             msg.setContent( mp );
             // send the mail off
             Transport.send( msg );
-            LOG.logDebug( "Mail sent successfully! Header=", eMess.getHeader() );
+            LOG.debug( "Mail sent successfully! Header=" + eMess.getHeader() );
         } catch ( Exception e ) {
-            LOG.logError( e.getMessage(), e );
+            LOG.error( e.getMessage(), e );
             String s = Messages.getMessage( "MAIL_SEND_ERROR", eMess.getHeader() );
             throw new SendMailException( s, e );
         }
@@ -247,7 +247,7 @@ public final class MailHelper {
         }
         try {
             int k = eMess.getMessageBody().length() > 60 ? 60 : eMess.getMessageBody().length() - 1;
-            LOG.logDebug( StringTools.concat( 500, "Sending message, From: ", eMess.getSender(), "\nTo: ",
+            LOG.debug( StringTools.concat( 500, "Sending message, From: ", eMess.getSender(), "\nTo: ",
                                               eMess.getReceiver(), "\nSubject: ", eMess.getSubject(), "\nContents: ",
                                               eMess.getMessageBody().substring( 0, k ), "..." ) );
             // construct the message
@@ -282,9 +282,9 @@ public final class MailHelper {
             msg.setContent( mp );
             // send the mail off
             Transport.send( msg );
-            LOG.logDebug( "Mail sent successfully! Header=", eMess.getHeader() );
+            LOG.debug( "Mail sent successfully! Header=" + eMess.getHeader() );
         } catch ( Exception e ) {
-            LOG.logError( e.getMessage(), e );
+            LOG.error( e.getMessage(), e );
             String s = Messages.getMessage( "MAIL_SEND_ERROR", eMess.getHeader() );
             throw new SendMailException( s, e );
         }
