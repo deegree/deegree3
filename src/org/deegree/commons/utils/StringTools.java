@@ -41,7 +41,7 @@
 
  
  ---------------------------------------------------------------------------*/
-package org.deegree.model.util;
+package org.deegree.commons.utils;
 
 import java.util.ArrayList;
 import java.util.List;

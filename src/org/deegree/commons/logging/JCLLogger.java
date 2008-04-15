@@ -41,7 +41,7 @@
 
  
  ---------------------------------------------------------------------------*/
-package org.deegree.model.logging;
+package org.deegree.commons.logging;
 
 import java.net.URL;
 

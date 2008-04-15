@@ -41,7 +41,7 @@
 
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.xml;
+package org.deegree.commons.xml;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -52,8 +52,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deegree.model.types.QualifiedName;
-import org.deegree.model.util.StringTools;
+import org.deegree.commons.types.QualifiedName;
+import org.deegree.commons.utils.StringTools;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
 import org.jaxen.dom.DOMXPath;

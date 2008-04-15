@@ -41,11 +41,11 @@
 
  
  ---------------------------------------------------------------------------*/
-package org.deegree.model.version;
+package org.deegree.commons.version;
 
 import java.util.Properties;
 
-import org.deegree.model.logging.BootLogger;
+import org.deegree.commons.logging.BootLogger;
 
 /**
  * The version number is created by 3 parts, the first represents the version number, the second a

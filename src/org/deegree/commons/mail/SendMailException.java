@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://developername@svn.wald.intevation.org/deegree/deegree3/model/trunk/src/org/deegree/model/types/Identifier.java $
+//$HeadURL: svn+ssh://developername@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/framework/mail/SendMailException.java $
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -39,18 +39,40 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
 
+ 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.types;
+package org.deegree.commons.mail;
 
 /**
+ * This exception is an application exception thrown by the mail component
  * 
+ * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe</A>
  * 
+ * @author last edited by: $Author: apoth $
  * 
- * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author: poth $
- * 
- * @version. $Revision: 6251 $, $Date: 2007-03-19 16:59:28 +0100 (Mo, 19 Mrz 2007) $
+ * @version $Revision: 10660 $,$Date: 2008-03-24 22:39:54 +0100 (Mo, 24 Mrz 2008) $
  */
-public interface Identifier {
-// TODO
+public class SendMailException extends RuntimeException {
+
+    /**
+     * 
+     */
+    public SendMailException() {
+        super();
+    }
+
+    /**
+     * @param str
+     */
+    public SendMailException( String str ) {
+        super( str );
+    }
+
+    /**
+     * @param str
+     * @param ex
+     */
+    public SendMailException( String str, Throwable ex ) {
+        super( str, ex );
+    }
 }

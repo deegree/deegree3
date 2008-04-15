@@ -41,12 +41,12 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.xml;
+package org.deegree.commons.xml;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.deegree.model.logging.BootLogger;
+import org.deegree.commons.logging.BootLogger;
 
 /**
  * Definitions for OGC related namespace bindings.

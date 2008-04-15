@@ -51,7 +51,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import org.deegree.model.logging.BootLogger;
+import org.deegree.commons.logging.BootLogger;
 
 
 /**

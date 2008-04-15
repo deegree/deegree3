@@ -40,7 +40,7 @@
  E-Mail: greve@giub.uni-bonn.de
  
  ---------------------------------------------------------------------------*/
-package org.deegree.model.xml;
+package org.deegree.commons.xml;
 
 import java.net.URI;
 

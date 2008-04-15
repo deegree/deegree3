@@ -40,13 +40,13 @@
  E-Mail: greve@giub.uni-bonn.de
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.types;
+package org.deegree.commons.types;
 
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.deegree.model.util.StringTools;
+import org.deegree.commons.utils.StringTools;
 
 /**
  * This class represent a qualified name for something. A name is thought to be built from an

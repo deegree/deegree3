@@ -41,7 +41,7 @@
 
  
  ---------------------------------------------------------------------------*/
-package org.deegree.model.logging;
+package org.deegree.commons.logging;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -59,10 +59,10 @@ import java.util.Properties;
 
 import javax.mail.Session;
 
-import org.deegree.model.mail.EMailMessage;
-import org.deegree.model.mail.MailHelper;
-import org.deegree.model.mail.MailMessage;
-import org.deegree.model.version.Version;
+import org.deegree.commons.mail.EMailMessage;
+import org.deegree.commons.mail.MailHelper;
+import org.deegree.commons.mail.MailMessage;
+import org.deegree.commons.version.Version;
 
 /**
  * The Logger is used to log messages to files. This service will use a logging service provided by

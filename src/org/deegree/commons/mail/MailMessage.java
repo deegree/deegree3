@@ -41,7 +41,7 @@
 
  
  ---------------------------------------------------------------------------*/
-package org.deegree.model.mail;
+package org.deegree.commons.mail;
 
 /**
  * Interface of a email message.

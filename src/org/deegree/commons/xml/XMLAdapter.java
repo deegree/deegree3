@@ -41,7 +41,7 @@
  
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.xml;
+package org.deegree.commons.xml;
 
 import java.io.File;
 import java.io.IOException;

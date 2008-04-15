@@ -41,7 +41,7 @@
 
  
  ---------------------------------------------------------------------------*/
-package org.deegree.model.mail;
+package org.deegree.commons.mail;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -61,8 +61,8 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.deegree.commons.utils.StringTools;
 import org.deegree.model.i18n.Messages;
-import org.deegree.model.util.StringTools;
 
 /**
  * A helper class to create and send mail.

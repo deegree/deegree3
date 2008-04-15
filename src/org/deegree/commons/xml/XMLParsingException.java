@@ -41,7 +41,7 @@
 
  
  ---------------------------------------------------------------------------*/
-package org.deegree.model.xml;
+package org.deegree.commons.xml;
 
 /**
  * This exception is thrown when a syntactic or semantic error has been encountered during the

@@ -41,7 +41,7 @@
 
  
  ---------------------------------------------------------------------------*/
-package org.deegree.model.mail;
+package org.deegree.commons.mail;
 
 /**
  * This class encapsulates all the info need to send an email message. This object is passed to the

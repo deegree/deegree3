@@ -41,7 +41,7 @@
 
  
  ---------------------------------------------------------------------------*/
-package org.deegree.model.logging;
+package org.deegree.commons.logging;
 
 /**
  * The BootLogger is designed to be used internally by the framework manager and components at

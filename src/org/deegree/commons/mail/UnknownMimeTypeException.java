@@ -41,7 +41,7 @@
 
  
  ---------------------------------------------------------------------------*/
-package org.deegree.model.mail;
+package org.deegree.commons.mail;
 
 /**
  * A UnknownMimetypeException is thrown if the MIME type is not supported.
