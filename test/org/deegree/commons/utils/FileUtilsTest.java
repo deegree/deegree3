@@ -42,56 +42,47 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
 
+import org.junit.Test;
+
 /**
- * This class contains static utility methods for handling files and filenames.
- * 
+ *
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author: $
- * 
+ *
  * @version $Revision: $, $Date: $
- * 
+ *}
  */
-public class FileUtils {
+public class FileUtilsTest {
+
     /**
-     * Returns the filename, without any extension. (Eg. /tmp/foo.txt -> /tmp/foo)
-     * 
-     * @param file
-     * @return the basename
+     * Test method for {@link org.deegree.commons.utils.FileUtils#getBasename(java.io.File)}.
      */
-    public static String getBasename( File file ) {
-        return splitFilename( file ).first;
-    }
-    
-    /**
-     * Returns the file extension (Eg. /tmp/foo.txt -> txt)
-     * 
-     * @param file
-     * @return the file extension
-     */
-    public static String getFileExtension( File file ) {
-        return splitFilename( file ).second;
+    @Test
+    public void testGetBasename() {
+        assertEquals( "/tmp/foo", FileUtils.getBasename( new File( "/tmp/foo.txt" ) ) );
+        assertEquals( "/tmp/foo", FileUtils.getBasename( new File( "/tmp/foo" ) ) );
+        assertEquals( "../foo", FileUtils.getBasename( new File( "../foo.txt" ) ) );
+        assertEquals( "/tmp", FileUtils.getBasename( new File( "/tmp/" ) ) );
+        assertEquals( "/tmp.dir/foo", FileUtils.getBasename( new File( "/tmp.dir/foo" ) ) );
+        assertEquals( "", FileUtils.getBasename( new File( "" ) ) );
     }
 
     /**
-     * Split a filename in basename and extension.
-     * @param file
-     * @return a StringPair with basename and extension
+     * Test method for {@link org.deegree.commons.utils.FileUtils#getFileExtension(java.io.File)}.
      */
-    private static StringPair splitFilename( File file ) {
-        String filename = file.getName();
-        File path = file.getParentFile();
-        int pos = filename.lastIndexOf( "." );
-        if ( pos != -1 ) {
-            String basename = filename.substring( 0, pos );
-            String suffix = filename.substring( pos + 1 );
-            if ( path != null ) {
-                basename = path.getPath() + File.separator + basename;
-            }
-            return new StringPair( basename, suffix );
-        } else {
-            return new StringPair( file.getPath(), "" );
-        }
+    @Test
+    public void testGetFileExtension() {
+        assertEquals( "txt", FileUtils.getFileExtension( new File( "/tmp/foo.txt" ) ) );
+        assertEquals( "txt", FileUtils.getFileExtension( new File( "/tmp/foo.bar.txt" ) ) );
+        assertEquals( "", FileUtils.getFileExtension( new File( "/tmp/foo.bar." ) ) );
+        assertEquals( "", FileUtils.getFileExtension( new File( "/tmp/foo" ) ) );
+        assertEquals( "", FileUtils.getFileExtension( new File( "/tmp.dir/foo" ) ) );
+        assertEquals( "", FileUtils.getFileExtension( new File( "" ) ) );
     }
+
 }
