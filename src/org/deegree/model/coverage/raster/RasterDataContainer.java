@@ -40,7 +40,8 @@ package org.deegree.model.coverage.raster;
 import org.deegree.model.coverage.raster.data.RasterData;
 
 /**
- * RasterDataContainer wraps RasterData.
+ * This interface is for abstraction of RasterData providers. Implementations of this interface can control the loading and unloading of
+ * the raster data (i.e. caching, etc).
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$

@@ -71,7 +71,7 @@ public class RasterEnvelope {
     }
 
     /**
-     * This type specifies where the in the upper-left pixel the origin lies.
+     * This type specifies where the upper-left coordinate lies.
      */
     public enum Type {
         /** upper left corner of the pixel */

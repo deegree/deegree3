@@ -47,7 +47,7 @@ import org.deegree.model.geometry.primitive.Envelope;
  * This TileContainer keeps all tiles (AbstractRaster) in memory.
  * 
  * Use this container for tiles with a few thousand or less tiles. The AbstractRaster should be loaded with a LAZY or
- * CACHED CachePolicy (see {@link RasterFactory}).
+ * CACHED LoadingPolicy (see {@link RasterFactory}).
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
