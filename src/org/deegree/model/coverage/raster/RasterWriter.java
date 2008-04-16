@@ -44,6 +44,7 @@ package org.deegree.model.coverage.raster;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * This interface is for abstraction of the raster writing handling.
@@ -61,10 +62,12 @@ public interface RasterWriter {
      * 
      * @param raster
      * @param file
+     * @param options
+     *            additional information for the raster writer (format, etc)
      * @throws IOException
      *             may be thrown when the file can't be written
      */
-    public void write( AbstractRaster raster, File file )
+    public void write( AbstractRaster raster, File file, Map<String, String> options )
                             throws IOException;
 
     /**
