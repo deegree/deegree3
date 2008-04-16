@@ -3,7 +3,7 @@
 	<deegree:GeometryFactories>
 		<deegree:GeometryFactory isDefault="true">
 			<deegree:Name>JTS</deegree:Name>
-			<deegree:ClassName>org.deegree.core.geometry.jtswrapper.JTSWrapperGeometryFactory</deegree:ClassName>
+			<deegree:ClassName>org.deegree.model.geometry.jtswrapper.JTSWrapperGeometryFactory</deegree:ClassName>
 			<deegree:Description>
                 Creates geometry classes that that wrapps JTS geometries. Because JTS just offers simple feature
                 geometry implementation support for complex geometries and none linear interpolations is limited
