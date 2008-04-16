@@ -39,30 +39,22 @@
 package org.deegree.commons.utils;
 
 /**
- * <code>Pair</code> is a convenience class, which pairs two objects. For a pair of <code>String</code>s see
- * {@link StringPair}.
+ * <code>StringPair</code> is a convenience class, which pairs two Strings.
  * 
- * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+ * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  * 
- * @param <T>
- *            the first Object of the pair
- * @param <U>
- *            the second Object of the pair
- * 
  */
-public class Pair<T, U> {
-    /**
-     * first value of the pair.
-     */
-    public T first;
+public class StringPair extends Pair<String, String> {
 
     /**
-     * second value of the pair.
+     * create a StringPair with empty strings
      */
-    public U second;
+    public StringPair() {
+        super( "", "" );
+    }
 
     /**
      * @param first
@@ -70,33 +62,8 @@ public class Pair<T, U> {
      * @param second
      *            value of the pair.
      */
-    public Pair( T first, U second ) {
-        this.first = first;
-        this.second = second;
-    }
-
-    /**
-     * Create a pair with null objects.
-     */
-    public Pair() {
-        // nothing to do here
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public boolean equals( Object other ) {
-        if ( other != null && other instanceof Pair ) {
-            // what ever, unchecked.
-            final Pair that = (Pair) other;
-            return ( first == null ? that.first == null : first.equals( that.first ) )
-                   && ( second == null ? that.second == null : second.equals( that.second ) );
-        }
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return "<" + first + ", " + second + ">";
+    public StringPair( String first, String second ) {
+        super( first, second );
     }
 
 }
