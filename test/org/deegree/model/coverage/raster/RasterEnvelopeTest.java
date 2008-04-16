@@ -37,16 +37,14 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster;
 
+import static org.junit.Assert.*;
+
+import org.deegree.model.coverage.raster.RasterEnvelope.Type;
+import org.deegree.model.coverage.raster.data.RasterRect;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.Envelope;
-
-import org.deegree.model.coverage.raster.RasterEnvelope;
-import org.deegree.model.coverage.raster.data.RasterRect;
 import org.junit.Test;
-
-import junit.framework.TestCase;
-import static org.deegree.model.coverage.raster.RasterEnvelope.Type;
 
 /**
  * Test the RasterEnvelope implementation. Test calculations between raster(int) and world(double) coordinates,
@@ -58,16 +56,11 @@ import static org.deegree.model.coverage.raster.RasterEnvelope.Type;
  * @version $Revision: $, $Date: $
  * 
  */
-public class RasterEnvelopeTest extends TestCase {
+public class RasterEnvelopeTest {
 
     static final double DELTA = 0.001;
 
     static GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
-
-    protected void setUp()
-                            throws Exception {
-        super.setUp();
-    }
 
     /**
      * 
