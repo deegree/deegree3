@@ -40,6 +40,7 @@ package org.deegree.model.coverage.raster;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deegree.model.coverage.raster.data.RasterData;
+import org.deegree.model.coverage.raster.data.RasterDataReader;
 
 /**
  * This class implements a RasterDataContainer that loads the data on first access.
@@ -52,7 +53,7 @@ import org.deegree.model.coverage.raster.data.RasterData;
  */
 public class LazyRasterDataContainer implements RasterDataContainer {
 
-    private RasterReader reader;
+    private RasterDataReader reader;
 
     private RasterData raster;
 
@@ -66,7 +67,7 @@ public class LazyRasterDataContainer implements RasterDataContainer {
      * @param reader
      *            RasterReader for the raster source
      */
-    public LazyRasterDataContainer( RasterReader reader ) {
+    public LazyRasterDataContainer( RasterDataReader reader ) {
         this.reader = reader;
     }
 

@@ -38,6 +38,7 @@
 package org.deegree.model.coverage.raster;
 
 import org.deegree.model.coverage.raster.data.RasterData;
+import org.deegree.model.coverage.raster.data.RasterDataReader;
 
 /**
  * This class implements a RasterDataContainer that keeps RasterData in memory.
@@ -58,7 +59,7 @@ public class MemoryRasterDataContainer implements RasterDataContainer {
      * @param reader
      *            RasterReader for RasterData
      */
-    public MemoryRasterDataContainer( RasterReader reader ) {
+    public MemoryRasterDataContainer( RasterDataReader reader ) {
         this.raster = reader.read();
     }
 
