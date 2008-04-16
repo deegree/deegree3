@@ -46,7 +46,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * This interface is for abstraction of the raster loading handling.
+ * This interface is for abstraction of the raster writing handling.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author: $
@@ -54,19 +54,25 @@ import java.io.IOException;
  * @version $Revision: $
  * 
  */
-public interface RasterReader {
+public interface RasterWriter {
+
     /**
-     * Read the given raster file into an abstract raster.
-     * @param filename
-     * @return the loaded raster
-     * @throws IOException may be thrown when there is a problem with reading the raster. 
+     * Write the raster into file.
+     * 
+     * @param raster
+     * @param file
+     * @throws IOException
+     *             may be thrown when the file can't be written
      */
-    public AbstractRaster load( File filename ) throws IOException;
-    
+    public void write( AbstractRaster raster, File file )
+                            throws IOException;
+
     /**
-     * Check if the raster reader is able to read the given raster file.
-     * @param filename
-     * @return true if the class can read the raster
+     * Check if the raster writer is able to write the given raster file.
+     * 
+     * @param raster
+     * @param file
+     * @return true if the class can write the raster
      */
-    public boolean canLoad( File filename );
+    public boolean canWrite( AbstractRaster raster, File file );
 }
