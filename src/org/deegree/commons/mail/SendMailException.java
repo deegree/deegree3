@@ -57,6 +57,11 @@ public class SendMailException extends RuntimeException {
     /**
      * 
      */
+    private static final long serialVersionUID = 5266241004774907543L;
+
+    /**
+     * 
+     */
     public SendMailException() {
         super();
     }

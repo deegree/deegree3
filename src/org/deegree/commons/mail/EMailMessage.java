@@ -55,6 +55,11 @@ package org.deegree.commons.mail;
  */
 public class EMailMessage implements java.io.Serializable, MailMessage {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7569652229263596515L;
+
     private String sender;
 
     private String subject;

@@ -54,6 +54,10 @@ package org.deegree.commons.mail;
  */
 public class UnknownMimeTypeException extends Exception {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3326395686226436933L;
     private String mimeType;
 
     /**

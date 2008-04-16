@@ -49,6 +49,11 @@ package org.deegree.model.geometry;
  */
 public class GeometryException extends RuntimeException {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 3327285706883207758L;
+
     public GeometryException() {
         super();
         // TODO Auto-generated constructor stub
