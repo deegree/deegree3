@@ -46,7 +46,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ServiceLoader;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.utils.FileUtils;
 
 /**
@@ -63,6 +66,10 @@ import org.deegree.commons.utils.FileUtils;
  */
 public class RasterFactory {
 
+    private static ServiceLoader<RasterIOProvider> rasterIOLoader = ServiceLoader.load( RasterIOProvider.class );
+
+    private static Log log = LogFactory.getLog( RasterFactory.class );
+
     /**
      * Load a raster from a file.
      * 
@@ -74,8 +81,11 @@ public class RasterFactory {
     public static AbstractRaster loadRasterFromFile( File filename )
                             throws IOException {
         String extension = FileUtils.getFileExtension( filename );
-        RasterReader reader = getRasterReader( extension );
-        // TODO error handling
+        RasterReader reader = getRasterReader( filename, extension );
+        if ( reader == null ) {
+            log.error( "couldn't find raster reader for " + filename );
+            throw new IOException( "couldn't find raster reader" );
+        }
         return reader.load( filename );
     }
 
@@ -103,46 +113,31 @@ public class RasterFactory {
     public static void saveRasterToFile( AbstractRaster raster, File filename, Map<String, String> options )
                             throws IOException {
         String extension = FileUtils.getFileExtension( filename );
-        RasterWriter writer = getRasterWriter( extension, options );
-        // TODO error handling
+        RasterWriter writer = getRasterWriter( raster, filename, extension, options );
+        if ( writer == null ) {
+            log.error( "couldn't find raster writer for " + filename );
+            throw new IOException( "couldn't find raster writer" );
+        }
         writer.write( raster, filename, options );
     }
 
-    private static RasterReader getRasterReader( String format ) {
-        // TODO make this configurable
-        Class rasterReader;
-        try {
-            rasterReader = Class.forName( "org.deegree.dataaccess.jai.JAIRasterReader" );
-            return (RasterReader) rasterReader.newInstance();
-        } catch ( ClassNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( InstantiationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( IllegalAccessException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    private static RasterReader getRasterReader( File filename, String format ) {
+        for ( RasterIOProvider reader : rasterIOLoader ) {
+            RasterReader possibleReader = reader.getRasterReader( format );
+            if ( possibleReader != null && possibleReader.canLoad( filename ) ) {
+                return possibleReader;
+            }
         }
         return null;
-
     }
 
-    private static RasterWriter getRasterWriter( String format, Map<String, String> options ) {
-        // TODO make this configurable
-        Class rasterReader;
-        try {
-            rasterReader = Class.forName( "org.deegree.dataaccess.jai.JAIRasterWriter" );
-            return (RasterWriter) rasterReader.newInstance();
-        } catch ( ClassNotFoundException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( InstantiationException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch ( IllegalAccessException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    private static RasterWriter getRasterWriter( AbstractRaster raster, File filename, String format,
+                                                 Map<String, String> options ) {
+        for ( RasterIOProvider writer : rasterIOLoader ) {
+            RasterWriter possibleWriter = writer.getRasterWriter( format );
+            if ( possibleWriter != null && possibleWriter.canWrite( raster, filename ) ) {
+                return possibleWriter;
+            }
         }
         return null;
     }

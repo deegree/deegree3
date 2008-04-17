@@ -42,41 +42,35 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
+import java.util.ServiceLoader;
 
 /**
- * This interface is for abstraction of the raster writing handling.
+ * This interface is for all classes that provide raster IO. It uses the new Java 6 ServiceLoader.
+ * 
+ * <p>
+ * To add your own raster IO to deegree you have to implement this interface and put the class name of _your_
+ * implementing class in META-INF/services/org.deegree.model.coverage.raster within _your_ .jar or classes directory.
+ * Then you have to add your implementation to the classpath of deegree.
+ * 
+ * @see ServiceLoader
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author: $
  * 
- * @version $Revision: $
+ * @version $Revision: $, $Date: $
  * 
  */
-public interface RasterWriter {
+public interface RasterIOProvider {
+    /**
+     * @param type
+     * @return a raster reader of the requested type, or null
+     */
+    public RasterReader getRasterReader( String type );
 
     /**
-     * Write the raster into file.
-     * 
-     * @param raster
-     * @param file
-     * @param options
-     *            additional information for the raster writer (format, etc)
-     * @throws IOException
-     *             may be thrown when the file can't be written
+     * @param type
+     * @return a raster writer of the requested type, or null
      */
-    public void write( AbstractRaster raster, File file, Map<String, String> options )
-                            throws IOException;
-
-    /**
-     * Check if the raster writer is able to write the given raster.
-     * 
-     * @param raster
-     * @param file
-     * @return true if the class can write the raster
-     */
-    public boolean canWrite( AbstractRaster raster, File file );
+    public RasterWriter getRasterWriter( String type );
 
 }

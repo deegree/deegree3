@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://otonnhofer@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/coverage/raster/RasterReader.java $
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -57,16 +57,21 @@ import java.io.IOException;
 public interface RasterReader {
     /**
      * Read the given raster file into an abstract raster.
+     * 
      * @param filename
      * @return the loaded raster
-     * @throws IOException may be thrown when there is a problem with reading the raster. 
+     * @throws IOException
+     *             may be thrown when there is a problem with reading the raster.
      */
-    public AbstractRaster load( File filename ) throws IOException;
-    
+    public AbstractRaster load( File filename )
+                            throws IOException;
+
     /**
      * Check if the raster reader is able to read the given raster file.
+     * 
      * @param filename
      * @return true if the class can read the raster
      */
     public boolean canLoad( File filename );
+
 }
