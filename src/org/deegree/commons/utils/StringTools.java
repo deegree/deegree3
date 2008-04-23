@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://developername@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/framework/util/StringTools.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -44,19 +44,39 @@
 package org.deegree.commons.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * this is a collection of some methods that extends the functionallity of the sun-java string
- * class.
+ * This is a collection of some methods that work with strings, like split or replace. It is complementary to the
+ * ArrayTools.
  * 
- * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author: apoth $
+ * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * @author last edited by: $Author: $
  * 
- * @version $Revision: 10660 $, $Date: 2008-03-24 22:39:54 +0100 (Mo, 24 Mrz 2008) $
+ * @version $Revision: $, $Date: $
+ * 
  */
 public class StringTools {
+
+    /**
+     * Remove empty fields. Used as an option for some StringTools methods.
+     */
+    public static final int REMOVE_EMPTY_FIELDS = 1;
+
+    /**
+     * Remove all double ocurrences of a field. Used as an option for some StringTools methods.
+     */
+    public static final int REMOVE_DOUBLE_FIELDS = 2;
+
+    /**
+     * Do not trim whitespace on fields. Used as an option for some StringTools methods.
+     */
+    public static final int NO_TRIM_FIELDS = 4;
 
     /**
      * concatenates an array of strings using a
@@ -68,7 +88,9 @@ public class StringTools {
      * @param objects
      *            toString() will be called for each object to append it to the result string
      * @return concatinated string
+     * @deprecated highliy deprecated, use normal string concatenation ("foo" + "bar")
      */
+    @Deprecated
     public static String concat( int size, Object... objects ) {
         StringBuilder sbb = new StringBuilder( size );
         for ( int i = 0; i < objects.length; i++ ) {
@@ -78,7 +100,30 @@ public class StringTools {
     }
 
     /**
-     * replaces occurences of a string fragment within a string by a new string.
+     * Extract all the strings that begin and end with the given tokens.
+     * 
+     * @param target
+     * @param start
+     *            start token
+     * @param end
+     *            ent token
+     * 
+     * @return a list with all extracted strings
+     */
+    public static List<String> extract( String target, String start, String end ) {
+        List<String> result = new LinkedList<String>();
+        Pattern p = Pattern.compile( Pattern.quote( start ) + "(.*?)" + Pattern.quote( end ) );
+        Matcher m = p.matcher( target );
+        while ( m.find() ) {
+            result.add( m.group( 1 ) );
+        }
+        return result;
+    }
+
+    /**
+     * Replaces the first substring of this string that matches the given from string with the given replacement. Works
+     * like {@link String#replaceFirst(String, String)} but doesn't use regular expressions. All occurences of special
+     * chars will be escaped.
      * 
      * @param target
      *            is the original string
@@ -86,478 +131,154 @@ public class StringTools {
      *            is the string to be replaced
      * @param to
      *            is the string which will used to replace
-     * @param all
-     *            if it's true all occurences of the string to be replaced will be replaced. else
-     *            only the first occurence will be replaced.
+     * 
      * @return the changed target string
-     * @deprecated
      */
-    public static String replace( String target, String from, String to, boolean all ) {
-
-        StringBuffer buffer = new StringBuffer( target.length() );
-        int copyFrom = 0;
-        char[] targetChars = null;
-        int lf = from.length();
-        int start = -1;
-        do {
-            start = target.indexOf( from );
-            copyFrom = 0;
-            if ( start == -1 ) {
-                return target;
-            }
-
-            targetChars = target.toCharArray();
-            while ( start != -1 ) {
-                buffer.append( targetChars, copyFrom, start - copyFrom );
-                buffer.append( to );
-                copyFrom = start + lf;
-                start = target.indexOf( from, copyFrom );
-                if ( !all ) {
-                    start = -1;
-                }
-            }
-            buffer.append( targetChars, copyFrom, targetChars.length - copyFrom );
-            target = buffer.toString();
-            buffer.delete( 0, buffer.length() );
-        } while ( target.indexOf( from ) > -1 && to.indexOf( from ) < 0 );
-
-        return target;
+    public static String replaceFirst( String target, String from, String to ) {
+        return target.replaceFirst( Pattern.quote( from ), Matcher.quoteReplacement( to ) );
     }
 
     /**
-     * parse a string and return its tokens as array
+     * Replaces the all substrings of this string that matches the given from string with the given replacement. Works
+     * like {@link String#replaceAll(String, String)} but doesn't use regular expressions. All occurences of special
+     * chars will be escaped.
      * 
-     * @param s
-     *            string to parse
-     * @param delimiter
-     *            delimiter that marks the end of a token
-     * @param deleteDoubles
-     *            if it's true all string that are already within the resulting array will be
-     *            deleted, so that there will only be one copy of them.
-     * @return array of strings 
+     * @param target
+     *            is the original string
+     * @param from
+     *            is the string to be replaced
+     * @param to
+     *            is the string which will used to replace
+     * 
+     * @return the changed target string
      */
-    public static String[] toArray( String s, String delimiter, boolean deleteDoubles ) {
-        if ( s == null || s.equals( "" ) ) {
-            return new String[0];
-        }
-
-        StringTokenizer st = new StringTokenizer( s, delimiter );
-        ArrayList<String> vec = new ArrayList<String>( st.countTokens() );
-
-        if ( st.countTokens() > 0 ) {
-            for ( int i = 0; st.hasMoreTokens(); i++ ) {
-                String t = st.nextToken();
-                if ( ( t != null ) && ( t.length() > 0 ) ) {
-                    vec.add( t.trim() );
-                }
-            }
-        } else {
-            vec.add( s );
-        }
-
-        String[] kw = vec.toArray( new String[vec.size()] );
-        if ( deleteDoubles ) {
-            kw = deleteDoubles( kw );
-        }
-
-        return kw;
+    public static String replaceAll( String target, String from, String to ) {
+        return target.replaceAll( Pattern.quote( from ), Matcher.quoteReplacement( to ) );
     }
 
     /**
-     * parse a string and return its tokens as typed List. empty fields will be removed from the
-     * list.
+     * Splits a string on all occurrences of delimiter and returns a list with all parts. Each part will be trimmed from
+     * whitespace. See {@link StringTools#split(String, String, int)} for further options. If you need regular
+     * expressions, use {@link String#split(String)}.
      * 
-     * @param s
-     *            string to parse
+     * @param string
+     *            the string to split
      * @param delimiter
-     *            delimiter that marks the end of a token
-     * @param deleteDoubles
-     *            if it's true all string that are already within the resulting array will be
-     *            deleted, so that there will only be one copy of them.
-     * @return list of strings
-     * @deprecated
+     * @return a list with all parts
      */
-    public static List<String> toList( String s, String delimiter, boolean deleteDoubles ) {
-        if ( s == null || s.equals( "" ) ) {
-            return new ArrayList<String>();
-        }
+    public static String[] split( String string, String delimiter ) {
+        return split( string, delimiter, 0 );
+    }
 
-        StringTokenizer st = new StringTokenizer( s, delimiter );
-        ArrayList<String> vec = new ArrayList<String>( st.countTokens() );
-        for ( int i = 0; st.hasMoreTokens(); i++ ) {
-            String t = st.nextToken();
-            if ( ( t != null ) && ( t.length() > 0 ) ) {
-                if ( deleteDoubles ) {
-                    if ( !vec.contains( t.trim() ) ) {
-                        vec.add( t.trim() );
+    /**
+     * Splits a string on all occurrences of delimiter and returns a list with all parts. If you need regular
+     * expressions, use {@link String#split(String)}.
+     * 
+     * This methods offers some options to modify the behaviour of the splitting. You can combine the options with |
+     * (eg. StringTools.split(string, delimiter, REMOVE_EMPTY_FIELDS | REMOVE_DOUBLE_FIELDS)
+     * 
+     * <ul>
+     * <li> {@link StringTools#REMOVE_DOUBLE_FIELDS} removes all double occurrences of a field.</li>
+     * <li> {@link StringTools#REMOVE_EMPTY_FIELDS} removes all empty fields.</li>
+     * <li> {@link StringTools#NO_TRIM_FIELDS} doesn't remove whitespace around each field</li>
+     * </ul>
+     * 
+     * @param string
+     * @param delimiter
+     * @param options
+     *            a combination (|) of options
+     * @return a list with all parts
+     */
+    public static String[] split( String string, String delimiter, int options ) {
+        String[] parts = string.split( Pattern.quote( delimiter ) );
+        Set<String> parts_set = new HashSet<String>();
+        int doublesRemoves = 0;
+
+        ArrayList<String> result = new ArrayList<String>( parts.length );
+        for ( String part : parts ) {
+            if ( ( options & NO_TRIM_FIELDS ) != NO_TRIM_FIELDS ) {
+                part = part.trim();
+            }
+            if ( ( options & REMOVE_EMPTY_FIELDS ) == REMOVE_EMPTY_FIELDS && part.length() == 0 ) {
+                // skip
+            } else {
+                if ( ( options & REMOVE_DOUBLE_FIELDS ) == REMOVE_DOUBLE_FIELDS ) {
+                    if ( parts_set.contains( part ) ) {
+                        // skip
+                    } else {
+                        doublesRemoves += 1;
+                        result.add( part );
+                        parts_set.add( part );
                     }
                 } else {
-                    vec.add( t.trim() );
+                    result.add( part );
                 }
             }
         }
 
-        return vec;
-    }
-
-    /**
-     * transforms a string array to one string. the array fields are seperated by the submitted
-     * delimiter:
-     * 
-     * @param s
-     *            stringarray to transform
-     * @param delimiter
-     * @return string created as concatination of passed string array
-     */
-    public static String arrayToString( String[] s, char delimiter ) {
-        StringBuilder res = new StringBuilder( s.length * 20 );
-
-        for ( int i = 0; i < s.length; i++ ) {
-            res.append( s[i] );
-
-            if ( i < ( s.length - 1 ) ) {
-                res.append( delimiter );
+        // check if we got empty fields at the end and if we want to keep them, because String#split will remove the
+        // last delimiter
+        if ( string.endsWith( delimiter ) && ( options & REMOVE_EMPTY_FIELDS ) != REMOVE_EMPTY_FIELDS ) {
+            int count = StringTools.count( string, delimiter );
+            count += 1; // n delimiters -> n+1 fields
+            int missingFields = count - parts.length - doublesRemoves;
+            for ( int i = 0; i < missingFields; i++ ) {
+                result.add( "" );
             }
         }
 
-        return res.toString();
+        return result.toArray( new String[] {} );
     }
 
     /**
-     * transforms a list to one string. the array fields are seperated by the submitted delimiter:
+     * Removes all occurrences of a string from the start and end. If you only want to remove whitespaces use
+     * {@link String#trim()}.
      * 
-     * @param s
-     *            stringarray to transform
-     * @param delimiter
-     * @return string created as a concatination of passed list
-     */
-    public static String listToString( List s, char delimiter ) {
-        StringBuilder res = new StringBuilder( s.size() * 20 );
-
-        for ( int i = 0; i < s.size(); i++ ) {
-            res.append( s.get( i ) );
-
-            if ( i < ( s.size() - 1 ) ) {
-                res.append( delimiter );
-            }
-        }
-
-        return res.toString();
-    }
-
-    /**
-     * transforms a double array to one string. the array fields are seperated by the submitted
-     * delimiter:
-     * 
-     * @param s
-     *            stringarray to transform
-     * @param delimiter
-     * @return string created as concatination of passed double array
-     */
-    public static String arrayToString( double[] s, char delimiter ) {
-        StringBuilder res = new StringBuilder( s.length * 20 );
-
-        for ( int i = 0; i < s.length; i++ ) {
-            res.append( Double.toString( s[i] ) );
-
-            if ( i < ( s.length - 1 ) ) {
-                res.append( delimiter );
-            }
-        }
-
-        return res.toString();
-    }
-
-    /**
-     * transforms a int array to one string. the array fields are seperated by the submitted
-     * delimiter:
-     * 
-     * @param s
-     *            stringarray to transform
-     * @param delimiter
-     * @return string created as concatination of passed int array
-     */
-    public static String arrayToString( int[] s, char delimiter ) {
-        StringBuilder res = new StringBuilder( s.length * 20 );
-
-        for ( int i = 0; i < s.length; i++ ) {
-            res.append( Integer.toString( s[i] ) );
-
-            if ( i < ( s.length - 1 ) ) {
-                res.append( delimiter );
-            }
-        }
-
-        return res.toString();
-    }
-
-    /**
-     * clears the begin and end of a string from the strings sumitted
-     * 
-     * @param s
-     *            string to validate
+     * @param string
      * @param mark
-     *            string to remove from begin and end of <code>s</code>
+     *            string to remove from begin and end of <code>string</code>
      * @return string where <code>mark</code> has been removed from start and end
-     * @deprecated
      */
-    public static String validateString( String s, String mark ) {
-        if ( s == null ) {
+    public static String trim( String string, String mark ) {
+        if ( string == null ) {
             return null;
         }
-
-        if ( s.length() == 0 ) {
-            return s;
+        if ( string.length() == 0 ) {
+            return string;
         }
 
-        s = s.trim();
+        string = string.trim();
 
-        while ( s.startsWith( mark ) ) {
-            s = s.substring( mark.length(), s.length() ).trim();
+        while ( string.startsWith( mark ) ) {
+            string = string.substring( mark.length() ).trim();
         }
 
-        while ( s.endsWith( mark ) ) {
-            s = s.substring( 0, s.length() - mark.length() ).trim();
+        while ( string.endsWith( mark ) ) {
+            string = string.substring( 0, string.length() - mark.length() ).trim();
         }
 
-        return s;
+        return string;
     }
 
     /**
-     * deletes all double entries from the submitted array
-     * 
-     * @param s
-     * @return arry withou double entries
-     */
-    private static String[] deleteDoubles( String[] s ) {
-        ArrayList<String> vec = new ArrayList<String>( s.length );
-
-        for ( int i = 0; i < s.length; i++ ) {
-            if ( !vec.contains( s[i] ) ) {
-                vec.add( s[i] );
-            }
-        }
-
-        return vec.toArray( new String[vec.size()] );
-    }
-
-    /**
-     * removes all fields from the array that equals <code>s</code>
-     * 
-     * @param target
-     *            array where to remove the submitted string
-     * @param value
-     *            string to remove
-     * @return array from which the passed value has been removed
-     */
-    public static String[] removeFromArray( String[] target, String value ) {
-        ArrayList<String> vec = new ArrayList<String>( target.length );
-
-        for ( int i = 0; i < target.length; i++ ) {
-            if ( !target[i].equals( value ) ) {
-                vec.add( target[i] );
-            }
-        }
-
-        return vec.toArray( new String[vec.size()] );
-    }
-
-    /**
-     * checks if the submitted array contains the string <code>value</code>
-     * 
-     * @param target
-     *            array to check if it contains <code>value</code>
-     * @param value
-     *            string to check if it within the array
-     * @return true if passed arry contains value
-     */
-    public static boolean contains( String[] target, String value ) {
-        if ( target == null || value == null ) {
-            return false;
-        }
-
-        for ( int i = 0; i < target.length; i++ ) {
-            if ( value.equalsIgnoreCase( target[i] ) ) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * convert the array of string like [(x1,y1),(x2,y2)...] into an array of double
-     * [x1,y1,x2,y2...]
-     * 
-     * @param s
-     * @param delimiter
-     * 
-     * @return array of doubles
-     * @deprecated
-     */
-    public static double[] toArrayDouble( String s, String delimiter ) {
-        if ( s == null ) {
-            return null;
-        }
-
-        if ( s.equals( "" ) ) {
-            return null;
-        }
-
-        StringTokenizer st = new StringTokenizer( s, delimiter );
-
-        ArrayList<String> vec = new ArrayList<String>( st.countTokens() );
-
-        for ( int i = 0; st.hasMoreTokens(); i++ ) {
-            String t = st.nextToken().replace( ' ', '+' );
-
-            if ( ( t != null ) && ( t.length() > 0 ) ) {
-                vec.add( t.trim().replace( ',', '.' ) );
-            }
-        }
-
-        double[] array = new double[vec.size()];
-
-        for ( int i = 0; i < vec.size(); i++ ) {
-            array[i] = Double.parseDouble( vec.get( i ) );
-        }
-
-        return array;
-    }
-
-    /**
-     * convert the array of string like [(x1,y1),(x2,y2)...] into an array of float values
-     * [x1,y1,x2,y2...]
-     * 
-     * @param s
-     * @param delimiter
-     * 
-     * @return array of floats
-     * @deprecated
-     */
-    public static float[] toArrayFloat( String s, String delimiter ) {
-        if ( s == null ) {
-            return null;
-        }
-
-        if ( s.equals( "" ) ) {
-            return null;
-        }
-
-        StringTokenizer st = new StringTokenizer( s, delimiter );
-
-        ArrayList<String> vec = new ArrayList<String>( st.countTokens() );
-        for ( int i = 0; st.hasMoreTokens(); i++ ) {
-            String t = st.nextToken().replace( ' ', '+' );
-            if ( ( t != null ) && ( t.length() > 0 ) ) {
-                vec.add( t.trim().replace( ',', '.' ) );
-            }
-        }
-
-        float[] array = new float[vec.size()];
-
-        for ( int i = 0; i < vec.size(); i++ ) {
-            array[i] = Float.parseFloat( vec.get( i ) );
-        }
-
-        return array;
-    }
-
-    /**
-     * counts the occurrences of token into target
+     * Counts the occurrences of token in target.
      * 
      * @param target
      * @param token
      * 
      * @return number of tokens within a string
      */
-    public static int countString( String target, String token ) {
-        int start = target.indexOf( token );
+    public static int count( String target, String token ) {
+        if ( token == null || token.length() == 0 ) {
+            return 0;
+        }
         int count = 0;
-
-        while ( start != -1 ) {
-            count++;
-            start = target.indexOf( token, start + 1 );
+        int i = 0;
+        while ( ( i = target.indexOf( token, i ) ) != -1 ) {
+            i += token.length();
+            count += 1;
         }
-
         return count;
-    }
-
-    /**
-     * Extract all the strings that begin with "start" and end with "end" and store it into an array
-     * of String
-     * 
-     * @param target
-     * @param startString
-     * @param endString
-     * 
-     * @return <code>null</code> if no strings were found!!
-     */
-    public static String[] extractStrings( String target, String startString, String endString ) {
-        int start = target.indexOf( startString );
-
-        if ( start == -1 ) {
-            return null;
-        }
-
-        int count = countString( target, startString );
-        String[] subString = null;
-        if ( startString.equals( endString ) ) {
-            count = count / 2;
-            subString = new String[count];
-            for ( int i = 0; i < count; i++ ) {
-                int tmp = target.indexOf( endString, start + 1 );
-                subString[i] = target.substring( start, tmp + 1 );
-                start = target.indexOf( startString, tmp + 1 );
-            }
-        } else {
-            subString = new String[count];
-            for ( int i = 0; i < count; i++ ) {
-                subString[i] = target.substring( start, target.indexOf( endString, start + 1 ) + 1 );
-                subString[i] = extractString( subString[i], startString, endString, true, true );
-                start = target.indexOf( startString, start + 1 );
-            }
-        }
-
-        return subString;
-    }
-
-    /**
-     * extract a string contained between startDel and endDel, you can remove the delimiters if set
-     * true the parameters delStart and delEnd
-     * 
-     * @param target
-     * @param startDel
-     * @param endDel
-     * @param delStart
-     * @param delEnd
-     * 
-     * @return string contained between startDel and endDel
-     */
-    public static String extractString( String target, String startDel, String endDel, boolean delStart, boolean delEnd ) {
-        int start = target.indexOf( startDel );
-
-        if ( start == -1 ) {
-            return null;
-        }
-
-        String s = target.substring( start, target.indexOf( endDel, start + 1 ) + 1 );
-
-        s = s.trim();
-
-        if ( delStart ) {
-            while ( s.startsWith( startDel ) ) {
-                s = s.substring( startDel.length(), s.length() ).trim();
-            }
-        }
-
-        if ( delEnd ) {
-            while ( s.endsWith( endDel ) ) {
-                s = s.substring( 0, s.length() - endDel.length() ).trim();
-            }
-        }
-
-        return s;
     }
 
 }
