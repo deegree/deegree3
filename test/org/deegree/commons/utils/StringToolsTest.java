@@ -49,7 +49,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import org.deegree.commons.utils.StringTools;
 import org.junit.Test;
 
 /**
@@ -63,7 +62,7 @@ public class StringToolsTest {
 
     /**
      * Test method for
-     * {@link org.deegree.model.util.StringTools#replaceAll(java.lang.String, java.lang.String, java.lang.String)}.
+     * {@link org.deegree.commons.utils.StringTools#replaceAll(java.lang.String, java.lang.String, java.lang.String)}.
      */
     @Test
     public void testReplaceAll() {
@@ -74,7 +73,7 @@ public class StringToolsTest {
 
     /**
      * Test method for
-     * {@link org.deegree.model.util.StringTools#replaceAll(java.lang.String, java.lang.String, java.lang.String)}.
+     * {@link org.deegree.commons.utils.StringTools#replaceAll(java.lang.String, java.lang.String, java.lang.String)}.
      */
     @Test(expected = NullPointerException.class)
     public void testReplaceAllNull() {
@@ -84,7 +83,7 @@ public class StringToolsTest {
 
     /**
      * Test method for
-     * {@link org.deegree.model.util.StringTools#replaceFirst(java.lang.String, java.lang.String, java.lang.String)}.
+     * {@link org.deegree.commons.utils.StringTools#replaceFirst(java.lang.String, java.lang.String, java.lang.String)}.
      */
     @Test
     public void testReplaceFirst() {
@@ -93,7 +92,7 @@ public class StringToolsTest {
     }
 
     /**
-     * Test method for {@link org.deegree.model.util.StringTools#split(String, String, int)}.
+     * Test method for {@link org.deegree.commons.utils.StringTools#split(String, String, int)}.
      */
     @Test
     public void testSplit() {
@@ -153,7 +152,7 @@ public class StringToolsTest {
     }
 
     /**
-     * Test method for {@link org.deegree.model.util.StringTools#count(java.lang.String, java.lang.String)}.
+     * Test method for {@link org.deegree.commons.utils.StringTools#count(java.lang.String, java.lang.String)}.
      */
     @Test
     public void testCountString() {
@@ -165,7 +164,7 @@ public class StringToolsTest {
     }
     
     /**
-     * Test method for {@link org.deegree.model.util.StringTools#extract(String, String, String)}.
+     * Test method for {@link org.deegree.commons.utils.StringTools#extract(String, String, String)}.
      */
     @Test
     public void testExtract() {
