@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://developername@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/framework/xml/NamespaceContext.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -54,9 +54,9 @@ import java.util.Set;
  * <code>org.jaxen.SimpleNamespaceContext</code> -- this prevents unnecessary binding to Jaxen.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author: apoth $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 10660 $, $Date: 2008-03-24 22:39:54 +0100 (Mo, 24 Mrz 2008) $
+ * @version $Revision$, $Date$
  */
 public class NamespaceContext implements org.jaxen.NamespaceContext {
 

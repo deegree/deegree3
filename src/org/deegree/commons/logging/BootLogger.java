@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://developername@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/framework/util/BootLogger.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -49,9 +49,9 @@ package org.deegree.commons.logging;
  * 
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe</A>
  * 
- * @author last edited by $Author: apoth $
+ * @author last edited by $Author$
  * 
- * @version $Revision: 9339 $, $Date: 2007-12-27 13:31:52 +0100 (Do, 27 Dez 2007) $
+ * @version $Revision$, $Date$
  * @deprecated
  * 
  */

@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://developername@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/framework/log/JCLLogger.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -55,9 +55,9 @@ import org.apache.log4j.PropertyConfigurator;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * 
- * @author last edited by: UID=$Author: apoth $
+ * @author last edited by: UID=$Author$
  * 
- * @version $Revision: 10660 $, $Date: 2008-03-24 22:39:54 +0100 (Mo, 24 Mrz 2008) $
+ * @version $Revision$, $Date$
  * @deprecated
  */
 public class JCLLogger extends LoggerService {

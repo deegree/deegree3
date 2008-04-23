@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://developername@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/framework/xml/XMLParsingException.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -48,7 +48,7 @@ package org.deegree.commons.xml;
  * parsing process of an XML document.
  * 
  * @author <a href="mailto:mschneider@lat-lon.de">Markus Schneider </a>
- * @version $Revision: 10660 $
+ * @version $Revision$
  */
 public class XMLParsingException extends RuntimeException {
 

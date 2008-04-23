@@ -1,4 +1,4 @@
-// $HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/framework/xml/XMLFragment.java $
+// $HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -94,9 +94,9 @@ import org.w3c.dom.Element;
  * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author: rbezema $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 10874 $, $Date: 2008-04-01 15:02:35 +0000 (Di, 01 Apr 2008) $
+ * @version $Revision$, $Date$
  */
 public class XMLAdapter {
 

@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://otonnhofer@svn.wald.intevation.org/deegree/deegree3/model/trunk/src/org/deegree/model/coverage/raster/RasterReader.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -42,9 +42,9 @@ package org.deegree.model.coverage.raster.data;
  * Simple interface to read RasterData.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author: otonnhofer $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 10867 $, $Date: 2008-04-01 13:49:26 +0200 (Tue, 01 Apr 2008) $
+ * @version $Revision$, $Date$
  * 
  */
 public interface RasterDataReader {

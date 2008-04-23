@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://developername@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/framework/log/LoggerFactory.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -76,9 +76,9 @@ import java.util.Properties;
  * 
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe </A>
  * 
- * @author last edited by: $Author: rbezema $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 10596 $, $Date: 2008-03-17 14:47:25 +0100 (Mo, 17 Mrz 2008) $
+ * @version $Revision$, $Date$
  * 
  * @see ILogger
  * @deprecated

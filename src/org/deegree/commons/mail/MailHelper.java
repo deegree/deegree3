@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://developername@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/framework/mail/MailHelper.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -68,9 +68,9 @@ import org.deegree.model.i18n.Messages;
  * A helper class to create and send mail.
  * 
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe </A>
- * @author last edited by: $Author: apoth $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 10660 $,$Date: 2008-03-24 22:39:54 +0100 (Mo, 24 Mrz 2008) $
+ * @version $Revision$,$Date$
  * 
  * @see javax.mail.Message
  * @see javax.mail.internet.MimeMessage

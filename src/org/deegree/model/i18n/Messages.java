@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://developername@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/i18n/Messages.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -67,9 +67,9 @@ import org.deegree.commons.logging.BootLogger;
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:taddei@lat-lon.de">Ugo Taddei</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: apoth $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 10660 $, $Date: 2008-03-24 22:39:54 +0100 (Mo, 24 Mrz 2008) $
+ * @version $Revision$, $Date$
  */
 public class Messages {
 

@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://otonnhofer@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/coverage/raster/RasterReader.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
