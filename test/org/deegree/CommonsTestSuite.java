@@ -65,7 +65,9 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses( {
+org.deegree.commons.utils.ArrayToolsTest.class,
 org.deegree.commons.utils.FileUtilsTest.class,
+org.deegree.commons.utils.StringToolsTest.class,
 org.deegree.model.coverage.raster.RasterEnvelopeTest.class,
 org.deegree.model.crs.components.UnitTest.class,
 org.deegree.model.crs.configuration.DeegreeCRSProviderTest.class,

@@ -27,7 +27,7 @@ public class GeometryTest {
      * common envelopes as test geometry
      */
     @Before
-    protected void setUp() {
+    public void setUp() {
         env1 = createEnvelope( 10, 10, 20, 20 );
         env2 = createEnvelope( 30, 30, 40, 40 ); // disjoint
         env3 = createEnvelope( 15, 15, 20, 20 ); // covers env1
