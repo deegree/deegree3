@@ -11,7 +11,6 @@ package org.deegree.model.configuration.descriptors;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.deegree.model.configuration.SupportedCurveInterpolation;
 
 /**
  * Class SupportedCurveInterpolationDescriptor.

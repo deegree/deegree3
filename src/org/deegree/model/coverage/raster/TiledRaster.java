@@ -39,11 +39,11 @@ package org.deegree.model.coverage.raster;
 
 import java.util.List;
 
+import org.deegree.model.coverage.raster.data.RasterData;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.coverage.raster.data.RasterData;
 
 /**
  * This class represents a tiled AbstractRaster.

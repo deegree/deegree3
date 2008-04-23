@@ -37,15 +37,15 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.signum;
+
+import org.deegree.model.coverage.raster.data.RasterRect;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.Envelope;
-import org.deegree.model.coverage.raster.data.RasterRect;
-
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
-import static java.lang.Math.max;
-import static java.lang.Math.signum;
 
 /**
  * This class maps a 2-D raster to another cartesian coordinate system.

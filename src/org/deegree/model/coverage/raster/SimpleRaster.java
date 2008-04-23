@@ -37,9 +37,9 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster;
 
-import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.coverage.raster.data.RasterData;
 import org.deegree.model.coverage.raster.data.RasterRect;
+import org.deegree.model.geometry.primitive.Envelope;
 
 /**
  * This class represents a single raster with multiple bands.
