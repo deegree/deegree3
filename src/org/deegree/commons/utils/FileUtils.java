@@ -63,7 +63,7 @@ public class FileUtils {
     public static String getBasename( File file ) {
         return splitFilename( file ).first;
     }
-    
+
     /**
      * Returns the file extension (Eg. /tmp/foo.txt -> txt)
      * 
@@ -76,6 +76,7 @@ public class FileUtils {
 
     /**
      * Split a filename in basename and extension.
+     * 
      * @param file
      * @return a StringPair with basename and extension
      */
@@ -90,8 +91,7 @@ public class FileUtils {
                 basename = path.getPath() + File.separator + basename;
             }
             return new StringPair( basename, suffix );
-        } else {
-            return new StringPair( file.getPath(), "" );
         }
+        return new StringPair( file.getPath(), "" );
     }
 }
