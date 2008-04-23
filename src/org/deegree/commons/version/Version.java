@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://developername@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/framework/version/Version.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -58,9 +58,9 @@ import org.deegree.commons.logging.BootLogger;
  * 
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe</A>
  * 
- * @author last edited by: $Author: apoth $
+ * @author last edited by: $Author$
  * 
- * @version 3.0 . $Revision: 10660 $, $Date: 2008-03-24 22:39:54 +0100 (Mo, 24 Mrz 2008) $
+ * @version 3.0 . $Revision$, $Date$
  */
 public final class Version {
 
