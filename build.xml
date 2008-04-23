@@ -1,0 +1,519 @@
+<?xml version="1.0"?>
+<!--
+    Ant build file for deegree. Requires Apache Ant 1.6 or later.
+    Base build file.
+
+    This file is part of deegree.
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    Copyright (C) 2001-2006 by:
+          EXSE, Department of Geography, University of Bonn
+          http://www.giub.uni-bonn.de/exse/
+          lat/lon GmbH, Bonn, Germany
+          http://www.lat-lon.de
+
+    $HeadURL$
+    $Revision$, $Date$
+    $Author$
+-->
+
+<project name="deegree_commons" default="compile" basedir=".">
+
+	<description>deegree - Java framework for geospatial solutions</description>
+
+	<!--
+	   set global properties for this build
+	   it's recommended to keep these definitions
+	    don't change this 
+	 -->
+	<!-- all properties are read from the build.properties file -->
+	<property file="build.properties" />
+
+	<property name="target.version" value="1.6" />
+	<property name="source.version" value="1.6" />
+	<property name="app.name" value="commons" />
+	<property name="src" value="${basedir}/src" />
+	<property name="build" value="${basedir}/classes" />
+	<property name="dist" value="${basedir}/dist" />
+	<!--property name="lib.jar"        value="${app.name}.jar" /-->
+	<property name="lib" value="${basedir}/lib" />
+	<property name="doc" value="${basedir}/docs" />
+	<property name="resources" value="${basedir}/resources" />
+	<property name="test.src" value="${basedir}/test" />
+	<property name="version.props" value="${src}/org/deegree/framework/version/version.properties" />
+	<property name="buildId.props" value="${src}/org/deegree/framework/version/buildId.properties" />
+	<property name="version.class" value="${src}/org/deegree/commons/Version" />
+
+
+	<!-- version + buildId properties -->
+	<property file="${version.props}" />
+	<property file="${buildId.props}" />
+
+	<!-- set build classpath -->
+	<path id="build.path">
+		<pathelement location="${build}" />
+		<fileset dir="${lib}">
+			<include name="**/*.jar" />
+		</fileset>
+		<if>
+			<isset property="optional.libs" />
+			<fileset dir="${optional.libs}">
+				<include name="**/*.jar" />
+			</fileset>
+		</if>
+	</path>
+
+	<!-- set dependency classpath -->
+	<path id="dependency.path">
+		<fileset dir="${lib}">
+			<include name="**/*.jar" />
+			<exclude name="${exclude.dependency.jars}" />
+		</fileset>
+	</path>
+
+
+	<!-- ant contrib optional task def >
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${ant.home}/lib/ant-contrib.jar" />
+		</classpath>
+	</taskdef-->
+
+
+	<!-- =================================================================== -->
+	<!-- create directories and load properties                              -->
+	<!-- =================================================================== -->
+
+	<target name="build_info">
+		<echo message="deegree version: ${version.number}" />
+		<echo message="old build.number: ${build.number}" />
+		<echo message="build.by: ${build.by}" />
+		<echo message="ant.java.version: ${ant.java.version}" />
+		<echo message="source.version: ${source.version}" />
+		<echo message="target.version: ${target.version}" />
+		<!-- Try to read the current svn number from the .svn directory -->
+		<loadfile srcFile=".svn/format" property="svn.format" failonerror="false">
+			<filterchain>
+				<striplinebreaks />
+			</filterchain>
+		</loadfile>
+		<if>
+			<equals arg1="${svn.format}" arg2="8" />
+			<then>
+				<loadfile srcFile=".svn/entries" property="svn.revision.new" failonerror="false">
+					<filterchain>
+						<headfilter lines="1" skip="3" />
+					</filterchain>
+				</loadfile>
+				<loadfile srcFile=".svn/entries" property="svn.path.new" failonerror="false">
+					<filterchain>
+						<headfilter lines="1" skip="4" />
+					</filterchain>
+				</loadfile>
+			</then>
+			<else>
+				<loadfile srcFile=".svn/entries" property="svn.revision.new" failonerror="false">
+					<filterchain>
+						<headfilter lines="1" skip="4" />
+						<tokenfilter>
+							<replacestring from="committed-rev=" to="" />
+						</tokenfilter>
+						<tokenfilter>
+							<replacestring from="&quot;" to="" />
+						</tokenfilter>
+						<tokenfilter>
+							<trim />
+						</tokenfilter>
+					</filterchain>
+				</loadfile>
+				<loadfile srcFile=".svn/entries" property="svn.path.new" failonerror="false">
+					<filterchain>
+						<headfilter lines="1" skip="7" />
+						<tokenfilter>
+							<replacestring from="url=" to="" />
+						</tokenfilter>
+						<tokenfilter>
+							<replacestring from="&quot;" to="" />
+						</tokenfilter>
+						<tokenfilter>
+							<trim />
+						</tokenfilter>
+					</filterchain>
+				</loadfile>
+			</else>
+		</if>
+		<echo message="Using svn revision: ${svn.revision.new}" />
+		<echo message="From svn path: ${svn.path.new}" />
+	</target>
+
+	<target name="init" depends="build_info">
+		<tstamp>
+			<format property="init.date" pattern="yyyy/MM/dd HH:mm" />
+		</tstamp>
+		<mkdir dir="${build}" />
+		<mkdir dir="${dist}" />
+		<mkdir dir="${doc}" />
+	</target>
+
+	<target name="clean" description="clean build,dist and doc directories">
+		<delete includeemptydirs="true">
+			<fileset dir="${build}" includes="**/*" />
+			<fileset dir="${dist}" includes="**/*" />
+			<fileset dir="${doc}" includes="**/*" />
+		</delete>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- prints the environment                                              -->
+	<!-- =================================================================== -->
+
+	<target name="env" depends="init" description="prints the environment">
+		<echo>Environment:</echo>
+		<echo>------------</echo>
+		<echo message="java.home = ${java.home}" />
+		<echo message="java.version = ${java.version}" />
+		<echo message="java.class.path = ${java.class.path}" />
+		<echo message="ant.home = ${ant.home}" />
+		<echo message="ant.version = ${ant.version}" />
+		<echo message="user.home = ${user.home}" />
+		<echo message="user.dir = ${user.dir}" />
+
+		<echo>Application:</echo>
+		<echo>------------</echo>
+		<echo message="project.name = ${ant.project.name}" />
+		<echo message="application.name = ${app.name}" />
+		<echo message="application.home = ${basedir}" />
+		<echo message="test.src.home = ${test.src}" />
+		<echo message="src = ${src}" />
+		<echo message="lib = ${lib}" />
+		<echo message="build = ${build}" />
+		<echo message="dist = ${dist}" />
+		<echo message="version.class = ${version.class}" />
+		<echo message="version.number = ${version.number}" />
+		<echo message="build.by = ${build.by}" />
+		<echo message="build.date = ${build.date}" />
+		<echo message="build.number = ${build.number}" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- find packages to exclude (adapt to available libraries)             -->
+	<!-- =================================================================== -->
+
+	<target name="exclude-packages">
+		<condition property="oraclesdo.present">
+			<and>
+				<available classname="oracle.spatial.geometry.JGeometry" classpathref="build.path" />
+				<available classname="oracle.jdbc.OracleDriver" classpathref="build.path" />
+			</and>
+		</condition>
+		<available classname="oracle.spatial.georaster.JGeoRaster" property="oracleraster.present" classpathref="build.path" />
+		<available classname="com.esri.sde.sdk.client.SeRelease" property="arcsde.present" classpathref="build.path" />
+		<available classname="com.mysql.jdbc.Driver" property="mysql.present" classpathref="build.path" />
+		<condition property="postgis.present">
+			<and>
+				<available classname="org.postgis.Geometry" classpathref="build.path" />
+				<available classname="org.postgresql.Driver" classpathref="build.path" />
+			</and>
+		</condition>
+		<!--available classname="org.jboss.logging.Logger" property="jboss.present" classpathref="build.path" /-->
+
+		<!--
+                                     all properties end with a trailing ',' - except the last one.
+                                 check the definition of property 'exclude.classes' below
+                                -->
+		<if>
+			<equals arg1="${oraclesdo.present}" arg2="true" />
+			<then>
+				<property name="oracle.exclude.classes" value="" />
+				<echo message="Enabling support for Oracle datastores." />
+				<echo message="Enabling support for security subsystem (FIXME: remove dependency to Oracle)." />
+			</then>
+			<else>
+				<property name="oracle.exclude.classes" value="org/deegree/io/datastore/sql/oracle/**,org/deegree/security/drm/**," />
+				<echo message="Disabling support for Oracle datastores." />
+				<echo message="Disabling support for security subsystem (FIXME: remove dependency to Oracle)." />
+			</else>
+		</if>
+		<if>
+			<and>
+				<equals arg1="${oraclesdo.present}" arg2="true" />
+				<equals arg1="${oracleraster.present}" arg2="true" />
+			</and>
+			<then>
+				<property name="oracleraster.exclude.classes" value="" />
+				<echo message="Enabling support for Oracle raster." />
+			</then>
+			<else>
+				<property name="oracleraster.exclude.classes" value="org/deegree/io/oraclegeoraster/**,org/deegree/tools/raster/Oracle*,org/deegree/model/coverage/grid/oracle/**," />
+				<echo message="Disabling support for Oracle raster." />
+			</else>
+		</if>
+		<if>
+			<equals arg1="${postgis.present}" arg2="true" />
+			<then>
+				<property name="postgis.exclude.classes" value="" />
+				<echo message="Enabling support for PostGIS backed datastores." />
+			</then>
+			<else>
+				<property name="postgis.exclude.classes" value="org/deegree/io/datastore/sql/postgis/**,org/deegree/model/coverage/grid/postgres/**," />
+				<echo message="Disabling support for PostGIS backed datastores." />
+			</else>
+		</if>
+		<if>
+			<equals arg1="${mysql.present}" arg2="true" />
+			<then>
+				<property name="mysql.exclude.classes" value="" />
+				<echo message="Enabling support for MySQL backed datastores." />
+			</then>
+			<else>
+				<property name="mysql.exclude.classes" value="org/deegree/io/datastore/sql/mysql/**," />
+				<echo message="Disabling support for MySQL backed datastores." />
+			</else>
+		</if>
+		<if>
+			<equals arg1="${arcsde.present}" arg2="true" />
+			<then>
+				<property name="arcsde.exclude.classes" value="" />
+				<echo message="Enabling support for ArcSDE." />
+			</then>
+			<else>
+				<property name="arcsde.exclude.classes" value="org/deegree/io/sdeapi/**," />
+				<echo message="Disabling support for ArcSDE." />
+			</else>
+		</if>
+		<!--if>
+                        <equals arg1="${jboss.present}" arg2="true" />
+                        <then>
+                                <property name="jboss.exclude.classes" value="" />
+                                <echo message="Enabling support for JBossLogger." />
+                        </then>
+                        <else>
+                                <property name="jboss.exclude.classes" value="**/log/JBossLogger.*" />
+                                <echo message="Disabling support for JBossLogger." />
+                        </else>
+                </if-->
+		<property name="exclude.classes" value="${oracle.exclude.classes}${oracleraster.exclude.classes}${arcsde.exclude.classes}${mysql.exclude.classes}${postgis.exclude.classes}" />
+		<echo message="exclude.classes=${exclude.classes}" />
+	</target>
+
+
+	<!--target name="exclude.oraclesdo" unless="oraclesdo.present">
+                <property name="oracle.exclude.classes" value="oracle" />
+        </target>
+        <target name="exclude.oracleraster" unless="oracleraster.present">
+                <property name="oracleraster.exclude.classes" value="oracleraster" />
+        </target>
+        <target name="exclude.arcsde" unless="arcsde.present">
+                <property name="arcsde.exclude.classes" value="arcsde" />
+        </target>
+        <target name="exclude.mysql" unless="mysql.present">
+                <property name="mysql.exclude.classes" value="mysql" />
+        </target>
+        <target name="exclude.postgis" unless="postgis.present">
+                <property name="postgis.exclude.classes" value="postgis" />
+        </target-->
+
+	<!-- =================================================================== -->
+	<!-- create new build number (for next run)                              -->
+	<!-- =================================================================== -->
+
+	<target name="new-build-number" depends="init" description="create new build number (for next run)">
+		<echo message="creating new build number, previous was ${build.number}" />
+		<buildnumber file="${buildId.props}" />
+		<propertyfile file="${buildId.props}">
+			<entry key="svn.revision" value="${svn.revision.new}" />
+			<entry key="svn.path" value="${svn.path.new}" />
+		</propertyfile>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- compiles all sources and copies all required resouces               -->
+	<!-- =================================================================== -->
+
+	<target name="compile" depends="init,exclude-packages" description="compiles all sources and copies all required resouces to the output directory">
+
+		<propertyfile file="${buildId.props}">
+			<entry key="build.date" value="${init.date}" />
+		</propertyfile>
+		<propertycopy property="build.date" from="init.date" override="yes" />
+
+		<javac srcdir="${src}" destdir="${build}" excludes="${exclude.classes}" includes="**/*.java" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.true}" source="${source.version}" target="${target.version}">
+			<classpath>
+				<path refid="build.path" />
+			</classpath>
+		</javac>
+		<copy todir="${build}">
+			<fileset dir="${src}" includes="**/*.properties" />
+			<fileset dir="${src}" includes="**/*.xsl" />
+			<fileset dir="${src}" includes="**/*.xml" />
+			<fileset dir="${src}" includes="**/*.sql" />
+			<fileset dir="${src}" includes="**/*.svg" />
+			<fileset dir="${src}" includes="**/*.html" excludes="**/package.html" />
+		</copy>
+
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- creates JavaDoc API                                                 -->
+	<!-- =================================================================== -->
+
+	<target name="javadoc" depends="compile" description="creates JavaDoc API">
+		<!-- Create the ${doc}/lib directory -->
+		<mkdir dir="${doc}" />
+
+		<javadoc source="1.5" packagenames="org.*,javax.*" sourcepath="${src}" destdir="${doc}" author="true" version="true" verbose="${debug}" use="true" package="true" linksource="true" excludepackagenames="${exclude.classes}" overview="${src}/overview.html" doctitle="deegree - Java framework for geospatial solutions" windowtitle="deegree framework ${version.number}" header="deegree ${version.number} (${build.date} build-${build.number}-${build.by})" footer="deegree ${version.number} (${build.date} build-${build.number}-${build.by})" maxmemory="512m" encoding="utf-8">
+
+			<bottom>
+				<![CDATA[<p align="center">an open source project founded by <a href="http://www.latlon.de">lat/lon</a>, Bonn, Germany.<BR>
+					<i>For more information visit: <a href="http://www.deegree.org">http://www.deegree.org</a>
+					</i>
+				</p>]]>
+            </bottom>
+
+			<!-- custom tags -->
+			<tag name="todo" scope="all" description="To do:" />
+			<tag name="TODO" scope="all" description="To do:" />
+			<tag name="bug" scope="all" description="Known bug:" />
+
+			<!-- uml tags... todo? -->
+			<tag name="uml.associationEnd" description="" />
+			<tag name="uml.property" description="" />
+			<tag name="UML" description="" />
+
+			<!-- what is this? -->
+			<tag name="rename" description="rename" />
+			<tag name="revisit" description="revisit" />
+			<tag name="unitof" description="" />
+
+			<tag name="associates" scope="all" description="Together" enabled="false" />
+			<tag name="clientCardinality" scope="all" description="Together" enabled="false" />
+			<tag name="ejb" scope="all" description="Xdoclet" enabled="false" />
+
+			<group title="deegree Coordinate Reference System (crs)" packages="org.deegree.crs*" />
+			<group title="deegree Framework" packages="org.deegree.framework*" />
+			<group title="deegree Enterprise Services" packages="org.deegree.enterprise*" />
+			<group title="deegree OGC Web Services (OWS)" packages="org.deegree.ogcwebservices*,org.deegree.ogcbase*" />
+			<group title="deegree Model" packages="org.deegree.model*" />
+			<group title="deegree Datatypes" packages="org.deegree.datatypes*" />
+			<group title="deegree Spatial Data Input/Output" packages="org.deegree.io*" />
+			<group title="deegree Graphics" packages="org.deegree.graphics*" />
+			<group title="deegree Portal" packages="org.deegree.portal*" />
+			<group title="deegree Security Framework" packages="org.deegree.security*" />
+			<group title="deegree Standalone Tools" packages="org.deegree.tools.*" />
+
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+
+			<classpath>
+				<path refid="build.path" />
+			</classpath>
+		</javadoc>
+	</target>
+
+	<!-- ########################################################## -->
+
+
+
+	<!-- ########################################################## -->
+
+	<!--target name="cruisecontrol" depends="clean-all, build-lib" description="target for cruisecontrol"-->
+	<target name="cruisecontrol" depends="clean-all, build-lib, javadoc, test" description="target for cruisecontrol">
+		<echo message="compress jar and javadoc for publishing..." />
+		<tar destfile="${dist}/deegree_jar_apidoc.tgz" compression="gzip" longfile="gnu">
+			<tarfileset dir="${dist}">
+				<include name="${lib.jar}" />
+			</tarfileset>
+
+			<tarfileset dir="${doc}">
+				<include name="**/*.*" />
+			</tarfileset>
+		</tar>
+	</target>
+
+	<!-- ########################################################## -->
+
+	<target name="build-lib" description="creates the deegree2.jar">
+		<antcall target="new-build-number" />
+		<antcall target="compile" />
+		<echo message="creating deegree libraries ..." />
+		<pathconvert pathsep=" " property="used.libs" refid="dependency.path">
+			<flattenmapper />
+			<map from="${lib}/" to="" />
+		</pathconvert>
+
+		<jar jarfile="${dist}/${lib.jar}" update="false">
+			<fileset dir="${build}" casesensitive="yes">
+				<include name="**/**" />
+				<exclude name="**/*Test*" />
+				<exclude name="**/test/**" />
+				<exclude name="**/junit*" />
+				<exclude name="alltests/**" />
+				<exclude name="alltests/**" />
+			</fileset>
+
+			<manifest>
+				<attribute name="Built-By" value="${build.by}" />
+				<attribute name="Specification-Title" value="${app.name}" />
+				<attribute name="Specification-Vendor" value="OpenGIS Consortium" />
+				<attribute name="Implementation-Vendor" value="lat/lon GmbH, Germany" />
+				<attribute name="Implementation-URL" value="http://www.lat-lon.de" />
+				<attribute name="Specification-Version" value="" />
+				<attribute name="Implementation-Version" value="${version.number} (${build.date} build-${build.number}-${build.by})" />
+				<attribute name="Class-Path" value="${used.libs}" />
+				<attribute name="Main-Class" value="org.deegree.framework.version.Version" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="build-lib-nocompile" depends="init" description="creates the deegree2.jar without compiling">
+		<echo message="creating deegree libraries ..." />
+		<pathconvert pathsep=" " property="used.libs" refid="dependency.path">
+			<flattenmapper />
+			<map from="${basedir}${file.separator}${lib}${file.separator}" to="" />
+			<map from="${basedir}" to="." />
+		</pathconvert>
+
+		<jar jarfile="${dist}/${lib.jar}" update="false">
+			<fileset dir="${build}" casesensitive="yes">
+				<include name="**/**" />
+				<exclude name="**/*Test*" />
+				<exclude name="**/test/**" />
+				<exclude name="**/junit*" />
+				<exclude name="alltests/**" />
+				<exclude name="alltests/**" />
+			</fileset>
+
+			<manifest>
+				<attribute name="Built-By" value="${build.by}" />
+				<attribute name="Specification-Title" value="${app.name}" />
+				<attribute name="Specification-Vendor" value="OpenGIS Consortium" />
+				<attribute name="Implementation-Vendor" value="lat/lon GmbH, Germany" />
+				<attribute name="Implementation-URL" value="http://www.lat-lon.de" />
+				<attribute name="Specification-Version" value="" />
+				<attribute name="Implementation-Version" value="${version.number} (${build.date} build-${build.number}-${build.by})" />
+				<attribute name="Class-Path" value="${used.libs}" />
+				<attribute name="Main-Class" value="org.deegree.framework.version.Version" />
+			</manifest>
+		</jar>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Targets which just delegate tasks to other build files.             -->
+	<!-- =================================================================== -->
+
+	<target name="test" depends="compile" description="runs unit tests">
+		<ant antfile="build-test.xml" dir="." target="cctest" />
+	</target>
+
+
+	<!-- ########################################################## -->
+
+	<target name="clean-all" depends="clean" description="clean all output directories">
+		<ant antfile="build-test.xml" dir="." target="clean" />
+	</target>
+
+	<!-- ########################################################## -->
+
+</project>
