@@ -62,7 +62,7 @@ import javax.mail.internet.MimeMultipart;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.utils.StringTools;
-import org.deegree.model.i18n.Messages;
+import org.deegree.commons.i18n.Messages;
 
 /**
  * A helper class to create and send mail.

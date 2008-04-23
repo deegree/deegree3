@@ -40,7 +40,7 @@
  E-Mail: greve@giub.uni-bonn.de
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.i18n;
+package org.deegree.commons.i18n;
 
 import java.io.IOException;
 import java.io.InputStream;
