@@ -50,6 +50,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.types.QualifiedName;
@@ -82,6 +85,47 @@ public final class XMLTools {
 
     private XMLTools() {
         // hidden constructor to prevent instantiation
+    }
+    
+    /**
+     * 
+     * Create a new and empty DOM document.
+     * 
+     * @return a new and empty DOM document.
+     */
+    public static Document create() {
+        return getDocumentBuilder().newDocument();
+    }
+    
+    /**
+     * Create a new document builder with:
+     * <UL>
+     * <li>namespace awareness = true
+     * <li>whitespace ignoring = false
+     * <li>validating = false
+     * <li>expand entity references = false
+     * </UL>
+     * 
+     * @return new document builder
+     */
+    public static synchronized DocumentBuilder getDocumentBuilder() {
+        DocumentBuilder builder = null;
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware( true );
+            factory.setExpandEntityReferences( false );
+            factory.setIgnoringElementContentWhitespace( false );
+            factory.setValidating( false );
+            try {
+                factory.setAttribute( "http://apache.org/xml/features/nonvalidating/load-external-dtd", false );
+            } catch ( IllegalArgumentException _ ) {
+                // ignore it, we just cannot set the feature
+            }
+            builder = factory.newDocumentBuilder();
+        } catch ( Exception ex ) {
+            LOG.error( ex.getMessage(), ex );
+        }
+        return builder;
     }
 
     // ------------------------------------------------------------------------
@@ -945,7 +989,7 @@ public final class XMLTools {
      *            current element
      * @return the textual contents of the element
      */
-    private static String getStringValue( Node node ) {
+    public static String getStringValue( Node node ) {
         NodeList children = node.getChildNodes();
         StringBuffer sb = new StringBuffer( children.getLength() * 500 );
         if ( node.getNodeValue() != null ) {

@@ -46,7 +46,7 @@ package org.deegree.commons.xml;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.deegree.commons.logging.BootLogger;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Definitions for OGC related namespace bindings.
@@ -134,6 +134,12 @@ public class CommonNamespaces {
      * The APISO namespace is currently bound to: "http://www.opengis.net/cat/csw/apiso/1.0"
      */
     public static final URI APISO = buildNSURI( "http://www.opengis.net/cat/csw/apiso/1.0" );
+    
+    /**
+     * The CRSNS namespace --used for the crs package-- is currently bound to:
+     * "http://www.deegree.org/crs"
+     */
+    public static final URI CRSNS = buildNSURI( "http://www.deegree.org/crs" );
 
     // prefixes
     /**
@@ -192,19 +198,24 @@ public class CommonNamespaces {
     public static final String SMXML_PREFIX = "smXML";
 
     /**
-     * The ISOAP10GMD_PREFIX is currrently assigned to: "gmd"
+     * The ISOAP10GMD_PREFIX is currently assigned to: "gmd"
      */
     public static final String ISOAP10GMD_PREFIX = "gmd";
 
     /**
-     * The ISOAP10GCO_PREFIX is currrently assigned to: "gco"
+     * The ISOAP10GCO_PREFIX is currently assigned to: "gco"
      */
     public static final String ISOAP10GCO_PREFIX = "gco";
 
     /**
-     * The APISO_PREFIX is currrently assigned to: "apiso"
+     * The APISO_PREFIX is currently assigned to: "apiso"
      */
     public static final String APISO_PREFIX = "apiso";
+    
+    /**
+     * The CRS_PREFIX is currently assigned to: "crs"
+     */
+    public static final String CRS_PREFIX = "crs";
 
     private static NamespaceContext nsContext = null;
 
@@ -217,7 +228,7 @@ public class CommonNamespaces {
         try {
             uri = new URI( namespace );
         } catch ( URISyntaxException e ) {
-            BootLogger.logError( "Invalid common namespace URI '" + namespace + "':" + e.getMessage(), e );
+            LogFactory.getLog( CommonNamespaces.class ).error( "Invalid common namespace URI '" + namespace + "':" + e.getMessage(), e );
         }
         return uri;
     }
@@ -243,6 +254,7 @@ public class CommonNamespaces {
             nsContext.addNamespace( ISOAP10GMD_PREFIX, ISOAP10GMDNS );
             nsContext.addNamespace( ISOAP10GCO_PREFIX, ISOAP10GCONS );
             nsContext.addNamespace( APISO_PREFIX, APISO );
+            nsContext.addNamespace( CRS_PREFIX, CRSNS);
 
         }
         return nsContext;
