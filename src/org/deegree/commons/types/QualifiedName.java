@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://developername@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/datatypes/QualifiedName.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -57,9 +57,9 @@ import org.deegree.commons.utils.StringTools;
  * the name has not prefix).
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth </a>
- * @author last edited by: $Author: apoth $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: 10522 $, $Date: 2008-03-07 12:09:06 +0100 (Fr, 07 Mrz 2008) $
+ * @version $Revision$, $Date$
  * @deprecated
  */
 public class QualifiedName implements Serializable {
