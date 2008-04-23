@@ -41,7 +41,7 @@ package org.deegree.model.geometry.jtswrapper;
 import java.util.Arrays;
 import java.util.List;
 
-import org.deegree.model.crs.CoordinateSystem;
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.AbstractGeometryFactory;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.composite.CompositeCurve;
@@ -106,7 +106,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      * (non-Javadoc)
      * 
      * @see org.deegree.model.geometry.GeometryFactory#createCurve(org.deegree.model.geometry.primitive.Point[][],
-     *      org.deegree.model.crs.CoordinateSystem)
+     *      org.deegree.model.crs.coordinatesystems.CoordinateSystem)
      */
     public Curve createCurve( Point[][] coordinates, ORIENTATION orientation, CoordinateSystem crs ) {
         CurveSegment[] segments = new CurveSegment[coordinates.length];
@@ -121,7 +121,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      * (non-Javadoc)
      * 
      * @see org.deegree.model.geometry.GeometryFactory#createCurve(org.deegree.model.geometry.primitive.CurveSegment[],
-     *      org.deegree.model.crs.CoordinateSystem)
+     *      org.deegree.model.crs.coordinatesystems.CoordinateSystem)
      */
     public Curve createCurve( CurveSegment[] segments, ORIENTATION orientation, CoordinateSystem crs ) {
         Point point = segments[0].getPoints().get( 0 );
@@ -216,7 +216,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      * (non-Javadoc)
      * 
      * @see org.deegree.model.geometry.GeometryFactory#createPatch(org.deegree.model.geometry.primitive.Curve[],
-     *      org.deegree.model.crs.CoordinateSystem,
+     *      org.deegree.model.crs.coordinatesystems.CoordinateSystem,
      *      org.deegree.model.geometry.primitive.Patch.INTERPOLATION)
      */
     public SurfacePatch createSurfacePatch( List<Curve> boundary, @SuppressWarnings("unused")
@@ -231,7 +231,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      * (non-Javadoc)
      * 
      * @see org.deegree.model.geometry.GeometryFactory#createPoint(double[],
-     *      org.deegree.model.crs.CoordinateSystem)
+     *      org.deegree.model.crs.coordinatesystems.CoordinateSystem)
      */
     public Point createPoint( double[] coordinates, double precision, CoordinateSystem crs ) {
         return new JTSWrapperPoint( precision, crs, coordinates );
@@ -242,7 +242,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      * 
      * @see org.deegree.model.geometry.GeometryFactory#createSolid(org.deegree.model.geometry.primitive.Surface[],
      *      org.deegree.model.geometry.primitive.Surface[][],
-     *      org.deegree.model.crs.CoordinateSystem)
+     *      org.deegree.model.crs.coordinatesystems.CoordinateSystem)
      */
     public Solid createSolid( @SuppressWarnings("unused")
     Surface[] outerboundary, @SuppressWarnings("unused")
@@ -255,7 +255,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      * (non-Javadoc)
      * 
      * @see org.deegree.model.geometry.GeometryFactory#createSurface(org.deegree.model.geometry.primitive.Curve[],
-     *      org.deegree.model.crs.CoordinateSystem)
+     *      org.deegree.model.crs.coordinatesystems.CoordinateSystem)
      */
     public Surface createSurface( Curve[] boundary, CoordinateSystem crs, SurfacePatch.INTERPOLATION interpolation ) {
         SurfacePatch patch = createSurfacePatch( Arrays.asList( boundary ), JTSWrapperSurfacePatch.class, interpolation );
@@ -266,7 +266,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      * (non-Javadoc)
      * 
      * @see org.deegree.model.geometry.GeometryFactory#createSurface(org.deegree.model.geometry.primitive.Patch[],
-     *      org.deegree.model.crs.CoordinateSystem)
+     *      org.deegree.model.crs.coordinatesystems.CoordinateSystem)
      */
     public Surface createSurface( SurfacePatch[] patches, CoordinateSystem crs ) {
         Point point = patches[0].getBoundary().get( 0 ).getPoints().get( 0 );
@@ -279,7 +279,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      * (non-Javadoc)
      * 
      * @see org.deegree.model.geometry.GeometryFactory#createEnvelope(double[], double[], double,
-     *      org.deegree.model.crs.CoordinateSystem)
+     *      org.deegree.model.crs.coordinatesystems.CoordinateSystem)
      */
     public Envelope createEnvelope( double[] min, double[] max, double precision, CoordinateSystem crs ) {
         Point p1 = new JTSWrapperPoint( precision, crs, min );

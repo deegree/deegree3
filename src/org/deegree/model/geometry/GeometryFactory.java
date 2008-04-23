@@ -41,7 +41,7 @@ package org.deegree.model.geometry;
 
 import java.util.List;
 
-import org.deegree.model.crs.CoordinateSystem;
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.composite.CompositeCurve;
 import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.composite.CompositeSurface;

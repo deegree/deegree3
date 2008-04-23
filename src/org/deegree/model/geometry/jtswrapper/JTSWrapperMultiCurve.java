@@ -41,7 +41,7 @@ package org.deegree.model.geometry.jtswrapper;
 
 import java.util.List;
 
-import org.deegree.model.crs.CoordinateSystem;
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.multi.MultiCurve;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;

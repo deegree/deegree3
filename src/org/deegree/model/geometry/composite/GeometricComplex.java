@@ -2,7 +2,6 @@ package org.deegree.model.geometry.composite;
 import java.util.List;
 
 import org.deegree.model.geometry.Geometry;
-import org.deegree.model.geometry.composite.CompositeGeometry;
 
 
 /**

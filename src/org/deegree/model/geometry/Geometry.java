@@ -37,7 +37,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry;
 
-import org.deegree.model.crs.CoordinateSystem;
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.primitive.Envelope;
 
 /**

@@ -38,7 +38,7 @@
 
 package org.deegree.model.geometry.jtswrapper;
 
-import org.deegree.model.crs.CoordinateSystem;
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
 
