@@ -366,7 +366,7 @@ public final class XMLTools {
         String name = node.getNodeValue().trim();
         QualifiedName qName = null;
         if ( name.indexOf( ':' ) > -1 ) {
-            String[] tmp = StringTools.toArray( name, ":", false );
+            String[] tmp = StringTools.split( name, ":" );
             try {
                 qName = new QualifiedName( tmp[0], tmp[1], XMLTools.getNamespaceForPrefix( tmp[0], node ) );
             } catch ( URISyntaxException e ) {
@@ -614,20 +614,20 @@ public final class XMLTools {
     }
 
     /**
-     * Returns the parts of the targeted node value which are separated by the specified regex.
+     * Returns the parts of the targeted node value which are separated by the specified token.
      * 
      * @param contextNode
      * @param xPathQuery
      * @param nsContext
-     * @param regex
-     * @return the parts of the targeted node value which are separated by the specified regex.
+     * @param token
+     * @return the parts of the targeted node value which are separated by the specified token.
      * @throws XMLParsingException
      */
     public static String[] getRequiredNodeAsStrings( Node contextNode, String xPathQuery, NamespaceContext nsContext,
-                                                     String regex )
+                                                     String token )
                             throws XMLParsingException {
         Node node = getRequiredNode( contextNode, xPathQuery, nsContext );
-        return StringTools.toArray( getStringValue( node ), regex, false );
+        return StringTools.split( getStringValue( node ), token );
     }
 
     /**

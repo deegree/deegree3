@@ -45,6 +45,8 @@ package org.deegree.commons.types;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.deegree.commons.utils.StringTools;
 
@@ -79,13 +81,14 @@ public class QualifiedName implements Serializable {
     public QualifiedName( String name ) {
         if ( name.indexOf( '{' ) > -1 ) {
             try {
-                namespace = new URI( StringTools.extractStrings( name, "{", "}" )[0] );
+                namespace = new URI( StringTools.extract( name, "{", "}" ).get(0) );
             } catch ( URISyntaxException e ) {
+                //
             }
             int pos = name.lastIndexOf( ':' );
             localName = name.substring( pos + 1 );
         } else if ( name.indexOf( ':' ) > -1 ) {
-            String[] tmp = StringTools.toArray( name, ":", false );
+            String[] tmp = StringTools.split( name, ":" );
             if ( tmp.length == 2 ) {
                 prefix = tmp[0];
                 localName = tmp[1];
@@ -106,7 +109,7 @@ public class QualifiedName implements Serializable {
      */
     public QualifiedName( String name, URI namespace ) {
         if ( name.indexOf( ':' ) > -1 ) {
-            String[] tmp = StringTools.toArray( name, ":", false );
+            String[] tmp = StringTools.split( name, ":" );
             prefix = tmp[0];
             this.localName = tmp[1];
         } else {
