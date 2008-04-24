@@ -116,38 +116,50 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     /**
+     * this method throws an {@link IllegalArgumentException} if the passed {@link Geometry} is not
+     * an instance of a geometry type that can be exported into a JTSGeometry. Allowed types are:
+     * <ul>
+     * <li>org.deegree.model.geometry.primitive.Point</li>
+     * <li>org.deegree.model.geometry.multi.MultiPoint</li>
+     * <li>org.deegree.model.geometry.primitive.Curve</li>
+     * <li>org.deegree.model.geometry.multi.MultiCurve</li>
+     * <li>org.deegree.model.geometry.primitive.Surface</li>
+     * <li>org.deegree.model.geometry.multi.MultiSurface</li>
+     * <li>org.deegree.model.geometry.multi.MultiGeometry</li>
+     * <li>org.deegree.model.geometry.primitive.Envelope</li>
+     * </ul>
      * 
-     * @param gmObject
-     * @return
-     * @throws GeometryException
+     * If conversion fails a {@link GeometryException} will be thrown
+     * 
+     * @param geometry
+     * @return corresponding JTS geometry
      */
-    protected com.vividsolutions.jts.geom.Geometry export( Geometry gmObject )
-                            throws GeometryException {
+    protected com.vividsolutions.jts.geom.Geometry export( Geometry geometry ) {
 
         com.vividsolutions.jts.geom.Geometry geom = null;
-        if ( !( gmObject instanceof com.vividsolutions.jts.geom.Geometry ) ) {
-            if ( gmObject instanceof Point ) {
-                geom = export( (Point) gmObject );
-            } else if ( gmObject instanceof MultiPoint ) {
-                geom = export( (MultiPoint<Point>) gmObject );
-            } else if ( gmObject instanceof Curve ) {
-                geom = export( (Curve) gmObject );
-            } else if ( gmObject instanceof MultiCurve ) {
-                geom = export( (MultiCurve<Curve>) gmObject );
-            } else if ( gmObject instanceof Surface ) {
-                geom = export( (Surface) gmObject );
-            } else if ( gmObject instanceof MultiSurface ) {
-                geom = export( (MultiSurface<Surface>) gmObject );
-            } else if ( gmObject instanceof MultiGeometry ) {
-                geom = export( (MultiGeometry<Geometry>) gmObject );
-            } else if ( gmObject instanceof Envelope ) {
-                geom = export( (Envelope) gmObject );
+        if ( !( geometry instanceof com.vividsolutions.jts.geom.Geometry ) ) {
+            if ( geometry instanceof Point ) {
+                geom = export( (Point) geometry );
+            } else if ( geometry instanceof MultiPoint ) {
+                geom = export( (MultiPoint<Point>) geometry );
+            } else if ( geometry instanceof Curve ) {
+                geom = export( (Curve) geometry );
+            } else if ( geometry instanceof MultiCurve ) {
+                geom = export( (MultiCurve<Curve>) geometry );
+            } else if ( geometry instanceof Surface ) {
+                geom = export( (Surface) geometry );
+            } else if ( geometry instanceof MultiSurface ) {
+                geom = export( (MultiSurface<Surface>) geometry );
+            } else if ( geometry instanceof MultiGeometry ) {
+                geom = export( (MultiGeometry<Geometry>) geometry );
+            } else if ( geometry instanceof Envelope ) {
+                geom = export( (Envelope) geometry );
             } else {
-                throw new GeometryException( "JTSAdapter.export does not support type '"
-                                             + gmObject.getClass().getName() + "'!" );
+                throw new IllegalArgumentException( "JTSAdapter.export does not support type '"
+                                                    + geometry.getClass().getName() + "'!" );
             }
         } else {
-            geom = ( (JTSWrapperGeometry) gmObject ).getJTSGeometry();
+            geom = ( (JTSWrapperGeometry) geometry ).getJTSGeometry();
         }
         return geom;
     }
@@ -185,7 +197,7 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     /**
-     * Converts a deegree <code>Envelope</code> to a JTS <code>Polygon</code>.
+     * Converts a deegree Envelope to a JTS Polygon.
      * 
      * @param envelope
      * @return JTS Polygon representing the passed envelope
@@ -206,24 +218,24 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     /**
-     * Converts a deegree <code>Point</code> to a JTS <code>Point</code>.
+     * Converts a deegree Point to a JTS Point.
      * 
      * 
      * @param gmPoint
      *            point to be converted
-     * @return the corresponding <code>Point</code> object
+     * @return the corresponding Point object
      */
     private com.vividsolutions.jts.geom.Point export( Point gmPoint ) {
         return jtsFactory.createPoint( toCoordinate( gmPoint ) );
     }
 
     /**
-     * Converts a deegree <code>MultiPoint</code> to a JTS <code>MultiPoint</code>.
+     * Converts a deegree MultiPoint to a JTS MultiPoint.
      * 
      * 
      * @param gmMultiPoint
      *            multipoint to be converted
-     * @return the corresponding <code>MultiPoint</code> object
+     * @return the corresponding MultiPoint object
      */
     private com.vividsolutions.jts.geom.MultiPoint export( MultiPoint<Point> gmMultiPoint ) {
         List<Point> gmPoints = gmMultiPoint.getGeometries();
@@ -238,32 +250,28 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     /**
-     * Converts a deegree <code>Curve</code> to a JTS <code>LineString</code>.
+     * Converts a deegree Curve to a JTS LineString.
      * 
      * 
      * @param curve
-     *            <code>Curve</code> to be converted
-     * @return the corresponding <code>LineString</code> object
-     * @throws GeometryException
+     *            Curve to be converted
+     * @return the corresponding LineString object
      */
-    private LineString export( Curve curve )
-                            throws GeometryException {
+    private LineString export( Curve curve ) {
 
         List<Point> points = curve.getPoints();
         return jtsFactory.createLineString( toCoordinates( points ) );
     }
 
     /**
-     * Converts a deegree <code>MultiCurve</code> to a JTS <code>MultiLineString</code>.
+     * Converts a deegree MultiCurve to a JTS MultiLineString.
      * 
      * 
      * @param multi
-     *            <code>MultiCurve</code> to be converted
-     * @return the corresponding <code>MultiLineString</code> object
-     * @throws GeometryException
+     *            MultiCurve to be converted
+     * @return the corresponding MultiLineString object
      */
-    private MultiLineString export( MultiCurve<Curve> multi )
-                            throws GeometryException {
+    private MultiLineString export( MultiCurve<Curve> multi ) {
 
         List<Curve> curves = multi.getGeometries();
 
@@ -276,14 +284,14 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     /**
-     * Converts a deegree <code>Surface</code> to a JTS <code>Polygon</code>.
+     * Converts a deegree Surface to a JTS Polygon.
      * 
-     * Currently, the <code>Surface</code> _must_ contain exactly one patch!
+     * Currently, the Surface _must_ contain exactly one patch!
      * 
      * 
      * @param surface
-     *            a <code>Surface</code>
-     * @return the corresponding <code>Polygon</code> object
+     *            a Surface
+     * @return the corresponding Polygon object
      */
     private Polygon export( Surface surface ) {
 
@@ -306,14 +314,14 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     /**
-     * Converts a deegree <code>MultiSurface</code> to a JTS <code>MultiPolygon</code>.
+     * Converts a deegree MultiSurface to a JTS MultiPolygon.
      * 
-     * Currently, the contained <code>Surface</code> _must_ have exactly one patch!
+     * Currently, the contained Surface _must_ have exactly one patch!
      * 
      * 
      * @param msurface
-     *            a <code>MultiSurface</code>
-     * @return the corresponding <code>MultiPolygon</code> object
+     *            a MultiSurface
+     * @return the corresponding MultiPolygon object
      */
     private MultiPolygon export( MultiSurface<Surface> msurface ) {
 
@@ -329,16 +337,14 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     /**
-     * Converts a deegree <code>MultiGeometry</code> to a JTS <code>GeometryCollection</code>.
+     * Converts a deegree MultiGeometry to a JTS GeometryCollection.
      * 
      * 
      * @param multi
-     *            a <code>MultiPrimtive</code>
-     * @return the corresponding <code>GeometryCollection</code> object
-     * @throws GeometryException
+     *            a MultiPrimtive
+     * @return the corresponding GeometryCollection object
      */
-    private com.vividsolutions.jts.geom.GeometryCollection export( MultiGeometry<Geometry> multi )
-                            throws GeometryException {
+    private com.vividsolutions.jts.geom.GeometryCollection export( MultiGeometry<Geometry> multi ) {
 
         List<Geometry> geometries = multi.getGeometries();
         com.vividsolutions.jts.geom.Geometry[] geoms = new com.vividsolutions.jts.geom.Geometry[geometries.size()];
@@ -355,7 +361,9 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     /**
-     * Converts a JTS-<code>Geometry</code> object to a corresponding <code>Geometry</code>.
+     * Converts a JTS-Geometry object to a corresponding Geometry. The method throws an
+     * {@link IllegalArgumentException} if passed geometry type is unsupported. If conversion fails
+     * a {@link GeometryException} will be thrown
      * 
      * Currently, the following conversions are supported:
      * <ul>
@@ -370,13 +378,10 @@ abstract class JTSWrapperGeometry implements Geometry {
      * 
      * 
      * @param geometry
-     *            the JTS-<code>Geometry</code> to be converted
-     * @return the corresponding <code>Geometry</code>
-     * @throws GeometryException
-     *             if type unsupported or conversion failed
+     *            the JTS-Geometry to be converted
+     * @return the corresponding Geometry
      */
-    public Geometry wrap( com.vividsolutions.jts.geom.Geometry geometry )
-                            throws GeometryException {
+    public Geometry wrap( com.vividsolutions.jts.geom.Geometry geometry ) {
 
         Geometry gmObject = null;
         if ( geometry instanceof com.vividsolutions.jts.geom.Point ) {
@@ -394,8 +399,8 @@ abstract class JTSWrapperGeometry implements Geometry {
         } else if ( geometry instanceof com.vividsolutions.jts.geom.GeometryCollection ) {
             gmObject = wrap( (com.vividsolutions.jts.geom.GeometryCollection) geometry );
         } else {
-            throw new GeometryException( "JTSAdapter.wrap does not support type '" + geometry.getClass().getName()
-                                         + "'!" );
+            throw new IllegalArgumentException( "JTSAdapter.wrap does not support type '"
+                                                + geometry.getClass().getName() + "'!" );
         }
         return gmObject;
     }
@@ -432,24 +437,24 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     /**
-     * Converts a <code>Point</code> to a <code>Point</code>s.
+     * Converts a Point to a Points.
      * 
      * 
      * @param point
-     *            a <code>Point</code> object
-     * @return the corresponding <code>Point</code>
+     *            a Point object
+     * @return the corresponding Point
      */
     private Point wrap( com.vividsolutions.jts.geom.Point point ) {
         return toPoint( point.getCoordinate() );
     }
 
     /**
-     * Converts a <code>MultiPoint</code> to a <code>MultiPoint</code>.
+     * Converts a MultiPoint to a MultiPoint.
      * 
      * 
      * @param multi
-     *            a <code>MultiPoint</code> object
-     * @return the corresponding <code>MultiPoint</code>
+     *            a MultiPoint object
+     * @return the corresponding MultiPoint
      */
     private MultiPoint wrap( com.vividsolutions.jts.geom.MultiPoint multi ) {
         List<Point> gmPoints = new ArrayList<Point>( multi.getNumGeometries() );
@@ -460,16 +465,14 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     /**
-     * Converts a <code>LineString</code> to a <code>Curve</code>.
+     * Converts a LineString to a Curve.
      * 
      * 
      * @param line
-     *            a <code>LineString</code> object
-     * @return the corresponding <code>Curve</code>
-     * @throws GeometryException
+     *            a LineString object
+     * @return the corresponding Curve
      */
-    private Curve wrap( LineString line )
-                            throws GeometryException {
+    private Curve wrap( LineString line ) {
         Coordinate[] coords = line.getCoordinates();
         List<Point> points = toPoints( coords );
 
@@ -480,15 +483,13 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     /**
-     * Converts a <code>MultiLineString</code> to a <code>MultiCurve</code>.
+     * Converts a MultiLineString to a MultiCurve.
      * 
      * @param multi
-     *            a <code>MultiLineString</code> object
-     * @return the corresponding <code>MultiCurve</code>
-     * @throws GeometryException
+     *            a MultiLineString object
+     * @return the corresponding MultiCurve
      */
-    private MultiCurve wrap( MultiLineString multi )
-                            throws GeometryException {
+    private MultiCurve wrap( MultiLineString multi ) {
         List<Curve> curves = new ArrayList<Curve>( multi.getNumGeometries() );
         for ( int i = 0; i < curves.size(); i++ ) {
             curves.add( wrap( (com.vividsolutions.jts.geom.LineString) multi.getGeometryN( i ) ) );
@@ -498,15 +499,13 @@ abstract class JTSWrapperGeometry implements Geometry {
 
     /**
      * 
-     * Converts a <code>Polygon</code> to a <code>Surface</code>.
+     * Converts a Polygon to a Surface.
      * 
      * @param polygon
-     *            a <code>Polygon</code>
-     * @return the corresponding <code>Surface</code> object
-     * @throws GeometryException
+     *            a Polygon
+     * @return the corresponding Surface object
      */
-    private Surface wrap( Polygon polygon )
-                            throws GeometryException {
+    private Surface wrap( Polygon polygon ) {
         List<Curve> boundary = new ArrayList<Curve>( polygon.getNumInteriorRing() + 1 );
         Point[][] ring = new Point[1][];
         List<Point> list = toPoints( polygon.getExteriorRing().getCoordinates() );
@@ -522,15 +521,13 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     /**
-     * Converts a <code>MultiPolygon</code> to a <code>MultiSurface</code>.
+     * Converts a MultiPolygon to a MultiSurface.
      * 
      * @param multiPolygon
-     *            a <code>MultiPolygon</code>
-     * @return the corresponding <code>MultiSurface</code> object
-     * @throws GeometryException
+     *            a MultiPolygon
+     * @return the corresponding MultiSurface object
      */
-    private MultiSurface wrap( com.vividsolutions.jts.geom.MultiPolygon multiPolygon )
-                            throws GeometryException {
+    private MultiSurface wrap( com.vividsolutions.jts.geom.MultiPolygon multiPolygon ) {
 
         List<Surface> surfaces = new ArrayList<Surface>( multiPolygon.getNumGeometries() );
         for ( int i = 0; i < surfaces.size(); i++ ) {
@@ -540,15 +537,13 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     /**
-     * Converts a <code>GeometryCollection</code> to a <code>MultiPrimitve</code>.
+     * Converts a GeometryCollection to a MultiPrimitve.
      * 
      * @param collection
-     *            a <code>GeometryCollection</code>
-     * @return the corresponding <code>MultiPrimitive</code> object
-     * @throws GeometryException
+     *            a GeometryCollection
+     * @return the corresponding MultiPrimitive object
      */
-    private MultiGeometry<Geometry> wrap( GeometryCollection collection )
-                            throws GeometryException {
+    private MultiGeometry<Geometry> wrap( GeometryCollection collection ) {
 
         Geometry[] geoms = new Geometry[collection.getNumGeometries()];
         for ( int i = 0; i < collection.getNumGeometries(); i++ ) {
@@ -628,7 +623,7 @@ abstract class JTSWrapperGeometry implements Geometry {
     public boolean intersects( Geometry geometry ) {
         if ( geometry instanceof JTSWrapperGeometry ) {
             return this.geometry.intersects( ( (JTSWrapperGeometry) geometry ).getJTSGeometry() );
-        } 
+        }
         return this.geometry.intersects( export( geometry ) );
     }
 
