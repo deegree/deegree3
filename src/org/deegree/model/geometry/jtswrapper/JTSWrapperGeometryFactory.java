@@ -236,6 +236,17 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     public Point createPoint( double[] coordinates, double precision, CoordinateSystem crs ) {
         return new JTSWrapperPoint( precision, crs, coordinates );
     }
+    
+    
+
+    /* (non-Javadoc)
+     * @see org.deegree.model.geometry.GeometryFactory#createPoint(double[], org.deegree.model.crs.coordinatesystems.CoordinateSystem)
+     */
+    public Point createPoint( double[] coordinates, CoordinateSystem crs ) {
+        // TODO
+        // set useful precision value
+        return new JTSWrapperPoint( 0.00001, crs, coordinates );
+    }
 
     /*
      * (non-Javadoc)
