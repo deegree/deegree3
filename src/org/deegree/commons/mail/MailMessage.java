@@ -56,6 +56,35 @@ package org.deegree.commons.mail;
 public interface MailMessage {
 
     /**
+     * MIME type <code>text/plain</code>
+     */
+    String PLAIN_TEXT = "text/plain";
+
+    /**
+     * MIME type <code>text/html</code>
+     */
+    String TEXT_HTML = "text/html";
+
+    /**
+     * MIME type <code>text/xml</code>
+     */
+    String TEXT_XML = "text/xml";
+
+    /**
+     * HTML mulitpart message with inline elements
+     * 
+     * @see javax.mail.Part
+     */
+    short PART_INLINE = 0;
+
+    /**
+     * Mulitpart message with references
+     * 
+     * @see javax.mail.Part
+     */
+    short PART_REF = 1;
+
+    /**
      * Returns the subject.
      * 
      * 
@@ -158,32 +187,4 @@ public interface MailMessage {
      */
     boolean isValid();
 
-    /**
-     * MIME type <code>text/plain</code>
-     */
-    String PLAIN_TEXT = "text/plain";
-
-    /**
-     * MIME type <code>text/html</code>
-     */
-    String TEXT_HTML = "text/html";
-
-    /**
-     * MIME type <code>text/xml</code>
-     */
-    String TEXT_XML = "text/xml";
-
-    /**
-     * HTML mulitpart message with inline elements
-     * 
-     * @see javax.mail.Part
-     */
-    short PART_INLINE = 0;
-
-    /**
-     * Mulitpart message with references
-     * 
-     * @see javax.mail.Part
-     */
-    short PART_REF = 1;
 }

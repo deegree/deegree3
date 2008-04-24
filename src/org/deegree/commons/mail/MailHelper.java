@@ -61,7 +61,6 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deegree.commons.utils.StringTools;
 import org.deegree.commons.i18n.Messages;
 
 /**
@@ -184,9 +183,8 @@ public final class MailHelper {
         }
         try {
             int k = eMess.getMessageBody().length() > 60 ? 60 : eMess.getMessageBody().length() - 1;
-            LOG.debug( StringTools.concat( 500, "Sending message, From: ", eMess.getSender(), "\nTo: ",
-                                              eMess.getReceiver(), "\nSubject: ", eMess.getSubject(), "\nContents: ",
-                                              eMess.getMessageBody().substring( 0, k ), "..." ) );
+            LOG.debug( "Sending message, From: " + eMess.getSender() + "\nTo: " + eMess.getReceiver() + "\nSubject: "
+                       + eMess.getSubject() + "\nContents: " + eMess.getMessageBody().substring( 0, k ) + "..." );
             // construct the message
             MimeMessage msg = new MimeMessage( session );
             msg.setFrom( new InternetAddress( eMess.getSender() ) );
@@ -247,9 +245,8 @@ public final class MailHelper {
         }
         try {
             int k = eMess.getMessageBody().length() > 60 ? 60 : eMess.getMessageBody().length() - 1;
-            LOG.debug( StringTools.concat( 500, "Sending message, From: ", eMess.getSender(), "\nTo: ",
-                                              eMess.getReceiver(), "\nSubject: ", eMess.getSubject(), "\nContents: ",
-                                              eMess.getMessageBody().substring( 0, k ), "..." ) );
+            LOG.debug( "Sending message, From: " + eMess.getSender() + "\nTo: " + eMess.getReceiver() + "\nSubject: "
+                       + eMess.getSubject() + "\nContents: " + eMess.getMessageBody().substring( 0, k ) + "..." );
             // construct the message
             MimeMessage msg = new MimeMessage( session );
             msg.setFrom( new InternetAddress( eMess.getSender() ) );
