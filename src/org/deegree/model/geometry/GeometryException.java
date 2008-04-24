@@ -69,5 +69,14 @@ public class GeometryException extends RuntimeException {
     public GeometryException( String message, Throwable throwable ) {
         super( message, throwable );
     }
+    
+    /**
+     * 
+     * @param message
+     * @param throwable
+     */
+    public GeometryException( String message) {
+        super( message );
+    }
 
 }
