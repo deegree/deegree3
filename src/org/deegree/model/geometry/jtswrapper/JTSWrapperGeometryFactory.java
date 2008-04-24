@@ -173,7 +173,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
         double precision = curves.get( 0 ).getPrecision();
         CoordinateSystem crs = curves.get( 0 ).getCoordinateSystem();
         int coordinateDimension = curves.get( 0 ).getCoordinateDimension();
-        return new JTSWrapperMultiCurve( precision, crs, coordinateDimension, curves );
+        return new JTSWrapperMultiCurve( curves, coordinateDimension, precision, crs );
     }
 
     /*
@@ -197,7 +197,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
         double precision = points.get( 0 ).getPrecision();
         CoordinateSystem crs = points.get( 0 ).getCoordinateSystem();
         int coordinateDimension = points.get( 0 ).getCoordinateDimension();
-        return new JTSWrapperMultiPoint( precision, crs, coordinateDimension, points );
+        return new JTSWrapperMultiPoint( points, coordinateDimension, precision, crs );
     }
 
     /*
@@ -219,7 +219,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
         double precision = surfaces.get( 0 ).getPrecision();
         CoordinateSystem crs = surfaces.get( 0 ).getCoordinateSystem();
         int coordinateDimension = surfaces.get( 0 ).getCoordinateDimension();
-        return new JTSWrapperMultiSurface( precision, crs, coordinateDimension, surfaces );
+        return new JTSWrapperMultiSurface( surfaces, coordinateDimension, precision, crs );
     }
 
     /*

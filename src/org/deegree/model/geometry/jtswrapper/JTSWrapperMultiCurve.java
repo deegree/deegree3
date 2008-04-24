@@ -63,17 +63,21 @@ public class JTSWrapperMultiCurve extends JTSWrapperGeometry implements MultiCur
     private List<Curve> curves;
 
     /**
+     * @param coordinateDimension
      * @param precision
      * @param crs
-     * @param coordinateDimension
      */
-    public JTSWrapperMultiCurve( double precision, CoordinateSystem crs, int coordinateDimension, List<Curve> curves ) {
+    public JTSWrapperMultiCurve( List<Curve> curves, int coordinateDimension, double precision, CoordinateSystem crs ) {
         super( precision, crs, coordinateDimension );
         this.curves = curves;        
         LineString[] ls = new LinearRing[curves.size()];
         int i = 0;
         for ( Curve curve : curves ) {
-            ls[i] = (LineString)export( curve );
+            if ( curve instanceof JTSWrapperCurve ) {
+                ls[i++] = (LineString) ((JTSWrapperGeometry) curve ).getJTSGeometry();
+            } else {
+                ls[i++] = (LineString)export( curve );
+            }
         }
         geometry = jtsFactory.createMultiLineString( ls );
     }

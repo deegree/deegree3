@@ -79,7 +79,11 @@ public class JTSWrapperGeometryCollection extends JTSWrapperGeometry implements 
         com.vividsolutions.jts.geom.Geometry[] gs = new com.vividsolutions.jts.geom.Geometry[geometries.size()];
         int i = 0;
         for ( Geometry geom : geometries ) {
-            gs[i] = export( geom );
+            if ( geom instanceof JTSWrapperGeometry ) {
+                gs[i++] = ((JTSWrapperGeometry) geom ).getJTSGeometry();
+            } else {
+                gs[i++] = export( geom );
+            }
             if ( !doContainsCurves && geom instanceof Curve ) {
                 doContainsCurves = true;
             } else if ( !doContainsSurface && geom instanceof Surface ) {

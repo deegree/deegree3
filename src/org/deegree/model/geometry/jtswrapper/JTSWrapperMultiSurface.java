@@ -61,18 +61,22 @@ public class JTSWrapperMultiSurface extends JTSWrapperGeometry implements MultiS
     private List<Surface> surfaces;
 
     /**
+     * @param coordinateDimension
      * @param precision
      * @param crs
-     * @param coordinateDimension
      */
-    public JTSWrapperMultiSurface( double precision, CoordinateSystem crs, int coordinateDimension,
-                                   List<Surface> surfaces ) {
+    public JTSWrapperMultiSurface( List<Surface> surfaces, int coordinateDimension, double precision,
+                                   CoordinateSystem crs ) {
         super( precision, crs, coordinateDimension );
         this.surfaces = surfaces;
         Polygon[] mp = new Polygon[surfaces.size()];
         int i = 0;
         for ( Surface surface : surfaces ) {
-            mp[i] = (Polygon) export( surface );
+            if ( surface instanceof JTSWrapperSurface ) {
+                mp[i++] = (Polygon) ( (JTSWrapperSurface) surface ).getJTSGeometry();
+            } else {
+                mp[i++] = (Polygon) export( surface );
+            }
         }
         geometry = jtsFactory.createMultiPolygon( mp );
     }

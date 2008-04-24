@@ -344,7 +344,11 @@ abstract class JTSWrapperGeometry implements Geometry {
         com.vividsolutions.jts.geom.Geometry[] geoms = new com.vividsolutions.jts.geom.Geometry[geometries.size()];
         int i = 0;
         for ( Geometry geometry : geometries ) {
-            geoms[i++] = export( geometry );
+            if ( geometry instanceof JTSWrapperGeometry ) {
+                geoms[i++] = ( (JTSWrapperGeometry) geometry ).getJTSGeometry();
+            } else {
+                geoms[i++] = export( geometry );
+            }
         }
 
         return jtsFactory.createGeometryCollection( geoms );
@@ -556,18 +560,24 @@ abstract class JTSWrapperGeometry implements Geometry {
     @Override
     public boolean contains( Geometry geometry ) {
         if ( geometry instanceof JTSWrapperGeometry ) {
-            // TODO
+            return this.geometry.contains( ( (JTSWrapperGeometry) geometry ).getJTSGeometry() );
         }
         return this.geometry.contains( export( geometry ) );
     }
 
     @Override
     public Geometry difference( Geometry geometry ) {
+        if ( geometry instanceof JTSWrapperGeometry ) {
+            return wrap( this.geometry.difference( ( (JTSWrapperGeometry) geometry ).getJTSGeometry() ) );
+        }
         return wrap( this.geometry.difference( export( geometry ) ) );
     }
 
     @Override
     public double distance( Geometry geometry ) {
+        if ( geometry instanceof JTSWrapperGeometry ) {
+            return this.geometry.distance( ( (JTSWrapperGeometry) geometry ).getJTSGeometry() );
+        }
         return this.geometry.distance( export( geometry ) );
     }
 
@@ -594,6 +604,7 @@ abstract class JTSWrapperGeometry implements Geometry {
     public CoordinateSystem getCoordinateSystem() {
         return crs;
     }
+
     @Override
     public Envelope getEnvelope() {
         if ( envelope == null ) {
@@ -601,15 +612,23 @@ abstract class JTSWrapperGeometry implements Geometry {
         }
         return envelope;
     }
+
     @Override
     public Geometry intersection( Geometry geometry ) {
-        // TODO
-        // test if JTSGeometry
-        com.vividsolutions.jts.geom.Geometry geom = this.geometry.intersection( export( geometry ) );
+        com.vividsolutions.jts.geom.Geometry geom = null;
+        if ( geometry instanceof JTSWrapperGeometry ) {
+            geom = this.geometry.intersection( ( (JTSWrapperGeometry) geometry ).getJTSGeometry() );
+        } else {
+            geom = this.geometry.intersection( export( geometry ) );
+        }
         return wrap( geom );
     }
+
     @Override
     public boolean intersects( Geometry geometry ) {
+        if ( geometry instanceof JTSWrapperGeometry ) {
+            return this.geometry.intersects( ( (JTSWrapperGeometry) geometry ).getJTSGeometry() );
+        } 
         return this.geometry.intersects( export( geometry ) );
     }
 
@@ -621,6 +640,9 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @return true if passed geometry is topological located within this geometry
      */
     public boolean isWithin( Geometry geometry ) {
+        if ( geometry instanceof JTSWrapperGeometry ) {
+            return ( (JTSWrapperGeometry) geometry ).getJTSGeometry().contains( this.geometry );
+        }
         return export( geometry ).contains( this.geometry );
     }
 
@@ -632,6 +654,9 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @return true if this geometry lies within another
      */
     public boolean isWithinDistance( Geometry geometry, double distance ) {
+        if ( geometry instanceof JTSWrapperGeometry ) {
+            return this.geometry.isWithinDistance( ( (JTSWrapperGeometry) geometry ).getJTSGeometry(), distance );
+        }
         return this.geometry.isWithinDistance( export( geometry ), distance );
     }
 
@@ -643,12 +668,20 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @return true if passed geometry is beyond a specified distance of this geometry.
      */
     public boolean isBeyond( Geometry geometry, double distance ) {
+        if ( geometry instanceof JTSWrapperGeometry ) {
+            return !this.geometry.isWithinDistance( ( (JTSWrapperGeometry) geometry ).getJTSGeometry(), distance );
+        }
         return !this.geometry.isWithinDistance( export( geometry ), distance );
     }
 
     @Override
     public Geometry union( Geometry geometry ) {
-        com.vividsolutions.jts.geom.Geometry geom = this.geometry.union( export( geometry ) );
+        com.vividsolutions.jts.geom.Geometry geom = null;
+        if ( geometry instanceof JTSWrapperGeometry ) {
+            geom = this.geometry.union( ( (JTSWrapperGeometry) geometry ).getJTSGeometry() );
+        } else {
+            geom = this.geometry.union( export( geometry ) );
+        }
         return wrap( geom );
     }
 
