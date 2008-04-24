@@ -176,7 +176,7 @@ public class CommonsTestSuite {
                 } else {
                     String className = tmp.getAbsoluteFile().toString().substring( prefix.length() + 1 );
                     className = className.substring( 0, className.length() - DOT_CLASS_LENGTH );
-                    className = className.replace( File.pathSeparatorChar, '.' );
+                    className = className.replace( File.separatorChar, '.' );
                     className = packageName + className;
                     // sometimes on windows this is the default behavior
                     className = className.replace( '/', '.' );
