@@ -91,6 +91,8 @@ public interface GeometryFactory {
     
     public Point createPoint(double[] coordinates, double precision, CoordinateSystem crs);
     
+    public Point createPoint(double[] coordinates, CoordinateSystem crs);
+    
     public Curve createCurve(Point[][] coordinates, Curve.ORIENTATION orientation, CoordinateSystem crs);
     
     public Curve createCurve(CurveSegment[] segments, Curve.ORIENTATION orientation, CoordinateSystem crs);
