@@ -52,7 +52,7 @@ package org.deegree.commons.mail;
  * 
  * @version $Revision$,$Date$
  */
-public class SendMailException extends RuntimeException {
+public class SendMailException extends Exception {
 
     /**
      * 
