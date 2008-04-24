@@ -52,6 +52,7 @@ import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.SurfacePatch;
 import org.deegree.model.geometry.primitive.Curve.ORIENTATION;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -182,7 +183,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         }
         return coords;
     }
-    
+
     /**
      * Converts a deegree <code>Envelope</code> to a JTS <code>Polygon</code>.
      * 
@@ -215,7 +216,6 @@ abstract class JTSWrapperGeometry implements Geometry {
     private com.vividsolutions.jts.geom.Point export( Point gmPoint ) {
         return jtsFactory.createPoint( toCoordinate( gmPoint ) );
     }
-    
 
     /**
      * Converts a deegree <code>MultiPoint</code> to a JTS <code>MultiPoint</code>.
@@ -411,7 +411,7 @@ abstract class JTSWrapperGeometry implements Geometry {
 
     private Envelope wrap( com.vividsolutions.jts.geom.Envelope envelope ) {
         Point min = new JTSWrapperPoint( precision, crs, new double[] { envelope.getMinX(), envelope.getMinY() } );
-        Point max = new JTSWrapperPoint( precision, crs, new double[] { envelope.getMaxX(), envelope.getMaxY() } );        
+        Point max = new JTSWrapperPoint( precision, crs, new double[] { envelope.getMaxX(), envelope.getMaxY() } );
         return new JTSWrapperEnvelope( precision, crs, 2, min, max );
     }
 
@@ -491,18 +491,18 @@ abstract class JTSWrapperGeometry implements Geometry {
      */
     private Surface wrap( Polygon polygon )
                             throws GeometryException {
-        Curve[] boundary = new Curve[polygon.getNumInteriorRing() + 1];
+        List<Curve> boundary = new ArrayList<Curve>( polygon.getNumInteriorRing() + 1 );
         Point[][] ring = new Point[1][];
         List<Point> list = toPoints( polygon.getExteriorRing().getCoordinates() );
         ring[0] = list.toArray( new Point[list.size()] );
-        boundary[0] = geomFactory.createCurve( ring, ORIENTATION.unknown, crs );
+        boundary.add( geomFactory.createCurve( ring, ORIENTATION.unknown, crs ) );
         for ( int i = 0; i < polygon.getNumInteriorRing(); i++ ) {
             list = toPoints( polygon.getInteriorRingN( i ).getCoordinates() );
             ring[0] = list.toArray( new Point[list.size()] );
-            boundary[i + 1] = geomFactory.createCurve( ring, ORIENTATION.unknown, crs );
+            boundary.add( geomFactory.createCurve( ring, ORIENTATION.unknown, crs ) );
         }
 
-        return geomFactory.createSurface( boundary, crs, null );
+        return geomFactory.createSurface( boundary, SurfacePatch.INTERPOLATION.none, crs );
     }
 
     /**
@@ -542,6 +542,9 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     public boolean contains( Geometry geometry ) {
+        if ( geometry instanceof JTSWrapperGeometry ) {
+
+        }
         return this.geometry.contains( export( geometry ) );
     }
 
@@ -581,6 +584,8 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     public Geometry intersection( Geometry geometry ) {
+        // TODO
+        // test if JTSGeometry
         com.vividsolutions.jts.geom.Geometry geom = this.geometry.intersection( export( geometry ) );
         return wrap( geom );
     }
@@ -599,7 +604,7 @@ abstract class JTSWrapperGeometry implements Geometry {
     public boolean isWithin( Geometry geometry ) {
         return export( geometry ).contains( this.geometry );
     }
-    
+
     /**
      * tests whether the value of a geometric is within a specified distance of this geometry.
      * 
@@ -610,8 +615,7 @@ abstract class JTSWrapperGeometry implements Geometry {
     public boolean isWithinDistance( Geometry geometry, double distance ) {
         return this.geometry.isWithinDistance( export( geometry ), distance );
     }
-    
-    
+
     /**
      * tests whether the value of a geometric is beyond a specified distance of this geometry.
      * 

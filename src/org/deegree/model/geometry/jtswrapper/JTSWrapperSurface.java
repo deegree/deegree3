@@ -89,13 +89,15 @@ class JTSWrapperSurface extends JTSWrapperGeometry implements Surface {
 
         LinearRing shell = new LinearRing( fac.create( coords ), jtsFactory );
 
-        LinearRing[] holes = new LinearRing[0];
+        LinearRing[] holes = null;
         if ( patchBoundary.size() > 1 ) {
             holes = new LinearRing[patchBoundary.size() - 1];
             for ( int i = 1; i < patchBoundary.size(); i++ ) {
                 coords = toCoordinates( patchBoundary.get( i ).getPoints() );
                 holes[i - 1] = new LinearRing( fac.create( coords ), jtsFactory );
             }
+        } else {
+            holes = new LinearRing[0];
         }
         geometry = jtsFactory.createPolygon( shell, holes );
     }
