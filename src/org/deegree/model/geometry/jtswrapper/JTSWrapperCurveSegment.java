@@ -36,7 +36,6 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-
 package org.deegree.model.geometry.jtswrapper;
 
 import java.util.List;
@@ -53,18 +52,25 @@ import org.deegree.model.geometry.primitive.Point;
  * @version. $Revision$, $Date$
  */
 public class JTSWrapperCurveSegment implements CurveSegment {
-    
+
     private List<Point> points;
+
     private double[] coordinates;
+
     private int coordinateDimension = 0;
-    
-    
+
+    /**
+     * 
+     * @param points list of {@link Point}s forming a {@link CurveSegment}
+     */
     public JTSWrapperCurveSegment( List<Point> points ) {
         this.points = points;
         coordinateDimension = points.get( 0 ).getCoordinateDimension();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.CurveSegment#getAsArray()
      */
     public double[] getAsArray() {
@@ -83,21 +89,27 @@ public class JTSWrapperCurveSegment implements CurveSegment {
         return coordinates;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.CurveSegment#getCoordinateDimension()
      */
     public int getCoordinateDimension() {
         return coordinateDimension;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.CurveSegment#getPoints()
      */
     public List<Point> getPoints() {
         return points;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.CurveSegment#getX()
      */
     public double[] getX() {
@@ -110,7 +122,9 @@ public class JTSWrapperCurveSegment implements CurveSegment {
         return x;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.CurveSegment#getY()
      */
     public double[] getY() {
@@ -123,7 +137,9 @@ public class JTSWrapperCurveSegment implements CurveSegment {
         return y;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.CurveSegment#getZ()
      */
     public double[] getZ() {
@@ -141,8 +157,10 @@ public class JTSWrapperCurveSegment implements CurveSegment {
         }
         return z;
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.CurveSegment#getInterpolation()
      */
     public INTERPOLATION getInterpolation() {

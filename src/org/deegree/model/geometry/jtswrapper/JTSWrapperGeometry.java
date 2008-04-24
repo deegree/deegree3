@@ -396,11 +396,23 @@ abstract class JTSWrapperGeometry implements Geometry {
         return gmObject;
     }
 
+    /**
+     * transforms a JTS coordinate into a deegree {@link Point}
+     * 
+     * @param coord
+     * @return deegree {@link Point}
+     */
     protected Point toPoint( Coordinate coord ) {
         return Double.isNaN( coord.z ) ? new JTSWrapperPoint( precision, crs, new double[] { coord.x, coord.y } )
                                       : new JTSWrapperPoint( precision, crs, new double[] { coord.x, coord.y, coord.z } );
     }
 
+    /**
+     * transforms a list of JTS coordinates into a list of deegree {@link Point}s
+     * 
+     * @param coords
+     * @return list of deegree {@link Point}s
+     */
     protected List<Point> toPoints( Coordinate[] coords ) {
         List<Point> points = new ArrayList<Point>( coords.length );
         for ( int i = 0; i < coords.length; i++ ) {
@@ -541,33 +553,40 @@ abstract class JTSWrapperGeometry implements Geometry {
         return null;
     }
 
+    @Override
     public boolean contains( Geometry geometry ) {
         if ( geometry instanceof JTSWrapperGeometry ) {
-
+            // TODO
         }
         return this.geometry.contains( export( geometry ) );
     }
 
+    @Override
     public Geometry difference( Geometry geometry ) {
         return wrap( this.geometry.difference( export( geometry ) ) );
     }
 
+    @Override
     public double distance( Geometry geometry ) {
         return this.geometry.distance( export( geometry ) );
     }
 
+    @Override
     public double getPrecision() {
         return precision;
     }
 
+    @Override
     public Geometry getBuffer( double distance ) {
         return wrap( this.geometry.buffer( distance ) );
     }
 
+    @Override
     public Geometry getConvexHull() {
         return wrap( this.geometry.convexHull() );
     }
 
+    @Override
     public int getCoordinateDimension() {
         return coordinateDimension;
     }
@@ -575,31 +594,31 @@ abstract class JTSWrapperGeometry implements Geometry {
     public CoordinateSystem getCoordinateSystem() {
         return crs;
     }
-
+    @Override
     public Envelope getEnvelope() {
         if ( envelope == null ) {
             envelope = wrap( this.geometry.getEnvelopeInternal() );
         }
         return envelope;
     }
-
+    @Override
     public Geometry intersection( Geometry geometry ) {
         // TODO
         // test if JTSGeometry
         com.vividsolutions.jts.geom.Geometry geom = this.geometry.intersection( export( geometry ) );
         return wrap( geom );
     }
-
+    @Override
     public boolean intersects( Geometry geometry ) {
         return this.geometry.intersects( export( geometry ) );
     }
 
     /**
-     * tests whether the value of a geometric is topological located within this geometry. This
+     * tests whether the value of a geometry is topological located within this geometry. This
      * method is the opposite of {@link #contains(Geometry)} method
      * 
      * @param geometry
-     * @return
+     * @return true if passed geometry is topological located within this geometry
      */
     public boolean isWithin( Geometry geometry ) {
         return export( geometry ).contains( this.geometry );
@@ -627,6 +646,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         return !this.geometry.isWithinDistance( export( geometry ), distance );
     }
 
+    @Override
     public Geometry union( Geometry geometry ) {
         com.vividsolutions.jts.geom.Geometry geom = this.geometry.union( export( geometry ) );
         return wrap( geom );

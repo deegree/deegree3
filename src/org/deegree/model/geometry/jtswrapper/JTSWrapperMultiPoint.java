@@ -56,6 +56,13 @@ public class JTSWrapperMultiPoint extends JTSWrapperGeometry implements MultiPoi
 
     private List<Point> points;
 
+    /**
+     * 
+     * @param precision
+     * @param crs
+     * @param coordinateDimension
+     * @param points
+     */
     public JTSWrapperMultiPoint( double precision, CoordinateSystem crs, int coordinateDimension, List<Point> points ) {
         super( precision, crs, coordinateDimension );
         this.points = points;
