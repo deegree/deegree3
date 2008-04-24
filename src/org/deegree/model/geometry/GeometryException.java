@@ -36,7 +36,6 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-
 package org.deegree.model.geometry;
 
 /**
@@ -54,24 +53,21 @@ public class GeometryException extends RuntimeException {
      */
     private static final long serialVersionUID = 3327285706883207758L;
 
+    /**
+     * 
+     * 
+     */
     public GeometryException() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-    public GeometryException( String arg0, Throwable arg1 ) {
-        super( arg0, arg1 );
-        // TODO Auto-generated constructor stub
-    }
-
-    public GeometryException( String arg0 ) {
-        super( arg0 );
-        // TODO Auto-generated constructor stub
-    }
-
-    public GeometryException( Throwable arg0 ) {
-        super( arg0 );
-        // TODO Auto-generated constructor stub
+    /**
+     * 
+     * @param message
+     * @param throwable
+     */
+    public GeometryException( String message, Throwable throwable ) {
+        super( message, throwable );
     }
 
 }

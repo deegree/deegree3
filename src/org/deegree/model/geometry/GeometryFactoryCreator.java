@@ -160,6 +160,13 @@ public class GeometryFactoryCreator {
         return factories.get( name );
     }
 
+    /**
+     * 
+     * @param supportedGeometries
+     * @param supportedCurveInterpolation
+     * @param supportedSurfaceInterpolation
+     * @return list of {@link GeometryFactory} supporting the passed requirements
+     */
     public List<GeometryFactory> findGeometryFactory( List<Class> supportedGeometries,
                                                       List<CurveSegment.INTERPOLATION> supportedCurveInterpolation,
                                                       List<SurfacePatch.INTERPOLATION> supportedSurfaceInterpolation ) {
