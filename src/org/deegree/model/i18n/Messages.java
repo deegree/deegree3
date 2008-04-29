@@ -51,7 +51,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import org.deegree.commons.logging.BootLogger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
@@ -82,6 +83,8 @@ public class Messages {
     private static Map<Locale, Properties> props = new HashMap<Locale, Properties>();
 
     private static String lang;
+    
+    private static Log LOG = LogFactory.getLog( Messages.class );
 
     /**
      * Initialization done at class loading time.
@@ -92,7 +95,7 @@ public class Messages {
             String fileName = "messages_en.properties";
             InputStream is = Messages.class.getResourceAsStream( fileName );
             if ( is == null ) {
-                BootLogger.log( "Error while initializing " + Messages.class.getName() + " : "
+                LOG.error( "Error while initializing " + Messages.class.getName() + " : "
                                 + " default message file: '" + fileName + " not found." );
             }
             is = Messages.class.getResourceAsStream( fileName );
@@ -113,7 +116,7 @@ public class Messages {
                 overrideMessages( fileName, defaultProps );
             }
         } catch ( IOException e ) {
-            BootLogger.logError( "Error while initializing " + Messages.class.getName() + " : " + e.getMessage(), e );
+            LOG.error( "Error while initializing " + Messages.class.getName() + " : " + e.getMessage(), e );
         }
     }
 
@@ -177,7 +180,7 @@ public class Messages {
                     fileName = "/messages_" + l + ".properties";
                     overrideMessages( fileName, p );
                 } catch ( IOException e ) {
-                    BootLogger.logError( "Error loading language file for language '" + l + "': ", e );
+                    LOG.error( "Error loading language file for language '" + l + "': ", e );
                 }
             }
 
