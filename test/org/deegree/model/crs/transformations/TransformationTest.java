@@ -346,7 +346,7 @@ public class TransformationTest extends TestCase {
             output.append( ae.getLocalizedMessage() );
             inverseSuccess = false;
         }
-        LOG.info( output.toString() );
+        LOG.debug( output.toString() );
 
         assertEquals( true, forwardSuccess );
         assertEquals( true, inverseSuccess );
