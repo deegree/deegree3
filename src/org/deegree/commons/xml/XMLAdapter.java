@@ -117,7 +117,7 @@ public class XMLAdapter {
     public static final String DEFAULT_URL = "http://www.deegree.org";
 
     // encapsulated element
-    private OMElement rootElement;
+    protected OMElement rootElement;
 
     // the physical source of the element (used for resolving of URLs)
     private URL systemId;
@@ -350,7 +350,7 @@ public class XMLAdapter {
         byte[] b = new byte[80];
         int rd = pbis.read( b );
         String s = new String( b ).toLowerCase();
-        
+
         // TODO think about this
         String encoding = "UTF-8";
         if ( s.indexOf( "?>" ) > -1 ) {
@@ -398,7 +398,7 @@ public class XMLAdapter {
 
         XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader( pbr );
         StAXOMBuilder builder = new StAXOMBuilder( parser );
-        builder.getDocumentElement();
+        rootElement = builder.getDocumentElement();
     }
 
     /**
@@ -482,5 +482,32 @@ public class XMLAdapter {
         }
 
         return new SimpleLink( href, role, arcrole, title, show, actuate );
+    }
+
+    /**
+     * Parses the given string as an instance of "xsd:boolean".
+     * 
+     * @param text
+     * @return
+     */
+    protected boolean parseBoolean( String text ) {
+        boolean value = true;
+        if ( text != null ) {
+            if ( "true".equals( text ) || "1".equals( text ) ) {
+                value = true;
+            } else if ( "false".equals( text ) || "0".equals( text ) ) {
+                value = false;
+            }
+        }
+        return value;
+    }
+
+    protected OMElement getRequiredChildElement( OMElement element, QName childName ) {
+        OMElement childElement = element.getFirstChildWithName( childName );
+        if ( childElement == null ) {
+            String msg = "Element '" + element.getQName() + "' is missing required child element '" + childName + "'.";
+            throw new XMLParsingException( msg );
+        }
+        return childElement;
     }
 }
