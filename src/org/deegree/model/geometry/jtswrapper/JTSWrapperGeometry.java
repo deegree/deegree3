@@ -552,7 +552,6 @@ abstract class JTSWrapperGeometry implements Geometry {
         return null;
     }
 
-    @Override
     public boolean contains( Geometry geometry ) {
         if ( geometry instanceof JTSWrapperGeometry ) {
             return this.geometry.contains( ( (JTSWrapperGeometry) geometry ).getJTSGeometry() );
@@ -560,7 +559,6 @@ abstract class JTSWrapperGeometry implements Geometry {
         return this.geometry.contains( export( geometry ) );
     }
 
-    @Override
     public Geometry difference( Geometry geometry ) {
         if ( geometry instanceof JTSWrapperGeometry ) {
             return wrap( this.geometry.difference( ( (JTSWrapperGeometry) geometry ).getJTSGeometry() ) );
@@ -568,7 +566,6 @@ abstract class JTSWrapperGeometry implements Geometry {
         return wrap( this.geometry.difference( export( geometry ) ) );
     }
 
-    @Override
     public double distance( Geometry geometry ) {
         if ( geometry instanceof JTSWrapperGeometry ) {
             return this.geometry.distance( ( (JTSWrapperGeometry) geometry ).getJTSGeometry() );
@@ -576,22 +573,18 @@ abstract class JTSWrapperGeometry implements Geometry {
         return this.geometry.distance( export( geometry ) );
     }
 
-    @Override
     public double getPrecision() {
         return precision;
     }
 
-    @Override
     public Geometry getBuffer( double distance ) {
         return wrap( this.geometry.buffer( distance ) );
     }
 
-    @Override
     public Geometry getConvexHull() {
         return wrap( this.geometry.convexHull() );
     }
 
-    @Override
     public int getCoordinateDimension() {
         return coordinateDimension;
     }
@@ -600,7 +593,6 @@ abstract class JTSWrapperGeometry implements Geometry {
         return crs;
     }
 
-    @Override
     public Envelope getEnvelope() {
         if ( envelope == null ) {
             envelope = wrap( this.geometry.getEnvelopeInternal() );
@@ -608,7 +600,6 @@ abstract class JTSWrapperGeometry implements Geometry {
         return envelope;
     }
 
-    @Override
     public Geometry intersection( Geometry geometry ) {
         com.vividsolutions.jts.geom.Geometry geom = null;
         if ( geometry instanceof JTSWrapperGeometry ) {
@@ -619,7 +610,6 @@ abstract class JTSWrapperGeometry implements Geometry {
         return wrap( geom );
     }
 
-    @Override
     public boolean intersects( Geometry geometry ) {
         if ( geometry instanceof JTSWrapperGeometry ) {
             return this.geometry.intersects( ( (JTSWrapperGeometry) geometry ).getJTSGeometry() );
@@ -669,7 +659,6 @@ abstract class JTSWrapperGeometry implements Geometry {
         return !this.geometry.isWithinDistance( export( geometry ), distance );
     }
 
-    @Override
     public Geometry union( Geometry geometry ) {
         com.vividsolutions.jts.geom.Geometry geom = null;
         if ( geometry instanceof JTSWrapperGeometry ) {
