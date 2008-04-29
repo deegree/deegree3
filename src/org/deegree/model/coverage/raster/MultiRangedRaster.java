@@ -138,6 +138,7 @@ public class MultiRangedRaster extends AbstractRaster {
      * @param source
      *            data to copy
      */
+    @Override
     public void setSubset( double x, double y, AbstractRaster source ) {
         // checkBounds(x, y, source.getColumns(), source.getRows());
         SimpleRaster src = source.getAsSimpleRaster();
@@ -163,6 +164,7 @@ public class MultiRangedRaster extends AbstractRaster {
      * @param source
      *            data to copy (first band will be used)
      */
+    @Override
     public void setSubset( double x, double y, int index, AbstractRaster source ) {
         // checkBounds(x, y, source.getColumns(), source.getRows());
         if ( index >= getNumberOfRanges() ) {

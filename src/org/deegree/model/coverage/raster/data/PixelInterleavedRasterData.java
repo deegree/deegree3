@@ -207,11 +207,7 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
         // TODO Auto-generated method stub
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.ByteBufferRasterData#getSubset(int, int, int, int)
-     */
+    @Override
     public PixelInterleavedRasterData getSubset( int x0, int y0, int width, int height ) {
         int w = Math.min( width, subWidth - x0 );
         int h = Math.min( height, subHeight - y0 );
@@ -225,6 +221,7 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
         return result;
     }
 
+    @Override
     public void setSubset( int x0, int y0, RasterData srcRaster ) {
         // System.out.format( "%d %d, %d %d\n", x0, y0, srcRaster.getWidth(), srcRaster.getHeight() );
         // checkBounds(x0, y0, srcRaster.getWidth(), srcRaster.getHeight());

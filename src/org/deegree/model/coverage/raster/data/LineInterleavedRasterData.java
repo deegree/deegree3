@@ -118,6 +118,7 @@ public class LineInterleavedRasterData extends ByteBufferRasterData {
         return InterleaveType.LINE;
     }
 
+    @Override
     public LineInterleavedRasterData getSubset( int x0, int y0, int width, int height ) {
         int w = Math.min( width, subWidth - x0 );
         int h = Math.min( height, subHeight - y0 );

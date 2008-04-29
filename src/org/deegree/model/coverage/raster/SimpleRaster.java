@@ -138,11 +138,7 @@ public class SimpleRaster extends AbstractRaster {
         return new SimpleRaster( newRaster, env, rEnv );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.raster.AbstractRaster#copy()
-     */
+    @Override
     public SimpleRaster copy() {
         SimpleRaster result = this.createCompatibleSimpleRaster();
         result.setSubset( getEnvelope(), this );
@@ -273,66 +269,28 @@ public class SimpleRaster extends AbstractRaster {
                                  getRasterEnvelope() );
     }
 
-    /**
-     * Sets the raster with data from source. Source must overlap the raster (within the envelope).
-     * 
-     * @param source
-     *            data to copy
-     * @param env
-     *            Envelope with the destination area
-     */
+    @Override
     public void setSubset( Envelope env, AbstractRaster source ) {
         RasterRect rect = getRasterEnvelope().convertEnvelopeToRasterCRS( env );
         SimpleRaster src = source.getSubset( env ).getAsSimpleRaster();
         getRasterData().setSubset( rect.x, rect.y, src.getRasterData() );
     }
 
-    /**
-     * Sets the raster with data from source.
-     * 
-     * @param x
-     *            left boundary
-     * @param y
-     *            upper boundary
-     * @param source
-     *            data to copy
-     */
+    @Override
     public void setSubset( double x, double y, AbstractRaster source ) {
         // calculate position in RasterData
         int offset[] = getRasterEnvelope().convertToRasterCRS( x, y );
         getRasterData().setSubset( offset[0], offset[1], source.getAsSimpleRaster().getRasterData() );
     }
 
-    /**
-     * Sets a single band with data from source.
-     * 
-     * Copies the first band of source into dstBand.
-     * 
-     * @param x
-     *            left boundary
-     * @param y
-     *            upper boundary
-     * @param dstBand
-     *            selected destination band
-     * @param source
-     *            data to copy
-     */
+    @Override
     public void setSubset( double x, double y, int dstBand, AbstractRaster source ) {
         // calculate position in RasterData
         int offset[] = getRasterEnvelope().convertToRasterCRS( x, y );
         getRasterData().setSubset( offset[0], offset[1], dstBand, source.getAsSimpleRaster().getRasterData() );
     }
 
-    /**
-     * Sets a single band with data from source.
-     * 
-     * @param env
-     *            destination area
-     * @param dstBand
-     *            selected destination band
-     * @param source
-     *            data to copy
-     */
+    @Override
     public void setSubset( Envelope env, int dstBand, AbstractRaster source ) {
         // calculate position in RasterData
         RasterRect rect = getRasterEnvelope().convertEnvelopeToRasterCRS( env );

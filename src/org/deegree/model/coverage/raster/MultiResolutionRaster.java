@@ -107,7 +107,7 @@ public class MultiResolutionRaster extends AbstractCoverage {
         // return envelope of highest resolution.
         // envelopes of other resolutions can be larger due to padding of tiles
         return resolutions.get( 0 ).getEnvelope();
-    };
+    }
 
     /**
      * Returns a scaled raster.

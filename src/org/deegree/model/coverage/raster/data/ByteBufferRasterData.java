@@ -42,19 +42,23 @@ import java.nio.ByteBuffer;
 /**
  * This abstract class implements the RasterData interface for ByteBuffer based raster.
  * 
- * <p>It is based on java.nio.ByteBuffer and implements common get- and set-operations on the data. The different
+ * <p>
+ * It is based on java.nio.ByteBuffer and implements common get- and set-operations on the data. The different
  * InterleaveTypes are implemented by additional subclasses.
  * 
- * <p>get- and set-operations are implemented naive and access all data sample-wise. For efficiency subclasses should
+ * <p>
+ * get- and set-operations are implemented naive and access all data sample-wise. For efficiency subclasses should
  * overwrite methods that access more than one sample and leverage the knowledge of the internal storage format
  * (interleaving).
  * 
- * <p>TODO: Only implements access to byte and float data at the moment. Copy float methods for other data types and change
+ * <p>
+ * TODO: Only implements access to byte and float data at the moment. Copy float methods for other data types and change
  * 'Float/float' to short, int, long or double. These types are supported by ByteBuffer and the according methods only
  * differ in the name of the type (eg. getFloat, getInt, getDouble,...). Opposed to the methods for bytes, which lack
  * the type in the method names (eg. only get()).
  * 
- * <p>Also this implementation is able to store a sub-view on another {@link ByteBufferRasterData}, resp. ByteBuffer. With
+ * <p>
+ * Also this implementation is able to store a sub-view on another {@link ByteBufferRasterData}, resp. ByteBuffer. With
  * this feature you are able to create subsets without copying the data. Though the current deegree SimpleRaster
  * implementation makes no use of it.
  * 
@@ -288,9 +292,8 @@ public abstract class ByteBufferRasterData implements RasterData {
     public final int getBands() {
         if ( singleBand ) {
             return 1;
-        } else {
-            return bands;
         }
+        return bands;
     }
 
     /*
@@ -467,12 +470,11 @@ public abstract class ByteBufferRasterData implements RasterData {
         int pos = calculatePos( x, y, getBand( band ) );
         if ( pos >= data.capacity() ) {
             return nodata;
-        } else {
-            byte[] result = new byte[dataType.getSize()];
-            data.position( pos );
-            data.get( result );
-            return result;
         }
+        byte[] result = new byte[dataType.getSize()];
+        data.position( pos );
+        data.get( result );
+        return result;
     }
 
     /*
@@ -698,11 +700,7 @@ public abstract class ByteBufferRasterData implements RasterData {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString() {
         StringBuilder result = new StringBuilder( 200 );
         result.append( "RasterData: type " + dataType + ", " );

@@ -78,7 +78,7 @@ public class RasterEnvelope {
         OUTER,
         /** center of the pixel */
         CENTER
-    };
+    }
 
     /**
      * Creates a new RasterEnvelope with origin and resolution
@@ -332,9 +332,8 @@ public class RasterEnvelope {
     public double getX0( Type type ) {
         if ( type == Type.CENTER ) {
             return x0 + xRes / 2;
-        } else { // (type == Type.OUTER)
-            return x0;
-        }
+        }// (type == Type.OUTER)
+        return x0;
     }
 
     /**
@@ -347,9 +346,8 @@ public class RasterEnvelope {
     public double getY0( Type type ) {
         if ( type == Type.CENTER ) {
             return y0 + yRes / 2;
-        } else { // (type == Type.OUTER)
-            return y0;
-        }
+        }// (type == Type.OUTER)
+        return y0;
     }
 
     /**

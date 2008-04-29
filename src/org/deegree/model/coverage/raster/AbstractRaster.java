@@ -124,9 +124,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
         assert ( envelope.getMin().getY() < envelope.getMax().getY() );
         assert ( getEnvelope().getMin().getX() < getEnvelope().getMax().getX() );
         assert ( getEnvelope().getMin().getY() < getEnvelope().getMax().getY() );
-        if ( getEnvelope().contains( envelope ) ) {
-            return;
-        } else {
+        if ( ! getEnvelope().contains( envelope ) ) {
             throw new IndexOutOfBoundsException();
         }
     }
@@ -230,6 +228,9 @@ public abstract class AbstractRaster extends AbstractCoverage {
     }
 
     // TODO remove
+    /**
+     * @return string representation of the envelope
+     */
     protected String envelopeString() {
         return "" + getEnvelope().getMin().getX() + " " + getEnvelope().getMin().getY() + " "
                + getEnvelope().getMax().getX() + " " + getEnvelope().getMax().getY();

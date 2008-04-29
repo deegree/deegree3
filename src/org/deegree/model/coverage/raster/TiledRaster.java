@@ -80,30 +80,18 @@ public class TiledRaster extends AbstractRaster {
         return tileContainer;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.coverage.AbstractCoverage#getEnvelope()
-     */
+    @Override
     public Envelope getEnvelope() {
         return tileContainer.getEnvelope();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.raster.AbstractRaster#getRasterEnvelope()
-     */
+    @Override
     public RasterEnvelope getRasterEnvelope() {
         return tileContainer.getRasterEnvelope();
     }
 
     // TODO: convert to TileContainer
-    // /*
-    // * (non-Javadoc)
-    // *
-    // * @see org.deegree.model.raster.AbstractRaster#copy()
-    // */
+    @Override
     public TiledRaster copy() {
         // TiledRaster result = new TiledRaster();
         // for ( AbstractRaster r : tiles ) {
@@ -142,14 +130,7 @@ public class TiledRaster extends AbstractRaster {
         return result;
     }
 
-    /**
-     * Sets the TiledRaster with data from source. Source must overlap the raster (within the envelope).
-     * 
-     * @param envelope
-     *            Envelope with the destination area
-     * @param source
-     *            data to paste into TiledRaster
-     */
+    @Override
     public void setSubset( Envelope envelope, AbstractRaster source ) {
         for ( AbstractRaster r : getTileContainer().getTiles( envelope ) ) {
             if ( r instanceof SimpleRaster ) {
@@ -162,16 +143,7 @@ public class TiledRaster extends AbstractRaster {
         }
     }
 
-    /**
-     * Sets the content of source to the TiledRaster at specified position.
-     * 
-     * @param x
-     *            upper-left pixel (world coordinates)
-     * @param y
-     *            upper-left pixel (world coordinates)
-     * @param source
-     *            source to paste into TiledRaster
-     */
+    @Override
     public void setSubset( double x, double y, AbstractRaster source ) {
         RasterEnvelope srcREnv = source.getRasterEnvelope();
         RasterEnvelope dstREnv = new RasterEnvelope( x, y, srcREnv.getXRes(), srcREnv.getYRes() );
