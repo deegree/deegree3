@@ -69,7 +69,7 @@ public class JTSWrapperPoint extends JTSWrapperGeometry implements Point {
      * @see org.deegree.model.geometry.primitive.Point#get(int)
      */
     public double get( int dimension ) {
-        if ( dimension > this.pos.length ) {
+        if ( dimension > this.pos.length-1 ) {
             return Double.NaN;
         }
         return this.pos[dimension];
