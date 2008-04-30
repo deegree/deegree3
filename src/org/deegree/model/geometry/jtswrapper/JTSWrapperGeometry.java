@@ -170,7 +170,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @param gmPoint
      * @return JTS Coordinate
      */
-    protected Coordinate toCoordinate( Point gmPoint ) {
+    static synchronized Coordinate toCoordinate( Point gmPoint ) {
         Coordinate coord = null;
         if ( gmPoint.getCoordinateDimension() == 2 ) {
             coord = new Coordinate( gmPoint.getX(), gmPoint.getY() );
@@ -186,7 +186,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @param points
      * @return JTS Coordinate array
      */
-    protected Coordinate[] toCoordinates( List<Point> points ) {
+    static synchronized Coordinate[] toCoordinates( List<Point> points ) {
         Coordinate[] coords = new Coordinate[points.size()];
 
         for ( int i = 0; i < coords.length; i++ ) {
