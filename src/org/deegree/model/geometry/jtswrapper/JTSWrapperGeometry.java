@@ -458,7 +458,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      */
     private MultiPoint wrap( com.vividsolutions.jts.geom.MultiPoint multi ) {
         List<Point> gmPoints = new ArrayList<Point>( multi.getNumGeometries() );
-        for ( int i = 0; i < gmPoints.size(); i++ ) {
+        for ( int i = 0; i < multi.getNumGeometries(); i++ ) {
             gmPoints.add( wrap( (com.vividsolutions.jts.geom.Point) multi.getGeometryN( i ) ) );
         }
         return geomFactory.createMultiPoint( gmPoints );
@@ -491,7 +491,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      */
     private MultiCurve wrap( MultiLineString multi ) {
         List<Curve> curves = new ArrayList<Curve>( multi.getNumGeometries() );
-        for ( int i = 0; i < curves.size(); i++ ) {
+        for ( int i = 0; i < multi.getNumGeometries(); i++ ) {
             curves.add( wrap( (com.vividsolutions.jts.geom.LineString) multi.getGeometryN( i ) ) );
         }
         return geomFactory.createMultiCurve( curves );
@@ -530,7 +530,7 @@ abstract class JTSWrapperGeometry implements Geometry {
     private MultiSurface wrap( com.vividsolutions.jts.geom.MultiPolygon multiPolygon ) {
 
         List<Surface> surfaces = new ArrayList<Surface>( multiPolygon.getNumGeometries() );
-        for ( int i = 0; i < surfaces.size(); i++ ) {
+        for ( int i = 0; i < multiPolygon.getNumGeometries(); i++ ) {
             surfaces.add( wrap( (com.vividsolutions.jts.geom.Polygon) multiPolygon.getGeometryN( i ) ) );
         }
         return geomFactory.createMultiSurface( surfaces );
