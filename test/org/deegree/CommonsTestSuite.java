@@ -65,20 +65,23 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses( {
-org.deegree.commons.utils.ArrayToolsTest.class,
-org.deegree.commons.utils.FileUtilsTest.class,
-org.deegree.commons.utils.StringToolsTest.class,
-org.deegree.model.coverage.raster.RasterEnvelopeTest.class,
-org.deegree.model.crs.components.UnitTest.class,
-org.deegree.model.crs.configuration.DeegreeCRSProviderTest.class,
-org.deegree.model.crs.coordinatesystems.CompoundCRSTest.class,
-org.deegree.model.crs.projections.azimuthal.LambertAzimuthalTest.class,
-org.deegree.model.crs.projections.azimuthal.StereographicAlternativeTest.class,
-org.deegree.model.crs.projections.azimuthal.StereographicTest.class,
-org.deegree.model.crs.projections.conic.LambertConformalConicTest.class,
-org.deegree.model.crs.projections.cylindric.TransverseMercatorTest.class,
-org.deegree.model.crs.transformations.TransformationTest.class,
-org.deegree.model.geometry.GeometryTest.class
+    org.deegree.commons.utils.ArrayToolsTest.class,
+    org.deegree.commons.utils.FileUtilsTest.class,
+    org.deegree.commons.utils.StringToolsTest.class,
+    org.deegree.commons.xml.XMLAdapterTest.class,
+    org.deegree.model.coverage.raster.RasterEnvelopeTest.class,
+    org.deegree.model.crs.components.UnitTest.class,
+    org.deegree.model.crs.configuration.DeegreeCRSProviderTest.class,
+    org.deegree.model.crs.coordinatesystems.CompoundCRSTest.class,
+    org.deegree.model.crs.projections.azimuthal.LambertAzimuthalTest.class,
+    org.deegree.model.crs.projections.azimuthal.StereographicAlternativeTest.class,
+    org.deegree.model.crs.projections.azimuthal.StereographicTest.class,
+    org.deegree.model.crs.projections.conic.LambertConformalConicTest.class,
+    org.deegree.model.crs.projections.cylindric.TransverseMercatorTest.class,
+    org.deegree.model.crs.transformations.TransformationTest.class,
+    org.deegree.model.filter.OGCFilter110XMLAdapterTest.class,
+    org.deegree.model.geometry.GeometryTest.class,
+    org.deegree.model.geometry.jtswrapper.JTSWrapperPointTest.class
 } )
 public class CommonsTestSuite {
 
