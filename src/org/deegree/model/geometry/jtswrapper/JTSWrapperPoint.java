@@ -41,6 +41,8 @@ import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
 
+import com.vividsolutions.jts.geom.Coordinate;
+
 /**
  * 
  * 
@@ -51,7 +53,7 @@ import org.deegree.model.geometry.primitive.Point;
  * @version. $Revision$, $Date$
  */
 public class JTSWrapperPoint extends JTSWrapperGeometry implements Point {
-    
+
     private double[] pos;
 
     /**
@@ -63,40 +65,55 @@ public class JTSWrapperPoint extends JTSWrapperGeometry implements Point {
     public JTSWrapperPoint( double precision, CoordinateSystem crs, double[] pos ) {
         super( precision, crs, pos.length );
         this.pos = pos;
+        if ( coordinateDimension < 3 ) {
+            geometry = jtsFactory.createPoint( new Coordinate( pos[0], pos[1] ) );
+        } else {
+            geometry = jtsFactory.createPoint( new Coordinate( pos[0], pos[1], pos[2] ) );
+        }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.Point#get(int)
      */
     public double get( int dimension ) {
-        if ( dimension > this.pos.length-1 ) {
+        if ( dimension > this.pos.length - 1 ) {
             return Double.NaN;
         }
         return this.pos[dimension];
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.Point#getAsArray()
      */
     public double[] getAsArray() {
         return this.pos;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.Point#getX()
      */
     public double getX() {
         return this.pos[0];
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.Point#getY()
      */
     public double getY() {
         return this.pos[1];
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.Point#getZ()
      */
     public double getZ() {
@@ -105,10 +122,13 @@ public class JTSWrapperPoint extends JTSWrapperGeometry implements Point {
         }
         return this.pos[2];
     }
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.Point#getEnvelope()
      */
+    @Override
     public Envelope getEnvelope() {
         throw new UnsupportedOperationException( "envelope for a point is not defined" );
     }
