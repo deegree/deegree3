@@ -148,22 +148,6 @@ public class JTSWrapperPointTest {
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#toCoordinate(org.deegree.model.geometry.primitive.Point)}.
-     */
-    @Test
-    public void testToCoordinate() {
-        fail( "Not yet implemented" );
-    }
-
-    /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#toCoordinates(java.util.List)}.
-     */
-    @Test
-    public void testToCoordinates() {
-        fail( "Not yet implemented" );
-    }
-
-    /**
      * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#wrap(com.vividsolutions.jts.geom.Geometry)}.
      */
     @Test
@@ -304,8 +288,7 @@ public class JTSWrapperPointTest {
      */
     @Test
     public void testGetJTSGeometry() {
-        Geometry geom = p1.getJTSGeometry();
-        geom.isSimple();
+        assertTrue( p1.getJTSGeometry().isSimple() );
     }
 
 }
