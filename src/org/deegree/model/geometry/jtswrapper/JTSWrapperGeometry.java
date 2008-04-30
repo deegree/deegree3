@@ -170,7 +170,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @param gmPoint
      * @return JTS Coordinate
      */
-    static synchronized Coordinate toCoordinate( Point gmPoint ) {
+    static Coordinate toCoordinate( Point gmPoint ) {
         Coordinate coord = null;
         if ( gmPoint.getCoordinateDimension() == 2 ) {
             coord = new Coordinate( gmPoint.getX(), gmPoint.getY() );
@@ -186,7 +186,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @param points
      * @return JTS Coordinate array
      */
-    static synchronized Coordinate[] toCoordinates( List<Point> points ) {
+    static Coordinate[] toCoordinates( List<Point> points ) {
         Coordinate[] coords = new Coordinate[points.size()];
 
         for ( int i = 0; i < coords.length; i++ ) {
@@ -545,11 +545,11 @@ abstract class JTSWrapperGeometry implements Geometry {
      */
     private MultiGeometry<Geometry> wrap( GeometryCollection collection ) {
 
-        Geometry[] geoms = new Geometry[collection.getNumGeometries()];
+        List<Geometry> geoms = new ArrayList<Geometry>(collection.getNumGeometries());
         for ( int i = 0; i < collection.getNumGeometries(); i++ ) {
-            geoms[i] = wrap( collection.getGeometryN( i ) );
+            geoms.add( wrap( collection.getGeometryN( i ) ) );
         }
-        return null;
+        return geomFactory.createMultiGeometry( geoms );
     }
 
     public boolean contains( Geometry geometry ) {
