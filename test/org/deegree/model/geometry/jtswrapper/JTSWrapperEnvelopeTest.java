@@ -44,6 +44,9 @@ package org.deegree.model.geometry.jtswrapper;
 
 import static org.junit.Assert.*;
 
+import org.deegree.model.crs.CRSFactory;
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
 import org.junit.Before;
@@ -60,9 +63,12 @@ import org.junit.Test;
  */
 public class JTSWrapperEnvelopeTest {
 
-    JTSWrapperEnvelope env1, env2;
-    Point min1, max1, min2, max2;
-    
+    JTSWrapperEnvelope env1, env2, env3;
+
+    Point min1, max1, min2, max2, min3, max3, between;
+
+    static CoordinateSystem crs = CRSFactory.createDummyCRS( "dummy" );
+
     static double delta = 0.0001;
 
     /**
@@ -72,23 +78,30 @@ public class JTSWrapperEnvelopeTest {
     public void setUp()
                             throws Exception {
 
-        min1 = new JTSWrapperPoint( delta, null, new double[] { 2.0, 3.0 } );
-        max1 = new JTSWrapperPoint( delta, null, new double[] { 5.0, 7.0 } );
+        min1 = new JTSWrapperPoint( delta, crs, new double[] { 2.0, 3.0 } );
+        max1 = new JTSWrapperPoint( delta, crs, new double[] { 5.0, 7.0 } );
 
-        min2 = new JTSWrapperPoint( delta, null, new double[] { -1.0, 5.0 } );
-        max2 = new JTSWrapperPoint( delta, null, new double[] { 1.0, 11.0 } );
-        
-        env1 = new JTSWrapperEnvelope( 0.001, null, 2, min1, max1 );
-        env2 = new JTSWrapperEnvelope( 0.001, null, 2, min2, max2 );
+        min2 = new JTSWrapperPoint( delta, crs, new double[] { -1.0, 5.0 } );
+        max2 = new JTSWrapperPoint( delta, crs, new double[] { 1.0, 11.0 } );
+
+        min3 = new JTSWrapperPoint( delta, crs, new double[] { 2.5, 3.5 } );
+        max3 = new JTSWrapperPoint( delta, crs, new double[] { 4.5, 6.5 } );
+
+        env1 = new JTSWrapperEnvelope( delta, crs, 2, min1, max1 );
+        env2 = new JTSWrapperEnvelope( delta, crs, 2, min2, max2 );
+        env3 = new JTSWrapperEnvelope( delta, crs, 2, min3, max3 );
+
+        // between both envelopes
+        between = new JTSWrapperPoint( delta, crs, new double[] { 1.5, 6.0 } );
     }
 
     /**
      * Test method for
      * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperEnvelope#JTSWrapperEnvelope(double, org.deegree.model.crs.coordinatesystems.CoordinateSystem, int, org.deegree.model.geometry.primitive.Point, org.deegree.model.geometry.primitive.Point)}.
      */
-    @Test
+    // @Test
     public void testJTSWrapperEnvelope() {
-        fail( "Not yet implemented" );
+        // constructor is used in setUp, that should be enough testing for now
     }
 
     /**
@@ -104,7 +117,7 @@ public class JTSWrapperEnvelopeTest {
      */
     @Test
     public void testGetMin() {
-        // point intersects point 
+        // point intersects point
         // Geometry p1 = new WKTReader().read("POINT (2.0 3.0)");
         // Geometry p2 = new WKTReader().read("POINT (2.0 3.0)");
         // assertTrue(p1.intersects( p2 ));
@@ -140,80 +153,14 @@ public class JTSWrapperEnvelopeTest {
 
     /**
      * Test method for
-     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#JTSWrapperGeometry(double, org.deegree.model.crs.coordinatesystems.CoordinateSystem, int)}.
-     */
-    @Test
-    public void testJTSWrapperGeometry() {
-        fail( "Not yet implemented" );
-    }
-
-    /**
-     * Test method for
-     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#export(org.deegree.model.geometry.Geometry)}.
-     */
-    @Test
-    public void testExport() {
-        fail( "Not yet implemented" );
-    }
-
-    /**
-     * Test method for
-     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#wrap(com.vividsolutions.jts.geom.Geometry)}.
-     */
-    @Test
-    public void testWrap() {
-        fail( "Not yet implemented" );
-    }
-
-    /**
-     * Test method for
-     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#toPoint(com.vividsolutions.jts.geom.Coordinate)}.
-     */
-    @Test
-    public void testToPoint() {
-        fail( "Not yet implemented" );
-    }
-
-    /**
-     * Test method for
-     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#toPoints(com.vividsolutions.jts.geom.Coordinate[])}.
-     */
-    @Test
-    public void testToPoints() {
-        fail( "Not yet implemented" );
-    }
-
-    /**
-     * Test method for
-     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#contains(org.deegree.model.geometry.Geometry)}.
-     */
-    @Test
-    public void testContains() {
-        fail( "Not yet implemented" );
-    }
-
-    /**
-     * Test method for
-     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#difference(org.deegree.model.geometry.Geometry)}.
-     */
-    @Test
-    public void testDifference() {
-        fail( "Not yet implemented" );
-    }
-
-    /**
-     * Test method for
      * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#distance(org.deegree.model.geometry.Geometry)}.
      */
     @Test
     public void testDistance() {
-        double dist, distExpected;
-        dist = env1.distance( env2 );
-        distExpected = Math.sqrt( 1*1 + 2*2 );
-        assertEquals( distExpected, dist, 0.0001 );
-        dist = env1.distance( min2 );
-        distExpected = Math.sqrt( 2*2 + 3*3 );
-        assertEquals( distExpected, dist, 0.0001 );
+        assertEquals( 1.0, env1.distance( env2 ), 0.0001 );
+        assertEquals( 3.0, env1.distance( min2 ), 0.0001 );
+        assertEquals( 0.0, env1.distance( min1 ), 0.0001 );
+        assertEquals( 0.0, env1.distance( env1 ), 0.0001 );
     }
 
     /**
@@ -231,10 +178,10 @@ public class JTSWrapperEnvelopeTest {
     public void testGetBuffer() {
         assertTrue( env1.getBuffer( 0.01 ).contains( env1 ) );
         assertFalse( env1.getBuffer( 0.01 ).contains( env2 ) );
-        
+
         assertTrue( env2.getBuffer( 0.01 ).contains( env2 ) );
         assertFalse( env2.getBuffer( 0.01 ).contains( env1 ) );
-        
+
         assertTrue( env1.getBuffer( 10.0 ).contains( env2 ) );
         assertTrue( env2.getBuffer( 10.0 ).contains( env1 ) );
     }
@@ -245,8 +192,8 @@ public class JTSWrapperEnvelopeTest {
     @Test
     public void testGetConvexHull() {
         assertTrue( env1.getConvexHull().contains( env1 ) );
-        assertTrue( env2.getConvexHull().contains( env2 ) );     
-        JTSWrapperPoint p = new JTSWrapperPoint(delta, null, new double[] { 6.0, 10.0 } );
+        assertTrue( env2.getConvexHull().contains( env2 ) );
+        JTSWrapperPoint p = new JTSWrapperPoint( delta, null, new double[] { 6.0, 10.0 } );
         assertFalse( env1.union( env2 ).getConvexHull().contains( p ) );
     }
 
@@ -263,7 +210,7 @@ public class JTSWrapperEnvelopeTest {
      */
     @Test
     public void testGetCoordinateSystem() {
-        fail( "Not yet implemented" );
+        assertEquals( crs, env1.getCoordinateSystem() );
     }
 
     /**
@@ -271,16 +218,33 @@ public class JTSWrapperEnvelopeTest {
      */
     @Test
     public void testGetEnvelope() {
-        fail( "Not yet implemented" );
+        assertTrue( env1.equals( env1.getEnvelope() ) );
+        assertFalse( env1.equals( env2.getEnvelope() ) );
     }
 
+    /**
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#difference(org.deegree.model.geometry.Geometry)}.
+     */
+    @Test
+    public void testDifference() {
+        assertTrue( env1.difference( env2 ).equals( env1 ) );
+        assertFalse( env1.difference( env3 ).equals( env1 ) );
+        assertNull( env1.difference( env1 ) );
+        
+    }
+    
     /**
      * Test method for
      * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#intersection(org.deegree.model.geometry.Geometry)}.
      */
     @Test
     public void testIntersection() {
-        fail( "Not yet implemented" );
+        assertNull( env1.intersection( env2 ) );
+        assertNotNull( env1.intersection( env3 ) );
+        assertNotNull( env1.intersection( min1 ) );
+        assertNull( env1.intersection( min2 ) );
+        assertNotNull( env1.intersection( min3 ) );
     }
 
     /**
@@ -289,16 +253,33 @@ public class JTSWrapperEnvelopeTest {
      */
     @Test
     public void testIntersects() {
-        fail( "Not yet implemented" );
+        assertTrue( env1.intersects( env3 ) );
+        assertTrue( env3.intersects( env1 ) );
+        assertFalse( env1.intersects( env2 ) );
     }
 
+    /**
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#contains(org.deegree.model.geometry.Geometry)}.
+     */
+    @Test
+    public void testContains() {
+        assertTrue( env1.contains( env3 ) );
+        assertFalse( env3.contains( env1 ) );
+        assertFalse( env2.contains( env1 ) );
+        assertFalse( env1.contains( env2 ) );
+    }
+    
     /**
      * Test method for
      * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#isWithin(org.deegree.model.geometry.Geometry)}.
      */
     @Test
     public void testIsWithin() {
-        fail( "Not yet implemented" );
+        assertTrue( env3.isWithin( env1 ) );
+        assertFalse( env1.isWithin( env3 ) );
+        assertFalse( env1.isWithin( env2 ) );
+        assertFalse( env2.isWithin( env1 ) );
     }
 
     /**
@@ -307,7 +288,8 @@ public class JTSWrapperEnvelopeTest {
      */
     @Test
     public void testIsWithinDistance() {
-        fail( "Not yet implemented" );
+        assertFalse( env1.isWithinDistance( env2, 0.999 ) );
+        assertTrue( env1.isWithinDistance( env2, 1.001 ) );
     }
 
     /**
@@ -316,7 +298,8 @@ public class JTSWrapperEnvelopeTest {
      */
     @Test
     public void testIsBeyond() {
-        fail( "Not yet implemented" );
+        assertTrue( env1.isBeyond( env2, 0.999 ) );
+        assertFalse( env1.isBeyond( env2, 1.001 ) );
     }
 
     /**
@@ -325,7 +308,25 @@ public class JTSWrapperEnvelopeTest {
      */
     @Test
     public void testUnion() {
-        fail( "Not yet implemented" );
+        Geometry union = env1.union( env2 );
+        assertTrue( union.contains( env1 ) );
+        assertTrue( union.contains( env2 ) );
+        assertFalse( union.contains( between ) );
+
+        union = env1.union( env3 );
+        assertTrue( union.equals( env1 ) );
+    }
+
+    /**
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#equals(org.deegree.model.geometry.Geometry)}.
+     */
+    @Test
+    public void testEquals() {
+        JTSWrapperEnvelope env1_ = new JTSWrapperEnvelope( delta, crs, 2, max1, min1 );
+        assertTrue( env1.equals( env1 ) );
+        assertTrue( env1.equals( env1_ ) );
+        assertFalse( env2.equals( env1 ) );
     }
 
     /**
@@ -334,6 +335,42 @@ public class JTSWrapperEnvelopeTest {
     @Test
     public void testGetJTSGeometry() {
         assertTrue( env1.getJTSGeometry().isSimple() );
+    }
+    
+    /**
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#export(org.deegree.model.geometry.Geometry)}.
+     */
+    // @Test
+    public void testExport() {
+        // this is more or less a static method, so no tests here
+    }
+
+    /**
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#wrap(com.vividsolutions.jts.geom.Geometry)}.
+     */
+    // @Test
+    public void testWrap() {
+        // this is more or less a static method, so no tests here
+    }
+
+    /**
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#toPoint(com.vividsolutions.jts.geom.Coordinate)}.
+     */
+    // @Test
+    public void testToPoint() {
+        // this is more or less a static method, so no tests here
+    }
+
+    /**
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#toPoints(com.vividsolutions.jts.geom.Coordinate[])}.
+     */
+    // @Test
+    public void testToPoints() {
+        // this is more or less a static method, so no tests here
     }
 
 }
