@@ -616,6 +616,13 @@ abstract class JTSWrapperGeometry implements Geometry {
         }
         return this.geometry.intersects( export( geometry ) );
     }
+    
+    public boolean equals( Geometry geometry ) {
+        if ( geometry instanceof JTSWrapperGeometry ) {
+            return this.geometry.equals( ( (JTSWrapperGeometry) geometry ).getJTSGeometry() );
+        }
+        return this.geometry.equals( export( geometry ) );
+    }
 
     /**
      * tests whether the value of a geometry is topological located within this geometry. This

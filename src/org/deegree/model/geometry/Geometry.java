@@ -67,20 +67,18 @@ public interface Geometry {
     public CoordinateSystem getCoordinateSystem();
 
     /**
-     * The operation "coordinateDimension" shall return the dimension of the coordinates that define
-     * this Geometry, which must be the same as the coordinate dimension of the coordinate reference
-     * system for this Geometry.
+     * The operation "coordinateDimension" shall return the dimension of the coordinates that define this Geometry,
+     * which must be the same as the coordinate dimension of the coordinate reference system for this Geometry.
      * 
      * @return coordinate dimension (usually 2 or 3)
      */
     public int getCoordinateDimension();
 
     /**
-     * The operation "buffer" shall return a Geometry containing all points whose distance from this
-     * Geometry is less than or equal to the "distance" passed as a parameter. The Geometry returned
-     * is in the same reference system as this original Geometry. The dimension of the returned
-     * Geometry is normally the same as the coordinate dimension - a collection of Surfaces in 2D
-     * space and a collection of Solids in 3D space, but this may be application defined.
+     * The operation "buffer" shall return a Geometry containing all points whose distance from this Geometry is less
+     * than or equal to the "distance" passed as a parameter. The Geometry returned is in the same reference system as
+     * this original Geometry. The dimension of the returned Geometry is normally the same as the coordinate dimension -
+     * a collection of Surfaces in 2D space and a collection of Solids in 3D space, but this may be application defined.
      * 
      * @param distance
      * @return buffer geometry
@@ -88,8 +86,7 @@ public interface Geometry {
     public Geometry getBuffer( double distance );
 
     /**
-     * The Boolean valued operation "contains" shall return TRUE if this Geometry contains another
-     * Geometry.
+     * The Boolean valued operation "contains" shall return TRUE if this Geometry contains another Geometry.
      * 
      * @param geometry
      * @return true if this Geometry contains the other
@@ -97,10 +94,9 @@ public interface Geometry {
     public boolean contains( Geometry geometry );
 
     /**
-     * The Boolean valued operation "intersects" shall return TRUE if this Geometry intersects
-     * another Geometry. Within a Complex, the Primitives do not intersect one another. In general,
-     * topologically structured data uses shared geometric objects to capture intersection
-     * information.
+     * The Boolean valued operation "intersects" shall return TRUE if this Geometry intersects another Geometry. Within
+     * a Complex, the Primitives do not intersect one another. In general, topologically structured data uses shared
+     * geometric objects to capture intersection information.
      * 
      * @param geometry
      * @return true if both Geometries intersects
@@ -108,17 +104,16 @@ public interface Geometry {
     public boolean intersects( Geometry geometry );
 
     /**
-     * The operation "distance" shall return the distance between this Geometry and another
-     * Geometry. This distance is defined to be the greatest lower bound of the set of distances
-     * between all pairs of points that include one each from each of the two Geometries. A
-     * "distance" value shall be a positive number associated to distance units such as meters or
-     * standard foot. If necessary, the second geometric object shall be transformed into the same
+     * The operation "distance" shall return the distance between this Geometry and another Geometry. This distance is
+     * defined to be the greatest lower bound of the set of distances between all pairs of points that include one each
+     * from each of the two Geometries. A "distance" value shall be a positive number associated to distance units such
+     * as meters or standard foot. If necessary, the second geometric object shall be transformed into the same
      * coordinate reference system as the first before the distance is calculated.
      * <p>
      * </p>
-     * If the geometric objects overlap, or touch, then their distance apart shall be zero. Some
-     * current implementations use a "negative" distance for such cases, but the approach is neither
-     * consistent between implementations, nor theoretically viable.
+     * If the geometric objects overlap, or touch, then their distance apart shall be zero. Some current implementations
+     * use a "negative" distance for such cases, but the approach is neither consistent between implementations, nor
+     * theoretically viable.
      * 
      * @param geometry
      * @return distance between two geometries
@@ -126,8 +121,7 @@ public interface Geometry {
     public double distance( Geometry geometry );
 
     /**
-     * The "union" operation shall return the set theoretic union of this Geometry and the passed
-     * Geometry.
+     * The "union" operation shall return the set theoretic union of this Geometry and the passed Geometry.
      * 
      * @param geometry
      * @return united Geometry
@@ -135,8 +129,8 @@ public interface Geometry {
     public Geometry union( Geometry geometry );
 
     /**
-     * The "intersection" operation shall return the set theoretic intersection of this Geometry and
-     * the passed Geometry.
+     * The "intersection" operation shall return the set theoretic intersection of this Geometry and the passed
+     * Geometry.
      * 
      * @param geometry
      * @return intersection Geometry or <code>null</code>
@@ -144,13 +138,23 @@ public interface Geometry {
     public Geometry intersection( Geometry geometry );
 
     /**
-     * The "difference" operation shall return the set theoretic difference of this Geometry and the
-     * passed Geometry.
+     * The "difference" operation shall return the set theoretic difference of this Geometry and the passed Geometry.
      * 
      * @param geometry
      * @return difference Geometry or <code>null</code>
      */
     public Geometry difference( Geometry geometry );
+
+    /**
+     * Returns true if this geometry is equal to the specified geometry. The behaviour of this method is not 100%
+     * specified and may differ with other implementations. E.g. a MULTIPOINT(A, B) could be equal to MULTIPOINT(B, A)
+     * or not, depending on the implementation. If the internal order is the same however, this method returns the
+     * expected result.
+     * 
+     * @param geometry
+     * @return true if the geometries are equal
+     */
+    public boolean equals( Geometry geometry );
 
     /**
      * tests whether the value of a geometric is within a specified distance of this geometry.
@@ -160,7 +164,7 @@ public interface Geometry {
      * @return true if passed geometry is within a specified distance of this geometry.
      */
     public boolean isWithinDistance( Geometry geometry, double distance );
-    
+
     /**
      * tests whether the value of a geometric is beyond a specified distance of this geometry.
      * 
@@ -171,8 +175,8 @@ public interface Geometry {
     public boolean isBeyond( Geometry geometry, double distance );
 
     /**
-     * tests whether the value of a geometric is topological located within this geometry. This
-     * method is the opposite of {@link #contains(Geometry)} method
+     * tests whether the value of a geometric is topological located within this geometry. This method is the opposite
+     * of {@link #contains(Geometry)} method
      * 
      * @param geometry
      * @return true if passed geometry is located completly within this geometry
