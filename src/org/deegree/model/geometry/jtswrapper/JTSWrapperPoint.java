@@ -37,6 +37,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.jtswrapper;
 
+import org.deegree.commons.utils.ArrayTools;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
@@ -73,7 +74,14 @@ public class JTSWrapperPoint extends JTSWrapperGeometry implements Point {
         } else {
             throw new IllegalArgumentException( "Points with " + coordinateDimension + " dimensions are not supported" );
         }
+        
         jtsFactory.getPrecisionModel().makePrecise( coord );
+        pos[0] = coord.x;
+        pos[1] = coord.y;
+        if ( pos.length == 3 ) {
+            pos[0] = coord.x;
+        }
+        
         geometry = jtsFactory.createPoint( coord );
     }
 
@@ -136,6 +144,11 @@ public class JTSWrapperPoint extends JTSWrapperGeometry implements Point {
     @Override
     public Envelope getEnvelope() {
         throw new UnsupportedOperationException( "envelope for a point is not defined" );
+    }
+    
+    @Override
+    public String toString() {
+        return ArrayTools.join( " ", getAsArray() );
     }
 
 }

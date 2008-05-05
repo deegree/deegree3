@@ -65,6 +65,7 @@ public class JTSWrapperPointTest {
     JTSWrapperPoint p1, p2, p3;
 
     static double delta = 0.001;
+    static double testDelta = 0.00001;
 
     static CoordinateSystem crs = CRSFactory.createDummyCRS( "dummy" );
 
@@ -76,7 +77,7 @@ public class JTSWrapperPointTest {
                             throws Exception {
         p1 = new JTSWrapperPoint( delta, crs, new double[] { 2.0, 3.0 } );
         p2 = new JTSWrapperPoint( delta, crs, new double[] { -1.0, 5.0 } );
-        p3 = new JTSWrapperPoint( delta, crs, new double[] { 2.0, 3.0 } );
+        p3 = new JTSWrapperPoint( delta, crs, new double[] { 2.00001, 3.00001 } );
     }
 
     /**
@@ -101,8 +102,8 @@ public class JTSWrapperPointTest {
      */
     @Test
     public void testGet() {
-        assertEquals( 2.0, p1.get( 0 ), 0.00001 );
-        assertEquals( 3.0, p1.get( 1 ), 0.00001 );
+        assertEquals( 2.0, p1.get( 0 ), testDelta );
+        assertEquals( 3.0, p1.get( 1 ), testDelta );
         assertEquals( Double.NaN, p1.get( 2 ) );
     }
 
@@ -113,8 +114,8 @@ public class JTSWrapperPointTest {
     public void testGetAsArray() {
         double[] arr = p1.getAsArray();
         assertEquals( 2, arr.length );
-        assertEquals( 2.0, arr[0], 0.00001 );
-        assertEquals( 3.0, arr[1], 0.00001 );
+        assertEquals( 2.0, arr[0], testDelta );
+        assertEquals( 3.0, arr[1], testDelta );
     }
 
     /**
@@ -122,7 +123,8 @@ public class JTSWrapperPointTest {
      */
     @Test
     public void testGetX() {
-        assertEquals( 2.0, p1.getX(), 0.00001 );
+        assertEquals( 2.0, p1.getX(), testDelta );
+        assertEquals( p1.getX(), p3.getX(), testDelta );
     }
 
     /**
@@ -130,7 +132,8 @@ public class JTSWrapperPointTest {
      */
     @Test
     public void testGetY() {
-        assertEquals( 3.0, p1.getY(), 0.00001 );
+        assertEquals( 3.0, p1.getY(), testDelta );
+        assertEquals( p1.getY(), p3.getY(), testDelta );
     }
 
     /**
@@ -205,10 +208,10 @@ public class JTSWrapperPointTest {
      */
     @Test
     public void testDistance() {
-        assertEquals( 0.0, p1.distance( p3 ), delta );
-        assertEquals( 0.0, p1.distance( p3 ), delta );
+        assertEquals( 0.0, p1.distance( p3 ), testDelta );
+        assertEquals( 0.0, p1.distance( p3 ), testDelta );
         double dist = Math.sqrt( 2 * 2 + 3 * 3 );
-        assertEquals( dist, p1.distance( p2 ), delta );
+        assertEquals( dist, p1.distance( p2 ), testDelta );
     }
 
     /**
@@ -216,7 +219,7 @@ public class JTSWrapperPointTest {
      */
     @Test
     public void testGetPrecision() {
-        assertEquals( delta, p1.getPrecision() );
+        assertEquals( delta, p1.getPrecision(), testDelta );
     }
 
     /**
@@ -330,8 +333,8 @@ public class JTSWrapperPointTest {
     public void testUnion() {
         Geometry union = p1.union( p2 );
         Envelope env = union.getEnvelope();
-        assertEquals( 3.0, env.getWidth(), delta );
-        assertEquals( 2.0, env.getHeight(), delta );
+        assertEquals( 3.0, env.getWidth(), testDelta );
+        assertEquals( 2.0, env.getHeight(), testDelta );
     }
 
     /**
