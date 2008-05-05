@@ -96,9 +96,9 @@ import org.deegree.model.i18n.Messages;
  * 
  * @version $Revision:$, $Date:$
  */
-public class OGCFilter110XMLAdapter extends XMLAdapter {
+public class Filter110XMLAdapter extends XMLAdapter {
 
-    private static final Log LOG = LogFactory.getLog( OGCFilter110XMLAdapter.class );
+    private static final Log LOG = LogFactory.getLog( Filter110XMLAdapter.class );
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
 
@@ -107,8 +107,6 @@ public class OGCFilter110XMLAdapter extends XMLAdapter {
     private static final QName FEATURE_ID_ELEMENT = new QName( OGC_NS, "FeatureId" );
 
     private static final QName GML_OBJECT_ID_ELEMENT = new QName( OGC_NS, "GmlObjectId" );
-
-    private static final QName MATCH_CASE_ATTR = new QName( "matchCase" );
 
     private static final Map<Expression.Type, QName> expressionTypeToElementName = new HashMap<Expression.Type, QName>();
 

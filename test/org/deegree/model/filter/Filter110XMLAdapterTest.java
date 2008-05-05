@@ -64,7 +64,7 @@ import org.junit.Test;
  *
  * @version $Revision:$, $Date:$
  */
-public class OGCFilter110XMLAdapterTest {
+public class Filter110XMLAdapterTest {
 
     private URL filterURL;
 
@@ -74,7 +74,7 @@ public class OGCFilter110XMLAdapterTest {
     @Before
     public void setUp()
                             throws Exception {
-        filterURL = OGCFilter110XMLAdapterTest.class.getResource( "testfilter_110.xml" );
+        filterURL = Filter110XMLAdapterTest.class.getResource( "testfilter_110.xml" );
     }
 
     /**
@@ -87,7 +87,7 @@ public class OGCFilter110XMLAdapterTest {
 
     @Test    
     public void parseFilterDocument () throws IOException, XMLStreamException, FactoryConfigurationError {
-        OGCFilter110XMLAdapter adapter = new OGCFilter110XMLAdapter ();
+        Filter110XMLAdapter adapter = new Filter110XMLAdapter ();
         adapter.load( filterURL );
         Filter filter = adapter.parse();
         System.out.println (filter);
@@ -96,7 +96,7 @@ public class OGCFilter110XMLAdapterTest {
     @Test    
     public void parseAndExportFilterDocument () throws IOException, XMLStreamException, FactoryConfigurationError {
 
-        OGCFilter110XMLAdapter adapter = new OGCFilter110XMLAdapter ();
+        Filter110XMLAdapter adapter = new Filter110XMLAdapter ();
         adapter.load( filterURL );
         Filter filter = adapter.parse();
 
@@ -104,7 +104,7 @@ public class OGCFilter110XMLAdapterTest {
         factory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);        
         XMLStreamWriter xmlWriter = factory.createXMLStreamWriter(System.out);
 
-        OGCFilter110XMLAdapter.export( filter, xmlWriter );
+        Filter110XMLAdapter.export( filter, xmlWriter );
         xmlWriter.flush();
     }    
 }

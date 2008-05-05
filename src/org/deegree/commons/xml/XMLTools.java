@@ -75,7 +75,9 @@ import org.w3c.dom.Text;
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * @deprecated
+ * 
+ * @see XMLAdapter
+ * @deprecated replaced by {@link XMLAdapter}
  */
 public final class XMLTools {
 
@@ -178,8 +180,9 @@ public final class XMLTools {
             }
 
         } catch ( JaxenException e ) {
-            throw new XMLProcessingException( "Error evaluating XPath-expression '" + xPathQuery + "' from context node '"
-                                           + contextNode.getNodeName() + "': " + e.getMessage(), e );
+            throw new XMLProcessingException( "Error evaluating XPath-expression '" + xPathQuery
+                                              + "' from context node '" + contextNode.getNodeName() + "': "
+                                              + e.getMessage(), e );
         }
         return node;
     }
@@ -242,8 +245,9 @@ public final class XMLTools {
                 value = false;
             } else {
                 throw new XMLProcessingException( "XPath-expression '" + xPathQuery + " ' from context node '"
-                                               + contextNode.getNodeName() + "' has an invalid value ('" + stringValue
-                                               + "'). Valid values are: 'true', 'yes', '1' " + "'false', 'no' and '0'." );
+                                                  + contextNode.getNodeName() + "' has an invalid value ('"
+                                                  + stringValue + "'). Valid values are: 'true', 'yes', '1' "
+                                                  + "'false', 'no' and '0'." );
             }
         }
         return value;
@@ -267,8 +271,8 @@ public final class XMLTools {
                 value = Integer.parseInt( stringValue );
             } catch ( NumberFormatException e ) {
                 throw new XMLProcessingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
-                                               + "' from context node '" + contextNode.getNodeName()
-                                               + "' does not denote a valid integer value." );
+                                                  + "' from context node '" + contextNode.getNodeName()
+                                                  + "' does not denote a valid integer value." );
             }
         }
         return value;
@@ -293,8 +297,8 @@ public final class XMLTools {
                 value = Double.parseDouble( stringValue );
             } catch ( NumberFormatException e ) {
                 throw new XMLProcessingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
-                                               + "' from context node '" + contextNode.getNodeName()
-                                               + "' does not denote a valid double value." );
+                                                  + "' from context node '" + contextNode.getNodeName()
+                                                  + "' does not denote a valid double value." );
             }
         }
         return value;
@@ -416,8 +420,9 @@ public final class XMLTools {
                 }
             }
         } catch ( JaxenException e ) {
-            throw new XMLProcessingException( "Error evaluating XPath-expression '" + xPathQuery + "' from context node '"
-                                           + contextNode.getNodeName() + "': " + e.getMessage(), e );
+            throw new XMLProcessingException( "Error evaluating XPath-expression '" + xPathQuery
+                                              + "' from context node '" + contextNode.getNodeName() + "': "
+                                              + e.getMessage(), e );
         }
         return nl;
     }
@@ -504,7 +509,7 @@ public final class XMLTools {
         Node node = getNode( contextNode, xPathQuery, nsContext );
         if ( node == null ) {
             throw new XMLProcessingException( "XPath-expression '" + xPathQuery + "' from context node '"
-                                           + contextNode.getNodeName() + "' yields no result!" );
+                                              + contextNode.getNodeName() + "' yields no result!" );
         }
         return node;
     }
@@ -613,8 +618,8 @@ public final class XMLTools {
             value = false;
         } else {
             throw new XMLProcessingException( "XPath-expression '" + xPathQuery + " ' from context node '"
-                                           + contextNode.getNodeName() + "' has an invalid value ('" + stringValue
-                                           + "'). Valid values are: 'true', 'yes', 'false' and 'no'." );
+                                              + contextNode.getNodeName() + "' has an invalid value ('" + stringValue
+                                              + "'). Valid values are: 'true', 'yes', 'false' and 'no'." );
         }
 
         return value;
@@ -636,8 +641,8 @@ public final class XMLTools {
             value = Integer.parseInt( stringValue );
         } catch ( NumberFormatException e ) {
             throw new XMLProcessingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
-                                           + "' from context node '" + contextNode.getNodeName()
-                                           + "' does not denote a valid integer value." );
+                                              + "' from context node '" + contextNode.getNodeName()
+                                              + "' does not denote a valid integer value." );
         }
         return value;
     }
@@ -658,8 +663,8 @@ public final class XMLTools {
             value = Double.parseDouble( stringValue );
         } catch ( NumberFormatException e ) {
             throw new XMLProcessingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
-                                           + "' from context node '" + contextNode.getNodeName()
-                                           + "' does not denote a valid double value." );
+                                              + "' from context node '" + contextNode.getNodeName()
+                                              + "' does not denote a valid double value." );
         }
         return value;
     }
@@ -716,7 +721,7 @@ public final class XMLTools {
         List<Node> nl = getNodes( contextNode, xPathQuery, nsContext );
         if ( nl.size() == 0 ) {
             throw new XMLProcessingException( "XPath-expression: '" + xPathQuery + "' from context node '"
-                                           + contextNode.getNodeName() + "' does not yield a result." );
+                                              + contextNode.getNodeName() + "' does not yield a result." );
         }
 
         return nl;

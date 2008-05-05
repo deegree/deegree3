@@ -44,6 +44,7 @@
 package org.deegree.commons.xml;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -152,7 +153,7 @@ public class XMLAdapterTest extends XMLAdapter {
 
         try {
             value = getRequiredNodeAsString( root, new XPath( "wfs:Query/@doesNotExist", nsContext ) );
-            assertEquals( false, true );
+            fail();
         } catch ( XMLProcessingException e ) {
             // expected to be thrown (node does not exist)
         }
@@ -167,7 +168,7 @@ public class XMLAdapterTest extends XMLAdapter {
 
         try {
             value = getRequiredNodeAsQName( root, new XPath( "wfs:Query/@doesNotExist", nsContext ) );
-            assertEquals( false, true );
+            fail();
         } catch ( XMLProcessingException e ) {
             // expected to be thrown (node does not exist)
         }

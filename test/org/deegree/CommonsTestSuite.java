@@ -75,7 +75,7 @@ import org.junit.runners.Suite.SuiteClasses;
                 org.deegree.model.crs.projections.conic.LambertConformalConicTest.class,
                 org.deegree.model.crs.projections.cylindric.TransverseMercatorTest.class,
                 org.deegree.model.crs.transformations.TransformationTest.class,
-                org.deegree.model.filter.OGCFilter110XMLAdapterTest.class,
+                org.deegree.model.filter.Filter110XMLAdapterTest.class,
                 org.deegree.model.geometry.GeometryTest.class,
                 org.deegree.model.geometry.jtswrapper.JTSWrapperEnvelopeTest.class,
                 org.deegree.model.geometry.jtswrapper.JTSWrapperPointTest.class })

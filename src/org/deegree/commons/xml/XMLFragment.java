@@ -112,10 +112,9 @@ import org.xml.sax.SAXException;
  * 
  * @version $Revision$, $Date$
  * 
- * @see org.deegree.framework.xml.XMLTools
- * @deprecated this class should be updated to the new xml framework.
+ * @see XMLAdapter
+ * @deprecated replaced by {@link XMLAdapter}
  */
-
 @Deprecated
 public class XMLFragment implements Serializable {
 
@@ -510,9 +509,10 @@ public class XMLFragment implements Serializable {
      * documents in some cases (GML, for instance).
      * 
      * @return the string
-     * @throws XMLProcessingException 
+     * @throws XMLProcessingException
      */
-    public String getAsPrettyString() throws XMLProcessingException {
+    public String getAsPrettyString()
+                            throws XMLProcessingException {
         StringWriter writer = new StringWriter( 50000 );
         try {
             Source source = new DOMSource( rootElement );
@@ -526,29 +526,28 @@ public class XMLFragment implements Serializable {
             throw new XMLProcessingException( e );
         }
 
-//        StringWriter writer = new StringWriter( 50000 );
-//        try {
-//            write( writer );
-//        } catch ( TransformerException e ) {
-//            LOG.error( "Error pretty printing XMLFragment!", e );
-//        }
+        // StringWriter writer = new StringWriter( 50000 );
+        // try {
+        // write( writer );
+        // } catch ( TransformerException e ) {
+        // LOG.error( "Error pretty printing XMLFragment!", e );
+        // }
         return writer.toString();
     }
-        
-        /**
-         * Writes the <code>XMLFragment</code> instance to the given <code>Writer</code> using the
-         * specified <code>OutputKeys</code>.
-         * 
-         * @param writer
-         *            cannot be null
-         * @param outputProperties
-         *            output properties for the <code>Transformer</code> that is used to serialize the
-         *            document
-         * 
-         * see javax.xml.OutputKeys
-         */
-        public void write( Writer writer, Properties outputProperties ) {
-        }
+
+    /**
+     * Writes the <code>XMLFragment</code> instance to the given <code>Writer</code> using the specified
+     * <code>OutputKeys</code>.
+     * 
+     * @param writer
+     *            cannot be null
+     * @param outputProperties
+     *            output properties for the <code>Transformer</code> that is used to serialize the document
+     * 
+     * see javax.xml.OutputKeys
+     */
+    public void write( Writer writer, Properties outputProperties ) {
+    }
 
     /**
      * Returns a string representation of the object.

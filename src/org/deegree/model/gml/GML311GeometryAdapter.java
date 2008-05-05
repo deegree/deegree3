@@ -41,32 +41,18 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.commons.xml;
+package org.deegree.model.gml;
+
+import org.deegree.commons.xml.XMLAdapter;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public class XPath {
+public class GML311GeometryAdapter extends XMLAdapter {
 
-    private String xpath;
-
-    private NamespaceContext nsContext;
-
-    public XPath( String xpath, NamespaceContext nsContext ) {
-        this.xpath = xpath;
-        this.nsContext = nsContext;
-    }
-
-    public String getXPath() {
-        return xpath;
-    }
-
-    public NamespaceContext getNamespaceContext() {
-        return nsContext;
-    }
 }

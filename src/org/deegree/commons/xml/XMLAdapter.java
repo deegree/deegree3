@@ -71,6 +71,7 @@ import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.i18n.Messages;
@@ -122,7 +123,7 @@ public class XMLAdapter {
     // encapsulated element
     protected OMElement rootElement;
 
-    // the physical source of the element (used for resolving of URLs)
+    // the physical source of the element (used for resolving of relative URLs while parsing)
     private URL systemId;
 
     /**
@@ -133,7 +134,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Creates a new <code>XMLAdapter</code> which loads its content from the given <code>URL</code>.
+     * Creates a new <code>XMLAdapter</code> that loads its content from the given <code>URL</code>.
      * 
      * @param url
      * 
@@ -146,7 +147,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Creates a new <code>XMLAdapter</code> which is loaded from the given <code>File</code>.
+     * Creates a new <code>XMLAdapter</code> that loads its content from the given <code>File</code>.
      * 
      * @param file
      *            the file to load from
@@ -165,7 +166,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Creates a new <code>XMLAdapter</code> which is loaded from the given <code>Reader</code>.
+     * Creates a new <code>XMLAdapter</code> that loads its content from the given <code>Reader</code>.
      * 
      * @param reader
      * @param systemId
@@ -176,8 +177,7 @@ public class XMLAdapter {
      * @throws FactoryConfigurationError
      * @throws XMLStreamException
      */
-    public XMLAdapter( Reader reader, String systemId ) throws IOException, XMLStreamException,
-                            FactoryConfigurationError {
+    public XMLAdapter( Reader reader, URL systemId ) throws IOException, XMLStreamException, FactoryConfigurationError {
         load( reader, systemId );
     }
 
@@ -188,10 +188,8 @@ public class XMLAdapter {
      * @param systemId
      *            the URL that is the source of the passed doc. If this URL is not available or unknown, the string
      *            should contain the value of XMLFragment.DEFAULT_URL
-     * @throws MalformedURLException
-     *             if systemId is no valid and absolute <code>URL</code>
      */
-    public XMLAdapter( OMDocument doc, String systemId ) throws MalformedURLException {
+    public XMLAdapter( OMDocument doc, URL systemId ) {
         this( doc.getOMDocumentElement(), systemId );
     }
 
@@ -202,15 +200,14 @@ public class XMLAdapter {
      * @param systemId
      *            the URL that is the source of the passed doc. If this URL is not available or unknown, the string
      *            should contain the value of XMLFragment.DEFAULT_URL
-     * @throws MalformedURLException
      */
-    public XMLAdapter( OMElement element, String systemId ) throws MalformedURLException {
+    public XMLAdapter( OMElement element, URL systemId ) {
         setRootElement( element );
         setSystemId( systemId );
     }
 
     /**
-     * Returns the systemId (the URL of the <code>XMLFragment</code>).
+     * Returns the systemId (the URL of the <code>XMLAdapter</code>).
      * 
      * @return the systemId
      */
@@ -312,8 +309,7 @@ public class XMLAdapter {
         if ( url == null ) {
             throw new IllegalArgumentException( "The given url may not be null" );
         }
-        String uri = url.toExternalForm();
-        load( url.openStream(), uri );
+        load( url.openStream(), url );
     }
 
     /**
@@ -329,7 +325,7 @@ public class XMLAdapter {
      * @throws FactoryConfigurationError
      * @throws XMLStreamException
      */
-    public void load( InputStream istream, String systemId )
+    public void load( InputStream istream, URL systemId )
                             throws IOException, XMLStreamException, FactoryConfigurationError {
 
         PushbackInputStream pbis = new PushbackInputStream( istream, 1024 );
@@ -384,7 +380,7 @@ public class XMLAdapter {
      * @throws FactoryConfigurationError
      * @throws XMLStreamException
      */
-    public void load( Reader reader, String systemId )
+    public void load( Reader reader, URL systemId )
                             throws IOException, XMLStreamException, FactoryConfigurationError {
 
         PushbackReader pbr = new PushbackReader( reader, 1024 );
@@ -408,6 +404,7 @@ public class XMLAdapter {
      * Sets the root element, i.e. the element encapsulated by this <code>XMLAdapter</code>.
      * 
      * @param rootElement
+     *            the root element
      */
     public void setRootElement( OMElement rootElement ) {
         this.rootElement = rootElement;
@@ -427,7 +424,7 @@ public class XMLAdapter {
      * <code>URL</code> (which is always absolute).
      * 
      * @param url
-     * @return the resolved URL object
+     * @return the resolved URL
      * @throws MalformedURLException
      */
     public URL resolve( String url )
@@ -491,7 +488,7 @@ public class XMLAdapter {
                             throws XMLProcessingException {
         Object result;
         try {
-            result = xpath.getAXIOMXPath().evaluate( context );
+            result = getAXIOMXPath( xpath ).evaluate( context );
         } catch ( JaxenException e ) {
             throw new XMLProcessingException( e.getMessage() );
         }
@@ -626,7 +623,7 @@ public class XMLAdapter {
                             throws XMLProcessingException {
         Object node;
         try {
-            node = xpath.getAXIOMXPath().selectSingleNode( context );
+            node = getAXIOMXPath( xpath ).selectSingleNode( context );
         } catch ( JaxenException e ) {
             throw new XMLProcessingException( e.getMessage() );
         }
@@ -722,7 +719,7 @@ public class XMLAdapter {
                             throws XMLProcessingException {
         List nodes;
         try {
-            nodes = xpath.getAXIOMXPath().selectNodes( context );
+            nodes = getAXIOMXPath( xpath ).selectNodes( context );
         } catch ( JaxenException e ) {
             throw new XMLProcessingException( e.getMessage() );
         }
@@ -811,4 +808,13 @@ public class XMLAdapter {
         return nodes;
     }
 
+    private AXIOMXPath getAXIOMXPath( XPath xpath )
+                            throws JaxenException {
+        AXIOMXPath compiledXPath = new AXIOMXPath( xpath.getXPath() );
+        Map<String, String> nsMap = xpath.getNamespaceContext().getNamespaceMap();
+        for ( String prefix : nsMap.keySet() ) {
+            compiledXPath.addNamespace( prefix, nsMap.get( prefix ) );
+        }
+        return compiledXPath;
+    }
 }
