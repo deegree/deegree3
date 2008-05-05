@@ -43,8 +43,6 @@
 
 package org.deegree.commons.xml;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -86,7 +84,7 @@ public final class XMLTools {
     private XMLTools() {
         // hidden constructor to prevent instantiation
     }
-    
+
     /**
      * 
      * Create a new and empty DOM document.
@@ -96,7 +94,7 @@ public final class XMLTools {
     public static Document create() {
         return getDocumentBuilder().newDocument();
     }
-    
+
     /**
      * Create a new document builder with:
      * <UL>
@@ -137,10 +135,10 @@ public final class XMLTools {
      * @param xPathQuery
      * @param nsContext
      * @return Node
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static Node getNode( Node contextNode, String xPathQuery, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         Node node = null;
         try {
             XPath xpath = new DOMXPath( xPathQuery );
@@ -180,7 +178,7 @@ public final class XMLTools {
             }
 
         } catch ( JaxenException e ) {
-            throw new XMLParsingException( "Error evaluating XPath-expression '" + xPathQuery + "' from context node '"
+            throw new XMLProcessingException( "Error evaluating XPath-expression '" + xPathQuery + "' from context node '"
                                            + contextNode.getNodeName() + "': " + e.getMessage(), e );
         }
         return node;
@@ -191,12 +189,12 @@ public final class XMLTools {
      * @param xpath
      * @param nsContext
      * @return the element
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      * @throws ClassCastException
      *             if the node was not an element
      */
     public static Element getElement( Node contextNode, String xpath, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         Node node = getNode( contextNode, xpath, nsContext );
         return (Element) node;
     }
@@ -207,11 +205,11 @@ public final class XMLTools {
      * @param nsContext
      * @param defaultValue
      * @return the node's String value
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static String getNodeAsString( Node contextNode, String xPathQuery, NamespaceContext nsContext,
                                           String defaultValue )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
 
         String value = defaultValue;
         Node node = getNode( contextNode, xPathQuery, nsContext );
@@ -228,11 +226,11 @@ public final class XMLTools {
      * @param nsContext
      * @param defaultValue
      * @return the node's boolean value
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static boolean getNodeAsBoolean( Node contextNode, String xPathQuery, NamespaceContext nsContext,
                                             boolean defaultValue )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         boolean value = defaultValue;
         Node node = getNode( contextNode, xPathQuery, nsContext );
         if ( node != null ) {
@@ -243,7 +241,7 @@ public final class XMLTools {
             } else if ( "false".equals( stringValue ) || "no".equals( stringValue ) || "0".equals( stringValue ) ) {
                 value = false;
             } else {
-                throw new XMLParsingException( "XPath-expression '" + xPathQuery + " ' from context node '"
+                throw new XMLProcessingException( "XPath-expression '" + xPathQuery + " ' from context node '"
                                                + contextNode.getNodeName() + "' has an invalid value ('" + stringValue
                                                + "'). Valid values are: 'true', 'yes', '1' " + "'false', 'no' and '0'." );
             }
@@ -257,10 +255,10 @@ public final class XMLTools {
      * @param nsContext
      * @param defaultValue
      * @return the node's integer value
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static int getNodeAsInt( Node contextNode, String xPathQuery, NamespaceContext nsContext, int defaultValue )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         int value = defaultValue;
         Node node = getNode( contextNode, xPathQuery, nsContext );
         if ( node != null ) {
@@ -268,7 +266,7 @@ public final class XMLTools {
             try {
                 value = Integer.parseInt( stringValue );
             } catch ( NumberFormatException e ) {
-                throw new XMLParsingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
+                throw new XMLProcessingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
                                                + "' from context node '" + contextNode.getNodeName()
                                                + "' does not denote a valid integer value." );
             }
@@ -282,11 +280,11 @@ public final class XMLTools {
      * @param nsContext
      * @param defaultValue
      * @return the node's double value
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static double getNodeAsDouble( Node contextNode, String xPathQuery, NamespaceContext nsContext,
                                           double defaultValue )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         double value = defaultValue;
         Node node = getNode( contextNode, xPathQuery, nsContext );
         if ( node != null ) {
@@ -294,7 +292,7 @@ public final class XMLTools {
             try {
                 value = Double.parseDouble( stringValue );
             } catch ( NumberFormatException e ) {
-                throw new XMLParsingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
+                throw new XMLProcessingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
                                                + "' from context node '" + contextNode.getNodeName()
                                                + "' does not denote a valid double value." );
             }
@@ -308,21 +306,15 @@ public final class XMLTools {
      * @param nsContext
      * @param defaultValue
      * @return the node as URI
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
-    public static URI getNodeAsURI( Node contextNode, String xPathQuery, NamespaceContext nsContext, URI defaultValue )
-                            throws XMLParsingException {
-        URI value = defaultValue;
+    public static String getNodeAsURI( Node contextNode, String xPathQuery, NamespaceContext nsContext,
+                                       String defaultValue )
+                            throws XMLProcessingException {
+        String value = defaultValue;
         Node node = getNode( contextNode, xPathQuery, nsContext );
         if ( node != null ) {
-            String stringValue = getStringValue( node );
-            try {
-                value = new URI( stringValue );
-            } catch ( URISyntaxException e ) {
-                throw new XMLParsingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
-                                               + "' from context node '" + contextNode.getNodeName()
-                                               + "' does not denote a valid URI." );
-            }
+            value = getStringValue( node );
         }
         return value;
     }
@@ -333,11 +325,11 @@ public final class XMLTools {
      * @param nsContext
      * @param defaultValue
      * @return the node as qualified name
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static QualifiedName getNodeAsQualifiedName( Node contextNode, String xPathQuery,
                                                         NamespaceContext nsContext, QualifiedName defaultValue )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
 
         QualifiedName value = defaultValue;
         Node node = getNode( contextNode, xPathQuery, nsContext );
@@ -358,20 +350,16 @@ public final class XMLTools {
      * 
      * @param node
      * @return object representation of the element
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     private static QualifiedName getQualifiedNameValue( Node node )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
 
         String name = node.getNodeValue().trim();
         QualifiedName qName = null;
         if ( name.indexOf( ':' ) > -1 ) {
             String[] tmp = StringTools.split( name, ":" );
-            try {
-                qName = new QualifiedName( tmp[0], tmp[1], XMLTools.getNamespaceForPrefix( tmp[0], node ) );
-            } catch ( URISyntaxException e ) {
-                throw new XMLParsingException( e.getMessage(), e );
-            }
+            qName = new QualifiedName( tmp[0], tmp[1], XMLTools.getNamespaceForPrefix( tmp[0], node ) );
         } else {
             qName = new QualifiedName( name );
         }
@@ -385,10 +373,10 @@ public final class XMLTools {
      * @param xPathQuery
      * @param nsContext
      * @return a list of nodes matching the passed XPath
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static List<Node> getNodes( Node contextNode, String xPathQuery, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         List<Node> nl = null;
         try {
             XPath xpath = new DOMXPath( xPathQuery );
@@ -428,7 +416,7 @@ public final class XMLTools {
                 }
             }
         } catch ( JaxenException e ) {
-            throw new XMLParsingException( "Error evaluating XPath-expression '" + xPathQuery + "' from context node '"
+            throw new XMLProcessingException( "Error evaluating XPath-expression '" + xPathQuery + "' from context node '"
                                            + contextNode.getNodeName() + "': " + e.getMessage(), e );
         }
         return nl;
@@ -439,10 +427,10 @@ public final class XMLTools {
      * @param xPathQuery
      * @param nsContext
      * @return the list of nodes as strings
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static String[] getNodesAsStrings( Node contextNode, String xPathQuery, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         String[] values = null;
         List<Node> nl = getNodes( contextNode, xPathQuery, nsContext );
         if ( nl != null ) {
@@ -464,10 +452,10 @@ public final class XMLTools {
      * @param nsContext
      *            to find the namespaces from.
      * @return the list of nodes as strings or an empty list, never <code>null</code>
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static List<String> getNodesAsStringList( Node contextNode, String xPathQuery, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         List<String> result = new ArrayList<String>();
         List<Node> nl = getNodes( contextNode, xPathQuery, nsContext );
         if ( nl != null ) {
@@ -483,35 +471,12 @@ public final class XMLTools {
      * @param contextNode
      * @param xPathQuery
      * @param nsContext
-     * @return the nodes as URIs
-     * @throws XMLParsingException
-     */
-    public static URI[] getNodesAsURIs( Node contextNode, String xPathQuery, NamespaceContext nsContext )
-                            throws XMLParsingException {
-        String[] values = getNodesAsStrings( contextNode, xPathQuery, nsContext );
-        URI[] uris = new URI[values.length];
-        for ( int i = 0; i < uris.length; i++ ) {
-            try {
-                uris[i] = new URI( values[i] );
-            } catch ( URISyntaxException e ) {
-                throw new XMLParsingException( "Result '" + values[i] + "' of XPath-expression '" + xPathQuery
-                                               + "' from context node '" + contextNode.getNodeName()
-                                               + "' does not denote a valid URI." );
-            }
-        }
-        return uris;
-    }
-
-    /**
-     * @param contextNode
-     * @param xPathQuery
-     * @param nsContext
      * @return the nodes as qualified names
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static QualifiedName[] getNodesAsQualifiedNames( Node contextNode, String xPathQuery,
                                                             NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
 
         QualifiedName[] values = null;
         List<Node> nl = getNodes( contextNode, xPathQuery, nsContext );
@@ -532,13 +497,13 @@ public final class XMLTools {
      * @param xPathQuery
      * @param nsContext
      * @return the node
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static Node getRequiredNode( Node contextNode, String xPathQuery, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         Node node = getNode( contextNode, xPathQuery, nsContext );
         if ( node == null ) {
-            throw new XMLParsingException( "XPath-expression '" + xPathQuery + "' from context node '"
+            throw new XMLProcessingException( "XPath-expression '" + xPathQuery + "' from context node '"
                                            + contextNode.getNodeName() + "' yields no result!" );
         }
         return node;
@@ -549,12 +514,12 @@ public final class XMLTools {
      * @param xpath
      * @param nsContext
      * @return the element
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      * @throws ClassCastException
      *             if the node was not an element
      */
     public static Element getRequiredElement( Node contextNode, String xpath, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         Node node = getRequiredNode( contextNode, xpath, nsContext );
         return (Element) node;
     }
@@ -564,10 +529,10 @@ public final class XMLTools {
      * @param xPathQuery
      * @param nsContext
      * @return the node as string
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static String getRequiredNodeAsString( Node contextNode, String xPathQuery, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         Node node = getRequiredNode( contextNode, xPathQuery, nsContext );
         return getStringValue( node );
     }
@@ -582,12 +547,12 @@ public final class XMLTools {
      * @param validValues
      *            the values that are valid for the required node
      * @return one of the String valid String values
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      *             if no Node was found or the text of the Node was not present in the given valid strings.
      */
     public static String getRequiredNodeAsString( Node contextNode, String xPathQuery, NamespaceContext nsContext,
                                                   String[] validValues )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         String value = getRequiredNodeAsString( contextNode, xPathQuery, nsContext );
         boolean found = false;
         for ( int i = 0; i < validValues.length; i++ ) {
@@ -608,7 +573,7 @@ public final class XMLTools {
                     sb.append( "." );
                 }
             }
-            throw new XMLParsingException( sb.toString() );
+            throw new XMLProcessingException( sb.toString() );
         }
         return value;
     }
@@ -621,11 +586,11 @@ public final class XMLTools {
      * @param nsContext
      * @param token
      * @return the parts of the targeted node value which are separated by the specified token.
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static String[] getRequiredNodeAsStrings( Node contextNode, String xPathQuery, NamespaceContext nsContext,
                                                      String token )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         Node node = getRequiredNode( contextNode, xPathQuery, nsContext );
         return StringTools.split( getStringValue( node ), token );
     }
@@ -635,10 +600,10 @@ public final class XMLTools {
      * @param xPathQuery
      * @param nsContext
      * @return the node as boolean
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static boolean getRequiredNodeAsBoolean( Node contextNode, String xPathQuery, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         boolean value = false;
         Node node = getRequiredNode( contextNode, xPathQuery, nsContext );
         String stringValue = getStringValue( node );
@@ -647,7 +612,7 @@ public final class XMLTools {
         } else if ( "false".equals( stringValue ) || "no".equals( stringValue ) ) {
             value = false;
         } else {
-            throw new XMLParsingException( "XPath-expression '" + xPathQuery + " ' from context node '"
+            throw new XMLProcessingException( "XPath-expression '" + xPathQuery + " ' from context node '"
                                            + contextNode.getNodeName() + "' has an invalid value ('" + stringValue
                                            + "'). Valid values are: 'true', 'yes', 'false' and 'no'." );
         }
@@ -660,17 +625,17 @@ public final class XMLTools {
      * @param xPathQuery
      * @param nsContext
      * @return the node as integer
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static int getRequiredNodeAsInt( Node contextNode, String xPathQuery, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
 
         int value = 0;
         String stringValue = getRequiredNodeAsString( contextNode, xPathQuery, nsContext );
         try {
             value = Integer.parseInt( stringValue );
         } catch ( NumberFormatException e ) {
-            throw new XMLParsingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
+            throw new XMLProcessingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
                                            + "' from context node '" + contextNode.getNodeName()
                                            + "' does not denote a valid integer value." );
         }
@@ -682,17 +647,17 @@ public final class XMLTools {
      * @param xPathQuery
      * @param nsContext
      * @return the node as double
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static double getRequiredNodeAsDouble( Node contextNode, String xPathQuery, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
 
         double value = 0;
         String stringValue = getRequiredNodeAsString( contextNode, xPathQuery, nsContext );
         try {
             value = Double.parseDouble( stringValue );
         } catch ( NumberFormatException e ) {
-            throw new XMLParsingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
+            throw new XMLProcessingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
                                            + "' from context node '" + contextNode.getNodeName()
                                            + "' does not denote a valid double value." );
         }
@@ -708,18 +673,18 @@ public final class XMLTools {
      * @param nsContext
      * @param regex
      * @return the parts of the targeted node value which are separated by the specified regex.
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static double[] getRequiredNodeAsDoubles( Node contextNode, String xPathQuery, NamespaceContext nsContext,
                                                      String regex )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         String[] parts = getRequiredNodeAsStrings( contextNode, xPathQuery, nsContext, regex );
         double[] doubles = new double[parts.length];
         for ( int i = 0; i < parts.length; i++ ) {
             try {
                 doubles[i] = Double.parseDouble( parts[i] );
             } catch ( NumberFormatException e ) {
-                throw new XMLParsingException( "Value '" + parts[i] + "' does not denote a valid double value." );
+                throw new XMLProcessingException( "Value '" + parts[i] + "' does not denote a valid double value." );
             }
         }
         return doubles;
@@ -729,35 +694,12 @@ public final class XMLTools {
      * @param contextNode
      * @param xPathQuery
      * @param nsContext
-     * @return the node as URI
-     * @throws XMLParsingException
-     */
-    public static URI getRequiredNodeAsURI( Node contextNode, String xPathQuery, NamespaceContext nsContext )
-                            throws XMLParsingException {
-
-        URI uri = null;
-        String stringValue = getRequiredNodeAsString( contextNode, xPathQuery, nsContext );
-
-        try {
-            uri = new URI( stringValue );
-        } catch ( URISyntaxException e ) {
-            throw new XMLParsingException( "Result '" + stringValue + "' of XPath-expression '" + xPathQuery
-                                           + "' from context node '" + contextNode.getNodeName()
-                                           + "' does not denote a valid URI." );
-        }
-        return uri;
-    }
-
-    /**
-     * @param contextNode
-     * @param xPathQuery
-     * @param nsContext
      * @return the node as qualified name
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static QualifiedName getRequiredNodeAsQualifiedName( Node contextNode, String xPathQuery,
                                                                 NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         Node node = getRequiredNode( contextNode, xPathQuery, nsContext );
         return getQualifiedNameValue( node );
     }
@@ -767,13 +709,13 @@ public final class XMLTools {
      * @param xPathQuery
      * @param nsContext
      * @return the nodes
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static List<Node> getRequiredNodes( Node contextNode, String xPathQuery, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         List<Node> nl = getNodes( contextNode, xPathQuery, nsContext );
         if ( nl.size() == 0 ) {
-            throw new XMLParsingException( "XPath-expression: '" + xPathQuery + "' from context node '"
+            throw new XMLProcessingException( "XPath-expression: '" + xPathQuery + "' from context node '"
                                            + contextNode.getNodeName() + "' does not yield a result." );
         }
 
@@ -785,12 +727,12 @@ public final class XMLTools {
      * @param xpath
      * @param nsContext
      * @return a list of Elements
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      * @throws ClassCastException
      *             if the resulting nodes of the xpath are not elements
      */
     public static List<Element> getRequiredElements( Node contextNode, String xpath, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         List<Node> nodes = getRequiredNodes( contextNode, xpath, nsContext );
 
         List<Element> list = new ArrayList<Element>( nodes.size() );
@@ -806,12 +748,12 @@ public final class XMLTools {
      * @param xpath
      * @param nsContext
      * @return a list of Elements
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      * @throws ClassCastException
      *             if the resulting nodes of the xpath are not elements
      */
     public static List<Element> getElements( Node contextNode, String xpath, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         List<Node> nodes = getNodes( contextNode, xpath, nsContext );
 
         List<Element> list = new ArrayList<Element>( nodes.size() );
@@ -830,10 +772,10 @@ public final class XMLTools {
      * @param xPathQuery
      * @param nsContext
      * @return the content of the nodes matching the XPathQuery as a String array.
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static String[] getRequiredNodesAsStrings( Node contextNode, String xPathQuery, NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
 
         List<Node> nl = getRequiredNodes( contextNode, xPathQuery, nsContext );
 
@@ -850,11 +792,11 @@ public final class XMLTools {
      * @param xPathQuery
      * @param nsContext
      * @return the qualified names
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static QualifiedName[] getRequiredNodesAsQualifiedNames( Node contextNode, String xPathQuery,
                                                                     NamespaceContext nsContext )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
 
         List<Node> nl = getRequiredNodes( contextNode, xPathQuery, nsContext );
 
@@ -869,10 +811,10 @@ public final class XMLTools {
     /**
      * @param value
      * @param validValues
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public static void checkValue( String value, String[] validValues )
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
         for ( int i = 0; i < validValues.length; i++ ) {
             if ( validValues[i].equals( value ) ) {
                 return;
@@ -887,7 +829,7 @@ public final class XMLTools {
                 sb.append( "." );
             }
         }
-        throw new XMLParsingException( sb.toString() );
+        throw new XMLProcessingException( sb.toString() );
     }
 
     // ------------------------------------------------------------------------
@@ -906,7 +848,7 @@ public final class XMLTools {
      *            qualified name
      * @return the appended <code>Element</code> node
      */
-    public static Element appendElement( Element element, URI namespaceURI, String name ) {
+    public static Element appendElement( Element element, String namespaceURI, String name ) {
         return appendElement( element, namespaceURI, name, null );
     }
 
@@ -924,8 +866,8 @@ public final class XMLTools {
      *            value for a text node that is appended to the generated element
      * @return the appended <code>Element</code> node
      */
-    public static Element appendElement( Element element, URI namespaceURI, String name, String nodeValue ) {
-        String namespace = namespaceURI == null ? null : namespaceURI.toString();
+    public static Element appendElement( Element element, String namespaceURI, String name, String nodeValue ) {
+        String namespace = namespaceURI;
         Element newElement = element.getOwnerDocument().createElementNS( namespace, name );
         if ( nodeValue != null && !nodeValue.equals( "" ) )
             newElement.appendChild( element.getOwnerDocument().createTextNode( nodeValue ) );
@@ -941,10 +883,10 @@ public final class XMLTools {
      * @param prefix
      * @param namespace
      */
-    public static void appendNSBinding( Element element, String prefix, URI namespace ) {
-        Attr attribute = element.getOwnerDocument().createAttributeNS( CommonNamespaces.XMLNS.toASCIIString(),
+    public static void appendNSBinding( Element element, String prefix, String namespace ) {
+        Attr attribute = element.getOwnerDocument().createAttributeNS( CommonNamespaces.XMLNS,
                                                                        CommonNamespaces.XMLNS_PREFIX + ":" + prefix );
-        attribute.setNodeValue( namespace.toASCIIString() );
+        attribute.setNodeValue( namespace );
         element.getAttributes().setNamedItemNS( attribute );
     }
 
@@ -955,10 +897,10 @@ public final class XMLTools {
      * @param prefix
      * @param namespace
      */
-    public static void appendNSDefaultBinding( Element element, URI namespace ) {
-        Attr attribute = element.getOwnerDocument().createAttributeNS( CommonNamespaces.XMLNS.toASCIIString(),
+    public static void appendNSDefaultBinding( Element element, String namespace ) {
+        Attr attribute = element.getOwnerDocument().createAttributeNS( CommonNamespaces.XMLNS,
                                                                        CommonNamespaces.XMLNS_PREFIX );
-        attribute.setNodeValue( namespace.toASCIIString() );
+        attribute.setNodeValue( namespace );
         element.getAttributes().setNamedItemNS( attribute );
     }
 
@@ -971,12 +913,12 @@ public final class XMLTools {
      * @param nsContext
      */
     public static void appendNSBindings( Element element, NamespaceContext nsContext ) {
-        Map<String, URI> namespaceMap = nsContext.getNamespaceMap();
+        Map<String, String> namespaceMap = nsContext.getNamespaceMap();
         Iterator<String> prefixIter = namespaceMap.keySet().iterator();
         while ( prefixIter.hasNext() ) {
             String prefix = prefixIter.next();
             if ( !CommonNamespaces.XMLNS_PREFIX.equals( prefix ) ) {
-                URI namespace = namespaceMap.get( prefix );
+                String namespace = namespaceMap.get( prefix );
                 appendNSBinding( element, prefix, namespace );
             }
         }
@@ -1014,8 +956,7 @@ public final class XMLTools {
      * @return namespace URI that is bound to the given prefix, null otherwise
      * @throws URISyntaxException
      */
-    public static URI getNamespaceForPrefix( String prefix, Node node )
-                            throws URISyntaxException {
+    public static String getNamespaceForPrefix( String prefix, Node node ) {
         if ( node == null ) {
             return null;
         }
@@ -1031,9 +972,9 @@ public final class XMLTools {
                     // + a.getName() );
 
                     if ( a.getName().startsWith( "xmlns:" ) && a.getName().endsWith( ':' + prefix ) ) {
-                        return new URI( a.getValue() );
+                        a.getValue();
                     } else if ( prefix == null && a.getName().equals( "xmlns" ) ) {
-                        return new URI( a.getValue() );
+                        a.getValue();
                     }
                 }
             }

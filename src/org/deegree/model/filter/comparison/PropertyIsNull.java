@@ -41,39 +41,40 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter;
+package org.deegree.model.filter.comparison;
 
-import java.util.Set;
-
+import org.deegree.model.filter.FilterEvaluationException;
+import org.deegree.model.filter.expression.PropertyName;
 import org.deegree.model.generic.StructuredObject;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public class PropertyIsNull extends ComparisonOperator {
 
-    private Set<String> ids;
-
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
+    private PropertyName propName;
+  
+    public PropertyName getPropertyName () {
+        return propName;
     }
-
-    public Type getType() {
-        return Type.ID_FILTER;
-    }
-
-    public Set<String> getIds() {
-        return ids;
-    }
-
+    
+    public SubType getSubType() {
+        return SubType.PROPERTY_IS_NULL;
+    } 
+    
     public boolean evaluate( StructuredObject object )
                             throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
+        return propName.evaluate( object ) == null;
     }
+
+    public String toString( String indent ) {
+        String s = indent + "-PropertyIsNull\n";
+        s += propName.toString (indent + "  ");
+        return s;
+    }    
 }

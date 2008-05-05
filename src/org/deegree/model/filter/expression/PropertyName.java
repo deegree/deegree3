@@ -45,6 +45,8 @@ package org.deegree.model.filter.expression;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.model.filter.Expression;
+import org.deegree.model.filter.Expression.Type;
 import org.deegree.model.generic.StructuredObject;
 
 /**
@@ -61,6 +63,10 @@ public class PropertyName implements Expression {
 
     public PropertyName( String propName ) {
         this.propName = propName;
+    }
+
+    public Type getType() {
+        return Type.PROPERTY_NAME;
     }
     
     public String getPropertyName () {

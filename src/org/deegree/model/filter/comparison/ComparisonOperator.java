@@ -41,39 +41,30 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter;
+package org.deegree.model.filter.comparison;
 
-import java.util.Set;
-
-import org.deegree.model.generic.StructuredObject;
+import org.deegree.model.filter.Operator;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public abstract class ComparisonOperator implements Operator {
 
-    private Set<String> ids;
-
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
-    }
-
-    public Type getType() {
-        return Type.ID_FILTER;
-    }
-
-    public Set<String> getIds() {
-        return ids;
-    }
-
-    public boolean evaluate( StructuredObject object )
-                            throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    public enum SubType {
+        PROPERTY_IS_EQUAL_TO, PROPERTY_IS_NOT_EQUAL_TO, PROPERTY_IS_LESS_THAN,        
+        PROPERTY_IS_GREATER_THAN, PROPERTY_IS_LESS_THAN_OR_EQUAL_TO,
+        PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO, PROPERTY_IS_LIKE, PROPERTY_IS_NULL,
+        PROPERTY_IS_BETWEEN;
+    }    
+    
+    public Type getType () {
+        return Type.COMPARISON;
+    }   
+    
+    public abstract SubType getSubType ();
 }

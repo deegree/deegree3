@@ -43,18 +43,14 @@
 package org.deegree.commons.types;
 
 import java.io.Serializable;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.deegree.commons.utils.StringTools;
 
 /**
- * This class represent a qualified name for something. A name is thought to be built from an
- * optional prefix and/or a local name E.g.: <BR>- deegree - pre:deegree <BR>
- * a name may be located within a namespace assigned to the names prefix (or as default namespace if
- * the name has not prefix).
+ * This class represent a qualified name for something. A name is thought to be built from an optional prefix and/or a
+ * local name E.g.: <BR>- deegree - pre:deegree <BR>
+ * a name may be located within a namespace assigned to the names prefix (or as default namespace if the name has not
+ * prefix).
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth </a>
  * @author last edited by: $Author$
@@ -70,7 +66,7 @@ public class QualifiedName implements Serializable {
 
     private String localName = null;
 
-    private URI namespace = null;
+    private String namespace = null;
 
     private String s = null;
 
@@ -80,11 +76,7 @@ public class QualifiedName implements Serializable {
      */
     public QualifiedName( String name ) {
         if ( name.indexOf( '{' ) > -1 ) {
-            try {
-                namespace = new URI( StringTools.extract( name, "{", "}" ).get(0) );
-            } catch ( URISyntaxException e ) {
-                //
-            }
+            namespace = StringTools.extract( name, "{", "}" ).get( 0 );
             int pos = name.lastIndexOf( ':' );
             localName = name.substring( pos + 1 );
         } else if ( name.indexOf( ':' ) > -1 ) {
@@ -107,7 +99,7 @@ public class QualifiedName implements Serializable {
      * @param namespace
      *            namespace the name is located within
      */
-    public QualifiedName( String name, URI namespace ) {
+    public QualifiedName( String name, String namespace ) {
         if ( name.indexOf( ':' ) > -1 ) {
             String[] tmp = StringTools.split( name, ":" );
             prefix = tmp[0];
@@ -126,7 +118,7 @@ public class QualifiedName implements Serializable {
      * @param namespace
      *            namespace the name is located within
      */
-    public QualifiedName( String prefix, String localName, URI namespace ) {
+    public QualifiedName( String prefix, String localName, String namespace ) {
         this.prefix = prefix;
         this.localName = localName;
         this.namespace = namespace;
@@ -141,11 +133,10 @@ public class QualifiedName implements Serializable {
         sb.append( localName );
         s = sb.toString();
     }
-    
 
     /**
-     * returns a string representation of a QualifiedName. prefix and local name are separated by
-     * ':'. If the Prefix is null, the sole localname will be returned.
+     * returns a string representation of a QualifiedName. prefix and local name are separated by ':'. If the Prefix is
+     * null, the sole localname will be returned.
      * 
      * @return string representation of a QualifiedName
      */
@@ -154,12 +145,10 @@ public class QualifiedName implements Serializable {
     }
 
     /**
-     * @return a QualifiedName as a formatted string. If a QualifiedName has a namespace the
-     *         returned format is:<br>
+     * @return a QualifiedName as a formatted string. If a QualifiedName has a namespace the returned format is:<br>
      *         {namespace}:localName. <br>
-     *         Otherwise just a String representation of this qualified name will be returned. Which
-     *         means, that if the prefix is not null (allthough not bound to namespace) the result
-     *         String will be: <br>
+     *         Otherwise just a String representation of this qualified name will be returned. Which means, that if the
+     *         prefix is not null (allthough not bound to namespace) the result String will be: <br>
      *         PRE_FIX:localName.<br>
      *         If the Prefix is null, the sole localname will be returned.
      */
@@ -193,17 +182,17 @@ public class QualifiedName implements Serializable {
      * 
      * @return the namespace the name is located within (may be null)
      */
-    public URI getNamespace() {
+    public String getNamespace() {
         return namespace;
     }
 
     /**
      * @param ns
      *            the namespace to checkfor
-     * @return true if the given namespace equals this qualified name's namespace. If the given ns
-     *         is null and the namespace is null, this method will also return true.
+     * @return true if the given namespace equals this qualified name's namespace. If the given ns is null and the
+     *         namespace is null, this method will also return true.
      */
-    public boolean isInNamespace( URI ns ) {
+    public boolean isInNamespace( String ns ) {
         if ( ns == null ) {
             if ( this.namespace == null ) {
                 return true;
@@ -221,10 +210,10 @@ public class QualifiedName implements Serializable {
             result.append( " (" );
             result.append( this.prefix );
             result.append( "=" );
-            if ( this.namespace == null || this.namespace.toASCIIString().length() == 0 ) {
+            if ( this.namespace == null || this.namespace.length() == 0 ) {
                 result.append( "not bound to a namespace" );
             } else {
-                result.append( this.namespace.toASCIIString() );
+                result.append( this.namespace );
             }
             result.append( ")" );
         }

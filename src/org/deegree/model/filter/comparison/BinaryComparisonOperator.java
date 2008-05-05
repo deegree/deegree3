@@ -43,8 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter.comparison;
 
-import org.deegree.model.filter.BooleanOperator;
-import org.deegree.model.filter.expression.Expression;
+import org.deegree.model.filter.Expression;
 
 /**
  * TODO add documentation here
@@ -54,7 +53,7 @@ import org.deegree.model.filter.expression.Expression;
  *
  * @version $Revision:$, $Date:$
  */
-public abstract class BinaryComparisonOperator implements BooleanOperator {
+public abstract class BinaryComparisonOperator extends ComparisonOperator {
 
     protected Expression param1;
     

@@ -41,39 +41,41 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter;
+package org.deegree.model.filter.comparison;
 
-import java.util.Set;
-
+import org.deegree.model.filter.Expression;
+import org.deegree.model.filter.FilterEvaluationException;
 import org.deegree.model.generic.StructuredObject;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
-
-    private Set<String> ids;
-
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
+public class PropertyIsEqualTo extends BinaryComparisonOperator {
+    
+    public PropertyIsEqualTo( Expression param1, Expression param2, boolean matchCase ) {
+        super (param1, param2, matchCase);
     }
 
-    public Type getType() {
-        return Type.ID_FILTER;
-    }
-
-    public Set<String> getIds() {
-        return ids;
-    }
-
+    public SubType getSubType() {
+        return SubType.PROPERTY_IS_EQUAL_TO;
+    }    
+    
     public boolean evaluate( StructuredObject object )
                             throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
+        Comparable parameter1Value = param1.evaluate( object );
+        Comparable parameter2Value = param2.evaluate( object );
+        return parameter1Value.equals( parameter2Value );
+    }
+
+    public String toString( String indent ) {
+        String s = indent + "-PropertyIsEqualTo\n";
+        s += param1.toString (indent + "  ");
+        s += param2.toString (indent + "  ");
+        return s;
     }
 }

@@ -41,10 +41,10 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter;
+package org.deegree.model.filter.comparison;
 
-import java.util.Set;
-
+import org.deegree.model.filter.Expression;
+import org.deegree.model.filter.FilterEvaluationException;
 import org.deegree.model.generic.StructuredObject;
 
 /**
@@ -55,25 +55,36 @@ import org.deegree.model.generic.StructuredObject;
  * 
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public class PropertyIsBetween extends ComparisonOperator {
 
-    private Set<String> ids;
+    private Expression upperBoundary;
 
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
+    private Expression lowerBoundary;
+
+    private Expression expression;
+
+    public SubType getSubType() {
+        return SubType.PROPERTY_IS_BETWEEN;
     }
-
-    public Type getType() {
-        return Type.ID_FILTER;
-    }
-
-    public Set<String> getIds() {
-        return ids;
-    }
-
+    
     public boolean evaluate( StructuredObject object )
                             throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
+
+        Comparable propertyValue = expression.evaluate( object );
+        Comparable upperBoundaryValue = upperBoundary.evaluate( object );
+        Comparable lowerBoundaryValue = lowerBoundary.evaluate( object );
+        return upperBoundaryValue.compareTo( propertyValue ) >= 0 && lowerBoundaryValue.compareTo( propertyValue ) <= 0;
     }
+
+    public Expression getExpression() {
+        return expression;
+    }     
+    
+    public String toString( String indent ) {
+        String s = indent + "-PropertyIsBetween\n";
+        s += upperBoundary.toString (indent + "  ");
+        s += expression.toString (indent + "  ");
+        s += lowerBoundary.toString (indent + "  ");
+        return s;
+    }  
 }

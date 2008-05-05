@@ -43,8 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter;
 
-import java.util.Set;
-
 import org.deegree.model.generic.StructuredObject;
 
 /**
@@ -55,25 +53,27 @@ import org.deegree.model.generic.StructuredObject;
  * 
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public interface Operator {
 
-    private Set<String> ids;
+    public enum Type {
+        SPATIAL,
+        LOGICAL,
+        COMPARISON;
+    }    
+    
+    public Type getType();
+       
+    /**
+     * Determines the value of the boolean operator.
+     * 
+     * @param object
+     *            <code>StructuredObject</code> to be tested
+     * @return true, if the operator evaluates to true, false otherwise
+     * @throws FilterEvaluationException
+     *             if the evaluation fails
+     */
+    boolean evaluate( StructuredObject object )
+                            throws FilterEvaluationException;
 
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
-    }
-
-    public Type getType() {
-        return Type.ID_FILTER;
-    }
-
-    public Set<String> getIds() {
-        return ids;
-    }
-
-    public boolean evaluate( StructuredObject object )
-                            throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    public String toString( String indent );
 }

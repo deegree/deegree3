@@ -41,39 +41,27 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter;
+package org.deegree.model.filter.logical;
 
-import java.util.Set;
-
-import org.deegree.model.generic.StructuredObject;
+import org.deegree.model.filter.Operator;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public abstract class LogicalOperator implements Operator {
 
-    private Set<String> ids;
+    public enum SubType {
+        AND, OR, NOT;
+    }    
+    
+    public Type getType () {
+        return Type.LOGICAL;
+    }        
 
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
-    }
-
-    public Type getType() {
-        return Type.ID_FILTER;
-    }
-
-    public Set<String> getIds() {
-        return ids;
-    }
-
-    public boolean evaluate( StructuredObject object )
-                            throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    public abstract SubType getSubType ();   
 }

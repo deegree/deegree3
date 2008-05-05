@@ -66,7 +66,7 @@ import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLFragment;
-import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.XMLTools;
 import org.deegree.model.crs.Identifiable;
 import org.deegree.model.crs.components.Axis;
@@ -182,7 +182,7 @@ public class DeegreeCRSProvider implements CRSProvider {
     /**
      * The namespace to use.
      */
-    private final static String CRS_URI = CommonNamespaces.CRSNS.toASCIIString();
+    private final static String CRS_URI = CommonNamespaces.CRSNS;
 
     /**
      * The EPSG-Database defines only 48 different ellipsoids, set to 60, will --probably-- result in no collisions.
@@ -274,7 +274,7 @@ public class DeegreeCRSProvider implements CRSProvider {
      */
     public DeegreeCRSProvider() {
         Document doc = XMLTools.create();
-        rootElement = doc.createElementNS( CommonNamespaces.CRSNS.toASCIIString(), PRE + "definitions" );
+        rootElement = doc.createElementNS( CommonNamespaces.CRSNS, PRE + "definitions" );
         rootElement = (Element) doc.importNode( rootElement, false );
         rootElement = (Element) doc.appendChild( rootElement );
     }
@@ -414,7 +414,7 @@ public class DeegreeCRSProvider implements CRSProvider {
         if ( crsToExport != null ) {
             if ( crsToExport.size() != 0 ) {
                 LOG.debug( "Trying to export: " + crsToExport.size() + " coordinate systems." );
-                XMLFragment frag = new XMLFragment( new QName( "crs", "definitions", CRSNS.toASCIIString() ) );
+                XMLFragment frag = new XMLFragment( new QName( "crs", "definitions", CRSNS ) );
                 Element root = frag.getRootElement();
                 LinkedList<String> exportedIDs = new LinkedList<String>();
                 for ( CoordinateSystem crs : crsToExport ) {
@@ -456,7 +456,7 @@ public class DeegreeCRSProvider implements CRSProvider {
             allCRSIDs.addAll( XMLTools.getElements( rootElement, "//" + PRE + "geocentricCRS/" + PRE + "id[1]",
                                                     nsContext ) );
             allCRSIDs.addAll( XMLTools.getElements( rootElement, "//" + PRE + "compoundCRS/" + PRE + "id[1]", nsContext ) );
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLProcessingException e ) {
             throw new CRSConfigurationException(
                                                  Messages.getMessage( "CRS_CONFIG_GET_ALL_ELEMENT_IDS", e.getMessage() ),
                                                  e );
@@ -485,7 +485,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                                                         nsContext ) );
                 allCRSIDs.addAll( XMLTools.getElements( rootElement, "//" + PRE + "compoundCRS/" + PRE + "id[1]",
                                                         nsContext ) );
-            } catch ( XMLParsingException e ) {
+            } catch ( XMLProcessingException e ) {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_GET_ALL_ELEMENT_IDS",
                                                                           e.getMessage() ), e );
             }
@@ -621,7 +621,7 @@ public class DeegreeCRSProvider implements CRSProvider {
             valid.addAll( XMLTools.getElements( root, PRE + "primeMeridian", nsContext ) );
             valid.addAll( XMLTools.getElements( root, PRE + "wgs84Transformation", nsContext ) );
             Document doc = XMLTools.create();
-            Element newRoot = doc.createElementNS( CommonNamespaces.CRSNS.toASCIIString(), PRE + "definitions" );
+            Element newRoot = doc.createElementNS( CommonNamespaces.CRSNS, PRE + "definitions" );
             newRoot = (Element) doc.importNode( newRoot, false );
             newRoot = (Element) doc.appendChild( newRoot );
             for ( int i = 0; i < valid.size(); ++i ) {
@@ -631,11 +631,11 @@ public class DeegreeCRSProvider implements CRSProvider {
             }
             XMLTools.appendNSBinding( newRoot, CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS );
             newRoot.setAttributeNS(
-                                    CommonNamespaces.XSINS.toASCIIString(),
+                                    CommonNamespaces.XSINS,
                                     "xsi:schemaLocation",
                                     "http://www.deegree.org/crs c:/windows/profiles/rutger/EIGE~VO5/eclipse-projekte/coordinate_systems/resources/schema/crsdefinition.xsd" );
             return doc;
-        } catch ( XMLParsingException xmle ) {
+        } catch ( XMLProcessingException xmle ) {
             xmle.printStackTrace();
         }
         return root.getOwnerDocument();
@@ -1143,7 +1143,7 @@ public class DeegreeCRSProvider implements CRSProvider {
             String[] descriptions = XMLTools.getNodesAsStrings( element, PRE + "description", nsContext );
             String[] areasOfUse = XMLTools.getNodesAsStrings( element, PRE + "areaOfuse", nsContext );
             return new Identifiable( identifiers, names, versions, descriptions, areasOfUse );
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLProcessingException e ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "Identifiable",
                                                                       ( ( element == null ) ? "null"
                                                                                            : element.getLocalName() ),
@@ -1166,7 +1166,7 @@ public class DeegreeCRSProvider implements CRSProvider {
         String axisOrder = null;
         try {
             axisOrder = XMLTools.getRequiredNodeAsString( crsElement, PRE + "axisOrder", nsContext );
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLProcessingException e ) {
             throw new CRSConfigurationException(
                                                  Messages.getMessage(
                                                                       "CRS_CONFIG_PARSE_ERROR",
@@ -1198,7 +1198,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                                                                                nsContext );
                     Unit unit = parseUnit( axisElement );
                     axis[i] = new Axis( unit, t, axisOrientation );
-                } catch ( XMLParsingException e ) {
+                } catch ( XMLProcessingException e ) {
                     throw new CRSConfigurationException(
                                                          Messages.getMessage(
                                                                               "CRS_CONFIG_PARSE_ERROR",
@@ -1223,7 +1223,7 @@ public class DeegreeCRSProvider implements CRSProvider {
         List<Element> usedTransformations = null;
         try {
             usedTransformations = XMLTools.getElements( crsElement, PRE + "polynomialTransformation", nsContext );
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLProcessingException e ) {
             LOG.error( e.getMessage(), e );
         }
         List<PolynomialTransformation> result = new LinkedList<PolynomialTransformation>();
@@ -1261,7 +1261,7 @@ public class DeegreeCRSProvider implements CRSProvider {
         Element usedTransformation = null;
         try {
             usedTransformation = XMLTools.getRequiredElement( transformationElement, "*[1]", nsContext );
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLProcessingException e ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
                                                                       "the transformation to use",
                                                                       transformationElement.getLocalName(),
@@ -1287,7 +1287,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                     bValues.add( Double.parseDouble( t ) );
                 }
             }
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLProcessingException e ) {
             LOG.error( e.getMessage(), e );
         }
 
@@ -1352,7 +1352,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                 LOG.error( e.getMessage(), e );
             } catch ( InvocationTargetException e ) {
                 LOG.error( e.getMessage(), e );
-            } catch ( XMLParsingException e ) {
+            } catch ( XMLProcessingException e ) {
                 // this will probably never happen.
                 LOG.error( e.getMessage(), e );
             }
@@ -1364,12 +1364,12 @@ public class DeegreeCRSProvider implements CRSProvider {
             float scaleY = 1;
             try {
                 scaleX = (float) XMLTools.getNodeAsDouble( usedTransformation, PRE + "scaleX", nsContext, 1 );
-            } catch ( XMLParsingException e ) {
+            } catch ( XMLProcessingException e ) {
                 LOG.error( "Could not parse scaleX from crs:leastsquare, because: " + e.getMessage(), e );
             }
             try {
                 scaleY = (float) XMLTools.getNodeAsDouble( usedTransformation, PRE + "scaleY", nsContext, 1 );
-            } catch ( XMLParsingException e ) {
+            } catch ( XMLProcessingException e ) {
                 LOG.error( "Could not parse scaleY from crs:leastsquare, because: " + e.getMessage(), e );
             }
             result = new LeastSquareApproximation( aValues, bValues, targetCRS, scaleX, scaleY );
@@ -1391,7 +1391,7 @@ public class DeegreeCRSProvider implements CRSProvider {
         String units = null;
         try {
             units = XMLTools.getNodeAsString( parent, PRE + "units", nsContext, null );
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLProcessingException e ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "units",
                                                                       ( ( parent == null ) ? "null"
                                                                                           : parent.getLocalName() ),
@@ -1429,7 +1429,7 @@ public class DeegreeCRSProvider implements CRSProvider {
             usedProjection = XMLTools.getRequiredElement( crsElement, PRE + "projection", nsContext );
             usedGeographicCRS = XMLTools.getRequiredNodeAsString( crsElement, PRE + "usedGeographicCRS", nsContext );
 
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLProcessingException e ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
                                                                       "projectiontType or usedGeographicCRS",
                                                                       ( ( crsElement == null ) ? "null"
@@ -1542,7 +1542,7 @@ public class DeegreeCRSProvider implements CRSProvider {
         String usedCRS = null;
         try {
             usedCRS = XMLTools.getRequiredNodeAsString( crsElement, PRE + "usedCRS", nsContext );
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLProcessingException e ) {
             throw new CRSConfigurationException(
                                                  Messages.getMessage(
                                                                       "CRS_CONFIG_PARSE_ERROR",
@@ -1573,7 +1573,7 @@ public class DeegreeCRSProvider implements CRSProvider {
             Unit unit = parseUnit( axisElement );
             heigtAxis = new Axis( unit, axisName, axisOrientation );
             defaultHeight = XMLTools.getNodeAsDouble( crsElement, PRE + "defaultHeight", nsContext, 0 );
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLProcessingException e ) {
             LOG.error( e.getMessage(), e );
             throw new CRSConfigurationException( e.getMessage() );
         }
@@ -1608,7 +1608,7 @@ public class DeegreeCRSProvider implements CRSProvider {
         String xPath = "*[" + PRE + "id='" + id + "']";
         try {
             crsElement = XMLTools.getElement( rootElement, xPath, nsContext );
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLProcessingException e ) {
             LOG.error( Messages.getMessage( "CRS_CONFIG_NO_RESULT_FOR_ID", id, e.getMessage() ), e );
         }
         LOG.debug( "Trying to find elements with xpath: " + xPath
@@ -1633,7 +1633,7 @@ public class DeegreeCRSProvider implements CRSProvider {
         String datumID = null;
         try {
             datumID = XMLTools.getRequiredNodeAsString( parentElement, PRE + "usedDatum", nsContext );
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLProcessingException e ) {
             throw new CRSConfigurationException(
                                                  Messages.getMessage(
                                                                       "CRS_CONFIG_PARSE_ERROR",
@@ -1687,7 +1687,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                 if ( ellipsID != null && !"".equals( ellipsID.trim() ) ) {
                     ellipsoid = getEllipsoidFromID( ellipsID );
                 }
-            } catch ( XMLParsingException e ) {
+            } catch ( XMLProcessingException e ) {
                 throw new CRSConfigurationException(
                                                      Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "usedEllipsoid",
                                                                           datumElement.getLocalName(), e.getMessage() ),
@@ -1704,7 +1704,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                 if ( pMeridian == null ) {
                     pMeridian = PrimeMeridian.GREENWICH;
                 }
-            } catch ( XMLParsingException e ) {
+            } catch ( XMLProcessingException e ) {
                 throw new CRSConfigurationException(
                                                      Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
                                                                           "usedPrimeMeridian",
@@ -1723,7 +1723,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                 if ( cInfo == null ) {
                     cInfo = new WGS84ConversionInfo( "Created by DeegreeCRSProvider" );
                 }
-            } catch ( XMLParsingException e ) {
+            } catch ( XMLProcessingException e ) {
                 throw new CRSConfigurationException(
                                                      Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
                                                                           "wgs84ConversionInfo",
@@ -1783,7 +1783,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                 boolean inDegrees = XMLTools.getNodeAsBoolean( meridianElement, PRE + "longitude/@inDegrees",
                                                                nsContext, true );
                 longitude = ( longitude != 0 && inDegrees ) ? Math.toRadians( longitude ) : longitude;
-            } catch ( XMLParsingException e ) {
+            } catch ( XMLProcessingException e ) {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "longitude",
                                                                           meridianElement.getLocalName(),
                                                                           e.getMessage() ), e );
@@ -1866,7 +1866,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                 // remove the ellipsoid from the xml-tree.
                 rootElement.removeChild( ellipsoidElement );
                 return result;
-            } catch ( XMLParsingException e ) {
+            } catch ( XMLProcessingException e ) {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "ellipsoid",
                                                                           ellipsoidElement.getLocalName(),
                                                                           e.getMessage() ), e );
@@ -1910,7 +1910,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                 yR = XMLTools.getNodeAsDouble( cInfoElement, PRE + "yAxisRotation", nsContext, 0 );
                 zR = XMLTools.getNodeAsDouble( cInfoElement, PRE + "zAxisRotation", nsContext, 0 );
                 scale = XMLTools.getNodeAsDouble( cInfoElement, PRE + "scaleDifference", nsContext, 0 );
-            } catch ( XMLParsingException e ) {
+            } catch ( XMLProcessingException e ) {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "conversionInfo",
                                                                           "definitions", e.getMessage() ), e );
             }
@@ -2072,7 +2072,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                 }
             }
             return result;
-        } catch ( XMLParsingException e ) {
+        } catch ( XMLProcessingException e ) {
             throw new CRSConfigurationException(
                                                  Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
                                                                       "projection parameters",

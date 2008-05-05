@@ -41,10 +41,10 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter;
+package org.deegree.model.filter.comparison;
 
-import java.util.Set;
-
+import org.deegree.model.filter.Expression;
+import org.deegree.model.filter.FilterEvaluationException;
 import org.deegree.model.generic.StructuredObject;
 
 /**
@@ -55,25 +55,27 @@ import org.deegree.model.generic.StructuredObject;
  * 
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public class PropertyIsLessThanOrEqualTo extends BinaryComparisonOperator {
 
-    private Set<String> ids;
-
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
+    public PropertyIsLessThanOrEqualTo( Expression parameter1, Expression parameter2, boolean matchCase ) {
+        super (parameter1, parameter2, matchCase);
     }
 
-    public Type getType() {
-        return Type.ID_FILTER;
-    }
-
-    public Set<String> getIds() {
-        return ids;
-    }
-
+    public SubType getSubType() {
+        return SubType.PROPERTY_IS_LESS_THAN_OR_EQUAL_TO;
+    }    
+    
     public boolean evaluate( StructuredObject object )
                             throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
+        Comparable parameter1Value = param1.evaluate( object );
+        Comparable parameter2Value = param2.evaluate( object );
+        return parameter1Value.compareTo( parameter2Value ) <= 0;
     }
+
+    public String toString( String indent ) {
+        String s = indent + "-PropertyIsLessThanOrEqualTo\n";
+        s += param1.toString (indent + "  ");
+        s += param2.toString (indent + "  ");
+        return s;
+    }    
 }

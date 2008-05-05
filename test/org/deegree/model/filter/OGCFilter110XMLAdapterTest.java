@@ -95,6 +95,7 @@ public class OGCFilter110XMLAdapterTest {
 
     @Test    
     public void parseAndExportFilterDocument () throws IOException, XMLStreamException, FactoryConfigurationError {
+
         OGCFilter110XMLAdapter adapter = new OGCFilter110XMLAdapter ();
         adapter.load( filterURL );
         Filter filter = adapter.parse();

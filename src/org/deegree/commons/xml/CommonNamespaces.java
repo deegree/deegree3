@@ -43,10 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Definitions for OGC related namespace bindings.
@@ -56,7 +52,6 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author <a href="mailto:tfriebe@sf.net">Torsten Friebe</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -67,79 +62,79 @@ public class CommonNamespaces {
     /**
      * The XMLNS namespace is currently bound to: "http://www.w3.org/2000/xmlns/"
      */
-    public static final URI XMLNS = buildNSURI( "http://www.w3.org/2000/xmlns/" );
+    public static final String XMLNS = "http://www.w3.org/2000/xmlns/";
 
     /**
      * The GMLNS namespace is currently bound to: "http://www.opengis.net/gml"
      */
-    public static final URI GMLNS = buildNSURI( "http://www.opengis.net/gml" );
+    public static final String GMLNS = "http://www.opengis.net/gml";
 
     /**
      * The OGCNS namespace is currently bound to: "http://www.opengis.net/ogc"
      */
-    public static final URI OGCNS = buildNSURI( "http://www.opengis.net/ogc" );
+    public static final String OGCNS = "http://www.opengis.net/ogc";
 
     /**
      * The XLNNS namespace is currently bound to: "http://www.w3.org/1999/xlink"
      */
-    public static final URI XLNNS = buildNSURI( "http://www.w3.org/1999/xlink" );
+    public static final String XLNNS = "http://www.w3.org/1999/xlink";
 
     /**
      * The ISO19115NS namespace is currently bound to: "http://schemas.opengis.net/iso19115full"
      */
-    public static final URI ISO19115NS = buildNSURI( "http://schemas.opengis.net/iso19115full" );
+    public static final String ISO19115NS = "http://schemas.opengis.net/iso19115full";
 
     /**
      * The ISO19115BRIEFNS namespace is currently bound to:
      * "http://schemas.opengis.net/iso19115brief"
      */
-    public static final URI ISO19115BRIEFNS = buildNSURI( "http://schemas.opengis.net/iso19115brief" );
+    public static final String ISO19115BRIEFNS = "http://schemas.opengis.net/iso19115brief";
 
     /**
      * The ISO19119NS namespace is currently bound to: "http://schemas.opengis.net/iso19119"
      */
-    public static final URI ISO19119NS = buildNSURI( "http://schemas.opengis.net/iso19119" );
+    public static final String ISO19119NS = "http://schemas.opengis.net/iso19119";
 
     /**
      * The DCNS namespace is currently bound to: "http://purl.org/dc/elements/1.1/"
      */
-    public static final URI DCNS = buildNSURI( "http://purl.org/dc/elements/1.1/" );
+    public static final String DCNS = "http://purl.org/dc/elements/1.1/";
 
     /**
      * The XSNS namespace is currently bound to: "http://www.w3.org/2001/XMLSchema"
      */
-    public static final URI XSNS = buildNSURI( "http://www.w3.org/2001/XMLSchema" );
+    public static final String XSNS = "http://www.w3.org/2001/XMLSchema";
 
     /**
      * The XSINS namespace is currently bound to: "http://www.w3.org/2001/XMLSchema-instance"
      */
-    public static final URI XSINS = buildNSURI( "http://www.w3.org/2001/XMLSchema-instance" );
+    public static final String XSINS = "http://www.w3.org/2001/XMLSchema-instance";
 
     /**
      * The SMXMLNS namespace is currently bound to: "http://metadata.dgiwg.org/smXML"
      */
-    public static final URI SMXMLNS = buildNSURI( "http://metadata.dgiwg.org/smXML" );
+    public static final String SMXMLNS = "http://metadata.dgiwg.org/smXML";
 
     /**
      * The ISOAP10GMDNS namespace is currently bound to: "http://www.isotc211.org/2005/gmd"
      */
-    public static final URI ISOAP10GMDNS = buildNSURI( "http://www.isotc211.org/2005/gmd" );
+    public static final String ISOAP10GMDNS = "http://www.isotc211.org/2005/gmd";
 
     /**
      * The ISOAP10GCONS namespace is currently bound to: "http://www.isotc211.org/2005/gco"
      */
-    public static final URI ISOAP10GCONS = buildNSURI( "http://www.isotc211.org/2005/gco" );
+    public static final String ISOAP10GCONS = "http://www.isotc211.org/2005/gco";
 
     /**
      * The APISO namespace is currently bound to: "http://www.opengis.net/cat/csw/apiso/1.0"
      */
-    public static final URI APISO = buildNSURI( "http://www.opengis.net/cat/csw/apiso/1.0" );
+    public static final String APISO = "http://www.opengis.net/cat/csw/apiso/1.0";
     
     /**
      * The CRSNS namespace --used for the crs package-- is currently bound to:
      * "http://www.deegree.org/crs"
      */
-    public static final URI CRSNS = buildNSURI( "http://www.deegree.org/crs" );
+    public static final String CRSNS = "http://www.deegree.org/crs";
 
     // prefixes
     /**
@@ -220,20 +215,6 @@ public class CommonNamespaces {
     private static NamespaceContext nsContext = null;
 
     /**
-     * @param namespace
-     * @return Returns the uri for the passed namespace.
-     */
-    public static URI buildNSURI( String namespace ) {
-        URI uri = null;
-        try {
-            uri = new URI( namespace );
-        } catch ( URISyntaxException e ) {
-            LogFactory.getLog( CommonNamespaces.class ).error( "Invalid common namespace URI '" + namespace + "':" + e.getMessage(), e );
-        }
-        return uri;
-    }
-
-    /**
      * Returns the <code>NamespaceContext</code> for common namespaces known be deegree.
      * 
      * @return the NamespaceContext for all common namespaces
@@ -264,5 +245,4 @@ public class CommonNamespaces {
     public String toString() {
         return nsContext.toString();
     }
-
 }

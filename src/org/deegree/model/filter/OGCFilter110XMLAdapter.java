@@ -44,9 +44,14 @@
 package org.deegree.model.filter;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -56,32 +61,35 @@ import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.xml.XMLAdapter;
-import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.XMLProcessingException;
+import org.deegree.commons.xml.XPath;
 import org.deegree.model.filter.comparison.BinaryComparisonOperator;
-import org.deegree.model.filter.comparison.PropertyIsBetweenOperator;
-import org.deegree.model.filter.comparison.PropertyIsEqualToOperator;
-import org.deegree.model.filter.comparison.PropertyIsGreaterThanOperator;
-import org.deegree.model.filter.comparison.PropertyIsGreaterThanOrEqualToOperator;
-import org.deegree.model.filter.comparison.PropertyIsLessThanOperator;
-import org.deegree.model.filter.comparison.PropertyIsLessThanOrEqualToOperator;
-import org.deegree.model.filter.comparison.PropertyIsLikeOperator;
-import org.deegree.model.filter.comparison.PropertyIsNotEqualToOperator;
-import org.deegree.model.filter.comparison.PropertyIsNullOperator;
-import org.deegree.model.filter.expression.AddExpression;
-import org.deegree.model.filter.expression.DivExpression;
-import org.deegree.model.filter.expression.Expression;
+import org.deegree.model.filter.comparison.ComparisonOperator;
+import org.deegree.model.filter.comparison.PropertyIsBetween;
+import org.deegree.model.filter.comparison.PropertyIsEqualTo;
+import org.deegree.model.filter.comparison.PropertyIsGreaterThan;
+import org.deegree.model.filter.comparison.PropertyIsGreaterThanOrEqualTo;
+import org.deegree.model.filter.comparison.PropertyIsLessThan;
+import org.deegree.model.filter.comparison.PropertyIsLessThanOrEqualTo;
+import org.deegree.model.filter.comparison.PropertyIsLike;
+import org.deegree.model.filter.comparison.PropertyIsNotEqualTo;
+import org.deegree.model.filter.comparison.PropertyIsNull;
+import org.deegree.model.filter.expression.Add;
+import org.deegree.model.filter.expression.Div;
 import org.deegree.model.filter.expression.Function;
 import org.deegree.model.filter.expression.Literal;
-import org.deegree.model.filter.expression.MulExpression;
+import org.deegree.model.filter.expression.Mul;
 import org.deegree.model.filter.expression.PropertyName;
-import org.deegree.model.filter.expression.SubExpression;
-import org.deegree.model.filter.logical.AndOperator;
-import org.deegree.model.filter.logical.NotOperator;
-import org.deegree.model.filter.logical.OrOperator;
+import org.deegree.model.filter.expression.Sub;
+import org.deegree.model.filter.logical.And;
+import org.deegree.model.filter.logical.LogicalOperator;
+import org.deegree.model.filter.logical.Not;
+import org.deegree.model.filter.logical.Or;
+import org.deegree.model.filter.spatial.SpatialOperator;
 import org.deegree.model.i18n.Messages;
 
 /**
- * TODO add documentation here
+ * Adapter between XML documents that comply to the Filter Encoding Specification 1.1.0 and {@link Filter} objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -90,304 +98,404 @@ import org.deegree.model.i18n.Messages;
  */
 public class OGCFilter110XMLAdapter extends XMLAdapter {
 
-    private static Log LOG = LogFactory.getLog( OGCFilter110XMLAdapter.class );
+    private static final Log LOG = LogFactory.getLog( OGCFilter110XMLAdapter.class );
 
-    private static String OGC_NS = "http://www.opengis.net/ogc";
+    private static final String OGC_NS = "http://www.opengis.net/ogc";
 
-    // qualified element name of filter
+    private static final QName NAME_ATTR = new QName( "name" );
 
-    public static QName FILTER = new QName( OGC_NS, "Filter" );
+    private static final QName FEATURE_ID_ELEMENT = new QName( OGC_NS, "FeatureId" );
 
-    // qualified element names of comparison operators
+    private static final QName GML_OBJECT_ID_ELEMENT = new QName( OGC_NS, "GmlObjectId" );
 
-    public static QName PROPERTY_IS_EQUAL_TO = new QName( OGC_NS, "PropertyIsEqualTo" );
+    private static final QName MATCH_CASE_ATTR = new QName( "matchCase" );
 
-    public static QName PROPERTY_IS_NOT_EQUAL_TO = new QName( OGC_NS, "PropertyIsNotEqualTo" );
+    private static final Map<Expression.Type, QName> expressionTypeToElementName = new HashMap<Expression.Type, QName>();
 
-    public static QName PROPERTY_IS_LESS_THAN = new QName( OGC_NS, "PropertyIsLessThan" );
+    private static final Map<QName, Expression.Type> elementNameToExpressionType = new HashMap<QName, Expression.Type>();
 
-    public static QName PROPERTY_IS_GREATER_THAN = new QName( OGC_NS, "PropertyIsGreaterThan" );
+    private static final Map<QName, Operator.Type> elementNameToOperatorType = new HashMap<QName, Operator.Type>();
 
-    public static QName PROPERTY_IS_LESS_THAN_OR_EQUAL_TO = new QName( OGC_NS, "PropertyIsLessThanOrEqualTo" );
+    private static final Map<QName, SpatialOperator.SubType> elementNameToSpatialOperatorType = new HashMap<QName, SpatialOperator.SubType>();
 
-    public static QName PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO = new QName( OGC_NS, "PropertyIsGreaterThanOrEqualTo" );
+    private static final Map<SpatialOperator.SubType, QName> spatialOperatorTypeToElementName = new HashMap<SpatialOperator.SubType, QName>();
 
-    public static QName PROPERTY_IS_LIKE = new QName( OGC_NS, "PropertyIsLike" );
+    private static final Map<QName, ComparisonOperator.SubType> elementNameToComparisonOperatorType = new HashMap<QName, ComparisonOperator.SubType>();
 
-    public static QName PROPERTY_IS_NULL = new QName( OGC_NS, "PropertyIsNull" );
+    private static final Map<ComparisonOperator.SubType, QName> comparisonOperatorTypeToElementName = new HashMap<ComparisonOperator.SubType, QName>();
 
-    public static QName PROPERTY_IS_BETWEEN = new QName( OGC_NS, "PropertyIsBetween" );
-    
-    public static QName UPPER_BOUNDARY = new QName( OGC_NS, "UpperBoundary" );
-    public static QName LOWER_BOUNDARY = new QName( OGC_NS, "UpperBoundary" );
+    private static final Map<QName, LogicalOperator.SubType> elementNameToLogicalOperatorType = new HashMap<QName, LogicalOperator.SubType>();
 
-    // attribute names
-
-    public static QName MATCH_CASE = new QName( "matchCase" );
-
-    // qualified element names of spatial operators
-
-    public static QName EQUALS = new QName( OGC_NS, "Equals" );
-
-    public static QName DISJOINT = new QName( OGC_NS, "Disjoint" );
-
-    public static QName TOUCHES = new QName( OGC_NS, "Touches" );
-
-    public static QName WITHIN = new QName( OGC_NS, "Within" );
-
-    public static QName OVERLAPS = new QName( OGC_NS, "Overlaps" );
-
-    public static QName CROSSES = new QName( OGC_NS, "Crosses" );
-
-    public static QName INTERSECTS = new QName( OGC_NS, "Intersects" );
-
-    public static QName CONTAINS = new QName( OGC_NS, "Contains" );
-
-    public static QName DWITHIN = new QName( OGC_NS, "DWithin" );
-
-    public static QName BEYOND = new QName( OGC_NS, "Beyond" );
-
-    public static QName BBOX = new QName( OGC_NS, "BBOX" );
-
-    // qualified element names of logical operators
-
-    public static QName AND = new QName( OGC_NS, "And" );
-
-    public static QName OR = new QName( OGC_NS, "Or" );
-
-    public static QName NOT = new QName( OGC_NS, "Not" );
-
-    // qualified element names of id specifiers
-
-    public static QName FEATURE_ID = new QName( OGC_NS, "FeatureId" );
-
-    public static QName GML_OBJECT_ID = new QName( OGC_NS, "GmlObjectId" );
-
-    // qualified element names of expressions
-
-    public static QName ADD = new QName( OGC_NS, "Add" );
-
-    public static QName SUB = new QName( OGC_NS, "Sub" );
-
-    public static QName MUL = new QName( OGC_NS, "Mul" );
-
-    public static QName DIV = new QName( OGC_NS, "Div" );
-
-    public static QName PROPERTY_NAME = new QName( OGC_NS, "PropertyName" );
-
-    public static QName FUNCTION = new QName( OGC_NS, "Function" );
-
-    public static QName LITERAL = new QName( OGC_NS, "Literal" );
-
-    // attribute names
-
-    public static QName NAME = new QName( "name" );
-
-    // arrays for all element names of a certain type
-
-    private static QName[] COMPARISON_OPS;
-
-    private static QName[] SPATIAL_OPS;
-
-    private static QName[] LOGICAL_OPS;
-
-    private static QName[] ID_SPECIFIERS;
+    private static final Map<LogicalOperator.SubType, QName> logicalOperatorTypeToElementName = new HashMap<LogicalOperator.SubType, QName>();
 
     static {
-        COMPARISON_OPS = new QName[] { PROPERTY_IS_EQUAL_TO, PROPERTY_IS_NOT_EQUAL_TO, PROPERTY_IS_LESS_THAN,
-                                      PROPERTY_IS_GREATER_THAN, PROPERTY_IS_LESS_THAN_OR_EQUAL_TO,
-                                      PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO, PROPERTY_IS_LIKE, PROPERTY_IS_BETWEEN };
-        SPATIAL_OPS = new QName[] { EQUALS, DISJOINT, TOUCHES, WITHIN, OVERLAPS, CROSSES, INTERSECTS, CONTAINS,
-                                   DWITHIN, BEYOND, BBOX };
-        LOGICAL_OPS = new QName[] { AND, OR, NOT };
-        ID_SPECIFIERS = new QName[] { FEATURE_ID, GML_OBJECT_ID };
 
+        // element name <-> expression type
+        addElementToExpressionMapping( new QName( OGC_NS, "Add" ), Expression.Type.ADD );
+        addElementToExpressionMapping( new QName( OGC_NS, "Sub" ), Expression.Type.SUB );
+        addElementToExpressionMapping( new QName( OGC_NS, "Mul" ), Expression.Type.MUL );
+        addElementToExpressionMapping( new QName( OGC_NS, "Div" ), Expression.Type.DIV );
+        addElementToExpressionMapping( new QName( OGC_NS, "PropertyName" ), Expression.Type.PROPERTY_NAME );
+        addElementToExpressionMapping( new QName( OGC_NS, "Function" ), Expression.Type.FUNCTION );
+        addElementToExpressionMapping( new QName( OGC_NS, "Literal" ), Expression.Type.LITERAL );
+
+        // element name <-> spatial operator type
+        addElementToSpatialOperatorMapping( new QName( OGC_NS, "BBOX" ), SpatialOperator.SubType.BBOX );
+        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Beyond" ), SpatialOperator.SubType.BEYOND );
+        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Contains" ), SpatialOperator.SubType.CONTAINS );
+        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Crosses" ), SpatialOperator.SubType.CROSSES );
+        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Equals" ), SpatialOperator.SubType.EQUALS );
+        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Disjoint" ), SpatialOperator.SubType.DISJOINT );
+        addElementToSpatialOperatorMapping( new QName( OGC_NS, "DWithin" ), SpatialOperator.SubType.DWITHIN );
+        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Intersects" ), SpatialOperator.SubType.INTERSECTS );
+        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Overlaps" ), SpatialOperator.SubType.OVERLAPS );
+        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Touches" ), SpatialOperator.SubType.TOUCHES );
+        addElementToSpatialOperatorMapping( new QName( OGC_NS, "Within" ), SpatialOperator.SubType.WITHIN );
+
+        // element name <-> logical operator type
+        addElementToLogicalOperatorMapping( new QName( OGC_NS, "And" ), LogicalOperator.SubType.AND );
+        addElementToLogicalOperatorMapping( new QName( OGC_NS, "Or" ), LogicalOperator.SubType.OR );
+        addElementToLogicalOperatorMapping( new QName( OGC_NS, "Not" ), LogicalOperator.SubType.NOT );
+
+        // element name <-> comparison operator type
+        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsBetween" ),
+                                               ComparisonOperator.SubType.PROPERTY_IS_BETWEEN );
+        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsEqualTo" ),
+                                               ComparisonOperator.SubType.PROPERTY_IS_EQUAL_TO );
+        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsGreaterThan" ),
+                                               ComparisonOperator.SubType.PROPERTY_IS_GREATER_THAN );
+        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsGreaterThanOrEqualTo" ),
+                                               ComparisonOperator.SubType.PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO );
+        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsLessThan" ),
+                                               ComparisonOperator.SubType.PROPERTY_IS_LESS_THAN );
+        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsLessThanOrEqualTo" ),
+                                               ComparisonOperator.SubType.PROPERTY_IS_LESS_THAN_OR_EQUAL_TO );
+        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsLike" ),
+                                               ComparisonOperator.SubType.PROPERTY_IS_LIKE );
+        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsNotEqualTo" ),
+                                               ComparisonOperator.SubType.PROPERTY_IS_NOT_EQUAL_TO );
+        addElementToComparisonOperatorMapping( new QName( OGC_NS, "PropertyIsNull" ),
+                                               ComparisonOperator.SubType.PROPERTY_IS_NULL );
+    }
+
+    private static void addElementToExpressionMapping( QName elementName, Expression.Type type ) {
+        elementNameToExpressionType.put( elementName, type );
+        expressionTypeToElementName.put( type, elementName );
+    }
+
+    private static void addElementToSpatialOperatorMapping( QName elementName, SpatialOperator.SubType type ) {
+        elementNameToOperatorType.put( elementName, Operator.Type.SPATIAL );
+        elementNameToSpatialOperatorType.put( elementName, type );
+        spatialOperatorTypeToElementName.put( type, elementName );
+    }
+
+    private static void addElementToLogicalOperatorMapping( QName elementName, LogicalOperator.SubType type ) {
+        elementNameToOperatorType.put( elementName, Operator.Type.LOGICAL );
+        elementNameToLogicalOperatorType.put( elementName, type );
+        logicalOperatorTypeToElementName.put( type, elementName );
+    }
+
+    private static void addElementToComparisonOperatorMapping( QName elementName, ComparisonOperator.SubType type ) {
+        elementNameToOperatorType.put( elementName, Operator.Type.COMPARISON );
+        elementNameToComparisonOperatorType.put( elementName, type );
+        comparisonOperatorTypeToElementName.put( type, elementName );
     }
 
     /**
-     * Parses the encapsulated element as a {@link Filter} expression.
+     * Parses the encapsulated root element as a {@link Filter}.
+     * <p>
+     * The element must be a {http://www.opengis.net/ogc}Filter element.
      * 
-     * @return corresponding <code>Filter</code> object
-     * @throws XMLParsingException
+     * @return <code>Filter</code> object
+     * @throws XMLProcessingException
      */
     public Filter parse()
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
 
         Filter filter = null;
 
         Iterator childIterator = rootElement.getChildElements();
         if ( !childIterator.hasNext() ) {
             String msg = "ogc:Filter elements must have at least one child.";
-            throw new XMLParsingException( msg );
+            throw new XMLProcessingException( msg );
         }
 
         OMElement element = (OMElement) rootElement.getChildElements().next();
         QName elementName = element.getQName();
-        if ( isIdSpecifier( elementName ) ) {
+        if ( GML_OBJECT_ID_ELEMENT.equals( elementName ) || FEATURE_ID_ELEMENT.equals( elementName ) ) {
             LOG.debug( "Building id filter" );
+            filter = parseIdFilter( element );
         } else {
-            LOG.debug( "Building complex (operator based) filter" );
-            BooleanOperator rootOperator = parseOperator( element );
-            filter = new ComplexFilter( rootOperator );
+            LOG.debug( "Building operator filter" );
+            Operator rootOperator = parseOperator( element );
+            filter = new OperatorFilter( rootOperator );
         }
         return filter;
     }
 
     /**
+     * Parses the given element as an {@link IdFilter}.
+     * <p>
+     * The element must be a {http://www.opengis.net/ogc}Filter element.
+     * 
+     * @return <code>Filter</code> object
+     * @throws XMLProcessingException
+     */
+    private IdFilter parseIdFilter( OMElement element ) {
+
+        Set<String> matchedIds = new HashSet<String>();
+
+        Iterator childElementIter = element.getChildElements();
+        while ( childElementIter.hasNext() ) {
+            OMElement childElement = (OMElement) childElementIter.next();
+            QName childElementName = childElement.getQName();
+            if ( GML_OBJECT_ID_ELEMENT.equals( childElementName ) || FEATURE_ID_ELEMENT.equals( childElementName ) ) {
+                String id = childElement.getText();
+                matchedIds.add( id );
+            } else {
+                String msg = Messages.getMessage( "FILTER_PARSING_ID_FILTER", childElementName, GML_OBJECT_ID_ELEMENT,
+                                                  FEATURE_ID_ELEMENT );
+                throw new XMLProcessingException( msg );
+            }
+        }
+        return new IdFilter( matchedIds );
+    }
+
+    /**
      * Parses the given element as an {@link Expression}.
      * <p>
-     * The given element must be one of the following:
+     * The element must be one of the following:
      * <ul>
-     * {http://www.opengis.net/ogc}:Add
+     * <li>{http://www.opengis.net/ogc}Add</li>
+     * <li>{http://www.opengis.net/ogc}Sub</li>
+     * <li>{http://www.opengis.net/ogc}Div</li>
+     * <li>{http://www.opengis.net/ogc}Mul</li>
+     * <li>{http://www.opengis.net/ogc}PropertyName</li>
+     * <li>{http://www.opengis.net/ogc}Literal</li>
+     * <li>{http://www.opengis.net/ogc}Function</li>
      * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:Sub
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:Div
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:Mul
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyName
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:Function
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:Literal
-     * </ul>
-     * <li>
      * 
      * @param element
      *            element to be parsed
      * @return expression object
      */
     private Expression parseExpression( OMElement element ) {
+
         Expression expression = null;
-        QName elementName = element.getQName();
-        if ( ADD.equals( elementName ) || SUB.equals( elementName ) || MUL.equals( elementName )
-             || DIV.equals( elementName ) ) {
-            Expression param1 = null;
-            Expression param2 = null;
+
+        // check if element name is a valid expression element
+        Expression.Type type = elementNameToExpressionType.get( element.getQName() );
+        if ( type == null ) {
+            String msg = "Unknown operator element '" + element.getQName() + "'.";
+            throw new XMLProcessingException( msg );
+        }
+
+        switch ( type ) {
+        case ADD: {
             try {
                 Iterator childElementIter = element.getChildElements();
-                OMElement paramElement = (OMElement) childElementIter.next();
-                param1 = parseExpression( paramElement );
-                paramElement = (OMElement) childElementIter.next();
-                param2 = parseExpression( paramElement );
+                Expression param1 = parseExpression( (OMElement) childElementIter.next() );
+                Expression param2 = parseExpression( (OMElement) childElementIter.next() );
+                expression = new Add( param1, param2 );
                 if ( childElementIter.hasNext() ) {
-                    throw new NoSuchElementException();
+                    String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
+                    throw new XMLProcessingException( msg );
                 }
             } catch ( NoSuchElementException e ) {
                 String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
-                throw new XMLParsingException( msg );
+                throw new XMLProcessingException( msg );
             }
-            if ( ADD.equals( elementName ) ) {
-                expression = new AddExpression( param1, param2 );
-            } else if ( SUB.equals( elementName ) ) {
-                expression = new SubExpression( param1, param2 );
-            } else if ( MUL.equals( elementName ) ) {
-                expression = new MulExpression( param1, param2 );
-            } else {
-                expression = new DivExpression( param1, param2 );
+            break;
+        }
+        case SUB: {
+            try {
+                Iterator childElementIter = element.getChildElements();
+                Expression param1 = parseExpression( (OMElement) childElementIter.next() );
+                Expression param2 = parseExpression( (OMElement) childElementIter.next() );
+                expression = new Sub( param1, param2 );
+                if ( childElementIter.hasNext() ) {
+                    String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
+                    throw new XMLProcessingException( msg );
+                }
+            } catch ( NoSuchElementException e ) {
+                String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
+                throw new XMLProcessingException( msg );
             }
-        } else if ( PROPERTY_NAME.equals( elementName ) ) {
+        }
+        case MUL: {
+            try {
+                Iterator childElementIter = element.getChildElements();
+                Expression param1 = parseExpression( (OMElement) childElementIter.next() );
+                Expression param2 = parseExpression( (OMElement) childElementIter.next() );
+                expression = new Mul( param1, param2 );
+                if ( childElementIter.hasNext() ) {
+                    String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
+                    throw new XMLProcessingException( msg );
+                }
+            } catch ( NoSuchElementException e ) {
+                String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
+                throw new XMLProcessingException( msg );
+            }
+        }
+        case DIV: {
+            try {
+                Iterator childElementIter = element.getChildElements();
+                Expression param1 = parseExpression( (OMElement) childElementIter.next() );
+                Expression param2 = parseExpression( (OMElement) childElementIter.next() );
+                expression = new Div( param1, param2 );
+                if ( childElementIter.hasNext() ) {
+                    String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
+                    throw new XMLProcessingException( msg );
+                }
+            } catch ( NoSuchElementException e ) {
+                String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
+                throw new XMLProcessingException( msg );
+            }
+        }
+        case PROPERTY_NAME: {
             expression = new PropertyName( element.getText() );
-        } else if ( FUNCTION.equals( elementName ) ) {
-            String name = element.getAttributeValue( NAME );
+            break;
+        }
+        case LITERAL: {
+            expression = new Literal( element.getText() );
+            break;
+        }
+        case FUNCTION: {
+            String name = element.getAttributeValue( new QName( "name" ) );
             if ( name == null ) {
                 String msg = Messages.getMessage( "FILTER_PARSING_FUNCTION_NAME_ATTR_MISSING" );
-                throw new XMLParsingException( msg );
+                throw new XMLProcessingException( msg );
             }
             List<Expression> params = new ArrayList<Expression>();
             Iterator childElementIter = element.getChildElements();
-            OMElement paramElement = (OMElement) childElementIter.next();
-            Expression param = parseExpression( paramElement );
+            Expression param = parseExpression( (OMElement) childElementIter.next() );
             params.add( param );
             expression = new Function( name, params );
-        } else if ( LITERAL.equals( elementName ) ) {
-            expression = new Literal( element.getText() );
+            break;
+        }
         }
         return expression;
     }
 
-    private BooleanOperator parseOperator( OMElement element ) {
-        BooleanOperator operator = null;
-        QName elementName = element.getQName();
-        if ( isSpatialOperator( elementName ) ) {
-            LOG.debug( "Building spatial operator" );
-            operator = parseSpatialOperator( element );
-        } else if ( isComparisonOperator( elementName ) ) {
+    /**
+     * Parses the given element as an {@link Operator}.
+     * <p>
+     * The element must be one of the following types:
+     * <ul>
+     * <li>{http://www.opengis.net/ogc}Add</li>
+     * <li>{http://www.opengis.net/ogc}Sub</li>
+     * <li>{http://www.opengis.net/ogc}Div</li>
+     * <li>{http://www.opengis.net/ogc}Mul</li>
+     * <li>{http://www.opengis.net/ogc}PropertyName</li>
+     * <li>{http://www.opengis.net/ogc}Literal</li>
+     * <li>{http://www.opengis.net/ogc}Function</li>
+     * </ul>
+     * 
+     * @param element
+     *            element to be parsed
+     * @return expression object
+     */
+    private Operator parseOperator( OMElement element ) {
+
+        Operator operator = null;
+
+        // check if element name is a valid operator element
+        Operator.Type type = elementNameToOperatorType.get( element.getQName() );
+        if ( type == null ) {
+            String msg = "Unknown operator element '" + element.getQName() + "'.";
+            throw new XMLProcessingException( msg );
+        }
+
+        switch ( type ) {
+        case COMPARISON:
             LOG.debug( "Building comparison operator" );
             operator = parseComparisonOperator( element );
-        } else if ( isLogicalOperator( elementName ) ) {
+            break;
+        case LOGICAL:
             LOG.debug( "Building logical operator" );
             operator = parseLogicalOperator( element );
-        } else {
-            String msg = "Unknown operator '" + elementName + "' in filter expression.";
-            throw new XMLParsingException( msg );
+            break;
+        case SPATIAL:
+            LOG.debug( "Building spatial operator" );
+            operator = parseSpatialOperator( element );
+            break;
         }
         return operator;
     }
 
-    private BooleanOperator parseSpatialOperator( OMElement element ) {
+    /**
+     * Parses the given element as a {@link SpatialOperator}.
+     * <p>
+     * The element must be one of the following:
+     * <ul>
+     * <li>{http://www.opengis.net/ogc}BBOX</li>
+     * <li>{http://www.opengis.net/ogc}Beyond</li>
+     * <li>{http://www.opengis.net/ogc}Contains</li>
+     * <li>{http://www.opengis.net/ogc}Crosses</li>
+     * <li>{http://www.opengis.net/ogc}Disjoint</li>
+     * <li>{http://www.opengis.net/ogc}DWithin</li>
+     * <li>{http://www.opengis.net/ogc}Equals</li>
+     * <li>{http://www.opengis.net/ogc}Intersects</li>
+     * <li>{http://www.opengis.net/ogc}Overlaps</li>
+     * <li>{http://www.opengis.net/ogc}Touches</li>
+     * <li>{http://www.opengis.net/ogc}Within</li>
+     * </ul>
+     * 
+     * @param element
+     *            element to be parsed
+     * @return logical operator object
+     */
+    private SpatialOperator parseSpatialOperator( OMElement element ) {
         // TODO Auto-generated method stub
         return null;
     }
 
     /**
-     * Parses the given element as a {@link BooleanOperator}.
+     * Parses the given element as a {@link ComparisonOperator}.
      * <p>
-     * The given element must be one of the following:
+     * The element must be one of the following:
      * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsEqualTo
+     * <li>{http://www.opengis.net/ogc}PropertyIsEqualTo</li>
+     * <li>{http://www.opengis.net/ogc}PropertyIsGreaterThan</li>
+     * <li>{http://www.opengis.net/ogc}PropertyIsGreaterThanOrEqualTo</li>
+     * <li>{http://www.opengis.net/ogc}PropertyIsLessThan</li>
+     * <li>{http://www.opengis.net/ogc}PropertyIsLessThanOrEqualTo</li>
+     * <li>{http://www.opengis.net/ogc}PropertyIsNotEqualTo</li>
+     * <li>{http://www.opengis.net/ogc}PropertyIsBetween</li>
+     * <li>{http://www.opengis.net/ogc}PropertyIsLike</li>
+     * <li>{http://www.opengis.net/ogc}PropertyIsNull</li>
      * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsNotEqualTo
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsLessThan
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsGreaterThan
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsLessThanOrEqualTo
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsGreaterThanOrEqualTo
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsLike
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsNull
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsBetween
-     * </ul>
-     * <li>
      * 
      * @param element
      *            element to be parsed
-     * @return corresponding boolean operator object
+     * @return logical operator object
      */
-    private BooleanOperator parseComparisonOperator( OMElement element ) {
-        BooleanOperator comparisonOperator = null;
-        QName elementName = element.getQName();
+    private ComparisonOperator parseComparisonOperator( OMElement element ) {
 
-        if ( elementName.equals( PROPERTY_IS_EQUAL_TO ) || elementName.equals( PROPERTY_IS_NOT_EQUAL_TO )
-             || elementName.equals( PROPERTY_IS_LESS_THAN ) || elementName.equals( PROPERTY_IS_GREATER_THAN )
-             || elementName.equals( PROPERTY_IS_LESS_THAN_OR_EQUAL_TO )
-             || elementName.equals( PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO ) ) {
-            comparisonOperator = parseBinaryComparisonOperator( element );
-        } else if ( elementName.equals( PROPERTY_IS_LIKE ) ) {
-        } else if ( elementName.equals( PROPERTY_IS_NULL ) ) {
-        } else if ( elementName.equals( PROPERTY_IS_BETWEEN ) ) {
-        } else {
-            assert false;
+        ComparisonOperator comparisonOperator = null;
+
+        // check if element name is a valid comparison operator element
+        ComparisonOperator.SubType type = elementNameToComparisonOperatorType.get( element.getQName() );
+        assert type != null;
+
+        switch ( type ) {
+        case PROPERTY_IS_EQUAL_TO:
+        case PROPERTY_IS_GREATER_THAN:
+        case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
+        case PROPERTY_IS_LESS_THAN:
+        case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
+        case PROPERTY_IS_NOT_EQUAL_TO:
+            comparisonOperator = parseBinaryComparisonOperator( element, type );
+            break;
+        case PROPERTY_IS_BETWEEN:
+            // TODO implement me
+            break;
+        case PROPERTY_IS_LIKE:
+            // TODO implement me
+            break;
+        case PROPERTY_IS_NULL:
+            // TODO implement me
+            break;
         }
         return comparisonOperator;
     }
@@ -395,32 +503,21 @@ public class OGCFilter110XMLAdapter extends XMLAdapter {
     /**
      * Parses the given element as a {@link BinaryComparisonOperator}.
      * <p>
-     * The given element must be one of the following:
+     * The element must be one of the following:
      * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsEqualTo
+     * <li>{http://www.opengis.net/ogc}PropertyIsEqualTo</li>
+     * <li>{http://www.opengis.net/ogc}PropertyIsGreaterThan</li>
+     * <li>{http://www.opengis.net/ogc}PropertyIsGreaterThanOrEqualTo</li>
+     * <li>{http://www.opengis.net/ogc}PropertyIsLessThan</li>
+     * <li>{http://www.opengis.net/ogc}PropertyIsLessThanOrEqualTo</li>
+     * <li>{http://www.opengis.net/ogc}PropertyIsNotEqualTo</li>
      * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsNotEqualTo
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsLessThan
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsGreaterThan
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsLessThanOrEqualTo
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:PropertyIsGreaterThanOrEqualTo
-     * </ul>
-     * <li>
      * 
      * @param element
      *            element to be parsed
-     * @return corresponding binary comparison operator object
+     * @return binary comparison operator object
      */
-    private BinaryComparisonOperator parseBinaryComparisonOperator( OMElement element ) {
+    private BinaryComparisonOperator parseBinaryComparisonOperator( OMElement element, ComparisonOperator.SubType type ) {
 
         BinaryComparisonOperator comparisonOperator = null;
         Iterator childElementIter = element.getChildElements();
@@ -435,288 +532,329 @@ public class OGCFilter110XMLAdapter extends XMLAdapter {
             if ( childElementIter.hasNext() ) {
                 throw new NoSuchElementException();
             }
-            String matchCaseAttr = parameterElement.getAttributeValue( MATCH_CASE );
-            matchCase = parseBoolean( matchCaseAttr );
+            matchCase = getNodeAsBoolean( parameterElement, new XPath( "@matchCase", nsContext ), false );
         } catch ( NoSuchElementException e ) {
             String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
-            throw new XMLParsingException( msg );
+            throw new XMLProcessingException( msg );
         }
 
-        QName elementName = element.getQName();
-        if ( PROPERTY_IS_EQUAL_TO.equals( elementName ) ) {
-            comparisonOperator = new PropertyIsEqualToOperator( parameter1, parameter2, matchCase );
-        } else if ( PROPERTY_IS_NOT_EQUAL_TO.equals( elementName ) ) {
-            comparisonOperator = new PropertyIsNotEqualToOperator( parameter1, parameter2, matchCase );
-        } else if ( PROPERTY_IS_LESS_THAN.equals( elementName ) ) {
-            comparisonOperator = new PropertyIsLessThanOperator( parameter1, parameter2, matchCase );
-        } else if ( PROPERTY_IS_GREATER_THAN.equals( elementName ) ) {
-            comparisonOperator = new PropertyIsGreaterThanOperator( parameter1, parameter2, matchCase );
-        } else if ( PROPERTY_IS_LESS_THAN_OR_EQUAL_TO.equals( elementName ) ) {
-            comparisonOperator = new PropertyIsLessThanOrEqualToOperator( parameter1, parameter2, matchCase );
-        } else if ( PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO.equals( elementName ) ) {
-            comparisonOperator = new PropertyIsGreaterThanOrEqualToOperator( parameter1, parameter2, matchCase );
-        } else {
+        switch ( type ) {
+        case PROPERTY_IS_EQUAL_TO:
+            comparisonOperator = new PropertyIsEqualTo( parameter1, parameter2, matchCase );
+            break;
+        case PROPERTY_IS_NOT_EQUAL_TO:
+            comparisonOperator = new PropertyIsNotEqualTo( parameter1, parameter2, matchCase );
+            break;
+        case PROPERTY_IS_LESS_THAN:
+            comparisonOperator = new PropertyIsLessThan( parameter1, parameter2, matchCase );
+            break;
+        case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
+            comparisonOperator = new PropertyIsLessThanOrEqualTo( parameter1, parameter2, matchCase );
+            break;
+        case PROPERTY_IS_GREATER_THAN:
+            comparisonOperator = new PropertyIsGreaterThan( parameter1, parameter2, matchCase );
+            break;
+        case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
+            comparisonOperator = new PropertyIsGreaterThanOrEqualTo( parameter1, parameter2, matchCase );
+            break;
+        default:
             assert false;
         }
         return comparisonOperator;
     }
 
     /**
-     * Parses the given element as a {@link BooleanOperator}.
+     * Parses the given element as a {@link LogicalOperator}.
      * <p>
-     * The given element must be one of the following:
+     * The element must be one of the following:
      * <ul>
-     * {http://www.opengis.net/ogc}:And
+     * <li>{http://www.opengis.net/ogc}And</li>
+     * <li>{http://www.opengis.net/ogc}Or</li>
+     * <li>{http://www.opengis.net/ogc}Not</li>
      * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:Or
-     * </ul>
-     * <ul>
-     * {http://www.opengis.net/ogc}:Not
-     * </ul>
-     * <li>
      * 
      * @param element
      *            element to be parsed
-     * @return corresponding boolean operator object
+     * @return logical operator object
      */
-    private BooleanOperator parseLogicalOperator( OMElement element ) {
+    private Operator parseLogicalOperator( OMElement element ) {
 
-        BooleanOperator logicalOperator;
-        QName elementName = element.getQName();
+        Operator logicalOperator = null;
 
-        if ( elementName.equals( AND ) ) {
-            Iterator childElementIter = element.getChildElements();
-            BooleanOperator parameter1 = null;
-            BooleanOperator parameter2 = null;
-            try {
-                OMElement parameterElement = (OMElement) childElementIter.next();
-                parameter1 = parseOperator( parameterElement );
-                parameterElement = (OMElement) childElementIter.next();
-                parameter2 = parseOperator( parameterElement );
+        // check if element name is a valid logical operator element
+        LogicalOperator.SubType type = elementNameToLogicalOperatorType.get( element.getQName() );
+        assert type != null;
+
+        try {
+            switch ( type ) {
+            case AND: {
+                Iterator childElementIter = element.getChildElements();
+                Operator parameter1 = parseOperator( (OMElement) childElementIter.next() );
+                Operator parameter2 = parseOperator( (OMElement) childElementIter.next() );
                 if ( childElementIter.hasNext() ) {
                     throw new NoSuchElementException();
                 }
-            } catch ( NoSuchElementException e ) {
-                String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", AND, 2 );
-                throw new XMLParsingException( msg );
+                logicalOperator = new And( parameter1, parameter2 );
+                break;
             }
-            logicalOperator = new AndOperator( parameter1, parameter2 );
-        } else if ( elementName.equals( OR ) ) {
-            Iterator childElementIter = element.getChildElements();
-            BooleanOperator parameter1 = null;
-            BooleanOperator parameter2 = null;
-            try {
-                OMElement parameterElement = (OMElement) childElementIter.next();
-                parameter1 = parseOperator( parameterElement );
-                parameterElement = (OMElement) childElementIter.next();
-                parameter2 = parseOperator( parameterElement );
+            case OR: {
+                Iterator childElementIter = element.getChildElements();
+                Operator parameter1 = parseOperator( (OMElement) childElementIter.next() );
+                Operator parameter2 = parseOperator( (OMElement) childElementIter.next() );
                 if ( childElementIter.hasNext() ) {
                     throw new NoSuchElementException();
                 }
-            } catch ( NoSuchElementException e ) {
-                String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", OR, 2 );
-                throw new XMLParsingException( msg );
+                logicalOperator = new Or( parameter1, parameter2 );
             }
-            logicalOperator = new OrOperator( parameter1, parameter2 );
-        } else {
-            Iterator childElementIter = element.getChildElements();
-            BooleanOperator parameter = null;
-            try {
-                OMElement parameterElement = (OMElement) childElementIter.next();
-                parameter = parseOperator( parameterElement );
-                parameterElement = (OMElement) childElementIter.next();
+            case NOT: {
+                Iterator childElementIter = element.getChildElements();
+                Operator parameter = parseOperator( (OMElement) childElementIter.next() );
                 if ( childElementIter.hasNext() ) {
                     throw new NoSuchElementException();
                 }
-            } catch ( NoSuchElementException e ) {
-                String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", NOT, 1 );
-                throw new XMLParsingException( msg );
+                logicalOperator = new Not( parameter );
+                break;
             }
-            logicalOperator = new NotOperator( parameter );
+            }
+        } catch ( NoSuchElementException e ) {
+            String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
+            throw new XMLProcessingException( msg );
         }
+
         return logicalOperator;
     }
 
-    private boolean isNameInArray( QName name, QName[] nameArray ) {
-        for ( QName name2 : nameArray ) {
-            if ( name2.equals( name ) ) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isComparisonOperator( QName name ) {
-        return isNameInArray( name, COMPARISON_OPS );
-    }
-
-    private boolean isSpatialOperator( QName name ) {
-        return isNameInArray( name, SPATIAL_OPS );
-    }
-
-    private boolean isLogicalOperator( QName name ) {
-        return isNameInArray( name, LOGICAL_OPS );
-    }
-
-    private boolean isIdSpecifier( QName name ) {
-        return isNameInArray( name, ID_SPECIFIERS );
-    }
-
     /**
-     * Serializes the given {@link Filter} object.
+     * Serializes the given {@link Filter} object to XML.
      * 
      * @param filter
      *            <code>Filter</code> object to be serialized
      * @param writer
-     *            where the xml is written
+     *            target of the xml stream
      * @throws XMLStreamException
      */
     public static void export( Filter filter, XMLStreamWriter writer )
                             throws XMLStreamException {
 
-        writer.setPrefix( "ogc", "http://www.opengis.net/ogc"  );        
-        
-        writer.writeStartElement( FILTER.getNamespaceURI(), FILTER.getLocalPart() );
-        if ( filter instanceof ComplexFilter ) {
-            export (((ComplexFilter) filter).getOperator(), writer);
-        } else if ( filter instanceof IdFilter ) {
+        writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
 
-        } else {
-            assert false;
+        writer.writeStartElement( OGC_NS, "Filter" );
+        switch ( filter.getType() ) {
+        case ID_FILTER:
+            Collection<String> ids = ( (IdFilter) filter ).getIds();
+            for ( String id : ids ) {
+                writer.writeStartElement( OGC_NS, "GmlObjectId" );
+                writer.writeCharacters( id );
+                writer.writeEndElement();
+            }
+            break;
+        case OPERATOR_FILTER:
+            export( ( (OperatorFilter) filter ).getOperator(), writer );
+            break;
         }
         writer.writeEndElement();
     }
 
     /**
-     * Serializes the given {@link BooleanOperator} object.
+     * Serializes the given {@link Operator} object to XML.
      * 
      * @param operator
      *            <code>BooleanOperator</code> object to be serialized
      * @param writer
-     *            where the xml is written
+     *            target of the xml stream
      * @throws XMLStreamException
      */
-    private static void export( BooleanOperator operator, XMLStreamWriter writer )
+    private static void export( Operator operator, XMLStreamWriter writer )
+                            throws XMLStreamException {
+        switch ( operator.getType() ) {
+        case COMPARISON:
+            export( (ComparisonOperator) operator, writer );
+            break;
+        case LOGICAL:
+            export( (LogicalOperator) operator, writer );
+            break;
+        case SPATIAL:
+            export( (SpatialOperator) operator, writer );
+            break;
+        }
+    }
+
+    /**
+     * Serializes the given {@link LogicalOperator} object to XML.
+     * 
+     * @param operator
+     *            <code>LogicalOperator</code> object to be serialized
+     * @param writer
+     *            target of the xml stream
+     * @throws XMLStreamException
+     */
+    private static void export( LogicalOperator operator, XMLStreamWriter writer )
                             throws XMLStreamException {
 
-        if ( operator instanceof AndOperator ) {
-            writer.writeStartElement( AND.getNamespaceURI(), AND.getLocalPart() );
-            export( ( (AndOperator) operator ).getParameter1(), writer );
-            export( ( (AndOperator) operator ).getParameter2(), writer );
-            writer.writeEndElement();            
-        } else if ( operator instanceof OrOperator ) {
-            writer.writeStartElement( OR.getNamespaceURI(), OR.getLocalPart() );
-            export( ( (OrOperator) operator ).getParameter1(), writer );
-            export( ( (OrOperator) operator ).getParameter2(), writer );
-            writer.writeEndElement();            
-        } else if ( operator instanceof NotOperator ) {
-            writer.writeStartElement( NOT.getNamespaceURI(), NOT.getLocalPart() );
-            export( ( (NotOperator) operator ).getParameter(), writer );
-            writer.writeEndElement();            
-        } else if ( operator instanceof PropertyIsEqualToOperator ) {
-            writer.writeStartElement( PROPERTY_IS_EQUAL_TO.getNamespaceURI(), PROPERTY_IS_EQUAL_TO.getLocalPart() );
-            export( ( (PropertyIsEqualToOperator) operator ).getParameter1(), writer );
-            export( ( (PropertyIsEqualToOperator) operator ).getParameter2(), writer );
-            writer.writeEndElement();            
-        } else if ( operator instanceof PropertyIsNotEqualToOperator ) {
-            writer.writeStartElement( PROPERTY_IS_NOT_EQUAL_TO.getNamespaceURI(),
-                                      PROPERTY_IS_NOT_EQUAL_TO.getLocalPart() );
-            export( ( (PropertyIsNotEqualToOperator) operator ).getParameter1(), writer );
-            export( ( (PropertyIsNotEqualToOperator) operator ).getParameter2(), writer );
-            writer.writeEndElement();            
-        } else if ( operator instanceof PropertyIsLessThanOperator ) {
-            writer.writeStartElement( PROPERTY_IS_LESS_THAN.getNamespaceURI(), PROPERTY_IS_LESS_THAN.getLocalPart() );
-            export( ( (PropertyIsLessThanOperator) operator ).getParameter1(), writer );
-            export( ( (PropertyIsLessThanOperator) operator ).getParameter2(), writer );
-            writer.writeEndElement();            
-        } else if ( operator instanceof PropertyIsGreaterThanOperator ) {
-            writer.writeStartElement( PROPERTY_IS_GREATER_THAN.getNamespaceURI(),
-                                      PROPERTY_IS_GREATER_THAN.getLocalPart() );
-            export( ( (PropertyIsGreaterThanOperator) operator ).getParameter1(), writer );
-            export( ( (PropertyIsGreaterThanOperator) operator ).getParameter2(), writer );
-            writer.writeEndElement();            
-        } else if ( operator instanceof PropertyIsLessThanOrEqualToOperator ) {
-            writer.writeStartElement( PROPERTY_IS_LESS_THAN_OR_EQUAL_TO.getNamespaceURI(),
-                                      PROPERTY_IS_LESS_THAN_OR_EQUAL_TO.getLocalPart() );
-            export( ( (PropertyIsLessThanOrEqualToOperator) operator ).getParameter1(), writer );
-            export( ( (PropertyIsLessThanOrEqualToOperator) operator ).getParameter2(), writer );
-            writer.writeEndElement();            
-        } else if ( operator instanceof PropertyIsGreaterThanOrEqualToOperator ) {
-            writer.writeStartElement( PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO.getNamespaceURI(),
-                                      PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO.getLocalPart() );
-            export( ( (PropertyIsGreaterThanOrEqualToOperator) operator ).getParameter1(), writer );
-            export( ( (PropertyIsGreaterThanOrEqualToOperator) operator ).getParameter2(), writer );
-            writer.writeEndElement();            
-        } else if ( operator instanceof PropertyIsLikeOperator ) {
-            writer.writeStartElement( PROPERTY_IS_LIKE.getNamespaceURI(),
-                                      PROPERTY_IS_LIKE.getLocalPart() );
-            PropertyIsLikeOperator isLikeOperator = (PropertyIsLikeOperator) operator;
+        QName elementName = logicalOperatorTypeToElementName.get( operator.getSubType() );
+        writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
+
+        switch ( operator.getSubType() ) {
+        case AND:
+            export( ( (And) operator ).getParameter1(), writer );
+            export( ( (And) operator ).getParameter2(), writer );
+            break;
+        case OR:
+            export( ( (Or) operator ).getParameter1(), writer );
+            export( ( (Or) operator ).getParameter2(), writer );
+            break;
+        case NOT:
+            export( ( (Not) operator ).getParameter(), writer );
+            break;
+        }
+
+        writer.writeEndElement();
+    }
+
+    /**
+     * Serializes the given {@link ComparisonOperator} object to XML.
+     * 
+     * @param operator
+     *            <code>ComparisonOperator</code> object to be serialized
+     * @param writer
+     *            target of the xml stream
+     * @throws XMLStreamException
+     */
+    private static void export( ComparisonOperator operator, XMLStreamWriter writer )
+                            throws XMLStreamException {
+
+        QName elementName = comparisonOperatorTypeToElementName.get( operator.getSubType() );
+        writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
+
+        switch ( operator.getSubType() ) {
+        case PROPERTY_IS_BETWEEN:
+            PropertyIsBetween isBetween = (PropertyIsBetween) operator;
+            export( isBetween.getExpression(), writer );
+            writer.writeStartElement( OGC_NS, "LowerBoundary" );
+            writer.writeEndElement();
+            writer.writeStartElement( OGC_NS, "UpperBoundary" );
+            writer.writeEndElement();
+            break;
+        case PROPERTY_IS_EQUAL_TO:
+            export( ( (PropertyIsEqualTo) operator ).getParameter1(), writer );
+            export( ( (PropertyIsEqualTo) operator ).getParameter2(), writer );
+            break;
+        case PROPERTY_IS_GREATER_THAN:
+            export( ( (PropertyIsGreaterThan) operator ).getParameter1(), writer );
+            export( ( (PropertyIsGreaterThan) operator ).getParameter2(), writer );
+            break;
+        case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
+            export( ( (PropertyIsGreaterThanOrEqualTo) operator ).getParameter1(), writer );
+            export( ( (PropertyIsGreaterThanOrEqualTo) operator ).getParameter2(), writer );
+            break;
+        case PROPERTY_IS_LESS_THAN:
+            export( ( (PropertyIsLessThan) operator ).getParameter1(), writer );
+            export( ( (PropertyIsLessThan) operator ).getParameter2(), writer );
+            break;
+        case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
+            export( ( (PropertyIsLessThanOrEqualTo) operator ).getParameter1(), writer );
+            export( ( (PropertyIsLessThanOrEqualTo) operator ).getParameter2(), writer );
+            break;
+        case PROPERTY_IS_LIKE:
+            PropertyIsLike isLikeOperator = (PropertyIsLike) operator;
             writer.writeAttribute( "wildCard", isLikeOperator.getWildCard() );
             writer.writeAttribute( "singleChar", isLikeOperator.getSingleChar() );
             writer.writeAttribute( "escapeChar", isLikeOperator.getEscapeChar() );
             export( isLikeOperator.getPropertyName(), writer );
             export( isLikeOperator.getLiteral(), writer );
-            writer.writeEndElement();            
-        } else if ( operator instanceof PropertyIsNullOperator ) {
-            writer.writeStartElement( PROPERTY_IS_NULL.getNamespaceURI(),
-                                      PROPERTY_IS_NULL.getLocalPart() );
-            export( ( (PropertyIsNullOperator) operator ).getPropertyName(), writer );
-            writer.writeEndElement();            
-        } else if ( operator instanceof PropertyIsBetweenOperator ) {
-            PropertyIsBetweenOperator isBetween = (PropertyIsBetweenOperator) operator;            
-            writer.writeStartElement( PROPERTY_IS_BETWEEN.getNamespaceURI(),
-                                      PROPERTY_IS_BETWEEN.getLocalPart() );
-            export( isBetween.getExpression(), writer );
-            writer.writeStartElement( LOWER_BOUNDARY.getNamespaceURI(), LOWER_BOUNDARY.getLocalPart() );
-            writer.writeEndElement();
-            writer.writeStartElement( UPPER_BOUNDARY.getNamespaceURI(), UPPER_BOUNDARY.getLocalPart() );
-            writer.writeEndElement();
-            writer.writeEndElement();            
-        } else {
-            assert false;
+            break;
+        case PROPERTY_IS_NOT_EQUAL_TO:
+            export( ( (PropertyIsNotEqualTo) operator ).getParameter1(), writer );
+            export( ( (PropertyIsNotEqualTo) operator ).getParameter2(), writer );
+            break;
+        case PROPERTY_IS_NULL:
+            export( ( (PropertyIsNull) operator ).getPropertyName(), writer );
+            break;
         }
+
+        writer.writeEndElement();
     }
 
-    private static void export( Expression expression, XMLStreamWriter writer ) throws XMLStreamException {
-        if (expression instanceof PropertyName) {
-            writer.writeStartElement( PROPERTY_NAME.getNamespaceURI(), PROPERTY_NAME.getLocalPart() );
-            writer.writeCharacters( ((PropertyName) expression).getPropertyName() );
-            writer.writeEndElement();
-        } else if (expression instanceof Literal) {
-            writer.writeStartElement( LITERAL.getNamespaceURI(), LITERAL.getLocalPart() );
-            writer.writeCharacters( ((Literal) expression).getValue() );
-            writer.writeEndElement();            
-        } else if (expression instanceof Function) {
-            Function function = (Function) expression;
-            writer.writeStartElement( FUNCTION.getNamespaceURI(), FUNCTION.getLocalPart() );
-            writer.writeAttribute( NAME.getLocalPart(), function.getName() );
-            for ( Expression param : function.getParameters() ) {
-                export (param, writer);
-            }
-            writer.writeEndElement();                  
-        } else if (expression instanceof AddExpression) {
-            writer.writeStartElement( ADD.getNamespaceURI(), ADD.getLocalPart() );
-            export (((AddExpression) expression).getParameter1(), writer);
-            export (((AddExpression) expression).getParameter2(), writer);
-            writer.writeEndElement();             
-        } else if (expression instanceof SubExpression) {
-            writer.writeStartElement( SUB.getNamespaceURI(), SUB.getLocalPart() );
-            export (((SubExpression) expression).getParameter1(), writer);
-            export (((SubExpression) expression).getParameter2(), writer);
-            writer.writeEndElement();            
-        } else if (expression instanceof MulExpression) {
-            writer.writeStartElement( MUL.getNamespaceURI(), MUL.getLocalPart() );
-            export (((MulExpression) expression).getParameter1(), writer);
-            export (((MulExpression) expression).getParameter2(), writer);
-            writer.writeEndElement();              
-        } else if (expression instanceof DivExpression) {
-            writer.writeStartElement( DIV.getNamespaceURI(), DIV.getLocalPart() );
-            export (((DivExpression) expression).getParameter1(), writer);
-            export (((DivExpression) expression).getParameter2(), writer);
-            writer.writeEndElement();              
-        } else {
-            assert false;
+    /**
+     * Serializes the given {@link SpatialOperator} object to XML.
+     * 
+     * @param operator
+     *            <code>SpatialOperator</code> object to be serialized
+     * @param writer
+     *            target of the xml stream
+     * @throws XMLStreamException
+     */
+    private static void export( SpatialOperator operator, XMLStreamWriter writer )
+                            throws XMLStreamException {
+
+        QName elementName = spatialOperatorTypeToElementName.get( operator.getSubType() );
+        writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
+
+        switch ( operator.getSubType() ) {
+        // TODO implement me
+        case BBOX:
+        case BEYOND:
+        case CONTAINS:
+        case CROSSES:
+        case DISJOINT:
+        case DWITHIN:
+        case EQUALS:
+        case INTERSECTS:
+        case OVERLAPS:
+        case TOUCHES:
+        case WITHIN:
         }
+
+        writer.writeEndElement();
+    }
+
+    /**
+     * Serializes the given {@link Expression} object to XML.
+     * 
+     * @param expression
+     *            <code>Expression</code> object to be serialized
+     * @param writer
+     *            target of the xml stream
+     * @throws XMLStreamException
+     */
+    private static void export( Expression expression, XMLStreamWriter writer )
+                            throws XMLStreamException {
+
+        QName elementName = expressionTypeToElementName.get( expression.getType() );
+        writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
+
+        switch ( expression.getType() ) {
+        case PROPERTY_NAME:
+            writer.writeCharacters( ( (PropertyName) expression ).getPropertyName() );
+            break;
+        case LITERAL:
+            writer.writeCharacters( ( (Literal) expression ).getValue() );
+            break;
+        case FUNCTION:
+            Function function = (Function) expression;
+            writer.writeAttribute( NAME_ATTR.getLocalPart(), function.getName() );
+            for ( Expression param : function.getParameters() ) {
+                export( param, writer );
+            }
+            break;
+        case ADD:
+            export( ( (Add) expression ).getParameter1(), writer );
+            export( ( (Add) expression ).getParameter2(), writer );
+            break;
+        case SUB:
+            export( ( (Sub) expression ).getParameter1(), writer );
+            export( ( (Sub) expression ).getParameter2(), writer );
+            break;
+        case MUL:
+            export( ( (Mul) expression ).getParameter1(), writer );
+            export( ( (Mul) expression ).getParameter2(), writer );
+            break;
+        case DIV:
+            export( ( (Div) expression ).getParameter1(), writer );
+            export( ( (Div) expression ).getParameter2(), writer );
+            break;
+        }
+
+        writer.writeEndElement();
     }
 }

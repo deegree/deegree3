@@ -43,6 +43,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter.expression;
 
+import org.deegree.model.filter.Expression;
+import org.deegree.model.filter.Expression.Type;
 import org.deegree.model.generic.StructuredObject;
 
 /**
@@ -59,6 +61,10 @@ public class Literal implements Expression {
        
     public Literal( String value ) {
         this.value = value;
+    }
+
+    public Type getType() {
+        return Type.LITERAL;
     }
 
     public String getValue() {

@@ -55,6 +55,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
@@ -68,10 +69,12 @@ import javax.xml.stream.XMLStreamReader;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Element;
+import org.deegree.commons.i18n.Messages;
+import org.jaxen.JaxenException;
 
 /**
  * An instance of <code>XMLAdapter</code> encapsulates an underlying XML element which acts as the root element of the
@@ -236,11 +239,11 @@ public class XMLAdapter {
     }
 
     /**
-     * Returns whether the document has a schema reference.
+     * Returns whether the document contains schema references.
      * 
-     * @return true, if the document has a schema reference, false otherwise
+     * @return true, if the document contains schema references, false otherwise
      */
-    public boolean hasSchema() {
+    public boolean hasSchemas() {
         return rootElement.getAttribute( SCHEMA_ATTRIBUTE_NAME ) != null;
     }
 
@@ -249,12 +252,12 @@ public class XMLAdapter {
      * 'xsi:schemaLocation' attribute of the document element.
      * 
      * @return keys are URIs (namespaces), values are URLs (schema locations)
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
-    public Map<URI, URL> getSchemas()
-                            throws XMLParsingException {
+    public Map<String, URL> getSchemas()
+                            throws XMLProcessingException {
 
-        Map<URI, URL> schemaMap = new HashMap<URI, URL>();
+        Map<String, URL> schemaMap = new HashMap<String, URL>();
 
         OMAttribute schemaLocationAttr = rootElement.getAttribute( SCHEMA_ATTRIBUTE_NAME );
         if ( schemaLocationAttr == null ) {
@@ -272,7 +275,7 @@ public class XMLAdapter {
             } catch ( URISyntaxException e ) {
                 String msg = "Invalid 'xsi:schemaLocation' attribute: namespace " + token + "' is not a valid URI.";
                 LOG.error( msg );
-                throw new XMLParsingException( msg );
+                throw new XMLProcessingException( msg );
             }
 
             URL schemaURL = null;
@@ -283,13 +286,13 @@ public class XMLAdapter {
                 String msg = "Invalid 'xsi:schemaLocation' attribute: namespace '" + nsURI
                              + "' is missing a schema URL.";
                 LOG.error( msg );
-                throw new XMLParsingException( msg );
+                throw new XMLProcessingException( msg );
             } catch ( MalformedURLException ex ) {
                 String msg = "Invalid 'xsi:schemaLocation' attribute: '" + token + "' for namespace '" + nsURI
                              + "' could not be parsed as URL.";
-                throw new XMLParsingException( msg );
+                throw new XMLProcessingException( msg );
             }
-            schemaMap.put( nsURI, schemaURL );
+            schemaMap.put( token, schemaURL );
         }
         return schemaMap;
     }
@@ -451,10 +454,10 @@ public class XMLAdapter {
      * 
      * @param element
      * @return the object representation of the element
-     * @throws XMLParsingException
+     * @throws XMLSyntaxException
      */
-    protected SimpleLink parseSimpleLink( Element element )
-                            throws XMLParsingException {
+    protected SimpleLink parseSimpleLink( OMElement element )
+                            throws XMLSyntaxException {
 
         URI href = null;
         URI role = null;
@@ -465,49 +468,347 @@ public class XMLAdapter {
 
         String uriString = null;
         try {
-            uriString = XMLTools.getNodeAsString( element, "@xlink:href", nsContext, null );
+            uriString = element.getAttributeValue( new QName( CommonNamespaces.XLNNS, "href" ) );
             if ( uriString != null ) {
                 href = new URI( null, uriString, null );
             }
-            uriString = XMLTools.getNodeAsString( element, "@xlink:role", nsContext, null );
+            uriString = element.getAttributeValue( new QName( CommonNamespaces.XLNNS, "role" ) );
             if ( uriString != null ) {
                 role = new URI( null, uriString, null );
             }
-            uriString = XMLTools.getNodeAsString( element, "@xlink:arcrole", nsContext, null );
+            uriString = element.getAttributeValue( new QName( CommonNamespaces.XLNNS, "arcrole" ) );
             if ( uriString != null ) {
                 arcrole = new URI( null, uriString, null );
             }
         } catch ( URISyntaxException e ) {
-            throw new XMLParsingException( "'" + uriString + "' is not a valid URI." );
+            throw new XMLSyntaxException( "'" + uriString + "' is not a valid URI." );
         }
 
         return new SimpleLink( href, role, arcrole, title, show, actuate );
     }
 
+    protected Object evaluateXPath( XPath xpath, Object context )
+                            throws XMLProcessingException {
+        Object result;
+        try {
+            result = xpath.getAXIOMXPath().evaluate( context );
+        } catch ( JaxenException e ) {
+            throw new XMLProcessingException( e.getMessage() );
+        }
+        return result;
+    }
+
     /**
-     * Parses the given string as an instance of "xsd:boolean".
+     * Parses the given <code>String</code> as an <code>xsd:boolean</code> value.
      * 
-     * @param text
-     * @return
+     * @param s
+     *            the <code>String</code> to be parsed
+     * @return corresponding boolean value
+     * @throws XMLSyntaxException
+     *             if the given <code>String</code> is not a valid instance of <code>xsd:boolean</code>
      */
-    protected boolean parseBoolean( String text ) {
-        boolean value = true;
-        if ( text != null ) {
-            if ( "true".equals( text ) || "1".equals( text ) ) {
-                value = true;
-            } else if ( "false".equals( text ) || "0".equals( text ) ) {
-                value = false;
+    protected boolean parseBoolean( String s )
+                            throws XMLSyntaxException {
+
+        boolean value = false;
+        if ( "true".equals( s ) || "1".equals( s ) ) {
+            value = true;
+        } else if ( "false".equals( s ) || "0".equals( s ) ) {
+            value = false;
+        } else {
+            String msg = Messages.getMessage( "XML_SYNTAX_ERROR_BOOLEAN", s );
+            throw new XMLSyntaxException( msg );
+        }
+        return value;
+    }
+
+    /**
+     * Parses the given <code>String</code> as an <code>xsd:double</code> value.
+     * 
+     * @param s
+     *            the <code>String</code> to be parsed
+     * @return corresponding double value
+     * @throws XMLSyntaxException
+     *             if the given <code>String</code> is not a valid instance of <code>xsd:double</code>
+     */
+    protected double parseDouble( String s )
+                            throws XMLSyntaxException {
+
+        double value = 0.0;
+        try {
+            value = Double.parseDouble( s );
+        } catch ( NumberFormatException e ) {
+            String msg = Messages.getMessage( "XML_SYNTAX_ERROR_DOUBLE", s );
+            throw new XMLSyntaxException( msg );
+        }
+        return value;
+    }
+
+    /**
+     * Parses the given <code>String</code> as an <code>xsd:float</code> value.
+     * 
+     * @param s
+     *            the <code>String</code> to be parsed
+     * @return corresponding float value
+     * @throws XMLSyntaxException
+     *             if the given <code>String</code> is not a valid instance of <code>xsd:float</code>
+     */
+    protected float parseFloat( String s )
+                            throws XMLSyntaxException {
+
+        float value = 0.0f;
+        try {
+            value = Float.parseFloat( s );
+        } catch ( NumberFormatException e ) {
+            String msg = Messages.getMessage( "XML_SYNTAX_ERROR_FLOAT", s );
+            throw new XMLSyntaxException( msg );
+        }
+        return value;
+    }
+
+    /**
+     * Parses the given <code>String</code> as an <code>xsd:integer</code> value.
+     * 
+     * @param s
+     *            the <code>String</code> to be parsed
+     * @return corresponding integer value
+     * @throws XMLSyntaxException
+     *             if the given <code>String</code> is not a valid instance of <code>xsd:integer</code>
+     */
+    protected int parseInt( String s )
+                            throws XMLSyntaxException {
+
+        int value = 0;
+        try {
+            value = Integer.parseInt( s );
+        } catch ( NumberFormatException e ) {
+            String msg = Messages.getMessage( "XML_SYNTAX_ERROR_INT", s );
+            throw new XMLSyntaxException( msg );
+        }
+        return value;
+    }
+
+    /**
+     * Parses the given <code>String</code> as an <code>xsd:QName</code> value.
+     * 
+     * @param s
+     *            the <code>String</code> to be parsed
+     * @param element
+     *            element that provides the namespace context (used to resolve the namespace prefix)
+     * @return corresponding QName value
+     * @throws XMLSyntaxException
+     *             if the given <code>String</code> is not a valid instance of <code>xsd:QName</code>
+     */
+    protected QName parseQName( String s, OMElement element )
+                            throws XMLSyntaxException {
+
+        QName value = element.resolveQName( s );
+        return value;
+    }
+
+    protected OMElement getElement( OMElement context, XPath xpath )
+                            throws XMLProcessingException {
+        Object result = getNode( context, xpath );
+        if ( !( result instanceof OMElement ) ) {
+            String msg = Messages.getMessage( "XML_PARSING_ERROR_NOT_ELEMENT", xpath, context, result.getClass() );
+            throw new XMLProcessingException( msg );
+        }
+        return (OMElement) result;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<OMElement> getElements( OMElement context, XPath xpath )
+                            throws XMLProcessingException {
+        return getNodes( context, xpath );
+    }
+
+    protected Object getNode( OMElement context, XPath xpath )
+                            throws XMLProcessingException {
+        Object node;
+        try {
+            node = xpath.getAXIOMXPath().selectSingleNode( context );
+        } catch ( JaxenException e ) {
+            throw new XMLProcessingException( e.getMessage() );
+        }
+        return node;
+    }
+
+    protected boolean getNodeAsBoolean( OMElement context, XPath xpath, boolean defaultValue )
+                            throws XMLProcessingException {
+
+        boolean value = defaultValue;
+        String s = getNodeAsString( context, xpath, null );
+        if ( s != null ) {
+            value = parseBoolean( s );
+        }
+        return value;
+    }
+
+    protected double getNodeAsDouble( OMElement context, XPath xpath, double defaultValue )
+                            throws XMLProcessingException {
+
+        double value = defaultValue;
+        String s = getNodeAsString( context, xpath, null );
+        if ( s != null ) {
+            value = parseDouble( s );
+        }
+        return value;
+    }
+
+    protected float getNodeAsFloat( OMElement context, XPath xpath, float defaultValue )
+                            throws XMLProcessingException {
+
+        float value = defaultValue;
+        String s = getNodeAsString( context, xpath, null );
+        if ( s != null ) {
+            value = parseFloat( s );
+        }
+        return value;
+    }
+
+    protected int getNodeAsInt( OMElement context, XPath xpath, int defaultValue )
+                            throws XMLProcessingException {
+
+        int value = defaultValue;
+        String s = getNodeAsString( context, xpath, null );
+        if ( s != null ) {
+            value = parseInt( s );
+        }
+        return value;
+    }
+
+    protected QName getNodeAsQName( OMElement context, XPath xpath, QName defaultValue )
+                            throws XMLProcessingException {
+
+        QName value = defaultValue;
+        Object node = getNode( context, xpath );
+        if ( node != null ) {
+            if ( node instanceof OMText ) {
+                value = ( (OMText) node ).getTextAsQName();
+            } else if ( node instanceof OMElement ) {
+                OMElement element = (OMElement) node;
+                value = element.resolveQName( element.getText() );
+            } else if ( node instanceof OMAttribute ) {
+                OMAttribute attribute = (OMAttribute) node;
+                value = attribute.getOwner().resolveQName( attribute.getAttributeValue() );
+            } else {
+                String msg = "Unexpected node type '" + node.getClass() + "'.";
+                throw new XMLProcessingException( msg );
             }
         }
         return value;
     }
 
-    protected OMElement getRequiredChildElement( OMElement element, QName childName ) {
-        OMElement childElement = element.getFirstChildWithName( childName );
-        if ( childElement == null ) {
-            String msg = "Element '" + element.getQName() + "' is missing required child element '" + childName + "'.";
-            throw new XMLParsingException( msg );
+    protected String getNodeAsString( OMElement context, XPath xpath, String defaultValue )
+                            throws XMLProcessingException {
+        String value = defaultValue;
+        Object node = getNode( context, xpath );
+        if ( node != null ) {
+            if ( node instanceof OMText ) {
+                value = ( (OMText) node ).getText();
+            } else if ( node instanceof OMElement ) {
+                value = ( (OMElement) node ).getText();
+            } else if ( node instanceof OMAttribute ) {
+                value = ( (OMAttribute) node ).getAttributeValue();
+            } else {
+                String msg = "Unexpected node type '" + node.getClass() + "'.";
+                throw new XMLProcessingException( msg );
+            }
         }
-        return childElement;
+        return value;
     }
+
+    protected List getNodes( OMElement context, XPath xpath )
+                            throws XMLProcessingException {
+        List nodes;
+        try {
+            nodes = xpath.getAXIOMXPath().selectNodes( context );
+        } catch ( JaxenException e ) {
+            throw new XMLProcessingException( e.getMessage() );
+        }
+        return nodes;
+    }
+
+    protected OMElement getRequiredElement( OMElement context, XPath xpath ) {
+        OMElement element = getElement( context, xpath );
+        if ( element == null ) {
+
+        }
+        return element;
+    }
+
+    protected List<OMElement> getRequiredElements( OMElement context, XPath xpath ) {
+        List<OMElement> elements = getElements( context, xpath );
+        if ( elements.size() == 0 ) {
+
+        }
+        return elements;
+    }
+
+    protected Object getRequiredNode( OMElement context, XPath xpath ) {
+        Object node = getNode( context, xpath );
+        if ( node == null ) {
+            String msg = Messages.getMessage( "XML_REQUIRED_NODE_MISSING", xpath, context );
+            throw new XMLProcessingException( msg );
+        }
+        return node;
+    }
+
+    protected boolean getRequiredNodeAsBoolean( OMElement context, XPath xpath ) {
+
+        String s = getRequiredNodeAsString( context, xpath );
+        boolean value = parseBoolean( s );
+        return value;
+    }
+
+    protected double getRequiredNodeAsDouble( OMElement context, XPath xpath ) {
+
+        String s = getRequiredNodeAsString( context, xpath );
+        double value = parseDouble( s );
+        return value;
+    }
+
+    protected float getRequiredNodeAsFloat( OMElement context, XPath xpath ) {
+
+        String s = getRequiredNodeAsString( context, xpath );
+        float value = parseFloat( s );
+        return value;
+    }
+
+    protected int getRequiredNodeAsInteger( OMElement context, XPath xpath ) {
+
+        String s = getRequiredNodeAsString( context, xpath );
+        int value = parseInt( s );
+        return value;
+    }
+
+    protected String getRequiredNodeAsString( OMElement context, XPath xpath ) {
+
+        String value = getNodeAsString( context, xpath, null );
+        if ( value == null ) {
+            String msg = Messages.getMessage( "XML_SYNTAX_ERROR_NODE_MISSING", xpath, context );
+            throw new XMLSyntaxException( msg );
+        }
+        return value;
+    }
+
+    protected QName getRequiredNodeAsQName( OMElement context, XPath xpath )
+                            throws XMLProcessingException {
+
+        QName value = getNodeAsQName( context, xpath, null );
+        if ( value == null ) {
+            String msg = Messages.getMessage( "XML_SYNTAX_ERROR_NODE_MISSING", xpath, context );
+            throw new XMLSyntaxException( msg );
+        }
+        return value;
+    }
+
+    protected List getRequiredNodes( OMElement context, XPath xpath ) {
+        List nodes = getNodes( context, xpath );
+        if ( nodes.size() == 0 ) {
+
+        }
+        return nodes;
+    }
+
 }

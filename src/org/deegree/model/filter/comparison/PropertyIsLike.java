@@ -41,39 +41,66 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter;
+package org.deegree.model.filter.comparison;
 
-import java.util.Set;
-
+import org.deegree.model.filter.FilterEvaluationException;
+import org.deegree.model.filter.expression.Literal;
+import org.deegree.model.filter.expression.PropertyName;
 import org.deegree.model.generic.StructuredObject;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public class PropertyIsLike extends ComparisonOperator {
 
-    private Set<String> ids;
+    private String wildCard;
+    
+    private String singleChar;
+    
+    private String escapeChar;
+    
+    private PropertyName propName;
+    
+    private Literal literal;
 
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
+    public PropertyName getPropertyName () {
+        return propName;
     }
 
-    public Type getType() {
-        return Type.ID_FILTER;
+    public SubType getSubType() {
+        return SubType.PROPERTY_IS_LIKE;
+    }    
+    
+    public Literal getLiteral () {
+        return literal;
+    }
+    
+    public String getWildCard () {
+        return wildCard;
     }
 
-    public Set<String> getIds() {
-        return ids;
+    public String getSingleChar () {
+        return singleChar;
     }
 
+    public String getEscapeChar () {
+        return escapeChar;
+    }    
+    
     public boolean evaluate( StructuredObject object )
                             throws FilterEvaluationException {
-        // TODO Auto-generated method stub
         return false;
     }
+
+    public String toString( String indent ) {
+        String s = indent + "-PropertyIsLike\n";
+        s += propName.toString (indent + "  ");
+        s += literal.toString (indent + "  ");
+        return s;
+    }     
 }

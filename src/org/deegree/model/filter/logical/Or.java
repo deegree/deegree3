@@ -41,10 +41,10 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter;
+package org.deegree.model.filter.logical;
 
-import java.util.Set;
-
+import org.deegree.model.filter.Operator;
+import org.deegree.model.filter.FilterEvaluationException;
 import org.deegree.model.generic.StructuredObject;
 
 /**
@@ -55,25 +55,38 @@ import org.deegree.model.generic.StructuredObject;
  * 
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public class Or extends LogicalOperator {
 
-    private Set<String> ids;
+    private Operator param1;
 
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
+    private Operator param2;
+
+    public Or( Operator param1, Operator param2 ) {
+        this.param1 = param1;
+        this.param2 = param2;
     }
 
-    public Type getType() {
-        return Type.ID_FILTER;
+    public SubType getSubType() {
+        return SubType.OR;
     }
 
-    public Set<String> getIds() {
-        return ids;
+    public Operator getParameter1() {
+        return param1;
+    }
+
+    public Operator getParameter2() {
+        return param2;
     }
 
     public boolean evaluate( StructuredObject object )
                             throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
+        return param1.evaluate( object ) || param2.evaluate( object );
+    }
+
+    public String toString( String indent ) {
+        String s = indent + "-Or\n";
+        s += param1.toString( indent + "  " );
+        s += param2.toString( indent + "  " );
+        return s;
     }
 }

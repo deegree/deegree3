@@ -1,4 +1,4 @@
-//$HeadURL$
+// $HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/commons/xml/XMLAdapter.java $
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -24,8 +24,8 @@
 
  Contact:
 
- Andreas Poth  
- lat/lon GmbH 
+ Andreas Poth
+ lat/lon GmbH
  Aennchenstr. 19
  53115 Bonn
  Germany
@@ -38,42 +38,16 @@
  53115 Bonn
  Germany
  E-Mail: greve@giub.uni-bonn.de
-
-
+ 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter;
+package org.deegree.commons.xml;
 
-import java.util.Set;
+public class XMLSyntaxException extends XMLProcessingException {
 
-import org.deegree.model.generic.StructuredObject;
-
-/**
- * TODO add documentation here
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
- */
-public class IdFilter implements Filter {
-
-    private Set<String> ids;
-
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
+    private static final long serialVersionUID = 1932388617463207320L;
+    
+    public XMLSyntaxException (String msg) {
+        super (msg);
     }
 
-    public Type getType() {
-        return Type.ID_FILTER;
-    }
-
-    public Set<String> getIds() {
-        return ids;
-    }
-
-    public boolean evaluate( StructuredObject object )
-                            throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
-    }
 }

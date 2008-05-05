@@ -43,37 +43,32 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter;
 
-import java.util.Set;
-
+import org.deegree.model.filter.Operator.Type;
 import org.deegree.model.generic.StructuredObject;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public interface Expression {
 
-    private Set<String> ids;
+    public enum Type {
+        ADD, SUB, MUL, DIV, PROPERTY_NAME, LITERAL, FUNCTION;
+    }    
+    
+    public Type getType();    
+    
+    /**
+     * Determines the value of the expression for the given {@link StructuredObject}.
+     *  
+     * @param obj
+     * @return the value of the expression
+     */
+    public Comparable evaluate (StructuredObject obj);
 
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
-    }
-
-    public Type getType() {
-        return Type.ID_FILTER;
-    }
-
-    public Set<String> getIds() {
-        return ids;
-    }
-
-    public boolean evaluate( StructuredObject object )
-                            throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    public String toString( String indent );    
 }

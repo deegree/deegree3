@@ -45,6 +45,8 @@ package org.deegree.model.filter.expression;
 
 import java.util.List;
 
+import org.deegree.model.filter.Expression;
+import org.deegree.model.filter.Expression.Type;
 import org.deegree.model.generic.StructuredObject;
 
 /**
@@ -64,6 +66,10 @@ public class Function implements Expression {
     public Function( String name, List<Expression> params ) {
         this.name = name;
         this.params = params;
+    }
+
+    public Type getType() {
+        return Type.FUNCTION;
     }
 
     public String getName() {

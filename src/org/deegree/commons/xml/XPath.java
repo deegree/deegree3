@@ -41,11 +41,13 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter;
+package org.deegree.commons.xml;
 
-import java.util.Set;
+import java.net.URI;
+import java.util.Map;
 
-import org.deegree.model.generic.StructuredObject;
+import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.jaxen.JaxenException;
 
 /**
  * TODO add documentation here
@@ -55,25 +57,24 @@ import org.deegree.model.generic.StructuredObject;
  * 
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public class XPath {
 
-    private Set<String> ids;
+    private AXIOMXPath compiledXPath;
 
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
+    public XPath( String xPath, NamespaceContext nsContext ) {
+        try {
+            compiledXPath = new AXIOMXPath( xPath );
+            Map<String, String> nsMap = nsContext.getNamespaceMap();
+            for ( String prefix : nsMap.keySet() ) {
+                compiledXPath.addNamespace( prefix, nsMap.get( prefix ) );
+            }
+        } catch ( JaxenException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
-    public Type getType() {
-        return Type.ID_FILTER;
-    }
-
-    public Set<String> getIds() {
-        return ids;
-    }
-
-    public boolean evaluate( StructuredObject object )
-                            throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
+    public AXIOMXPath getAXIOMXPath() {
+        return compiledXPath;
     }
 }

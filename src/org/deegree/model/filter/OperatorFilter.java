@@ -43,37 +43,43 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter;
 
-import java.util.Set;
-
 import org.deegree.model.generic.StructuredObject;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public class OperatorFilter implements Filter {
 
-    private Set<String> ids;
-
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
+    private Operator rootOperator;
+    
+    /**
+     * 
+     * @param rootOperator
+     */
+    public OperatorFilter( Operator rootOperator ) {
+        this.rootOperator = rootOperator;
     }
 
     public Type getType() {
-        return Type.ID_FILTER;
-    }
+        return Type.OPERATOR_FILTER;
+    }    
 
-    public Set<String> getIds() {
-        return ids;
-    }
-
+    public Operator getOperator() {
+        return rootOperator;
+    }    
+    
     public boolean evaluate( StructuredObject object )
                             throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
+        return rootOperator.evaluate( object );
+    }
+    
+    @Override
+    public String toString () {
+        return rootOperator.toString("");
     }
 }

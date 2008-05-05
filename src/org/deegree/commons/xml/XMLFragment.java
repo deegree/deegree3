@@ -123,7 +123,7 @@ public class XMLFragment implements Serializable {
 
     protected static NamespaceContext nsContext = CommonNamespaces.getNamespaceContext();
 
-    protected static final URI XLNNS = CommonNamespaces.XLNNS;
+    protected static final String XLNNS = CommonNamespaces.XLNNS;
 
     private static final Log LOG = LogFactory.getLog( XMLFragment.class );
 
@@ -297,10 +297,10 @@ public class XMLFragment implements Serializable {
      * 'xsi:schemaLocation' attribute of the document element.
      * 
      * @return keys are URIs (namespaces), values are URLs (schema locations)
-     * @throws XMLParsingException
+     * @throws XMLProcessingException
      */
     public Map<URI, URL> getAttachedSchemas()
-                            throws XMLParsingException {
+                            throws XMLProcessingException {
 
         Map<URI, URL> schemaMap = new HashMap<URI, URL>();
 
@@ -321,7 +321,7 @@ public class XMLFragment implements Serializable {
             } catch ( URISyntaxException e ) {
                 String msg = "Invalid 'xsi:schemaLocation' attribute: namespace " + token + "' is not a valid URI.";
                 LOG.error( msg );
-                throw new XMLParsingException( msg );
+                throw new XMLProcessingException( msg );
             }
 
             URL schemaURL = null;
@@ -332,11 +332,11 @@ public class XMLFragment implements Serializable {
                 String msg = "Invalid 'xsi:schemaLocation' attribute: namespace '" + nsURI
                              + "' is missing a schema URL.";
                 LOG.error( msg );
-                throw new XMLParsingException( msg );
+                throw new XMLProcessingException( msg );
             } catch ( MalformedURLException ex ) {
                 String msg = "Invalid 'xsi:schemaLocation' attribute: '" + token + "' for namespace '" + nsURI
                              + "' could not be parsed as URL.";
-                throw new XMLParsingException( msg );
+                throw new XMLProcessingException( msg );
             }
             schemaMap.put( nsURI, schemaURL );
         }
@@ -510,9 +510,9 @@ public class XMLFragment implements Serializable {
      * documents in some cases (GML, for instance).
      * 
      * @return the string
-     * @throws XMLParsingException 
+     * @throws XMLProcessingException 
      */
-    public String getAsPrettyString() throws XMLParsingException {
+    public String getAsPrettyString() throws XMLProcessingException {
         StringWriter writer = new StringWriter( 50000 );
         try {
             Source source = new DOMSource( rootElement );
@@ -520,10 +520,10 @@ public class XMLFragment implements Serializable {
             transformer.transform( source, new StreamResult( writer ) );
         } catch ( TransformerConfigurationException e ) {
             LOG.error( e.getMessage(), e );
-            throw new XMLParsingException( e );
+            throw new XMLProcessingException( e );
         } catch ( Exception e ) {
             LOG.error( e.getMessage(), e );
-            throw new XMLParsingException( e );
+            throw new XMLProcessingException( e );
         }
 
 //        StringWriter writer = new StringWriter( 50000 );

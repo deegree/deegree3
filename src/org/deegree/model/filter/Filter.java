@@ -55,6 +55,12 @@ import org.deegree.model.generic.StructuredObject;
  */
 public interface Filter {
 
+    public enum Type {
+        ID_FILTER, OPERATOR_FILTER;
+    }
+    
+    public Type getType ();
+    
     /**
      * Determines if the given {@link StructuredObject} matches this <code>Filter</code>.
      * 

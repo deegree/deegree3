@@ -41,39 +41,44 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter;
+package org.deegree.model.filter.logical;
 
-import java.util.Set;
-
+import org.deegree.model.filter.Operator;
+import org.deegree.model.filter.FilterEvaluationException;
 import org.deegree.model.generic.StructuredObject;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public class Not extends LogicalOperator {
 
-    private Set<String> ids;
-
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
+    private Operator param;
+    
+    public Not (Operator param) {
+        this.param = param;
     }
 
-    public Type getType() {
-        return Type.ID_FILTER;
-    }
+    public SubType getSubType() {
+        return SubType.NOT;
+    }     
 
-    public Set<String> getIds() {
-        return ids;
+    public Operator getParameter () {
+        return param;
     }
-
+    
     public boolean evaluate( StructuredObject object )
                             throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
+        return !param.evaluate( object );
     }
+
+    public String toString( String indent ) {
+        String s = indent + "-Not\n";
+        s += param.toString (indent + "  ");
+        return s;
+    }    
 }

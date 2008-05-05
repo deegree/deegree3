@@ -1,20 +1,3 @@
-package org.deegree;
-
-import java.io.File;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
-
 //$HeadURL: $
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
@@ -53,37 +36,49 @@ import org.junit.runners.Suite.SuiteClasses;
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
+package org.deegree;
+
+import java.io.File;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+
 /**
  * <code>CommonsTestSuite</code> the test suite for all test defined in commons
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  * 
  */
 @RunWith(Suite.class)
-@SuiteClasses( {
-    org.deegree.commons.utils.ArrayToolsTest.class,
-    org.deegree.commons.utils.FileUtilsTest.class,
-    org.deegree.commons.utils.StringToolsTest.class,
-    org.deegree.commons.xml.XMLAdapterTest.class,
-    org.deegree.model.coverage.raster.RasterEnvelopeTest.class,
-    org.deegree.model.crs.components.UnitTest.class,
-    org.deegree.model.crs.configuration.DeegreeCRSProviderTest.class,
-    org.deegree.model.crs.coordinatesystems.CompoundCRSTest.class,
-    org.deegree.model.crs.projections.azimuthal.LambertAzimuthalTest.class,
-    org.deegree.model.crs.projections.azimuthal.StereographicAlternativeTest.class,
-    org.deegree.model.crs.projections.azimuthal.StereographicTest.class,
-    org.deegree.model.crs.projections.conic.LambertConformalConicTest.class,
-    org.deegree.model.crs.projections.cylindric.TransverseMercatorTest.class,
-    org.deegree.model.crs.transformations.TransformationTest.class,
-    org.deegree.model.filter.OGCFilter110XMLAdapterTest.class,
-    org.deegree.model.geometry.GeometryTest.class,
-    org.deegree.model.geometry.jtswrapper.JTSWrapperEnvelopeTest.class,
-    org.deegree.model.geometry.jtswrapper.JTSWrapperPointTest.class
-} )
+@SuiteClasses( { org.deegree.commons.utils.ArrayToolsTest.class, org.deegree.commons.utils.FileUtilsTest.class,
+                org.deegree.commons.utils.StringToolsTest.class, org.deegree.commons.xml.XMLAdapterTest.class,
+                org.deegree.model.coverage.raster.RasterEnvelopeTest.class,
+                org.deegree.model.crs.components.UnitTest.class,
+                org.deegree.model.crs.configuration.DeegreeCRSProviderTest.class,
+                org.deegree.model.crs.coordinatesystems.CompoundCRSTest.class,
+                org.deegree.model.crs.projections.azimuthal.LambertAzimuthalTest.class,
+                org.deegree.model.crs.projections.azimuthal.StereographicAlternativeTest.class,
+                org.deegree.model.crs.projections.azimuthal.StereographicTest.class,
+                org.deegree.model.crs.projections.conic.LambertConformalConicTest.class,
+                org.deegree.model.crs.projections.cylindric.TransverseMercatorTest.class,
+                org.deegree.model.crs.transformations.TransformationTest.class,
+                org.deegree.model.filter.OGCFilter110XMLAdapterTest.class,
+                org.deegree.model.geometry.GeometryTest.class,
+                org.deegree.model.geometry.jtswrapper.JTSWrapperEnvelopeTest.class,
+                org.deegree.model.geometry.jtswrapper.JTSWrapperPointTest.class })
 public class CommonsTestSuite {
 
     private static final int DOT_CLASS_LENGTH = ".class".length();
@@ -96,7 +91,8 @@ public class CommonsTestSuite {
     private static final String packageName = "org.deegree.";
 
     /**
-     * @param args will not be evaluated
+     * @param args
+     *            will not be evaluated
      */
     public static void main( String[] args ) {
         CommonsTestSuite suite = new CommonsTestSuite();
@@ -147,22 +143,22 @@ public class CommonsTestSuite {
             }
             for ( Class<?> cl : values ) {
                 testClasses.add( cl.getName() );
-            }   
+            }
             Collections.sort( testClasses );
             sb.append( "\n\nThe new annotation should be following:\n" );
             sb.append( "@SuiteClasses( {\n" );
             i = 0;
             for ( String c : testClasses ) {
-                sb.append( c ).append( ".class");
+                sb.append( c ).append( ".class" );
                 if ( ++i < testClasses.size() ) {
                     sb.append( ",\n" );
                 }
             }
             sb.append( "\n} )" );
         } else {
-            sb.append( "\n\nNo new test classes found, the current @SuiteClasses annotation tag is up-to-date.\n\n");
+            sb.append( "\n\nNo new test classes found, the current @SuiteClasses annotation tag is up-to-date.\n\n" );
         }
-            
+
         System.out.println( sb.toString() );
     }
 

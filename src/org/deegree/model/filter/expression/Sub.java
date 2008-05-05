@@ -41,39 +41,51 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter;
+package org.deegree.model.filter.expression;
 
-import java.util.Set;
-
+import org.deegree.model.filter.Expression;
 import org.deegree.model.generic.StructuredObject;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public class Sub implements Expression {
 
-    private Set<String> ids;
-
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
+    private Expression param1;
+    
+    private Expression param2;
+    
+    public Sub( Expression param1, Expression param2 ) {
+        this.param1 = param1;
+        this.param2 = param2;
     }
 
     public Type getType() {
-        return Type.ID_FILTER;
+        return Type.SUB;
+    }    
+    
+    public Expression getParameter1 () {
+        return param1;
     }
+    
+    public Expression getParameter2 () {
+        return param2;
+    }    
 
-    public Set<String> getIds() {
-        return ids;
-    }
-
-    public boolean evaluate( StructuredObject object )
-                            throws FilterEvaluationException {
+    public Comparable evaluate( StructuredObject obj ) {
         // TODO Auto-generated method stub
-        return false;
+        return null;
     }
+
+    public String toString( String indent ) {
+        String s = indent + "-Div\n";
+        s += param1.toString (indent + "  ");
+        s += param2.toString (indent + "  ");
+        return s;
+    }     
 }

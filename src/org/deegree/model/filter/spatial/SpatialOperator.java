@@ -43,6 +43,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter.spatial;
 
+import org.deegree.model.filter.Operator;
+
 /**
  * TODO add documentation here
  *
@@ -51,7 +53,16 @@ package org.deegree.model.filter.spatial;
  *
  * @version $Revision:$, $Date:$
  */
-public abstract class SpatialOperator {
+public abstract class SpatialOperator implements Operator {
 
+    public enum SubType {
+        EQUALS, DISJOINT, TOUCHES, WITHIN, OVERLAPS, CROSSES, INTERSECTS, CONTAINS, DWITHIN,         
+        BEYOND, BBOX
+    }    
     
+    public Type getType () {
+        return Type.SPATIAL;
+    }
+
+    public abstract SubType getSubType ();    
 }

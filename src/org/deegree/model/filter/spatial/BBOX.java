@@ -41,39 +41,33 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter;
+package org.deegree.model.filter.spatial;
 
-import java.util.Set;
-
+import org.deegree.model.filter.FilterEvaluationException;
 import org.deegree.model.generic.StructuredObject;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public class IdFilter implements Filter {
+public class BBOX extends SpatialOperator {
 
-    private Set<String> ids;
-
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
+    public SubType getSubType() {
+        return SubType.BBOX;
     }
-
-    public Type getType() {
-        return Type.ID_FILTER;
-    }
-
-    public Set<String> getIds() {
-        return ids;
-    }
-
+    
     public boolean evaluate( StructuredObject object )
                             throws FilterEvaluationException {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    public String toString( String indent ) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
