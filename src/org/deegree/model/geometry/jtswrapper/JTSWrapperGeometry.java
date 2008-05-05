@@ -170,13 +170,14 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @param gmPoint
      * @return JTS Coordinate
      */
-    static Coordinate toCoordinate( Point gmPoint ) {
+    Coordinate toCoordinate( Point gmPoint ) {
         Coordinate coord = null;
         if ( gmPoint.getCoordinateDimension() == 2 ) {
             coord = new Coordinate( gmPoint.getX(), gmPoint.getY() );
         } else {
             coord = new Coordinate( gmPoint.getX(), gmPoint.getY(), gmPoint.getZ() );
         }
+        jtsFactory.getPrecisionModel().makePrecise( coord );
         return coord;
     }
 
@@ -186,7 +187,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @param points
      * @return JTS Coordinate array
      */
-    static Coordinate[] toCoordinates( List<Point> points ) {
+    Coordinate[] toCoordinates( List<Point> points ) {
         Coordinate[] coords = new Coordinate[points.size()];
 
         for ( int i = 0; i < coords.length; i++ ) {
@@ -203,14 +204,14 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @return JTS Polygon representing the passed envelope
      */
     private Polygon export( Envelope envelope ) {
-        Point min = envelope.getMin();
-        Point max = envelope.getMax();
+        Coordinate min = toCoordinate( envelope.getMin() );
+        Coordinate max = toCoordinate( envelope.getMax() );
         Coordinate[] coords = new Coordinate[5];
-        coords[0] = new Coordinate( min.getX(), min.getY() );
-        coords[1] = new Coordinate( min.getX(), max.getY() );
-        coords[2] = new Coordinate( max.getX(), max.getY() );
-        coords[3] = new Coordinate( max.getX(), min.getY() );
-        coords[4] = new Coordinate( min.getX(), min.getY() );
+        coords[0] = new Coordinate( min.x, min.y );
+        coords[1] = new Coordinate( min.x, max.y );
+        coords[2] = new Coordinate( max.x, max.y );
+        coords[3] = new Coordinate( max.x, min.y );
+        coords[4] = new Coordinate( min.x, min.y );
         CoordinateSequenceFactory fac = CoordinateArraySequenceFactory.instance();
         CoordinateSequence cs = fac.create( coords );
         LinearRing lr = new LinearRing( cs, jtsFactory );
