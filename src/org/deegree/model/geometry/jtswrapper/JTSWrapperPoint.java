@@ -65,11 +65,16 @@ public class JTSWrapperPoint extends JTSWrapperGeometry implements Point {
     public JTSWrapperPoint( double precision, CoordinateSystem crs, double[] pos ) {
         super( precision, crs, pos.length );
         this.pos = pos;
-        if ( coordinateDimension < 3 ) {
-            geometry = jtsFactory.createPoint( new Coordinate( pos[0], pos[1] ) );
+        Coordinate coord;
+        if ( coordinateDimension == 2 ) {
+            coord = new Coordinate( pos[0], pos[1] );
+        } else if ( coordinateDimension == 3 ) {
+            coord = new Coordinate( pos[0], pos[1], pos[2] );
         } else {
-            geometry = jtsFactory.createPoint( new Coordinate( pos[0], pos[1], pos[2] ) );
+            throw new IllegalArgumentException( "Points with " + coordinateDimension + " dimensions are not supported" );
         }
+        jtsFactory.getPrecisionModel().makePrecise( coord );
+        geometry = jtsFactory.createPoint( coord );
     }
 
     /*

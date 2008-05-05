@@ -44,30 +44,39 @@ package org.deegree.model.geometry.jtswrapper;
 
 import static org.junit.Assert.*;
 
+import org.deegree.model.crs.CRSFactory;
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Geometry;
+import org.deegree.model.geometry.primitive.Envelope;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vividsolutions.jts.geom.Geometry;
-
 /**
- *
- *
+ * 
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author: $
- *
+ * 
  * @version $Revision: $, $Date: $
- *
+ * 
  */
 public class JTSWrapperPointTest {
 
-    JTSWrapperPoint p1;
+    JTSWrapperPoint p1, p2, p3;
+
+    static double delta = 0.001;
+
+    static CoordinateSystem crs = CRSFactory.createDummyCRS( "dummy" );
+
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp()
                             throws Exception {
-        p1 = new JTSWrapperPoint(0.01, null, new double[] {2.0, 3.0} );
+        p1 = new JTSWrapperPoint( delta, crs, new double[] { 2.0, 3.0 } );
+        p2 = new JTSWrapperPoint( delta, crs, new double[] { -1.0, 5.0 } );
+        p3 = new JTSWrapperPoint( delta, crs, new double[] { 2.0, 3.0 } );
     }
 
     /**
@@ -79,11 +88,12 @@ public class JTSWrapperPointTest {
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperPoint#JTSWrapperPoint(double, org.deegree.model.crs.coordinatesystems.CoordinateSystem, double[])}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperPoint#JTSWrapperPoint(double, org.deegree.model.crs.coordinatesystems.CoordinateSystem, double[])}.
      */
-    @Test
+    // @Test
     public void testJTSWrapperPoint() {
-        fail( "Not yet implemented" );
+        // constructor is used in setUp, that should be enough testing for now
     }
 
     /**
@@ -91,9 +101,9 @@ public class JTSWrapperPointTest {
      */
     @Test
     public void testGet() {
-        assertEquals( 2.0, p1.get(0), 0.00001 );
-        assertEquals( 3.0, p1.get(1), 0.00001 );
-        assertEquals( Double.NaN, p1.get(2) );
+        assertEquals( 2.0, p1.get( 0 ), 0.00001 );
+        assertEquals( 3.0, p1.get( 1 ), 0.00001 );
+        assertEquals( Double.NaN, p1.get( 2 ) );
     }
 
     /**
@@ -132,67 +142,73 @@ public class JTSWrapperPointTest {
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#JTSWrapperGeometry(double, org.deegree.model.crs.coordinatesystems.CoordinateSystem, int)}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#export(org.deegree.model.geometry.Geometry)}.
      */
-    @Test
-    public void testJTSWrapperGeometry() {
-        fail( "Not yet implemented" );
-    }
-
-    /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#export(org.deegree.model.geometry.Geometry)}.
-     */
-    @Test
+    // @Test
     public void testExport() {
-        fail( "Not yet implemented" );
+        // this is more or less a static method, so no tests here
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#wrap(com.vividsolutions.jts.geom.Geometry)}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#wrap(com.vividsolutions.jts.geom.Geometry)}.
      */
-    @Test
+    // @Test
     public void testWrap() {
-        fail( "Not yet implemented" );
+        // this is more or less a static method, so no tests here
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#toPoint(com.vividsolutions.jts.geom.Coordinate)}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#toPoint(com.vividsolutions.jts.geom.Coordinate)}.
      */
-    @Test
+    // @Test
     public void testToPoint() {
-        fail( "Not yet implemented" );
+        // this is more or less a static method, so no tests here
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#toPoints(com.vividsolutions.jts.geom.Coordinate[])}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#toPoints(com.vividsolutions.jts.geom.Coordinate[])}.
      */
-    @Test
+    // @Test
     public void testToPoints() {
-        fail( "Not yet implemented" );
+        // this is more or less a static method, so no tests here
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#contains(org.deegree.model.geometry.Geometry)}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#contains(org.deegree.model.geometry.Geometry)}.
      */
     @Test
     public void testContains() {
-        fail( "Not yet implemented" );
+        assertTrue( p1.contains( p3 ) );
+        assertTrue( p3.contains( p1 ) );
+        assertFalse( p1.contains( p2 ) );
+        assertFalse( p2.contains( p1 ) );
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#difference(org.deegree.model.geometry.Geometry)}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#difference(org.deegree.model.geometry.Geometry)}.
      */
     @Test
     public void testDifference() {
-        fail( "Not yet implemented" );
+        assertTrue( p1.difference( p2 ).equals( p1 ) );
+        assertNull( p1.difference( p3 ) );
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#distance(org.deegree.model.geometry.Geometry)}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#distance(org.deegree.model.geometry.Geometry)}.
      */
     @Test
     public void testDistance() {
-        fail( "Not yet implemented" );
+        assertEquals( 0.0, p1.distance( p3 ), delta );
+        assertEquals( 0.0, p1.distance( p3 ), delta );
+        double dist = Math.sqrt( 2 * 2 + 3 * 3 );
+        assertEquals( dist, p1.distance( p2 ), delta );
     }
 
     /**
@@ -200,7 +216,7 @@ public class JTSWrapperPointTest {
      */
     @Test
     public void testGetPrecision() {
-        fail( "Not yet implemented" );
+        assertEquals( delta, p1.getPrecision() );
     }
 
     /**
@@ -208,7 +224,8 @@ public class JTSWrapperPointTest {
      */
     @Test
     public void testGetBuffer() {
-        fail( "Not yet implemented" );
+        assertTrue( p2.isWithin( p1.getBuffer( 5.0 ) ) );
+        assertTrue( p3.isWithin( p1.getBuffer( 0.01 ) ) );
     }
 
     /**
@@ -216,7 +233,7 @@ public class JTSWrapperPointTest {
      */
     @Test
     public void testGetConvexHull() {
-        fail( "Not yet implemented" );
+        assertTrue( p1.getConvexHull().equals( p1 ) );
     }
 
     /**
@@ -232,55 +249,106 @@ public class JTSWrapperPointTest {
      */
     @Test
     public void testGetCoordinateSystem() {
-        fail( "Not yet implemented" );
+        assertEquals( crs, p1.getCoordinateSystem() );
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#intersection(org.deegree.model.geometry.Geometry)}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#intersection(org.deegree.model.geometry.Geometry)}.
      */
     @Test
     public void testIntersection() {
-        fail( "Not yet implemented" );
+        assertNull( p1.intersection( p2 ) );
+        assertTrue( p1.equals( p1.intersection( p3 ) ) );
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#intersects(org.deegree.model.geometry.Geometry)}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#intersects(org.deegree.model.geometry.Geometry)}.
      */
     @Test
     public void testIntersects() {
-        fail( "Not yet implemented" );
+        assertTrue( p1.intersects( p1 ) );
+        assertTrue( p1.intersects( p3 ) );
+        assertFalse( p1.intersects( p2 ) );
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#isWithin(org.deegree.model.geometry.Geometry)}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#isWithin(org.deegree.model.geometry.Geometry)}.
      */
     @Test
     public void testIsWithin() {
-        fail( "Not yet implemented" );
+        assertTrue( p1.isWithin( p3 ) );
+        assertTrue( p3.isWithin( p1 ) );
+        assertFalse( p1.isWithin( p2 ) );
+        assertFalse( p2.isWithin( p1 ) );
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#isWithinDistance(org.deegree.model.geometry.Geometry, double)}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#isWithinDistance(org.deegree.model.geometry.Geometry, double)}.
      */
     @Test
     public void testIsWithinDistance() {
-        fail( "Not yet implemented" );
+        assertTrue( p1.isWithinDistance( p3, 0.0 ) );
+
+        double dist = Math.sqrt( 2 * 2 + 3 * 3 );
+        assertTrue( p1.isWithinDistance( p2, dist ) );
+        assertTrue( p1.isWithinDistance( p2, dist + delta ) );
+        assertFalse( p1.isWithinDistance( p2, dist - delta ) );
+
+        // doesn't work as expected, see JTS precision model description
+        // http://www.vividsolutions.com/jts/javadoc/com/vividsolutions/jts/geom/PrecisionModel.html
+        // assertTrue( p1.isWithinDistance( p2, dist + delta / 2 ) );
+        // assertTrue( p1.isWithinDistance( p2, dist - delta / 2 ) );
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#isBeyond(org.deegree.model.geometry.Geometry, double)}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#isBeyond(org.deegree.model.geometry.Geometry, double)}.
      */
     @Test
     public void testIsBeyond() {
-        fail( "Not yet implemented" );
+        assertFalse( p1.isBeyond( p3, 0.0 ) );
+
+        double dist = Math.sqrt( 2 * 2 + 3 * 3 );
+        assertFalse( p1.isBeyond( p2, dist ) );
+        assertFalse( p1.isBeyond( p2, dist + delta ) );
+        assertTrue( p1.isBeyond( p2, dist - delta ) );
+
+        // see testIsWithinDistance
+        // assertFalse( p1.isBeyond( p2, dist + delta / 2 ) );
+        // assertFalse( p1.isBeyond( p2, dist - delta / 2 ) );
     }
 
     /**
-     * Test method for {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#union(org.deegree.model.geometry.Geometry)}.
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#union(org.deegree.model.geometry.Geometry)}.
      */
     @Test
     public void testUnion() {
-        fail( "Not yet implemented" );
+        Geometry union = p1.union( p2 );
+        Envelope env = union.getEnvelope();
+        assertEquals( 3.0, env.getWidth(), delta );
+        assertEquals( 2.0, env.getHeight(), delta );
+    }
+
+    /**
+     * Test method for
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperGeometry#equals(org.deegree.model.geometry.Geometry)}.
+     */
+    @Test
+    public void testEquals() {
+        assertTrue( p1.equals( p1 ) );
+        assertTrue( p1.equals( p3 ) );
+        assertFalse( p1.equals( p2 ) );
+
+        JTSWrapperPoint p1_1 = new JTSWrapperPoint( delta, crs, new double[] { 2.0 + ( delta / 5 ), 3.0 } );
+        JTSWrapperPoint p1_2 = new JTSWrapperPoint( delta, crs, new double[] { 2.0 + delta, 3.0 } );
+        assertTrue( p1.equals( p1_1 ) );
+        assertFalse( p1.equals( p1_2 ) );
+
     }
 
     /**
