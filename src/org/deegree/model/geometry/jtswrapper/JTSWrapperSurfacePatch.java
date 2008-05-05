@@ -64,6 +64,8 @@ public class JTSWrapperSurfacePatch implements SurfacePatch {
     public JTSWrapperSurfacePatch( List<Curve> boundary ) {
         this.boundary = boundary;
         coordinateDimension = boundary.get( 0 ).getCoordinateDimension();
+        // TODO: create jts geometry
+        throw new UnsupportedOperationException( "creation of surface patches is not implemented" );
     }
 
     /*

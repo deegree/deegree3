@@ -61,11 +61,14 @@ public class JTSWrapperCurveSegment implements CurveSegment {
 
     /**
      * 
-     * @param points list of {@link Point}s forming a {@link CurveSegment}
+     * @param points
+     *            list of {@link Point}s forming a {@link CurveSegment}
      */
     public JTSWrapperCurveSegment( List<Point> points ) {
         this.points = points;
         coordinateDimension = points.get( 0 ).getCoordinateDimension();
+        // TODO: create jts geometry
+        throw new UnsupportedOperationException( "creation of curve segments is not implemented" );
     }
 
     /*
