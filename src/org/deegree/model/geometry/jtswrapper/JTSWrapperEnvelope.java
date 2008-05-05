@@ -74,15 +74,14 @@ class JTSWrapperEnvelope extends JTSWrapperGeometry implements Envelope {
         super( precision, crs, coordinateDimension );
         this.min = min;
         this.max = max;
-
-        // create polygon representation of the envelope to use JTS topological
-        // methods; a JTS envelope always has dimension == 2
+        Coordinate minCoord = toCoordinate( min );
+        Coordinate maxCoord = toCoordinate( max );
         Coordinate[] coords = new Coordinate[5];
-        coords[0] = new Coordinate( min.getX(), min.getY() );
-        coords[1] = new Coordinate( min.getX(), max.getY() );
-        coords[2] = new Coordinate( max.getX(), max.getY() );
-        coords[3] = new Coordinate( max.getX(), min.getY() );
-        coords[4] = new Coordinate( min.getX(), min.getY() );
+        coords[0] = new Coordinate( minCoord.x, minCoord.y );
+        coords[1] = new Coordinate( minCoord.x, maxCoord.y );
+        coords[2] = new Coordinate( maxCoord.x, maxCoord.y );
+        coords[3] = new Coordinate( maxCoord.x, minCoord.y );
+        coords[4] = new Coordinate( minCoord.x, minCoord.y );
         CoordinateSequenceFactory fac = CoordinateArraySequenceFactory.instance();
         CoordinateSequence cs = fac.create( coords );
         LinearRing lr = new LinearRing( cs, jtsFactory );

@@ -48,6 +48,7 @@ import org.deegree.model.geometry.primitive.Point;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 /**
  * 
@@ -93,6 +94,11 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
             for ( Point point : points ) {
                 coords.add( new Coordinate( point.getX(), point.getY(), point.getZ() ) );
             }
+        }
+        
+        PrecisionModel pm = jtsFactory.getPrecisionModel();
+        for ( Coordinate coord: coords ) {
+            pm.makePrecise( coord );
         }
 
         geometry = jtsFactory.createLineString( coords.toArray( new Coordinate[coords.size()] ) );
