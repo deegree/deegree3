@@ -48,7 +48,7 @@ import org.deegree.model.geometry.primitive.Curve;
  * 
  * @version. $Revision$, $Date$
  */
-public interface MultiCurve<T> extends MultiGeometry<T> {
+public interface MultiCurve extends MultiGeometry<Curve> {
       
     /**
      * The length of a MultiCurve is calculated as the sum of all contained {@link Curve}s

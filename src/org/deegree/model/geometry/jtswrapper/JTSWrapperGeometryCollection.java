@@ -55,7 +55,7 @@ import org.deegree.model.geometry.primitive.Surface;
  * 
  * @version. $Revision$, $Date$
  */
-public class JTSWrapperGeometryCollection extends JTSWrapperGeometry implements GeometryCollection<Geometry> {
+public class JTSWrapperGeometryCollection extends JTSWrapperGeometry implements GeometryCollection {
 
     private List<Geometry> geometries;
 
@@ -71,6 +71,7 @@ public class JTSWrapperGeometryCollection extends JTSWrapperGeometry implements 
      * @param precision
      * @param crs
      * @param coordinateDimension
+     * @param geometries
      */
     public JTSWrapperGeometryCollection( double precision, CoordinateSystem crs, int coordinateDimension,
                                          List<Geometry> geometries ) {

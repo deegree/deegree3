@@ -72,7 +72,8 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
      * @param precision
      * @param crs
      * @param coordinateDimension
-     * @param segments
+     * @param segment
+     * @param orientation
      */
     public JTSWrapperCurve( double precision, CoordinateSystem crs, int coordinateDimension, CurveSegment segment,
                             Curve.ORIENTATION orientation ) {

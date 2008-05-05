@@ -37,6 +37,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.multi;
 
+import org.deegree.model.geometry.Geometry;
+
 /**
  * 
  * 
@@ -45,43 +47,44 @@ package org.deegree.model.geometry.multi;
  * @author last edited by: $Author$
  * 
  * @version. $Revision$, $Date$
+ * 
  */
-public interface GeometryCollection<T> extends MultiGeometry<T> {
+public interface GeometryCollection extends MultiGeometry<Geometry> {
 
     /**
      * 
      * @return true if a collection contains point geometries
      */
     public boolean containsPoints();
-    
+
     /**
      * 
      * @return true if a collection contains curve geometries
      */
     public boolean containsCurves();
-    
+
     /**
      * 
      * @return true if a collection contains curve geometries
      */
     public boolean containsSurfaces();
-    
+
     /**
      * 
      * @return true if a collection contains solid geometries
      */
     public boolean containsSolids();
-    
+
     /**
      * 
      * @return true if a collection contains geometric complexes
      */
     public boolean containsComplexes();
-    
+
     /**
      * 
      * @return true if a collection contains geometry collections
      */
     public boolean containsCollections();
-	
+
 }

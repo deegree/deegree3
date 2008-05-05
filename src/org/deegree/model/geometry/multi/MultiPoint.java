@@ -37,6 +37,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.multi;
 
+import org.deegree.model.geometry.primitive.Point;
+
 /**
  * 
  * 
@@ -46,7 +48,6 @@ package org.deegree.model.geometry.multi;
  * 
  * @version. $Revision$, $Date$
  */
-public interface MultiPoint<T> extends MultiGeometry<T> {
-
-
+public interface MultiPoint extends MultiGeometry<Point> {
+    // no additional methods MultiPoints 
 }

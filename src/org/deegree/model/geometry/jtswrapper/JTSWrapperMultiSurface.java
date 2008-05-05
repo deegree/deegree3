@@ -56,11 +56,12 @@ import com.vividsolutions.jts.geom.Polygon;
  * 
  * @version. $Revision$, $Date$
  */
-public class JTSWrapperMultiSurface extends JTSWrapperGeometry implements MultiSurface<Surface> {
+public class JTSWrapperMultiSurface extends JTSWrapperGeometry implements MultiSurface {
 
     private List<Surface> surfaces;
 
     /**
+     * @param surfaces
      * @param coordinateDimension
      * @param precision
      * @param crs

@@ -49,7 +49,7 @@ import org.deegree.model.geometry.primitive.Solid;
  * 
  * @version. $Revision$, $Date$
  */
-public interface MultiSolid<T> extends MultiGeometry<T> {
+public interface MultiSolid extends MultiGeometry<Solid> {
 
     /**
      * A volume will be calculated as the sum of all contained {@link Solid}s

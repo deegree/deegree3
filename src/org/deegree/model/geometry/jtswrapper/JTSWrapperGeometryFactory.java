@@ -178,7 +178,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      * 
      * @see org.deegree.model.geometry.GeometryFactory#createMultiCurve(org.deegree.model.geometry.primitive.Curve[])
      */
-    public MultiCurve<Curve> createMultiCurve( List<Curve> curves ) {
+    public MultiCurve createMultiCurve( List<Curve> curves ) {
         if ( curves == null || curves.size() == 0 ) {
             return null;
         }
@@ -208,7 +208,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      * 
      * @see org.deegree.model.geometry.GeometryFactory#createMultiPoint(org.deegree.model.geometry.primitive.Point[])
      */
-    public MultiPoint<Point> createMultiPoint( List<Point> points ) {
+    public MultiPoint createMultiPoint( List<Point> points ) {
         if ( points == null || points.size() == 0 ) {
             return null;
         }
@@ -223,7 +223,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      * 
      * @see org.deegree.model.geometry.GeometryFactory#createMultiSolid(org.deegree.model.geometry.primitive.Solid[])
      */
-    public MultiSolid<Solid> createMultiSolid( @SuppressWarnings("unused")
+    public MultiSolid createMultiSolid( @SuppressWarnings("unused")
     List<Solid> solids ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
@@ -233,7 +233,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      * 
      * @see org.deegree.model.geometry.GeometryFactory#createMultiSurface(org.deegree.model.geometry.primitive.Surface[])
      */
-    public MultiSurface<Surface> createMultiSurface( List<Surface> surfaces ) {
+    public MultiSurface createMultiSurface( List<Surface> surfaces ) {
         if ( surfaces == null || surfaces.size() == 0 ) {
             return null;
         }

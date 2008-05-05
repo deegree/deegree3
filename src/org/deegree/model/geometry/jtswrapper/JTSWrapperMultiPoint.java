@@ -52,7 +52,7 @@ import org.deegree.model.geometry.primitive.Point;
  * 
  * @version. $Revision$, $Date$
  */
-public class JTSWrapperMultiPoint extends JTSWrapperGeometry implements MultiPoint<Point> {
+public class JTSWrapperMultiPoint extends JTSWrapperGeometry implements MultiPoint {
 
     private List<Point> points;
 

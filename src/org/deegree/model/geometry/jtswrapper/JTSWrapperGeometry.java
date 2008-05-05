@@ -79,21 +79,33 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequenceFactory;
  */
 abstract class JTSWrapperGeometry implements Geometry {
 
+    /**
+     * coordinate dimensions of the geometry
+     */
     protected int coordinateDimension;
 
     private CoordinateSystem crs;
 
+    /**
+     * the wrapped geometry
+     */
     protected com.vividsolutions.jts.geom.Geometry geometry;
 
     // precision model that is used for all JTS-Geometries
     private PrecisionModel pm;
 
+    /**
+     * the JTS geometry factory
+     */
     protected GeometryFactory jtsFactory;
 
     private double precision;
 
     private Envelope envelope;
 
+    /**
+     * the deegree geometry factory for JTS wrapped geometries
+     */
     protected static org.deegree.model.geometry.GeometryFactory geomFactory = null;
     static {
         if ( geomFactory == null ) {
@@ -134,6 +146,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @param geometry
      * @return corresponding JTS geometry
      */
+    @SuppressWarnings("unchecked")
     protected com.vividsolutions.jts.geom.Geometry export( Geometry geometry ) {
 
         com.vividsolutions.jts.geom.Geometry geom = null;
@@ -141,15 +154,15 @@ abstract class JTSWrapperGeometry implements Geometry {
             if ( geometry instanceof Point ) {
                 geom = export( (Point) geometry );
             } else if ( geometry instanceof MultiPoint ) {
-                geom = export( (MultiPoint<Point>) geometry );
+                geom = export( (MultiPoint) geometry );
             } else if ( geometry instanceof Curve ) {
                 geom = export( (Curve) geometry );
             } else if ( geometry instanceof MultiCurve ) {
-                geom = export( (MultiCurve<Curve>) geometry );
+                geom = export( (MultiCurve) geometry );
             } else if ( geometry instanceof Surface ) {
                 geom = export( (Surface) geometry );
             } else if ( geometry instanceof MultiSurface ) {
-                geom = export( (MultiSurface<Surface>) geometry );
+                geom = export( (MultiSurface) geometry );
             } else if ( geometry instanceof MultiGeometry ) {
                 geom = export( (MultiGeometry<Geometry>) geometry );
             } else if ( geometry instanceof Envelope ) {
@@ -238,7 +251,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      *            multipoint to be converted
      * @return the corresponding MultiPoint object
      */
-    private com.vividsolutions.jts.geom.MultiPoint export( MultiPoint<Point> gmMultiPoint ) {
+    private com.vividsolutions.jts.geom.MultiPoint export( MultiPoint gmMultiPoint ) {
         List<Point> gmPoints = gmMultiPoint.getGeometries();
 
         com.vividsolutions.jts.geom.Point[] points = new com.vividsolutions.jts.geom.Point[gmPoints.size()];
@@ -272,7 +285,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      *            MultiCurve to be converted
      * @return the corresponding MultiLineString object
      */
-    private MultiLineString export( MultiCurve<Curve> multi ) {
+    private MultiLineString export( MultiCurve multi ) {
 
         List<Curve> curves = multi.getGeometries();
 
@@ -324,7 +337,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      *            a MultiSurface
      * @return the corresponding MultiPolygon object
      */
-    private MultiPolygon export( MultiSurface<Surface> msurface ) {
+    private MultiPolygon export( MultiSurface msurface ) {
 
         List<Surface> surfaces = msurface.getGeometries();
         Polygon[] polygons = new Polygon[surfaces.size()];

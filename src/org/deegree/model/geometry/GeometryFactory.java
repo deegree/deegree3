@@ -257,7 +257,7 @@ public interface GeometryFactory {
      * 
      * @param points
      *            list of points to create a {@link CurveSegment} from
-     * @return
+     * @return created {@link CurveSegment}
      */
     public CurveSegment createCurveSegment( List<Point> points );
 
@@ -352,31 +352,31 @@ public interface GeometryFactory {
      * @param points
      * @return created {@link MultiPoint}
      */
-    public MultiPoint<Point> createMultiPoint( List<Point> points );
+    public MultiPoint createMultiPoint( List<Point> points );
 
     /**
      * Creates a {@link MultiCurve} from a list of passed {@link Curve}s
      * 
-     * @param points
+     * @param curves
      * @return created {@link MultiCurve}
      */
-    public MultiCurve<Curve> createMultiCurve( List<Curve> curves );
+    public MultiCurve createMultiCurve( List<Curve> curves );
 
     /**
      * Creates a {@link MultiSurface} from a list of passed {@link Surface}s
      * 
-     * @param points
+     * @param surfaces
      * @return created {@link MultiSurface}
      */
-    public MultiSurface<Surface> createMultiSurface( List<Surface> surfaces );
+    public MultiSurface createMultiSurface( List<Surface> surfaces );
 
     /**
      * Creates a {@link MultiSolid} from a list of passed {@link Solid}s
      * 
-     * @param points
+     * @param solids
      * @return created {@link MultiSolid}
      */
-    public MultiSolid<Solid> createMultiSolid( List<Solid> solids );
+    public MultiSolid createMultiSolid( List<Solid> solids );
 
     /**
      * Creates a {@link CompositeCurve} from a list of passed {@link Curve}s.

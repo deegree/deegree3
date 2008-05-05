@@ -50,7 +50,7 @@ import org.deegree.model.geometry.primitive.Surface;
  * 
  * @version. $Revision$, $Date$
  */
-public interface MultiSurface<T> extends MultiGeometry<T> {
+public interface MultiSurface extends MultiGeometry<Surface> {
 
     /**
      * Area is calculated as the sum of all contained {@link Surface}s

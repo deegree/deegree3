@@ -58,11 +58,12 @@ import com.vividsolutions.jts.geom.MultiLineString;
  * 
  * @version. $Revision$, $Date$
  */
-public class JTSWrapperMultiCurve extends JTSWrapperGeometry implements MultiCurve<Curve> {
+public class JTSWrapperMultiCurve extends JTSWrapperGeometry implements MultiCurve {
     
     private List<Curve> curves;
 
     /**
+     * @param curves
      * @param coordinateDimension
      * @param precision
      * @param crs
