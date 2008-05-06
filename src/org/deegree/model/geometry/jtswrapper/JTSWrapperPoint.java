@@ -37,7 +37,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.jtswrapper;
 
-import org.deegree.commons.utils.ArrayTools;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
@@ -146,9 +145,4 @@ public class JTSWrapperPoint extends JTSWrapperGeometry implements Point {
         throw new UnsupportedOperationException( "envelope for a point is not defined" );
     }
     
-    @Override
-    public String toString() {
-        return ArrayTools.join( " ", getAsArray() );
-    }
-
 }

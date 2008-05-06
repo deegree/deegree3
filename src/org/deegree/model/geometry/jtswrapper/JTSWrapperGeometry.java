@@ -699,4 +699,9 @@ abstract class JTSWrapperGeometry implements Geometry {
         return geometry;
     }
 
+    @Override
+    public String toString() {
+        // the name of the wrapper + wkt of the geometry
+        return this.getClass().getSimpleName() + ": " + geometry.toString();
+    }
 }

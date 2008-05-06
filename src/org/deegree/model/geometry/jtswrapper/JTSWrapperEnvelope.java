@@ -146,6 +146,4 @@ class JTSWrapperEnvelope extends JTSWrapperGeometry implements Envelope {
         return max.getX() - min.getX();
     }
     
-    
-
 }
