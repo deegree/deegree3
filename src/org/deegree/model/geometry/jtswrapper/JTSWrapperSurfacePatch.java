@@ -52,11 +52,11 @@ import org.deegree.model.geometry.primitive.SurfacePatch;
  * @version. $Revision$, $Date$
  */
 public class JTSWrapperSurfacePatch implements SurfacePatch {
-    
+
     private List<Curve> boundary;
+
     private int coordinateDimension = 0;
-    
-    
+
     /**
      * 
      * @param boundary
@@ -64,8 +64,6 @@ public class JTSWrapperSurfacePatch implements SurfacePatch {
     public JTSWrapperSurfacePatch( List<Curve> boundary ) {
         this.boundary = boundary;
         coordinateDimension = boundary.get( 0 ).getCoordinateDimension();
-        // TODO: create jts geometry
-        throw new UnsupportedOperationException( "creation of surface patches is not implemented" );
     }
 
     /*
@@ -87,13 +85,13 @@ public class JTSWrapperSurfacePatch implements SurfacePatch {
         return boundary;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.SurfacePatch#getCoordinateDimension()
      */
     public int getCoordinateDimension() {
         return coordinateDimension;
     }
-    
-    
 
 }
