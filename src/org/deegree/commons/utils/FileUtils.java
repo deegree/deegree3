@@ -42,7 +42,15 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class contains static utility methods for handling files and filenames.
@@ -54,6 +62,9 @@ import java.io.File;
  * 
  */
 public class FileUtils {
+
+    private static Log LOG = LogFactory.getLog( FileUtils.class );
+
     /**
      * Returns the filename, without any extension. (Eg. /tmp/foo.txt -> /tmp/foo)
      * 
@@ -93,5 +104,97 @@ public class FileUtils {
             return new StringPair( basename, suffix );
         }
         return new StringPair( file.getPath(), "" );
+    }
+
+    /**
+     * Writes the given {@link String} to the specified file.
+     * 
+     * @param file
+     *            file to write to
+     * @param content
+     */
+    void writeFile( File file, String content ) {
+        LOG.debug( "Writing debug file '" + file.getAbsolutePath() + "'." );
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter( new FileWriter( file ) );
+            writer.write( content );
+        } catch ( IOException e ) {
+            LOG.error( "Could not write to debug file '" + file.getAbsolutePath() + "'.", e );
+        } finally {
+            if ( writer != null ) {
+                try {
+                    writer.close();
+                } catch ( IOException e ) {
+                    LOG.error( "Error closing debug file '" + file.getAbsolutePath() + "'.", e );
+                }
+            }
+        }
+    }
+
+    /**
+     * Writes the given {@link String} to a temporary file (created from specified prefix and suffix).
+     * 
+     * @see File#createTempFile(String, String)
+     * @param filePrefix
+     *            prefix for the temp file name, must be at least three characters long
+     * @param fileSuffix
+     *            suffix for the temp file name, can be null (then ".tmp" is used)
+     * @param content
+     */
+    void writeTempFile( String filePrefix, String fileSuffix, String content ) {
+        try {
+            File tmpFile = File.createTempFile( filePrefix, fileSuffix );
+            writeFile( tmpFile, content );
+        } catch ( IOException e ) {
+            LOG.error( "Cannot create debug file for prefix '" + filePrefix + "' and suffix '" + fileSuffix + ".", e );
+        }
+    }
+
+    /**
+     * Writes the given binary data to the specified file.
+     * 
+     * @param file
+     *            file to write to
+     * @param data
+     *            binary data to be written
+     */
+    void writeBinaryFile( File file, byte[] data ) {
+        LOG.debug( "Writing binary debug file '" + file.getAbsolutePath() + "'." );
+        BufferedOutputStream out = null;
+        try {
+            out = new BufferedOutputStream( new FileOutputStream( file ) );
+            out.write( data );
+        } catch ( IOException e ) {
+            LOG.error( "Could not write to debug file '" + file.getAbsolutePath() + "'.", e );
+        } finally {
+            if ( out != null ) {
+                try {
+                    out.close();
+                } catch ( IOException e ) {
+                    LOG.error( "Error closing debug file '" + file.getAbsolutePath() + "'.", e );
+                }
+            }
+        }
+    }
+
+    /**
+     * Writes the given binary data to a temporary file (created from specified prefix and suffix).
+     * 
+     * @see File#createTempFile(String, String)
+     * @param filePrefix
+     *            prefix for the temp file name, must be at least three characters long
+     * @param fileSuffix
+     *            suffix for the temp file name, can be null (then ".tmp" is used)
+     * @param data
+     *            binary data to be written
+     */
+    void writeBinaryTempFile( String filePrefix, String fileSuffix, byte[] data ) {
+        try {
+            File tmpFile = File.createTempFile( filePrefix, fileSuffix );
+            writeBinaryFile( tmpFile, data );
+        } catch ( IOException e ) {
+            LOG.error( "Cannot create debug file for prefix '" + filePrefix + "' and suffix '" + fileSuffix + ".", e );
+        }
     }
 }
