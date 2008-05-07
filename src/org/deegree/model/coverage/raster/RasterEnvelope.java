@@ -43,6 +43,7 @@ import static java.lang.Math.min;
 import static java.lang.Math.signum;
 
 import org.deegree.model.coverage.raster.data.RasterRect;
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.Envelope;
@@ -294,6 +295,33 @@ public class RasterEnvelope {
 
         Envelope envelope = geomFactory.createEnvelope( new double[] { xmin, ymin }, new double[] { xmax, ymax },
                                                         delta, null );
+        return envelope;
+    }
+    
+    /**
+     * Returns an Envelope for a raster with given size.
+     * 
+     * The calculation considers the origin and resolution of the raster.
+     * 
+     * @param width
+     * @param height
+     * @param crs the coordinate system for the envelope
+     * 
+     * @return the calculated envelope
+     */
+    public Envelope getEnvelope( int width, int height, CoordinateSystem crs ) {
+        GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
+        double x0 = this.x0;
+        double y0 = this.y0;
+        double x1 = x0 + width * xRes;
+        double y1 = y0 + height * yRes;
+        double xmin = min( x0, x1 );
+        double xmax = max( x0, x1 );
+        double ymin = min( y0, y1 );
+        double ymax = max( y0, y1 );
+
+        Envelope envelope = geomFactory.createEnvelope( new double[] { xmin, ymin }, new double[] { xmax, ymax },
+                                                        delta, crs );
         return envelope;
     }
 
