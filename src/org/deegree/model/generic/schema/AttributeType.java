@@ -41,61 +41,24 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic.implementation;
+
+package org.deegree.model.generic.schema;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.generic.AttributeNode;
-import org.deegree.model.generic.StructuredObject;
-import org.deegree.model.generic.schema.AttributeNodeType;
+public interface AttributeType {
 
-/**
- * TODO add documentation here
- *
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- *
- * @version $Revision:$, $Date:$
- */
-public class GenericAttributeNode extends GenericNode implements AttributeNode {
-
-    private QName name;
-    
-    private String valueString;
-
-    private AttributeNodeType type;
-
-    GenericAttributeNode(QName name, String value, StructuredObject parent, AttributeNodeType type) {
-        this.name = name;
-        this.valueString = value;
-        this.parent = parent;
-        this.type = type;
-
-        // add to parent if it exists
-        if (parent != null) {
-            parent.addAttribute( this );
-        }
-    }
-    
     /**
-     * TODO implement me!
+     * Returns the name of this attribute.
+     * 
+     * @return the name of this attribute
      */
-    public AttributeNodeType getType() {
-        return type;
-    }    
-    
-    public QName getName() {
-        return name;
-    }   
+    public QName getName();
 
-    public String getValue() {
-        return valueString;
-    }    
-    
     /**
-     * TODO implement me!
-     */
-    public Object getTypedValue() {
-        return null;
-    }
+     * Returns the element type that owns this attribute.
+     * 
+     * @return the element type that owns this attribute
+     */    
+    public ElementType getOwner ();
 }

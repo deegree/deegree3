@@ -41,18 +41,18 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic.schema;
+package org.deegree.model.generic.implementation.schema;
 
-import org.deegree.model.generic.AttributeNode;
+import org.deegree.model.generic.schema.TextType;
 
 /**
- * Type information for an {@link AttributeNode}.
+ * TODO add documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public interface AttributeNodeType extends ObjectNodeType {
-    // still needs to be designed
+public class GenericTextType implements TextType {
+
 }

@@ -45,7 +45,7 @@ package org.deegree.model.filter.comparison;
 
 import org.deegree.model.filter.Expression;
 import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.generic.StructuredObject;
+import org.deegree.model.generic.Element;
 
 /**
  * TODO add documentation here
@@ -65,7 +65,7 @@ public class PropertyIsLessThanOrEqualTo extends BinaryComparisonOperator {
         return SubType.PROPERTY_IS_LESS_THAN_OR_EQUAL_TO;
     }    
     
-    public boolean evaluate( StructuredObject object )
+    public boolean evaluate( Element object )
                             throws FilterEvaluationException {
         Comparable parameter1Value = param1.evaluate( object );
         Comparable parameter2Value = param2.evaluate( object );

@@ -44,8 +44,7 @@
 package org.deegree.model.filter.expression;
 
 import org.deegree.model.filter.Expression;
-import org.deegree.model.filter.Expression.Type;
-import org.deegree.model.generic.StructuredObject;
+import org.deegree.model.generic.Element;
 
 /**
  * TODO add documentation here
@@ -71,7 +70,7 @@ public class Literal implements Expression {
         return value;
     }      
     
-    public Comparable evaluate( StructuredObject obj ) {
+    public Comparable evaluate( Element obj ) {
         return value;
     }
 

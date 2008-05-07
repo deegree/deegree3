@@ -43,10 +43,10 @@
 
 package org.deegree.model.filter;
 
-import org.deegree.model.generic.StructuredObject;
+import org.deegree.model.generic.Element;
 
 /**
- * A <code>Filter</code> is a boolean expression that can be tested against {@link StructuredObject}s.
+ * A <code>Filter</code> is a boolean expression that can be tested against {@link Element}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -62,15 +62,15 @@ public interface Filter {
     public Type getType ();
     
     /**
-     * Determines if the given {@link StructuredObject} matches this <code>Filter</code>.
+     * Determines if the given {@link Element} matches this <code>Filter</code>.
      * 
      * @param object
-     *            <code>StructuredObject</code> to be tested
+     *            <code>Element</code> to be tested
      * @return true, if the <code>Filter</code> evaluates to true, else false
      * @throws FilterEvaluationException
      *             if the evaluation fails
      */
-    boolean evaluate( StructuredObject object )
+    boolean evaluate( Element object )
                             throws FilterEvaluationException;
 
 }

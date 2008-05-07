@@ -41,10 +41,7 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter.spatial;
-
-import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.generic.Element;
+package org.deegree.model.generic.schema;
 
 /**
  * TODO add documentation here
@@ -54,21 +51,5 @@ import org.deegree.model.generic.Element;
  *
  * @version $Revision:$, $Date:$
  */
-public class Within extends SpatialOperator {
-
-    public SubType getSubType() {
-        return SubType.WITHIN;
-    }    
-    
-    public boolean evaluate( Element object )
-                            throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    public String toString( String indent ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
+public interface NodeType { 
 }

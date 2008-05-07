@@ -41,18 +41,42 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic.schema;
+package org.deegree.model.generic.implementation.schema;
 
-import org.deegree.model.generic.ValueNode;
+import javax.xml.namespace.QName;
+
+import org.deegree.model.generic.schema.AttributeType;
+import org.deegree.model.generic.schema.ElementType;
 
 /**
- * Type information for a {@link ValueNode}.
+ * TODO add documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public interface ValueNodeType extends ObjectNodeType {
-    // still needs to be designed
+public class GenericAttributeType implements AttributeType {
+
+    private QName name;
+    
+    private GenericElementType owner;
+
+    public GenericAttributeType (QName name) {
+        this.name = name;
+    }    
+    
+    public QName getName() {
+        return name;
+    }
+
+    public ElementType getOwner() {
+        return owner;
+    }
+
+    @Override
+    public String toString () {
+        String s = "attribute: " + name.toString();
+        return s;
+    }
 }

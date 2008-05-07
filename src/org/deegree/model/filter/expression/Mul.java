@@ -44,8 +44,7 @@
 package org.deegree.model.filter.expression;
 
 import org.deegree.model.filter.Expression;
-import org.deegree.model.filter.Expression.Type;
-import org.deegree.model.generic.StructuredObject;
+import org.deegree.model.generic.Element;
 
 /**
  * TODO add documentation here
@@ -78,7 +77,7 @@ public class Mul implements Expression {
         return param2;
     }
 
-    public Comparable evaluate( StructuredObject obj ) {
+    public Comparable evaluate( Element obj ) {
         // TODO Auto-generated method stub
         return null;
     }

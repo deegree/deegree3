@@ -43,7 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter;
 
-import org.deegree.model.generic.StructuredObject;
+import org.deegree.model.generic.Element;
 
 /**
  * TODO add documentation here
@@ -73,7 +73,7 @@ public class OperatorFilter implements Filter {
         return rootOperator;
     }    
     
-    public boolean evaluate( StructuredObject object )
+    public boolean evaluate( Element object )
                             throws FilterEvaluationException {
         return rootOperator.evaluate( object );
     }

@@ -43,9 +43,9 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter.logical;
 
-import org.deegree.model.filter.Operator;
 import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.generic.StructuredObject;
+import org.deegree.model.filter.Operator;
+import org.deegree.model.generic.Element;
 
 /**
  * TODO add documentation here
@@ -78,7 +78,7 @@ public class Or extends LogicalOperator {
         return param2;
     }
 
-    public boolean evaluate( StructuredObject object )
+    public boolean evaluate( Element object )
                             throws FilterEvaluationException {
         return param1.evaluate( object ) || param2.evaluate( object );
     }

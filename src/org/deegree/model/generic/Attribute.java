@@ -43,45 +43,23 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic;
 
-import javax.xml.namespace.QName;
-
-import org.deegree.model.generic.schema.AttributeNodeType;
+import org.apache.axiom.om.OMAttribute;
+import org.deegree.model.generic.schema.AttributeType;
 
 /**
- * TODO add documentation here
- * 
+ * An <code>OMAttribute</code> with schema information.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public interface AttributeNode extends ObjectNode {
+public interface Attribute extends OMAttribute {
 
     /**
-     * Returns the type information (think: schema) of the <code>AttributeNode</code>.
+     * Returns the schema information for this attribute node.
      * 
-     * @return the type information
+     * @return the schema information
      */
-    public AttributeNodeType getType();
-
-    /**
-     * Returns the name of the <code>AttributeNode</code>.
-     * 
-     * @return the name
-     */
-    public QName getName();
-
-    /**
-     * Returns the value of the <code>AttributeNode</code> as a <code>String</code>.
-     * 
-     * @return the value as a <code>String</code>
-     */
-    public String getValue();
-
-    /**
-     * Returns the value of the <code>AttributeNode</code> as a suitable java object.
-     * 
-     * @return the value as a suitable java object
-     */    
-    public Object getTypedValue();
+    public AttributeType getSchemaInfo();
 }

@@ -43,11 +43,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter.expression;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.model.filter.Expression;
-import org.deegree.model.filter.Expression.Type;
-import org.deegree.model.generic.StructuredObject;
+import org.deegree.model.generic.Element;
 
 /**
  * TODO add documentation here
@@ -73,7 +70,7 @@ public class PropertyName implements Expression {
         return propName;
     }
 
-    public Comparable evaluate( StructuredObject obj ) {
+    public Comparable evaluate( Element obj ) {
         // TODO Auto-generated method stub
         return null;
     }

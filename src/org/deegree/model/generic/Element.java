@@ -41,49 +41,25 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic.implementation;
+package org.deegree.model.generic;
 
-import org.deegree.model.generic.StructuredObject;
-import org.deegree.model.generic.ValueNode;
-import org.deegree.model.generic.schema.ValueNodeType;
+import org.apache.axiom.om.OMElement;
+import org.deegree.model.generic.schema.ElementType;
 
 /**
- * TODO add documentation here
+ * An <code>OMElement</code> with schema information.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public class GenericValueNode extends GenericNode implements ValueNode {
+public interface Element extends Node, OMElement {
 
-    private String valueString;
-    
-    private ValueNodeType type;    
-
-    GenericValueNode(String value, StructuredObject parent, ValueNodeType type) {
-        this.valueString = value;
-        this.parent = parent;
-        this.type = type;
-
-        // add to parent if it exists
-        if (parent != null) {
-            parent.addContent( this );
-        }        
-    }    
-    
-    public ValueNodeType getType() {
-        return type;
-    }
-
-    public String getValue() {
-        return valueString;
-    }    
-    
     /**
-     * TODO implement me!
-     */    
-    public Object getTypedValue() {
-        return null;
-    }
+     * Returns the schema information for this element.
+     * 
+     * @return the schema information
+     */
+    public ElementType getSchemaInfo();
 }

@@ -41,36 +41,33 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic;
+package org.deegree.model.generic.schema;
+
+import java.util.List;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
-public class GenericStAXAdapter {
+/**
+ * TODO add documentation here
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author:$
+ * 
+ * @version $Revision:$, $Date:$
+ */
+public interface ElementType extends NodeType {
 
-    public static void append( XMLStreamWriter writer, StructuredObject structuredObject )
-                            throws XMLStreamException {
+    /**
+     * Returns the name of the element.
+     * 
+     * @return the name of the element
+     */
+    public QName getName();
 
-        QName elementName = structuredObject.getName();
-        writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
-
-        // write attributes
-        for ( AttributeNode attribute : structuredObject.getAttributes() ) {
-            QName attributeName = attribute.getName();
-            writer.writeAttribute( attributeName.getNamespaceURI(), attributeName.getLocalPart(), attribute.getValue() );
-        }
-        
-        // write contents
-        for ( ObjectNode contentNode : structuredObject.getContents() ) {
-            if (contentNode instanceof StructuredObject) {
-                append (writer, (StructuredObject) contentNode);
-            } else {
-                // must be ValueNode (TODO find a save way to do this)
-                writer.writeCharacters( ((ValueNode) contentNode).getValue());               
-            }
-        }
-        
-        writer.writeEndElement();
-    }
+    /**
+     * Returns the schema information for the allowed attributes of this element.
+     * 
+     * @return the schema information for the allowed attributes
+     */
+    public List<AttributeType> getAttributes();
 }

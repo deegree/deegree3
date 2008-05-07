@@ -43,7 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter;
 
-import org.deegree.model.generic.StructuredObject;
+import org.deegree.model.generic.Element;
 
 /**
  * TODO add documentation here
@@ -67,12 +67,12 @@ public interface Operator {
      * Determines the value of the boolean operator.
      * 
      * @param object
-     *            <code>StructuredObject</code> to be tested
+     *            <code>Element</code> to be tested
      * @return true, if the operator evaluates to true, false otherwise
      * @throws FilterEvaluationException
      *             if the evaluation fails
      */
-    boolean evaluate( StructuredObject object )
+    boolean evaluate( Element object )
                             throws FilterEvaluationException;
 
     public String toString( String indent );

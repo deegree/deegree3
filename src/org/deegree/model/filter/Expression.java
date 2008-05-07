@@ -43,8 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter;
 
-import org.deegree.model.filter.Operator.Type;
-import org.deegree.model.generic.StructuredObject;
+import org.deegree.model.generic.Element;
 
 /**
  * TODO add documentation here
@@ -63,12 +62,12 @@ public interface Expression {
     public Type getType();    
     
     /**
-     * Determines the value of the expression for the given {@link StructuredObject}.
+     * Determines the value of the expression for the given {@link Element}.
      *  
      * @param obj
      * @return the value of the expression
      */
-    public Comparable evaluate (StructuredObject obj);
+    public Comparable evaluate (Element obj);
 
     public String toString( String indent );    
 }

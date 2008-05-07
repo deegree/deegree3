@@ -41,6 +41,7 @@
 
 
  ---------------------------------------------------------------------------*/
+
 package org.deegree.model.generic.schema;
 
 /**
@@ -51,6 +52,6 @@ package org.deegree.model.generic.schema;
  *
  * @version $Revision:$, $Date:$
  */
-public interface ObjectNodeType {
-    // still needs to be designed
+public interface TextType extends NodeType {
+    
 }

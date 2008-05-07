@@ -43,60 +43,23 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic;
 
-import java.util.List;
-
-import javax.xml.xpath.XPath;
-
-import org.deegree.model.generic.schema.ObjectNodeType;
+import org.apache.axiom.om.OMNode;
+import org.deegree.model.generic.schema.NodeType;
 
 /**
- * Base interface for all nodes that may occur in a {@link StructuredObject} hierarchy.
- * <p>
- * Each {@link ObjectNode} has:
- * <ul>
- * <li>type information (think: schema)</li>
- * <li>a parent {@link StructuredObject} (may be null)</li>
- * </ul>
- * <p>
- * There are three different types of nodes:
- * <ul>
- * <li>{@link StructuredObject}: has a name, attributes, and contents (this is a mixed sequence of
- * {@link StructuredObject} and {@link ValueNode} objects)</li>
- * <li>{@link AttributeNode}: an attribute of a {@link StructuredObject}</li>
- * <li>{@link ValueNode}: (partial) contents of a {@link StructuredObject}</li>
- * </ul>
- * 
- * @see StructuredObject
- * @see AttributeNode
- * @see ValueNode
+ * An <code>OMNode</code> with schema information. Basis of the deegree object model.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public interface ObjectNode {
+public interface Node extends OMNode {
 
     /**
-     * Returns the type information (think: schema) of the <code>ObjectNode</code>.
+     * Returns the schema information for this node.
      * 
-     * @return the type information
+     * @return the schema information
      */
-    public ObjectNodeType getType();
-
-    /**
-     * Returns the parent <code>StructuredObject</code> of the hierarchy (null if there is no parent).
-     * 
-     * @return the parent or null if there is none
-     */
-    public StructuredObject getParent();
-
-    /**
-     * Evaluates the given {@link XPath} against this <code>ObjectNode</code> and returns all matching nodes.
-     * 
-     * @param xpath
-     *            expression to be matched
-     * @return matching nodes
-     */
-    public List<ObjectNode> evaluateXPath( XPath xpath );
+    public NodeType getSchemaInfo();
 }

@@ -41,18 +41,48 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic.schema;
+package org.deegree.model.generic.implementation.schema;
 
-import org.deegree.model.generic.StructuredObject;
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.deegree.model.generic.schema.AttributeType;
+import org.deegree.model.generic.schema.ElementType;
 
 /**
- * Type information for a {@link StructuredObject}.
- * 
+ * TODO add documentation here
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public interface StructuredObjectType extends ObjectNodeType {
-    // still needs to be designed
+public class GenericElementType implements ElementType {
+
+    private QName name;
+    
+    private List<AttributeType> attributes;    
+
+    public GenericElementType (QName name, List<AttributeType> attributes) {
+        this.name = name;
+        this.attributes = attributes;
+    }
+    
+    public List<AttributeType> getAttributes() {
+        return attributes;
+    }
+
+    public QName getName() {
+        return name;
+    }
+    
+    @Override
+    public String toString () {
+        String s = "element type: " + name.toString();
+        for ( AttributeType attribute : attributes ) {
+            s += "\n - " + attribute;
+        }
+        return s;
+    }
 }

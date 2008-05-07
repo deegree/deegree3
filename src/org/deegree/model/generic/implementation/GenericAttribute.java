@@ -41,9 +41,16 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic;
+package org.deegree.model.generic.implementation;
 
-import org.deegree.model.generic.schema.ValueNodeType;
+import javax.xml.namespace.QName;
+
+import org.apache.axiom.om.OMAttribute;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
+import org.deegree.model.generic.Attribute;
+import org.deegree.model.generic.schema.AttributeType;
 
 /**
  * TODO add documentation here
@@ -53,26 +60,49 @@ import org.deegree.model.generic.schema.ValueNodeType;
  * 
  * @version $Revision:$, $Date:$
  */
-public interface ValueNode extends ObjectNode {
+public class GenericAttribute implements Attribute {
 
-    /**
-     * Returns the type information (think: schema) of the <code>Value</code>.
-     * 
-     * @return the type information
-     */
-    public ValueNodeType getType();    
+    private OMAttribute attribute;
 
-    /**
-     * Returns the value of the <code>ValueNode</code> as a <code>String</code>.
-     * 
-     * @return the value as a <code>String</code>
-     */    
-    public String getValue();
-    
-    /**
-     * Returns the value of the <code>ValueNode</code> as a suitable java object.
-     * 
-     * @return the value as a suitable java object
-     */
-    public Object getTypedValue();    
+    private AttributeType schemaInfo;
+
+    public AttributeType getSchemaInfo() {
+        return schemaInfo;
+    }
+
+    public String getAttributeValue() {
+        return attribute.getAttributeValue();
+    }
+
+    public String getLocalName() {
+        return attribute.getLocalName();
+    }
+
+    public OMNamespace getNamespace() {
+        return attribute.getNamespace();
+    }
+
+    public OMFactory getOMFactory() {
+        return attribute.getOMFactory();
+    }
+
+    public OMElement getOwner() {
+        return attribute.getOwner();
+    }
+
+    public QName getQName() {
+        return attribute.getQName();
+    }
+
+    public void setAttributeValue( String arg0 ) {
+        attribute.setAttributeValue( arg0 );
+    }
+
+    public void setLocalName( String arg0 ) {
+        attribute.setLocalName( arg0 );
+    }
+
+    public void setOMNamespace( OMNamespace arg0 ) {
+        setOMNamespace( arg0 );
+    }
 }

@@ -44,7 +44,7 @@
 package org.deegree.model.filter.spatial;
 
 import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.generic.StructuredObject;
+import org.deegree.model.generic.Element;
 
 /**
  * TODO add documentation here
@@ -60,7 +60,7 @@ public class Touches extends SpatialOperator {
         return SubType.TOUCHES;
     }    
     
-    public boolean evaluate( StructuredObject object )
+    public boolean evaluate( Element object )
                             throws FilterEvaluationException {
         // TODO Auto-generated method stub
         return false;
