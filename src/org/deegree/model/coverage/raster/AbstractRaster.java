@@ -232,7 +232,11 @@ public abstract class AbstractRaster extends AbstractCoverage {
      * @return string representation of the envelope
      */
     protected String envelopeString() {
-        return "" + getEnvelope().getMin().getX() + " " + getEnvelope().getMin().getY() + " "
+        String epsg = "";
+        if ( getEnvelope().getCoordinateSystem() != null ) {
+            epsg = getEnvelope().getCoordinateSystem().getIdentifier();
+        }
+        return epsg + " " + getEnvelope().getMin().getX() + " " + getEnvelope().getMin().getY() + " "
                + getEnvelope().getMax().getX() + " " + getEnvelope().getMax().getY();
     }
 
