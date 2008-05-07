@@ -112,12 +112,13 @@ public class RasterFactory {
      */
     public static void saveRasterToFile( AbstractRaster raster, File filename, Map<String, String> options )
                             throws IOException {
-        String extension = FileUtils.getFileExtension( filename );
-        RasterWriter writer = getRasterWriter( raster, filename, extension, options );
+        String format = FileUtils.getFileExtension( filename );
+        RasterWriter writer = getRasterWriter( raster, filename, format, options );
         if ( writer == null ) {
             log.error( "couldn't find raster writer for " + filename );
             throw new IOException( "couldn't find raster writer" );
         }
+
         writer.write( raster, filename, options );
     }
 
@@ -132,6 +133,7 @@ public class RasterFactory {
     }
 
     private static RasterWriter getRasterWriter( AbstractRaster raster, File filename, String format,
+                                                 @SuppressWarnings("unused")
                                                  Map<String, String> options ) {
         for ( RasterIOProvider writer : rasterIOLoader ) {
             RasterWriter possibleWriter = writer.getRasterWriter( format );
