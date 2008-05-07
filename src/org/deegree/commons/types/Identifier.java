@@ -52,5 +52,11 @@ package org.deegree.commons.types;
  * @version. $Revision$, $Date$
  */
 public interface Identifier {
-// TODO
+
+    /**
+     * 
+     * @return
+     */
+    String getAsFormattedString();
+    
 }
