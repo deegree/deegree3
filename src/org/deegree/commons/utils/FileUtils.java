@@ -113,20 +113,19 @@ public class FileUtils {
      *            file to write to
      * @param content
      */
-    void writeFile( File file, String content ) {
-        LOG.debug( "Writing debug file '" + file.getAbsolutePath() + "'." );
+    public static void writeFile( File file, String content ) {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter( new FileWriter( file ) );
             writer.write( content );
         } catch ( IOException e ) {
-            LOG.error( "Could not write to debug file '" + file.getAbsolutePath() + "'.", e );
+            LOG.error( "Could not write to file '" + file.getAbsolutePath() + "'.", e );
         } finally {
             if ( writer != null ) {
                 try {
                     writer.close();
                 } catch ( IOException e ) {
-                    LOG.error( "Error closing debug file '" + file.getAbsolutePath() + "'.", e );
+                    LOG.error( "Error closing file '" + file.getAbsolutePath() + "'.", e );
                 }
             }
         }
@@ -142,12 +141,12 @@ public class FileUtils {
      *            suffix for the temp file name, can be null (then ".tmp" is used)
      * @param content
      */
-    void writeTempFile( String filePrefix, String fileSuffix, String content ) {
+    public static void writeTempFile( String filePrefix, String fileSuffix, String content ) {
         try {
             File tmpFile = File.createTempFile( filePrefix, fileSuffix );
             writeFile( tmpFile, content );
         } catch ( IOException e ) {
-            LOG.error( "Cannot create debug file for prefix '" + filePrefix + "' and suffix '" + fileSuffix + ".", e );
+            LOG.error( "Cannot create temporary file for prefix '" + filePrefix + "' and suffix '" + fileSuffix + ".", e );
         }
     }
 
@@ -159,20 +158,19 @@ public class FileUtils {
      * @param data
      *            binary data to be written
      */
-    void writeBinaryFile( File file, byte[] data ) {
-        LOG.debug( "Writing binary debug file '" + file.getAbsolutePath() + "'." );
+    public static void writeBinaryFile( File file, byte[] data ) {
         BufferedOutputStream out = null;
         try {
             out = new BufferedOutputStream( new FileOutputStream( file ) );
             out.write( data );
         } catch ( IOException e ) {
-            LOG.error( "Could not write to debug file '" + file.getAbsolutePath() + "'.", e );
+            LOG.error( "Could not write to file '" + file.getAbsolutePath() + "'.", e );
         } finally {
             if ( out != null ) {
                 try {
                     out.close();
                 } catch ( IOException e ) {
-                    LOG.error( "Error closing debug file '" + file.getAbsolutePath() + "'.", e );
+                    LOG.error( "Error closing file '" + file.getAbsolutePath() + "'.", e );
                 }
             }
         }
@@ -189,12 +187,12 @@ public class FileUtils {
      * @param data
      *            binary data to be written
      */
-    void writeBinaryTempFile( String filePrefix, String fileSuffix, byte[] data ) {
+    public static void writeBinaryTempFile( String filePrefix, String fileSuffix, byte[] data ) {
         try {
             File tmpFile = File.createTempFile( filePrefix, fileSuffix );
             writeBinaryFile( tmpFile, data );
         } catch ( IOException e ) {
-            LOG.error( "Cannot create debug file for prefix '" + filePrefix + "' and suffix '" + fileSuffix + ".", e );
+            LOG.error( "Cannot create temporary file for prefix '" + filePrefix + "' and suffix '" + fileSuffix + ".", e );
         }
     }
 }
