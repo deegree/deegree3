@@ -56,7 +56,7 @@ import java.util.List;
  * @version $Revision: $, $Date: $
  *
  */
-public class ArrayTools {
+public class ArrayUtils {
     /**
      * Removes all occurrences of token in array
      * 

@@ -61,7 +61,7 @@ import java.util.regex.Pattern;
  * @version $Revision: $, $Date: $
  * 
  */
-public class StringTools {
+public class StringUtils {
 
     /**
      * Remove empty fields. Used as an option for some StringTools methods.
@@ -158,7 +158,7 @@ public class StringTools {
 
     /**
      * Splits a string on all occurrences of delimiter and returns a list with all parts. Each part will be trimmed from
-     * whitespace. See {@link StringTools#split(String, String, int)} for further options. If you need regular
+     * whitespace. See {@link StringUtils#split(String, String, int)} for further options. If you need regular
      * expressions, use {@link String#split(String)}.
      * 
      * @param string
@@ -178,9 +178,9 @@ public class StringTools {
      * (eg. StringTools.split(string, delimiter, REMOVE_EMPTY_FIELDS | REMOVE_DOUBLE_FIELDS)
      * 
      * <ul>
-     * <li> {@link StringTools#REMOVE_DOUBLE_FIELDS} removes all double occurrences of a field.</li>
-     * <li> {@link StringTools#REMOVE_EMPTY_FIELDS} removes all empty fields.</li>
-     * <li> {@link StringTools#NO_TRIM_FIELDS} doesn't remove whitespace around each field</li>
+     * <li> {@link StringUtils#REMOVE_DOUBLE_FIELDS} removes all double occurrences of a field.</li>
+     * <li> {@link StringUtils#REMOVE_EMPTY_FIELDS} removes all empty fields.</li>
+     * <li> {@link StringUtils#NO_TRIM_FIELDS} doesn't remove whitespace around each field</li>
      * </ul>
      * 
      * @param string
@@ -219,7 +219,7 @@ public class StringTools {
         // check if we got empty fields at the end and if we want to keep them, because String#split will remove the
         // last delimiter
         if ( string.endsWith( delimiter ) && ( options & REMOVE_EMPTY_FIELDS ) != REMOVE_EMPTY_FIELDS ) {
-            int count = StringTools.count( string, delimiter );
+            int count = StringUtils.count( string, delimiter );
             count += 1; // n delimiters -> n+1 fields
             int missingFields = count - parts.length - doublesRemoves;
             for ( int i = 0; i < missingFields; i++ ) {

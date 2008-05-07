@@ -42,8 +42,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
-import static org.deegree.commons.utils.ArrayTools.join;
-import static org.deegree.commons.utils.ArrayTools.removeAll;
+import static org.deegree.commons.utils.ArrayUtils.join;
+import static org.deegree.commons.utils.ArrayUtils.removeAll;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ import org.junit.Test;
 public class ArrayToolsTest {
 
     /**
-     * Test method for {@link org.deegree.commons.utils.ArrayTools#join( String delimiter, String... strings )}.
+     * Test method for {@link org.deegree.commons.utils.ArrayUtils#join( String delimiter, String... strings )}.
      */
     @Test
     public void testJoin() {
@@ -75,7 +75,7 @@ public class ArrayToolsTest {
     }
 
     /**
-     * Test method for {@link org.deegree.commons.utils.ArrayTools#join(String, List)}.
+     * Test method for {@link org.deegree.commons.utils.ArrayUtils#join(String, List)}.
      */
     @Test
     public void testJoinList() {
@@ -92,19 +92,19 @@ public class ArrayToolsTest {
     }
 
     /**
-     * Test method for {@link org.deegree.commons.utils.ArrayTools#join( String delimiter, int[] values )}.
+     * Test method for {@link org.deegree.commons.utils.ArrayUtils#join( String delimiter, int[] values )}.
      */
     @Test
     public void testjoinInts() {
         int[] arr1 = new int[] { 1, 2, 3, 4, 5 };
-        assertEquals( "1, 2, 3, 4, 5", ArrayTools.join( ", ", arr1 ) );
-        assertEquals( "1,2,3,4,5", ArrayTools.join( ",", arr1 ) );
-        assertEquals( "12345", ArrayTools.join( "", arr1 ) );
-        assertEquals( "", ArrayTools.join( ",", new int[] {} ) );
+        assertEquals( "1, 2, 3, 4, 5", ArrayUtils.join( ", ", arr1 ) );
+        assertEquals( "1,2,3,4,5", ArrayUtils.join( ",", arr1 ) );
+        assertEquals( "12345", ArrayUtils.join( "", arr1 ) );
+        assertEquals( "", ArrayUtils.join( ",", new int[] {} ) );
     }
 
     /**
-     * Test method for {@link org.deegree.commons.utils.ArrayTools#removeAll(String[], String)}.
+     * Test method for {@link org.deegree.commons.utils.ArrayUtils#removeAll(String[], String)}.
      */
     @Test
     public void testRemoveAll() {

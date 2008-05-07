@@ -77,7 +77,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deegree.commons.utils.StringTools;
+import org.deegree.commons.utils.StringUtils;
 import org.exolab.castor.xml.XMLException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -199,11 +199,11 @@ public class XMLFragment implements Serializable {
                 String ns = elementName.getNamespaceURI();
                 if ( pre == null || pre.trim().length() == 0 ) {
                     pre = "dummy";
-                    LOG.warn( StringTools.concat( 200, "Incorrect usage of deegree API,",
+                    LOG.warn( StringUtils.concat( 200, "Incorrect usage of deegree API,",
                                                   " prefix of a root node was not ", "defined:\nNode name was ",
                                                   elementName.getLocalPart(), ", namespace was ", ns ) );
                 }
-                String name = StringTools.concat( 200, pre, ":", elementName.getLocalPart() );
+                String name = StringUtils.concat( 200, pre, ":", elementName.getLocalPart() );
                 rootElement = db.newDocument().createElementNS( ns, name );
                 rootElement.setAttribute( "xmlns:" + pre, ns );
             }
@@ -467,7 +467,7 @@ public class XMLFragment implements Serializable {
      */
     public URL resolve( String url )
                             throws MalformedURLException {
-        LOG.debug( StringTools.concat( 200, "Resolving URL '", url, "' against SystemID '", systemId,
+        LOG.debug( StringUtils.concat( 200, "Resolving URL '", url, "' against SystemID '", systemId,
                                        "' of XMLFragment" ) );
         // check if url is an absolut path
         File file = new File( url );
@@ -482,7 +482,7 @@ public class XMLFragment implements Serializable {
         }
         URL resolvedURL = new URL( systemId, url );
 
-        LOG.debug( StringTools.concat( 100, "-> resolvedURL: '", resolvedURL, "'" ) );
+        LOG.debug( StringUtils.concat( 100, "-> resolvedURL: '", resolvedURL, "'" ) );
         return resolvedURL;
     }
 

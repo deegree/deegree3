@@ -42,9 +42,9 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
-import static org.deegree.commons.utils.StringTools.NO_TRIM_FIELDS;
-import static org.deegree.commons.utils.StringTools.REMOVE_DOUBLE_FIELDS;
-import static org.deegree.commons.utils.StringTools.REMOVE_EMPTY_FIELDS;
+import static org.deegree.commons.utils.StringUtils.NO_TRIM_FIELDS;
+import static org.deegree.commons.utils.StringUtils.REMOVE_DOUBLE_FIELDS;
+import static org.deegree.commons.utils.StringUtils.REMOVE_EMPTY_FIELDS;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
@@ -62,75 +62,75 @@ public class StringToolsTest {
 
     /**
      * Test method for
-     * {@link org.deegree.commons.utils.StringTools#replaceAll(java.lang.String, java.lang.String, java.lang.String)}.
+     * {@link org.deegree.commons.utils.StringUtils#replaceAll(java.lang.String, java.lang.String, java.lang.String)}.
      */
     @Test
     public void testReplaceAll() {
-        assertEquals( "foo|bar||baz", StringTools.replaceAll( "foo*bar**baz", "*", "|" ) );
-        assertEquals( "foo$1bar$1baz", StringTools.replaceAll( "foo*bar*baz", "*", "$1" ) );
-        assertEquals( "", StringTools.replaceAll( "", "*", "$1" ) );
+        assertEquals( "foo|bar||baz", StringUtils.replaceAll( "foo*bar**baz", "*", "|" ) );
+        assertEquals( "foo$1bar$1baz", StringUtils.replaceAll( "foo*bar*baz", "*", "$1" ) );
+        assertEquals( "", StringUtils.replaceAll( "", "*", "$1" ) );
     }
 
     /**
      * Test method for
-     * {@link org.deegree.commons.utils.StringTools#replaceAll(java.lang.String, java.lang.String, java.lang.String)}.
+     * {@link org.deegree.commons.utils.StringUtils#replaceAll(java.lang.String, java.lang.String, java.lang.String)}.
      */
     @Test(expected = NullPointerException.class)
     public void testReplaceAllNull() {
         // should that be the correct behaviour? or should it return an empty string?
-        StringTools.replaceAll( null, "*", "$1" );
+        StringUtils.replaceAll( null, "*", "$1" );
     }
 
     /**
      * Test method for
-     * {@link org.deegree.commons.utils.StringTools#replaceFirst(java.lang.String, java.lang.String, java.lang.String)}.
+     * {@link org.deegree.commons.utils.StringUtils#replaceFirst(java.lang.String, java.lang.String, java.lang.String)}.
      */
     @Test
     public void testReplaceFirst() {
-        assertEquals( "foo|bar**baz", StringTools.replaceFirst( "foo*bar**baz", "*", "|" ) );
-        assertEquals( "foo$1bar*baz", StringTools.replaceFirst( "foo*bar*baz", "*", "$1" ) );
+        assertEquals( "foo|bar**baz", StringUtils.replaceFirst( "foo*bar**baz", "*", "|" ) );
+        assertEquals( "foo$1bar*baz", StringUtils.replaceFirst( "foo*bar*baz", "*", "$1" ) );
     }
 
     /**
-     * Test method for {@link org.deegree.commons.utils.StringTools#split(String, String, int)}.
+     * Test method for {@link org.deegree.commons.utils.StringUtils#split(String, String, int)}.
      */
     @Test
     public void testSplit() {
         String[] result;
         // simple split
-        result = StringTools.split( "foo ;bar;;bar;baz", ";" );
+        result = StringUtils.split( "foo ;bar;;bar;baz", ";" );
         arrayCompare( result, "foo", "bar", "", "bar", "baz" );
 
-        result = StringTools.split( "foo ;bar;;bar;baz", ";", REMOVE_DOUBLE_FIELDS );
+        result = StringUtils.split( "foo ;bar;;bar;baz", ";", REMOVE_DOUBLE_FIELDS );
         arrayCompare( result, "foo", "bar", "", "baz" );
 
-        result = StringTools.split( "foo ;bar;;bar;baz", ";", REMOVE_EMPTY_FIELDS );
+        result = StringUtils.split( "foo ;bar;;bar;baz", ";", REMOVE_EMPTY_FIELDS );
         arrayCompare( result, "foo", "bar", "bar", "baz" );
 
-        result = StringTools.split( "foo ;bar;; ;bar;baz", ";", NO_TRIM_FIELDS );
+        result = StringUtils.split( "foo ;bar;; ;bar;baz", ";", NO_TRIM_FIELDS );
         arrayCompare( result, "foo ", "bar", "", " ", "bar", "baz" );
 
-        result = StringTools.split( "foo ;bar; ;bar;baz;;", ";", REMOVE_EMPTY_FIELDS );
+        result = StringUtils.split( "foo ;bar; ;bar;baz;;", ";", REMOVE_EMPTY_FIELDS );
         arrayCompare( result, "foo", "bar", "bar", "baz" );
 
-        result = StringTools.split( "foo ;bar; ;bar;baz;;", ";", REMOVE_EMPTY_FIELDS | NO_TRIM_FIELDS );
+        result = StringUtils.split( "foo ;bar; ;bar;baz;;", ";", REMOVE_EMPTY_FIELDS | NO_TRIM_FIELDS );
         arrayCompare( result, "foo ", "bar", " ", "bar", "baz" );
 
-        result = StringTools.split( "foo ;bar;;bar;baz", ";", NO_TRIM_FIELDS | REMOVE_DOUBLE_FIELDS
+        result = StringUtils.split( "foo ;bar;;bar;baz", ";", NO_TRIM_FIELDS | REMOVE_DOUBLE_FIELDS
                                                               | REMOVE_EMPTY_FIELDS );
         arrayCompare( result, "foo ", "bar", "baz" );
 
         // some tests with empty fields at the end
-        result = StringTools.split( "foo ;bar;;bar;baz;;", ";" );
+        result = StringUtils.split( "foo ;bar;;bar;baz;;", ";" );
         arrayCompare( result, "foo", "bar", "", "bar", "baz", "", "" );
 
-        result = StringTools.split( "foo ;bar;;bar;baz;;", ";", REMOVE_DOUBLE_FIELDS );
+        result = StringUtils.split( "foo ;bar;;bar;baz;;", ";", REMOVE_DOUBLE_FIELDS );
         arrayCompare( result, "foo", "bar", "", "baz" );
 
-        result = StringTools.split( "foo ;bar;;bar;baz;;", ";", REMOVE_EMPTY_FIELDS );
+        result = StringUtils.split( "foo ;bar;;bar;baz;;", ";", REMOVE_EMPTY_FIELDS );
         arrayCompare( result, "foo", "bar", "bar", "baz" );
 
-        result = StringTools.split( "foo ;bar;;bar;baz;;", ";;" );
+        result = StringUtils.split( "foo ;bar;;bar;baz;;", ";;" );
         arrayCompare( result, "foo ;bar", "bar;baz", "" );
 
     }
@@ -152,25 +152,25 @@ public class StringToolsTest {
     }
 
     /**
-     * Test method for {@link org.deegree.commons.utils.StringTools#count(java.lang.String, java.lang.String)}.
+     * Test method for {@link org.deegree.commons.utils.StringUtils#count(java.lang.String, java.lang.String)}.
      */
     @Test
     public void testCountString() {
-        assertEquals( StringTools.count( "fod,sdmcsd,ssdcs,,", "," ), 4 );
-        assertEquals( StringTools.count( "fod,sdmcsd,ssdcs,,", ",s" ), 2 );
-        assertEquals( StringTools.count( "fod,sdmcsd,,,,ssdcs,,", ",," ), 3 );
-        assertEquals( StringTools.count( "fod,sdmcsd,,,,ssdcs,,", "" ), 0 );
-        assertEquals( StringTools.count( "", ",," ), 0 );
+        assertEquals( StringUtils.count( "fod,sdmcsd,ssdcs,,", "," ), 4 );
+        assertEquals( StringUtils.count( "fod,sdmcsd,ssdcs,,", ",s" ), 2 );
+        assertEquals( StringUtils.count( "fod,sdmcsd,,,,ssdcs,,", ",," ), 3 );
+        assertEquals( StringUtils.count( "fod,sdmcsd,,,,ssdcs,,", "" ), 0 );
+        assertEquals( StringUtils.count( "", ",," ), 0 );
     }
     
     /**
-     * Test method for {@link org.deegree.commons.utils.StringTools#extract(String, String, String)}.
+     * Test method for {@link org.deegree.commons.utils.StringUtils#extract(String, String, String)}.
      */
     @Test
     public void testExtract() {
-        listCompare( StringTools.extract( "<foo><bar<bar><baz>", "<", ">" ), "foo", "bar<bar", "baz" );
-        listCompare( StringTools.extract( "fhsld jfflkfs dlk $$ sdn $foo$", "$", "$" ), "", "foo" );
-        listCompare( StringTools.extract( "fhsld jfflkfs dlk $$ sdn $foo$", "$", ">" ) );
+        listCompare( StringUtils.extract( "<foo><bar<bar><baz>", "<", ">" ), "foo", "bar<bar", "baz" );
+        listCompare( StringUtils.extract( "fhsld jfflkfs dlk $$ sdn $foo$", "$", "$" ), "", "foo" );
+        listCompare( StringUtils.extract( "fhsld jfflkfs dlk $$ sdn $foo$", "$", ">" ) );
         
     }
 

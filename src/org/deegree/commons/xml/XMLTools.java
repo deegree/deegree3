@@ -54,7 +54,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.types.QualifiedName;
-import org.deegree.commons.utils.StringTools;
+import org.deegree.commons.utils.StringUtils;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
 import org.jaxen.dom.DOMXPath;
@@ -362,7 +362,7 @@ public final class XMLTools {
         String name = node.getNodeValue().trim();
         QualifiedName qName = null;
         if ( name.indexOf( ':' ) > -1 ) {
-            String[] tmp = StringTools.split( name, ":" );
+            String[] tmp = StringUtils.split( name, ":" );
             qName = new QualifiedName( tmp[0], tmp[1], XMLTools.getNamespaceForPrefix( tmp[0], node ) );
         } else {
             qName = new QualifiedName( name );
@@ -597,7 +597,7 @@ public final class XMLTools {
                                                      String token )
                             throws XMLProcessingException {
         Node node = getRequiredNode( contextNode, xPathQuery, nsContext );
-        return StringTools.split( getStringValue( node ), token );
+        return StringUtils.split( getStringValue( node ), token );
     }
 
     /**

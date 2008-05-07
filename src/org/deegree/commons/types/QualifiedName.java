@@ -44,7 +44,7 @@ package org.deegree.commons.types;
 
 import java.io.Serializable;
 
-import org.deegree.commons.utils.StringTools;
+import org.deegree.commons.utils.StringUtils;
 
 /**
  * This class represent a qualified name for something. A name is thought to be built from an optional prefix and/or a
@@ -76,11 +76,11 @@ public class QualifiedName implements Serializable {
      */
     public QualifiedName( String name ) {
         if ( name.indexOf( '{' ) > -1 ) {
-            namespace = StringTools.extract( name, "{", "}" ).get( 0 );
+            namespace = StringUtils.extract( name, "{", "}" ).get( 0 );
             int pos = name.lastIndexOf( ':' );
             localName = name.substring( pos + 1 );
         } else if ( name.indexOf( ':' ) > -1 ) {
-            String[] tmp = StringTools.split( name, ":" );
+            String[] tmp = StringUtils.split( name, ":" );
             if ( tmp.length == 2 ) {
                 prefix = tmp[0];
                 localName = tmp[1];
@@ -101,7 +101,7 @@ public class QualifiedName implements Serializable {
      */
     public QualifiedName( String name, String namespace ) {
         if ( name.indexOf( ':' ) > -1 ) {
-            String[] tmp = StringTools.split( name, ":" );
+            String[] tmp = StringUtils.split( name, ":" );
             prefix = tmp[0];
             this.localName = tmp[1];
         } else {
@@ -154,7 +154,7 @@ public class QualifiedName implements Serializable {
      */
     public String getFormattedString() {
         if ( namespace != null ) {
-            return StringTools.concat( 100, "{", namespace, "}:", localName );
+            return StringUtils.concat( 100, "{", namespace, "}:", localName );
         }
         return s;
     }
