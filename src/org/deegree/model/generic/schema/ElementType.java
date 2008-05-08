@@ -70,4 +70,13 @@ public interface ElementType extends NodeType {
      * @return the schema information for the allowed attributes
      */
     public List<AttributeType> getAttributes();
+
+    /**
+     * Returns a description of the allowed contents of this element. 
+     *
+     * @return description of allowed contents
+     */
+    public ContentModel getContents();
+
+    public String toString( String indent );
 }

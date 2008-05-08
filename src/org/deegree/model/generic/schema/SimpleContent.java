@@ -41,15 +41,11 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic.implementation.schema;
+package org.deegree.model.generic.schema;
 
 import java.util.List;
 
 import javax.xml.namespace.QName;
-
-import org.deegree.model.generic.schema.AttributeType;
-import org.deegree.model.generic.schema.ContentModel;
-import org.deegree.model.generic.schema.ElementType;
 
 /**
  * TODO add documentation here
@@ -59,45 +55,16 @@ import org.deegree.model.generic.schema.ElementType;
  *
  * @version $Revision:$, $Date:$
  */
-public class GenericElementType implements ElementType {
+public class SimpleContent implements ContentModel {
 
-    private QName name;
-    
-    private List<AttributeType> attributes;
+    private QName simpleTypeName;
 
-    private ContentModel contents;    
-
-    public GenericElementType (QName name, List<AttributeType> attributes, ContentModel contents) {
-        this.name = name;
-        this.attributes = attributes;
-        this.contents = contents;
+    public SimpleContent (QName simpleTypeName) {
+        this.simpleTypeName = simpleTypeName;
     }
 
-    public QName getName() {
-        return name;
-    }    
-    
-    public List<AttributeType> getAttributes() {
-        return attributes;
-    }
-
-    public ContentModel getContents () {
-        return contents;
-    }
-    
-    @Override
-    public String toString () {
-        return toString("");
-    }
-
-    public String toString (String indent) {
-        String s = indent + "- element name: " + name.toString() + "\n";
-        for ( AttributeType attribute : attributes ) {
-            s += indent + "  - " + attribute + "\n";
-        }
-        if (contents != null){
-            s += contents.toString (indent + "  ");
-        }
+    public String toString( String indent ) {
+        String s = indent + "('" + simpleTypeName + "')\n";
         return s;
     }    
 }

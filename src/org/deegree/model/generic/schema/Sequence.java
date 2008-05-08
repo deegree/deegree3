@@ -41,15 +41,9 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic.implementation.schema;
+package org.deegree.model.generic.schema;
 
 import java.util.List;
-
-import javax.xml.namespace.QName;
-
-import org.deegree.model.generic.schema.AttributeType;
-import org.deegree.model.generic.schema.ContentModel;
-import org.deegree.model.generic.schema.ElementType;
 
 /**
  * TODO add documentation here
@@ -59,44 +53,22 @@ import org.deegree.model.generic.schema.ElementType;
  *
  * @version $Revision:$, $Date:$
  */
-public class GenericElementType implements ElementType {
+public class Sequence implements ContentModel {
 
-    private QName name;
-    
-    private List<AttributeType> attributes;
+    private List<ElementType> contents;
 
-    private ContentModel contents;    
-
-    public GenericElementType (QName name, List<AttributeType> attributes, ContentModel contents) {
-        this.name = name;
-        this.attributes = attributes;
+    public Sequence (List<ElementType> contents) {
         this.contents = contents;
     }
-
-    public QName getName() {
-        return name;
-    }    
     
-    public List<AttributeType> getAttributes() {
-        return attributes;
+    public void addElement(ElementType element) {
+        contents.add( element );
     }
 
-    public ContentModel getContents () {
-        return contents;
-    }
-    
-    @Override
-    public String toString () {
-        return toString("");
-    }
-
-    public String toString (String indent) {
-        String s = indent + "- element name: " + name.toString() + "\n";
-        for ( AttributeType attribute : attributes ) {
-            s += indent + "  - " + attribute + "\n";
-        }
-        if (contents != null){
-            s += contents.toString (indent + "  ");
+    public String toString( String indent ) {
+        String s = "";
+        for ( ElementType element : contents ) {
+            s += element.toString(indent);
         }
         return s;
     }    

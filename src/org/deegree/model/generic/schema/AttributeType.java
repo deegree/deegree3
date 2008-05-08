@@ -56,9 +56,17 @@ public interface AttributeType {
     public QName getName();
 
     /**
+     * Determines whether this use of an attribute declaration requires an appropriate attribute information item to be
+     * present, or merely allows it.
+     * 
+     * @return true, if the attribute is required, otherwise false
+     */
+    public boolean isRequired();
+
+    /**
      * Returns the element type that owns this attribute.
      * 
      * @return the element type that owns this attribute
-     */    
-    public ElementType getOwner ();
+     */
+    public ElementType getOwner();
 }

@@ -50,24 +50,31 @@ import org.deegree.model.generic.schema.ElementType;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GenericAttributeType implements AttributeType {
 
     private QName name;
-    
+
+    private boolean isRequired;
+
     private GenericElementType owner;
 
-    public GenericAttributeType (QName name) {
+    public GenericAttributeType( QName name, boolean isRequired ) {
         this.name = name;
-    }    
-    
+        this.isRequired = isRequired;
+    }
+
     public QName getName() {
         return name;
+    }
+
+    public boolean isRequired() {
+        return isRequired;
     }
 
     public ElementType getOwner() {
@@ -75,8 +82,8 @@ public class GenericAttributeType implements AttributeType {
     }
 
     @Override
-    public String toString () {
-        String s = "attribute: " + name.toString();
+    public String toString() {
+        String s = "attribute: '" + name.toString() + "', isRequired: " + isRequired;
         return s;
     }
 }
