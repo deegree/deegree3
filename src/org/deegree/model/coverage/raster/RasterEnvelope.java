@@ -121,7 +121,7 @@ public class RasterEnvelope {
         }
         this.xRes = xRes;
         this.yRes = yRes;
-        this.delta = Math.abs( xRes * 10e-9 );
+        this.delta = Math.abs( xRes * 10e-6 );
     }
 
     /**
@@ -283,19 +283,7 @@ public class RasterEnvelope {
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height ) {
-        GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
-        double x0 = this.x0;
-        double y0 = this.y0;
-        double x1 = x0 + width * xRes;
-        double y1 = y0 + height * yRes;
-        double xmin = min( x0, x1 );
-        double xmax = max( x0, x1 );
-        double ymin = min( y0, y1 );
-        double ymax = max( y0, y1 );
-
-        Envelope envelope = geomFactory.createEnvelope( new double[] { xmin, ymin }, new double[] { xmax, ymax },
-                                                        delta, null );
-        return envelope;
+        return getEnvelope( width, height, null );
     }
     
     /**
@@ -310,11 +298,38 @@ public class RasterEnvelope {
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height, CoordinateSystem crs ) {
+        return getEnvelope( width, height, crs, RasterEnvelope.Type.OUTER );
+    }
+    
+    /**
+     * Returns an Envelope for a raster with given size.
+     * 
+     * The calculation considers the origin and resolution of the raster.
+     * 
+     * @param width
+     * @param height
+     * @param crs the coordinate system for the envelope
+     * @param type if the result envelope should span from pixel center or the outer pixel edge
+     * 
+     * @return the calculated envelope
+     */
+    public Envelope getEnvelope( int width, int height, CoordinateSystem crs, RasterEnvelope.Type type ) {
         GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
-        double x0 = this.x0;
-        double y0 = this.y0;
-        double x1 = x0 + width * xRes;
-        double y1 = y0 + height * yRes;
+
+        double x0, y0, x1, y1;
+        
+        if (type == RasterEnvelope.Type.OUTER) {
+            x0 = this.x0;
+            y0 = this.y0;
+            x1 = x0 + width * xRes;
+            y1 = y0 + height * yRes;
+        } else {
+            x0 = this.x0 + xRes/2;
+            y0 = this.y0 + yRes/2;
+            x1 = x0 + width * xRes - xRes/2;
+            y1 = y0 + height * yRes - yRes/2;
+        }
+        
         double xmin = min( x0, x1 );
         double xmax = max( x0, x1 );
         double ymin = min( y0, y1 );
