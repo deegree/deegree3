@@ -56,7 +56,7 @@ import javax.xml.namespace.QName;
  * @version $Revision:$, $Date:$
  */
 public interface ElementType extends NodeType {
-
+   
     /**
      * Returns the name of the element.
      * 
@@ -78,5 +78,7 @@ public interface ElementType extends NodeType {
      */
     public ContentModel getContents();
 
+    public boolean isAbstract();
+    
     public String toString( String indent );
 }

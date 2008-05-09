@@ -65,7 +65,9 @@ public class GenericElementType implements ElementType {
     
     private List<AttributeType> attributes;
 
-    private ContentModel contents;    
+    private ContentModel contents;
+
+    private boolean isAbstract;    
 
     public GenericElementType (QName name, List<AttributeType> attributes, ContentModel contents) {
         this.name = name;
@@ -84,6 +86,10 @@ public class GenericElementType implements ElementType {
     public ContentModel getContents () {
         return contents;
     }
+
+    public boolean isAbstract() {
+        return isAbstract;
+    }
     
     @Override
     public String toString () {
@@ -99,5 +105,5 @@ public class GenericElementType implements ElementType {
             s += contents.toString (indent + "  ");
         }
         return s;
-    }    
+    }  
 }
