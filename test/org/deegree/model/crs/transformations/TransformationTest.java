@@ -48,7 +48,7 @@ import junit.framework.TestCase;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deegree.model.crs.GeoTransformer;
+import org.deegree.model.crs.CoordinateTransformer;
 import org.deegree.model.crs.Identifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
@@ -203,15 +203,15 @@ public class TransformationTest extends TestCase {
                                                                           new String[] { "EPSG:31467" } );
 
     /**
-     * Creates a {@link GeoTransformer} for the given coordinate system.
+     * Creates a {@link CoordinateTransformer} for the given coordinate system.
      * 
      * @param targetCrs
      *            to which incoming coordinates will be transformed.
      * @return the transformer which is able to transform coordinates to the given crs..
      */
-    private GeoTransformer getGeotransformer( CoordinateSystem targetCrs ) {
+    private CoordinateTransformer getGeotransformer( CoordinateSystem targetCrs ) {
         assertNotNull( targetCrs );
-        return new GeoTransformer( targetCrs );
+        return new CoordinateTransformer( targetCrs );
     }
 
     /**
@@ -269,7 +269,7 @@ public class TransformationTest extends TestCase {
         assertNotNull( targetPoint );
         assertNotNull( epsilons );
 
-        GeoTransformer transformer = getGeotransformer( targetCRS );
+        CoordinateTransformer transformer = getGeotransformer( targetCRS );
 
         List<Point3d> tmp = new ArrayList<Point3d>(1);
         tmp.add( new Point3d( sourcePoint) );
