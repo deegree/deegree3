@@ -92,17 +92,7 @@ public abstract class Transformer {
      *             if the given parameter is null.
      */
     protected Transformer( String targetCRS ) throws UnknownCRSException, IllegalArgumentException {
-
-        CRSConfiguration crsConfig = CRSConfiguration.getCRSConfiguration();
-        CRSProvider crsProvider = crsConfig.getProvider();
-        if ( targetCRS == null ) {
-            throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL", "Transformer(String)",
-                                                                     "targetCRS" ) );
-        }
-        this.targetCRS = crsProvider.getCRSByID( targetCRS );
-        if ( this.targetCRS == null ) {
-            throw new UnknownCRSException( targetCRS );
-        }
+        this.targetCRS = getCRSFromString( targetCRS );
     }
 
     /**
@@ -127,6 +117,47 @@ public abstract class Transformer {
         }
         TransformationFactory factory = TransformationFactory.getInstance();
         return factory.createFromCoordinateSystems( sourceCRS, targetCRS );
+    }
+
+    /**
+     * Creates a transformation chain, which can be used to transform incoming coordinates (in the given source CRS)
+     * into this Transformer's targetCRS.
+     * 
+     * @param sourceCRS
+     *            in which the coordinates are defined.
+     * @return the Transformation chain.
+     * @throws TransformationException
+     *             if no transformation chain could be created.
+     * @throws IllegalArgumentException
+     *             if the given CoordinateSystem is <code>null</code>
+     * @throws UnknownCRSException
+     *             if the given crs name could not be mapped to a valid (configured) crs.
+     * 
+     */
+    protected CRSTransformation createCRSTransformation( String sourceCRS )
+                            throws TransformationException, IllegalArgumentException, UnknownCRSException {
+        if ( sourceCRS == null ) {
+            throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
+                                                                     "createCRSTransformation( CoordinateSystem )",
+                                                                     "sourceCRS" ) );
+        }
+        TransformationFactory factory = TransformationFactory.getInstance();
+        return factory.createFromCoordinateSystems( getCRSFromString( sourceCRS ), targetCRS );
+    }
+
+    private static CoordinateSystem getCRSFromString( String crsName )
+                            throws UnknownCRSException {
+        CRSConfiguration crsConfig = CRSConfiguration.getCRSConfiguration();
+        CRSProvider crsProvider = crsConfig.getProvider();
+        if ( crsName == null ) {
+            throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL", "Transformer(String)",
+                                                                     "targetCRS" ) );
+        }
+        CoordinateSystem crs = crsProvider.getCRSByID( crsName );
+        if ( crs == null ) {
+            throw new UnknownCRSException( crsName );
+        }
+        return crs;
     }
 
     /**
