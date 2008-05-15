@@ -45,7 +45,7 @@ package org.deegree.model.filter.comparison;
 
 import org.deegree.model.filter.Expression;
 import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.generic.Element;
+import org.deegree.model.generic.DeegreeObject;
 
 /**
  * TODO add documentation here
@@ -67,7 +67,7 @@ public class PropertyIsBetween extends ComparisonOperator {
         return SubType.PROPERTY_IS_BETWEEN;
     }
     
-    public boolean evaluate( Element object )
+    public boolean evaluate( DeegreeObject object )
                             throws FilterEvaluationException {
 
         Comparable propertyValue = expression.evaluate( object );

@@ -43,10 +43,10 @@
 
 package org.deegree.model.filter;
 
-import org.deegree.model.generic.Element;
+import org.deegree.model.generic.DeegreeObject;
 
 /**
- * A <code>Filter</code> is a boolean expression that can be tested against {@link Element}s.
+ * A <code>Filter</code> is a boolean expression that can be tested against {@link DeegreeObject}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -62,7 +62,7 @@ public interface Filter {
     public Type getType ();
     
     /**
-     * Determines if the given {@link Element} matches this <code>Filter</code>.
+     * Determines if the given {@link DeegreeObject} matches this <code>Filter</code>.
      * 
      * @param object
      *            <code>Element</code> to be tested
@@ -70,7 +70,7 @@ public interface Filter {
      * @throws FilterEvaluationException
      *             if the evaluation fails
      */
-    boolean evaluate( Element object )
+    boolean evaluate( DeegreeObject object )
                             throws FilterEvaluationException;
 
 }

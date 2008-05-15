@@ -43,6 +43,13 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature;
 
-public class Property {
+import javax.xml.namespace.QName;
 
+import org.deegree.model.generic.DeegreeObject;
+
+public interface Property extends DeegreeObject {
+
+    public QName getName ();
+    
+    public Object getValue ();
 }

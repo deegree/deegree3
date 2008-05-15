@@ -43,12 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic.implementation;
 
-import javax.xml.namespace.QName;
-
-import org.apache.axiom.om.OMAttribute;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
 import org.deegree.model.generic.Attribute;
 import org.deegree.model.generic.schema.AttributeType;
 
@@ -62,47 +56,9 @@ import org.deegree.model.generic.schema.AttributeType;
  */
 public class GenericAttribute implements Attribute {
 
-    private OMAttribute attribute;
+    private AttributeType type;
 
-    private AttributeType schemaInfo;
-
-    public AttributeType getSchemaInfo() {
-        return schemaInfo;
-    }
-
-    public String getAttributeValue() {
-        return attribute.getAttributeValue();
-    }
-
-    public String getLocalName() {
-        return attribute.getLocalName();
-    }
-
-    public OMNamespace getNamespace() {
-        return attribute.getNamespace();
-    }
-
-    public OMFactory getOMFactory() {
-        return attribute.getOMFactory();
-    }
-
-    public OMElement getOwner() {
-        return attribute.getOwner();
-    }
-
-    public QName getQName() {
-        return attribute.getQName();
-    }
-
-    public void setAttributeValue( String arg0 ) {
-        attribute.setAttributeValue( arg0 );
-    }
-
-    public void setLocalName( String arg0 ) {
-        attribute.setLocalName( arg0 );
-    }
-
-    public void setOMNamespace( OMNamespace arg0 ) {
-        setOMNamespace( arg0 );
+    public AttributeType getType() {
+        return type;
     }
 }

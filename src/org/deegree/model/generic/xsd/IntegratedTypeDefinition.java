@@ -41,11 +41,9 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter.comparison;
+package org.deegree.model.generic.xsd;
 
-import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.filter.expression.PropertyName;
-import org.deegree.model.generic.DeegreeObject;
+import javax.xml.namespace.QName;
 
 /**
  * TODO add documentation here
@@ -55,26 +53,14 @@ import org.deegree.model.generic.DeegreeObject;
  *
  * @version $Revision:$, $Date:$
  */
-public class PropertyIsNull extends ComparisonOperator {
+public class IntegratedTypeDefinition extends TypeDefinition {
 
-    private PropertyName propName;
-  
-    public PropertyName getPropertyName () {
-        return propName;
-    }
-    
-    public SubType getSubType() {
-        return SubType.PROPERTY_IS_NULL;
-    } 
-    
-    public boolean evaluate( DeegreeObject object )
-                            throws FilterEvaluationException {
-        return propName.evaluate( object ) == null;
+    IntegratedTypeDefinition( QName name ) {
+        super (name, null);
     }
 
-    public String toString( String indent ) {
-        String s = indent + "-PropertyIsNull\n";
-        s += propName.toString (indent + "  ");
+    String toString (String indent) {
+        String s = indent + "- integrated type: " + name + "\n";
         return s;
     }    
 }

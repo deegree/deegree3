@@ -46,7 +46,7 @@ package org.deegree.model.filter.comparison;
 import org.deegree.model.filter.FilterEvaluationException;
 import org.deegree.model.filter.expression.Literal;
 import org.deegree.model.filter.expression.PropertyName;
-import org.deegree.model.generic.Element;
+import org.deegree.model.generic.DeegreeObject;
 
 /**
  * TODO add documentation here
@@ -92,7 +92,7 @@ public class PropertyIsLike extends ComparisonOperator {
         return escapeChar;
     }    
     
-    public boolean evaluate( Element object )
+    public boolean evaluate( DeegreeObject object )
                             throws FilterEvaluationException {
         return false;
     }

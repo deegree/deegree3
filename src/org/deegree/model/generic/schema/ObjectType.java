@@ -41,40 +41,58 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter.comparison;
+package org.deegree.model.generic.schema;
 
-import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.filter.expression.PropertyName;
-import org.deegree.model.generic.DeegreeObject;
+import java.util.List;
+
+import javax.xml.namespace.QName;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class PropertyIsNull extends ComparisonOperator {
+public interface ObjectType extends NodeType {
 
-    private PropertyName propName;
-  
-    public PropertyName getPropertyName () {
-        return propName;
-    }
+//    public DeegreeObject createInstance (List<Attribute> attribs, List<DeegreeObject> contents);
     
-    public SubType getSubType() {
-        return SubType.PROPERTY_IS_NULL;
-    } 
-    
-    public boolean evaluate( DeegreeObject object )
-                            throws FilterEvaluationException {
-        return propName.evaluate( object ) == null;
-    }
+    /**
+     * Returns the name of elements with this type.
+     * 
+     * @return the name of elements with this type
+     */
+    public QName getName();
 
-    public String toString( String indent ) {
-        String s = indent + "-PropertyIsNull\n";
-        s += propName.toString (indent + "  ");
-        return s;
-    }    
+    /**
+     * Returns the schema information for allowed attributes of elements with this type.
+     * 
+     * @return the schema information for allowed attributes
+     */
+    public List<AttributeType> getAttributes();
+
+    /**
+     * Returns a description for the allowed contents of elements with this type.
+     * 
+     * @return description for allowed contents
+     */
+    public ContentModel getContents();
+
+    /**
+     * Returns the parent type for this type.
+     * 
+     * @return parent type
+     */
+    public ObjectType getParentType ();
+    
+    /**
+     * Returns whether this type is abstract, i.e. not instantiable.
+     *
+     * @return true, if this type is abstract, otherwise false
+     */
+    public boolean isAbstract();
+
+    public String toString( String indent );
 }

@@ -41,11 +41,12 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic.schema;
+package org.deegree.model.generic;
 
-import java.util.List;
-
-import javax.xml.namespace.QName;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.model.generic.schema.ObjectType;
 
 /**
  * TODO add documentation here
@@ -55,30 +56,28 @@ import javax.xml.namespace.QName;
  * 
  * @version $Revision:$, $Date:$
  */
-public interface ElementType extends NodeType {
-   
+public class DeegreeObjectXMLAdapter extends XMLAdapter {
+
+    private static final Log LOG = LogFactory.getLog( DeegreeObjectXMLAdapter.class );
+
+    private ApplicationSchema schema;
+
     /**
-     * Returns the name of the element.
+     * Constructs a new <code>DeegreeObjectXMLAdapter</code> for the object types that are defined in the given
+     * application schema.
      * 
-     * @return the name of the element
+     * @param schema
+     *            application schema that provides the binding between element names and object types
      */
-    public QName getName();
+    public DeegreeObjectXMLAdapter( ApplicationSchema schema ) {
+        this.schema = schema;
+    }
 
-    /**
-     * Returns the schema information for the allowed attributes of this element.
-     * 
-     * @return the schema information for the allowed attributes
-     */
-    public List<AttributeType> getAttributes();
+    public DeegreeObject parse() {
 
-    /**
-     * Returns a description of the allowed contents of this element. 
-     *
-     * @return description of allowed contents
-     */
-    public ContentModel getContents();
+        LOG.info( "Parsing root element '" + rootElement.getQName() + "' of application document." );
+        ObjectType ot = schema.getObjectType( rootElement.getQName() );
 
-    public boolean isAbstract();
-    
-    public String toString( String indent );
+        return null;
+    }
 }

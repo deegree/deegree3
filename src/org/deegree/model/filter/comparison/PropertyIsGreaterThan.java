@@ -45,7 +45,7 @@ package org.deegree.model.filter.comparison;
 
 import org.deegree.model.filter.Expression;
 import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.generic.Element;
+import org.deegree.model.generic.DeegreeObject;
 
 /**
  * TODO add documentation here
@@ -65,7 +65,7 @@ public class PropertyIsGreaterThan extends BinaryComparisonOperator {
         return SubType.PROPERTY_IS_GREATER_THAN;
     }    
     
-    public boolean evaluate( Element object )
+    public boolean evaluate( DeegreeObject object )
                             throws FilterEvaluationException {
         Comparable parameter1Value = param1.evaluate( object );
         Comparable parameter2Value = param2.evaluate( object );

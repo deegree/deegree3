@@ -43,23 +43,22 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic;
 
-import org.apache.axiom.om.OMNode;
 import org.deegree.model.generic.schema.NodeType;
 
 /**
- * An <code>OMNode</code> with schema information. Basis of the deegree object model.
+ * A <code>Node</code> with type information. Basis of the deegree object model.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public interface Node extends OMNode {
+public interface Node {
 
     /**
-     * Returns the schema information for this node.
+     * Returns the type information for this node.
      * 
-     * @return the schema information
+     * @return the type information
      */
-    public NodeType getSchemaInfo();
+    public NodeType getType();
 }

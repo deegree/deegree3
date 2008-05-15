@@ -43,23 +43,22 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic;
 
-import org.apache.axiom.om.OMAttribute;
 import org.deegree.model.generic.schema.AttributeType;
 
 /**
- * An <code>OMAttribute</code> with schema information.
+ * An <code>Attribute</code> with type information.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public interface Attribute extends OMAttribute {
+public interface Attribute {
 
     /**
-     * Returns the schema information for this attribute node.
+     * Returns the type information for this attribute node.
      * 
-     * @return the schema information
+     * @return the type information
      */
-    public AttributeType getSchemaInfo();
+    public AttributeType getType();
 }

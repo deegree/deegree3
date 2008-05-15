@@ -1,22 +1,21 @@
 package org.deegree.model.generic;
 
-import org.apache.axiom.om.OMText;
 import org.deegree.model.generic.schema.TextType;
 
 /**
- * An <code>OMText</code> with schema information.
+ * A <code>Text</code> node with type information.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public interface Text extends Node, OMText {
+public interface Text extends Node {
 
     /**
-     * Returns the schema information for this node.
+     * Returns the type information for this node.
      * 
-     * @return the schema information
+     * @return the type information
      */
-    public TextType getSchemaInfo();
+    public TextType getType();
 }

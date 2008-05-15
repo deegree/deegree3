@@ -43,9 +43,12 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic.implementation.schema;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.model.generic.schema.AttributeType;
+import org.deegree.model.generic.schema.ContentModel;
 import org.deegree.model.generic.schema.ObjectType;
 
 /**
@@ -56,34 +59,66 @@ import org.deegree.model.generic.schema.ObjectType;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GenericAttributeType implements AttributeType {
+public class GenericObjectType implements ObjectType {
 
     private QName name;
 
-    private boolean isRequired;
+    private List<AttributeType> attributes;
 
-    private GenericObjectType owner;
+    private ContentModel contents;
 
-    public GenericAttributeType( QName name, boolean isRequired ) {
+    private boolean isAbstract;
+
+    private ObjectType parentType;
+
+    public GenericObjectType( QName name, List<AttributeType> attributes, ContentModel contents, boolean isAbstract,
+                              ObjectType parentType ) {
         this.name = name;
-        this.isRequired = isRequired;
+        this.attributes = attributes;
+        this.contents = contents;
+        this.isAbstract = isAbstract;
+        this.parentType = parentType;
     }
 
     public QName getName() {
         return name;
     }
 
-    public boolean isRequired() {
-        return isRequired;
+    public List<AttributeType> getAttributes() {
+        return attributes;
     }
 
-    public ObjectType getOwner() {
-        return owner;
+    public ContentModel getContents() {
+        return contents;
+    }
+
+    public boolean isAbstract() {
+        return isAbstract;
+    }
+
+    public ObjectType getParentType() {
+        return parentType;
     }
 
     @Override
     public String toString() {
-        String s = "attribute: '" + name.toString() + "', isRequired: " + isRequired;
+        return toString( "" );
+    }
+
+    public String toString( String indent ) {
+        String s = indent + "- object type: " + name.toString() + ", abstract: " + isAbstract + ", parent type: ";
+        if (parentType != null) {
+            s += "'" + parentType.getName() + "'\n";
+        } else {
+            s += "-\n";
+        }
+
+        for ( AttributeType attribute : attributes ) {
+            s += indent + "  - " + attribute + "\n";
+        }
+        if ( contents != null ) {
+            s += contents.toString( indent + "  " );
+        }
         return s;
     }
 }

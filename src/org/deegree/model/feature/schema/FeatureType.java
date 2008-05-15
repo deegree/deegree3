@@ -43,7 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature.schema;
 
-import org.deegree.model.generic.schema.ElementType;
+import org.deegree.model.generic.schema.ObjectType;
 
 /**
  * TODO add documentation here
@@ -53,7 +53,6 @@ import org.deegree.model.generic.schema.ElementType;
  *
  * @version $Revision:$, $Date:$
  */
-public interface FeatureType extends ElementType {
+public interface FeatureType extends ObjectType {
 
-    
 }

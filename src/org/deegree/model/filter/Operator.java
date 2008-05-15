@@ -43,7 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter;
 
-import org.deegree.model.generic.Element;
+import org.deegree.model.generic.DeegreeObject;
 
 /**
  * TODO add documentation here
@@ -72,7 +72,7 @@ public interface Operator {
      * @throws FilterEvaluationException
      *             if the evaluation fails
      */
-    boolean evaluate( Element object )
+    boolean evaluate( DeegreeObject object )
                             throws FilterEvaluationException;
 
     public String toString( String indent );

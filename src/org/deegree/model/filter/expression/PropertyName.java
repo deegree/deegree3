@@ -44,7 +44,7 @@
 package org.deegree.model.filter.expression;
 
 import org.deegree.model.filter.Expression;
-import org.deegree.model.generic.Element;
+import org.deegree.model.generic.DeegreeObject;
 
 /**
  * TODO add documentation here
@@ -70,7 +70,7 @@ public class PropertyName implements Expression {
         return propName;
     }
 
-    public Comparable evaluate( Element obj ) {
+    public Comparable evaluate( DeegreeObject obj ) {
         // TODO Auto-generated method stub
         return null;
     }

@@ -68,5 +68,5 @@ public interface AttributeType {
      * 
      * @return the element type that owns this attribute
      */
-    public ElementType getOwner();
+    public ObjectType getOwner();
 }

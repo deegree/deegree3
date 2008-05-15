@@ -43,23 +43,31 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic;
 
-import org.apache.axiom.om.OMElement;
-import org.deegree.model.generic.schema.ElementType;
+import javax.xml.namespace.QName;
+
+import org.deegree.model.generic.schema.ObjectType;
 
 /**
- * An <code>OMElement</code> with schema information.
- *
+ * An <code>Element</code> with type information.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public interface Element extends Node, OMElement {
+public interface DeegreeObject extends Node {
 
     /**
-     * Returns the schema information for this element.
+     * Returns the type information for this element.
      * 
-     * @return the schema information
+     * @return the type information
      */
-    public ElementType getSchemaInfo();
+    public ObjectType getType();
+
+    /**
+     * Returns this element's name.
+     * 
+     * @return this element's name
+     */
+    public QName getName();
 }

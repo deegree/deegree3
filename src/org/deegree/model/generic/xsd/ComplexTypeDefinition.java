@@ -41,40 +41,25 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter.comparison;
+package org.deegree.model.generic.xsd;
 
-import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.filter.expression.PropertyName;
-import org.deegree.model.generic.DeegreeObject;
+import javax.xml.namespace.QName;
 
 /**
- * TODO add documentation here
- *
+ * Represents an <code>xs:complexType</code> definition.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class PropertyIsNull extends ComparisonOperator {
+class ComplexTypeDefinition extends TypeDefinition {
 
-    private PropertyName propName;
-  
-    public PropertyName getPropertyName () {
-        return propName;
+    ComplexTypeDefinition( QName typeName, TypeDefinition baseType ) {
+        super( typeName, baseType );
     }
     
-    public SubType getSubType() {
-        return SubType.PROPERTY_IS_NULL;
-    } 
-    
-    public boolean evaluate( DeegreeObject object )
-                            throws FilterEvaluationException {
-        return propName.evaluate( object ) == null;
-    }
-
-    public String toString( String indent ) {
-        String s = indent + "-PropertyIsNull\n";
-        s += propName.toString (indent + "  ");
-        return s;
+    String toString (String indent) {
+        return indent + "- complex type: " + name + ", based on type: '" + baseType.getName() + "'\n";
     }    
 }

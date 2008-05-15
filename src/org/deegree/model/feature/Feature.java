@@ -46,27 +46,38 @@ package org.deegree.model.feature;
 import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.schema.FeatureType;
-import org.deegree.model.generic.Element;
+import org.deegree.model.generic.DeegreeObject;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public interface Feature extends Element {
-    
-    public Object getPropertyValue (QName propName);
+public interface Feature extends DeegreeObject {
 
-    public Property[] getProperties();
-    
     /**
      * Returns the schema information for this feature.
      * 
      * @return the schema information
      */
-    public FeatureType getSchemaInfo();    
+    public FeatureType getType();  
     
+    /**
+     * Returns the value of the specified property.
+     * 
+     * @param propName
+     *            name of the property
+     * @return property value
+     */
+    public Object getPropertyValue( QName propName );
+
+    /**
+     * Returns all properties of this feature.
+     * 
+     * @return all properties of this feature.
+     */
+    public Property[] getProperties();
 }

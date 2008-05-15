@@ -55,19 +55,19 @@ import java.util.List;
  */
 public class Sequence implements ContentModel {
 
-    private List<ElementType> contents;
+    private List<ObjectType> contents;
 
-    public Sequence (List<ElementType> contents) {
+    public Sequence (List<ObjectType> contents) {
         this.contents = contents;
     }
     
-    public void addElement(ElementType element) {
+    public void addElement(ObjectType element) {
         contents.add( element );
     }
 
     public String toString( String indent ) {
         String s = "";
-        for ( ElementType element : contents ) {
+        for ( ObjectType element : contents ) {
             s += element.toString(indent);
         }
         return s;

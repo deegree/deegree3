@@ -41,40 +41,34 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter.comparison;
+package org.deegree.model.generic.xsd;
 
-import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.filter.expression.PropertyName;
-import org.deegree.model.generic.DeegreeObject;
+import javax.xml.namespace.QName;
 
 /**
- * TODO add documentation here
- *
+ * Represents an <code>xs:simpleType</code> definition.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class PropertyIsNull extends ComparisonOperator {
+class SimpleTypeDefinition extends TypeDefinition {
 
-    private PropertyName propName;
-  
-    public PropertyName getPropertyName () {
-        return propName;
-    }
-    
-    public SubType getSubType() {
-        return SubType.PROPERTY_IS_NULL;
-    } 
-    
-    public boolean evaluate( DeegreeObject object )
-                            throws FilterEvaluationException {
-        return propName.evaluate( object ) == null;
+    enum VARIETY {
+        /** */
+        ATOMIC,
+        /** */
+        LIST,
+        /** */
+        UNION;
     }
 
-    public String toString( String indent ) {
-        String s = indent + "-PropertyIsNull\n";
-        s += propName.toString (indent + "  ");
-        return s;
+    protected SimpleTypeDefinition( QName typeName, TypeDefinition baseType ) {
+        super( typeName, baseType );
+    }
+
+    String toString (String indent) {
+        return indent + "- simple type: " + name + ", based on: '" + baseType.getName() + "'\n";
     }    
 }

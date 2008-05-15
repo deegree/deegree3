@@ -41,69 +41,66 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic.implementation.schema;
+package org.deegree.model.generic.xsd;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.generic.schema.AttributeType;
-import org.deegree.model.generic.schema.ContentModel;
-import org.deegree.model.generic.schema.ElementType;
-
 /**
- * TODO add documentation here
- *
+ * Represents either a <code>xs:simpleType</code> definition or a <code>xs:complexType</code> definition.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class GenericElementType implements ElementType {
+abstract class TypeDefinition {
 
-    private QName name;
-    
-    private List<AttributeType> attributes;
+    // null means: anonymous type
+    protected QName name;
 
-    private ContentModel contents;
+    // can be null (if it is the root of a type hierarchy)
+    protected TypeDefinition baseType;
 
-    private boolean isAbstract;    
+    protected List<TypeDefinition> directDerivations = new ArrayList<TypeDefinition>();
 
-    public GenericElementType (QName name, List<AttributeType> attributes, ContentModel contents) {
+    protected TypeDefinition( QName name, TypeDefinition baseType ) {
         this.name = name;
-        this.attributes = attributes;
-        this.contents = contents;
+        this.baseType = baseType;
     }
 
-    public QName getName() {
+    QName getName () {
         return name;
+    }
+    
+    boolean isAnonymous() {
+        return name == null;
     }    
     
-    public List<AttributeType> getAttributes() {
-        return attributes;
+    TypeDefinition getBaseType() {
+        return baseType;
     }
 
-    public ContentModel getContents () {
-        return contents;
+    void addDerivedType( TypeDefinition type ) {
+        directDerivations.add( type );
     }
 
-    public boolean isAbstract() {
-        return isAbstract;
+    List<TypeDefinition> getDirectDerivations() {
+        return directDerivations;
     }
     
     @Override
     public String toString () {
-        return toString("");
+        return toString ("");
     }
 
-    public String toString (String indent) {
-        String s = indent + "- element name: " + name.toString() + "\n";
-        for ( AttributeType attribute : attributes ) {
-            s += indent + "  - " + attribute + "\n";
-        }
-        if (contents != null){
-            s += contents.toString (indent + "  ");
+    String toString (String indent) {
+        String s = indent + "- type: " + name + "\n";
+        for ( TypeDefinition childType : directDerivations ) {
+            s += childType.toString( "  " + indent );
         }
         return s;
-    }  
+    }
 }

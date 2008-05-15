@@ -45,7 +45,7 @@ package org.deegree.model.filter.logical;
 
 import org.deegree.model.filter.FilterEvaluationException;
 import org.deegree.model.filter.Operator;
-import org.deegree.model.generic.Element;
+import org.deegree.model.generic.DeegreeObject;
 
 /**
  * TODO add documentation here
@@ -78,7 +78,7 @@ public class And extends LogicalOperator {
         return param2;
     }    
 
-    public boolean evaluate( Element object )
+    public boolean evaluate( DeegreeObject object )
                             throws FilterEvaluationException {
         return param1.evaluate( object ) && param2.evaluate (object);
     }

@@ -41,40 +41,34 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.filter.comparison;
 
-import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.filter.expression.PropertyName;
+package org.deegree.model.generic.implementation;
+
+import javax.xml.namespace.QName;
+
 import org.deegree.model.generic.DeegreeObject;
+import org.deegree.model.generic.schema.ObjectType;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class PropertyIsNull extends ComparisonOperator {
+public class GenericDeegreeObject extends GenericNode implements DeegreeObject {
 
-    private PropertyName propName;
-  
-    public PropertyName getPropertyName () {
-        return propName;
-    }
-    
-    public SubType getSubType() {
-        return SubType.PROPERTY_IS_NULL;
-    } 
-    
-    public boolean evaluate( DeegreeObject object )
-                            throws FilterEvaluationException {
-        return propName.evaluate( object ) == null;
+    protected GenericDeegreeObject( ObjectType type ) {
+        super( type );
     }
 
-    public String toString( String indent ) {
-        String s = indent + "-PropertyIsNull\n";
-        s += propName.toString (indent + "  ");
-        return s;
-    }    
+    @Override
+    public ObjectType getType() {
+        return (ObjectType) type;
+    }
+
+    public QName getName() {
+        return ( (ObjectType) type ).getName();
+    }
 }

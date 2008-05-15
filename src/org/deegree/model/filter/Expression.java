@@ -43,7 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter;
 
-import org.deegree.model.generic.Element;
+import org.deegree.model.generic.DeegreeObject;
 
 /**
  * TODO add documentation here
@@ -62,12 +62,12 @@ public interface Expression {
     public Type getType();    
     
     /**
-     * Determines the value of the expression for the given {@link Element}.
+     * Determines the value of the expression for the given {@link DeegreeObject}.
      *  
      * @param obj
      * @return the value of the expression
      */
-    public Comparable evaluate (Element obj);
+    public Comparable evaluate (DeegreeObject obj);
 
     public String toString( String indent );    
 }
