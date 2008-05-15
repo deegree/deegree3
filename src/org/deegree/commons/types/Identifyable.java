@@ -42,6 +42,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.types;
 
+
 /**
  * 
  * 
@@ -51,7 +52,7 @@ package org.deegree.commons.types;
  * 
  * @version. $Revision$, $Date$
  */
-public interface Identifier {
+public interface Identifyable extends Comparable {
 
     /**
      * 
