@@ -43,10 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic.schema;
 
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 /**
  * TODO add documentation here
  *
@@ -55,16 +51,20 @@ import javax.xml.namespace.QName;
  *
  * @version $Revision:$, $Date:$
  */
-public class SimpleContent implements ContentModel {
+public class Occurrence<T> {
 
-    private QName simpleTypeName;
+    private int minOccurs;
+    
+    private int maxOccurs;
 
-    public SimpleContent (QName simpleTypeName) {
-        this.simpleTypeName = simpleTypeName;
+    private T nodeType;
+    
+    public Occurrence (T nodeType) {
+        this.nodeType = nodeType;
     }
 
     public String toString( String indent ) {
-        String s = indent + "('" + simpleTypeName + "')\n";
-        return s;
-    }    
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

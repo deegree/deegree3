@@ -43,11 +43,15 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature.implementation;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.Property;
 import org.deegree.model.feature.schema.FeatureType;
+import org.deegree.model.generic.Attribute;
+import org.deegree.model.generic.Node;
 
 /**
  * TODO add documentation here
@@ -75,6 +79,16 @@ public class GenericFeature implements Feature {
     }
 
     public Object getPropertyValue( QName propName ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<Attribute> getAttributes() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public List<Node> getContents() {
         // TODO Auto-generated method stub
         return null;
     }

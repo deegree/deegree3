@@ -77,7 +77,6 @@ import org.deegree.model.generic.schema.AttributeType;
 import org.deegree.model.generic.schema.ContentModel;
 import org.deegree.model.generic.schema.ObjectType;
 import org.deegree.model.generic.schema.Sequence;
-import org.deegree.model.generic.schema.SimpleContent;
 
 /**
  * TODO add documentation here
@@ -108,9 +107,9 @@ public class ApplicationSchemaXSDAdapter {
      */
     public ApplicationSchemaXSDAdapter( XSModel xmlSchema ) {
         this.xmlSchema = xmlSchema;
-        this.integratedNamespaces.add( XMLConstants.W3C_XML_SCHEMA_NS_URI );
-        this.integratedNamespaces.add( "http://www.w3.org/1999/xlink" );
-        this.integratedNamespaces.add( "http://www.opengis.net/gml" );
+        integratedNamespaces.add( XMLConstants.W3C_XML_SCHEMA_NS_URI );
+        integratedNamespaces.add( "http://www.w3.org/1999/xlink" );
+        integratedNamespaces.add( "http://www.opengis.net/gml" );
     }
 
     /**
@@ -292,7 +291,8 @@ public class ApplicationSchemaXSDAdapter {
                                 break;
                             }
                             case XSConstants.MODEL_GROUP: {
-                                LOG.warn( "Unhandled particle: MODEL_GROUP" );
+                                XSModelGroup modelGroup2 = (XSModelGroup) particle2.getTerm();
+                                analyzeModelGroup (modelGroup2);
                                 break;
                             }
                             }
@@ -317,7 +317,7 @@ public class ApplicationSchemaXSDAdapter {
                     assert false;
                 }
                 }
-                contents = new Sequence( elements );
+//                contents = new Sequence( elements );
                 break;
             }
             case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
@@ -331,7 +331,7 @@ public class ApplicationSchemaXSDAdapter {
             case XSComplexTypeDefinition.CONTENTTYPE_SIMPLE: {
                 XSSimpleTypeDefinition simpleType = complexType.getSimpleType();
                 QName simpleTypeName = new QName( simpleType.getNamespace(), simpleType.getName() );
-                contents = new SimpleContent( simpleTypeName );
+//                contents = new SimpleContent( simpleTypeName );
                 break;
             }
             default: {
@@ -346,7 +346,7 @@ public class ApplicationSchemaXSDAdapter {
             if ( simpleType.getName() != null ) {
                 simpleTypeName = new QName( simpleType.getNamespace(), simpleType.getName() );
             }
-            contents = new SimpleContent( simpleTypeName );
+//            contents = new SimpleContent( simpleTypeName );
             break;
         }
         default: {
@@ -366,6 +366,47 @@ public class ApplicationSchemaXSDAdapter {
         elementType = new GenericObjectType( elementName, attributes, contents, elementDecl.getAbstract(), parentType );
         xsElementNameToOT.put( elementName, elementType );
         return elementType;
+    }
+
+    private void analyzeModelGroup( XSModelGroup modelGroup ) {
+        LOG.info( " - processing model group..." );
+        switch ( modelGroup.getCompositor() ) {
+        case XSModelGroup.COMPOSITOR_ALL: {
+            LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
+            break;
+        }
+        case XSModelGroup.COMPOSITOR_CHOICE: {
+            LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
+            break;
+        }
+        case XSModelGroup.COMPOSITOR_SEQUENCE: {
+            XSObjectList sequence = modelGroup.getParticles();
+            for ( int i = 0; i < sequence.getLength(); i++ ) {
+                XSParticle particle = (XSParticle) sequence.item( i );
+                LOG.info ("  - minOccurs=" + particle.getMinOccurs() + ", maxOccurs=" + particle.getMaxOccurs());                
+                switch ( particle.getTerm().getType() ) {
+                case XSConstants.ELEMENT_DECLARATION: {
+                    XSElementDeclaration elementDecl = (XSElementDeclaration) particle.getTerm();
+                    LOG.info ("  - element declaration: " + elementDecl);
+                    break;
+                }
+                case XSConstants.WILDCARD: {
+                    LOG.warn( "Unhandled particle: WILDCARD" );
+                    break;
+                }
+                case XSConstants.MODEL_GROUP: {
+                    XSModelGroup modelGroup2 = (XSModelGroup) particle.getTerm();
+                    analyzeModelGroup (modelGroup2);
+                    break;
+                }
+                }
+            }
+            break;
+        }
+        default: {
+            assert false;
+        }
+        }        
     }
 
     /**

@@ -18,4 +18,11 @@ public interface Text extends Node {
      * @return the type information
      */
     public TextType getType();
+    
+    /**
+     * Returns the <code>String</code> value of this node.
+     * 
+     * @return the <code>String</code> value
+     */
+    public String getValue();
 }

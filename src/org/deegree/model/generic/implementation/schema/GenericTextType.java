@@ -43,6 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic.implementation.schema;
 
+import org.deegree.model.generic.implementation.GenericText;
 import org.deegree.model.generic.schema.TextType;
 
 /**
@@ -55,4 +56,11 @@ import org.deegree.model.generic.schema.TextType;
  */
 public class GenericTextType implements TextType {
 
+    public GenericText createInstance() {
+        return new GenericText(this, null);
+    }
+
+    public GenericText createInstance(String value) {
+        return new GenericText(this, value);
+    }    
 }

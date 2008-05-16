@@ -43,6 +43,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic.schema;
 
+import org.deegree.model.generic.Node;
+
 /**
  * TODO add documentation here
  *
@@ -51,5 +53,12 @@ package org.deegree.model.generic.schema;
  *
  * @version $Revision:$, $Date:$
  */
-public interface NodeType { 
+public interface NodeType {
+
+    /**
+     * Creates a new (uninitialized) instance of this <code>NodeType</code>.
+     *  
+     * @return the new instance
+     */
+    public Node createInstance ();
 }

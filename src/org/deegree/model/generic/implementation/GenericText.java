@@ -41,9 +41,10 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic.schema;
+package org.deegree.model.generic.implementation;
 
-import java.util.List;
+import org.deegree.model.generic.Text;
+import org.deegree.model.generic.schema.TextType;
 
 /**
  * TODO add documentation here
@@ -53,23 +54,22 @@ import java.util.List;
  *
  * @version $Revision:$, $Date:$
  */
-public class Sequence implements ContentModel {
+public class GenericText implements Text {
 
-    private List<Occurrence<?>> contents;
+    private TextType type;    
+    
+    private String value;
 
-    public Sequence (List<Occurrence<?>> contents) {
-        this.contents = contents;
+    public GenericText(TextType type, String value) {
+        this.type = type;
+        this.value = value;
     }
     
-    public void addElement(Occurrence<?> occurence) {
-        contents.add( occurence );
+    public TextType getType() {
+        return type;
     }
 
-    public String toString( String indent ) {
-        String s = "";
-        for ( Occurrence<?> occurence : contents ) {
-            s += occurence.toString(indent);
-        }
-        return s;
-    }    
+    public String getValue() {
+        return value;
+    }
 }

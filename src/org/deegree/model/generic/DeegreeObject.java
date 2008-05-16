@@ -43,6 +43,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.model.generic.schema.ObjectType;
@@ -67,7 +69,21 @@ public interface DeegreeObject extends Node {
     /**
      * Returns this element's name.
      * 
-     * @return this element's name
+     * @return the name
      */
     public QName getName();
+
+    /**
+     * Returns the attributes of this element.
+     * 
+     * @return the attributes
+     */
+    public List<Attribute> getAttributes();
+
+    /**
+     * Returns the contents of this element.
+     * 
+     * @return the contents
+     */
+    public List<Node> getContents();        
 }

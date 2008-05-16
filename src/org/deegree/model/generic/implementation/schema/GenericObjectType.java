@@ -47,6 +47,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.model.generic.Attribute;
+import org.deegree.model.generic.Node;
+import org.deegree.model.generic.implementation.GenericDeegreeObject;
 import org.deegree.model.generic.schema.AttributeType;
 import org.deegree.model.generic.schema.ContentModel;
 import org.deegree.model.generic.schema.ObjectType;
@@ -105,6 +108,14 @@ public class GenericObjectType implements ObjectType {
         return toString( "" );
     }
 
+    public GenericDeegreeObject createInstance() {
+        return new GenericDeegreeObject(this);
+    }    
+    
+    public GenericDeegreeObject createInstance(List<Attribute> attributes, List<Node> contents ) {
+        return new GenericDeegreeObject(this, attributes, contents);
+    }    
+    
     public String toString( String indent ) {
         String s = indent + "- object type: " + name.toString() + ", abstract: " + isAbstract + ", parent type: ";
         if (parentType != null) {

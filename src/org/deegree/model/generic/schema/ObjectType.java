@@ -47,6 +47,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.model.generic.DeegreeObject;
+
 /**
  * TODO add documentation here
  * 
@@ -57,26 +59,24 @@ import javax.xml.namespace.QName;
  */
 public interface ObjectType extends NodeType {
 
-//    public DeegreeObject createInstance (List<Attribute> attribs, List<DeegreeObject> contents);
-    
     /**
-     * Returns the name of elements with this type.
+     * Returns the name of the type.
      * 
-     * @return the name of elements with this type
+     * @return the name of the type
      */
     public QName getName();
 
     /**
-     * Returns the schema information for allowed attributes of elements with this type.
+     * Returns the schema information for allowed attributes of {@link DeegreeObject}s with this type.
      * 
      * @return the schema information for allowed attributes
      */
     public List<AttributeType> getAttributes();
 
     /**
-     * Returns a description for the allowed contents of elements with this type.
+     * Returns a description of the allowed contents for {@link DeegreeObject}s with this type.
      * 
-     * @return description for allowed contents
+     * @return description of allowed contents
      */
     public ContentModel getContents();
 
@@ -85,14 +85,14 @@ public interface ObjectType extends NodeType {
      * 
      * @return parent type
      */
-    public ObjectType getParentType ();
-    
+    public ObjectType getParentType();
+
     /**
      * Returns whether this type is abstract, i.e. not instantiable.
-     *
+     * 
      * @return true, if this type is abstract, otherwise false
      */
     public boolean isAbstract();
-
+    
     public String toString( String indent );
 }

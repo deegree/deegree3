@@ -44,9 +44,15 @@
 
 package org.deegree.model.generic.implementation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
+import org.deegree.model.generic.Attribute;
 import org.deegree.model.generic.DeegreeObject;
+import org.deegree.model.generic.Node;
+import org.deegree.model.generic.implementation.schema.GenericObjectType;
 import org.deegree.model.generic.schema.ObjectType;
 
 /**
@@ -59,8 +65,18 @@ import org.deegree.model.generic.schema.ObjectType;
  */
 public class GenericDeegreeObject extends GenericNode implements DeegreeObject {
 
-    protected GenericDeegreeObject( ObjectType type ) {
-        super( type );
+    private List<Attribute> attributes = new ArrayList<Attribute>();    
+    
+    private List<Node> contents = new ArrayList<Node>();
+
+    public GenericDeegreeObject( GenericObjectType ot ) {
+        super (ot);
+    }    
+    
+    public GenericDeegreeObject( ObjectType ot, List<Attribute> attributes, List<Node> contents ) {
+        super( ot );
+        this.attributes = attributes;
+        this.contents = contents;
     }
 
     @Override
@@ -70,5 +86,13 @@ public class GenericDeegreeObject extends GenericNode implements DeegreeObject {
 
     public QName getName() {
         return ( (ObjectType) type ).getName();
+    }
+
+    public List<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public List<Node> getContents() {
+        return contents;
     }
 }

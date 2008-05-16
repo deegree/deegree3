@@ -44,7 +44,7 @@
 package org.deegree.model.generic.schema;
 
 /**
- * TODO add documentation here
+ * Describes the allowed contents for an {@link ObjectType}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
