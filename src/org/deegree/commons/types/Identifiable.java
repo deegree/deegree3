@@ -54,7 +54,7 @@ import java.io.Serializable;
  * 
  * @version. $Revision$, $Date$
  */
-public interface Identifyable extends Comparable, Serializable {
+public interface Identifiable extends Comparable<Identifiable>, Serializable {
 
     /**
      * 
