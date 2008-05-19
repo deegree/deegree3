@@ -39,12 +39,19 @@ package org.deegree.model.coverage.raster.data;
 
 /**
  * Interface for a 2 dimensional raster.
- * 
+ * <p>
  * A raster is a rectangular grid of pixels with coordinates from the uppler left corner (0, 0) to the lower right
  * corner (width-1, height-1). A raster can contain multiple bands. A pixel stores one sample for every band. The sample
- * arrangement is determined by the interleaving type. The size of each sample is dertermined by the data type.
+ * arrangement is determined by the interleaving type ({@link InterleaveType}). The size of each sample is dertermined
+ * by the data type ({@link DataType}).
  * 
- * TODO: Only defines interface to byte and float data at the moment. Copy float methods for other data types.
+ * <p>
+ * Most get-methods accept an array as a parameter for performance reasons. This parameter is used to store the result.
+ * The same array will be returned by the method, filled with requested values. A new array will be created, filled and
+ * returned if this parameter is <code>null</code>.
+ * 
+ * <p>
+ * TODO: Only defines interface to byte, short and float data at the moment. Copy float methods for other data types.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -93,6 +100,15 @@ public interface RasterData {
     public int getWidth();
 
     /**
+     * Returns the no data values for this raster
+     * 
+     * @param result
+     *            an array to put the values into or <code>null</code>
+     * @return the <code>result</code> array or a new array, if the <code>result</code> array is <code>null</code>
+     */
+    public byte[] getNullPixel( byte[] result );
+
+    /**
      * Returns a new RasterData with the same DataType and InterleaveType
      * 
      * @param width
@@ -122,26 +138,24 @@ public interface RasterData {
     public RasterData createCompatibleRasterData();
 
     /**
-     * Retruns a sample as byte array, regardless of the DataType. i.e. a FLOAT DataType results in a four byte array
+     * Returns a sample as byte array, regardless of the DataType. i.e. a FLOAT DataType results in a four byte array
      * 
      * @param x
-     *            x position
      * @param y
-     *            y position
      * @param band
      *            selected band
-     * @return byte array with sample data
+     * @param result
+     *            an array to put the values into or <code>null</code>
+     * @return the <code>result</code> array or a new array, if the <code>result</code> array is <code>null</code>
      */
-    public byte[] getSample( int x, int y, int band );
+    public byte[] getSample( int x, int y, int band, byte[] result );
 
     /**
      * Sets a sample with data from a byte array, regardless of the DataType. i.e. a float must be packed as a four byte
      * array
      * 
      * @param x
-     *            x coordinate
      * @param y
-     *            y coordinate
      * @param band
      *            selected band
      * @param values
@@ -150,62 +164,108 @@ public interface RasterData {
     public void setSample( int x, int y, int band, byte[] values );
 
     /**
+     * Returns a pixel as byte array, regardless of the DataType. i.e. a FLOAT DataType results in a four byte array.
+     * 
+     * @param x
+     * @param y
+     * @param result
+     *            a byte array to put the values into or <code>null</code>
+     * @return the <code>result</code> array or a new array, if the <code>result</code> array is <code>null</code>
+     */
+    public byte[] getPixel( int x, int y, byte[] result );
+
+    /**
+     * Sets a pixel with data from a byte array, regardless of the DataType. i.e. a float sample must be packed as a
+     * four byte array.
+     * 
+     * @param x
+     * @param y
+     * @param pixel
+     */
+    public void setPixel( int x, int y, byte[] pixel );
+
+    /*******************************************************************************************************************
+     * pixel getter and setter
+     ******************************************************************************************************************/
+
+    /**
+     * Returns a byte array with all sample values from coordinate x/y. The lenght of the array is equal to the number
+     * of bands.
+     * 
+     * @param x
+     * @param y
+     * @param result
+     *            an array to put the values into or <code>null</code>
+     * @return the <code>result</code> array or a new array, if the <code>result</code> array is <code>null</code>
+     */
+    public byte[] getBytePixel( int x, int y, byte[] result );
+
+    /**
+     * Returns a short array with all sample values from coordinate x/y. The lenght of the array is equal to the number
+     * of bands.
+     * 
+     * @param x
+     * @param y
+     * @param result
+     *            an array to put the values into or <code>null</code>
+     * @return the <code>result</code> array or a new array, if the <code>result</code> array is <code>null</code>
+     */
+    public short[] getShortPixel( int x, int y, short[] result );
+
+    /**
+     * Returns a float array with all sample values from coordinate x/y. The lenght of the array is equal to the number
+     * of bands.
+     * 
+     * @param x
+     * @param y
+     * @param result
+     *            an array to put the values into or <code>null</code>
+     * @return the <code>result</code> array or a new array, if the <code>result</code> array is <code>null</code>
+     */
+    public float[] getFloatPixel( int x, int y, float[] result );
+
+    /**
      * Sets a single pixel with byte values for each sample. The lenght of pixel array must be equal to the number of
      * bands.
      * 
      * @param x
-     *            x coordinate
      * @param y
-     *            y coordinate
      * @param pixel
      *            array with one sample per band
      */
     public void setBytePixel( int x, int y, byte[] pixel );
 
     /**
-     * Returns a byte array with all sample values from coordinate x/y. The lenght of the result array is equal to the
-     * number of bands.
+     * Sets a single pixel with short values for each sample. The lenght of pixel array must be equal to the number of
+     * bands.
      * 
      * @param x
-     *            x coordinate
      * @param y
-     *            y coordinate
-     * @return sample array with sample values
+     * @param pixel
+     *            array with one sample per band
      */
-    public byte[] getBytePixel( int x, int y );
+    public void setShortPixel( int x, int y, short[] pixel );
 
     /**
      * Sets a single pixel with float values for each sample. The lenght of pixel array must be equal to the number of
      * bands.
      * 
      * @param x
-     *            x coordinate
      * @param y
-     *            y coordinate
      * @param pixel
      *            array with one sample per band
      */
     public void setFloatPixel( int x, int y, float[] pixel );
 
-    /**
-     * Returns a float array with all sample values from coordinate x/y. The lenght of the result array is equal to the
-     * number of bands.
-     * 
-     * @param x
-     *            x coordinate
-     * @param y
-     *            y coordinate
-     * @return sample array with sample values
-     */
-    public float[] getFloatPixel( int x, int y );
+    /*******************************************************************************************************************
+     * sample getter and setter
+     ******************************************************************************************************************/
 
     /**
      * Returns a byte sample from coordinate x/y and selected band.
      * 
      * @param x
-     *            x coordinate
      * @param y
-     *            y coordinate
      * @param band
      *            band number for sample
      * @return sample from selected coordinate and band
@@ -213,12 +273,32 @@ public interface RasterData {
     public byte getByteSample( int x, int y, int band );
 
     /**
+     * Returns a short sample from coordinate x/y and selected band.
+     * 
+     * @param x
+     * @param y
+     * @param band
+     *            band number for sample
+     * @return sample from selected coordinate and band
+     */
+    public short getShortSample( int x, int y, int band );
+
+    /**
+     * Returns a float sample from coordinate x/y and selected band.
+     * 
+     * @param x
+     * @param y
+     * @param band
+     *            band number for sample
+     * @return sample from selected coordinate and band
+     */
+    public float getFloatSample( int x, int y, int band );
+
+    /**
      * Sets a single byte sample on coordinate x/y and selected band.
      * 
      * @param x
-     *            x coordinate
      * @param y
-     *            y coordinate
      * @param band
      *            band number for sample
      * @param value
@@ -227,25 +307,22 @@ public interface RasterData {
     public void setByteSample( int x, int y, int band, byte value );
 
     /**
-     * Returns a float sample from coordinate x/y and selected band.
+     * Sets a single short sample on coordinate x/y and selected band.
      * 
      * @param x
-     *            x coordinate
      * @param y
-     *            y coordinate
      * @param band
      *            band number for sample
-     * @return sample from selected coordinate and band
+     * @param value
+     *            new value for sample
      */
-    public float getFloatSample( int x, int y, int band );
+    public void setShortSample( int x, int y, int band, short value );
 
     /**
      * Sets a single float sample on coordinate x/y and selected band.
      * 
      * @param x
-     *            x coordinate
      * @param y
-     *            y coordinate
      * @param band
      *            band number for sample
      * @param value
@@ -253,127 +330,114 @@ public interface RasterData {
      */
     public void setFloatSample( int x, int y, int band, float value );
 
-    /**
-     * Returns a 2-D byte array for the specified rectangle.
-     * 
-     * When the raster contains multiple bands, the samples are interleaved with the current interleaving type ({@link #getInterleaveType()}.
-     * 
-     * @param x
-     *            min x coordinate
-     * @param y
-     *            min y coordinate
-     * @param width
-     *            size of the rectangle
-     * @param height
-     *            size of the rectangle
-     * @return selected samples
-     */
-    public byte[][] getBytes( int x, int y, int width, int height );
+    /*******************************************************************************************************************
+     * getter and setter for rectangles
+     ******************************************************************************************************************/
 
     /**
-     * Returns a 2-D byte array for the specified rectangle.
+     * Gets values from the specified rectangle and band. The result is stored row-ordered in a single array (e.g.
+     * {x0y0, x1y0, x2y0,...,x0y1...})
      * 
      * @param x
-     *            min x coordinate
      * @param y
-     *            min y coordinate
      * @param width
-     *            size of the rectangle
      * @param height
-     *            size of the rectangle
      * @param band
-     *            selected band
-     * @return selected samples
+     * @param result
+     *            an array to put the values into or <code>null</code>
+     * @return the <code>result</code> array or a new array, if the <code>result</code> array is <code>null</code>
      */
-    public byte[][] getBytes( int x, int y, int width, int height, int band );
+    public byte[] getBytes( int x, int y, int width, int height, int band, byte[] result );
 
     /**
-     * Sets values from a 2-D byte array in the specified rectangle.
+     * Gets values from the specified rectangle and band. The result is stored row-ordered in a single array (e.g.
+     * {x0y0, x1y0, x2y0,...,x0y1...})
      * 
      * @param x
-     *            min x coordinate
      * @param y
-     *            min y coordinate
      * @param width
-     *            size of the rectangle
      * @param height
-     *            size of the rectangle
      * @param band
-     *            selected band
-     * @param source
-     *            float array with the input values
+     * @param result
+     *            an array to put the values into or <code>null</code>
+     * @return the <code>result</code> array or a new array, if the <code>result</code> array is <code>null</code>
      */
-    public void setBytes( int x, int y, int width, int height, int band, byte[][] source );
+    public short[] getShorts( int x, int y, int width, int height, int band, short[] result );
 
     /**
-     * Returns a 2-D float array for the specified rectangle.
-     * 
-     * When the raster contains multiple bands, the samples are interleaved with the current interleaving type ({@link #getInterleaveType()}.
-     * 
-     * @param x
-     *            min x coordinate
-     * @param y
-     *            min y coordinate
-     * @param width
-     *            size of the rectangle
-     * @param height
-     *            size of the rectangle
-     * @return selected samples
-     */
-    public float[][] getFloats( int x, int y, int width, int height );
-
-    /**
-     * Returns a 2-D float array for the specified rectangle.
+     * Gets values from the specified rectangle and band. The result is stored row-ordered in a single array (e.g.
+     * {x0y0, x1y0, x2y0,...,x0y1...})
      * 
      * @param x
-     *            min x coordinate
      * @param y
-     *            min y coordinate
      * @param width
-     *            size of the rectangle
      * @param height
-     *            size of the rectangle
      * @param band
-     *            selected band
-     * @return selected samples
+     * @param result
+     *            an array to put the values into or <code>null</code>
+     * @return the <code>result</code> array or a new array, if the <code>result</code> array is <code>null</code>
      */
-    public float[][] getFloats( int x, int y, int width, int height, int band );
+    public float[] getFloats( int x, int y, int width, int height, int band, float[] result );
 
     /**
-     * Sets values from a 2-D float array in the specified rectangle.
+     * Sets values from the array to the specified rectangle and band. The values must be stored row-ordered in a single
+     * array (e.g. {x0y0, x1y0, x2y0,...,x0y1...})
      * 
      * @param x
-     *            min x coordinate
      * @param y
-     *            min y coordinate
      * @param width
-     *            size of the rectangle
      * @param height
-     *            size of the rectangle
      * @param band
-     *            selected band
-     * @param source
-     *            float array with the input values
+     * @param values
+     *            the samples to put into the raster
      */
-    public void setFloats( int x, int y, int width, int height, int band, float[][] source );
+    public void setBytes( int x, int y, int width, int height, int band, byte[] values );
 
     /**
-     * Returns new RasterData object for the specified rectangle The result may share the data with the source raster.
+     * Sets values from the array to the specified rectangle and band. The values must be stored row-ordered in a single
+     * array (e.g. {x0y0, x1y0, x2y0,...,x0y1...})
      * 
      * @param x
-     *            min x coordinate
      * @param y
-     *            min y coordinate
      * @param width
-     *            size of the rectangle
      * @param height
-     *            size of the rectangle
+     * @param band
+     * @param values
+     *            the samples to put into the raster
+     */
+    public void setShorts( int x, int y, int width, int height, int band, short[] values );
+
+    /**
+     * Sets values from the array to the specified rectangle and band. The values must be stored row-ordered in a single
+     * array (e.g. {x0y0, x1y0, x2y0,...,x0y1...})
+     * 
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @param band
+     * @param values
+     *            the samples to put into the raster
+     */
+    public void setFloats( int x, int y, int width, int height, int band, float[] values );
+
+    /*******************************************************************************************************************
+     * RasterData getter and setter
+     ******************************************************************************************************************/
+
+    /**
+     * Returns new RasterData object for the specified rectangle.
+     * 
+     * @param x
+     * @param y
+     * @param width
+     * @param height
      * @return selected rectangle
      */
     public RasterData getSubset( int x, int y, int width, int height );
 
     /**
-     * Returns new RasterData object for the specified rectangle The result may share the data with the source raster.
+     * Returns new RasterData object for the specified rectangle.
      * 
      * @param rasterRect
      *            rectangle for subset
@@ -382,28 +446,12 @@ public interface RasterData {
     public RasterData getSubset( RasterRect rasterRect );
 
     /**
-     * Scales the raster to given width and height.
-     * 
-     * @param outWidth
-     *            The output width in pixel.
-     * @param outHeight
-     *            The output height in pixel.
-     * @return The scaled raster data.
-     */
-    public RasterData getSubset( int outWidth, int outHeight );
-
-    /**
-     * Returns new single-band RasterData object for the specified rectangle The result may share the data with the
-     * source raster.
+     * Returns new single-band RasterData object for the specified rectangle.
      * 
      * @param x
-     *            min x coordinate
      * @param y
-     *            min y coordinate
      * @param width
-     *            size of the rectangle
      * @param height
-     *            size of the rectangle
      * @param band
      *            selected band
      * @return selected rectangle
@@ -411,31 +459,84 @@ public interface RasterData {
     public RasterData getSubset( int x, int y, int width, int height, int band );
 
     /**
-     * Sets the raster with values from sourceRaster. To limit the width and height use getSubset on the sourceRaster.
+     * Sets the raster with values from sourceRaster.
      * 
      * @param x
-     *            min x coordinate
+     *            insert position
      * @param y
-     *            min y coordinate
+     *            insert position
+     * @param width
+     *            width of the subset
+     * @param height
+     *            height of the subset
      * @param sourceRaster
      *            data source to copy
      */
-    public void setSubset( int x, int y, RasterData sourceRaster );
+    public void setSubset( int x, int y, int width, int height, RasterData sourceRaster );
 
     /**
-     * Sets a single band of the raster with values from the first band of the sourceRaster.
-     * 
-     * To limit the width and height or to select another band use getSubset on the sourceRaster.
+     * Sets the raster with values from sourceRaster.
      * 
      * @param x
-     *            min x coordinate
+     *            insert position
      * @param y
-     *            min y coordinate
-     * @param band
-     *            the index of the band
+     *            insert position
+     * @param width
+     *            width of the subset
+     * @param height
+     *            height of the subset
+     * @param xOffset
+     *            x offset in the source raster
+     * @param yOffset
+     *            y offset in the source raster
      * @param sourceRaster
      *            data source to copy
      */
-    public void setSubset( int x, int y, int band, RasterData sourceRaster );
+    public void setSubset( int x, int y, int width, int height, RasterData sourceRaster, int xOffset, int yOffset );
+
+    /**
+     * Sets a single band of the raster with values from one band of the sourceRaster.
+     * 
+     * @param x
+     *            insert position
+     * @param y
+     *            insert position
+     * @param width
+     *            width of the subset
+     * @param height
+     *            height of the subset
+     * @param dstBand
+     *            the index of the destination band
+     * @param sourceRaster
+     *            data source to copy
+     * @param srcBand
+     *            the index of the source band of <code>sourceRaster</code>
+     */
+    public void setSubset( int x, int y, int width, int height, int dstBand, RasterData sourceRaster, int srcBand );
+
+    /**
+     * Sets a single band of the raster with values from one band of the sourceRaster.
+     * 
+     * @param x
+     *            insert position
+     * @param y
+     *            insert position
+     * @param width
+     *            width of the subset
+     * @param height
+     *            height of the subset
+     * @param dstBand
+     *            the index of the destination band
+     * @param sourceRaster
+     *            data source to copy
+     * @param srcBand
+     *            the index of the source band of <code>sourceRaster</code>
+     * @param xOffset
+     *            x offset in the source raster
+     * @param yOffset
+     *            y offset in the source raster
+     */
+    public void setSubset( int x, int y, int width, int height, int dstBand, RasterData sourceRaster, int srcBand,
+                           int xOffset, int yOffset );
 
 }

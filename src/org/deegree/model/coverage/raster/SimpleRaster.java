@@ -248,13 +248,13 @@ public class SimpleRaster extends AbstractRaster {
      */
     public SimpleRaster getSubset( Envelope env, int outWidth, int outHeight ) {
 
-        SimpleRaster subset = this.getSubset( env );
-
-        RasterEnvelope dstEnv = subset.getRasterEnvelope().createResizedEnvelope( env, outWidth, outHeight );
-
-        RasterData dstRaster = subset.getRasterData().getSubset( outWidth, outHeight );
-
-        return new SimpleRaster( dstRaster, env, dstEnv );
+        // SimpleRaster subset = this.getSubset( env );
+        //
+        // RasterEnvelope dstEnv = subset.getRasterEnvelope().createResizedEnvelope( env, outWidth, outHeight );
+        //
+        // RasterData dstRaster = subset.getRasterData(); // .getSubset( outWidth, outHeight );
+        throw new UnsupportedOperationException( "scaling not implemented" );
+        // return new SimpleRaster( dstRaster, env, dstEnv );
     }
 
     /**
@@ -273,21 +273,23 @@ public class SimpleRaster extends AbstractRaster {
     public void setSubset( Envelope env, AbstractRaster source ) {
         RasterRect rect = getRasterEnvelope().convertEnvelopeToRasterCRS( env );
         SimpleRaster src = source.getSubset( env ).getAsSimpleRaster();
-        getRasterData().setSubset( rect.x, rect.y, src.getRasterData() );
+        getRasterData().setSubset( rect.x, rect.y, src.getRasterData().getHeight(), src.getRasterData().getWidth(),
+                                   src.getRasterData() );
     }
 
     @Override
     public void setSubset( double x, double y, AbstractRaster source ) {
         // calculate position in RasterData
         int offset[] = getRasterEnvelope().convertToRasterCRS( x, y );
-        getRasterData().setSubset( offset[0], offset[1], source.getAsSimpleRaster().getRasterData() );
+        RasterData sourceRD = source.getAsSimpleRaster().getRasterData();
+        getRasterData().setSubset( offset[0], offset[1], sourceRD.getWidth(), sourceRD.getHeight(), sourceRD );
     }
 
     @Override
     public void setSubset( double x, double y, int dstBand, AbstractRaster source ) {
         // calculate position in RasterData
         int offset[] = getRasterEnvelope().convertToRasterCRS( x, y );
-        getRasterData().setSubset( offset[0], offset[1], dstBand, source.getAsSimpleRaster().getRasterData() );
+        getRasterData().setSubset( offset[0], offset[1], dstBand, 0, source.getAsSimpleRaster().getRasterData() );
     }
 
     @Override
@@ -295,7 +297,7 @@ public class SimpleRaster extends AbstractRaster {
         // calculate position in RasterData
         RasterRect rect = getRasterEnvelope().convertEnvelopeToRasterCRS( env );
 
-        getRasterData().setSubset( rect.x, rect.y, dstBand, source.getAsSimpleRaster().getRasterData() );
+        getRasterData().setSubset( rect.x, rect.y, dstBand, 0, source.getAsSimpleRaster().getRasterData() );
     }
 
     @Override

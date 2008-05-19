@@ -38,14 +38,13 @@
 package org.deegree.model.coverage.raster.data;
 
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 
 /**
  * This class implements a pixel-interleaved, ByteBuffer-based RasterData.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class PixelInterleavedRasterData extends ByteBufferRasterData {
@@ -64,33 +63,6 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
      */
     public PixelInterleavedRasterData( int width, int height, int bands, DataType dataType ) {
         super( width, height, bands, dataType );
-    }
-
-    /**
-     * Create a new {@link PixelInterleavedRasterData} that represents a subset of a larger {@link PixelInterleavedRasterData}.
-     * 
-     * @param x0
-     *            The x offset of the subset.
-     * @param y0
-     *            The y offset of the subset.
-     * @param subWidth
-     *            The width of the subset.
-     * @param subHeight
-     *            The height of the subset.
-     * @param width
-     *            The width of the original raster.
-     * @param height
-     *            The height of the original raster.
-     * @param bands
-     *            The number of bands of the raster.
-     * @param dataType
-     *            The {@link DataType} of the raster.
-     * @param data
-     *            The original raster data.
-     */
-    protected PixelInterleavedRasterData( int x0, int y0, int subWidth, int subHeight, int width, int height,
-                                          int bands, DataType dataType, ByteBuffer data ) {
-        super( x0, y0, subWidth, subHeight, width, height, bands, dataType, data );
     }
 
     @Override
@@ -119,172 +91,78 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
     }
 
     @Override
-    public byte[][] getBytes( int x, int y, int width, int height, int band ) {
-        checkBounds( x, y, width, height );
-
-        byte[][] result = new byte[height][width];
-        for ( int i = 0; i < height; i++ ) {
-            for ( int j = 0; j < width; j++ ) {
-                result[i][j] = data.get( calculatePos( x + j, y + i, band ) );
-            }
+    public byte[] getPixel( int x, int y, byte[] result ) {
+        if ( result == null ) {
+            result = new byte[getBands() * bands];
         }
-        return result;
-    }
-
-    @Override
-    public byte[][] getBytes( int x, int y, int width, int height ) {
-        checkBounds( x, y, width, height );
-
-        byte[][] result = new byte[height][width * bands];
-
-        for ( int i = 0; i < height; i++ ) {
-            data.position( calculatePos( x, y + i ) );
-            data.get( result[i], 0, result[i].length );
+        if ( 0 > x || x >= width || 0 > y || y >= width  ) {
+            System.arraycopy( nodata, 0, result, 0, result.length );
+            return result;
         }
-
+        data.position( calculatePos( x, y ) );
+        data.get( result );
         return result;
     }
 
     @Override
-    public float[][] getFloats( int x, int y, int width, int height, int band ) {
-        checkBounds( x, y, width, height );
-
-        FloatBuffer bufView = data.asFloatBuffer();
-
-        float[][] result = new float[height][width];
-        for ( int i = 0; i < height; i++ ) {
-            for ( int j = 0; j < width; j++ ) {
-                result[i][j] = bufView.get( calculateViewPos( x + j, y + i, band ) );
-            }
-        }
-        return result;
+    public void setPixel( int x, int y, byte[] result ) {
+        data.position( calculatePos( x, y ) );
+        data.put( result );
     }
 
     @Override
-    public float[][] getFloats( int x, int y, int width, int height ) {
-        checkBounds( x, y, width, height );
-
-        FloatBuffer bufView = data.asFloatBuffer();
-
-        float[][] result = new float[height][width * bands];
-
-        for ( int i = 0; i < height; i++ ) {
-            bufView.position( calculateViewPos( x, y + i ) );
-            bufView.get( result[i], 0, result[i].length );
-        }
-
-        return result;
-    }
-
-    @Override
-    public byte[][] getBytes( int x, int y, int width, int height, InterleaveType interleaving ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public float[][] getFloats( int x, int y, int width, int height, InterleaveType interleaving ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#setBytes(int, int, int, int, int, byte[][])
-     */
-    public void setBytes( int x, int y, int width, int height, int band, byte[][] source ) {
-        // TODO Auto-generated method stub
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#setFloats(int, int, int, int, int, float[][])
-     */
-    public void setFloats( int x, int y, int width, int height, int band, float[][] source ) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public PixelInterleavedRasterData getSubset( int x0, int y0, int width, int height ) {
-        int w = Math.min( width, subWidth - x0 );
-        int h = Math.min( height, subHeight - y0 );
-        checkBounds( x0, y0, w, h );
-        PixelInterleavedRasterData result = createCompatibleRasterData( w, h, bands );
-        PixelInterleavedRasterData subset = new PixelInterleavedRasterData( this.x0 + x0, this.y0 + y0, w, h,
-                                                                            this.width, this.height, this.bands,
-                                                                            this.dataType, this.data );
-        result.setSubset( 0, 0, subset );
-
-        return result;
-    }
-
-    @Override
-    public void setSubset( int x0, int y0, RasterData srcRaster ) {
+    public void setSubset( int x0, int y0, int width, int height, RasterData srcRaster, int xOffset, int yOffset ) {
         // System.out.format( "%d %d, %d %d\n", x0, y0, srcRaster.getWidth(), srcRaster.getHeight() );
         // checkBounds(x0, y0, srcRaster.getWidth(), srcRaster.getHeight());
 
-        // copy data direct if interleaving type is identical _and_ both are not
-        // single-band subsets
+        // copy data direct if interleaving type is identical
         boolean set = false;
 
-        if ( ( srcRaster instanceof PixelInterleavedRasterData ) && !singleBand ) {
+        if ( srcRaster instanceof PixelInterleavedRasterData ) {
             PixelInterleavedRasterData raster = (PixelInterleavedRasterData) srcRaster;
-            int width = Math.min( raster.getWidth(), subWidth - x0 );
-            int height = Math.min( raster.getHeight(), subHeight - y0 );
-            if ( width == 0 || height == 0 ) {
-                return;
+            ByteBuffer srcData = raster.getByteBuffer();
+            byte[] tmp = new byte[width * getPixelStride()];
+            for ( int i = 0; i < height; i++ ) {
+                // order of .position and .get calls is significant, if bytebuffer is identical
+                srcData.position( raster.calculatePos( xOffset, i + yOffset ) );
+                srcData.get( tmp );
+                data.position( calculatePos( x0, y0 + i ) );
+                data.put( tmp );
             }
-            if ( !raster.singleBand ) {
-                ByteBuffer srcData = raster.getByteBuffer();
-                byte[] tmp = new byte[width * getPixelStride()];
-                for ( int i = 0; i < height; i++ ) {
-                    // order of position and get calls is significant, if bytebuffer is identical
-                    srcData.position( raster.calculatePos( 0, i ) );
-                    srcData.get( tmp );
-                    data.position( calculatePos( x0, y0 + i ) );
-                    data.put( tmp );
-                }
-                set = true;
-            }
+            set = true;
         }
         if ( !set ) { // else use generic setSubset method
-            super.setSubset( x0, y0, srcRaster );
+            super.setSubset( x0, y0, width, height, srcRaster, xOffset, yOffset );
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getSubset(int, int)
-     */
-    public RasterData getSubset( int outWidth, int outHeight ) {
-        PixelInterleavedRasterData result = createCompatibleRasterData( outWidth, outHeight, bands );
-        double xStep = (double) width / outWidth;
-        double yStep = (double) height / outHeight;
+    // scaling code, to be moved in an external package
+    // public RasterData getSubset( int outWidth, int outHeight ) {
+    // PixelInterleavedRasterData result = createCompatibleRasterData( outWidth, outHeight, bands );
+    // double xStep = (double) width / outWidth;
+    // double yStep = (double) height / outHeight;
+    //
+    // byte[] tmp = new byte[getPixelStride()];
+    //
+    // double xSrc = 0;
+    // double ySrc = 0;
+    //
+    // ByteBuffer srcBuf = this.getByteBuffer();
+    // ByteBuffer destBuf = result.getByteBuffer();
+    // destBuf.rewind();
+    //
+    // for ( int yDest = 0; yDest < outHeight; yDest++ ) {
+    // xSrc = 0;
+    // for ( int xDest = 0; xDest < outWidth; xDest++ ) {
+    // srcBuf.position( calculatePos( (int) xSrc, (int) ySrc ) );
+    // srcBuf.get( tmp );
+    // destBuf.put( tmp );
+    // xSrc += xStep;
+    // }
+    // ySrc += yStep;
+    // }
+    //
+    // return result;
+    // }
 
-        byte[] tmp = new byte[getPixelStride()];
-
-        double xSrc = 0;
-        double ySrc = 0;
-
-        ByteBuffer srcBuf = this.getByteBuffer();
-        ByteBuffer destBuf = result.getByteBuffer();
-        destBuf.rewind();
-
-        for ( int yDest = 0; yDest < outHeight; yDest++ ) {
-            xSrc = 0;
-            for ( int xDest = 0; xDest < outWidth; xDest++ ) {
-                srcBuf.position( calculatePos( (int) xSrc, (int) ySrc ) );
-                srcBuf.get( tmp );
-                destBuf.put( tmp );
-                xSrc += xStep;
-            }
-            ySrc += yStep;
-        }
-
-        return result;
-    }
 }

@@ -81,51 +81,6 @@ public abstract class ByteBufferRasterData implements RasterData {
     protected int height;
 
     /**
-     * The width of the subset of the raster.
-     * 
-     * <p>
-     * A ByteBufferRasterData can refer to a subset of another ByteBuffer so lazy evaluation/copying is possible. Though
-     * it is not effective at the moment, getSubset always returns a copy.
-     * 
-     */
-    protected int subWidth;
-
-    /**
-     * The height of the subset of the raster.
-     * 
-     * <p>
-     * A ByteBufferRasterData can refer to a subset of another ByteBuffer so lazy evaluation/copying is possible. Though
-     * it is not effective at the moment, getSubset always returns a copy.
-     * 
-     */
-    protected int subHeight;
-
-    /**
-     * The x offset of the subset of the raster.
-     */
-    protected int x0 = 0;
-
-    /**
-     * The y offset of the subset of the raster.
-     */
-    protected int y0 = 0;
-
-    /**
-     * The index of the subband.
-     */
-    protected int subBand = -1;
-
-    /**
-     * true if this raster is a single banded subview of the raster.
-     */
-    protected boolean singleBand = false;
-
-    /**
-     * true if the raster is a subset of the original raster data.
-     */
-    protected boolean subset = false;
-
-    /**
      * The number of bands in this raster.
      */
     protected int bands;
@@ -143,7 +98,7 @@ public abstract class ByteBufferRasterData implements RasterData {
     /**
      * The raster data itself.
      */
-    ByteBuffer data;
+    protected ByteBuffer data;
 
     /**
      * Creates a new single-band ByteBufferRasterData instance.
@@ -174,158 +129,40 @@ public abstract class ByteBufferRasterData implements RasterData {
     protected ByteBufferRasterData( int width, int height, int bands, DataType dataType ) {
         this.width = width;
         this.height = height;
-        this.subWidth = width;
-        this.subHeight = height;
 
         this.bands = bands;
         this.dataType = dataType;
 
-        this.nodata = new byte[dataType.getSize()];
+        this.nodata = new byte[dataType.getSize() * bands];
         this.data = createByteBuffer();
-    }
-
-    /**
-     * Create a new {@link ByteBufferRasterData} that represents a subset of a larger {@link ByteBufferRasterData}.
-     * 
-     * @param x0
-     *            The x offset of the subset.
-     * @param y0
-     *            The y offset of the subset.
-     * @param subWidth
-     *            The width of the subset.
-     * @param subHeight
-     *            The height of the subset.
-     * @param width
-     *            The width of the original raster.
-     * @param height
-     *            The height of the original raster.
-     * @param bands
-     *            The number of bands of the raster.
-     * @param dataType
-     *            The {@link DataType} of the raster.
-     * @param data
-     *            The original raster data.
-     */
-    protected ByteBufferRasterData( int x0, int y0, int subWidth, int subHeight, int width, int height, int bands,
-                                    DataType dataType, ByteBuffer data ) {
-
-        this.x0 = x0;
-        this.y0 = y0;
-        this.width = width;
-        this.height = height;
-        this.subWidth = subWidth;
-        this.subHeight = subHeight;
-        this.subset = true;
-
-        this.bands = bands;
-        this.dataType = dataType;
-
-        this.nodata = new byte[dataType.getSize()];
-        this.data = data;
-    }
-
-    /**
-     * Set the raster to be a single banded subset.
-     * 
-     * @param band
-     *            The index of the subband.
-     */
-    protected void setSubBand( int band ) {
-        if ( band >= bands ) {
-            throw new IndexOutOfBoundsException( "band not available" );
-        }
-        singleBand = true;
-        subBand = band;
     }
 
     private ByteBuffer createByteBuffer() {
         return ByteBuffer.allocate( getBufferSize() );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#createCompatibleRasterData(int, int, int)
-     */
-    public abstract RasterData createCompatibleRasterData( int width, int height, int bands );
+    public abstract ByteBufferRasterData createCompatibleRasterData( int width, int height, int bands );
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#createCompatibleRasterData(int)
-     */
-    public RasterData createCompatibleRasterData( int bands ) {
-        return createCompatibleRasterData( this.subWidth, this.subHeight, bands );
+    public ByteBufferRasterData createCompatibleRasterData( int bands ) {
+        return createCompatibleRasterData( width, height, bands );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#createCompatibleRasterData()
-     */
-    public RasterData createCompatibleRasterData() {
-        int bands;
-        if ( singleBand ) {
-            bands = 1;
-        } else {
-            bands = this.bands;
-        }
-        return createCompatibleRasterData( this.subWidth, this.subHeight, bands );
+    public ByteBufferRasterData createCompatibleRasterData() {
+        return createCompatibleRasterData( width, height, bands );
     }
 
-    // returns the selected band
-    private final int getBand( int b ) {
-        if ( !singleBand ) {
-            return b; // not a single-band subset, return requested band number
-        } else if ( b == 0 ) { // else single-band subset
-            return subBand; // return wrapped band
-        } else {
-            throw new IndexOutOfBoundsException( "band index out of bounds" );
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getBands()
-     */
     public final int getBands() {
-        if ( singleBand ) {
-            return 1;
-        }
         return bands;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getWidth()
-     */
     public final int getWidth() {
-        return subWidth;
+        return width;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getHeight()
-     */
     public final int getHeight() {
-        return subHeight;
+        return height;
     }
 
-    /**
-     * @return true if the raster is a subset.
-     */
-    public boolean isSubset() {
-        return subset;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getDataType()
-     */
     public final DataType getDataType() {
         return dataType;
     }
@@ -339,11 +176,6 @@ public abstract class ByteBufferRasterData implements RasterData {
         return width * height * bands * dataType.getSize();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getInterleaveType()
-     */
     public abstract InterleaveType getInterleaveType();
 
     /**
@@ -375,6 +207,27 @@ public abstract class ByteBufferRasterData implements RasterData {
     }
 
     /**
+     * Checks whether a given rect is inside the raster, throws an exception if outside.
+     * 
+     * @param x
+     *            The x position of the rect.
+     * @param y
+     *            The y position of the rect.
+     * @param width
+     *            The width of the rect.
+     * @param height
+     *            The height of the rect.
+     * @throws IndexOutOfBoundsException
+     *             if the given rect is outside the raster
+     */
+    protected final void checkBoundsEx( int x, int y, int width, int height )
+                            throws IndexOutOfBoundsException {
+        if ( !checkBounds( x, y, width, height ) ) {
+            throw new IndexOutOfBoundsException( "request out of bounds" );
+        }
+    }
+
+    /**
      * Checks whether a given rect is inside the raster.
      * 
      * @param x
@@ -385,12 +238,13 @@ public abstract class ByteBufferRasterData implements RasterData {
      *            The width of the rect.
      * @param height
      *            The height of the rect.
+     * @return <code>true</code> if the given rect is inside the raster, else <code>false</code>
      */
-    protected void checkBounds( int x, int y, int width, int height ) {
-        if ( ( ( this.subWidth - x ) < width ) || ( ( this.subHeight - y ) < height ) || ( x < 0 ) || ( y < 0 ) ) {
-
-            throw new IndexOutOfBoundsException( "request out of bounds" );
+    protected final boolean checkBounds( int x, int y, int width, int height ) {
+        if ( ( x < width ) || ( y < height ) || ( x < 0 ) || ( y < 0 ) ) {
+            return false;
         }
+        return true;
     }
 
     /**
@@ -406,7 +260,7 @@ public abstract class ByteBufferRasterData implements RasterData {
      * @return byte offset to the pixel with the specified coordinate
      */
     public final int calculatePos( int x, int y ) {
-        return ( y0 + y ) * getLineStride() + ( x0 + x ) * getPixelStride();
+        return y * getLineStride() + x * getPixelStride();
     }
 
     /**
@@ -424,7 +278,7 @@ public abstract class ByteBufferRasterData implements RasterData {
      * @return byte offset to the sample with the specified coordinate
      */
     public final int calculatePos( int x, int y, int band ) {
-        return calculatePos( x, y ) + band * getBandStride(); // TODO
+        return y * getLineStride() + x * getPixelStride() + band * getBandStride();
     }
 
     /**
@@ -461,250 +315,257 @@ public abstract class ByteBufferRasterData implements RasterData {
         return calculatePos( x, y, band ) / dataType.getSize();// TODO
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getSample(int, int, int)
-     */
-    public byte[] getSample( int x, int y, int band ) {
-        int pos = calculatePos( x, y, getBand( band ) );
-        if ( pos >= data.capacity() ) {
-            return nodata;
+    public byte[] getNullPixel( byte[] result ) {
+        if ( result == null ) {
+            result = new byte[nodata.length];
         }
-        byte[] result = new byte[dataType.getSize()];
+        System.arraycopy( nodata, 0, result, 0, result.length );
+        return result;
+    }
+
+    public byte[] getSample( int x, int y, int band, byte[] result ) {
+        if ( result == null ) {
+            result = new byte[dataType.getSize()];
+        }
+        int pos = calculatePos( x, y, band );
+
         data.position( pos );
         data.get( result );
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#setSample(int, int, int, byte[])
-     */
     public void setSample( int x, int y, int band, byte[] value ) {
-        data.position( calculatePos( x, y, getBand( band ) ) );
+        data.position( calculatePos( x, y, band ) );
         data.put( value );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#setByteSample(int, int, int, byte)
-     */
-    public void setByteSample( int x, int y, int band, byte value ) {
-        int pos = calculatePos( x, y, band );
-        data.put( pos, value );
-    }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#setFloatSample(int, int, int, float)
-     */
-    public void setFloatSample( int x, int y, int band, float value ) {
-        int pos = calculatePos( x, y, band );
-        data.putFloat( pos, value );
-    }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#setBytePixel(int, int, byte[])
-     */
-    public void setBytePixel( int x, int y, byte[] pixel ) {
-        assert pixel.length == bands;
-        for ( int band = 0; band < bands; band++ ) {
-            data.put( calculatePos( x, y, band ), pixel[band] );
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#setFloatPixel(int, int, float[])
-     */
-    public void setFloatPixel( int x, int y, float[] pixel ) {
-        assert pixel.length == bands;
-        for ( int band = 0; band < bands; band++ ) {
-            data.putFloat( calculatePos( x, y, band ), pixel[band] );
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getByteSample(int, int, int)
-     */
     public byte getByteSample( int x, int y, int band ) {
         return data.get( calculatePos( x, y, band ) );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getFloatSample(int, int, int)
-     */
+    public short getShortSample( int x, int y, int band ) {
+        return data.getShort( calculatePos( x, y, band ) );
+    }
+
     public float getFloatSample( int x, int y, int band ) {
         return data.getFloat( calculatePos( x, y, band ) );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getBytes(int, int, int, int)
-     */
-    public abstract byte[][] getBytes( int x, int y, int width, int height );
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getBytes(int, int, int, int, int)
-     */
-    public abstract byte[][] getBytes( int x, int y, int width, int height, int bands );
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getFloats(int, int, int, int)
-     */
-    public abstract float[][] getFloats( int x, int y, int width, int height );
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getFloats(int, int, int, int, int)
-     */
-    public abstract float[][] getFloats( int x, int y, int width, int height, int bands );
-
-    /**
-     * Returns a 2-D byte array for the specified rectangle.
-     * 
-     * When the raster contains multiple bands, the samples are interleaved with the passed interleaving type.
-     * 
-     * @param x
-     *            min x coordinate
-     * @param y
-     *            min y coordinate
-     * @param width
-     *            size of the rectangle
-     * @param height
-     *            size of the rectangle
-     * @param interleaving
-     *            interleaving type for the result array
-     * @return selected samples
-     */
-    public abstract byte[][] getBytes( int x, int y, int width, int height, InterleaveType interleaving );
-
-    /**
-     * Returns a 2-D byte array for the specified rectangle.
-     * 
-     * When the raster contains multiple bands, the samples are interleaved with the passed interleaving type.
-     * 
-     * @param x
-     *            min x coordinate
-     * @param y
-     *            min y coordinate
-     * @param width
-     *            size of the rectangle
-     * @param height
-     *            size of the rectangle
-     * @param interleaving
-     *            interleaving type for the result array
-     * @return selected samples
-     */
-    public abstract float[][] getFloats( int x, int y, int width, int height, InterleaveType interleaving );
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getSubset(int, int, int, int)
-     */
-    public abstract ByteBufferRasterData getSubset( int x0, int y0, int width, int height );
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getSubset(raster.org.deegree.model.raster.RasterRect)
-     */
-    public ByteBufferRasterData getSubset( RasterRect env ) {
-        return this.getSubset( env.x, env.y, env.width, env.height );
+    public void setByteSample( int x, int y, int band, byte value ) {
+        data.put( calculatePos( x, y, band ), value );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getSubset(int, int, int, int, int)
-     */
-    public ByteBufferRasterData getSubset( int x0, int y0, int width, int height, int band ) {
-        ByteBufferRasterData result = getSubset( x0, y0, width, height );
-        result.setSubBand( band );
+    public void setShortSample( int x, int y, int band, short value ) {
+        data.putShort( calculatePos( x, y, band ), value );
+    }
+
+    public void setFloatSample( int x, int y, int band, float value ) {
+        data.putFloat( calculatePos( x, y, band ), value );
+    }
+
+    public void setPixel( int x, int y, byte[] result ) {
+        int sampleSize = getDataType().getSize();
+        for ( int b = 0; b < getBands(); b++ ) {
+            data.position( calculatePos( x, y, b ) );
+            data.put( result, b * sampleSize, sampleSize );
+        }
+    }
+
+    public byte[] getPixel( int x, int y, byte[] result ) {
+        int numBands = getBands();
+        int sampleSize = getDataType().getSize();
+        if ( result == null ) {
+            result = new byte[numBands * sampleSize];
+        }
+        if ( 0 > x || x >= width || 0 > y || y >= width ) {
+            System.arraycopy( nodata, 0, result, 0, result.length );
+            return result;
+        }
+        for ( int b = 0; b < numBands; b++ ) {
+            data.position( calculatePos( x, y, b ) );
+            data.get( result, b * sampleSize, sampleSize );
+        }
+
         return result;
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#setSubset(int, int, raster.org.deegree.model.raster.RasterData)
-     */
-    public void setSubset( int x0, int y0, RasterData raster ) {
-        int width = Math.min( raster.getWidth(), subWidth - x0 );
-        int height = Math.min( raster.getHeight(), subHeight - y0 );
-
-        for ( int y = 0; y < height; y++ )
-            for ( int x = 0; x < width; x++ )
-                for ( int band = 0; band < this.bands; band++ ) {
-                    setSample( x0 + x, y0 + y, band, raster.getSample( x, y, band ) );
-                }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#setSubset(int, int, raster.org.deegree.model.raster.RasterData,
-     *      int)
-     */
-    public void setSubset( int x0, int y0, int band, RasterData raster ) {
-        int width = Math.min( raster.getWidth(), subWidth - x0 );
-        int height = Math.min( raster.getHeight(), subHeight - y0 );
-
-        for ( int y = 0; y < height; y++ )
-            for ( int x = 0; x < width; x++ ) {
-                setSample( x0 + x, y0 + y, band, raster.getSample( x, y, 0 ) );
-            }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getBytePixel(int, int)
-     */
-    public byte[] getBytePixel( int x, int y ) {
-        byte[] result = new byte[bands];
-        for ( int band = 0; band < bands; band++ ) {
+    
+    public byte[] getBytePixel( int x, int y, byte[] result ) {
+        if ( result == null ) {
+            result = new byte[getBands()];
+        }
+        for ( int band = 0; band < getBands(); band++ ) {
             result[band] = getByteSample( x, y, band );
         }
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#getFloatPixel(int, int)
-     */
-    public float[] getFloatPixel( int x, int y ) {
-        float[] result = new float[bands];
-        for ( int band = 0; band < bands; band++ ) {
+    public short[] getShortPixel( int x, int y, short[] result ) {
+        if ( result == null ) {
+            result = new short[getBands()];
+        }
+        for ( int band = 0; band < getBands(); band++ ) {
+            result[band] = getShortSample( x, y, band );
+        }
+        return result;
+    }
+
+    public float[] getFloatPixel( int x, int y, float[] result ) {
+        if ( result == null ) {
+            result = new float[getBands()];
+        }
+        for ( int band = 0; band < getBands(); band++ ) {
             result[band] = getFloatSample( x, y, band );
+        }
+        return result;
+    }
+   
+    public void setBytePixel( int x, int y, byte[] pixel ) {
+        for ( int band = 0; band < bands; band++ ) {
+            data.put( calculatePos( x, y, band ), pixel[band] );
+        }
+    }
+
+    public void setShortPixel( int x, int y, short[] pixel ) {
+        for ( int band = 0; band < bands; band++ ) {
+            data.putShort( calculatePos( x, y, band ), pixel[band] );
+        }
+    }
+
+    public void setFloatPixel( int x, int y, float[] pixel ) {
+        for ( int band = 0; band < bands; band++ ) {
+            data.putFloat( calculatePos( x, y, band ), pixel[band] );
+        }
+    }
+
+    @Override
+    public byte[] getBytes( int x, int y, int width, int height, int band, byte[] result ) {
+        if ( result == null ) {
+            result = new byte[width * height];
+        }
+        if ( !checkBounds( x, y, width, height ) ) {
+            System.arraycopy( nodata, band * dataType.getSize(), result, 0, result.length );
+            return result;
+        }
+        for ( int i = 0; i < height; i++ ) {
+            for ( int j = 0; j < width; j++ ) {
+                result[( 2 * i ) + j] = data.get( calculatePos( x + j, y + i, band ) );
+            }
         }
         return result;
     }
 
     @Override
+    public short[] getShorts( int x, int y, int width, int height, int band, short[] result ) {
+        if ( result == null ) {
+            result = new short[width * height];
+        }
+        if ( !checkBounds( x, y, width, height ) ) {
+            System.arraycopy( nodata, band * dataType.getSize(), result, 0, result.length );
+            return result;
+        }
+        for ( int i = 0; i < height; i++ ) {
+            for ( int j = 0; j < width; j++ ) {
+                result[( 2 * i ) + j] = data.getShort( calculatePos( x + j, y + i, band ) );
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public float[] getFloats( int x, int y, int width, int height, int band, float[] result ) {
+        if ( result == null ) {
+            result = new float[width * height];
+        }
+        if ( !checkBounds( x, y, width, height ) ) {
+            System.arraycopy( nodata, band * dataType.getSize(), result, 0, result.length );
+            return result;
+        }
+        for ( int i = 0; i < height; i++ ) {
+            for ( int j = 0; j < width; j++ ) {
+                result[( 2 * i ) + j] = data.getFloat( calculatePos( x + j, y + i, band ) );
+            }
+        }
+        return result;
+    }
+
+    public void setBytes( int x, int y, int width, int height, int band, byte[] values ) {
+        for ( int i = 0; i < height; i++ ) {
+            for ( int j = 0; j < width; j++ ) {
+                data.put( calculatePos( x + j, y + i, band ), values[( 2 * i ) + j] );
+            }
+        }
+    }
+
+    public void setShorts( int x, int y, int width, int height, int band, short[] values ) {
+        for ( int i = 0; i < height; i++ ) {
+            for ( int j = 0; j < width; j++ ) {
+                data.putShort( calculatePos( x + j, y + i, band ), values[( 2 * i ) + j] );
+            }
+        }
+    }
+
+    public void setFloats( int x, int y, int width, int height, int band, float[] values ) {
+        for ( int i = 0; i < height; i++ ) {
+            for ( int j = 0; j < width; j++ ) {
+                data.putFloat( calculatePos( x + j, y + i, band ), values[( 2 * i ) + j] );
+            }
+        }
+    }
+    
+    public ByteBufferRasterData getSubset( int x0, int y0, int width, int height ) {
+        ByteBufferRasterData result = createCompatibleRasterData( width, height, bands );
+        result.setSubset( 0, 0, width, height, this, x0, y0 );
+        return result;
+    }
+
+    public ByteBufferRasterData getSubset( RasterRect env ) {
+        return this.getSubset( env.x, env.y, env.width, env.height );
+    }
+
+    public ByteBufferRasterData getSubset( int x0, int y0, int width, int height, int band ) {
+        ByteBufferRasterData result = createCompatibleRasterData( width, height, 1 );
+        result.setSubset( 0, 0, width, height, 0, this, band, x0, y0 );
+        return result;
+    }
+
+    public void setSubset( int x0, int y0, int width, int height, RasterData sourceRaster ) {
+        setSubset( x0, y0, width, height, sourceRaster, 0, 0 );
+    }
+
+    public void setSubset( int x0, int y0, int width, int height, int dstBand, RasterData sourceRaster, int srcBand ) {
+        setSubset( x0, y0, width, height, dstBand, sourceRaster, srcBand, 0, 0 );
+    }
+
+    public void setSubset( int x0, int y0, int width, int height, RasterData sourceRaster, int xOffset, int yOffset ) {
+        byte[] tmp = new byte[getDataType().getSize()];
+        for ( int y = 0; y < height; y++ ) {
+            for ( int x = 0; x < width; x++ ) {
+                for ( int band = 0; band < this.bands; band++ ) {
+                    tmp = sourceRaster.getSample( x  + xOffset, y+yOffset, band, tmp );
+                    setSample( x0 + x, y0 + y, band, tmp );
+                }
+            }
+        }
+    }
+
+    public void setSubset( int x0, int y0, int width, int height, int dstBand, RasterData sourceRaster, int srcBand,
+                           int xOffset, int yOffset ) {
+        byte[] tmp = new byte[getDataType().getSize()];
+        for ( int y = 0; y < height; y++ ) {
+            for ( int x = 0; x < width; x++ ) {
+                tmp = sourceRaster.getSample( x + xOffset, y + yOffset, srcBand, tmp );
+                setSample( x0 + x, y0 + y, dstBand, tmp );
+            }
+        }
+    }
+
+    @Override
     public String toString() {
-        StringBuilder result = new StringBuilder( 200 );
+        StringBuilder result = new StringBuilder();
         result.append( "RasterData: type " + dataType + ", " );
-        result.append( "size " + width + "x" + height + "(" + subWidth + "x" + subHeight + ")" );
+        result.append( "size " + width + "x" + height + "(" + width + "x" + height + ")" );
         result.append( ", interleaving " + getInterleaveType() );
 
         return result.toString();

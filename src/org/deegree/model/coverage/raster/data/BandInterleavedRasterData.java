@@ -37,8 +37,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster.data;
 
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 
 /**
  * This class implements a band-interleaved, ByteBuffer-based RasterData.
@@ -66,34 +64,6 @@ public class BandInterleavedRasterData extends ByteBufferRasterData {
         super( width, height, bands, type );
     }
 
-    /**
-     * Create a new {@link BandInterleavedRasterData} that represents a subset of a larger
-     * {@link BandInterleavedRasterData}.
-     * 
-     * @param x0
-     *            The x offset of the subset.
-     * @param y0
-     *            The y offset of the subset.
-     * @param subWidth
-     *            The width of the subset.
-     * @param subHeight
-     *            The height of the subset.
-     * @param width
-     *            The width of the original raster.
-     * @param height
-     *            The height of the original raster.
-     * @param bands
-     *            The number of bands of the raster.
-     * @param dataType
-     *            The {@link DataType} of the raster.
-     * @param data
-     *            The original raster data.
-     */
-    protected BandInterleavedRasterData( int x0, int y0, int subWidth, int subHeight, int width, int height, int bands,
-                                         DataType dataType, ByteBuffer data ) {
-        super( x0, y0, subWidth, subHeight, width, height, bands, dataType, data );
-    }
-
     @Override
     public BandInterleavedRasterData createCompatibleRasterData( int width, int height, int bands ) {
         return new BandInterleavedRasterData( width, height, bands, this.dataType );
@@ -117,114 +87,6 @@ public class BandInterleavedRasterData extends ByteBufferRasterData {
     @Override
     public final InterleaveType getInterleaveType() {
         return InterleaveType.BAND;
-    }
-
-    @Override
-    public BandInterleavedRasterData getSubset( int x0, int y0, int width, int height ) {
-        int w = Math.min( width, subWidth - x0 );
-        int h = Math.min( height, subHeight - y0 );
-        checkBounds( x0, y0, width, height );
-        BandInterleavedRasterData result = createCompatibleRasterData( w, h, bands );
-        BandInterleavedRasterData subset = new BandInterleavedRasterData( this.x0 + x0, this.y0 + y0, w, h, this.width,
-                                                                          this.height, this.bands, this.dataType,
-                                                                          this.data );
-        result.setSubset( 0, 0, subset );
-        return result;
-    }
-
-    @Override
-    public byte[][] getBytes( int x, int y, int width, int height, int band ) {
-        byte[][] result = new byte[height][width];
-
-        checkBounds( x, y, width, height );
-
-        for ( int i = 0; i < height; i++ ) {
-            data.position( calculatePos( x, y + i, band ) );
-            data.get( result[i], 0, result[i].length );
-        }
-        return result;
-    }
-
-    @Override
-    public byte[][] getBytes( int x, int y, int width, int height ) {
-        byte[][] result = new byte[height * bands][width];
-
-        checkBounds( x, y, width, height );
-
-        for ( int b = 0; b < bands; b++ ) {
-            for ( int i = 0; i < height; i++ ) {
-                data.position( calculatePos( x, y + i, b ) );
-                data.get( result[i + height * b], 0, result[i].length );
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public float[][] getFloats( int x, int y, int width, int height, int band ) {
-        float[][] result = new float[height][width];
-        FloatBuffer bufView = data.asFloatBuffer();
-
-        checkBounds( x, y, width, height );
-
-        for ( int i = 0; i < height; i++ ) {
-            bufView.position( calculateViewPos( x, y + i, band ) );
-            bufView.get( result[i], 0, result[i].length );
-        }
-        return result;
-    }
-
-    @Override
-    public float[][] getFloats( int x, int y, int width, int height ) {
-        float[][] result = new float[height * bands][width];
-        FloatBuffer bufView = data.asFloatBuffer();
-
-        checkBounds( x, y, width, height );
-
-        for ( int b = 0; b < bands; b++ ) {
-            for ( int i = 0; i < height; i++ ) {
-                bufView.position( calculateViewPos( x, y + i, b ) );
-                bufView.get( result[i + height * b], 0, result[i].length );
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public byte[][] getBytes( int x, int y, int width, int height, InterleaveType interleaving ) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public float[][] getFloats( int x, int y, int width, int height, InterleaveType interleaving ) {
-        throw new UnsupportedOperationException();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#setBytes(int, int, int, int, int, byte[][])
-     */
-    public void setBytes( int x, int y, int width, int height, int band, byte[][] source ) {
-        throw new UnsupportedOperationException();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see raster.org.deegree.model.raster.RasterData#setFloats(int, int, int, int, int, float[][])
-     */
-    public void setFloats( int x, int y, int width, int height, int band, float[][] source ) {
-        throw new UnsupportedOperationException();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.coverage.raster.data.RasterData#getSubset(int, int)
-     */
-    public RasterData getSubset( int outWidth, int outHeight ) {
-        throw new UnsupportedOperationException();
     }
 
 }
