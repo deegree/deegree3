@@ -241,7 +241,7 @@ public abstract class ByteBufferRasterData implements RasterData {
      * @return <code>true</code> if the given rect is inside the raster, else <code>false</code>
      */
     protected final boolean checkBounds( int x, int y, int width, int height ) {
-        if ( ( x < width ) || ( y < height ) || ( x < 0 ) || ( y < 0 ) ) {
+        if ( ( (x + width) > this.width ) || ( ( y + height) > this.height ) || ( x < 0 ) || ( y < 0 ) ) {
             return false;
         }
         return true;
@@ -441,12 +441,9 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     @Override
     public byte[] getBytes( int x, int y, int width, int height, int band, byte[] result ) {
+        checkBoundsEx( x, y, width, height );
         if ( result == null ) {
             result = new byte[width * height];
-        }
-        if ( !checkBounds( x, y, width, height ) ) {
-            System.arraycopy( nodata, band * dataType.getSize(), result, 0, result.length );
-            return result;
         }
         for ( int i = 0; i < height; i++ ) {
             for ( int j = 0; j < width; j++ ) {
@@ -458,12 +455,9 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     @Override
     public short[] getShorts( int x, int y, int width, int height, int band, short[] result ) {
+        checkBoundsEx( x, y, width, height );
         if ( result == null ) {
             result = new short[width * height];
-        }
-        if ( !checkBounds( x, y, width, height ) ) {
-            System.arraycopy( nodata, band * dataType.getSize(), result, 0, result.length );
-            return result;
         }
         for ( int i = 0; i < height; i++ ) {
             for ( int j = 0; j < width; j++ ) {
@@ -475,12 +469,9 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     @Override
     public float[] getFloats( int x, int y, int width, int height, int band, float[] result ) {
+        checkBoundsEx( x, y, width, height );
         if ( result == null ) {
             result = new float[width * height];
-        }
-        if ( !checkBounds( x, y, width, height ) ) {
-            System.arraycopy( nodata, band * dataType.getSize(), result, 0, result.length );
-            return result;
         }
         for ( int i = 0; i < height; i++ ) {
             for ( int j = 0; j < width; j++ ) {
