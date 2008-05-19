@@ -42,6 +42,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.types;
 
+import java.io.Serializable;
+
 
 /**
  * 
@@ -52,12 +54,13 @@ package org.deegree.commons.types;
  * 
  * @version. $Revision$, $Date$
  */
-public interface Identifyable extends Comparable {
+public interface Identifyable extends Comparable, Serializable {
 
     /**
      * 
-     * @return
+     * @return string representation of an identifying object
      */
     String getAsFormattedString();
+    
     
 }
