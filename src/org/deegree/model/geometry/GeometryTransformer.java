@@ -233,8 +233,8 @@ public class GeometryTransformer extends Transformer {
         double width = envelope.getWidth();
         double height = envelope.getHeight();
 
-        double xStep = width / ( pointsPerSide - 1 );
-        double yStep = height / ( pointsPerSide - 1 );
+        double xStep = width / ( pointsPerSide + 1 );
+        double yStep = height / ( pointsPerSide + 1 );
 
         double precision = envelope.getPrecision();
 
