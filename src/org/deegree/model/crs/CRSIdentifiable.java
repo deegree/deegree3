@@ -41,7 +41,7 @@ package org.deegree.model.crs;
 import org.deegree.model.i18n.Messages;
 
 /**
- * The <code>Identifiable</code> class can be used to identify a crs, ellipsoid, Datum and primemeridian
+ * The <code>CRSIdentifiable</code> class can be used to identify a crs, ellipsoid, Datum and primemeridian
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -51,7 +51,9 @@ import org.deegree.model.i18n.Messages;
  * 
  */
 
-public class Identifiable {
+public class CRSIdentifiable implements org.deegree.commons.types.Identifiable {
+
+    private static final long serialVersionUID = 3924691540158117922L;
 
     private String[] identifiers;
 
@@ -64,12 +66,12 @@ public class Identifiable {
     private String[] areasOfUse;
 
     /**
-     * Takes the references of the other object and stores them in this Identifiable Object.
+     * Takes the references of the other object and stores them in this CRSIdentifiable Object.
      * 
      * @param other
      *            identifiable object.
      */
-    public Identifiable( Identifiable other ) {
+    public CRSIdentifiable( CRSIdentifiable other ) {
         this( other.getIdentifiers(), other.getNames(), other.getVersions(), other.getDescriptions(),
               other.getAreasOfUse() );
     }
@@ -85,7 +87,7 @@ public class Identifiable {
      * @throws IllegalArgumentException
      *             if no identifier(s) was/were given.
      */
-    public Identifiable( String[] identifiers, String[] names, String[] versions, String[] descriptions,
+    public CRSIdentifiable( String[] identifiers, String[] names, String[] versions, String[] descriptions,
                          String[] areasOfUse ) {
         if ( identifiers == null || identifiers.length == 0 ) {
             throw new IllegalArgumentException( "An identifiable object must at least have one identifier." );
@@ -99,25 +101,14 @@ public class Identifiable {
     }
 
     /**
-     * Creates arrays fromt the given identifier and name without setting the versions, descriptions and areasOfUse.
+     * Creates arrays from the given identifier and name without setting the versions, descriptions and areasOfUse.
      * 
      * @param identifiers
      *            of the object.
      */
-    public Identifiable( String[] identifiers ) {
+    public CRSIdentifiable( String[] identifiers ) {
         this( identifiers, null, null, null, null );
     }
-
-    // /**
-    // * Creates arrays fromt the given identifier and name without setting the versions,
-    // descriptions and areasOfUse.
-    // *
-    // * @param identifier of the object.
-    // * @param name the human readable name of the object.
-    // */
-    // protected Identifiable( String identifier, String name ) {
-    // this( new String[]{identifier}, new String[]{name}, null, null, null );
-    // }
 
     /**
      * @return the first of all areasOfUse or <code>null</code> if no areasOfUse were given.
@@ -278,8 +269,8 @@ public class Identifiable {
 
     @Override
     public boolean equals( Object other ) {
-        if ( other != null && other instanceof Identifiable ) {
-            final Identifiable that = (Identifiable) other;
+        if ( other != null && other instanceof CRSIdentifiable ) {
+            final CRSIdentifiable that = (CRSIdentifiable) other;
             boolean isThisEPSG = false;
             boolean isThatEPSG = false;
             for ( String id : getIdentifiers() ) {
@@ -297,7 +288,7 @@ public class Identifiable {
             if ( isThatEPSG && isThisEPSG ) {
                 return idsMatch( that.identifiers );
             }
-            return true;// idsMatch( that.identifiers );
+            return true;
         }
         return false;
     }
@@ -343,7 +334,7 @@ public class Identifiable {
     }
 
     /**
-     * @return the identifiers, each identifiable object has atleast one id.
+     * @return the identifiers, each identifiable object has at least one id.
      */
     public final String[] getIdentifiers() {
         return identifiers;
@@ -361,6 +352,28 @@ public class Identifiable {
      */
     public final String[] getVersions() {
         return versions;
+    }
+
+    @Override
+    public String getAsFormattedString() {
+        return getIdAndName();
+    }
+
+    /**
+     * Compares the first Identifier of this CRSIdentifiable with the first Identifier of the given CRSIdentifiable.
+     * 
+     * @return the lexicographically comparison of the {@link String#compareTo(String)} function.
+     * 
+     * @throws IllegalArgumentException
+     *             if the given Identifiable is <code>null</code> or not a CRSIdentifiable
+     */
+    @Override
+    public int compareTo( org.deegree.commons.types.Identifiable o )
+                            throws IllegalArgumentException {
+        if ( o == null || !( o instanceof CRSIdentifiable ) ) {
+            throw new IllegalArgumentException( "The given CRSIdentifiable object is not CRSIdentifiable object" );
+        }
+        return this.getIdentifier().compareTo( ( (CRSIdentifiable) o ).getIdentifier() );
     }
 
 }

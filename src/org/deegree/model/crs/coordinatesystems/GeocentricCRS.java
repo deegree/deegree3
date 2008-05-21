@@ -40,7 +40,7 @@ package org.deegree.model.crs.coordinatesystems;
 
 import java.util.List;
 
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.GeodeticDatum;
 import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation;
@@ -60,6 +60,10 @@ import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation
 public class GeocentricCRS extends CoordinateSystem {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 6275348240699500695L;
+    /**
      * The default geocentric coordinate system. Geocentric datum is WGS84 and linear units are metre. The <var>X</var>
      * axis points towards the prime meridian (e.g. front). The <var>Y</var> axis points East. The <var>Z</var> axis
      * points North.
@@ -71,7 +75,7 @@ public class GeocentricCRS extends CoordinateSystem {
      * @param axisOrder
      * @param identity
      */
-    public GeocentricCRS( GeodeticDatum datum, Axis[] axisOrder, Identifiable identity ) {
+    public GeocentricCRS( GeodeticDatum datum, Axis[] axisOrder, CRSIdentifiable identity ) {
         this( null, datum, axisOrder, identity );
     }
 
@@ -133,7 +137,7 @@ public class GeocentricCRS extends CoordinateSystem {
      * @param identity
      */
     public GeocentricCRS( List<PolynomialTransformation> transformations, GeodeticDatum usedDatum, Axis[] axisOrder,
-                          Identifiable identity ) {
+                          CRSIdentifiable identity ) {
         super( transformations, usedDatum, axisOrder, identity );
     }
 

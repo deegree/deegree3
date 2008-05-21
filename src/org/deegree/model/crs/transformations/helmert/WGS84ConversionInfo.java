@@ -41,7 +41,7 @@ import static org.deegree.model.crs.projections.ProjectionUtils.EPS11;
 
 import javax.vecmath.Matrix4d;
 
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 
 /**
  * Parameters for a geographic transformation into WGS84. The Bursa Wolf parameters should be applied to geocentric
@@ -56,7 +56,9 @@ import org.deegree.model.crs.Identifiable;
  * @version $Revision$, $Date$
  * 
  */
-public class WGS84ConversionInfo extends Identifiable {
+public class WGS84ConversionInfo extends CRSIdentifiable {
+
+    private static final long serialVersionUID = 3609096054318456918L;
 
     /** Bursa Wolf shift in meters. */
     public double dx;
@@ -236,7 +238,7 @@ public class WGS84ConversionInfo extends Identifiable {
      *            object containing all relevant id.
      */
     public WGS84ConversionInfo( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                                Identifiable identifiable ) {
+                                CRSIdentifiable identifiable ) {
         super( identifiable );
         this.dx = dx;
         this.dy = dy;

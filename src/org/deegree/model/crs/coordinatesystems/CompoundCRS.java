@@ -38,7 +38,7 @@
 
 package org.deegree.model.crs.coordinatesystems;
 
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Unit;
 
@@ -54,6 +54,8 @@ import org.deegree.model.crs.components.Unit;
  * 
  */
 public class CompoundCRS extends CoordinateSystem {
+
+    private static final long serialVersionUID = -3318761585967176316L;
 
     private CoordinateSystem underlyingCRS;
 
@@ -74,7 +76,7 @@ public class CompoundCRS extends CoordinateSystem {
      *             if the underlying crs is not of type geographic, geocentric or projected or one of the other values
      *             is <code>null</code>.
      */
-    public CompoundCRS( Axis heightAxis, CoordinateSystem underlyingCRS, double defaultHeight, Identifiable identity )
+    public CompoundCRS( Axis heightAxis, CoordinateSystem underlyingCRS, double defaultHeight, CRSIdentifiable identity )
                             throws IllegalArgumentException {
         super( underlyingCRS.getGeodeticDatum(), underlyingCRS.getAxis(), identity );
         int tmp = underlyingCRS.getType();

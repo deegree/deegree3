@@ -42,7 +42,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
 
@@ -81,7 +81,7 @@ public abstract class PolynomialTransformation {
             throw new IllegalArgumentException( "The second parameter list my not be null" );
         }
         this.secondParams = secondParameters;
-        Identifiable.checkForNullObject( targetCRS, "PolynomialTransformation", "targetCRS" );
+        CRSIdentifiable.checkForNullObject( targetCRS, "PolynomialTransformation", "targetCRS" );
         this.targetCRS = targetCRS;
     }
 

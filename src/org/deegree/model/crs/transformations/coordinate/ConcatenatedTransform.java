@@ -62,6 +62,9 @@ import org.deegree.model.crs.exceptions.TransformationException;
 
 public class ConcatenatedTransform extends CRSTransformation {
 
+    /**
+     * Signaling if this transformation is the identity
+     */
     boolean isIdentitiy = false;
 
     private CRSTransformation firstTransform;

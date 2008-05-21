@@ -40,7 +40,7 @@ package org.deegree.model.crs.coordinatesystems;
 
 import java.util.List;
 
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.projections.Projection;
 import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation;
@@ -60,6 +60,8 @@ import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation
 
 public class ProjectedCRS extends CoordinateSystem {
 
+    private static final long serialVersionUID = -8710821837647304760L;
+
     private final GeographicCRS underlyingCRS;
 
     private Projection projection;
@@ -72,7 +74,7 @@ public class ProjectedCRS extends CoordinateSystem {
      *            of this projection.
      * @param identity
      */
-    public ProjectedCRS( Projection projection, Axis[] axisOrder, Identifiable identity ) {
+    public ProjectedCRS( Projection projection, Axis[] axisOrder, CRSIdentifiable identity ) {
         this( null, projection, axisOrder, identity );
     }
 
@@ -150,7 +152,7 @@ public class ProjectedCRS extends CoordinateSystem {
      *            of this projection.
      * @param identity 
      */
-    public ProjectedCRS( List<PolynomialTransformation> transformations, Projection projection, Axis[] axisOrder, Identifiable identity ) {
+    public ProjectedCRS( List<PolynomialTransformation> transformations, Projection projection, Axis[] axisOrder, CRSIdentifiable identity ) {
         super( transformations, projection.getGeographicCRS().getGeodeticDatum(), axisOrder, identity );
         this.underlyingCRS = projection.getGeographicCRS();
         this.projection = projection;

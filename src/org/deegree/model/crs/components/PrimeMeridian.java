@@ -40,7 +40,7 @@ package org.deegree.model.crs.components;
 
 import static org.deegree.model.crs.projections.ProjectionUtils.EPS11;
 
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 
 /**
  * The <code>PrimeMeridian</code> class saves the longitude to the greenwich meridian.
@@ -53,7 +53,12 @@ import org.deegree.model.crs.Identifiable;
  * 
  */
 
-public class PrimeMeridian extends Identifiable {
+public class PrimeMeridian extends CRSIdentifiable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7667499241197819278L;
 
     private double longitude;
 

@@ -71,6 +71,9 @@ public abstract class CRSTransformation {
 
     private CoordinateSystem targetCRS;
 
+    /**
+     * Signaling if this transformation is inverse
+     */
     boolean isInverse;
 
     /**

@@ -54,6 +54,11 @@ import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
 public class GeodeticDatum extends Datum {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 7585690468720546419L;
+
+    /**
      * The default WGS 1984 datum, with primeMeridian set to Greenwich and default (no) wgs84 conversion info.
      */
     public static final GeodeticDatum WGS84 = new GeodeticDatum( Ellipsoid.WGS84, new WGS84ConversionInfo( "-1" ),
@@ -185,7 +190,7 @@ public class GeodeticDatum extends Datum {
     /*
      * (non-Javadoc)
      * 
-     * @see org.deegree.model.crs.Identifiable#toString()
+     * @see org.deegree.model.crs.CRSIdentifiable#toString()
      */
     @Override
     public String toString() {

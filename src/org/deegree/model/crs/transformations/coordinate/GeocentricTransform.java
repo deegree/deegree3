@@ -214,6 +214,10 @@ public class GeocentricTransform extends CRSTransformation {
         }
     }
 
+    /**
+     * Calculate the euclidian coordinates from given geographic coordinates
+     * @param srcPts
+     */
     protected void toGeoCentric( List<Point3d> srcPts ) {
         for ( Point3d p : srcPts ) {
             final double lambda = p.x; // Longitude

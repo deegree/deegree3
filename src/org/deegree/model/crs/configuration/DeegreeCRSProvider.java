@@ -68,7 +68,7 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLFragment;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.XMLTools;
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -1014,7 +1014,7 @@ public class DeegreeCRSProvider implements CRSProvider {
      * @param currentNode
      *            to expand
      */
-    private void exportIdentifiable( Identifiable id, Element currentNode ) {
+    private void exportIdentifiable( CRSIdentifiable id, Element currentNode ) {
         for ( String i : id.getIdentifiers() ) {
             if ( i != null ) {
                 XMLTools.appendElement( currentNode, CommonNamespaces.CRSNS, PRE + "id", i );
@@ -1124,7 +1124,7 @@ public class DeegreeCRSProvider implements CRSProvider {
      * @return the identifiable object or <code>null</code> if no id was given.
      * @throws CRSConfigurationException
      */
-    private Identifiable parseIdentifiable( Element element )
+    private CRSIdentifiable parseIdentifiable( Element element )
                             throws CRSConfigurationException {
         try {
             String[] identifiers = XMLTools.getNodesAsStrings( element, PRE + "id", nsContext );
@@ -1142,9 +1142,9 @@ public class DeegreeCRSProvider implements CRSProvider {
             String[] versions = XMLTools.getNodesAsStrings( element, PRE + "version", nsContext );
             String[] descriptions = XMLTools.getNodesAsStrings( element, PRE + "description", nsContext );
             String[] areasOfUse = XMLTools.getNodesAsStrings( element, PRE + "areaOfuse", nsContext );
-            return new Identifiable( identifiers, names, versions, descriptions, areasOfUse );
+            return new CRSIdentifiable( identifiers, names, versions, descriptions, areasOfUse );
         } catch ( XMLProcessingException e ) {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "Identifiable",
+            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "CRSIdentifiable",
                                                                       ( ( element == null ) ? "null"
                                                                                            : element.getLocalName() ),
                                                                       e.getMessage() ), e );
@@ -1416,7 +1416,7 @@ public class DeegreeCRSProvider implements CRSProvider {
      */
     private CoordinateSystem parseProjectedCRS( Element crsElement )
                             throws CRSConfigurationException {
-        Identifiable id = parseIdentifiable( crsElement );
+        CRSIdentifiable id = parseIdentifiable( crsElement );
         Axis[] axis = parseAxisOrder( crsElement );
         List<PolynomialTransformation> transformations = parseAlternativeTransformations( crsElement );
         // Unit units = parseUnit( crsElement );
@@ -1485,7 +1485,7 @@ public class DeegreeCRSProvider implements CRSProvider {
      */
     private CoordinateSystem parseGeographicCRS( Element crsElement )
                             throws CRSConfigurationException {
-        Identifiable id = parseIdentifiable( crsElement );
+        CRSIdentifiable id = parseIdentifiable( crsElement );
         Axis[] axis = parseAxisOrder( crsElement );
         List<PolynomialTransformation> transformations = parseAlternativeTransformations( crsElement );
         // get the datum
@@ -1513,7 +1513,7 @@ public class DeegreeCRSProvider implements CRSProvider {
      */
     private CoordinateSystem parseGeocentricCRS( Element crsElement )
                             throws CRSConfigurationException {
-        Identifiable id = parseIdentifiable( crsElement );
+        CRSIdentifiable id = parseIdentifiable( crsElement );
         Axis[] axis = parseAxisOrder( crsElement );
         List<PolynomialTransformation> transformations = parseAlternativeTransformations( crsElement );
         GeodeticDatum usedDatum = parseReferencedGeodeticDatum( crsElement, id.getIdentifier() );
@@ -1537,7 +1537,7 @@ public class DeegreeCRSProvider implements CRSProvider {
      *             if a required element could not be found, or an xmlParsingException occurred.
      */
     private CoordinateSystem parseCompoundCRS( Element crsElement ) {
-        Identifiable id = parseIdentifiable( crsElement );
+        CRSIdentifiable id = parseIdentifiable( crsElement );
 
         String usedCRS = null;
         try {
@@ -1678,7 +1678,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "datum", datumID ) );
             }
             // get the identifiable.
-            Identifiable id = parseIdentifiable( datumElement );
+            CRSIdentifiable id = parseIdentifiable( datumElement );
 
             // get the ellipsoid.
             Ellipsoid ellipsoid = null;
@@ -1775,7 +1775,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "primeMeridian",
                                                                           meridianID ) );
             }
-            Identifiable id = parseIdentifiable( meridianElement );
+            CRSIdentifiable id = parseIdentifiable( meridianElement );
             Unit units = parseUnit( meridianElement );
             double longitude = 0;
             try {
@@ -1830,7 +1830,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "ellipsoid",
                                                                           ellipsoidID ) );
             }
-            Identifiable id = parseIdentifiable( ellipsoidElement );
+            CRSIdentifiable id = parseIdentifiable( ellipsoidElement );
             try {
                 double semiMajor = XMLTools.getRequiredNodeAsDouble( ellipsoidElement, PRE + "semiMajorAxis", nsContext );
 
@@ -1900,7 +1900,7 @@ public class DeegreeCRSProvider implements CRSProvider {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT",
                                                                           "wgs84ConversionInfo", infoID ) );
             }
-            Identifiable identifiable = parseIdentifiable( cInfoElement );
+            CRSIdentifiable identifiable = parseIdentifiable( cInfoElement );
             double xT = 0, yT = 0, zT = 0, xR = 0, yR = 0, zR = 0, scale = 0;
             try {
                 xT = XMLTools.getNodeAsDouble( cInfoElement, PRE + "xAxisTranslation", nsContext, 0 );
@@ -2084,7 +2084,7 @@ public class DeegreeCRSProvider implements CRSProvider {
 
     /**
      * @param <T>
-     *            should be at least of Type Identifiable.
+     *            should be at least of Type CRSIdentifiable.
      * @param uniqueList
      *            to check against
      * @param mapping
@@ -2093,12 +2093,12 @@ public class DeegreeCRSProvider implements CRSProvider {
      *            to check.
      * @return the cached T if found or the given identifiable.
      */
-    private <T extends Identifiable> T checkForUniqueness( List<T> uniqueList, Map<String, String> mapping,
+    private <T extends CRSIdentifiable> T checkForUniqueness( List<T> uniqueList, Map<String, String> mapping,
                                                            T toBeChecked ) {
         T result = toBeChecked;
         if ( uniqueList.contains( toBeChecked ) ) {
             int index = uniqueList.indexOf( toBeChecked );
-            LOG.info( "The Identifiable with id: " + toBeChecked.getIdentifier() + " was found to be equal with: "
+            LOG.info( "The CRSIdentifiable with id: " + toBeChecked.getIdentifier() + " was found to be equal with: "
                          + uniqueList.get( index ).getIdentifier() );
             String key = uniqueList.get( index ).getIdentifier();
             boolean updatedEPSG = false;

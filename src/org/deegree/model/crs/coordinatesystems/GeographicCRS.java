@@ -40,7 +40,7 @@ package org.deegree.model.crs.coordinatesystems;
 
 import java.util.List;
 
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.GeodeticDatum;
 import org.deegree.model.crs.components.Unit;
@@ -61,6 +61,8 @@ import org.deegree.model.i18n.Messages;
 
 public class GeographicCRS extends CoordinateSystem {
 
+
+    private static final long serialVersionUID = -1686716022188132732L;
     /**
      * A geographic coordinate system using WGS84 datum. This coordinate system use <var>longitude</var>/<var>latitude</var>
      * axis with latitude values increasing north and longitude values increasing east. Angular
@@ -81,7 +83,7 @@ public class GeographicCRS extends CoordinateSystem {
      * @throws IllegalArgumentException
      *             if the axisOrder.length != 2.
      */
-    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, Identifiable identity )
+    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSIdentifiable identity )
                             throws IllegalArgumentException {
         this( null, datum, axisOrder, identity );
     }
@@ -148,7 +150,7 @@ public class GeographicCRS extends CoordinateSystem {
      * @param id
      */
     public GeographicCRS( List<PolynomialTransformation> transformations, GeodeticDatum usedDatum, Axis[] axisOrder,
-                          Identifiable id ) {
+                          CRSIdentifiable id ) {
         super( transformations, usedDatum, axisOrder, id );
         if ( axisOrder.length != 2 ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_COORDINATESYSTEMS_WRONG_AXIS_DIM",

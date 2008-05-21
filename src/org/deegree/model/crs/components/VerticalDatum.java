@@ -52,6 +52,11 @@ package org.deegree.model.crs.components;
 public class VerticalDatum extends Datum {
 
     /**
+     * 
+     */
+    private static final long serialVersionUID = 6993001149068624748L;
+
+    /**
      * @param identifiers
      * @param names
      * @param versions

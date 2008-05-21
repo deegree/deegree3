@@ -38,7 +38,7 @@
 
 package org.deegree.model.crs.components;
 
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 
 /**
  * The <code>Datum</code> is a generic type for all datums.
@@ -51,7 +51,12 @@ import org.deegree.model.crs.Identifiable;
  * 
  */
 
-public class Datum extends Identifiable {
+public class Datum extends CRSIdentifiable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3156411797986485936L;
 
     /**
      * @param identifiers

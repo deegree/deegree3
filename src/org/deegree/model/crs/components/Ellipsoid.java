@@ -40,7 +40,7 @@ package org.deegree.model.crs.components;
 
 import static org.deegree.model.crs.projections.ProjectionUtils.EPS11;
 
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 
 /**
  * The <code>Ellipsoid</code> class hold all parameters which are necessary to define an Ellipsoid. Every Ellipsoid
@@ -54,7 +54,12 @@ import org.deegree.model.crs.Identifiable;
  * 
  */
 
-public class Ellipsoid extends Identifiable {
+public class Ellipsoid extends CRSIdentifiable {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 4805089142395287574L;
 
     /**
      * WGS 1984 ellipsoid. This ellipsoid is used in the GPS system and is the "default" Ellipsoid.

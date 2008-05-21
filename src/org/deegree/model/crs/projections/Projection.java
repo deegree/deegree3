@@ -38,7 +38,7 @@
 
 package org.deegree.model.crs.projections;
 
-import static org.deegree.model.crs.Identifiable.checkForNullObject;
+import static org.deegree.model.crs.CRSIdentifiable.checkForNullObject;
 import static org.deegree.model.crs.projections.ProjectionUtils.EPS11;
 import static org.deegree.model.crs.projections.ProjectionUtils.normalizeLatitude;
 import static org.deegree.model.crs.projections.ProjectionUtils.normalizeLongitude;

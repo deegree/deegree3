@@ -45,7 +45,7 @@ import javax.vecmath.Matrix4d;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -179,7 +179,7 @@ public class TransformationFactory {
                 } else if ( targetCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
                     CompoundCRS target = (CompoundCRS) targetCRS;
                     CompoundCRS sTmp = new CompoundCRS( target.getHeightAxis(), source, target.getDefaultHeight(),
-                                                        new Identifiable( new String[] { source.getIdentifier()
+                                                        new CRSIdentifiable( new String[] { source.getIdentifier()
                                                                                          + "_compound" } ) );
                     result = createTransformation( sTmp, target );
                 }
@@ -197,7 +197,7 @@ public class TransformationFactory {
                 } else if ( targetCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
                     CompoundCRS target = (CompoundCRS) targetCRS;
                     CompoundCRS sTmp = new CompoundCRS( target.getHeightAxis(), source, target.getDefaultHeight(),
-                                                        new Identifiable( new String[] { source.getIdentifier()
+                                                        new CRSIdentifiable( new String[] { source.getIdentifier()
                                                                                          + "_compound" } ) );
                     result = createTransformation( sTmp, target );
                 }
@@ -215,7 +215,7 @@ public class TransformationFactory {
                 } else if ( targetCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
                     CompoundCRS target = (CompoundCRS) targetCRS;
                     CompoundCRS sTmp = new CompoundCRS( target.getHeightAxis(), source, target.getDefaultHeight(),
-                                                        new Identifiable( new String[] { source.getIdentifier()
+                                                        new CRSIdentifiable( new String[] { source.getIdentifier()
                                                                                          + "_compound" } ) );
                     result = createTransformation( sTmp, target );
                 }
@@ -230,7 +230,7 @@ public class TransformationFactory {
                                               source.getHeightAxis(),
                                               targetCRS,
                                               source.getDefaultHeight(),
-                                              new Identifiable(
+                                              new CRSIdentifiable(
                                                                 new String[] { targetCRS.getIdentifier() + "_compound" } ) );
                 } else {
                     target = (CompoundCRS) targetCRS;

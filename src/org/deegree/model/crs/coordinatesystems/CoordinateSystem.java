@@ -43,7 +43,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.GeodeticDatum;
 import org.deegree.model.crs.components.Unit;
@@ -82,7 +82,7 @@ import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation
  * 
  */
 
-public abstract class CoordinateSystem extends Identifiable {
+public abstract class CoordinateSystem extends CRSIdentifiable {
 
     private Axis[] axisOrder;
 
@@ -117,7 +117,7 @@ public abstract class CoordinateSystem extends Identifiable {
      *            the axisorder of this coordinate system.
      * @param identity
      */
-    public CoordinateSystem( GeodeticDatum datum, Axis[] axisOrder, Identifiable identity ) {
+    public CoordinateSystem( GeodeticDatum datum, Axis[] axisOrder, CRSIdentifiable identity ) {
         this( null, datum, axisOrder, identity );
     }
 
@@ -150,7 +150,7 @@ public abstract class CoordinateSystem extends Identifiable {
      * @param identity
      */
     public CoordinateSystem( List<PolynomialTransformation> transformations, GeodeticDatum geodeticDatum,
-                             Axis[] axisOrder, Identifiable identity ) {
+                             Axis[] axisOrder, CRSIdentifiable identity ) {
         super( identity );
         this.axisOrder = axisOrder;
         this.usedDatum = geodeticDatum;
