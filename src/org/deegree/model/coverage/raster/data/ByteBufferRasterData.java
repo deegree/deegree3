@@ -530,9 +530,13 @@ public abstract class ByteBufferRasterData implements RasterData {
     }
 
     public void setSubset( int x0, int y0, int width, int height, RasterData sourceRaster, int xOffset, int yOffset ) {
+        // clamp to maximum possible size
+        int subWidth = min( this.width - x0, width, sourceRaster.getWidth() );
+        int subHeight = min( this.height - y0, height, sourceRaster.getHeight() );
+        
         byte[] tmp = new byte[getDataType().getSize()];
-        for ( int y = 0; y < height; y++ ) {
-            for ( int x = 0; x < width; x++ ) {
+        for ( int y = 0; y < subHeight; y++ ) {
+            for ( int x = 0; x < subWidth; x++ ) {
                 for ( int band = 0; band < this.bands; band++ ) {
                     tmp = sourceRaster.getSample( x  + xOffset, y+yOffset, band, tmp );
                     setSample( x0 + x, y0 + y, band, tmp );
@@ -543,9 +547,13 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     public void setSubset( int x0, int y0, int width, int height, int dstBand, RasterData sourceRaster, int srcBand,
                            int xOffset, int yOffset ) {
+        // clamp to maximum possible size
+        int subWidth = min( this.width - x0, width, sourceRaster.getWidth() );
+        int subHeight = min( this.height - y0, height, sourceRaster.getHeight() );
+        
         byte[] tmp = new byte[getDataType().getSize()];
-        for ( int y = 0; y < height; y++ ) {
-            for ( int x = 0; x < width; x++ ) {
+        for ( int y = 0; y < subHeight; y++ ) {
+            for ( int x = 0; x < subWidth; x++ ) {
                 tmp = sourceRaster.getSample( x + xOffset, y + yOffset, srcBand, tmp );
                 setSample( x0 + x, y0 + y, dstBand, tmp );
             }
@@ -560,5 +568,20 @@ public abstract class ByteBufferRasterData implements RasterData {
         result.append( ", interleaving " + getInterleaveType() );
 
         return result.toString();
+    }
+    
+    /**
+     * Returns the smallest value of all <code>int</code>s.
+     * @param sizes
+     * @return the smalles value
+     */
+    protected final int min( int... sizes ) {
+        int result = Math.min( sizes[0], sizes[1] );
+        int i = 2;
+        while ( i < sizes.length ) {
+            result = Math.min( result, sizes[i] );
+            i++;
+        }
+        return result;
     }
 }

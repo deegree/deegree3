@@ -112,17 +112,18 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
 
     @Override
     public void setSubset( int x0, int y0, int width, int height, RasterData srcRaster, int xOffset, int yOffset ) {
-        // System.out.format( "%d %d, %d %d\n", x0, y0, srcRaster.getWidth(), srcRaster.getHeight() );
-        // checkBounds(x0, y0, srcRaster.getWidth(), srcRaster.getHeight());
-
+        // clamp to maximum possible size
+        int subWidth = min( this.width - x0, width, srcRaster.getWidth() );
+        int subHeight = min( this.height - y0, height, srcRaster.getHeight() );
+        
         // copy data direct if interleaving type is identical
         boolean set = false;
 
         if ( srcRaster instanceof PixelInterleavedRasterData ) {
             PixelInterleavedRasterData raster = (PixelInterleavedRasterData) srcRaster;
             ByteBuffer srcData = raster.getByteBuffer();
-            byte[] tmp = new byte[width * getPixelStride()];
-            for ( int i = 0; i < height; i++ ) {
+            byte[] tmp = new byte[subWidth * getPixelStride()];
+            for ( int i = 0; i < subHeight; i++ ) {
                 // order of .position and .get calls is significant, if bytebuffer is identical
                 srcData.position( raster.calculatePos( xOffset, i + yOffset ) );
                 srcData.get( tmp );
