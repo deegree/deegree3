@@ -80,7 +80,7 @@ public class CRSFactory {
      * e.g. epgs:4326
      * 
      * @param name
-     * @return a CoordinateSystem corresponding to the given name
+     * @return a CoordinateSystem corresponding to the given name never <code>null</code>
      * @throws UnknownCRSException
      *             if the crs-name is not known
      */

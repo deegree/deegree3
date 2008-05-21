@@ -42,8 +42,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.crs;
 
-import org.deegree.model.crs.configuration.CRSConfiguration;
-import org.deegree.model.crs.configuration.CRSProvider;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
 import org.deegree.model.crs.exceptions.UnknownCRSException;
@@ -92,7 +90,7 @@ public abstract class Transformer {
      *             if the given parameter is null.
      */
     protected Transformer( String targetCRS ) throws UnknownCRSException, IllegalArgumentException {
-        this.targetCRS = getCRSFromString( targetCRS );
+        this.targetCRS = CRSFactory.create( targetCRS );
     }
 
     /**
@@ -142,22 +140,7 @@ public abstract class Transformer {
                                                                      "sourceCRS" ) );
         }
         TransformationFactory factory = TransformationFactory.getInstance();
-        return factory.createFromCoordinateSystems( getCRSFromString( sourceCRS ), targetCRS );
-    }
-
-    private static CoordinateSystem getCRSFromString( String crsName )
-                            throws UnknownCRSException {
-        CRSConfiguration crsConfig = CRSConfiguration.getCRSConfiguration();
-        CRSProvider crsProvider = crsConfig.getProvider();
-        if ( crsName == null ) {
-            throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL", "Transformer(String)",
-                                                                     "targetCRS" ) );
-        }
-        CoordinateSystem crs = crsProvider.getCRSByID( crsName );
-        if ( crs == null ) {
-            throw new UnknownCRSException( crsName );
-        }
-        return crs;
+        return factory.createFromCoordinateSystems( CRSFactory.create( sourceCRS ), targetCRS );
     }
 
     /**
