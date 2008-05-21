@@ -37,6 +37,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage;
 
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.Envelope;
@@ -53,8 +54,10 @@ import org.deegree.model.geometry.primitive.Envelope;
  */
 public abstract class AbstractCoverage {
 
-    private GeometryFactory geomFactory = null;
+    private GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
 
+    private CoordinateSystem crs;
+    
     private Envelope envelope;
 
     /**
@@ -71,16 +74,13 @@ public abstract class AbstractCoverage {
      *            The envelope of the coverage.
      */
     public AbstractCoverage( Envelope envelope ) {
-        this.envelope = envelope;
+        setEnvelope( envelope );
     }
 
     /**
      * @return GeometryFactory for creation of envelopes, etc.
      */
     protected GeometryFactory getGeometryFactory() {
-        if ( geomFactory == null ) {
-            geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
-        }
         return geomFactory;
     }
 
@@ -96,6 +96,9 @@ public abstract class AbstractCoverage {
      *            New envelope for the coverage.
      */
     protected void setEnvelope( Envelope envelope ) {
+        if ( envelope != null && envelope.getCoordinateSystem() != null ) {
+            setCoordinateSystem( envelope.getCoordinateSystem() );
+        }
         this.envelope = envelope;
     }
 
@@ -113,5 +116,19 @@ public abstract class AbstractCoverage {
         } else {
             this.envelope = this.envelope.merger( envelope );
         }
+    }
+
+    /**
+     * @return the coordinate system of the raster
+     */
+    public CoordinateSystem getCoordinateSystem() {
+        return crs;
+    }
+
+    /**
+     * @param crs
+     */
+    public void setCoordinateSystem( CoordinateSystem crs ) {
+        this.crs = crs;
     }
 }
