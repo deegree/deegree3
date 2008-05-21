@@ -273,8 +273,7 @@ public class SimpleRaster extends AbstractRaster {
     public void setSubset( Envelope env, AbstractRaster source ) {
         RasterRect rect = getRasterEnvelope().convertEnvelopeToRasterCRS( env );
         SimpleRaster src = source.getSubset( env ).getAsSimpleRaster();
-        getRasterData().setSubset( rect.x, rect.y, src.getRasterData().getHeight(), src.getRasterData().getWidth(),
-                                   src.getRasterData() );
+        getRasterData().setSubset( rect.x, rect.y, rect.width, rect.height, src.getRasterData() );
     }
 
     @Override
