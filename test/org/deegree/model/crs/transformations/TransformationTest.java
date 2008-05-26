@@ -49,7 +49,7 @@ import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deegree.model.crs.CoordinateTransformer;
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -148,13 +148,13 @@ public class TransformationTest extends TestCase {
     private final static GeocentricCRS geocentric_4964 = new GeocentricCRS(
                                                                             datum_6171,
                                                                             axis_geocentric,
-                                                                            new Identifiable(
+                                                                            new CRSIdentifiable(
                                                                                               new String[] { "EPSG:4964" } ) );
 
     private final static GeocentricCRS geocentric_dummy = new GeocentricCRS(
                                                                              datum_6314,
                                                                              axis_geocentric,
-                                                                             new Identifiable(
+                                                                             new CRSIdentifiable(
                                                                                                new String[] { "NO_REAL_GEOCENTRIC" } ) );
 
     /**
@@ -364,12 +364,12 @@ public class TransformationTest extends TestCase {
                             throws TransformationException {
         // Source crs espg:28992
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_28992, 20,
-                                                 new Identifiable( new String[] { projected_28992.getIdentifier()
+                                                 new CRSIdentifiable( new String[] { projected_28992.getIdentifier()
                                                                                   + "_compound" } ) );
 
         // Target crs espg:25832
         CompoundCRS targetCRS = new CompoundCRS( heightAxis, projected_25832, 20,
-                                                 new Identifiable( new String[] { projected_25832.getIdentifier()
+                                                 new CRSIdentifiable( new String[] { projected_25832.getIdentifier()
                                                                                   + "_compound" } ) );
 
         // reference created with coord tool from http://www.rdnap.nl/ (NL/Amsterdam/dam)
@@ -389,7 +389,7 @@ public class TransformationTest extends TestCase {
                             throws TransformationException {
         // Source crs espg:28992
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_28992, 20,
-                                                 new Identifiable( new String[] { projected_28992.getIdentifier()
+                                                 new CRSIdentifiable( new String[] { projected_28992.getIdentifier()
                                                                                   + "_compound" } ) );
 
         // Target crs espg:4258
@@ -415,7 +415,7 @@ public class TransformationTest extends TestCase {
 
         // source crs epsg:31467
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_31467, 20,
-                                                 new Identifiable( new String[] { projected_31467.getIdentifier()
+                                                 new CRSIdentifiable( new String[] { projected_31467.getIdentifier()
                                                                                   + "_compound" } ) );
 
         // Target crs EPSG:4964
@@ -440,7 +440,7 @@ public class TransformationTest extends TestCase {
 
         // Source WGS:84_compound
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, GeographicCRS.WGS84, 20,
-                                                 new Identifiable( new String[] { GeographicCRS.WGS84.getIdentifier()
+                                                 new CRSIdentifiable( new String[] { GeographicCRS.WGS84.getIdentifier()
                                                                                   + "_compound" } ) );
 
         // Target EPSG:31467

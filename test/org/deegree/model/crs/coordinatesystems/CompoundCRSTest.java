@@ -42,7 +42,7 @@ import javax.vecmath.Point2d;
 
 import junit.framework.TestCase;
 
-import org.deegree.model.crs.Identifiable;
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -91,7 +91,7 @@ public class CompoundCRSTest extends TestCase {
                                                    new String[] { "EPSG:28992" } );
 
         CompoundCRS sourceCompound = new CompoundCRS( new Axis( "z", Axis.AO_UP ), sourceCRS, 100,
-                                                      new Identifiable( new String[] { "test_case" } ) );
+                                                      new CRSIdentifiable( new String[] { "test_case" } ) );
         assertEquals( 100.0, sourceCompound.getDefaultHeight() );
         // standard projection values.
         assertEquals( Math.toRadians( 5.38763888888889 ),
@@ -135,7 +135,7 @@ public class CompoundCRSTest extends TestCase {
                                                                            new Axis( "y", Axis.AO_NORTH ) },
                                                    new String[] { "EPSG:28992" } );
         CompoundCRS targetCompound = new CompoundCRS( new Axis( "z", Axis.AO_UP ), targetCRS, 2,
-                                                      new Identifiable( new String[] { "test_case_2" } ) );
+                                                      new CRSIdentifiable( new String[] { "test_case_2" } ) );
         assertEquals( 2., targetCompound.getDefaultHeight() );
         assertEquals( Math.toRadians( 9 ),
                       ( (ProjectedCRS) targetCompound.getUnderlyingCRS() ).getProjection().getProjectionLongitude() );
