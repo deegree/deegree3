@@ -42,15 +42,14 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster.interpolation;
 
-import static org.deegree.model.coverage.raster.interpolation.InterpolationType.BILINEAR;
-import static org.deegree.model.coverage.raster.interpolation.InterpolationType.NEAREST_NEIGHBOUR;
+import java.nio.BufferUnderflowException;
+import java.nio.ByteBuffer;
 
 import org.deegree.model.coverage.raster.data.DataType;
 import org.deegree.model.coverage.raster.data.RasterData;
-import org.deegree.model.coverage.raster.interpolation.InterpolationType;
 
 /**
- * Factory for {@link Interpolation}s.
+ * This class implements a bilinear interpolation for short raster.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author: $
@@ -58,35 +57,47 @@ import org.deegree.model.coverage.raster.interpolation.InterpolationType;
  * @version $Revision: $, $Date: $
  * 
  */
-public class InterpolationFactory {
+public class BiLinearShortInterpolation implements Interpolation {
+    private RasterData raster;
+
+    private ByteBuffer tmp;
+
+    private short[] window = new short[4];
 
     /**
-     * Creates a new interpolation of the given type and for the given raster.
+     * Create a new bilinear interpolation for given short {@link RasterData}.
      * 
-     * @param type
-     *            the interpolation type
      * @param rasterData
-     * @return interpolation for given type and raster
-     * @throws UnsupportedOperationException
-     *             if no interpolation is found for the given type and raster
      */
-    public static Interpolation getInterpolation( InterpolationType type, RasterData rasterData ) {
-        if ( type == NEAREST_NEIGHBOUR ) {
-            return new NearestNeighbourInterpolation( rasterData );
-        } else if ( type == BILINEAR ) {
-            if ( rasterData.getDataType() == DataType.BYTE ) {
-                return new BiLinearByteInterpolation( rasterData );
-            } else if ( rasterData.getDataType() == DataType.FLOAT ) {
-                return new BiLinearFloatInterpolation( rasterData );
-            } else if ( rasterData.getDataType() == DataType.SHORT ) {
-                return new BiLinearShortInterpolation( rasterData );
-            } else {
-                throw new UnsupportedOperationException( "no bilinear interpolation implementation for "
-                                                         + rasterData.getDataType() + " found." );
-            }
-        } else {
-            throw new UnsupportedOperationException( "no " + type + " interpolation implementation found." );
-
+    public BiLinearShortInterpolation( RasterData rasterData ) {
+        if ( rasterData.getDataType() != DataType.SHORT ) {
+            throw new IllegalArgumentException( this.getClass().getName() + " only supports short raster" );
         }
+        raster = rasterData;
+        tmp = ByteBuffer.allocate( DataType.SHORT.getSize() * raster.getBands() );
+
+    }
+
+    public final byte[] getPixel( float x, float y, byte[] result ) {
+        try {
+            tmp.position( 0 );
+            float xfrac = Math.abs( x - (int) x ); // the fractional part
+            float yfrac = Math.abs( y - (int) y );
+            for ( int b = 0; b < raster.getBands(); b++ ) {
+                raster.getShorts( (int) x, (int) y, 2, 2, b, window );
+                float h1 = window[0] + ( window[1] - window[0] ) * xfrac;
+                float h2 = window[2] + ( window[3] - window[2] ) * xfrac;
+                tmp.putShort( (short) ( h1 + ( h2 - h1 ) * yfrac ) );
+            }
+            tmp.position( 0 );
+            tmp.get( result );
+        } catch ( IndexOutOfBoundsException ex ) {
+            raster.getNullPixel( result );
+        } catch ( IllegalArgumentException ex ) {
+            raster.getNullPixel( result );
+        } catch ( BufferUnderflowException ex ) {
+            raster.getNullPixel( result );
+        }
+        return result;
     }
 }
