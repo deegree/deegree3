@@ -45,6 +45,7 @@ package org.deegree.commons.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * This is a collection of some methods that work with arrays and lists, like join or removeAll. It is complementary to the
@@ -160,5 +161,172 @@ public class ArrayUtils {
         }
 
         return false;
+    }
+    
+    /**
+     * parse a string and return its tokens as array
+     * 
+     * @param s
+     *            string to parse
+     * @param delimiter
+     *            delimiter that marks the end of a token
+     * @param deleteDoubles
+     *            if it's true all string that are already within the resulting array will be deleted, so that there
+     *            will only be one copy of them.
+     * @return an Array of Strings
+     */
+    public static String[] toArray( String s, String delimiter, boolean deleteDoubles ) {
+        if ( s == null || s.equals( "" ) ) {
+            return new String[0];
+        }
+
+        StringTokenizer st = new StringTokenizer( s, delimiter );
+        ArrayList<String> vec = new ArrayList<String>( st.countTokens() );
+
+        if ( st.countTokens() > 0 ) {
+            for ( int i = 0; st.hasMoreTokens(); i++ ) {
+                String t = st.nextToken();
+                if ( ( t != null ) && ( t.length() > 0 ) ) {
+                    vec.add( t.trim() );
+                }
+            }
+        } else {
+            vec.add( s );
+        }
+
+        String[] kw = vec.toArray( new String[vec.size()] );
+        if ( deleteDoubles ) {
+            kw = deleteDoubles( kw );
+        }
+
+        return kw;
+    }
+    
+    /**
+     * convert the array of string like [(x1,y1),(x2,y2)...] into an array of double [x1,y1,x2,y2...]
+     * 
+     * @param s
+     * @param delimiter
+     * 
+     * @return the array representation of the given String
+     */
+    public static double[] toArrayDouble( String s, String delimiter ) {
+        if ( s == null ) {
+            return null;
+        }
+
+        if ( s.equals( "" ) ) {
+            return null;
+        }
+
+        StringTokenizer st = new StringTokenizer( s, delimiter );
+
+        ArrayList<String> vec = new ArrayList<String>( st.countTokens() );
+
+        for ( int i = 0; st.hasMoreTokens(); i++ ) {
+            String t = st.nextToken().replace( ' ', '+' );
+
+            if ( ( t != null ) && ( t.length() > 0 ) ) {
+                vec.add( t.trim().replace( ',', '.' ) );
+            }
+        }
+
+        double[] array = new double[vec.size()];
+
+        for ( int i = 0; i < vec.size(); i++ ) {
+            array[i] = Double.parseDouble( vec.get( i ) );
+        }
+
+        return array;
+    }
+    
+    /**
+     * convert the array of string like [(x1,y1),(x2,y2)...] into an array of float values [x1,y1,x2,y2...]
+     * 
+     * @param s
+     * @param delimiter
+     * 
+     * @return the array representation of the given String
+     */
+    public static float[] toArrayFloat( String s, String delimiter ) {
+        if ( s == null ) {
+            return null;
+        }
+
+        if ( s.equals( "" ) ) {
+            return null;
+        }
+
+        StringTokenizer st = new StringTokenizer( s, delimiter );
+
+        ArrayList<String> vec = new ArrayList<String>( st.countTokens() );
+        for ( int i = 0; st.hasMoreTokens(); i++ ) {
+            String t = st.nextToken().replace( ' ', '+' );
+            if ( ( t != null ) && ( t.length() > 0 ) ) {
+                vec.add( t.trim().replace( ',', '.' ) );
+            }
+        }
+
+        float[] array = new float[vec.size()];
+
+        for ( int i = 0; i < vec.size(); i++ ) {
+            array[i] = Float.parseFloat( vec.get( i ) );
+        }
+
+        return array;
+    }
+    
+    /**
+     * parse a string and return its tokens as typed List. empty fields will be removed from the list.
+     * 
+     * @param s
+     *            string to parse
+     * @param delimiter
+     *            delimiter that marks the end of a token
+     * @param deleteDoubles
+     *            if it's true all string that are already within the resulting array will be deleted, so that there
+     *            will only be one copy of them.
+     * @return a list of Strings
+     */
+    public static List<String> toList( String s, String delimiter, boolean deleteDoubles ) {
+        if ( s == null || s.equals( "" ) ) {
+            return new ArrayList<String>();
+        }
+
+        StringTokenizer st = new StringTokenizer( s, delimiter );
+        ArrayList<String> vec = new ArrayList<String>( st.countTokens() );
+        for ( int i = 0; st.hasMoreTokens(); i++ ) {
+            String t = st.nextToken();
+            if ( ( t != null ) && ( t.length() > 0 ) ) {
+                if ( deleteDoubles ) {
+                    if ( !vec.contains( t.trim() ) ) {
+                        vec.add( t.trim() );
+                    }
+                } else {
+                    vec.add( t.trim() );
+                }
+            }
+        }
+
+        return vec;
+    }
+    
+    /**
+     * deletes all double entries from the submitted array
+     * 
+     * @param s
+     *            to remove the doubles from
+     * @return The string array without all doubled values
+     */
+    public static String[] deleteDoubles( String[] s ) {
+        ArrayList<String> vec = new ArrayList<String>( s.length );
+
+        for ( int i = 0; i < s.length; i++ ) {
+            if ( !vec.contains( s[i] ) ) {
+                vec.add( s[i] );
+            }
+        }
+
+        return vec.toArray( new String[vec.size()] );
     }
 }
