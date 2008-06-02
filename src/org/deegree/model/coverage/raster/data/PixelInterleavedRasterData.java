@@ -95,7 +95,7 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
         if ( result == null ) {
             result = new byte[getBands() * bands];
         }
-        if ( 0 > x || x >= width || 0 > y || y >= width  ) {
+        if ( 0 > x || x >= width || 0 > y || y >= height  ) {
             System.arraycopy( nodata, 0, result, 0, result.length );
             return result;
         }
@@ -113,8 +113,12 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
     @Override
     public void setSubset( int x0, int y0, int width, int height, RasterData srcRaster, int xOffset, int yOffset ) {
         // clamp to maximum possible size
-        int subWidth = min( this.width - x0, width, srcRaster.getWidth() );
-        int subHeight = min( this.height - y0, height, srcRaster.getHeight() );
+        int subWidth = min( this.width - x0, width, srcRaster.getWidth() - xOffset );
+        int subHeight = min( this.height - y0, height, srcRaster.getHeight() - yOffset );
+        
+        if ( subHeight <= 0 || subWidth <= 0 ) {
+            return;
+        }
         
         // copy data direct if interleaving type is identical
         boolean set = false;
