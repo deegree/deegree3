@@ -42,12 +42,16 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.media.jai.WarpPolynomial;
 import javax.vecmath.Point3d;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deegree.model.coverage.raster.data.RasterData;
 import org.deegree.model.coverage.raster.interpolation.Interpolation;
 import org.deegree.model.coverage.raster.interpolation.InterpolationFactory;
@@ -70,6 +74,8 @@ import org.deegree.model.geometry.primitive.Envelope;
  * 
  */
 public class RasterTransformer extends Transformer {
+
+    private static Log LOG = LogFactory.getLog( RasterTransformer.class );
 
     /**
      * Creates a new RasterTransformer with the given target CRS.
@@ -132,8 +138,19 @@ public class RasterTransformer extends Transformer {
 
             // get the data we need as a simple raster (can be a part of a large tiled raster)
             AbstractRaster source = sourceRaster.getSubset( dataEnv );
+            if ( LOG.isDebugEnabled() ) {
+                File tmpFile = null;
+                try {
+                    tmpFile = File.createTempFile( "transform-src", ".tiff" );
+                    LOG.debug( "writing the source raster of the transformation to " + tmpFile );
+                    RasterFactory.saveRasterToFile( source, tmpFile );
+                } catch ( IOException e ) {
+                    LOG.error( "couldn't write debug file " + tmpFile );
+                    e.printStackTrace();
+                }
+            }
             RasterData srcRaster = source.getAsSimpleRaster().getRasterData();
-
+            
             RasterData dstRaster = srcRaster.createCompatibleRasterData( dstWidth, dstHeight, srcRaster.getBands() );
             RasterEnvelope srcREnv = source.getRasterEnvelope();
             RasterEnvelope dstREnv = new RasterEnvelope( dstEnvelope, dstWidth, dstHeight );
