@@ -37,6 +37,10 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -143,6 +147,21 @@ public class MultiResolutionRaster extends AbstractCoverage {
         int width = (int) ( env.getWidth() / res );
         int height = (int) ( env.getHeight() / res );
         return result.getAsSimpleRaster().getSubset( env, width, height );
+    }
+
+    /**
+     * Returns a list with the highest resolution of every level. The list is sorted ascending (from highest to lowest
+     * resolution).
+     * 
+     * @return a list of all resolutions
+     */
+    public List<Double> getResolutions() {
+        List<Double> res = new ArrayList<Double>( resolutions.size() );
+        for ( AbstractRaster level : resolutions ) {
+            RasterEnvelope renv = level.getRasterEnvelope();
+            res.add( min( abs( renv.getXRes() ), abs( renv.getYRes() ) ) );
+        }
+        return res;
     }
 
 }
