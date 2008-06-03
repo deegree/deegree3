@@ -111,7 +111,10 @@ public class TiledRaster extends AbstractRaster {
         for ( AbstractRaster r : tileContainer.getTiles( env ) ) {
             try {
                 Geometry intersection = r.getEnvelope().intersection( env );
-
+                
+                if ( intersection == null ) {
+                    continue;
+                }
                 // ignore if it only touches a tile
                 if ( intersection instanceof Point ) {
                     continue;
@@ -189,7 +192,7 @@ public class TiledRaster extends AbstractRaster {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append( "TiledRaster: " + envelopeString() );
+        result.append( "TiledRaster: " + getEnvelope() );
         result.append( "\n\t" );
         result.append( getTileContainer().toString() );
         return result.toString();
