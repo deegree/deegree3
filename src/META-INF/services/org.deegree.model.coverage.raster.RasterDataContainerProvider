@@ -1,0 +1,2 @@
+org.deegree.model.coverage.raster.MemoryRasterDataContainer
+org.deegree.model.coverage.raster.LazyRasterDataContainer
