@@ -70,8 +70,8 @@ public class RasterEnvelopeTest {
         RasterEnvelope r = new RasterEnvelope( Type.OUTER, 0.0, 0.0, 1.0, 1.0 );
         double[] result_d;
         result_d = r.convertToCRS( 10, 5 );
-        assertEquals( 10.5, result_d[0], DELTA );
-        assertEquals( 5.5, result_d[1], DELTA );
+        assertEquals( 10.0, result_d[0], DELTA );
+        assertEquals( 5.0, result_d[1], DELTA );
 
         int[] result_i;
         result_i = r.convertToRasterCRS( 1.8, 0.49 );
@@ -93,8 +93,8 @@ public class RasterEnvelopeTest {
         RasterEnvelope r = new RasterEnvelope( Type.OUTER, 10.0, -5.0, 1.0, 1.0 );
         double[] result_d;
         result_d = r.convertToCRS( 10, 5 );
-        assertEquals( 20.5, result_d[0], DELTA );
-        assertEquals( 0.5, result_d[1], DELTA );
+        assertEquals( 20.0, result_d[0], DELTA );
+        assertEquals( 0.0, result_d[1], DELTA );
 
         int[] result_i;
         result_i = r.convertToRasterCRS( 19.8, 10.3 );
@@ -132,8 +132,8 @@ public class RasterEnvelopeTest {
         RasterEnvelope r = new RasterEnvelope( 10.5, 25.5, 1.0, -1.0 );
         double[] result_d;
         result_d = r.convertToCRS( 10, 5 );
-        assertEquals( 20.5, result_d[0], DELTA );
-        assertEquals( 20.5, result_d[1], DELTA );
+        assertEquals( 20.0, result_d[0], DELTA );
+        assertEquals( 21.0, result_d[1], DELTA );
 
         int[] result_i;
         result_i = r.convertToRasterCRS( 10.001, 25.999 );

@@ -201,14 +201,11 @@ public class RasterEnvelope {
         int[] max = convertToRasterCRS( envelope.getMax().getX() - delta, envelope.getMax().getY() - delta );
         double[] origin = convertToCRS( min( min[0], max[0] ), min( min[1], max[1] ) );
 
-        origin[0] -= xRes / 2;
-        origin[1] -= yRes / 2;
-
         return origin;
     }
 
     /**
-     * Converts raster coordinates to world coordinates (center of pixel).
+     * Converts raster coordinates to world coordinates (outer bound of pixel).
      * 
      * @param x
      *            x coordinate
@@ -217,7 +214,7 @@ public class RasterEnvelope {
      * @return array with world coordinates (x, y)
      */
     public double[] convertToCRS( int x, int y ) {
-        return new double[] { x0 + x * xRes + xRes / 2, y0 + y * yRes + yRes / 2 };
+        return new double[] { x0 + x * xRes, y0 + y * yRes };
     }
 
     /**
