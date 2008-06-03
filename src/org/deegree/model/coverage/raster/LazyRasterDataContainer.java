@@ -51,7 +51,7 @@ import org.deegree.model.coverage.raster.data.RasterDataReader;
  * @version $Revision$, $Date$
  * 
  */
-public class LazyRasterDataContainer implements RasterDataContainer {
+public class LazyRasterDataContainer implements RasterDataContainer, RasterDataContainerProvider {
 
     private RasterDataReader reader;
 
@@ -60,6 +60,13 @@ public class LazyRasterDataContainer implements RasterDataContainer {
     private boolean rasterLoaded = false;
 
     private static Log log = LogFactory.getLog( LazyRasterDataContainer.class );
+
+    /**
+     * Creates an empty LazyRasterDataContainer that loads the raster on demand and stores the raster data in memory.
+     */
+    public LazyRasterDataContainer() {
+        // empty consturctor
+    }
 
     /**
      * Creates a RasterDataContainer that loads the data on first access.
@@ -103,5 +110,19 @@ public class LazyRasterDataContainer implements RasterDataContainer {
      */
     public int getRows() {
         return reader.getHeight();
+    }
+
+    public void setRasterDataReader( RasterDataReader reader ) {
+        this.rasterLoaded = false;
+        this.raster = null;
+        this.reader = reader;
+    }
+
+    public RasterDataContainer getRasterDataContainer( String type ) {
+        if ( type.equalsIgnoreCase( RasterDataContainerFactory.LoadingPolicy.LAZY.toString() ) ) {
+            // the service loader caches provider instances, so return a new instance
+            return new LazyRasterDataContainer();
+        }
+        return null;
     }
 }

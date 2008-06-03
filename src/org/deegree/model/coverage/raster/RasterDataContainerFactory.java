@@ -42,6 +42,10 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster;
 
+import java.util.ServiceLoader;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.deegree.model.coverage.raster.data.RasterDataReader;
 
 /**
@@ -56,12 +60,18 @@ import org.deegree.model.coverage.raster.data.RasterDataReader;
  */
 public class RasterDataContainerFactory {
 
+    private static ServiceLoader<RasterDataContainerProvider> rasterContainerLoader = ServiceLoader.load( RasterDataContainerProvider.class );
+
+    private static Log LOG = LogFactory.getLog( RasterDataContainerFactory.class );
+
     /**
      * Defines how raster should be loaded/stored.
      */
     public enum LoadingPolicy {
-        /** Load raster right away and keep in memory */
+        /** No caching, alias for MEMORY */
         NONE,
+        /** Load raster right away and keep in memory */
+        MEMORY,
         /** Load raster on first access and keep in memory */
         LAZY,
         /** Use caching. Load raster on fist access and cache in memory */
@@ -71,7 +81,7 @@ public class RasterDataContainerFactory {
     private static LoadingPolicy defaultLoadingPolicy = LoadingPolicy.NONE;
 
     /**
-     * Create a RasterDataContainer for given LoadingPolicy. The loadign policy controlls if a raster should be loaded
+     * Create a RasterDataContainer for given LoadingPolicy. The loading policy controlls if a raster should be loaded
      * immediately, on demand or cached.
      * 
      * @param reader
@@ -80,22 +90,21 @@ public class RasterDataContainerFactory {
      */
     public static RasterDataContainer withLoadingPolicy( RasterDataReader reader, LoadingPolicy policy ) {
         RasterDataContainer result;
-
-        // TODO make configurable
         switch ( policy ) {
         case NONE:
-            result = new MemoryRasterDataContainer( reader );
+        case MEMORY:    
+            result = getRasterDataContainer( "memory" );
             break;
-        // case LAZY:
-        // result = new LazyRasterDataContainer( reader );
-        // break;
-        // case CACHED:
-        // result = new CachedRasterDataContainer( reader );
-        // break;
+        case LAZY:
+            result = getRasterDataContainer( "lazy" );
+            break;
+        case CACHED:
+            result = getRasterDataContainer( "cached" );
+            break;
         default:
             throw new UnsupportedOperationException( "Unsupported LoadingPolicy" );
         }
-
+        result.setRasterDataReader( reader );
         return result;
     }
 
@@ -107,5 +116,25 @@ public class RasterDataContainerFactory {
      */
     public static RasterDataContainer withDefaultLoadingPolicy( RasterDataReader reader ) {
         return withLoadingPolicy( reader, defaultLoadingPolicy );
+    }
+
+    private static RasterDataContainer getRasterDataContainer( String type ) {
+        for ( RasterDataContainerProvider provider : rasterContainerLoader ) {
+            RasterDataContainer container = provider.getRasterDataContainer( type );
+            if ( container != null ) {
+                return container;
+            }
+        }
+        LOG.error( "RasterDataContainer for type " + type + " not found, returning default MemoryRasterDataContainer" );
+        return new MemoryRasterDataContainer();
+    }
+
+    /**
+     * Sets the default loading policy for all new raster container.
+     * 
+     * @param policy
+     */
+    public static void setDefaultLoadingPolicy( LoadingPolicy policy ) {
+        defaultLoadingPolicy = policy;
     }
 }

@@ -49,10 +49,19 @@ import org.deegree.model.coverage.raster.data.RasterDataReader;
  * @version $Revision$, $Date$
  * 
  */
-public class MemoryRasterDataContainer implements RasterDataContainer {
+public class MemoryRasterDataContainer implements RasterDataContainer, RasterDataContainerProvider {
 
     private RasterData raster;
 
+
+    /**
+     * Creates an empty RasterDataContainer that stores the raster data in memory.
+     */
+    public MemoryRasterDataContainer( ) {
+        // empty consturctor
+    }
+
+    
     /**
      * Reads RasterData from RasterReader and wraps it in a RasterDataContainer. RasterData stays in memory.
      * 
@@ -98,6 +107,18 @@ public class MemoryRasterDataContainer implements RasterDataContainer {
      */
     public RasterData getRasterData() {
         return raster;
+    }
+
+    public void setRasterDataReader( RasterDataReader reader ) {
+        this.raster = reader.read();
+    }
+
+    public RasterDataContainer getRasterDataContainer( String type ) {
+        if ( type.equalsIgnoreCase( RasterDataContainerFactory.LoadingPolicy.MEMORY.toString() ) ) {
+            // the service loader caches provider instances, so return a new instance
+            return new MemoryRasterDataContainer();  
+        }
+        return null;
     }
 
 }

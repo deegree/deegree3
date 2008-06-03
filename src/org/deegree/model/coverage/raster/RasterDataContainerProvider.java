@@ -1,8 +1,9 @@
 //$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
+
  This file is part of deegree.
- Copyright (C) 2001-2007 by:
- Department of Geography, University of Bonn
+ Copyright (C) 2001-2008 by:
+ EXSE, Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
  http://www.lat-lon.de
@@ -11,13 +12,16 @@
  modify it under the terms of the GNU Lesser General Public
  License as published by the Free Software Foundation; either
  version 2.1 of the License, or (at your option) any later version.
+
  This library is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  Lesser General Public License for more details.
+
  You should have received a copy of the GNU Lesser General Public
  License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
  Contact:
 
  Andreas Poth
@@ -34,47 +38,30 @@
  53115 Bonn
  Germany
  E-Mail: greve@giub.uni-bonn.de
+
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster;
 
-import org.deegree.model.coverage.raster.data.RasterData;
-import org.deegree.model.coverage.raster.data.RasterDataReader;
+import java.util.ServiceLoader;
 
 /**
- * This interface is for abstraction of RasterData providers. Implementations of this interface can control the loading
- * and unloading of the raster data (i.e. caching, etc).
+ * This interface is for all classes that provide {@link RasterDataContainer}. A RasterDataContainer can implement lazy
+ * loading or caching of raster data. The implemented provider will be used by the new Java 6 ServiceLoader.
+ * 
+ * @see ServiceLoader
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
+ * 
  */
-public interface RasterDataContainer {
+public interface RasterDataContainerProvider {
     /**
-     * Sets the source of the raster data.
+     * Returns a new RasterDataContainer for given type or null, if the implementation doesn't provide this type.
      * 
-     * @param reader the raster data reader for this container
+     * @param type
+     * @return a RasterDataContainer for given type or null
      */
-    public void setRasterDataReader( RasterDataReader reader );
-    
-    /**
-     * Returns the RasterData
-     * 
-     * @return RasterData
-     */
-    public RasterData getRasterData();
-
-    /**
-     * Returns the columns / with in pixel of the raster
-     * 
-     * @return columns of the raster
-     */
-    public int getColumns();
-
-    /**
-     * Returns the rows / height in pixel of the raster
-     * 
-     * @return rows of the raster
-     */
-    public int getRows();
+    RasterDataContainer getRasterDataContainer( String type );
 }
