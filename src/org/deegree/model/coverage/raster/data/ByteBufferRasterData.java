@@ -439,7 +439,6 @@ public abstract class ByteBufferRasterData implements RasterData {
         }
     }
 
-    @Override
     public byte[] getBytes( int x, int y, int width, int height, int band, byte[] result ) {
         checkBoundsEx( x, y, width, height );
         if ( result == null ) {
@@ -453,7 +452,6 @@ public abstract class ByteBufferRasterData implements RasterData {
         return result;
     }
 
-    @Override
     public short[] getShorts( int x, int y, int width, int height, int band, short[] result ) {
         checkBoundsEx( x, y, width, height );
         if ( result == null ) {
@@ -467,7 +465,6 @@ public abstract class ByteBufferRasterData implements RasterData {
         return result;
     }
 
-    @Override
     public float[] getFloats( int x, int y, int width, int height, int band, float[] result ) {
         checkBoundsEx( x, y, width, height );
         if ( result == null ) {
