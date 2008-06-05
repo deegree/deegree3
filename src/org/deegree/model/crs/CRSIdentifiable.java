@@ -44,13 +44,10 @@ import org.deegree.model.i18n.Messages;
  * The <code>CRSIdentifiable</code> class can be used to identify a crs, ellipsoid, Datum and primemeridian
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
-
 public class CRSIdentifiable implements org.deegree.commons.types.Identifiable {
 
     private static final long serialVersionUID = 3924691540158117922L;
@@ -354,7 +351,6 @@ public class CRSIdentifiable implements org.deegree.commons.types.Identifiable {
         return versions;
     }
 
-    @Override
     public String getAsFormattedString() {
         return getIdAndName();
     }
@@ -367,7 +363,6 @@ public class CRSIdentifiable implements org.deegree.commons.types.Identifiable {
      * @throws IllegalArgumentException
      *             if the given Identifiable is <code>null</code> or not a CRSIdentifiable
      */
-    @Override
     public int compareTo( org.deegree.commons.types.Identifiable o )
                             throws IllegalArgumentException {
         if ( o == null || !( o instanceof CRSIdentifiable ) ) {
