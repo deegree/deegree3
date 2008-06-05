@@ -727,7 +727,8 @@ public class XMLAdapter {
     public static OMElement getRequiredElement( OMElement context, XPath xpath ) {
         OMElement element = getElement( context, xpath );
         if ( element == null ) {
-
+            String msg = Messages.getMessage( "XML_REQUIRED_ELEMENT_MISSING", xpath, context );
+            throw new XMLProcessingException( msg );
         }
         return element;
     }
@@ -735,7 +736,8 @@ public class XMLAdapter {
     public static List<OMElement> getRequiredElements( OMElement context, XPath xpath ) {
         List<OMElement> elements = getElements( context, xpath );
         if ( elements.size() == 0 ) {
-
+            String msg = Messages.getMessage( "XML_REQUIRED_ELEMENT_MISSING", xpath, context );
+            throw new XMLProcessingException( msg );
         }
         return elements;
     }
