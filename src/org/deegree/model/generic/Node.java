@@ -46,7 +46,7 @@ package org.deegree.model.generic;
 import org.deegree.model.generic.schema.NodeType;
 
 /**
- * A <code>Node</code> with type information. Basis of the deegree object model.
+ * Corresponds to an XML node with type information. Basis of the deegree object model.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

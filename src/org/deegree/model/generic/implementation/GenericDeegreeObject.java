@@ -71,7 +71,7 @@ public class GenericDeegreeObject extends GenericNode implements DeegreeObject {
 
     public GenericDeegreeObject( GenericObjectType ot ) {
         super (ot);
-    }    
+    }
     
     public GenericDeegreeObject( ObjectType ot, List<Attribute> attributes, List<Node> contents ) {
         super( ot );

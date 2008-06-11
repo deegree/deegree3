@@ -76,7 +76,6 @@ import org.deegree.model.generic.implementation.schema.GenericObjectType;
 import org.deegree.model.generic.schema.AttributeType;
 import org.deegree.model.generic.schema.ContentModel;
 import org.deegree.model.generic.schema.ObjectType;
-import org.deegree.model.generic.schema.Sequence;
 
 /**
  * TODO add documentation here
@@ -114,6 +113,7 @@ public class ApplicationSchemaXSDAdapter {
 
     /**
      * @param xmlSchema
+     * @param integratedNamespaces 
      */
     public ApplicationSchemaXSDAdapter( XSModel xmlSchema, List<String> integratedNamespaces ) {
         this.xmlSchema = xmlSchema;
@@ -123,8 +123,8 @@ public class ApplicationSchemaXSDAdapter {
     public ApplicationSchema parse() {
         analyzeNamespaces( xmlSchema );
         analyzeTypeDefinitions( xmlSchema );
-        analyzeElementDeclarations( xmlSchema );
-        return null;
+        analyzeElementDeclarations( xmlSchema );        
+        return new ApplicationSchema (xsElementNameToOT.values());
     }
 
     private void analyzeNamespaces( XSModel xmlSchema ) {

@@ -54,8 +54,8 @@ import org.apache.commons.logging.LogFactory;
 import org.deegree.model.generic.schema.ObjectType;
 
 /**
- * An <code>ApplicationSchema</code> wraps an XML Schema InfoSet to provide a view of its elements with a generic
- * {@link ObjectType} semantic.
+ * Representation of an XML Schema InfoSet that provides a view of its element definitions with a generic
+ * {@link ObjectType} semantic. 
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -94,5 +94,14 @@ public class ApplicationSchema {
             throw new RuntimeException( msg );
         }
         return ot;
+    }
+    
+    @Override
+    public String toString () {
+        String s = "";
+        for ( ObjectType ot : nameToOT.values() ) {
+            s += ot;
+        }
+        return s;        
     }
 }

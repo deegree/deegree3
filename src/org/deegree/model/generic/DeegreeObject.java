@@ -50,7 +50,7 @@ import javax.xml.namespace.QName;
 import org.deegree.model.generic.schema.ObjectType;
 
 /**
- * An <code>Element</code> with type information.
+ * Corresponds to an XML element with type information.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
