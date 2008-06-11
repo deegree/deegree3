@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:ipo="http://www.altova.com/IPO" targetNamespace="http://www.altova.com/IPO" elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <annotation>
+    <documentation>
+   Addresses for International Purchase order schema
+   Copyright 2000 Example.com. All rights reserved.
+  </documentation>
+  </annotation>
+  <complexType name="Address">
+    <sequence>
+      <element name="name" type="string" minOccurs="0"/>
+      <element name="street" type="string"/>
+      <element name="city" type="string"/>
+    </sequence>
+  </complexType>
+  <complexType name="US-Address">
+    <complexContent>
+      <extension base="ipo:Address">
+        <sequence>
+          <element name="state" type="ipo:US-State"/>
+          <element name="zip" type="positiveInteger"/>
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>
+  <complexType name="EU-Address">
+    <complexContent>
+      <extension base="ipo:Address">
+        <sequence>
+          <element name="postcode" type="ipo:EU-Postcode"/>
+        </sequence>
+        <attribute name="export-code" type="positiveInteger" fixed="1"/>
+      </extension>
+    </complexContent>
+  </complexType>
+  <!-- other Address derivations for more countries -->
+  <simpleType name="US-State">
+    <restriction base="string">
+      <enumeration value="AK"/>
+      <enumeration value="AL"/>
+      <enumeration value="AR"/>
+      <enumeration value="AZ"/>
+      <enumeration value="CA"/>
+      <enumeration value="CO"/>
+      <enumeration value="CT"/>
+      <enumeration value="DC"/>
+      <enumeration value="DE"/>
+      <enumeration value="FL"/>
+      <enumeration value="GA"/>
+      <enumeration value="GU"/>
+      <enumeration value="HI"/>
+      <enumeration value="IA"/>
+      <enumeration value="ID"/>
+      <enumeration value="IL"/>
+      <enumeration value="IN"/>
+      <enumeration value="KS"/>
+      <enumeration value="KY"/>
+      <enumeration value="LA"/>
+      <enumeration value="MA"/>
+      <enumeration value="MD"/>
+      <enumeration value="ME"/>
+      <enumeration value="MI"/>
+      <enumeration value="MN"/>
+      <enumeration value="MO"/>
+      <enumeration value="MS"/>
+      <enumeration value="MT"/>
+      <enumeration value="NC"/>
+      <enumeration value="ND"/>
+      <enumeration value="NE"/>
+      <enumeration value="NH"/>
+      <enumeration value="NJ"/>
+      <enumeration value="NM"/>
+      <enumeration value="NV"/>
+      <enumeration value="NY"/>
+      <enumeration value="OH"/>
+      <enumeration value="OK"/>
+      <enumeration value="OR"/>
+      <enumeration value="PA"/>
+      <enumeration value="PR"/>
+      <enumeration value="RI"/>
+      <enumeration value="SC"/>
+      <enumeration value="SD"/>
+      <enumeration value="TN"/>
+      <enumeration value="TX"/>
+      <enumeration value="UT"/>
+      <enumeration value="VA"/>
+      <enumeration value="VI"/>
+      <enumeration value="VT"/>
+      <enumeration value="WA"/>
+      <enumeration value="WI"/>
+      <enumeration value="WV"/>
+      <enumeration value="WY"/>
+    </restriction>
+    <!-- and so on ... -->
+  </simpleType>
+  <simpleType name="EU-Postcode">
+    <restriction base="string"/>
+    <!-- and so on ... -->
+  </simpleType>
+  <!-- simple type definition for UK-Postcode -->
+</schema>

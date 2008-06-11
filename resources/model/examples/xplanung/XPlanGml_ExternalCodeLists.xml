@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	Externe Codelisten fuer Anwendungsschema: XPlanGML
+	Erzeugt von NAS Schema Generator
+	Erstellt: 13.03.2007 15:43:35
+-->
+<Dictionary gml:id="ExternalCodeLists"
+	xmlns="http://www.opengis.net/gml" xmlns:gml="http://www.opengis.net/gml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/gml gml/3.0.0/base/gml3nas.xsd">
+	<description>Externe Codelisten von Anwendungsschema 'XPlanGML'.</description>
+	<name>XPlanGML</name>
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_StylesheetListe">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_StylesheetListe</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetaillZweckbestGemeinschaftsanlagen">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetaillZweckbestGemeinschaftsanlagen</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestNebenanlagen">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestNebenanlagen</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailDachform">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailDachform</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestSpielSportanlage">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestSpielSportanlage</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestGemeinbedarf">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestGemeinbedarf</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestVerEntsorgung">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestVerEntsorgung</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestStrassenverkehr">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestStrassenverkehr</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestLuftverkehr">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestLuftverkehr</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestBahnverkehr">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestBahnverkehr</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestGewaesser">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestGewaesser</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestWasserrecht">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestWasserrecht</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestWasserwirtschaft">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestWasserwirtschaft</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestVorbHochwSchutz">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestVorbHochwSchutz</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestSchutzgebiet">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestSchutzgebiet</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestWaldFlaeche">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestWaldFlaeche</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestGruenFlaeche">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestGruenFlaeche</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_DetailZweckbestLandwirtschaftsFlaeche">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_DetailZweckbestLandwirtschaftsFlaeche</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_ZweckbestimmungGenerischeObjekte">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_ZweckbestimmungGenerischeObjekte</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_Status">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_Status</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_Status">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_Status</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DifferenzArtDerBaulNutzung">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DifferenzArtDerBaulNutzung</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZweckbestGemeinbedarf">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZweckbestGemeinbedarf</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZweckbestSpielSportanlage">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZweckbestSpielSportanlage</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZweckbestWaldFlaeche">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZweckbestWaldFlaeche</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZweckbestGruen">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZweckbestGruen</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZweckbestLandwirtschaftsFlaeche">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZweckbestLandwirtschaftsFlaeche</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZweckbestSchutzgebiet">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZweckbestSchutzgebiet</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_ZweckbestimmungGenerischeObjekte">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_ZweckbestimmungGenerischeObjekte</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZweckbestVerEntsorgung">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZweckbestVerEntsorgung</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZweckbestLuftverkehr">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZweckbestLuftverkehr</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZeckbestBahnverkehr">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZeckbestBahnverkehr</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZweckbestStrassenverkehr">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZweckbestStrassenverkehr</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZweckbestGewaesser">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZweckbestGewaesser</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZweckbestWasserwirtschaft">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZweckbestWasserwirtschaft</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZweckbestWasserrecht">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZweckbestWasserrecht</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_DetailZweckbestVorbHochwSchutz">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_DetailZweckbestVorbHochwSchutz</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="RP_DetailFestlegEntwicklungsschwerpunkte">
+		<description>Stand: 23.2.2007</description>
+		<name>RP_DetailFestlegEntwicklungsschwerpunkte</name>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+</Dictionary>

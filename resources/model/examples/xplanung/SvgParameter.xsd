@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 U (http://www.xmlspy.com) by Dr. Joachim Benner (Institut für Angewandte Informatik Forschungszentrum Karlsruhe) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="SvgVisualisierung">
+		<xs:annotation>
+			<xs:documentation>Parameter Gml-Visualisierung mit SVG</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="GmlKlassenVisual" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Style" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Symbol" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Marker" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Pattern" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Hatching" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="Enumeration" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="gmlType" use="required">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="XPlanGML"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="datum" type="xs:date" use="optional"/>
+			<xs:attribute name="Masstab" type="xs:string" use="optional"/>
+			<xs:attribute name="breiteUeberschrift" type="xs:int" use="optional"/>
+			<xs:attribute name="hoeheUeberschrift" type="xs:int" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GmlKlassenVisual">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Darstellung" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="gmlKlassenName" type="xs:string" use="required"/>
+			<xs:attribute name="priorityFlaechendarstellung" type="xs:int" use="optional"/>
+			<xs:attribute name="priorityLiniendarstellung" type="xs:int" use="optional"/>
+			<xs:attribute name="priorityPunktdarstellung" type="xs:int" use="optional"/>
+			<xs:attribute name="selectAttribut1" type="xs:string" use="optional"/>
+			<xs:attribute name="selectAttribut2" type="xs:string" use="optional"/>
+			<xs:attribute name="defaultSymbol" type="xs:IDREF" use="optional"/>
+			<xs:attribute name="defaultSymbolSize" type="xs:float" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Darstellung" type="DarstellungType" abstract="true"/>
+	<xs:complexType name="DarstellungType">
+		<xs:sequence>
+			<xs:element name="SelectAttributWert1" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="SelectAttributWert2" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="default" type="xs:boolean" use="optional" default="false"/>
+	</xs:complexType>
+	<xs:element name="FlaechenDarstellung" substitutionGroup="Darstellung">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="DarstellungType">
+					<xs:sequence>
+						<xs:element ref="FlaechenParams" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="LineTextParams" minOccurs="0"/>
+						<xs:element ref="LineSymbolParams" minOccurs="0"/>
+					</xs:sequence>
+					<xs:attribute name="deckend" type="xs:boolean" use="optional" default="false"/>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="LinienDarstellung" substitutionGroup="Darstellung">
+		<xs:complexType>
+			
+			<xs:complexContent>
+				<xs:extension base="DarstellungType">
+					<xs:sequence>
+						<xs:element ref="LinienParams" minOccurs="0" maxOccurs="unbounded"/>
+						<xs:element ref="LineTextParams" minOccurs="0"/>
+						<xs:element ref="LineSymbolParams" minOccurs="0"/>
+					</xs:sequence>
+					<xs:attribute name="startMarker" use="optional" type="xs:IDREF"/>		
+					<xs:attribute name="endMarker" use="optional" type="xs:IDREF"/>	
+				</xs:extension>
+			</xs:complexContent>
+					
+		</xs:complexType>
+		
+	</xs:element>
+	<xs:element name="PunktDarstellung" substitutionGroup="Darstellung">
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="DarstellungType">
+					<xs:attribute name="attributA" type="xs:string" use="optional"/>
+					<xs:attribute name="attributB" type="xs:string" use="optional"/>
+					<xs:attribute name="textStyle" type="xs:IDREF" use="optional"/>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>-----------  Farbe------------------------------------------</xs:documentation>
+	</xs:annotation>
+	<xs:complexType name="ColorType">
+		<xs:attribute name="r" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:int">
+					<xs:minInclusive value="0"/>
+					<xs:maxInclusive value="255"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="g" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:int">
+					<xs:minInclusive value="0"/>
+					<xs:maxInclusive value="255"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="b" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:int">
+					<xs:minInclusive value="0"/>
+					<xs:maxInclusive value="255"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:element name="None"/>
+	<xs:element name="ColorName">
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:enumeration value="aqua"/>
+				<xs:enumeration value="black"/>
+				<xs:enumeration value="blue"/>
+				<xs:enumeration value="fuchsia"/>
+				<xs:enumeration value="gray"/>
+				<xs:enumeration value="green"/>
+				<xs:enumeration value="lime"/>
+				<xs:enumeration value="maroon"/>
+				<xs:enumeration value="navy"/>
+				<xs:enumeration value="olive"/>
+				<xs:enumeration value="purple"/>
+				<xs:enumeration value="red"/>
+				<xs:enumeration value="silver"/>
+				<xs:enumeration value="teal"/>
+				<xs:enumeration value="white"/>
+				<xs:enumeration value="yellow"/>
+			</xs:restriction>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="Color">
+		<xs:complexType mixed="0">
+			<xs:complexContent mixed="0">
+				<xs:extension base="ColorType"/>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="FillColor">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="None"/>
+				<xs:element ref="ColorName"/>
+				<xs:element ref="Color"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="StrokeColor">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element ref="None"/>
+				<xs:element ref="ColorName"/>
+				<xs:element ref="Color"/>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:annotation>
+		<xs:documentation>---------- Symbole</xs:documentation>
+	</xs:annotation>
+	<xs:element name="Symbol">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element ref="Path"/>
+				<xs:element ref="Circle"/>
+				<xs:element ref="Rect"/>
+				<xs:element ref="Text"/>
+			</xs:choice>
+			<xs:attribute name="name" type="xs:ID" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Style">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="FillColor"/>
+				<xs:element ref="StrokeColor"/>
+				<xs:element name="Fill-opacity" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:float">
+							<xs:minInclusive value="0"/>
+							<xs:maxInclusive value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="Stroke-width" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:float">
+							<xs:minInclusive value="0"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="Stroke-linecap" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="butt"/>
+							<xs:enumeration value="round"/>
+							<xs:enumeration value="square"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="Stroke-dasharray" type="xs:float" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="Stroke-dashoffset" type="xs:int" minOccurs="0"/>
+				<xs:element name="Font-size" type="xs:float" minOccurs="0"/>
+				<xs:element name="Font-weight" minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="bold"/>
+							<xs:enumeration value="lighter"/>
+							<xs:enumeration value="normal"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="Font-family" type="xs:string" minOccurs="0"/>
+				<xs:element name="Kerning" type="xs:float" minOccurs="0"/>
+				<xs:element name="Baseline-shift" type="xs:float" minOccurs="0"/>
+				<xs:element name="Baseline-shift-uom" type="xs:string" minOccurs="0"/>
+				<xs:element name="Text-anchor"  minOccurs="0">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="start"/>
+							<xs:enumeration value="middle"/>
+							<xs:enumeration value="end"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="styleName" type="xs:ID" use="required"/>
+			<xs:attribute use="optional" type="xs:boolean" name="scalable">
+				
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Path">
+		<xs:complexType>
+			<xs:attribute name="class" type="xs:IDREF" use="required"/>
+			<xs:attribute name="path" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Circle">
+		<xs:complexType>
+			<xs:attribute name="class" type="xs:IDREF" use="required"/>
+			<xs:attribute name="cx" type="xs:float" use="required"/>
+			<xs:attribute name="cy" type="xs:float" use="required"/>
+			<xs:attribute name="r" type="xs:float" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Rect">
+		<xs:complexType>
+			<xs:attribute name="class" type="xs:IDREF" use="required"/>
+			<xs:attribute name="x" type="xs:float" use="optional" default="0.0"/>
+			<xs:attribute name="y" type="xs:float" use="optional" default="0.0"/>
+			<xs:attribute name="width" type="xs:float" use="required"/>
+			<xs:attribute name="height" type="xs:float" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Text">
+		<xs:complexType>
+			<xs:attribute name="class" type="xs:string" use="required"/>
+			<xs:attribute name="size" type="xs:float" use="required"/>
+			<xs:attribute name="x" type="xs:float" use="required"/>
+			<xs:attribute name="y" type="xs:float" use="required"/>
+			<xs:attribute name="text" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Pattern">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element ref="Path"/>
+				<xs:element ref="Circle"/>
+				<xs:element ref="Rect"/>
+				<xs:element ref="Text"/>
+			</xs:choice>
+			<xs:attribute name="name" type="xs:ID" use="required"/>
+			<xs:attribute name="x" type="xs:float" use="required"/>
+			<xs:attribute name="y" type="xs:float" use="required"/>
+			<xs:attribute name="width" type="xs:float" use="required"/>
+			<xs:attribute name="height" type="xs:float" use="required"/>
+			<xs:attribute name="angle" type="xs:float" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Hatching">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="stroke-width" type="xs:float"/>
+				<xs:element name="line-dist" type="xs:float"/>
+				<xs:element ref="StrokeColor"/>
+				<xs:element ref="FillColor"/>
+				<xs:element name="HatchingType">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="horizontal"/>
+							<xs:enumeration value="vertical"/>
+							<xs:enumeration value="chequered"/>
+							<xs:enumeration value="lowerLeftToUpperRight"/>
+							<xs:enumeration value="upperLeftToLowerRight"/>
+							<xs:enumeration value="crossed"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="name" type="xs:ID" use="required"/>	
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="FlaechenParams">
+		<xs:complexType>
+			<xs:attribute name="class" type="xs:IDREF" use="required"/>
+			<xs:attribute name="clip" type="xs:boolean" use="optional" default="true"/>
+			<xs:attribute name="pattern" type="xs:IDREF" use="optional"/>
+			<xs:attribute name="hatching" type="xs:IDREF" use="optional"/> 
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="LinienParams">
+		<xs:complexType>
+			<xs:attribute name="class" type="xs:IDREF" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="PunktParams">
+		<xs:complexType>
+			<xs:attribute name="symbolId" type="xs:IDREF" use="required"/>
+			<xs:attribute name="symbolSize" type="xs:float" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="LineTextParams">
+		<xs:complexType mixed="false">
+			<xs:attribute name="class" type="xs:IDREF" use="required"/>
+			<xs:attribute name="text" type="xs:string" use="required"/>
+			<xs:attribute name="charSize" type="xs:float" use="optional" default="1.0"/>
+			<xs:attribute name="extraFont" type="xs:boolean" use="optional" default="false"/>
+			<xs:attribute name="wideChar" type="xs:boolean" use="optional" default="false"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="LineSymbolParams">
+		<xs:complexType>
+			<xs:attribute name="symbolId" type="xs:string" use="required"/>
+			<xs:attribute name="symbolDist" type="xs:float" use="optional"/>
+			<xs:attribute name="symbolSize" type="xs:float" use="optional"/>
+			<xs:attribute name="symbolAngle" use="optional" type="xs:decimal">
+				
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="SymbolTabelle">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="SymbolTabellenEintrag" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="attributWert" type="xs:string" use="required"/>
+						<xs:attribute name="symbolId" type="xs:IDREF" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="TextTabelle">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="TextTabellenEintrag" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:attribute name="attributWert" type="xs:string" use="required"/>
+						<xs:attribute name="textString" type="xs:string" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Enumeration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="EnumItem" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="nameA" type="xs:string" use="required"/>
+			<xs:attribute name="nameB" type="xs:string" use="optional"/>
+			<xs:attribute name="defaultSymbolSize" type="xs:float" use="optional"/>
+			<xs:attribute name="defaultTextStyle" type="xs:IDREF" use="optional"/>
+			<xs:attribute name="defaultTextSymbol" type="xs:IDREF" use="optional"/>
+			<xs:attribute name="defaultTextSymbolSize" type="xs:float" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="EnumItem">
+		<xs:complexType>
+			<xs:attribute name="schluesselNummerA" type="xs:string" use="required"/>
+			<xs:attribute name="schluesselNummerB" type="xs:string" use="optional"/>
+			<xs:attribute name="symbolId" type="xs:IDREF" use="optional"/>
+			<xs:attribute name="symbolSize" type="xs:float" use="optional"/>
+			<xs:attribute name="text" type="xs:string" use="optional"/>
+			<xs:attribute name="textStyle" type="xs:IDREF" use="optional"/>
+			<xs:attribute name="textSymbol" type="xs:IDREF" use="optional"/>
+			<xs:attribute name="textSymbolSize" type="xs:float" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="ExternalCodeList">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="EnumItem" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Marker">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded" minOccurs="1">
+				<xs:element ref="Path"/>
+			</xs:choice>
+			<xs:attribute name="name" use="required" type="xs:ID"/>
+			<xs:attribute name="viewBox" use="required" type="xs:string"/>			
+			<xs:attribute name="refX" use="required" type="xs:decimal"/>
+			<xs:attribute name="refY" use="required" type="xs:decimal"/>
+			<xs:attribute name="width" use="required" type="xs:decimal"/>
+			<xs:attribute name="height" use="required" type="xs:decimal"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -1,0 +1,3264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by Dr. Joachim Benner (FZK/IAI) -->
+<!--Parameter zur SVG-Visualisierung eine BPlanGML-Modells-->
+<!-- Version 1.0
+      Letzte Änderung: 25.5.2007      -->
+<SvgVisualisierung xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="SvgParameter.xsd"
+ gmlType="XPlanGML"
+ Masstab="1:2000"
+ datum="2006-11-28"
+ breiteUeberschrift="800"
+ hoeheUeberschrift="30">
+	<!--=================    Flächen  ==========================================================================
+	-->
+	<!-- BP_BaugebietsTeilFlaeche-->
+	<GmlKlassenVisual gmlKlassenName="BP_BaugebietsTeilFlaeche" priorityFlaechendarstellung="10" selectAttribut1="artDerBaulichenNutzung">
+		
+		<FlaechenDarstellung deckend="true">
+			<SelectAttributWert1>1000</SelectAttributWert1>
+			<SelectAttributWert1>1100</SelectAttributWert1>
+			<SelectAttributWert1>1200</SelectAttributWert1>
+			<SelectAttributWert1>1300</SelectAttributWert1>
+			<FlaechenParams class="Wohnbauflaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung deckend="true">
+			<SelectAttributWert1>1400</SelectAttributWert1>
+			<SelectAttributWert1>1500</SelectAttributWert1>
+			<SelectAttributWert1>1600</SelectAttributWert1>
+			<FlaechenParams class="GemischteBauflaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung deckend="true">
+			<SelectAttributWert1>1700</SelectAttributWert1>
+			<SelectAttributWert1>1800</SelectAttributWert1>
+			<FlaechenParams class="GewerblicheBauflaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung deckend="true">
+			<SelectAttributWert1>2000</SelectAttributWert1>
+			<SelectAttributWert1>2100</SelectAttributWert1>
+			<FlaechenParams class="SonderBauflaeche" clip="true"/>
+		</FlaechenDarstellung>
+			
+	</GmlKlassenVisual>
+	<!--FP_BebauungsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="FP_BebauungsFlaeche" priorityFlaechendarstellung="10" selectAttribut1="allgArtDerBaulNutzung">
+		<FlaechenDarstellung deckend="true">
+			<SelectAttributWert1>1000</SelectAttributWert1>
+			<FlaechenParams class="Wohnbauflaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung deckend="true">
+			<SelectAttributWert1>2000</SelectAttributWert1>
+			<FlaechenParams class="GemischteBauflaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung deckend="true">
+			<SelectAttributWert1>3000</SelectAttributWert1>
+			<FlaechenParams class="GewerblicheBauflaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung deckend="true">
+			<SelectAttributWert1>4000</SelectAttributWert1>
+			<FlaechenParams class="SonderBauflaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<GmlKlassenVisual gmlKlassenName="FP_KeineZentrAbwasserBeseitigungFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="KeineZentrAbwasserBeseitigungFlaeche" clip="true"/>
+			<LineSymbolParams symbolId="RsKeineZentrAbwasserBeseitigungFlaeche" symbolDist="5" symbolSize="0.6"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_Plan -->
+	<GmlKlassenVisual gmlKlassenName="BP_Plan" priorityFlaechendarstellung="5">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="RaeumlicherGeltungsbereichA" clip="false"/>
+			<FlaechenParams class="RaeumlicherGeltungsbereichB" clip="false"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_Bereich -->
+	<GmlKlassenVisual gmlKlassenName="BP_Bereich" priorityFlaechendarstellung="5">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="RaeumlicherGeltungsbereichA" clip="false"/>
+			<FlaechenParams class="RaeumlicherGeltungsbereichB" clip="false"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_Plan -->
+	<GmlKlassenVisual gmlKlassenName="FP_Plan" priorityFlaechendarstellung="5">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="RaeumlicherGeltungsbereichA" clip="false"/>
+			<FlaechenParams class="RaeumlicherGeltungsbereichB" clip="false"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_Bereich-->
+	<GmlKlassenVisual gmlKlassenName="FP_Bereich" priorityFlaechendarstellung="5">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="RaeumlicherGeltungsbereichA" clip="false"/>
+			<FlaechenParams class="RaeumlicherGeltungsbereichB" clip="false"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>	<!--BP_BesondererNutzungszweckFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_BesondererNutzungszweckFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="FlaecheMitBesonderemNutzungszweck" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	
+	<!--BP_UeberbaubareGrundstuecksFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_UeberbaubareGrundstuecksFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="UeberbaubareGrundstuecksflaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	
+	
+	<!--BP_PersGruppenBestimmteFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_PersGruppenBestimmteFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="PersGruppenBestimmteFlaeche" clip="false"/>
+			<LineSymbolParams symbolId="RsPersGruppenBestFlaeche" symbolSize="2" symbolDist="6"/>
+			<!--LineTextParams class="PersGruppenBestimmteFlaecheText" text="P" extraFont="false"/-->
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	
+	
+	<!--BP_FoerderungsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_FoerderungsFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="FoerderungsFlaeche"  clip="false"/>
+			<LineTextParams class="FoerderungsFlaecheText" text="F" extraFont="false"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	
+	<!--BP_TechnikBestimmteFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_TechnikBestimmteFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="TechnikBestimmteFlaeche" clip="false"/>
+			<LineTextParams class="TechnikBestimmteFlaecheText" text="9524"  wideChar="true" extraFont="false"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>	
+	
+	
+	<!--BP_GebaeudeFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_GebaeudeFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="GebaeudeFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	
+	<!-- BP_Abstandsflaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_AbstandsFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="NormalSchwarzStrich" clip="true"/>
+			<LineSymbolParams symbolId="RsAbstandsflaeche" symbolDist="4" symbolSize="1"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	
+	<!--BP_GruenFlaeche-->
+	<GmlKlassenVisual gmlKlassenName="BP_GruenFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="GruenFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_Gruen -->
+	<GmlKlassenVisual gmlKlassenName="FP_Gruen" priorityFlaechendarstellung="10" priorityPunktdarstellung="30">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="GruenFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<PunktDarstellung default="true" attributA="zweckbestimmung"/>
+	</GmlKlassenVisual>
+	<!--BP_Ausgleich -->
+	<GmlKlassenVisual gmlKlassenName="BP_Ausgleich" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="AusgleichA" clip="true"/>
+			<FlaechenParams class="AusgleichB" clip="true"/>
+			<FlaechenParams class="AusgleichC" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_AusgleichsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="FP_AusgleichsFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="AusgleichA" clip="true"/>
+			<FlaechenParams class="AusgleichB" clip="true"/>
+			<FlaechenParams class="AusgleichC" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_GemeinbedarfsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_GemeinbedarfsFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="GemeinbedarfFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_Gemeinbedarf -->
+	<GmlKlassenVisual gmlKlassenName="FP_Gemeinbedarf" priorityFlaechendarstellung="10" priorityPunktdarstellung="30">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="GemeinbedarfFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<PunktDarstellung default="true" attributA="zweckbestimmung"/>
+	</GmlKlassenVisual>
+	<!--BP_SpielSportanlagenFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_SpielSportanlagenFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="SpielSportanlagenFlaeche" clip="true"/>
+			<LineTextParams class="SpielSportanlagenRS" text=":"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_SpielSportanlage -->
+	<GmlKlassenVisual gmlKlassenName="FP_SpielSportanlage" priorityFlaechendarstellung="10" priorityPunktdarstellung="30">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="SpielSportanlagenFlaeche" clip="true"/>
+			<LineTextParams class="SpielSportanlagenRS" text=":"/>
+		</FlaechenDarstellung>
+		<PunktDarstellung default="true" attributA="zweckbestimmung"/>
+	</GmlKlassenVisual>
+	<!--BP_WasserwirtschaftsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_WasserwirtschaftsFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="WasserwirtschaftsFlaeche" clip="true"/>
+			<LineSymbolParams symbolId="RsWasserwirtschaftsFlaeche" symbolSize="0.05" symbolDist="4.5" symbolAngle="180"/>
+			<!--LineTextParams class="WasserwirtschaftRS" text="A" charSize="4"/-->
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!-- FP_Wasserwirtschaft-->
+	<GmlKlassenVisual gmlKlassenName="FP_Wasserwirtschaft" priorityFlaechendarstellung="10" priorityPunktdarstellung="30">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="WasserwirtschaftsFlaeche" clip="true"/>
+			<LineSymbolParams symbolId="RsWasserwirtschaftsFlaeche" symbolSize="0.05" symbolDist="4.5" symbolAngle="180"/>
+		</FlaechenDarstellung>
+		<PunktDarstellung default="true" attributA="zweckbestimmung"/>
+	</GmlKlassenVisual>
+	<!--BP_VorbHochwSchutzFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_VorbHochwSchutzFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="VorbHochwSchutz" clip="true"/>
+			<LineSymbolParams symbolId="RsVorbHochwSchutz" symbolDist="6" symbolSize="1"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_VorbHochwSchutz -->
+	<GmlKlassenVisual gmlKlassenName="FP_VorbHochwSchutz" priorityFlaechendarstellung="10" priorityPunktdarstellung="30">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="VorbHochwSchutz" clip="true"/>
+			<LineSymbolParams symbolId="RsVorbHochwSchutz" symbolDist="6" symbolSize="1"/>
+		</FlaechenDarstellung>
+		<PunktDarstellung default="true" attributA="zweckbestimmung"/>
+	</GmlKlassenVisual>
+	<!--BP_WasserrechtlicheFestsetzungsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_WasserrechtlicheFestsetzungsFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="WasserrechtlicheFestsetzungA" clip="true"/>
+			<FlaechenParams class="WasserrechtlicheFestsetzungB" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_Wasserrecht -->
+	<GmlKlassenVisual gmlKlassenName="FP_Wasserrecht" priorityFlaechendarstellung="10" priorityPunktdarstellung="30">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="WasserrechtlicheFestsetzungA" clip="true"/>
+			<FlaechenParams class="WasserrechtlicheFestsetzungB" clip="true"/>
+		</FlaechenDarstellung>
+		<PunktDarstellung default="true" attributA="zweckbestimmung"/>
+	</GmlKlassenVisual>
+	<!--BP_KennzeichnungsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_KennzeichnungsFlaeche" priorityFlaechendarstellung="10" selectAttribut1="zweckbestimmung">
+		<FlaechenDarstellung default="false">
+			<SelectAttributWert1>1000</SelectAttributWert1>
+			<FlaechenParams class="KennzeichnungsFlaeche" clip="true"/>
+			<LineTextParams class="KennzeichnungsRSA" text="x" charSize="4"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="KennzeichnungsFlaeche" clip="true"/>
+			<LineSymbolParams symbolId="RsNaturgewaltenBergbau" symbolDist="6" symbolSize="0.5"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_Kennzeichnung -->
+	<GmlKlassenVisual gmlKlassenName="FP_Kennzeichnung" priorityFlaechendarstellung="10" priorityPunktdarstellung="30" selectAttribut1="zweckbestimmung">
+		<FlaechenDarstellung>
+			<SelectAttributWert1>1000</SelectAttributWert1>
+			<FlaechenParams class="KennzeichnungsFlaeche" clip="true"/>
+			<LineSymbolParams symbolId="RsNaturgewaltenBergbau" symbolDist="6" symbolSize="0.5"/>
+		</FlaechenDarstellung>
+
+		<FlaechenDarstellung>
+			<SelectAttributWert1>2000</SelectAttributWert1>
+			<FlaechenParams class="KennzeichnungsFlaeche" clip="true"/>
+			<LineSymbolParams symbolId="RsNaturgewaltenBergbau" symbolDist="6" symbolSize="0.5"/>
+		</FlaechenDarstellung>
+		
+		<FlaechenDarstellung>
+			<SelectAttributWert1>3000</SelectAttributWert1>
+			<FlaechenParams class="KennzeichnungsFlaeche" clip="true"/>
+			<LineSymbolParams symbolId="RsNaturgewaltenBergbau" symbolDist="6" symbolSize="0.5"/>
+		</FlaechenDarstellung>
+		
+		
+		<FlaechenDarstellung>
+			<SelectAttributWert1>4000</SelectAttributWert1>
+			<FlaechenParams class="KennzeichnungsFlaeche" clip="true"/>
+			<LineTextParams class="KennzeichnungsRSA" text="x" charSize="4"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung>
+			<SelectAttributWert1>5000</SelectAttributWert1>
+			<FlaechenParams class="KennzeichnungsFlaeche" clip="true"/>
+			<LineSymbolParams symbolId="RsImmissionsschutz" symbolSize="0.5" symbolDist="10"/>
+		</FlaechenDarstellung>
+		
+		<LinienDarstellung>
+			<SelectAttributWert1>1000</SelectAttributWert1>
+			<LinienParams class="KennzeichnungsFlaeche"/>
+			<LineSymbolParams symbolId="RsNaturgewaltenBergbau" symbolDist="6" symbolSize="0.5"/>
+		</LinienDarstellung>
+		
+		<LinienDarstellung>
+			<SelectAttributWert1>2000</SelectAttributWert1>
+			<LinienParams class="KennzeichnungsFlaeche"/>
+			<LineSymbolParams symbolId="RsNaturgewaltenBergbau" symbolDist="6" symbolSize="0.5"/>
+		</LinienDarstellung>		
+
+		<LinienDarstellung>
+			<SelectAttributWert1>3000</SelectAttributWert1>
+			<LinienParams class="KennzeichnungsFlaeche"/>
+			<LineSymbolParams symbolId="RsNaturgewaltenBergbau" symbolDist="6" symbolSize="0.5"/>
+		</LinienDarstellung>
+		
+		<LinienDarstellung>
+			<SelectAttributWert1>4000</SelectAttributWert1>
+			<LinienParams class="KennzeichnungsFlaeche"/>
+			<LineTextParams class="KennzeichnungsRSA" text="x" charSize="4"/>
+		</LinienDarstellung>	
+		
+		<LinienDarstellung>
+			<SelectAttributWert1>5000</SelectAttributWert1>
+			<LinienParams class="KennzeichnungsFlaeche"/>
+			<LineSymbolParams symbolId="RsImmissionsschutz" symbolSize="0.5" symbolDist="4"/>
+		</LinienDarstellung>		
+		
+		<PunktDarstellung default="true" attributA="zweckbestimmung"/>
+	</GmlKlassenVisual>
+	<!--BP_StrassenVerkehrsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_StrassenVerkehrsFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="StrassenVerkehrsFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_GewaesserFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_GewaesserFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="WasserFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_Strassenverkehr -->
+	<GmlKlassenVisual gmlKlassenName="FP_Strassenverkehr" priorityFlaechendarstellung="10" priorityLiniendarstellung="20" 
+		priorityPunktdarstellung="30" selectAttribut1="zweckbestimmung" selectAttribut2="ebene">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="StrassenVerkehrsFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>1000</SelectAttributWert1>
+			<SelectAttributWert2>0</SelectAttributWert2>
+			<LinienParams class="AutobahnA"/>
+			<LinienParams class="AutobahnB"/>
+			<LinienParams class="AutobahnC"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+		<SelectAttributWert1>1000</SelectAttributWert1>
+		<SelectAttributWert2>1</SelectAttributWert2>
+		<LinienParams class="AutobahnA"/>
+		<LinienParams class="AutobahnB"/>
+		<LinienParams class="AutobahnC"/>
+		</LinienDarstellung>		
+		<LinienDarstellung>
+			<SelectAttributWert1>1000</SelectAttributWert1>
+			<SelectAttributWert2>-1</SelectAttributWert2>
+			<LinienParams class="AutobahnUnterirdischA"/>
+			<LinienParams class="AutobahnUnterirdischB"/>
+			<LinienParams class="AutobahnUnterirdischC"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>1100</SelectAttributWert1>
+			<SelectAttributWert2>0</SelectAttributWert2>
+			<LinienParams class="UeberoertlicherVerkehrA"/>
+			<LinienParams class="UeberoertlicherVerkehrB"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>1100</SelectAttributWert1>
+			<SelectAttributWert2>1</SelectAttributWert2>
+			<LinienParams class="UeberoertlicherVerkehrA"/>
+			<LinienParams class="UeberoertlicherVerkehrB"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>1100</SelectAttributWert1>
+			<SelectAttributWert2>-1</SelectAttributWert2>
+			<LinienParams class="UeberoertlicherVerkehrUnterirdischA"/>
+			<LinienParams class="UeberoertlicherVerkehrUnterirdischB"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>1200</SelectAttributWert1>
+			<SelectAttributWert2>0</SelectAttributWert2>
+			<LinienParams class="UeberoertlicherWeg"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>1200</SelectAttributWert1>
+			<SelectAttributWert2>1</SelectAttributWert2>
+			<LinienParams class="UeberoertlicherWeg"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>1200</SelectAttributWert1>
+			<SelectAttributWert2>-1</SelectAttributWert2>
+			<LinienParams class="UeberoertlicherWeg"/>
+		</LinienDarstellung>
+		<PunktDarstellung default="true" attributA="zweckbestimmung"/>
+	</GmlKlassenVisual>
+	<!--FP_Gewaesser -->
+	<GmlKlassenVisual gmlKlassenName="FP_Gewaesser" priorityFlaechendarstellung="10" priorityLiniendarstellung="20" priorityPunktdarstellung="30">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="WasserFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<LinienDarstellung default="true">
+			<LinienParams class="WasserLinie"/>
+		</LinienDarstellung>
+		<PunktDarstellung default="true" attributA="zweckbestimmung"/>
+	</GmlKlassenVisual>
+	
+	<!--BP_VerkehrsflaecheBesondererZweckbestimmung-->
+	<GmlKlassenVisual gmlKlassenName="BP_VerkehrsflaecheBesondererZweckbestimmung" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="VerkehrsflaecheBesondererZweckbestimmung"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_NebenanlagenFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_NebenanlagenFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="NebenanlagenFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_LuftverkehrFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_LuftverkehrFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="LuftverkehrFlaecheA" clip="true"/>
+			<FlaechenParams class="LuftverkehrFlaecheB" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_Luftverkehr -->
+	<GmlKlassenVisual gmlKlassenName="FP_Luftverkehr" priorityFlaechendarstellung="10" priorityPunktdarstellung="30">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="LuftverkehrFlaecheA" clip="true"/>
+			<FlaechenParams class="LuftverkehrFlaecheB" clip="true"/>
+		</FlaechenDarstellung>
+		<PunktDarstellung default="true" attributA="zweckbestimmung"/>
+	</GmlKlassenVisual>
+	<!-- BP_BahnVerkehr-->
+	<GmlKlassenVisual gmlKlassenName="BP_BahnVerkehr" selectAttribut1="zweckbestimmung" priorityFlaechendarstellung="10" priorityLiniendarstellung="20">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="BahnFlaeche" clip="false"/>
+		</FlaechenDarstellung>
+		<LinienDarstellung default="false">
+			<SelectAttributWert1>1100</SelectAttributWert1>
+			<LinienParams class="BahnLinie"/>
+			<LineSymbolParams symbolId="SymbolStrassenbahn" symbolDist="10" symbolSize="1"/>
+		</LinienDarstellung>
+		<LinienDarstellung default="false">
+			<SelectAttributWert1>1200</SelectAttributWert1>
+			<LinienParams class="BahnLinie"/>
+			<LineSymbolParams symbolId="LsSeilbahn" symbolDist="10" symbolSize="1"/>
+			</LinienDarstellung>
+		<LinienDarstellung default="true">
+			<LinienParams class="BahnLinie"/>
+		</LinienDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_Bahnverkehr -->
+	<GmlKlassenVisual gmlKlassenName="FP_Bahnverkehr" priorityFlaechendarstellung="10" priorityLiniendarstellung="20" selectAttribut1="zweckbestimmung">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="BahnFlaeche" clip="false"/>
+		</FlaechenDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>1100</SelectAttributWert1>
+			<LinienParams class="BahnLinie"/>
+			<LineSymbolParams symbolId="SymbolStrassenbahn" symbolDist="10" symbolSize="1"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>1200</SelectAttributWert1>
+			<LinienParams class="BahnLinie"/>
+			<LineSymbolParams symbolId="LsSeilbahn" symbolDist="10" symbolSize="1"/>
+		</LinienDarstellung>
+		<LinienDarstellung default="true">
+			<LinienParams class="NormalSchwarzStrich"/>
+		</LinienDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_GemeinschaftsanlagenFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_GemeinschaftsanlagenFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="GemeinschaftsanlagenFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_VerEntsorgungsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_VerEntsorgungsFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="VerEntsorgungsFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_VerEntsorgung -->
+	<GmlKlassenVisual gmlKlassenName="FP_VerEntsorgung" priorityFlaechendarstellung="10"  priorityLiniendarstellung="20" selectAttribut1="ebene" priorityPunktdarstellung="30">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="VerEntsorgungsFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>-1</SelectAttributWert1>
+			<LinienParams class="VerEntsorgungsleitung"/>
+			<LineSymbolParams symbolId="VerEntsorgungsleitungUnterirdisch" symbolDist="30" symbolSize="0.5"/>
+		</LinienDarstellung>
+		<LinienDarstellung default="true">
+			<LinienParams class="VerEntsorgungsleitung"/>
+			<LineSymbolParams symbolId="VerEntsorgungsleitungOberirdisch" symbolDist="30" symbolSize="0.5"/>
+		</LinienDarstellung>
+		<PunktDarstellung default="true" attributA="zweckbestimmung"/>
+	</GmlKlassenVisual>
+	<!--BP_Strassenkoerper -->
+	<GmlKlassenVisual gmlKlassenName="BP_Strassenkoerper" selectAttribut1="typ" priorityFlaechendarstellung="10" priorityLiniendarstellung="20">
+		<FlaechenDarstellung>
+			<SelectAttributWert1>1000</SelectAttributWert1>
+			<FlaechenParams clip="true" class="Strassenkoerper"/>
+			<LineSymbolParams symbolId="StrassenkoerperAufschuettung" symbolDist="6" symbolSize="1"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung>
+			<SelectAttributWert1>2000</SelectAttributWert1>
+			<FlaechenParams clip="true" class="Strassenkoerper"/>
+			<LineSymbolParams symbolId="StrassenkoerperAbgrabung" symbolDist="6" symbolSize="1"/>
+		</FlaechenDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>1000</SelectAttributWert1>
+			<LinienParams class="Strassenkoerper"/>
+			<LineSymbolParams symbolId="StrassenkoerperAufschuettung" symbolDist="6" symbolSize="1"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>2000</SelectAttributWert1>
+			<LinienParams class="Strassenkoerper"/>
+			<LineSymbolParams symbolId="StrassenkoerperAbgrabung" symbolDist="6" symbolSize="1"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>3000</SelectAttributWert1>
+			<LineSymbolParams symbolId="StrassenkoerperStuetzmauer" symbolDist="3" symbolSize="1"/>
+		</LinienDarstellung>
+	</GmlKlassenVisual>
+	<!-- BP_GenerischesObjekt-->
+	<GmlKlassenVisual gmlKlassenName="BP_GenerischesObjekt" selectAttribut1="flaechenschluss" selectAttribut2="zweckbestimmung" priorityFlaechendarstellung="10" 
+		 defaultSymbol="SymbolGenerischesObjekt" defaultSymbolSize="1" priorityLiniendarstellung="20">
+		<FlaechenDarstellung default="false">
+			<SelectAttributWert1>false</SelectAttributWert1>
+			<FlaechenParams class="GenerischesObjektRandA" clip="true"/>
+			<FlaechenParams class="GenerischesObjektRandB" clip="true"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="GenerischesObjektFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<LinienDarstellung default="true">
+			<LinienParams class="GenerischesObjektLinie"/>
+		</LinienDarstellung>
+		<PunktDarstellung default="true" attributA="zweckbestimmung" textStyle="GenerischesObjektTextA"/>
+		<!--PunktDarstellung default="true"/-->
+		
+	</GmlKlassenVisual>
+	<!--FP_GenerischesObjekt -->
+	<GmlKlassenVisual gmlKlassenName="FP_GenerischesObjekt" priorityFlaechendarstellung="10" priorityLiniendarstellung="20" 
+		defaultSymbol="SymbolGenerischesObjekt" defaultSymbolSize="1" selectAttribut2="zweckbestimmung" selectAttribut1="flaechenschluss">
+		<FlaechenDarstellung default="true">
+			<SelectAttributWert1>true</SelectAttributWert1>
+			<FlaechenParams class="GenerischesObjektFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung>
+			<SelectAttributWert1>false</SelectAttributWert1>
+			<FlaechenParams class="GenerischesObjektRandA" clip="true"/>
+			<FlaechenParams class="GenerischesObjektRandB" clip="true"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung>
+			<SelectAttributWert1>true</SelectAttributWert1>
+			<SelectAttributWert2>5500</SelectAttributWert2>
+			<FlaechenParams class="WaldFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+		<LinienDarstellung default="true">
+			<LinienParams class="GenerischesObjektLinie"/>
+		</LinienDarstellung>
+		<PunktDarstellung default="true" attributA="zweckbestimmung" textStyle="GenerischesObjektTextA"/>
+		
+	</GmlKlassenVisual>
+	<!--BP_WaldFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_WaldFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="WaldFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_WaldFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="FP_WaldFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="WaldFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_LandwirtschaftsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_LandwirtschaftsFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="LandwirtschaftsFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_LandwirtschaftsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="FP_LandwirtschaftsFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="LandwirtschaftsFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_Schutzgebiet -->
+	<GmlKlassenVisual gmlKlassenName="BP_Schutzgebiet" priorityFlaechendarstellung="10" priorityPunktdarstellung="30">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="SchutzgebietFlaecheA" clip="true"/>
+			<FlaechenParams class="SchutzgebietFlaecheB" clip="true"/>
+			<FlaechenParams class="SchutzgebietFlaecheC" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!-- FP_Schutzgebiet-->
+	<GmlKlassenVisual gmlKlassenName="FP_Schutzgebiet" priorityFlaechendarstellung="10" priorityPunktdarstellung="30" defaultSymbolSize="1">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="SchutzgebietFlaecheA" clip="true"/>
+			<FlaechenParams class="SchutzgebietFlaecheB" clip="true"/>
+			<FlaechenParams class="SchutzgebietFlaecheC" clip="true"/>
+		</FlaechenDarstellung>
+		<PunktDarstellung attributA="zweckbestimmung" default="true"/>
+	</GmlKlassenVisual>
+	<!--BP_AufschuettungsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_AufschuettungsFlaeche" defaultSymbol="SymbolAufschuettung" defaultSymbolSize="0.2" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="NormalSchwarzStrich" clip="true"/>
+			<LineSymbolParams symbolId="RsAufschuettung" symbolSize="1" symbolDist="2" symbolAngle="180"/>
+			<!--LineTextParams class="AufschuettungTextSignatur" text="9650" wideChar="true" charSize="1"/-->
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_AufschuettungsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="FP_AufschuettungsFlaeche" defaultSymbol="SymbolAufschuettung"  defaultSymbolSize="0.2" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="NormalSchwarzStrich" clip="true"/>
+			<LineSymbolParams symbolId="RsAufschuettung" symbolSize="1" symbolDist="2" symbolAngle="180"/>
+			<!--LineTextParams class="AufschuettungTextSignatur" text="9650" wideChar="true" charSize="1"/-->
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_AbgrabungsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_AbgrabungsFlaeche" defaultSymbol="SymbolAbgrabungBodenschaetze" defaultSymbolSize="0.2" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="NormalSchwarzStrich" clip="true"/>
+			<LineSymbolParams symbolId="RsAbgrabung" symbolSize="1" symbolDist="2" symbolAngle="180"/>
+			<!--LineTextParams class="AbgrabungBodenschaetzeTextSignatur" text="9650" wideChar="true" charSize="2"/-->
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_AbgrabungsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="FP_AbgrabungsFlaeche" defaultSymbol="SymbolAbgrabungBodenschaetze" defaultSymbolSize="0.2" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="NormalSchwarzStrich" clip="true"/>
+			<LineSymbolParams symbolId="RsAbgrabung" symbolSize="1" symbolDist="2" symbolAngle="180"/>
+			<!--LineTextParams class="AbgrabungBodenschaetzeTextSignatur" text="9650" wideChar="true" charSize="2"/-->
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_BodenschaetzeFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_BodenschaetzeFlaeche" defaultSymbol="SymbolAbgrabungBodenschaetze" defaultSymbolSize="0.2" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="NormalSchwarzStrich" clip="true"/>
+			<LineSymbolParams symbolId="RsAbgrabung" symbolSize="1" symbolDist="2" symbolAngle="180"/>
+			<!--LineTextParams class="AbgrabungBodenschaetzeTextSignatur" text="9650" wideChar="true" charSize="2"/-->
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_BodenschaetzeFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="FP_BodenschaetzeFlaeche" defaultSymbol="SymbolAbgrabungBodenschaetze" defaultSymbolSize="0.2" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="NormalSchwarzStrich" clip="true"/>
+			<LineSymbolParams symbolId="RsAbgrabung" symbolSize="1" symbolDist="2" symbolAngle="180"/>
+			<!--LineTextParams class="AbgrabungBodenschaetzeTextSignatur" text="9650" wideChar="true" charSize="2"/-->
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_SchutzPflegeEntwicklungsFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_SchutzPflegeEntwicklungsFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="SchuPflEntwA" clip="true"/>
+			<FlaechenParams class="SchuPflEntwB" clip="true"/>
+			<LineTextParams class="SchuPflEntwTextSignatur" text="9524" wideChar="true" charSize="4"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_SchutzPflegeEntwicklung -->
+	<GmlKlassenVisual gmlKlassenName="FP_SchutzPflegeEntwicklung" priorityFlaechendarstellung="10"  defaultSymbolSize="0.8" defaultSymbol="SymbolSchutzPflegeEntwicklung">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="SchuPflEntwA" clip="true"/>
+			<FlaechenParams class="SchuPflEntwB" clip="true"/>
+			<LineTextParams class="SchuPflEntwTextSignatur" text="9524" wideChar="true" charSize="4"/>
+		</FlaechenDarstellung>
+		<PunktDarstellung default="true" />
+		
+	</GmlKlassenVisual>
+	<!--BP_ErhaltungsBereichFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_ErhaltungsBereichFlaeche" priorityFlaechendarstellung="10" defaultSymbol="SymbolErhaltungsbereich" defaultSymbolSize="0.15">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="DenkmalschutzA" clip="true"/>
+			<FlaechenParams class="DenkmalschutzB" clip="true"/>
+			<FlaechenParams class="DenkmalschutzC" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_ErhaltungsSatzung -->
+	<GmlKlassenVisual gmlKlassenName="FP_Erhaltungssatzung" priorityFlaechendarstellung="10" priorityPunktdarstellung="30" defaultSymbol="SymbolErhaltungsbereich" defaultSymbolSize="0.15">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="DenkmalschutzA" clip="true"/>
+			<FlaechenParams class="DenkmalschutzB" clip="true"/>
+			<FlaechenParams class="DenkmalschutzC" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_DenkmalschutzEnsembleFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_DenkmalschutzEnsembleFlaeche" priorityFlaechendarstellung="10" defaultSymbol="SymbolDenkmalschutzEnsemble" defaultSymbolSize="0.15">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="DenkmalschutzA" clip="true"/>
+			<FlaechenParams class="DenkmalschutzB" clip="true"/>
+			<FlaechenParams class="DenkmalschutzC" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--FP_DenkmalschutzEnsemble -->
+	<GmlKlassenVisual gmlKlassenName="FP_DenkmalschutzEnsemble" priorityFlaechendarstellung="10" priorityPunktdarstellung="30" defaultSymbol="SymbolDenkmalschutzEnsemble" defaultSymbolSize="0.15">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="DenkmalschutzA" clip="true"/>
+			<FlaechenParams class="DenkmalschutzB" clip="true"/>
+			<FlaechenParams class="DenkmalschutzC" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_LuftreinhalteFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_LuftreinhalteFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="LuftreinhalteFlaeche" clip="true"/>
+			<LineSymbolParams symbolId="RsLuftreinhaltung" symbolSize="1" symbolDist="10"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!-- BP_Immissionsschutz-->
+	<GmlKlassenVisual gmlKlassenName="BP_Immissionsschutz" priorityFlaechendarstellung="10" priorityLiniendarstellung="20">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="Immissionsschutz" clip="true"/>
+			<LineSymbolParams symbolId="RsImmissionsschutz" symbolSize="0.5" symbolDist="4"/>
+		</FlaechenDarstellung>
+		<LinienDarstellung default="true">
+			<LinienParams class="Immissionsschutz"/>
+			<LineSymbolParams symbolId="RsImmissionsschutz" symbolSize="0.5" symbolDist="4"/>
+		</LinienDarstellung>
+	</GmlKlassenVisual>
+	<!-- FP_NutzungsbeschraenkungsFlaeche-->
+	<GmlKlassenVisual gmlKlassenName="FP_NutzungsbeschraenkungsFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="Immissionsschutz" clip="true"/>
+			<LineSymbolParams symbolId="RsImmissionsschutz" symbolSize="0.5" symbolDist="4"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	
+	<!--FP_VorbehalteFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="FP_VorbehalteFlaeche" priorityFlaechendarstellung="30">
+		<FlaechenDarstellung default="true" deckend="true">
+			<FlaechenParams class="VorbehalteFlaeche" clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	
+	<!--BP_FreiFlaeche -->
+	<GmlKlassenVisual gmlKlassenName="BP_FreiFlaeche" priorityFlaechendarstellung="10">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="FreiFlaeche" clip="true"/>
+			<LineSymbolParams symbolId="RsFreiFlaeche" symbolDist="4" symbolSize="1"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_Wegerecht -->
+	<GmlKlassenVisual gmlKlassenName="BP_Wegerecht" priorityFlaechendarstellung="10" priorityLiniendarstellung="20">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="Wegerecht" clip="true"/>
+			<LineSymbolParams symbolId="RsWegerecht" symbolDist="4" symbolSize="1"/>
+		</FlaechenDarstellung>
+		<LinienDarstellung default="true">
+			<LineSymbolParams symbolId="LsWegerecht" symbolDist="6" symbolSize="1"/>
+		</LinienDarstellung>
+	</GmlKlassenVisual>
+	<!--BP_Fachgesetz-->
+	<GmlKlassenVisual gmlKlassenName="BP_Fachgesetz" priorityFlaechendarstellung="10" priorityLiniendarstellung="20"  defaultSymbol="SymbolFachgesetz">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="FachgesetzA" clip="true"/>
+			<FlaechenParams class="FachgesetzB" clip="true"/>
+		</FlaechenDarstellung>
+		<LinienDarstellung default="true">
+			<LinienParams class="FachgesetzLinie"/>
+		</LinienDarstellung>
+		<PunktDarstellung default="true"/>
+	</GmlKlassenVisual>
+	<!--FP_Fachgesetz-->
+	<GmlKlassenVisual gmlKlassenName="FP_Fachgesetz" priorityFlaechendarstellung="10" priorityLiniendarstellung="20" defaultSymbol="SymbolFachgesetz">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="FachgesetzA" clip="true"/>
+			<FlaechenParams class="FachgesetzB" clip="true"/>
+		</FlaechenDarstellung>
+		<LinienDarstellung default="true">
+			<LinienParams class="FachgesetzLinie"/>
+		</LinienDarstellung>
+		<PunktDarstellung default="true"/>
+	</GmlKlassenVisual>
+	
+	<!-- FP_PriviligiertesVorhaben-->
+	<GmlKlassenVisual gmlKlassenName="FP_PriviligiertesVorhaben" priorityFlaechendarstellung="10" priorityLiniendarstellung="20" priorityPunktdarstellung="30">
+			<FlaechenDarstellung default="true">
+				<FlaechenParams class="NormalSchwarzStrich" clip="true"/>
+				<LineSymbolParams symbolId="RsPriviligiertesVorhaben" symbolDist="5" symbolSize="0.6"/>			
+			</FlaechenDarstellung>
+			<LinienDarstellung default="true">
+				<LinienParams class="PriviligiertesVorhabenLinie"/>
+			</LinienDarstellung>
+		<PunktDarstellung default="true" attributA="zweckbestimmung"/>
+	</GmlKlassenVisual>
+	
+	<!-- RP_Entwicklungsschwerpunkte -->
+	<GmlKlassenVisual gmlKlassenName="RP_Entwicklungsschwerpunkte" priorityFlaechendarstellung="10" selectAttribut1="festlegung">
+		<FlaechenDarstellung default="true">
+			<FlaechenParams class="Einzelhandelskonzentration"  clip="true"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	
+	
+	<!--=================     Linien  ==========================================================================
+	-->
+	<GmlKlassenVisual gmlKlassenName="BP_AnpflanzungBindungErhaltung" priorityFlaechendarstellung="10" priorityLiniendarstellung="20"
+		 defaultSymbolSize="0.4" priorityPunktdarstellung="30" selectAttribut1="massnahme" selectAttribut2="gegenstand">
+		<LinienDarstellung>
+			<SelectAttributWert1>2000</SelectAttributWert1>
+			<SelectAttributWert2>1000</SelectAttributWert2>
+			<LinienParams class="AnpflanzungBindungErhaltungsLinie"/>
+			<LineSymbolParams symbolId="SymbolAnpflanzungBaeume" symbolDist="15" symbolSize="0.2"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>1000</SelectAttributWert1>
+			<SelectAttributWert2>1000</SelectAttributWert2>
+			<LinienParams class="AnpflanzungBindungErhaltungsLinie"/>
+			<LineSymbolParams symbolId="SymbolErhaltungBaeume" symbolDist="15" symbolSize="0.2"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>2000</SelectAttributWert1>
+			<SelectAttributWert2>2000</SelectAttributWert2>
+			<LinienParams class="AnpflanzungBindungErhaltungsLinie"/>
+			<LineSymbolParams symbolId="SymbolAnpflanzungStraeucher" symbolDist="15" symbolSize="0.2"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>1000</SelectAttributWert1>
+			<SelectAttributWert2>2000</SelectAttributWert2>
+			<LinienParams class="AnpflanzungBindungErhaltungsLinie"/>
+			<LineSymbolParams symbolId="SymbolErhaltungStraeucher" symbolDist="15" symbolSize="0.2"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>2000</SelectAttributWert1>
+			<SelectAttributWert2>3000</SelectAttributWert2>
+			<LinienParams class="AnpflanzungBindungErhaltungsLinie"/>
+			<LineSymbolParams symbolId="SymbolAnpflanzungSonstige" symbolDist="15" symbolSize="0.2"/>
+		</LinienDarstellung>
+		<LinienDarstellung>
+			<SelectAttributWert1>1000</SelectAttributWert1>
+			<SelectAttributWert2>3000</SelectAttributWert2>
+			<LinienParams class="AnpflanzungBindungErhaltungsLinie"/>
+			<LineSymbolParams symbolId="SymbolErhaltungSonstige" symbolDist="15" symbolSize="0.2"/>
+		</LinienDarstellung>
+		<PunktDarstellung default="true" attributA="massnahme" attributB="gegenstand"/>
+		<FlaechenDarstellung>
+			<SelectAttributWert1>1000</SelectAttributWert1>
+			<SelectAttributWert2>9999</SelectAttributWert2>
+			<FlaechenParams class="AnpflanzungErhaltungFlaeche" clip="true"/>
+			<LineSymbolParams symbolId="ErhaltungsFlaecheSymbol" symbolDist="5" symbolSize="1"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung>
+			<SelectAttributWert1>2000</SelectAttributWert1>
+			<SelectAttributWert2>9999</SelectAttributWert2>
+			<FlaechenParams class="AnpflanzungErhaltungFlaeche" clip="true"/>
+			<LineSymbolParams symbolId="AnpflanzungsFlaecheSymbol" symbolDist="5" symbolSize="1"/>
+		</FlaechenDarstellung>
+		<FlaechenDarstellung>
+			<SelectAttributWert1>3000</SelectAttributWert1>
+			<SelectAttributWert2>9999</SelectAttributWert2>
+			<FlaechenParams class="AnpflanzungErhaltungFlaeche" clip="true"/>
+			<LineSymbolParams symbolId="ErhaltungsFlaecheSymbol" symbolDist="5" symbolSize="1"/>
+		</FlaechenDarstellung>
+	</GmlKlassenVisual>
+	<!-- -->
+	<GmlKlassenVisual gmlKlassenName="BP_VerEntsorgungsleitungLinie" priorityLiniendarstellung="20" selectAttribut1="ebene">
+		<LinienDarstellung default="false">
+			<SelectAttributWert1>-1</SelectAttributWert1>
+			<LinienParams class="VerEntsorgungsleitung"/>
+			<LineSymbolParams symbolId="VerEntsorgungsleitungUnterirdisch" symbolDist="30" symbolSize="0.5"/>
+		</LinienDarstellung>
+		<LinienDarstellung default="false">
+			<SelectAttributWert1>-2</SelectAttributWert1>
+			<LinienParams class="VerEntsorgungsleitung"/>
+			<LineSymbolParams symbolId="VerEntsorgungsleitungUnterirdisch" symbolDist="30" symbolSize="0.5"/>
+		</LinienDarstellung>
+		<LinienDarstellung default="true">
+			<SelectAttributWert1>0</SelectAttributWert1>
+			<LinienParams class="VerEntsorgungsleitung"/>
+			<LineSymbolParams symbolId="VerEntsorgungsleitungOberirdisch" symbolDist="30" symbolSize="0.5"/>
+		</LinienDarstellung>
+	</GmlKlassenVisual>
+	<!-- -->
+	<GmlKlassenVisual gmlKlassenName="BP_BauLinie" priorityLiniendarstellung="20">
+		<LinienDarstellung default="true">
+			<LinienParams class="BaulinieNeu"/>
+			<LineSymbolParams symbolId="BaulinieRS" symbolDist="3" symbolSize="1"/>
+		</LinienDarstellung>
+	</GmlKlassenVisual>
+	<!-- -->
+	<GmlKlassenVisual gmlKlassenName="BP_BauGrenze" priorityLiniendarstellung="20">
+		<LinienDarstellung default="true">
+			<LinienParams class="BaugrenzeNeu"/>
+			<LineSymbolParams symbolId="BaugrenzeRS" symbolDist="3" symbolSize="1"/>
+		</LinienDarstellung>
+	</GmlKlassenVisual>
+	<!-- -->
+	<GmlKlassenVisual gmlKlassenName="BP_FirstRichtungsLinie" priorityLiniendarstellung="20">
+		<LinienDarstellung default="true" startMarker="MarkerFirstrichtungAnfang" endMarker="MarkerFirstrichtungEnde">
+			<LinienParams class="FirstRichtungsLinie"/>
+		</LinienDarstellung>
+	</GmlKlassenVisual>
+	
+	<!-- -->
+	<GmlKlassenVisual gmlKlassenName="BP_NutzungsartenGrenze" priorityLiniendarstellung="20">
+		<LinienDarstellung default="true">
+			<LinienParams class="NutzungsartenGrenze"/>
+			<LineSymbolParams symbolId="SymbolKreisGefuellt" symbolDist="10" symbolSize="1"/>
+		</LinienDarstellung>
+	</GmlKlassenVisual>
+	<!-- -->
+	<GmlKlassenVisual gmlKlassenName="BP_StrassenbegrenzungsLinie" priorityLiniendarstellung="18">
+		<LinienDarstellung default="true">
+			<LinienParams class="StrassenbegrenzungslinieNeu"/>
+			<LineSymbolParams symbolId="StrassenBegrLinieRS" symbolDist="3" symbolSize="1"/>
+		</LinienDarstellung>
+	</GmlKlassenVisual>
+	<!-- -->
+	<GmlKlassenVisual gmlKlassenName="BP_BereichOhneEinAusfahrtLinie" priorityLiniendarstellung="20">
+		<LinienDarstellung default="true">
+			<LineSymbolParams symbolId="BereichOhneEinAusfahrt" symbolDist="10" symbolAngle="90" symbolSize="2.0" />
+		</LinienDarstellung>
+	</GmlKlassenVisual>
+	
+	<GmlKlassenVisual gmlKlassenName="BP_EinfahrtsbereichLinie" priorityLiniendarstellung="20">
+		<LinienDarstellung startMarker="MarkerEinfahrtsbereichAnfang" endMarker="MarkerEinfahrtsbereichEnde" default="true">
+			<LinienParams class="EinfahrtsbereichLinie"/>
+		</LinienDarstellung>
+	</GmlKlassenVisual>
+	<!--=================     Punkte ===========================================================================
+-->
+	<!-- -->
+	<GmlKlassenVisual gmlKlassenName="BP_EInfahrtPunkt" priorityPunktdarstellung="30" defaultSymbol="SymbolEinfahrt" defaultSymbolSize="5">
+	</GmlKlassenVisual>
+	<!-- -->
+	<GmlKlassenVisual gmlKlassenName="BP_DenkmalschutzEinzelanlagePunkt" priorityPunktdarstellung="30" defaultSymbol="SymbolDenkmalschutzEinzelanlage" defaultSymbolSize="2">
+		<PunktDarstellung default="true"/>
+	</GmlKlassenVisual>
+	<GmlKlassenVisual gmlKlassenName="BP_HoehenPunkt" priorityPunktdarstellung="30" defaultSymbol="SymbolHoehenpunkt" defaultSymbolSize="4">
+	</GmlKlassenVisual>
+	
+	<!-- =============== Präsentationsobjekte ====================================================================-->
+	<GmlKlassenVisual gmlKlassenName="XP_PPO" priorityPunktdarstellung="30" defaultSymbol="SymbolKreisOffen" defaultSymbolSize="5"/>
+	<GmlKlassenVisual gmlKlassenName="XP_PTO" priorityPunktdarstellung="30"/>
+	<GmlKlassenVisual gmlKlassenName="XP_LPO" priorityLiniendarstellung="20"/>
+	<GmlKlassenVisual gmlKlassenName="XP_LTO" priorityLiniendarstellung="20"/>
+	<GmlKlassenVisual gmlKlassenName="XP_FPO" priorityFlaechendarstellung="10"/>
+	<!--===============    Styles  =============================================================================
+-->
+	<Style styleName="NormalGruenGefuelltSymbol" scalable="false">
+		<FillColor>
+			<Color r="0" g="228" b="0"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style>
+	
+	<Style styleName="NormalGruenStrich" scalable="false">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="0" g="228" b="0"/>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>	
+	
+	
+	<Style styleName="NormalWeissGefuelltSymbol" scalable="false">
+		<FillColor>
+			<ColorName>white</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style>
+	<Style styleName="NormalSchwarzStrichWeissGefuelltSymbol">
+		<FillColor>
+			<ColorName>white</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="NormalSchwarzStrich">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="NormalSchwarzStrichRund">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+		<Stroke-linecap>round</Stroke-linecap>
+	</Style>
+	<Style styleName="NormalSchwarzStrichSymbol" scalable="false">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="DuennSchwarzStrich">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.2</Stroke-width>
+	</Style>
+	<Style styleName="DuennSchwarzStrichSymbol" scalable="false">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.2</Stroke-width>
+	</Style>
+	<Style styleName="MittelSchwarzStrichSymbol" scalable="false">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="DickSchwarzStrichSymbol" scalable="false">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>3</Stroke-width>
+	</Style>
+	<Style styleName="NormalSchwarzGefuellt">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style>
+	<Style styleName="NormalSchwarzGefuelltSymbol" scalable="false">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style>
+	<Style styleName="DuennSchwarzGefuelltSymbol" scalable="false">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.2</Stroke-width>
+	</Style>
+	<Style styleName="BoldWeissGefuelltSymbol" scalable="false">
+		<FillColor>
+			<ColorName>white</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		<Font-weight>bold</Font-weight>
+	</Style>
+	<Style styleName="BoldSchwarzGefuelltSymbol" scalable="false">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		<Font-weight>bold</Font-weight>
+	</Style>
+	<Style styleName="RaeumlicherGeltungsbereichA">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="0" g="0" b="0"/>
+		</StrokeColor>
+		<Stroke-width>4</Stroke-width>
+		<Stroke-dasharray>10</Stroke-dasharray>
+		<Stroke-dasharray>3</Stroke-dasharray>
+		<Stroke-dashoffset>1</Stroke-dashoffset>
+	</Style>
+	<Style styleName="RaeumlicherGeltungsbereichB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="Wohnbauflaeche">
+		<FillColor>
+			<Color r="255" g="138" b="111"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="WohnbauflaecheOR">
+		<FillColor>
+			<Color r="255" g="138" b="111"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		
+	</Style>
+	<Style styleName="GemischteBauflaeche">
+		<FillColor>
+			<Color r="168" g="112" b="0"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="GewerblicheBauflaeche">
+		<FillColor>
+			<Color r="192" g="192" b="192"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="SonderBauflaeche">
+		<FillColor>
+			<Color r="228" g="92" b="0"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="FlaecheMitBesonderemNutzungszweck">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="NebenanlagenFlaeche">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="255" g="0" b="0"/>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+		<Stroke-dasharray>1</Stroke-dasharray>
+		<Stroke-dasharray>1</Stroke-dasharray>
+	</Style>
+	<Style styleName="GemeinschaftsanlagenFlaeche">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="255" g="0" b="0"/>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+		<Stroke-dasharray>1</Stroke-dasharray>
+		<Stroke-dasharray>1</Stroke-dasharray>
+	</Style>
+	<Style styleName="UeberbaubareGrundstuecksflaeche">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>2</Stroke-width>
+	</Style>
+	<Style styleName="GemeinbedarfFlaeche">
+		<FillColor>
+			<Color r="255" g="0" b="112"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="SpielSportanlagenFlaeche">
+		<FillColor>
+			<ColorName>white</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="SpielSportanlagenRS">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		<Font-size>2</Font-size>
+		<Kerning>0.5</Kerning>
+		<Baseline-shift>-2</Baseline-shift>
+	</Style>
+	<Style styleName="WasserwirtschaftsFlaeche">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="WasserwirtschaftRS" scalable="false">
+		<FillColor>
+			<Color r="0" g="123" b="206"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		<Font-size>4</Font-size>
+		<Font-family>MyFonts</Font-family>
+		<Kerning>-0.1</Kerning>
+		<Baseline-shift>0.1</Baseline-shift>
+	</Style>
+	<Style styleName="VorbHochwSchutz">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="VorbHochwSchutzRs" scalable="false">
+		<FillColor>
+			<Color r="0" g="123" b="206"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style>
+	<Style styleName="WasserrechtlicheFestsetzungA">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="0" g="123" b="206"/>
+		</StrokeColor>
+		<Stroke-width>6</Stroke-width>
+	</Style>
+	<Style styleName="WasserrechtlicheFestsetzungB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<!--Style styleName="WasserrechtlicheFestsetzungRs">
+		<FillColor>
+			<Color r="0" g="123" b="206"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style-->
+	<Style styleName="PersGruppenBestimmteFlaeche">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	
+	<Style styleName="TechnikBestimmteFlaeche">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>	
+	
+	<Style styleName="FoerderungsFlaeche">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<!--Style styleName="PersGruppenBestimmteFlaecheText">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.2</Stroke-width>
+		<Font-size>2</Font-size>
+		<Kerning>4</Kerning>
+		<Baseline-shift>0</Baseline-shift>
+	</Style-->
+	
+	<Style styleName="TechnikBestimmteFlaecheText">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.2</Stroke-width>
+		<Font-size>2</Font-size>
+		<Kerning>4</Kerning>
+		<Baseline-shift>-2</Baseline-shift>
+	</Style>	
+	<Style styleName="FoerderungsFlaecheText">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.2</Stroke-width>
+		<Font-size>2</Font-size>
+		<Kerning>4</Kerning>
+		<Baseline-shift>0</Baseline-shift>
+	</Style>
+	<Style styleName="SymbolAnpflanzErhaltA" scalable="false">
+		<FillColor>
+			<ColorName>green</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+		<Font-size>4</Font-size>
+		<Kerning>4</Kerning>
+		<Baseline-shift>0</Baseline-shift>
+	</Style>
+	
+	<Style styleName="StyleErhaltungGewaesser" scalable="false">
+		<FillColor>
+			<Color r="117" g="199" b="255"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	
+	
+	<Style styleName="SymbolAnpflanzErhaltB" scalable="false">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+		<Font-size>4</Font-size>
+		<Kerning>4</Kerning>
+		<Baseline-shift>0</Baseline-shift>
+	</Style>
+	<Style styleName="SymbolAnpflanzErhaltC" scalable="false">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+		<Font-size>4</Font-size>
+		<Kerning>4</Kerning>
+		<Baseline-shift>0</Baseline-shift>
+	</Style>
+	<Style styleName="VerEntsorgungsleitung">
+		<FillColor>
+			<None>black</None>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1.0</Stroke-width>
+		<Font-size>4</Font-size>
+		<Kerning>4</Kerning>
+		<Baseline-shift>0</Baseline-shift>
+	</Style>
+	<Style styleName="SymbolVerEntsorgungsleitungOberirdisch" scalable="false">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="SymbolVerEntsorgungsleitungUnterirdisch" scalable="false">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="AnpflanzungBindungErhaltungsLinie">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style>
+	<Style styleName="GruenFlaeche">
+		<FillColor>
+			<Color r="0" g="228" b="8"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	
+	<Style styleName="VorbehalteFlaeche">
+		<FillColor>
+			<Color r="100" g="100" b="100"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="StrassenVerkehrsFlaeche">
+		<FillColor>
+			<Color r="255" g="220" b="69"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="AutobahnA">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>6</Stroke-width>
+	</Style>
+	<Style styleName="AutobahnUnterirdischA">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="128" g="128" b="128"/>
+		</StrokeColor>
+		
+		<Stroke-width>6</Stroke-width>
+	</Style>
+	<Style styleName="AutobahnB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="255" g="220" b="69"/>
+		</StrokeColor>
+		<Stroke-width>4</Stroke-width>
+	</Style>
+	<Style styleName="AutobahnUnterirdischB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			
+			<Color r="255" g="237" b="166"/>
+		</StrokeColor>
+		
+		<Stroke-width>4</Stroke-width>
+	</Style>
+	<Style styleName="AutobahnC">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="AutobahnUnterirdischC">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="128" g="128" b="128"/>
+		</StrokeColor>
+		
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="UeberoertlicherVerkehrA">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>6</Stroke-width>
+	</Style>
+	<Style styleName="UeberoertlicherVerkehrUnterirdischA">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="128" g="128" b="128"/>
+		</StrokeColor>
+		
+		<Stroke-width>6</Stroke-width>
+	</Style>
+	<Style styleName="UeberoertlicherVerkehrB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="255" g="220" b="69"/>
+		</StrokeColor>
+		<Stroke-width>4</Stroke-width>
+	</Style>
+	<Style styleName="UeberoertlicherVerkehrUnterirdischB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="255" g="237" b="166"/>
+		</StrokeColor>
+		
+		<Stroke-width>4</Stroke-width>
+	</Style>
+	<Style styleName="UeberoertlicherWeg">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>2</Stroke-width>
+		<Stroke-dasharray>2</Stroke-dasharray>
+		<Stroke-dasharray>2</Stroke-dasharray>
+	</Style>
+	<Style styleName="VBZ">
+		<FillColor>
+			<Color r="255" g="220" b="69"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style>
+	<Style styleName="WasserFlaeche">
+		<FillColor>
+			<Color r="117" g="199" b="255"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="Baulinie" scalable="false">
+		<FillColor>
+			<Color r="255" g="51" b="0"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="BaulinieNeu">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="Baugrenze" scalable="false">
+		<FillColor>
+			<Color r="0" g="102" b="255"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="BaugrenzeNeu">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="NutzungsartenGrenze">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="0" g="0" b="0"/>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="Strassenbegrenzungslinie" scalable="false">
+		<FillColor>
+			<Color r="153" g="204" b="0"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="StrassenbegrenzungslinieNeu">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	
+	<Style styleName="EinfahrtsbereichLinie">
+		
+		<FillColor><None/></FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+		<Stroke-dasharray>2</Stroke-dasharray>
+		<Stroke-dasharray>2</Stroke-dasharray>
+	</Style>
+	
+	<Style styleName="LuftverkehrFlaecheA">
+		<FillColor>
+			<Color r="235" g="222" b="235"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="LuftverkehrFlaecheB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="204" g="51" b="153"/>
+		</StrokeColor>
+		<Stroke-width>4</Stroke-width>
+	</Style>
+	<Style styleName="SchutzgebietFlaecheA">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="0" g="128" b="0"/>
+		</StrokeColor>
+		<Stroke-width>4</Stroke-width>
+	</Style>
+	<Style styleName="SchutzgebietFlaecheB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>4</Stroke-width>
+		<Stroke-linecap>butt</Stroke-linecap>
+		<Stroke-dasharray>0.6</Stroke-dasharray>
+		<Stroke-dasharray>0.6</Stroke-dasharray>
+		<Stroke-dasharray>0.6</Stroke-dasharray>
+		<Stroke-dasharray>0.6</Stroke-dasharray>
+		<Stroke-dasharray>0.6</Stroke-dasharray>
+		<Stroke-dasharray>0.6</Stroke-dasharray>
+		<Stroke-dasharray>0.6</Stroke-dasharray>
+		<Stroke-dasharray>12</Stroke-dasharray>
+	</Style>
+	<Style styleName="SchutzgebietFlaecheC">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="BahnFlaeche">
+		<FillColor>
+			<Color r="255" g="183" b="231"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style>
+	<Style styleName="BahnLinie">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="255" g="183" b="231"/>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="BahnLinieSymbol" scalable="false">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="255" g="183" b="231"/>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="VerkehrsflaecheBesondererZweckbestimmung">
+		<FillColor>
+			<Color r="255" g="220" b="69"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Fill-opacity>0.5</Fill-opacity>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="VerEntsorgungsFlaeche">
+		<FillColor>
+			<Color r="255" g="236" b="153"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="SchutzPflegeEntwicklungA">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>4</Stroke-width>
+		<Stroke-dasharray>5 </Stroke-dasharray>
+		<Stroke-dasharray>3</Stroke-dasharray>
+	</Style>
+	<Style styleName="SchutzPflegeEntwicklungB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="0" g="128" b="0"/>
+		</StrokeColor>
+		<Stroke-width>3.5</Stroke-width>
+	</Style>
+	<Style styleName="SchutzPflegeEntwicklungC">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>3.5</Stroke-width>
+		<Stroke-dasharray>0.5</Stroke-dasharray>
+		<Stroke-dasharray>7.5</Stroke-dasharray>
+		<Stroke-dashoffset>5</Stroke-dashoffset>
+	</Style>
+	<Style styleName="SchutzPflegeEntwicklungD">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="GenerischesObjektFlaeche">
+		<FillColor>
+			<Color r="97" g="0" b="193"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>2</Stroke-width>
+	</Style>
+	<Style styleName="GenerischesObjektRandB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>2</Stroke-width>
+	</Style>
+	<Style styleName="GenerischesObjektRandA">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="97" g="0" b="193"/>
+		</StrokeColor>
+		<Stroke-width>6</Stroke-width>
+	</Style>
+	<Style styleName="GenerischesObjektLinie">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="97" g="0" b="193"/>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="GenerischesObjektSymbol" scalable="false">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="97" g="0" b="193"/>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="GenerischesObjektText" scalable="false">
+		<FillColor>
+			<Color r="97" g="0" b="193"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style>
+	<Style styleName="GenerischesObjektTextA">
+		<FillColor>
+			<Color r="97" g="0" b="193"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		<Font-size>4</Font-size>
+		<Baseline-shift>-30</Baseline-shift>
+		<Baseline-shift-uom>%</Baseline-shift-uom>
+		<Text-anchor>start</Text-anchor>
+	</Style>
+	<Style styleName="KennzeichnungsFlaeche">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="0" g="0" b="0"/>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="KennzeichnungsRSA">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		<Font-size>4</Font-size>
+		<Kerning>3</Kerning>
+		<Baseline-shift>-2</Baseline-shift>
+	</Style>
+	<Style styleName="KennzeichnungsRSB">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		<Font-size>4</Font-size>
+		<Kerning>10</Kerning>
+		<Baseline-shift>0.5</Baseline-shift>
+	</Style>
+	<Style styleName="WaldFlaeche">
+		<FillColor>
+			<Color r="51" g="153" b="102"/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="0" g="0" b="0"/>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="AufforstungA">
+		<FillColor>
+			<Color r="51" g="153" b="102"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style>
+	<Style styleName="AufforstungB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="254" g="169" b="0"/>
+		</StrokeColor>
+		<Stroke-width>6</Stroke-width>
+	</Style>
+	<!--Style styleName="AufschuettungLinie">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>4</Stroke-width>
+	</Style-->
+	<!--Style styleName="AbgrabungBodenschaetzeLinie">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1.0</Stroke-width>
+	</Style-->
+	<!--Style styleName="AbgrabungBodenschaetzeTextSignatur">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		<Font-size>2.9</Font-size>
+		<Kerning>-0.8</Kerning>
+		<Baseline-shift>-3.0</Baseline-shift>
+	</Style-->
+	<!--Style styleName="AufschuettungTextSignatur">
+		<FillColor>
+			<ColorName>white</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+		<Font-size>2.9</Font-size>
+		<Kerning>-0.8</Kerning>
+		<Baseline-shift>-3.0</Baseline-shift>
+	</Style-->
+	<Style styleName="LandwirtschaftsFlaeche">
+		<FillColor>
+			<Color r="153" g="204" b="0"/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	<Style styleName="SchuPflEntwA">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="0" g="128" b="0"/>
+		</StrokeColor>
+		<Stroke-width>8</Stroke-width>
+	</Style>
+	<Style styleName="SchuPflEntwB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>2</Stroke-width>
+	</Style>
+	<Style styleName="SchuPflEntwTextSignatur">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Font-size>4</Font-size>
+		<Kerning>5.0</Kerning>
+		<Baseline-shift>-4.2</Baseline-shift>
+	</Style>
+	<Style styleName="DenkmalschutzA">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>5</Stroke-width>
+	</Style>
+	<Style styleName="DenkmalschutzB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="255" g="51" b="0"/>
+		</StrokeColor>
+		<Stroke-width>4</Stroke-width>
+		<Stroke-dasharray>6</Stroke-dasharray>
+		<Stroke-dasharray>1</Stroke-dasharray>
+	</Style>
+	<Style styleName="DenkmalschutzC">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="AnpflanzungErhaltungFlaeche">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>2</Stroke-width>
+	</Style>
+	<Style styleName="Strassenkoerper">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="SymbolStrassenkoerper" scalable="false">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		
+		<Stroke-width>0.5</Stroke-width>
+		<Stroke-dasharray>1</Stroke-dasharray>
+		<Stroke-dasharray>1</Stroke-dasharray>
+	</Style>
+	<Style styleName="AusgleichA">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>8</Stroke-width>
+	</Style>
+	<Style styleName="AusgleichB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="128" g="128" b="128"/>
+		</StrokeColor>
+		<Stroke-width>7</Stroke-width>
+	</Style>
+	<Style styleName="AusgleichC">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>2</Stroke-width>
+	</Style>
+	<Style styleName="GebaeudeFlaeche">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Fill-opacity>0.5</Fill-opacity>
+		<Stroke-width>2</Stroke-width>
+	</Style>
+	<Style styleName="LuftreinhalteFlaeche">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>2</Stroke-width>
+	</Style>
+	<Style styleName="Immissionsschutz">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="FreiFlaeche">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>2</Stroke-width>
+	</Style>
+	
+	<Style styleName="Wegerecht">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="FachgesetzA">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="255" g="255" b="0"/>
+		</StrokeColor>
+		<Stroke-width>3</Stroke-width>
+	</Style>
+	<Style styleName="FachgesetzB">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="FachgesetzLinie">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="255" g="255" b="0"/>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	
+	<Style styleName="FirstRichtungsLinie">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	
+	<Style styleName="NaturgewaltenBergbau" scalable="false">
+		<FillColor>
+			<Color r="128" g="128" b="128"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style>
+	<Style styleName="WasserLinie">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="117" g="199" b="255"/>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	<Style styleName="KeineZentrAbwasserBeseitigungFlaeche">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="255" g="255" b="0"/>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	
+	<Style styleName="PriviligiertesVorhaben" scalable="false">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="255" g="0" b="112"/>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>
+	
+	<Style styleName="PriviligiertesVorhabenLinie">
+		<FillColor>
+		<None/>
+		</FillColor>
+		<StrokeColor>
+			<Color r="255" g="0" b="112"/>
+		</StrokeColor>
+		<Stroke-width>0.5</Stroke-width>
+	</Style>	
+	
+	<Style styleName="FillYellow" scalable="false">
+		<FillColor>
+			<Color r="255" g="255" b="0"/>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style>
+	
+	<!--  Text-Styles
+	-->
+	<Style styleName="TextDefault">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None></None>
+		</StrokeColor>
+		<Font-size>3.5</Font-size>
+		<Font-family>Arial</Font-family>
+		<Baseline-shift>-30</Baseline-shift>
+		<Baseline-shift-uom>%</Baseline-shift-uom>
+		<Text-anchor>middle</Text-anchor>
+		
+	</Style>
+	<Style styleName="TextDefaultSymbol" scalable="false">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None></None>
+		</StrokeColor>
+		<Font-size>3.5</Font-size>
+		<Font-family>Arial</Font-family>
+		<Baseline-shift>-30</Baseline-shift>
+		<Baseline-shift-uom>%</Baseline-shift-uom>
+		<Text-anchor>middle</Text-anchor>
+		
+	</Style>
+	<Style styleName="TextNormal2">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None></None>
+		</StrokeColor>
+		<Font-size>2</Font-size>
+		<Font-weight>normal</Font-weight>
+		<Font-family>Arial</Font-family>
+		<Text-anchor>middle</Text-anchor>
+	</Style>
+	
+	<Style styleName="TextPriviligiertesVorhaben">
+		<FillColor>
+		<Color r="255" g="0" b="112"/>
+		</FillColor>
+		<StrokeColor>
+			<None></None>
+		</StrokeColor>
+		<Font-size>2</Font-size>
+		<Font-weight>normal</Font-weight>
+		<Font-family>Arial</Font-family>
+		<Text-anchor>middle</Text-anchor>
+		
+	</Style>	
+	
+	<Style styleName="TextBold2">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None></None>
+		</StrokeColor>
+		<Font-size>2</Font-size>
+		<Font-weight>bold</Font-weight>
+		<Font-family>Arial</Font-family>
+		<Text-anchor>middle</Text-anchor>
+		
+	</Style>	
+	
+	<Style styleName="TextNormal4">
+	<FillColor>
+		<ColorName>black</ColorName>
+	</FillColor>
+	<StrokeColor>
+		<None></None>
+	</StrokeColor>
+	<Font-size>4</Font-size>
+	<Font-weight>normal</Font-weight>
+	<Font-family>Arial</Font-family>
+	<Text-anchor>middle</Text-anchor>
+	</Style>
+	
+	<Style styleName="TextBold4">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None></None>
+		</StrokeColor>
+		<Font-size>4</Font-size>
+		<Font-weight>bold</Font-weight>
+		<Font-family>Arial</Font-family>
+		<Text-anchor>middle</Text-anchor>
+	
+	</Style>		
+	
+	<Style styleName="TextNormal16">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None></None>
+		</StrokeColor>
+		<Font-size>16</Font-size>
+		<Font-weight>normal</Font-weight>
+		<Font-family>Arial</Font-family>
+		<Text-anchor>middle</Text-anchor>
+		
+	</Style>
+	
+	<Style styleName="TextNormal8">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None></None>
+		</StrokeColor>
+		<Font-size>8</Font-size>
+		<Font-weight>normal</Font-weight>
+		<Font-family>Arial</Font-family>
+		<Text-anchor>middle</Text-anchor>
+		
+	</Style>	
+	
+	<Style styleName="TextBold8">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None></None>
+		</StrokeColor>
+		<Font-size>8</Font-size>
+		<Font-weight>bold</Font-weight>
+		<Font-family>Arial</Font-family>
+		<Text-anchor>middle</Text-anchor>
+		
+	</Style>		
+	
+	<Style styleName="TextBold16">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None></None>
+		</StrokeColor>
+		<Font-size>16</Font-size>
+		<Font-weight>bold</Font-weight>
+		<Font-family>Arial</Font-family>
+		<Text-anchor>middle</Text-anchor>
+		
+	</Style>	
+	
+	<Style styleName="TextNormal">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None></None>
+		</StrokeColor>
+		<Font-weight>normal</Font-weight>
+		<Font-family>Arial</Font-family>
+		<Text-anchor>middle</Text-anchor>
+		
+	</Style>
+	
+	<Style styleName="TextBoldSymbol" scalable="false">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None></None>
+		</StrokeColor>
+		
+		<Font-weight>bold</Font-weight>
+		<Font-family>Arial</Font-family>
+		<Text-anchor>middle</Text-anchor>
+		
+	</Style>		
+	
+	<Style styleName="LinieDefault">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		<Stroke-width>1</Stroke-width>
+	</Style>
+	
+	<Style styleName="LinieGestrichelt05">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		
+		<Stroke-width>0.5</Stroke-width>
+		<Stroke-dasharray>1</Stroke-dasharray>
+		<Stroke-dasharray>1</Stroke-dasharray>
+	</Style>
+	
+	<Style styleName="Linie05">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		
+		<Stroke-width>0.5</Stroke-width>
+	</Style>	
+	
+	<Style styleName="Linie2">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		
+		<Stroke-width>2</Stroke-width>
+	</Style>	
+	
+	<Style styleName="LinieGestrichelt2">
+		<FillColor>
+			<None/>
+		</FillColor>
+		<StrokeColor>
+			<ColorName>black</ColorName>
+		</StrokeColor>
+		
+		<Stroke-width>2</Stroke-width>
+		<Stroke-dasharray>1</Stroke-dasharray>
+		<Stroke-dasharray>1</Stroke-dasharray>
+	</Style>	
+	
+	<Style styleName="Einzelhandelskonzentration">
+		<FillColor>
+			<ColorName>black</ColorName>
+		</FillColor>
+		<StrokeColor>
+			<None/>
+		</StrokeColor>
+	</Style>
+	
+	<!--=================   Symbols  ===========================================================================-->
+	<Symbol name="SymbolSchutzPflegeEntwicklung">
+		<Circle class="SymbolAnpflanzErhaltA" cx="0" cy="0" r="6"/>
+	</Symbol>
+	<Symbol name="SymbolAnpflanzungStraeucher">
+		<Path class="SymbolAnpflanzErhaltA" path="M -4.242,-4.242A 6.0  6.0 0 0 1 4.242  -4.242  
+			A 5 5 0 1 1 4.242 4.242 A 6.0  6.0 0 0 1 -4.242  4.242  A 5 5 0 1 1 -4.242 -4.242"/>
+	</Symbol>
+	<Symbol name="SymbolAnpflanzungBaeume">
+		<Circle class="SymbolAnpflanzErhaltA" cx="0" cy="0" r="6"/>
+		<Circle class="SymbolAnpflanzErhaltB" cx="0" cy="0" r="0.8"/>
+	</Symbol>
+	<Symbol name="SymbolAnpflanzungSonstige">
+		<Path class="SymbolAnpflanzErhaltA" path="M -4.242,-4.242A 6.0  6.0 0 0 1 4.242  -4.242  
+			A 5 5 0 1 1 4.242 4.242 A 6.0  6.0 0 0 1 -4.242  4.242  A 5 5 0 1 1 -4.242 -4.242"/>
+		<Path class="SymbolAnpflanzErhaltB" path="M-7,-4.242 h14 v8.484 h-14 z "/>
+	</Symbol>
+	<Symbol name="SymbolErhaltungStraeucher">
+		<Path class="SymbolAnpflanzErhaltA" path="M -4.242,-4.242A 6.0  6.0 0 0 1 4.242  -4.242  
+			A 5 5 0 1 1 4.242 4.242 A 6.0  6.0 0 0 1 -4.242  4.242  A 5 5 0 1 1 -4.242 -4.242"/>
+		<Circle class="SymbolAnpflanzErhaltC" cx="0" cy="0" r="0.8"/>
+	</Symbol>
+	
+	<Symbol name="SymbolErhaltungBaeume">
+		<Circle class="SymbolAnpflanzErhaltA" cx="0" cy="0" r="6"/>
+		<Circle class="SymbolAnpflanzErhaltC" cx="0" cy="0" r="0.8"/>
+	</Symbol>
+	
+	<Symbol name="SymbolErhaltungGewaesser">
+		<Circle class="StyleErhaltungGewaesser" cx="0" cy="0" r="6"/>
+		<Circle class="SymbolAnpflanzErhaltC" cx="0" cy="0" r="0.8"/>
+	</Symbol>
+	
+	<Symbol name="SymbolErhaltungSonstige">
+		<Path class="SymbolAnpflanzErhaltA" path="M -4.242,-4.242A 6.0  6.0 0 0 1 4.242  -4.242  
+			A 5 5 0 1 1 4.242 4.242 A 6.0  6.0 0 0 1 -4.242  4.242  A 5 5 0 1 1 -4.242 -4.242"/>
+		<Path class="SymbolAnpflanzErhaltB" path="M-7,-4.242 h14 v8.484 h-14 z "/>
+		<Circle class="SymbolAnpflanzErhaltC" cx="0" cy="0" r="0.8"/>
+	</Symbol>
+	<Symbol name="SymbolAusgleich">
+		<Circle class="SymbolAnpflanzErhaltA" cx="0" cy="0" r="10"/>
+		<Text class="NormalSchwarzStrichSymbol" size="12" x="0" y="2" text="A"/>
+	</Symbol>
+	<Symbol name="VerEntsorgungsleitungOberirdisch">
+		<Path class="SymbolVerEntsorgungsleitungOberirdisch" path="M -4,0 L 0,4 L4,0 L 0,-4 z"/>
+	</Symbol>
+	<Symbol name="VerEntsorgungsleitungUnterirdisch">
+		<Path class="SymbolVerEntsorgungsleitungUnterirdisch" path="M -4,0 L 0,4 L4,0 L 0,-4 z"/>
+	</Symbol>
+	<Symbol name="SymbolSpielplatzTrans">
+		<Rect class="NormalSchwarzStrichSymbol" width="36" height="24"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 14.5 21 L 11 9.5 L 26 9.5 L 22.5 21 Z"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 11 9.5 L 10 7.5 L 11 4 L 14 3 L 23 3 L 26 4 L 27 7.5 L 26 9.5 Z"/>
+	</Symbol>
+	<Symbol name="SymbolSportplatzTrans">
+		<Rect class="NormalSchwarzStrichSymbol" width="36" height="24"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 11 5 L 26 5 C 34,5 34,18 26,18 L 11 18 C 3,18 3,5 11,5"/>
+	</Symbol>
+	<Symbol name="SymbolZeltplatzTrans">
+		<Rect class="NormalSchwarzStrichSymbol" width="36" height="24"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 17 3 L 26 20 L 11 20 L 21 3"/>
+	</Symbol>
+	<Symbol name="SymbolBadeplatzTrans">
+		<Rect class="NormalSchwarzStrichSymbol" width="36" height="24"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 2 5 Q 6 2 10 5 Q 14 8 19 5 Q 23 2 27 5 Q 31 8 35 5"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 2 8 Q 6 5 10 8 Q 14 11 19 8 Q 23 5 27 8 Q 31 11 35 8"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 2 11 Q 6 8 10 11 Q 14 14 19 11 Q 23 8 27 11 Q 31 14 35 11"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 2 14 Q 6 11 10 14 Q 14 17 19 14 Q 23 11 27 14 Q 31 17 35 14"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 2 17 Q 6 14 10 17 Q 14 21 19 17 Q 23 14 27 17 Q 31 21 35 17"/>
+	</Symbol>
+	<Symbol name="SymbolDauerkleingartenTrans">
+		<Rect class="NormalSchwarzStrichSymbol" width="36" height="24"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 0 12 L 26 12"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 12 0  L 12 24"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 24 0  L 24 24"/>
+		<Circle class="NormalSchwarzStrichSymbol" cx="6" cy="6" r="0.5"/>
+		<Circle class="NormalSchwarzStrichSymbol" cx="18" cy="6" r="0.5"/>
+		<Circle class="NormalSchwarzStrichSymbol" cx="30" cy="6" r="0.5"/>
+		<Circle class="NormalSchwarzStrichSymbol" cx="6" cy="18" r="0.5"/>
+		<Circle class="NormalSchwarzStrichSymbol" cx="18" cy="18" r="0.5"/>
+		<Circle class="NormalSchwarzStrichSymbol" cx="30" cy="18" r="0.5"/>
+	</Symbol>
+	<Symbol name="SymbolParkanlage">
+		<Rect class="NormalSchwarzStrichSymbol" width="36" height="24"/>
+		<Circle class="NormalSchwarzGefuelltSymbol" cx="18" cy="6" r="2"/>
+		<Circle class="NormalSchwarzGefuelltSymbol" cx="6" cy="18" r="2"/>
+		<Circle class="NormalSchwarzGefuelltSymbol" cx="30" cy="18" r="2"/>
+	</Symbol>
+	<Symbol name="SymbolFriedhof">
+		<Rect class="NormalGruenGefuelltSymbol" width="36" height="24"/>
+		<Text class="NormalSchwarzStrichSymbol" size="8" x="18" y="6" text="+"/>
+		<Text class="NormalSchwarzStrichSymbol" size="8" x="6" y="18" text="+"/>
+		<Text class="NormalSchwarzStrichSymbol" size="8" x="30" y="18" text="+"/>
+	</Symbol>
+	<Symbol name="SymbolKleintierhaltung">
+		<Rect class="NormalSchwarzStrichSymbol" width="36" height="24"/>
+		<Text class="NormalSchwarzStrichSymbol" size="16" x="18" y="6" text="KT"/>
+	</Symbol>
+	<Symbol name="SymbolStrassenbegleitGruen">
+		<Rect class="NormalSchwarzStrichSymbol" width="36" height="24"/>
+		<Text class="TextBoldSymbol"  size="16" x="18" y="20" text="SbG"/>
+	</Symbol>
+	<Symbol name="SymbolSonstigeGaerten">
+		<Rect class="NormalSchwarzStrich" width="36" height="24"/>
+		<Text class="TextBoldSymbol" size="16" x="18" y="20" text="Gar"/>
+	</Symbol>
+	<Symbol name="SymbolErholungsGaerten">
+		<Rect class="NormalSchwarzStrich" width="36" height="24"/>
+		<Text class="TextBoldSymbol" size="14" x="18" y="20" text="EGar"/>
+	</Symbol>
+	<Symbol name="SymbolGolfplatz">
+		<Rect class="NormalSchwarzStrich" width="36" height="24"/>
+		<Text class="TextBoldSymbol" size="12" x="18" y="18" text="Golf"/>
+	</Symbol>
+	<Symbol name="SymbolBoeschungsFlaeche">
+		<Rect class="NormalSchwarzStrich" width="36" height="24"/>
+		<Text class="TextBoldSymbol" size="16" x="18" y="20" text="Bö"/>
+	</Symbol>
+	<Symbol name="SymbolBolzplatz">
+		<Rect class="NormalSchwarzStrichSymbol" width="36" height="24"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 3 20 L 3 4 L 33 4 L 33 20"/>
+		<Circle class="MittelSchwarzStrichSymbol" cx="6" cy="6" r="1.5"/>
+	</Symbol>
+	
+	<Symbol name="SymbolSkateanlage">
+		<Rect class="NormalSchwarzStrich" width="36" height="24"/>
+		<Path class="NormalSchwarzStrich" path="M 4 11 L 6 12 L 28 12 L 31 10 "/>
+		<Circle class="MittelSchwarzStrichSymbol" cx="12" cy="15" r="2 "/>
+		<Circle class="MittelSchwarzStrichSymbol" cx="24" cy="15" r="2 "/>		
+	</Symbol>	
+	
+	<Symbol name="SymbolGenerischesObjekt">
+		<Circle class="GenerischesObjektSymbol" cx="-3.0" cy="0" r="2.5" />
+		<Text class="GenerischesObjektText" size="4" x="-3.0" y="1.0" text="G"/>
+	</Symbol>	
+	
+	
+	<Symbol name="SymbolSozial">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="36" height="24"/>
+		<Path class="NormalWeissGefuelltSymbol" path="M 6 7.5 L 18.5 3 L 31 7.5 L 31 15.5 L 18.5 20 L 6 15.5 Z"/>
+	</Symbol>
+	<Symbol name="SymbolOeffentlicheVerwaltung">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="36" height="24"/>
+		<Circle class="NormalWeissGefuelltSymbol" cx="18" cy="12" r="10"/>
+	</Symbol>
+	<Symbol name="SymbolSchule">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="36" height="24"/>
+		<Path class="NormalWeissGefuelltSymbol" path="M 6 21 L 31 21 L 18.5 2 Z"/>
+	</Symbol>
+	<Symbol name="SymbolKirche">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="36" height="24"/>
+		<Path class="NormalWeissGefuelltSymbol" path="M 9 7.5 L 12.5 7.5 L 14.5 5.5 L 14.5 2 L 22.5 2 L 22.5 5.5 L 24.5 7.5 L 28 7.5 L 28 15.5 L 24.5 15.5 L 22.5 17.5 L 22.5 21 L 14.5 21 L 14.5 17.5 L 12.5 15.5 L 9 15.5 Z"/>
+	</Symbol>
+	<Symbol name="SymbolGesundheit">
+		<Rect class="NormalSchwarzGefuelltSymbol"  width="36" height="24"/>
+		<Path class="NormalWeissGefuelltSymbol" path="M 9 7 L 13.5 7 L 13.5 3 L 23.5 3 L 23.5 7 L 28 7 L 28 16 L 23.5 16 L 23.5 20 L 13.5 20 L 13.5 16 L 9 16 Z"/>
+	</Symbol>
+	<Symbol name="SymbolKultur">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="36" height="24"/>
+		<Path class="NormalWeissGefuelltSymbol" path="M 6 2 L 31 2 L 18.5 21 Z"/>
+	</Symbol>
+	<Symbol name="SymbolSportanlage">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="36" height="24"/>
+		<Path class="NormalWeissGefuelltSymbol" path="M 11 5 L 26 5 C 34,5 34,18 26,18 L 11 18 C 3,18 3,5 11,5"/>
+	</Symbol>
+	<Symbol name="SymbolPost">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="36" height="24"/>
+		<Path class="NormalWeissGefuelltSymbol" path="M 6 7 C 5,24 31,24 31,7 L 25 7 C 25,18 8,18 8,7 Z"/>
+	</Symbol>
+	<Symbol name="SymbolSchutzbauwerk">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="36" height="24"/>
+		<Path class="NormalWeissGefuelltSymbol" path="M 10 19 Q 18.5,-12 27,19 Z"/>
+	</Symbol>
+	<Symbol name="SymbolFeuerwehr">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="36" height="24"/>
+		<Text class="BoldWeissGefuelltSymbol" size="16" x="14" y="17" text="F"/>
+	</Symbol>
+	<Symbol name="SymbolSpielanlagen">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="36" height="24"/>
+		<Path class="NormalWeissGefuelltSymbol" path="M 14.5 20 L 11 8.5 L 26 8.5 L 22.5 20 Z"/>
+		<Path class="NormalWeissGefuelltSymbol" path="M 11 7.5 Q 18.5 0 26,7.5 Z"/>
+	</Symbol>
+	<Symbol name="SymbolAufschuettung">
+		<Circle class="NormalSchwarzStrichSymbol" cx="0" cy="0" r="12"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M -12 0 L 12 0"/>
+		<Path class="NormalSchwarzGefuelltSymbol" path="M -6 0 L 6 0 L 6 -4 L -6 -4 Z"/>
+	</Symbol>
+	<Symbol name="SymbolAbgrabungBodenschaetze">
+		<Circle class="NormalSchwarzStrichSymbol" cx="0" cy="0" r="12"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M -12 0 L 12 0"/>
+		<Path class="NormalSchwarzGefuelltSymbol" path="M -6 0 L 6 0 L 6 4 L -6 4 Z"/>
+	</Symbol>
+	<Symbol name="Kennzeichnung">
+		<Circle class="NormalSchwarzStrichSymbol" cx="0" cy="0" r="12"/>
+		<Path class="DickSchwarzStrichSymbol" path="M -12 12 L 12 -12"/>
+		<Path class="DickSchwarzStrichSymbol" path="M -12 -12 L 12 12"/>
+	</Symbol>
+	<Symbol name="SymbolFlughafen">
+		<Path class="DuennSchwarzStrichSymbol" path="M 0 -3.5 L 0.5 -3 L 0.5 -2 L 1.5 -2 L 1.5 -2.5 L 2 -2.5 L 2 -2 L 3 -2 L 3 -1 L 2.2 -0.68 L 2 0 L 1.8 -0.51 L 0.5 0 L 0.5 2  L 1 2 L 1 2.5 L 0.5 2.5 L 0 3.5 L -0.5 2.5 L -1 2.5 L -1 2 L -0.5 2 L -0.5 0 L -1.8 -0.51 L -2 0 L -2.2 -0.68 L -3 -1 L -3 -2 L -2 -2 L -2 -2.5 L -1.5 -2.5 L -1.5 -2 L -0.5 -2 L -0.5 -3 Z "/>
+		<Circle class="DuennSchwarzStrichSymbol" cx="0" cy="0" r="4"/>
+	</Symbol>
+	<Symbol name="SymbolLandeplatz">
+		<Path class="DuennSchwarzStrichSymbol" path="M 0 -3 L 0.5 -2 L 3 -2 L 3 -1 L 0.5 0 L 0.5 2 L 1 2 L 1 2.5 L 0.2 2.5 L 0 3 L -0.2 2.5 L -1 2.5 L -1 2 L -0.5 2 L -0.5 0 L -3 -1 L -3 -2 L -0.5 -2 Z"/>
+		<Circle class="DuennSchwarzStrichSymbol" cx="0" cy="0" r="4"/>
+	</Symbol>
+	<Symbol name="SymbolHubschrauberLandeplatz">
+		<Path class="DuennSchwarzStrichSymbol" path="M 0.25 -0.7 L 0.25 -3.5 L -0.25 -3.5 L -0.25 -0.7 Z"/>
+		<Path class="DuennSchwarzStrichSymbol" path="M 0.48 0.57 L 2.9 1.97 L 3.16 1.53 L 0.73 0.13 Z"/>
+		<Path class="DuennSchwarzStrichSymbol" path="M -0.48 0.57 L -2.9 1.97 L -3.16 1.53 L -0.73 0.13 Z"/>
+		<Circle class="DuennSchwarzStrichSymbol" cx="0" cy="0" r="4"/>
+		<Circle class="DuennSchwarzStrichSymbol" cx="0" cy="0" r="0.5"/>
+	</Symbol>
+	<Symbol name="SymbolSegelfluggelaende">
+		<Path class="DuennSchwarzStrichSymbol" path="M -3.5 0 A 3 3 0 0 1 0 0 A 3 3 0 0 1 3.5 0"/>
+		<Path class="DuennSchwarzStrichSymbol" path="M -3.5 0 A 3.5 3.5 0 0 1 0 1.5 A 3.5 3.5 0 0 1 3.5 0"/>
+		<Circle class="DuennSchwarzStrichSymbol" cx="0" cy="0" r="4"/>
+	</Symbol>
+	<Symbol name="SymbolKreisOffen">
+		<Circle class="DuennSchwarzStrichSymbol" cx="0" cy="0" r="1"/>
+	</Symbol>
+	<Symbol name="SymbolKreisGefuellt">
+		<Circle class="DuennSchwarzGefuelltSymbol" cx="0" cy="0" r="1"/>
+	</Symbol>
+	<Symbol name="SymbolOeffentlicheParkflaeche">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="23" height="23"/>
+		<Text class="NormalWeissGefuelltSymbol" size="20" x="10.5" y="20" text="P"/>
+	</Symbol>
+	<Symbol name="SymbolRadFussweg">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="23" height="23"/>
+		<Text class="NormalWeissGefuelltSymbol" size="20" x="10.5" y="20" text="RF"/>
+	</Symbol>
+	<Symbol name="SymbolRadweg">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="23" height="23"/>
+		<Text class="NormalWeissGefuelltSymbol" size="20" x="10.5" y="20" text="R"/>
+	</Symbol>
+	<Symbol name="SymbolFussweg">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="23" height="23"/>
+		<Text class="NormalWeissGefuelltSymbol" size="20" x="10.5" y="20" text="FW"/>
+	</Symbol>
+	<Symbol name="SymbolAbstellenFahrraeder">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="23" height="23"/>
+		<Text class="NormalWeissGefuelltSymbol" size="20" x="10.5" y="20" text="AF"/>
+	</Symbol>
+	<Symbol name="SymbolBruecke">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="23" height="23"/>
+		<Text class="NormalWeissGefuelltSymbol" size="20" x="10.5" y="20" text="Br"/>
+	</Symbol>
+	<Symbol name="SymbolDurchgang">
+		<Rect class="NormalSchwarzGefuellt" width="23" height="23"/>
+		<Text class="NormalWeissGefuellt" size="20" x="10.5" y="20" text="D"/>
+	</Symbol>
+	<Symbol name="SymbolFussgaengerbereich">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="23" height="23"/>
+		<Path class="NormalWeissGefuelltSymbol" path="M 9.5 2 L 13.5 2.5 L 13.5 4 L 12.5 5 L 17 10 L 17 13 L 16 14 L 15 11 L 14 9.5 L 13 10 L 13 13 L 14 15 L 16 21 L 12 21 L 13.5 20 L 11 14 L 8 19 L 8 21 L 4 21 L 9.5 12.5 L 9.5 9.5 L 5 13.5 L 4.5 11.5 L 10.5 6.5 L 10.5 2.5 Z"/>
+	</Symbol>
+	<Symbol name="SymbolVerkehrsberuhigterBereich">
+		<Rect class="NormalSchwarzGefuelltSymbol" width="23" height="23"/>
+		<Text class="NormalWeissGefuelltSymbol" size="20" x="10.5" y="20" text="V"/>
+	</Symbol>
+	<Symbol name="SymbolElektrizitaet">
+		<Circle class="NormalSchwarzStrichWeissGefuelltSymbol" cx="0" cy="0" r="18.5"/>
+		<Path class="NormalSchwarzGefuelltSymbol" path="M -1 -18.3 L -4 0.5 L 0 -2.5 L -2 18.5 A 18.5 18.5 0 0 1 -1 -18.3"/>
+	</Symbol>
+	<Symbol name="SymbolGas">
+		<Circle class="NormalSchwarzStrichWeissGefuelltSymbol" cx="0" cy="0" r="18.5"/>
+		<Path class="NormalSchwarzGefuelltSymbol" path="M 16.5 -8 L -16.5 -8 A 18.5 18.5 0 0 1 16.5 -8"/>
+		<Path class="NormalSchwarzGefuelltSymbol" path="M -16.5 8 L 16.5 8 A 18.5 18.5 0 0 1 -16.5 8"/>
+	</Symbol>
+	<Symbol name="SymbolFernwaerme">
+		<Circle class="NormalSchwarzStrichWeissGefuelltSymbol" cx="0" cy="0" r="18.5"/>
+		<Path class="NormalSchwarzGefuelltSymbol" path="M 16.5 -8 L -16.5 -8 A 18.5 18.5 0 0 1 16.5 -8"/>
+		<Path class="NormalSchwarzGefuelltSymbol" path="M -16.5 8 L 16.5 8 A 18.5 18.5 0 0 1 -16.5 8"/>
+	</Symbol>
+	<Symbol name="SymbolWasser">
+		<Circle class="NormalSchwarzStrichWeissGefuelltSymbol" cx="0" cy="0" r="18.5"/>
+		<Path class="NormalSchwarzGefuelltSymbol" path="M -16.5 7.5 Q -8.25 3 0 7.5 Q 8.25 11.5 16.5 7.5 A 18.5 18.5 0 0 1 -16.5 8.5"/>
+	</Symbol>
+	<Symbol name="SymbolAbwasser">
+		<Circle class="NormalSchwarzStrichWeissGefuelltSymbol" cx="0" cy="0" r="18.5"/>
+		<Path class="NormalSchwarzGefuelltSymbol" path="M 16.5 -8 L -16.5 -8 A 18.5 18.5 0 0 1 -11.5 -14 L 11.5 -14 A 18.5 18.5 0 0 1 16.5 -8"/>
+	</Symbol>
+	<Symbol name="SymbolAbfall">
+		<Circle class="NormalSchwarzGefuelltSymbol" cx="0" cy="0" r="18.5"/>
+		<Path class="NormalWeissGefuelltSymbol" path="M -14 10 L 0 -17 L 14 10 Z"/>
+	</Symbol>
+	<Symbol name="SymbolAblagerungen">
+		<Circle class="NormalSchwarzGefuelltSymbol" cx="0" cy="0" r="18.5"/>
+		<Path class="NormalWeissGefuelltSymbol" path="M -18 0 L 0 -18 L 18 0 L 0 18 Z"/>
+	</Symbol>
+	
+	<Symbol name="SymbolRichtfunk">		
+		<Circle class="NormalSchwarzStrichSymbol" cx="0" cy="0" r="4.5"/>
+		<Circle class="NormalSchwarzStrichSymbol" cx="0" cy="-1" r="0.5"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 0 3 L 0 -1"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 0 -1 L 3.5 -2.75"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 0 -1 L 3.5 0.75"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 1.5 -1.75 A 1.5 1.5 0 0 1  1.5  -0.25"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 2.5 -2.25 A 2.5 2.5 0 0 1  2.5  0.25"/>
+	</Symbol>	
+	
+	<Symbol name="SymbolWindenergie">
+		<Rect class="NormalSchwarzGefuellt" x="-1" y="-5" width="2" height="10"/>
+		<Path class="NormalSchwarzStrichRund" path="M 0 -4.5  L 4.33   -2  "/>
+		<Path class="NormalSchwarzStrichRund" path="M 0 -4.5  L -4.33  -2 "/>
+		<Path class="NormalSchwarzStrichRund" path="M 0 -4.5  L 0 -9.5  "/>
+		<Circle class="NormalWeissGefuelltSymbol" cx="0" cy="-4" r="0.5"/>
+	</Symbol>
+	
+	<Symbol name="BereichOhneEinAusfahrt">
+		<Path class="NormalSchwarzGefuelltSymbol" path="M  0 1 L 0 -1 L 0.8 -1 A 1.5 1.5 0 0 1  0.8 1 Z"/>
+	</Symbol>
+	<Symbol name="SymbolErhaltungsbereich">
+		<Circle class="NormalSchwarzStrichSymbol" cx="0" cy="0" r="16"/>
+		<Text class="NormalSchwarzGefuelltSymbol" size="18" x="0" y="6" text="E"/>
+	</Symbol>
+	<Symbol name="SymbolDenkmalschutzEnsemble">
+		<Circle class="NormalSchwarzStrichSymbol" cx="0" cy="0" r="16"/>
+		<Text class="NormalSchwarzGefuelltSymbol" size="18" x="0" y="6" text="D"/>
+	</Symbol>
+	<!--Symbol name="DenkmalschutzAnlage">
+		<Circle class="NormalSchwarzStrich" cx="0" cy="0" r="16"/>
+		<Text class="NormalSchwarzStrich" size="18" x="0" y="6" text="D"/>
+	</Symbol-->
+	<Symbol name="ErhaltungsFlaecheSymbol">
+		<Circle class="NormalSchwarzGefuelltSymbol" cx="0" cy="-2.0" r="1"/>
+	</Symbol>
+	<Symbol name="AnpflanzungsFlaecheSymbol">
+		<Circle class="DuennSchwarzStrichSymbol" cx="0" cy="-2.0" r="1"/>
+	</Symbol>
+	<Symbol name="StrassenBegrLinieRS">
+		<Rect class="Strassenbegrenzungslinie" x="-2" y="0.5" width="4" height="2"/>
+	</Symbol>
+	<Symbol name="StrassenBegrLinieARS">
+		<Rect class="NormalSchwarzGefuelltSymbol" x="-3" y="0" width="6" height="1"/>
+		<Rect class="Strassenbegrenzungslinie" x="-3" y="1" width="6" height="3"/>
+	</Symbol>
+	<Symbol name="BaulinieRS">
+		<Rect class="Baulinie" x="-2" y="0.5" width="4" height="2"/>
+	</Symbol>
+	<Symbol name="BaulinieARS">
+		<Rect class="NormalSchwarzGefuelltSymbol" x="-3" y="0" width="6" height="1"/>
+		<Rect class="Baulinie" x="-3" y="1" width="6" height="3"/>
+	</Symbol>
+	<Symbol name="BaugrenzeRS">
+		<Rect class="Baugrenze" x="-2" y="0.5" width="4" height="2"/>
+	</Symbol>
+	<Symbol name="BaugrenzeARS">
+		<Rect class="NormalSchwarzGefuelltSymbol" x="-3" y="0" width="6" height="1"/>
+		<Rect class="Baugrenze" x="-3" y="1" width="6" height="3"/>
+	</Symbol>
+	<Symbol name="SymbolStrassenbahn">
+		<Path class="BahnLinieSymbol" path="M -1.0 0 L -1.0  -3"/>
+		<Path class="BahnLinieSymbol" path="M  1.0 0 L  1.0  -3"/>
+	</Symbol>
+	<Symbol name="LsSeilbahn">
+		<Circle class="BahnLinieSymbol" cx="0" cy="0" r="2"/>
+	</Symbol>
+	<Symbol name="StrassenkoerperAufschuettung">
+		<Path class="SymbolStrassenkoerper" path="M -1.5 0 L -1.5 6"/>
+		<Path class="SymbolStrassenkoerper" path="M  1.5 0 L  1.5 8"/>
+	</Symbol>
+	<Symbol name="StrassenkoerperAbgrabung">
+		<Path class="SymbolStrassenkoerper" path="M -1.5 2 L -1.5 8"/>
+		<Path class="SymbolStrassenkoerper" path="M  1.5 0 L  1.5 8"/>
+	</Symbol>
+	<Symbol name="StrassenkoerperStuetzmauer">
+		<Path class="NormalSchwarzStrichSymbol" path="M -1.0 -2 L -1.0 2"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M  1.0 -2 L  1.  2"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M -1. -1.5 L 1.0 1.5"/>
+	</Symbol>
+	<!--Symbol name="GenerischesObjektSymbol">
+		<Circle class="GenerischesObjektLinie" cx="0" cy="0" r="3.0"/>
+		<Text class="GenerischesObjektFlaeche" x="0" y="1.5" size="4" text="G"/>
+	</Symbol-->
+	<Symbol name="SymbolErholungswald">
+		<Circle class="NormalSchwarzStrichSymbol" cx="0" cy="0" r="4.5"/>
+		<Text class="BoldSchwarzGefuelltSymbol" x="0" y="1.5" size="4" text="E"/>
+	</Symbol>
+	<Symbol name="SymbolWaldAllgemein">
+		<Circle class="NormalSchwarzStrichSymbol" cx="0" cy="0" r="4.5"/>
+		<Text class="BoldSchwarzGefuelltSymbol" x="0" y="1.5" size="4" text="W"/>
+	</Symbol>
+	<Symbol name="SymbolSchutzwald">
+		<Circle class="NormalSchwarzStrichSymbol" cx="0" cy="0" r="4.5"/>
+		<Text class="BoldSchwarzGefuelltSymbol" x="0" y="1.5" size="4" text="SW"/>
+	</Symbol>
+	<Symbol name="SymbolEinfahrt">
+		<Path class="NormalSchwarzStrichSymbol" path="M -1 0 L 1 0 L 0 1.732 Z"/>
+	</Symbol>
+	
+	<Symbol name="SymbolFachgesetz">
+		<Circle class="NormalSchwarzStrichSymbol" cx="0" cy="0" r="3"/>
+		<Text class="TextDefaultSymbol" size="2" x="0" y="0" text="§"/>
+	</Symbol>
+	
+	<Symbol name="SymbolSchadstoffBelastBoeden"> 
+		<Circle class="DuennSchwarzStrichSymbol" cx="0" cy="0" r="4.5"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M -4.5 4.5 L 4.5 -4.5"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M  4.5 4.5 L -4.5 -4.5"/>
+	</Symbol>
+	
+	<Symbol name="RsLuftreinhaltung">
+		<!--Path class="NormalSchwarzStrich" path="M -4 -0.25 L 4 -0.25"/-->
+		<Path class="DuennSchwarzStrichSymbol" path="M -3 -0.25 L 0 -3.25 L 3 -0.25 z"/>
+	</Symbol>
+	<Symbol name="RsImmissionsschutz">
+		<Path class="NormalSchwarzGefuelltSymbol" path="M -3 -0.25 L 0 -3.25 L 3 -0.25 z"/>
+	</Symbol>
+	<Symbol name="SymbolDenkmalschutzEinzelanlage">
+		<Rect class="DuennSchwarzStrichSymbol" x="-4" y="-4" width="8" height="8"/>
+		<Text class="BoldSchwarzGefuelltSymbol" x="0" y="1.5" size="4" text="D"/>
+	</Symbol>
+	<Symbol name="RsVorbHochwSchutz">
+		<Path class="VorbHochwSchutzRs" path="M -3 -0.5 L 0 -3.25 L 3 -0.5 z"/>
+	</Symbol>
+	
+	<Symbol name="RsWasserwirtschaftsFlaeche">
+		<Path class="WasserwirtschaftRS" path="M 0 10 L 100 10 L 100 30 A 33, 33, 0, 0, 0, 75, 35 A 33, 33, 0, 0, 1, 50, 40  A 33, 33, 0, 0, 1, 25, 35  A 33, 33, 0, 0, 0, 0, 30 L 0,10"/>
+	</Symbol>
+	<!--Symbol name="RsWasserrechtlicheFestsetzung">
+		<Path class="WasserrechtlicheFestsetzungRs" path="M -4  0 L -4 -3 L 4 -3 L 4 0 Z"/>
+	</Symbol-->
+	<Symbol name="RsFreiFlaeche">
+		<Path class="DuennSchwarzStrichSymbol" path="M -1.8 -0.25 L 0 -2 L  1.8 -0.25 z"/>
+	</Symbol>
+	<Symbol name="RsWegerecht">
+		<Path class="DuennSchwarzStrichSymbol" path="M -1  0. L  -1 -1. L 1 -1 L 1 0"/>
+	</Symbol>
+	<Symbol name="LsWegerecht">
+		<Path class="NormalSchwarzStrichSymbol" path="M  -1.5  -1.5 L -5  -1.5"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M  1.5  -1.5 L 5  -1.5"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M -1.5 1.5 L -5  1.5"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 1.5 1.5 L 5  1.5"/>
+	</Symbol>
+	<Symbol name="SymbolHoehenpunkt">
+		<Circle class="NormalSchwarzStrichSymbol" cx="0" cy="0" r="1"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M -1 0 L 1 0"/>
+		<Path class="NormalSchwarzStrichSymbol" path="M 0 -1 L 0 1"/>
+	</Symbol>
+	<Symbol name="RsNaturgewaltenBergbau">
+		<Rect class="NaturgewaltenBergbau" width="4" height="4" x="-2" y="-4"/>
+	</Symbol>
+	<Symbol name="RsKeineZentrAbwasserBeseitigungFlaeche">
+		<Rect class="FillYellow" x="-1.75" y="-4" width="3.5" height="3.5"/>
+	</Symbol>
+	<Symbol name="RsPriviligiertesVorhaben">
+		<Rect class="PriviligiertesVorhaben" x="-1.75" y="-4" width="3.5" height="3."/>
+	</Symbol>
+	<Symbol name="SymbolDreieck">
+		<Path class="DuennSchwarzStrichSymbol" path="M -1 0.3 L 1 0.3 L 0 -1.432 Z "/>
+	</Symbol>
+	
+	<Symbol name="RsAufschuettung">
+		<Path class="NormalSchwarzGefuelltSymbol" path="M  -1 1.432 L 1 1.432 L 0 0  Z "/>
+	</Symbol>
+	
+	<Symbol name="RsAbgrabung">
+		<Path class="NormalSchwarzGefuelltSymbol" path="M  -1 0 L 1 0 L 0 1.432  Z "/>
+	</Symbol>
+	
+	<Symbol name="RsAbstandsflaeche">
+		<Path class="DuennSchwarzStrichSymbol" path="M 0 0 L 0 -2"/>
+		<Path class="NormalSchwarzGefuelltSymbol" path="M 0 -2.5 L 0.5 -1.5 L -0.5 -1.5 Z"/>
+	</Symbol>
+	
+	<Symbol name="RsPersGruppenBestFlaeche" >
+		<Text class="NormalSchwarzGefuelltSymbol" x="0" y="0" size="1" text="P"/>
+	</Symbol>
+	
+	
+	
+	<Marker name="markerPfeilRechts" viewBox="-5 -2.5 5 5" refX="0" refY="0" width="5" height="5">
+		<Path class="NormalSchwarzGefuelltSymbol" path="M -5 -2.5 L -5 2.5 L 0 0 Z"/>
+	</Marker>
+	
+	<Marker name="markerPfeilLinks" viewBox="0 -2.5 5 5" refX="0" refY="0" width="5" height="5">
+		<Path class="NormalSchwarzGefuelltSymbol" path="M 5 -2.5 L 5 2.5 L 0 0 Z"/>
+	</Marker>
+	
+	<Marker name="MarkerEinfahrtsbereichAnfang" viewBox="-4 0 4 6" refX="4" refY="0" width="4" height="6">
+		<Path class="NormalSchwarzGefuelltSymbol" path="M 4 0 L 4 6 L 0 0 Z"/>
+	</Marker>
+	
+	<Marker name="MarkerFirstrichtungAnfang" viewBox="0 -1.5 6 3" refX="0" refY="0" width="6" height="6">
+		<Path class="NormalSchwarzStrich" path="M 6 1.5 L 0 0 L 6 -1.5"/>
+	</Marker>
+	
+	<Marker name="MarkerEinfahrtsbereichEnde" viewBox="0 0 4 6" refX="0" refY="0" width="4" height="6">
+		<Path class="NormalSchwarzGefuellt" path="M 0 0 L 4 0 L 0 6 Z"/>
+	</Marker>
+	
+	<Marker name="MarkerFirstrichtungEnde" viewBox="-2 -2.5 2 5" refX="0" refY="0" width="2" height="5">
+		<Path class="NormalSchwarzStrich" path="M -2 2 L  0 0  L -2 -2"/>
+	</Marker>	
+	
+	<Pattern name="SchraffurGruenAufRot" x="0" y="0" width="14.142" height="14.142" >
+		<Rect class="WohnbauflaecheOR" width="14.142" height="14.142"/>
+		<Path class="NormalGruenStrich" path="M -1 8.072 L 8.071  -1"/>
+		<Path class="NormalGruenStrich" path="M 6.072  15.142  L15.1421 6.072"/>
+	</Pattern>
+	
+	<Hatching name="TestHatching" >
+		<stroke-width>1</stroke-width>
+		<line-dist>10</line-dist>
+		<StrokeColor>
+			<ColorName>blue</ColorName>
+		</StrokeColor>
+		<FillColor>
+			<None/>
+		</FillColor>
+		<HatchingType>vertical</HatchingType>
+	</Hatching>
+	
+	<Enumeration nameA="XP_ArtDerBaulNutzung" defaultTextStyle="TextDefault">
+		<EnumItem schluesselNummerA="1000" text="WS"/>
+		<EnumItem schluesselNummerA="1100" text="WR"/>
+		<EnumItem schluesselNummerA="1200" text="WA"/>
+		<EnumItem schluesselNummerA="1300" text="WB"/>
+		<EnumItem schluesselNummerA="1400" text="MD"/>
+		<EnumItem schluesselNummerA="1500" text="MI"/>
+		<EnumItem schluesselNummerA="1600" text="MK"/>
+		<EnumItem schluesselNummerA="1700" text="GE"/>
+		<EnumItem schluesselNummerA="1800" text="GI"/>
+		<EnumItem schluesselNummerA="2000" text="SO"/>
+		<EnumItem schluesselNummerA="2100" text="SO"/>
+	</Enumeration>
+	
+	<Enumeration nameA="BP_Bauweise" defaultTextStyle="TextNormal2">
+		<EnumItem schluesselNummerA="1000" text="o"/>
+		<EnumItem schluesselNummerA="2000" text="g"/>
+		<EnumItem schluesselNummerA="3000" text="a"/>
+	</Enumeration>
+	
+	<Enumeration nameA="BP_BebauungsArt" defaultTextStyle="TextNormal2" defaultTextSymbol="SymbolDreieck" defaultTextSymbolSize="3">
+		<EnumItem schluesselNummerA="1000" text="E"/>
+		<EnumItem schluesselNummerA="2000" text="D"/>
+		<EnumItem schluesselNummerA="3000" text="H"/>
+		<EnumItem schluesselNummerA="4000" text="ED"/>
+		<EnumItem schluesselNummerA="5000" text="EH"/>
+		<EnumItem schluesselNummerA="6000" text="DH"/>
+	</Enumeration>
+	<Enumeration nameA="BP_Dachform" defaultTextStyle="TextNormal2">
+		<EnumItem schluesselNummerA="1000" text="FD"/>
+		<EnumItem schluesselNummerA="2100" text="PD"/>
+		<EnumItem schluesselNummerA="2200" text="VPD"/>
+		<EnumItem schluesselNummerA="3100" text="SD"/>
+		<EnumItem schluesselNummerA="3200" text="WD"/>
+		<EnumItem schluesselNummerA="3300" text="KWD"/>
+		<EnumItem schluesselNummerA="3400" text="MD"/>
+		<EnumItem schluesselNummerA="3500" text="ZD"/>
+		<EnumItem schluesselNummerA="3600" text="KeD"/>
+		<EnumItem schluesselNummerA="3700" text="KuD"/>
+		<EnumItem schluesselNummerA="3800" text="ShD"/>
+		<EnumItem schluesselNummerA="3900" text="BD"/>
+		<EnumItem schluesselNummerA="4000" text="TD"/>
+		<EnumItem schluesselNummerA="4100" text="MIschform"/>
+		
+	</Enumeration> 
+	<Enumeration nameA="BP_GrenzBebauung" defaultTextStyle="TextNormal2">
+		<EnumItem schluesselNummerA="1000" text="Verboten"/>
+		<EnumItem schluesselNummerA="2000" text="Erlaubt"/>
+		<EnumItem schluesselNummerA="3000" text="Erzwungen"/>	
+	</Enumeration>
+	<Enumeration nameA="BP_ZweckbestimmungNebenanlagen" defaultTextStyle="TextBold2">
+		<EnumItem schluesselNummerA="1000" text="St"/>
+		<EnumItem schluesselNummerA="2000" text="Ga"/>
+		<EnumItem schluesselNummerA="3000" symbolId="SymbolSpielplatzTrans" symbolSize="0.2"/>
+		<EnumItem schluesselNummerA="3200" text="TGa"/>
+		<EnumItem schluesselNummerA="3100" text="Cp"/>
+		<EnumItem schluesselNummerA="3300" text="NG"/>
+		<EnumItem schluesselNummerA="3400" text="AS"/>
+		<EnumItem schluesselNummerA="3500" text="EV"/>
+		<EnumItem schluesselNummerA="3600" text="AW"/>
+	</Enumeration>
+	
+	<Enumeration nameA="BP_ZweckbestimmungGemeinschaftsanlagen" defaultTextStyle="TextBold2">
+		<EnumItem schluesselNummerA="1000" text="GSt"/>
+		<EnumItem schluesselNummerA="2000" text="GGa"/>
+		<EnumItem schluesselNummerA="3000" symbolId="SymbolSpielplatzTrans" symbolSize="0.2"/>
+		<EnumItem schluesselNummerA="3200" text="GTGa"/>
+		<EnumItem schluesselNummerA="3100" text="GCp"/>
+		<EnumItem schluesselNummerA="3300" text="GNG"/>
+		<EnumItem schluesselNummerA="3400" text="GAS"/>
+		<EnumItem schluesselNummerA="3500" text="GEV"/>
+		<EnumItem schluesselNummerA="3600" text="GAW"/>
+		<EnumItem schluesselNummerA="3700" text="Fr"/>
+		<EnumItem schluesselNummerA="3800" text="LA"/>
+		<EnumItem schluesselNummerA="3900" text="AwRw"/>
+		<EnumItem schluesselNummerA="4000" text="AM"/>	
+	</Enumeration>	
+	
+	<Enumeration nameA="XP_ZweckbestimmungGruen" defaultSymbolSize="0.2">
+		<EnumItem schluesselNummerA="1000" symbolId="SymbolParkanlage"/>
+		<EnumItem schluesselNummerA="1100" symbolId="SymbolDauerkleingartenTrans"/>
+		<EnumItem schluesselNummerA="1200" symbolId="SymbolSportplatzTrans"/>
+		<EnumItem schluesselNummerA="1300" symbolId="SymbolSpielplatzTrans"/>
+		<EnumItem schluesselNummerA="1400" symbolId="SymbolZeltplatzTrans"/>
+		<EnumItem schluesselNummerA="1500" symbolId="SymbolBadeplatzTrans"/>
+		<EnumItem schluesselNummerA="1600" symbolId="SymbolFriedhof"/>
+		<EnumItem schluesselNummerA="1700" symbolId="SymbolKleintierhaltung"/>
+		<EnumItem schluesselNummerA="1800" symbolId="SymbolStrassenbegleitGruen"/>
+		<EnumItem schluesselNummerA="1900" symbolId="SymbolSonstigeGaerten"/>
+		<EnumItem schluesselNummerA="2000" symbolId="SymbolErholungsGaerten"/>
+		<EnumItem schluesselNummerA="2100" symbolId="SymbolGolfplatz"/>
+		<EnumItem schluesselNummerA="2200" symbolId="SymbolBoeschungsFlaeche"/>
+		<EnumItem schluesselNummerA="2300" symbolId="SymbolBolzplatz"/>
+		<EnumItem schluesselNummerA="2400" symbolId="SymbolSkateanlage"/>
+	</Enumeration>
+	<Enumeration nameA="XP_ZweckbestimmungGemeinbedarf" defaultSymbolSize="0.2">
+		<EnumItem schluesselNummerA="1300" symbolId="SymbolSozial"/>
+		<EnumItem schluesselNummerA="1000" symbolId="SymbolOeffentlicheVerwaltung"/>
+		<EnumItem schluesselNummerA="1100" symbolId="SymbolSchule"/>
+		<EnumItem schluesselNummerA="1200" symbolId="SymbolKirche"/>
+		<EnumItem schluesselNummerA="1400" symbolId="SymbolGesundheit"/>
+		<EnumItem schluesselNummerA="1500" symbolId="SymbolKultur"/>
+		<EnumItem schluesselNummerA="1600" symbolId="SymbolSportanlage"/>
+		<EnumItem schluesselNummerA="1700" symbolId="SymbolSchutzbauwerk"/>
+		<EnumItem schluesselNummerA="1800" symbolId="SymbolFeuerwehr"/>
+	</Enumeration>
+	<Enumeration nameA="XP_ZweckbestimmungSpielSportanlage" defaultSymbolSize="0.2">
+		<EnumItem schluesselNummerA="1000" symbolId="SymbolSportanlage"/>
+		<EnumItem schluesselNummerA="2000" symbolId="SymbolSpielanlagen"/>
+	</Enumeration>
+	<Enumeration nameA="XP_ZweckbestimmungWasserwirtschaft" defaultTextStyle="TextDefault" defaultTextSymbol="SymbolKreisOffen" defaultTextSymbolSize="3">
+		<EnumItem schluesselNummerA="1000" text="R"/>
+		<EnumItem schluesselNummerA="1100" text="Ü"/>
+		
+	</Enumeration>
+	<Enumeration nameA="XP_ZweckbestimmungVorbHochwSchutz"  defaultSymbolSize="0.7" defaultTextStyle="TextDefault" defaultTextSymbol="SymbolKreisOffen" defaultTextSymbolSize="3">
+		<EnumItem schluesselNummerA="1000" text="FÜ"/>
+		<EnumItem schluesselNummerA="1100" text="NFÜ"/>
+		<EnumItem schluesselNummerA="1200" text="ÜG"/>
+		
+	</Enumeration>
+	<Enumeration nameA="XP_ZweckbestimmungWasserrecht" defaultTextStyle="TextDefault" defaultTextSymbol="SymbolKreisOffen" defaultTextSymbolSize="3">
+		<EnumItem schluesselNummerA="1000" text="GW"/>
+		<EnumItem schluesselNummerA="1100" text="OW"/>
+		<EnumItem schluesselNummerA="1200" text="Z1"/>
+		<EnumItem schluesselNummerA="1300" text="Z2"/>
+		<EnumItem schluesselNummerA="1400" text="Z3"/>
+		
+	</Enumeration>
+	<Enumeration nameA="XP_ZweckbestimmungGewaesser" defaultTextStyle="TextDefault" defaultTextSymbol="SymbolKreisOffen" defaultTextSymbolSize="3">
+		<EnumItem schluesselNummerA="1000" text="H"/>
+		<EnumItem schluesselNummerA="1100" text="W"/>
+		<EnumItem schluesselNummerA="1200" text="F"/>
+	</Enumeration>
+	<Enumeration nameA="FP_ZweckbestimmungStrassenverkehr" defaultSymbolSize="0.2">
+		<EnumItem schluesselNummerA="1300" symbolId="SymbolOeffentlicheParkflaeche"/>
+		<EnumItem schluesselNummerA="1400" symbolId="SymbolBruecke"/>
+		<EnumItem schluesselNummerA="1500" symbolId="SymbolDurchgang"/>
+	</Enumeration>
+	<Enumeration nameA="BP_ZweckbestimmungStrassenverkehr" defaultSymbolSize="0.2">
+		<EnumItem schluesselNummerA="1000" symbolId="SymbolOeffentlicheParkflaeche"/>
+		<EnumItem schluesselNummerA="1100" symbolId="SymbolFussgaengerbereich"/>
+		<EnumItem schluesselNummerA="1200" symbolId="SymbolVerkehrsberuhigterBereich"/>
+		<EnumItem schluesselNummerA="1300" symbolId="SymbolRadFussweg"/>
+		<EnumItem schluesselNummerA="1400" symbolId="SymbolRadweg"/>
+		<EnumItem schluesselNummerA="1500" symbolId="SymbolFussweg"/>
+		<EnumItem schluesselNummerA="1600" symbolId="SymbolAbstellenFahrraeder"/>
+		<EnumItem schluesselNummerA="1700" symbolId="SymbolBruecke"/>
+		<EnumItem schluesselNummerA="1800" symbolId="SymbolDurchgang"/>
+	</Enumeration>
+	
+	<Enumeration nameA="XP_ZweckbestimmungLuftverkehr" defaultSymbolSize="0.3">
+		<EnumItem schluesselNummerA="1000" symbolId="SymbolFlughafen"/>
+		<EnumItem schluesselNummerA="2000" symbolId="SymbolLandeplatz"/>
+		<EnumItem schluesselNummerA="4000" symbolId="SymbolHubschrauberLandeplatz"/>
+		<EnumItem schluesselNummerA="3000" symbolId="SymbolSegelfluggelaende"/>
+	</Enumeration>
+	
+	<Enumeration nameA="XP_ZweckbestimmungVerEntsorgung" defaultSymbolSize="0.1">
+		<EnumItem schluesselNummerA="1000" symbolId="SymbolElektrizitaet"/>
+		<EnumItem schluesselNummerA="1100" symbolId="SymbolGas"/>
+		<EnumItem schluesselNummerA="1200" symbolId="SymbolFernwaerme"/>
+		<EnumItem schluesselNummerA="1300" symbolId="SymbolWasser"/>
+		<EnumItem schluesselNummerA="1400" symbolId="SymbolAbwasser"/>
+		<EnumItem schluesselNummerA="1500" symbolId="SymbolAbfall"/>
+		<EnumItem schluesselNummerA="1600" symbolId="SymbolAblagerungen"/>
+		<EnumItem schluesselNummerA="1700" symbolId="SymbolRichtfunk" symbolSize="0.41"/>
+	</Enumeration>
+	<Enumeration nameA="XP_ZweckbestimmungWald">
+		<EnumItem schluesselNummerA="1000" symbolId="SymbolErholungswald"/>
+		<EnumItem schluesselNummerA="1100" symbolId="SymbolWaldAllgemein"/>
+		<EnumItem schluesselNummerA="1200" symbolId="SymbolSchutzwald"/>
+	</Enumeration>
+	<Enumeration nameA="XP_ZweckbestimmungLandwirtschaft" defaultTextStyle="TextNormal2">
+		<EnumItem schluesselNummerA="1000" text="Allg. Landwirtschaft"/>
+		<EnumItem schluesselNummerA="1100" text="Ackerbau"/>
+		<EnumItem schluesselNummerA="1200" text="Wiesen/Weiden"/>
+		<EnumItem schluesselNummerA="1300" text="Gartenbau"/>
+		<EnumItem schluesselNummerA="1400" text="Obstbau"/>
+		<EnumItem schluesselNummerA="1500" text="Weinbau"/>
+		<EnumItem schluesselNummerA="1600" text="Imkerei"/>
+		<EnumItem schluesselNummerA="1700" text="Fischerei"/>
+	</Enumeration>
+	<Enumeration nameA="XP_ZweckbestimmungSchutzgebiet" defaultTextStyle="TextDefault " defaultTextSymbol="SymbolKreisOffen" defaultTextSymbolSize="4">
+		<EnumItem schluesselNummerA="1000" text="N"/>
+		<EnumItem schluesselNummerA="1100" text="NLP"/>
+		<EnumItem schluesselNummerA="1200" text="BRV" textSymbolSize="5"/>
+		<EnumItem schluesselNummerA="1300" text="L"/>
+		<EnumItem schluesselNummerA="1600" text="LB"/>
+		<EnumItem schluesselNummerA="1400" text="NP"/>
+		<EnumItem schluesselNummerA="1500" text="ND"/>
+		<EnumItem schluesselNummerA="1600" text="LB"/>
+		<EnumItem schluesselNummerA="1700" text="BT"/>
+		<EnumItem schluesselNummerA="1800" text="GGB"/>
+		<EnumItem schluesselNummerA="1900" text="EVG"/>
+		
+	</Enumeration>
+	<Enumeration nameA="BP_Massnahme" nameB="BP_AnpflanzungBindungErhaltungsGegenstand" defaultSymbolSize="0.4" >
+		<EnumItem schluesselNummerA="2000" schluesselNummerB="1000" symbolId="SymbolAnpflanzungBaeume"/>
+		<EnumItem schluesselNummerA="1000" schluesselNummerB="1000" symbolId="SymbolErhaltungBaeume"/>
+		<EnumItem schluesselNummerA="3000" schluesselNummerB="1000" symbolId="SymbolErhaltungBaeume"/>
+		<EnumItem schluesselNummerA="2000" schluesselNummerB="2000" symbolId="SymbolAnpflanzungStraeucher"/>
+		<EnumItem schluesselNummerA="1000" schluesselNummerB="2000" symbolId="SymbolErhaltungStraeucher"/>
+		<EnumItem schluesselNummerA="3000" schluesselNummerB="2000" symbolId="SymbolErhaltungStraeucher"/>
+		<EnumItem schluesselNummerA="2000" schluesselNummerB="3000" symbolId="SymbolAnpflanzungSonstige"/>
+		<EnumItem schluesselNummerA="1000" schluesselNummerB="3000" symbolId="SymbolErhaltungSonstige"/>
+		<EnumItem schluesselNummerA="3000" schluesselNummerB="3000" symbolId="SymbolErhaltungSonstige"/>
+		<EnumItem schluesselNummerA="1000" schluesselNummerB="4000" symbolId="SymbolErhaltungGewaesser"/>
+	</Enumeration>
+	<Enumeration nameA="BP_ArtHoehenbezugspunkt" defaultTextStyle="TextDefault">
+		<EnumItem schluesselNummerA="1000" text="TH"/>
+		<EnumItem schluesselNummerA="2000" text="FH"/>
+		<EnumItem schluesselNummerA="3000" text="OK"/>
+	</Enumeration>
+	
+	<Enumeration nameA="XP_RechtlicheHerkunft" defaultTextStyle="TextNormal2">
+		<EnumItem schluesselNummerA="1000" text="Bundesrecht"/>
+		<EnumItem schluesselNummerA="1100" text="Landesrecht"/>
+		<EnumItem schluesselNummerA="1200" text="Gemeinderecht"/>
+		<EnumItem schluesselNummerA="1300" text="Kennz§9"/>
+		<EnumItem schluesselNummerA="1400" text="NachrÜbernahme"/>
+	</Enumeration>
+	<Enumeration nameA="XP_ErhaltungsGrund" defaultTextStyle="TextNormal2">
+		<EnumItem schluesselNummerA="1000" text="Städtebau"/>
+		<EnumItem schluesselNummerA="2000" text="Wohnbevölkerung"/>
+		<EnumItem schluesselNummerA="3000" text="Umstrukturierung"/>
+	</Enumeration>
+	
+	<Enumeration nameA="XP_Nutzungsform" defaultTextStyle="TextNormal2">
+		<EnumItem schluesselNummerA="1000" text="Priv"/>
+		<EnumItem schluesselNummerA="2000" text="Öff"/>
+	</Enumeration>
+	
+	<Enumeration nameA="FP_AllgArtDerBaulNutzung" defaultTextStyle="TextDefault">
+		<EnumItem schluesselNummerA="1000" text="W"/>
+		<EnumItem schluesselNummerA="2000" text="M"/>
+		<EnumItem schluesselNummerA="3000" text="G"/>
+		<EnumItem schluesselNummerA="4000" text="S"/>
+	</Enumeration>
+	
+	<Enumeration nameA="FP_ZweckbestimmungPriviligiertesVorhaben" defaultTextStyle="TextPriviligiertesVorhaben">
+		<EnumItem schluesselNummerA="1000" text="Gartenbau"/>
+		<EnumItem schluesselNummerA="1100" text="Öffentl. Versorg."/>
+		<EnumItem schluesselNummerA="1200" text="Bes. Umg. Anford."/>
+		<EnumItem schluesselNummerA="1300" text=" Nachtlg. Umg. Wirkg."/>
+		<EnumItem schluesselNummerA="1500" text="Besond. Zweckbest."/>
+		<EnumItem schluesselNummerA="1600" text=" Wasser- u. Windenergie"/>
+		<EnumItem schluesselNummerA="1700" text="Biogasanlage"/>
+		<EnumItem schluesselNummerA="1800" text="Kernenergie"/>
+		<EnumItem schluesselNummerA="1900" text="Land- u. Forstwirts."/>
+	</Enumeration>
+	
+	<Enumeration nameA="FP_ZweckbestimmungKennzeichnung" defaultTextStyle="TextNormal2">
+		<EnumItem schluesselNummerA="1000" text="Naturgewalten"/>
+		<EnumItem schluesselNummerA="2000" text="Abbauflaeche"/>
+		<EnumItem schluesselNummerA="3000" text="Äußere Einwirkungen"/>
+		<EnumItem schluesselNummerA="4000" symbolId="SymbolSchadstoffBelastBoeden" symbolSize="0.5"/>
+		<EnumItem schluesselNummerA="5000" text="Lärmbelastung"/>
+	</Enumeration>
+	
+</SvgVisualisierung>

@@ -1,0 +1,1808 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	Codelisten fuer Anwendungsschema: XPlanGML
+	Erzeugt von NAS Schema Generator
+	Erstellt: 13.03.2007 15:43:35
+-->
+<Dictionary gml:id="CodeLists"
+	xmlns="http://www.opengis.net/gml" xmlns:gml="http://www.opengis.net/gml"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/gml gml/3.0.0/base/gml3nas.xsd">
+	<description>Codelisten von Anwendungsschema 'XPlanGML'.</description>
+	<name>XPlanGML</name>
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_VertikaleAusrichtung">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_VertikaleAusrichtung</name>
+		<definitionMember>
+			<Definition gml:id="XP_VertikaleAusrichtung_1">
+			<name codeSpace="urn:xplan:XP_VertikaleAusrichtung">Basis</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_VertikaleAusrichtung_2">
+			<name codeSpace="urn:xplan:XP_VertikaleAusrichtung">Mitte</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_VertikaleAusrichtung_3">
+			<name codeSpace="urn:xplan:XP_VertikaleAusrichtung">oben</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_HorizontaleAusrichtung">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_HorizontaleAusrichtung</name>
+		<definitionMember>
+			<Definition gml:id="XP_HorizontaleAusrichtung_1">
+			<name codeSpace="urn:xplan:XP_HorizontaleAusrichtung">linksbündig</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_HorizontaleAusrichtung_2">
+			<name codeSpace="urn:xplan:XP_HorizontaleAusrichtung">rechtsbündig</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_HorizontaleAusrichtung_3">
+			<name codeSpace="urn:xplan:XP_HorizontaleAusrichtung">zentrisch</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_RechtlicheHerkunft">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_RechtlicheHerkunft</name>
+		<definitionMember>
+			<Definition gml:id="XP_RechtlicheHerkunft_1000">
+			<description>Bundesrecht</description>
+			<name codeSpace="urn:xplan:XP_RechtlicheHerkunft">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_RechtlicheHerkunft_1100">
+			<description>Landesrecht</description>
+			<name codeSpace="urn:xplan:XP_RechtlicheHerkunft">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_RechtlicheHerkunft_1200">
+			<description>Gemeinderecht</description>
+			<name codeSpace="urn:xplan:XP_RechtlicheHerkunft">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_RechtlicheHerkunft_1300">
+			<description>KennzParag9BauGB</description>
+			<name codeSpace="urn:xplan:XP_RechtlicheHerkunft">1300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_RechtlicheHerkunft_1400">
+			<description>NachrichtlUebernahme</description>
+			<name codeSpace="urn:xplan:XP_RechtlicheHerkunft">1400</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ArtDerBaulNutzung">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ArtDerBaulNutzung</name>
+		<definitionMember>
+			<Definition gml:id="XP_ArtDerBaulNutzung_1000">
+			<description>Kleinsiedlungsgebiet</description>
+			<name codeSpace="urn:xplan:XP_ArtDerBaulNutzung">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ArtDerBaulNutzung_1100">
+			<description>ReinesWohngebiet</description>
+			<name codeSpace="urn:xplan:XP_ArtDerBaulNutzung">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ArtDerBaulNutzung_1200">
+			<description>AllgWohngebiet</description>
+			<name codeSpace="urn:xplan:XP_ArtDerBaulNutzung">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ArtDerBaulNutzung_1300">
+			<description>BesonderesWohngebiet</description>
+			<name codeSpace="urn:xplan:XP_ArtDerBaulNutzung">1300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ArtDerBaulNutzung_1400">
+			<description>Dorfgebiet</description>
+			<name codeSpace="urn:xplan:XP_ArtDerBaulNutzung">1400</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ArtDerBaulNutzung_1500">
+			<description>Mischgebiet</description>
+			<name codeSpace="urn:xplan:XP_ArtDerBaulNutzung">1500</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ArtDerBaulNutzung_1600">
+			<description>Kerngebiet</description>
+			<name codeSpace="urn:xplan:XP_ArtDerBaulNutzung">1600</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ArtDerBaulNutzung_1700">
+			<description>Gewerbegebiet</description>
+			<name codeSpace="urn:xplan:XP_ArtDerBaulNutzung">1700</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ArtDerBaulNutzung_1800">
+			<description>Industriegebiet</description>
+			<name codeSpace="urn:xplan:XP_ArtDerBaulNutzung">1800</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ArtDerBaulNutzung_2000">
+			<description>SondergebietErholung</description>
+			<name codeSpace="urn:xplan:XP_ArtDerBaulNutzung">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ArtDerBaulNutzung_2100">
+			<description>SondergebietSonst</description>
+			<name codeSpace="urn:xplan:XP_ArtDerBaulNutzung">2100</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ErhaltungsGrund">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ErhaltungsGrund</name>
+		<definitionMember>
+			<Definition gml:id="XP_ErhaltungsGrund_1000">
+			<description>StaedtebaulicheGestalt</description>
+			<name codeSpace="urn:xplan:XP_ErhaltungsGrund">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ErhaltungsGrund_2000">
+			<description>Wohnbevoelkerung</description>
+			<name codeSpace="urn:xplan:XP_ErhaltungsGrund">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ErhaltungsGrund_3000">
+			<description>Umstrukturierung</description>
+			<name codeSpace="urn:xplan:XP_ErhaltungsGrund">3000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ZweckbestimmungSpielSportanlage">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ZweckbestimmungSpielSportanlage</name>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSpielSportanlage_1000">
+			<description>Sportanlage</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSpielSportanlage">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSpielSportanlage_2000">
+			<description>Spielanlage</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSpielSportanlage">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSpielSportanlage_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSpielSportanlage">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ZweckbestimmungGemeinbedarf">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ZweckbestimmungGemeinbedarf</name>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGemeinbedarf_1000">
+			<description>OffentlicheVerwaltung</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGemeinbedarf">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGemeinbedarf_1100">
+			<description>Schule</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGemeinbedarf">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGemeinbedarf_1200">
+			<description>Kirche</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGemeinbedarf">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGemeinbedarf_1300">
+			<description>Sozial</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGemeinbedarf">1300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGemeinbedarf_1400">
+			<description>Gesundheit</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGemeinbedarf">1400</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGemeinbedarf_1500">
+			<description>Kultur</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGemeinbedarf">1500</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGemeinbedarf_1600">
+			<description>Sport</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGemeinbedarf">1600</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGemeinbedarf_1700">
+			<description>Schutzbauwerk</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGemeinbedarf">1700</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGemeinbedarf_1800">
+			<description>Feuerwehr</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGemeinbedarf">1800</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGemeinbedarf_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGemeinbedarf">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ZweckbestimmungGruen">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ZweckbestimmungGruen</name>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_1000">
+			<description>Parkanlage</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_1100">
+			<description>Dauerkleingarten</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_1200">
+			<description>Sportplatz</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_1300">
+			<description>Spielplatz</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">1300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_1400">
+			<description>Zeltplatz</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">1400</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_1500">
+			<description>Badeplatz</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">1500</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_1600">
+			<description>Friedhof</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">1600</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_1700">
+			<description>Kleintierhaltung</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">1700</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_1800">
+			<description>StrassenbegleitGruen</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">1800</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_1900">
+			<description>SonstigeGaerten</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">1900</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_2000">
+			<description>ErholungsGaerten</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_2100">
+			<description>Golfplatz</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">2100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_2200">
+			<description>BoeschungsFlaeche</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">2200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_2300">
+			<description>Bolzplatz</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">2300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_2400">
+			<description>Skateanlage</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">2400</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGruen_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGruen">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ZweckbestimmungWald">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ZweckbestimmungWald</name>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungWald_1000">
+			<description>Erholungswald</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungWald">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungWald_1100">
+			<description>WaldAllgemein</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungWald">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungWald_1200">
+			<description>Schutzwald</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungWald">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungWald_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungWald">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ZweckbestimmungSchutzgebiet">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ZweckbestimmungSchutzgebiet</name>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSchutzgebiet_1000">
+			<description>Naturschutzgebiet</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSchutzgebiet">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSchutzgebiet_1100">
+			<description>Nationalpark</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSchutzgebiet">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSchutzgebiet_1200">
+			<description>Biosphaerenreservat</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSchutzgebiet">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSchutzgebiet_1300">
+			<description>Landschaftsschutzgebiet</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSchutzgebiet">1300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSchutzgebiet_1400">
+			<description>Naturpark</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSchutzgebiet">1400</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSchutzgebiet_1500">
+			<description>Naturdenkmal</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSchutzgebiet">1500</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSchutzgebiet_1600">
+			<description>GeschuetzterLandschaftsBestandteil</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSchutzgebiet">1600</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSchutzgebiet_1700">
+			<description>GesetzlichGeschuetztesBiotop</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSchutzgebiet">1700</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSchutzgebiet_1800">
+			<description>GebietGemeinschaftlicherBedeutung</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSchutzgebiet">1800</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSchutzgebiet_1900">
+			<description>EuropaeischesVogelschutzgebiet</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSchutzgebiet">1900</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungSchutzgebiet_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungSchutzgebiet">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ZweckbestimmungVerEntsorgung">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ZweckbestimmungVerEntsorgung</name>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungVerEntsorgung_1000">
+			<description>Elektrizitaet</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungVerEntsorgung">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungVerEntsorgung_1100">
+			<description>Gas</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungVerEntsorgung">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungVerEntsorgung_1200">
+			<description>Fernwaerme</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungVerEntsorgung">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungVerEntsorgung_1300">
+			<description>Wasser</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungVerEntsorgung">1300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungVerEntsorgung_1400">
+			<description>Abwasser</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungVerEntsorgung">1400</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungVerEntsorgung_1500">
+			<description>Abfall</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungVerEntsorgung">1500</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungVerEntsorgung_1600">
+			<description>Ablagerungen</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungVerEntsorgung">1600</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungVerEntsorgung_1700">
+			<description>Richtfunk</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungVerEntsorgung">1700</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungVerEntsorgung_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungVerEntsorgung">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ZweckbestimmungLuftverkehr">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ZweckbestimmungLuftverkehr</name>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLuftverkehr_1000">
+			<description>Flughafen</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLuftverkehr">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLuftverkehr_2000">
+			<description>Landeplatz</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLuftverkehr">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLuftverkehr_3000">
+			<description>Segelfluggelaende</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLuftverkehr">3000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLuftverkehr_4000">
+			<description>HubschrauberLandeplatz</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLuftverkehr">4000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLuftverkehr_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLuftverkehr">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ZweckbestimmungBahnverkehr">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ZweckbestimmungBahnverkehr</name>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungBahnverkehr_1000">
+			<description>Bahnanlage</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungBahnverkehr">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungBahnverkehr_1100">
+			<description>Strassenbahn</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungBahnverkehr">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungBahnverkehr_1200">
+			<description>Seilbahn</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungBahnverkehr">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungBahnverkehr_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungBahnverkehr">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_Nutzungsform">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_Nutzungsform</name>
+		<definitionMember>
+			<Definition gml:id="XP_Nutzungsform_1000">
+			<description>Privat</description>
+			<name codeSpace="urn:xplan:XP_Nutzungsform">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_Nutzungsform_2000">
+			<description>Oeffentlich</description>
+			<name codeSpace="urn:xplan:XP_Nutzungsform">2000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ZweckbestimmungGewaesser">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ZweckbestimmungGewaesser</name>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGewaesser_1000">
+			<description>Hafen</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGewaesser">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGewaesser_1100">
+			<description>Wasserflaeche</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGewaesser">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGewaesser_1200">
+			<description>Fliessgewaesser</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGewaesser">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungGewaesser_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungGewaesser">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ZweckbestimmungVorbHochwSchutz">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ZweckbestimmungVorbHochwSchutz</name>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungVorbHochwSchutz_1000">
+			<description>FestgesetztesUeberschwemmgebiet</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungVorbHochwSchutz">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungVorbHochwSchutz_1100">
+			<description>NochNichtFestgesetztesUeberschwemmgebiet</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungVorbHochwSchutz">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungVorbHochwSchutz_1200">
+			<description>UeberschwemmGefaehrdetesGebiet</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungVorbHochwSchutz">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungVorbHochwSchutz_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungVorbHochwSchutz">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ZweckbestimmungWasserrecht">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ZweckbestimmungWasserrecht</name>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungWasserrecht_1000">
+			<description>SchutzgebietQuellGrundwasser</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungWasserrecht">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungWasserrecht_1100">
+			<description>SchutzgebietOberflaechengewaesser</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungWasserrecht">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungWasserrecht_1200">
+			<description>WasserschutzgebietZone1</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungWasserrecht">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungWasserrecht_1300">
+			<description>WasserschutzgebietZone2</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungWasserrecht">1300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungWasserrecht_1400">
+			<description>WasserschutzgebietZone3</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungWasserrecht">1400</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungWasserrecht_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungWasserrecht">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ZweckbestimmungWasserwirtschaft">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ZweckbestimmungWasserwirtschaft</name>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungWasserwirtschaft_1000">
+			<description>HochwasserRueckhaltebecken</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungWasserwirtschaft">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungWasserwirtschaft_1100">
+			<description>Ueberschwemmgebiet</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungWasserwirtschaft">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungWasserwirtschaft_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungWasserwirtschaft">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="XP_ZweckbestimmungLandwirtschaft">
+		<description>Stand: 23.2.2007</description>
+		<name>XP_ZweckbestimmungLandwirtschaft</name>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLandwirtschaft_1000">
+			<description>LandwirtschaftAllgemein</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLandwirtschaft">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLandwirtschaft_1100">
+			<description>Ackerbau</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLandwirtschaft">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLandwirtschaft_1200">
+			<description>WiesenWeidewirtschaft</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLandwirtschaft">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLandwirtschaft_1300">
+			<description>GartenbaulicheErzeugung</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLandwirtschaft">1300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLandwirtschaft_1400">
+			<description>Obstbau</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLandwirtschaft">1400</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLandwirtschaft_1500">
+			<description>Weinbau</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLandwirtschaft">1500</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLandwirtschaft_1600">
+			<description>Imkerei</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLandwirtschaft">1600</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLandwirtschaft_1700">
+			<description>Binnenfischerei</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLandwirtschaft">1700</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="XP_ZweckbestimmungLandwirtschaft_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:XP_ZweckbestimmungLandwirtschaft">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_Bauweise">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_Bauweise</name>
+		<definitionMember>
+			<Definition gml:id="BP_Bauweise_1000">
+			<description>OffeneBauweise</description>
+			<name codeSpace="urn:xplan:BP_Bauweise">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Bauweise_2000">
+			<description>GeschlosseneBauweise</description>
+			<name codeSpace="urn:xplan:BP_Bauweise">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Bauweise_3000">
+			<description>AbweichendeBauweise</description>
+			<name codeSpace="urn:xplan:BP_Bauweise">3000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_BebauungsArt">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_BebauungsArt</name>
+		<definitionMember>
+			<Definition gml:id="BP_BebauungsArt_1000">
+			<description>Einzelhaeuser</description>
+			<name codeSpace="urn:xplan:BP_BebauungsArt">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_BebauungsArt_2000">
+			<description>Doppelhaeuser</description>
+			<name codeSpace="urn:xplan:BP_BebauungsArt">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_BebauungsArt_3000">
+			<description>Hausgruppen</description>
+			<name codeSpace="urn:xplan:BP_BebauungsArt">3000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_BebauungsArt_4000">
+			<description>EinzelDoppelhaeuser</description>
+			<name codeSpace="urn:xplan:BP_BebauungsArt">4000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_BebauungsArt_5000">
+			<description>EinzelhaeuserHausgruppen</description>
+			<name codeSpace="urn:xplan:BP_BebauungsArt">5000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_BebauungsArt_6000">
+			<description>DoppelhaeuserHausgruppen</description>
+			<name codeSpace="urn:xplan:BP_BebauungsArt">6000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_GrenzBebauung">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_GrenzBebauung</name>
+		<definitionMember>
+			<Definition gml:id="BP_GrenzBebauung_1000">
+			<description>Verboten</description>
+			<name codeSpace="urn:xplan:BP_GrenzBebauung">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_GrenzBebauung_2000">
+			<description>Erlaubt</description>
+			<name codeSpace="urn:xplan:BP_GrenzBebauung">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_GrenzBebauung_3000">
+			<description>Erzwungen</description>
+			<name codeSpace="urn:xplan:BP_GrenzBebauung">3000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_ZweckbestimmungGemeinschaftsanlagen">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_ZweckbestimmungGemeinschaftsanlagen</name>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_1000">
+			<description>Gemeinschaftsstellplaetze</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_2000">
+			<description>Gemeinschaftsgaragen</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_3000">
+			<description>Spielplatz</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">3000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_3100">
+			<description>Carport</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">3100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_3200">
+			<description>GemeinschaftsTiefgarage</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">3200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_3300">
+			<description>Nebengebaeude</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">3300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_3400">
+			<description>AbfallSammelanlagen</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">3400</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_3500">
+			<description>EnergieVerteilungsanlagen</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">3500</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_3600">
+			<description>AbfallWertstoffbehaelter</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">3600</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_3700">
+			<description>Freizeiteinrichtungen</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">3700</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_3800">
+			<description>Laermschutzanlagen</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">3800</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_3900">
+			<description>AbwasserRegenwasser</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">3900</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_4000">
+			<description>Ausgleichsmassnahmen</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">4000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungGemeinschaftsanlagen_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungGemeinschaftsanlagen">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_ZweckbestimmungNebenanlagen">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_ZweckbestimmungNebenanlagen</name>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungNebenanlagen_1000">
+			<description>Stellplaetze</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungNebenanlagen">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungNebenanlagen_2000">
+			<description>Garagen</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungNebenanlagen">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungNebenanlagen_3000">
+			<description>Spielplatz</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungNebenanlagen">3000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungNebenanlagen_3100">
+			<description>Carport</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungNebenanlagen">3100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungNebenanlagen_3200">
+			<description>Tiefgarage</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungNebenanlagen">3200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungNebenanlagen_3300">
+			<description>Nebengebaeude</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungNebenanlagen">3300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungNebenanlagen_3400">
+			<description>AbfallSammelanlagen</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungNebenanlagen">3400</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungNebenanlagen_3500">
+			<description>EnergieVerteilungsanlagen</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungNebenanlagen">3500</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungNebenanlagen_3600">
+			<description>AbfallWertstoffbehaelter</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungNebenanlagen">3600</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungNebenanlagen_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungNebenanlagen">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_Dachform">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_Dachform</name>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_1000">
+			<description>Flachdach</description>
+			<name codeSpace="urn:xplan:BP_Dachform">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_2100">
+			<description>Pultdach</description>
+			<name codeSpace="urn:xplan:BP_Dachform">2100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_2200">
+			<description>Versetztes Pultdach</description>
+			<name codeSpace="urn:xplan:BP_Dachform">2200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_3100">
+			<description>Satteldach</description>
+			<name codeSpace="urn:xplan:BP_Dachform">3100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_3200">
+			<description>Walmdach</description>
+			<name codeSpace="urn:xplan:BP_Dachform">3200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_3300">
+			<description>Krüppelwalmdach</description>
+			<name codeSpace="urn:xplan:BP_Dachform">3300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_3400">
+			<description>Mansardendach</description>
+			<name codeSpace="urn:xplan:BP_Dachform">3400</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_3500">
+			<description>Zeltdach</description>
+			<name codeSpace="urn:xplan:BP_Dachform">3500</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_3600">
+			<description>Kegeldach</description>
+			<name codeSpace="urn:xplan:BP_Dachform">3600</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_3700">
+			<description>Kuppeldach</description>
+			<name codeSpace="urn:xplan:BP_Dachform">3700</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_3800">
+			<description>Sheddach</description>
+			<name codeSpace="urn:xplan:BP_Dachform">3800</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_3900">
+			<description>Bogendach</description>
+			<name codeSpace="urn:xplan:BP_Dachform">3900</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_4000">
+			<description>Turmdach</description>
+			<name codeSpace="urn:xplan:BP_Dachform">4000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_5000">
+			<description>Mischform</description>
+			<name codeSpace="urn:xplan:BP_Dachform">5000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Dachform_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:BP_Dachform">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_StrassenkoerperHerstellung">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_StrassenkoerperHerstellung</name>
+		<definitionMember>
+			<Definition gml:id="BP_StrassenkoerperHerstellung_1000">
+			<description>Aufschuettung</description>
+			<name codeSpace="urn:xplan:BP_StrassenkoerperHerstellung">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_StrassenkoerperHerstellung_2000">
+			<description>Abgrabung</description>
+			<name codeSpace="urn:xplan:BP_StrassenkoerperHerstellung">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_StrassenkoerperHerstellung_3000">
+			<description>Stuetzmauer</description>
+			<name codeSpace="urn:xplan:BP_StrassenkoerperHerstellung">3000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_ZweckbestimmungStrassenverkehr">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_ZweckbestimmungStrassenverkehr</name>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungStrassenverkehr_1000">
+			<description>FlaechenParken</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungStrassenverkehr">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungStrassenverkehr_1100">
+			<description>Fussgaengerbereich</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungStrassenverkehr">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungStrassenverkehr_1200">
+			<description>VerkehrsberuhigterBereich</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungStrassenverkehr">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungStrassenverkehr_1300">
+			<description>RadFussweg</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungStrassenverkehr">1300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungStrassenverkehr_1400">
+			<description>Radweg</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungStrassenverkehr">1400</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungStrassenverkehr_1500">
+			<description>Fussweg</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungStrassenverkehr">1500</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungStrassenverkehr_1550">
+			<description>Wanderweg</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungStrassenverkehr">1550</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungStrassenverkehr_1600">
+			<description>AbstellenVonFahrraedern</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungStrassenverkehr">1600</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungStrassenverkehr_1700">
+			<description>Bruecke</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungStrassenverkehr">1700</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungStrassenverkehr_1800">
+			<description>Durchgang</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungStrassenverkehr">1800</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungStrassenverkehr_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungStrassenverkehr">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_AnpflanzungBindungErhaltungsGegenstand">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_AnpflanzungBindungErhaltungsGegenstand</name>
+		<definitionMember>
+			<Definition gml:id="BP_AnpflanzungBindungErhaltungsGegenstand_1000">
+			<description>Baeume</description>
+			<name codeSpace="urn:xplan:BP_AnpflanzungBindungErhaltungsGegenstand">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_AnpflanzungBindungErhaltungsGegenstand_2000">
+			<description>Straeucher</description>
+			<name codeSpace="urn:xplan:BP_AnpflanzungBindungErhaltungsGegenstand">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_AnpflanzungBindungErhaltungsGegenstand_3000">
+			<description>SonstBepflanzung</description>
+			<name codeSpace="urn:xplan:BP_AnpflanzungBindungErhaltungsGegenstand">3000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_AnpflanzungBindungErhaltungsGegenstand_4000">
+			<description>Gewaesser</description>
+			<name codeSpace="urn:xplan:BP_AnpflanzungBindungErhaltungsGegenstand">4000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_Massnahme">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_Massnahme</name>
+		<definitionMember>
+			<Definition gml:id="BP_Massnahme_1000">
+			<description>Erhaltung</description>
+			<name codeSpace="urn:xplan:BP_Massnahme">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Massnahme_2000">
+			<description>Anpflanzung</description>
+			<name codeSpace="urn:xplan:BP_Massnahme">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Massnahme_3000">
+			<description>Bindung</description>
+			<name codeSpace="urn:xplan:BP_Massnahme">3000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_ZweckbestimmungKennzeichnungsFlaeche">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_ZweckbestimmungKennzeichnungsFlaeche</name>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungKennzeichnungsFlaeche_1000">
+			<description>UmweltgefaehrdendeStoffe</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungKennzeichnungsFlaeche">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungKennzeichnungsFlaeche_2000">
+			<description>Naturgewalten</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungKennzeichnungsFlaeche">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ZweckbestimmungKennzeichnungsFlaeche_3000">
+			<description>Bergbau</description>
+			<name codeSpace="urn:xplan:BP_ZweckbestimmungKennzeichnungsFlaeche">3000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_Art">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_Art</name>
+		<definitionMember>
+			<Definition gml:id="BP_Art_1000">
+			<description>EinfacherBPlan</description>
+			<name codeSpace="urn:xplan:BP_Art">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Art_2000">
+			<description>QualifizierterBPlan</description>
+			<name codeSpace="urn:xplan:BP_Art">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Art_3000">
+			<description>VorhabenbezogenerBPlan</description>
+			<name codeSpace="urn:xplan:BP_Art">3000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Art_4000">
+			<description>EntwicklungsSatzung</description>
+			<name codeSpace="urn:xplan:BP_Art">4000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Art_5000">
+			<description>ErgaenzungsSatzung</description>
+			<name codeSpace="urn:xplan:BP_Art">5000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Art_6000">
+			<description>BPlan_Innenentwicklung</description>
+			<name codeSpace="urn:xplan:BP_Art">6000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_Rechtsstand">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_Rechtsstand</name>
+		<definitionMember>
+			<Definition gml:id="BP_Rechtsstand_1000">
+			<description>Aufstellungsbeschluss</description>
+			<name codeSpace="urn:xplan:BP_Rechtsstand">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Rechtsstand_2000">
+			<description>Entwurf</description>
+			<name codeSpace="urn:xplan:BP_Rechtsstand">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Rechtsstand_3000">
+			<description>Satzung</description>
+			<name codeSpace="urn:xplan:BP_Rechtsstand">3000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Rechtsstand_4000">
+			<description>Rechtskraft</description>
+			<name codeSpace="urn:xplan:BP_Rechtsstand">4000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_Rechtsstand_5000">
+			<description>Untergegangen</description>
+			<name codeSpace="urn:xplan:BP_Rechtsstand">5000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="BP_ArtHoehenbezugspunkt">
+		<description>Stand: 23.2.2007</description>
+		<name>BP_ArtHoehenbezugspunkt</name>
+		<definitionMember>
+			<Definition gml:id="BP_ArtHoehenbezugspunkt_1000">
+			<description>TH</description>
+			<name codeSpace="urn:xplan:BP_ArtHoehenbezugspunkt">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ArtHoehenbezugspunkt_2000">
+			<description>FH</description>
+			<name codeSpace="urn:xplan:BP_ArtHoehenbezugspunkt">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="BP_ArtHoehenbezugspunkt_3000">
+			<description>OK</description>
+			<name codeSpace="urn:xplan:BP_ArtHoehenbezugspunkt">3000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_PlanArt">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_PlanArt</name>
+		<definitionMember>
+			<Definition gml:id="FP_PlanArt_1000">
+			<description>FPlan</description>
+			<name codeSpace="urn:xplan:FP_PlanArt">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_PlanArt_2000">
+			<description>GemeinsamerFPlan</description>
+			<name codeSpace="urn:xplan:FP_PlanArt">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_PlanArt_3000">
+			<description>RegFPlan</description>
+			<name codeSpace="urn:xplan:FP_PlanArt">3000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_PlanArt_4000">
+			<description>FPlanRegPlan</description>
+			<name codeSpace="urn:xplan:FP_PlanArt">4000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_Rechtsstand">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_Rechtsstand</name>
+		<definitionMember>
+			<Definition gml:id="FP_Rechtsstand_1000">
+			<description>Aufstellungsbeschluss</description>
+			<name codeSpace="urn:xplan:FP_Rechtsstand">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_Rechtsstand_2000">
+			<description>Entwurf</description>
+			<name codeSpace="urn:xplan:FP_Rechtsstand">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_Rechtsstand_3000">
+			<description>Plan</description>
+			<name codeSpace="urn:xplan:FP_Rechtsstand">3000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_Rechtsstand_4000">
+			<description>Wirksamkeit</description>
+			<name codeSpace="urn:xplan:FP_Rechtsstand">4000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_Rechtsstand_5000">
+			<description>Untergegangen</description>
+			<name codeSpace="urn:xplan:FP_Rechtsstand">5000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_ArtHoehenbezugspunkt">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_ArtHoehenbezugspunkt</name>
+		<definitionMember>
+			<Definition gml:id="FP_ArtHoehenbezugspunkt_1000">
+			<description>TH</description>
+			<name codeSpace="urn:xplan:FP_ArtHoehenbezugspunkt">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ArtHoehenbezugspunkt_2000">
+			<description>FH</description>
+			<name codeSpace="urn:xplan:FP_ArtHoehenbezugspunkt">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ArtHoehenbezugspunkt_3000">
+			<description>OK</description>
+			<name codeSpace="urn:xplan:FP_ArtHoehenbezugspunkt">3000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_AllgArtDerBaulNutzung">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_AllgArtDerBaulNutzung</name>
+		<definitionMember>
+			<Definition gml:id="FP_AllgArtDerBaulNutzung_1000">
+			<description>WohnBauflaeche</description>
+			<name codeSpace="urn:xplan:FP_AllgArtDerBaulNutzung">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_AllgArtDerBaulNutzung_2000">
+			<description>GemischteBauflaeche</description>
+			<name codeSpace="urn:xplan:FP_AllgArtDerBaulNutzung">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_AllgArtDerBaulNutzung_3000">
+			<description>GewerblicheBauflaeche</description>
+			<name codeSpace="urn:xplan:FP_AllgArtDerBaulNutzung">3000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_AllgArtDerBaulNutzung_4000">
+			<description>SonderBauflaeche</description>
+			<name codeSpace="urn:xplan:FP_AllgArtDerBaulNutzung">4000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_AllgArtDerBaulNutzung_9999">
+			<description>SonstigeBauflaeche</description>
+			<name codeSpace="urn:xplan:FP_AllgArtDerBaulNutzung">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_ZweckbestimmungKennzeichnung">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_ZweckbestimmungKennzeichnung</name>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungKennzeichnung_1000">
+			<description>Naturgewalten</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungKennzeichnung">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungKennzeichnung_2000">
+			<description>Abbauflaeche</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungKennzeichnung">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungKennzeichnung_3000">
+			<description>AeussereEinwirkungen</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungKennzeichnung">3000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungKennzeichnung_4000">
+			<description>SchadstoffBelastBoden</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungKennzeichnung">4000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungKennzeichnung_5000">
+			<description>LaermBelastung</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungKennzeichnung">5000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungKennzeichnung_9999">
+			<description>AndereGesetzlVorschriften</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungKennzeichnung">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_ZweckbestimmungPriviligiertesVorhaben">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_ZweckbestimmungPriviligiertesVorhaben</name>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungPriviligiertesVorhaben_1000">
+			<description>Gartenbau</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungPriviligiertesVorhaben">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungPriviligiertesVorhaben_1100">
+			<description>OeffentlicheVersorgung</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungPriviligiertesVorhaben">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungPriviligiertesVorhaben_1200">
+			<description>BesondereUmgebungsAnforderung</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungPriviligiertesVorhaben">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungPriviligiertesVorhaben_1300">
+			<description>NachteiligeUmgebungsWirkung</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungPriviligiertesVorhaben">1300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungPriviligiertesVorhaben_1500">
+			<description>BesondereZweckbestimmung</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungPriviligiertesVorhaben">1500</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungPriviligiertesVorhaben_1600">
+			<description>WasserWindEnergie</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungPriviligiertesVorhaben">1600</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungPriviligiertesVorhaben_1700">
+			<description>Biogasanlage</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungPriviligiertesVorhaben">1700</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungPriviligiertesVorhaben_1800">
+			<description>Kernenergie</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungPriviligiertesVorhaben">1800</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungPriviligiertesVorhaben_1900">
+			<description>LandForstwirtschaft</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungPriviligiertesVorhaben">1900</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="FP_ZweckbestimmungStrassenverkehr">
+		<description>Stand: 23.2.2007</description>
+		<name>FP_ZweckbestimmungStrassenverkehr</name>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungStrassenverkehr_1000">
+			<description>Autobahn</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungStrassenverkehr">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungStrassenverkehr_1100">
+			<description>Hauptverkehrsstrasse</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungStrassenverkehr">1100</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungStrassenverkehr_1200">
+			<description>UeberoertlicherWeg</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungStrassenverkehr">1200</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungStrassenverkehr_1300">
+			<description>FlaecheParken</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungStrassenverkehr">1300</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungStrassenverkehr_1400">
+			<description>Bruecke</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungStrassenverkehr">1400</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungStrassenverkehr_1500">
+			<description>Durchgang</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungStrassenverkehr">1500</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="FP_ZweckbestimmungStrassenverkehr_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:FP_ZweckbestimmungStrassenverkehr">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="RP_Art">
+		<description>Stand: 23.2.2007</description>
+		<name>RP_Art</name>
+		<definitionMember>
+			<Definition gml:id="RP_Art_1000">
+			<description>Regionalplan</description>
+			<name codeSpace="urn:xplan:RP_Art">1000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="RP_GebietTyp">
+		<description>Stand: 23.2.2007</description>
+		<name>RP_GebietTyp</name>
+		<definitionMember>
+			<Definition gml:id="RP_GebietTyp_1000">
+			<description>vorrangGebiet</description>
+			<name codeSpace="urn:xplan:RP_GebietTyp">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="RP_GebietTyp_2000">
+			<description>vorbehaltsGebiet</description>
+			<name codeSpace="urn:xplan:RP_GebietTyp">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="RP_GebietTyp_3000">
+			<description>eignungsGebiet</description>
+			<name codeSpace="urn:xplan:RP_GebietTyp">3000</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<DefinitionCollection gml:id="RP_FestlegungEntwicklungsschwerpunkte">
+		<description>Stand: 23.2.2007</description>
+		<name>RP_FestlegungEntwicklungsschwerpunkte</name>
+		<definitionMember>
+			<Definition gml:id="RP_FestlegungEntwicklungsschwerpunkte_1000">
+			<description>GemischteBauflaechenDienstleistungszentrum</description>
+			<name codeSpace="urn:xplan:RP_FestlegungEntwicklungsschwerpunkte">1000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="RP_FestlegungEntwicklungsschwerpunkte_2000">
+			<description>Einzelhandelskonzentration</description>
+			<name codeSpace="urn:xplan:RP_FestlegungEntwicklungsschwerpunkte">2000</name>
+			</Definition>
+		</definitionMember>
+		<definitionMember>
+			<Definition gml:id="RP_FestlegungEntwicklungsschwerpunkte_9999">
+			<description>Sonstiges</description>
+			<name codeSpace="urn:xplan:RP_FestlegungEntwicklungsschwerpunkte">9999</name>
+			</Definition>
+		</definitionMember>
+		</DefinitionCollection>
+	</dictionaryEntry>
+
+</Dictionary>

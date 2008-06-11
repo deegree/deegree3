@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://www.xmlspy.com/schemas/textstate" xmlns:ts="http://www.xmlspy.com/schemas/textstate" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.xmlspy.com/schemas/textstate" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="TextType" mixed="true">
+		<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element ref="bold"/>
+			<xs:element ref="italic"/>
+			<xs:element ref="underline"/>
+		</xs:choice>
+	</xs:complexType>
+	<xs:element name="bold" type="TextType"/>
+	<xs:element name="italic" type="TextType"/>
+	<xs:element name="underline" type="TextType"/>
+</xs:schema>
