@@ -52,7 +52,7 @@ import java.net.URI;
  */
 public class SimpleLink {
 
-    public final static String type = "simple";
+    private final static String type = "simple";
 
     private URI href;
 
