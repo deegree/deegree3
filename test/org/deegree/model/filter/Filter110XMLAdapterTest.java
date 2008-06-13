@@ -94,6 +94,15 @@ public class Filter110XMLAdapterTest {
     }
 
     @Test    
+    public void parseBrokenIdFilterDocument () throws IOException, XMLStreamException, FactoryConfigurationError {
+        Filter110XMLAdapter adapter = new Filter110XMLAdapter ();
+        URL filterURL = Filter110XMLAdapterTest.class.getResource( "testfilter_110_id_broken.xml" );
+        adapter.load( filterURL );
+        Filter filter = adapter.parse();
+        System.out.println (filter);
+    }    
+
+    @Test    
     public void parseAndExportFilterDocument () throws IOException, XMLStreamException, FactoryConfigurationError {
 
         Filter110XMLAdapter adapter = new Filter110XMLAdapter ();
