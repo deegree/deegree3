@@ -44,11 +44,12 @@
 package org.deegree.commons.xml;
 
 /**
- * This exception is thrown when a syntactic or semantic error has been encountered during the
- * parsing process of an XML document.
+ * Base class for XML-related exceptions.
  * 
  * @author <a href="mailto:mschneider@lat-lon.de">Markus Schneider </a>
- * @version $Revision$
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
  */
 public class XMLProcessingException extends RuntimeException {
 
@@ -59,13 +60,14 @@ public class XMLProcessingException extends RuntimeException {
     private String stackTrace = "<< is empty >>";
 
     /**
-     * Creates a new instance of <code>XMLParsingException</code> without detail message.
+     * Creates a new instance of <code>XMLProcessingException</code> without detail message.
      */
-    XMLProcessingException() {
+    protected XMLProcessingException() {
+        // nothing to do
     }
 
     /**
-     * Constructs an instance of <code>XMLParsingException</code> with the specified detail
+     * Constructs an instance of <code>XMLProcessingException</code> with the specified detail
      * message.
      * 
      * @param msg
@@ -78,7 +80,7 @@ public class XMLProcessingException extends RuntimeException {
     }
 
     /**
-     * Constructs an instance of <code>XMLParsingException</code> with the specified cause.
+     * Constructs an instance of <code>XMLProcessingException</code> with the specified cause.
      * 
      * @param cause
      *            the Throwable that caused this XMLParsingException
@@ -89,11 +91,12 @@ public class XMLProcessingException extends RuntimeException {
     }
 
     /**
-     * Constructs an instance of <code>XMLParsingException</code> with the specified detail
+     * Constructs an instance of <code>XMLProcessingException</code> with the specified detail
      * message.
      * 
      * @param msg
      *            the detail message.
+     * @param e 
      */
     public XMLProcessingException( String msg, Throwable e ) {
         this( msg );
