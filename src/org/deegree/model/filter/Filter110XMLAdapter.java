@@ -61,6 +61,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.model.filter.comparison.BinaryComparisonOperator;
@@ -222,7 +223,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
         QName elementName = element.getQName();
         if ( GML_OBJECT_ID_ELEMENT.equals( elementName ) || FEATURE_ID_ELEMENT.equals( elementName ) ) {
             LOG.debug( "Building id filter" );
-            filter = parseIdFilter( element );
+            filter = parseIdFilter( rootElement );
         } else {
             LOG.debug( "Building operator filter" );
             Operator rootOperator = parseOperator( element );
@@ -243,7 +244,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
         Set<String> matchedIds = new HashSet<String>();
 
-        Iterator childElementIter = element.getChildElements();
+        Iterator<?> childElementIter = element.getChildElements();
         while ( childElementIter.hasNext() ) {
             OMElement childElement = (OMElement) childElementIter.next();
             QName childElementName = childElement.getQName();
@@ -253,7 +254,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
             } else {
                 String msg = Messages.getMessage( "FILTER_PARSING_ID_FILTER", childElementName, GML_OBJECT_ID_ELEMENT,
                                                   FEATURE_ID_ELEMENT );
-                throw new XMLProcessingException( msg );
+                throw new XMLParsingException (this, childElement, msg);
             }
         }
         return new IdFilter( matchedIds );
