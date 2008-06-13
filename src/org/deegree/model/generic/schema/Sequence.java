@@ -61,14 +61,14 @@ public class Sequence implements ContentModel {
         this.contents = contents;
     }
     
-    public void addElement(Occurrence<?> occurence) {
+    public void append(Occurrence<?> occurence) {
         contents.add( occurence );
     }
 
     public String toString( String indent ) {
         String s = "";
         for ( Occurrence<?> occurence : contents ) {
-            s += occurence.toString(indent);
+            s += occurence.toString(indent) + "\n";
         }
         return s;
     }    

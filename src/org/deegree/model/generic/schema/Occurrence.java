@@ -51,7 +51,7 @@ package org.deegree.model.generic.schema;
  *
  * @version $Revision:$, $Date:$
  */
-public class Occurrence<T> {
+public class Occurrence<T extends NodeType> {
 
     private int minOccurs;
     
@@ -64,7 +64,12 @@ public class Occurrence<T> {
     }
 
     public String toString( String indent ) {
-        // TODO Auto-generated method stub
-        return null;
+        String s = indent + "- occurence (minOccurs=" + minOccurs + ", maxOccurs= " + maxOccurs + "): ";
+        if (nodeType instanceof ObjectType ) {
+            s += ((ObjectType) nodeType).getName();
+        } else if (nodeType instanceof TextType ) {
+            s += " value";
+        }    
+        return s;
     }
 }

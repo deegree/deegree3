@@ -76,6 +76,7 @@ import org.deegree.model.generic.implementation.schema.GenericObjectType;
 import org.deegree.model.generic.schema.AttributeType;
 import org.deegree.model.generic.schema.ContentModel;
 import org.deegree.model.generic.schema.ObjectType;
+import org.deegree.model.generic.schema.Sequence;
 
 /**
  * TODO add documentation here
@@ -363,6 +364,7 @@ public class ApplicationSchemaXSDAdapter {
                 parentType = addElementDeclaration( substitutionGroupElementDecl );
             }
         }
+        System.out.println ("Creating new object type '" + elementName + "' with contents: " + contents);
         elementType = new GenericObjectType( elementName, attributes, contents, elementDecl.getAbstract(), parentType );
         xsElementNameToOT.put( elementName, elementType );
         return elementType;
@@ -490,45 +492,7 @@ public class ApplicationSchemaXSDAdapter {
     // SimplePropertyType pt = new SimplePropertyType( propertyName, minOccurs, maxOccurs, typeDef.getBuiltInKind() );
     // return pt;
     // }
-    private static void printParticle( XSParticle particle, String indent ) {
-        System.out.print( indent + "particle: name=" + particle.getName() + ", minOccurs=" + particle.getMinOccurs()
-                          + ", maxOccurs=" + particle.getMaxOccurs() + ", type: " );
-        XSTerm term = particle.getTerm();
-        switch ( term.getType() ) {
-        case XSConstants.ELEMENT_DECLARATION: {
-            System.out.println( "element declaration ({" + term.getNamespace() + "}:" + term.getName() + ")" );
-            break;
-        }
-        case XSConstants.MODEL_GROUP: {
-            System.out.print( "model group (" );
-            XSModelGroup modelGroup = (XSModelGroup) term;
-            switch ( modelGroup.getCompositor() ) {
-            case XSModelGroup.COMPOSITOR_ALL: {
-                System.out.println( "all)" );
-                break;
-            }
-            case XSModelGroup.COMPOSITOR_CHOICE: {
-                System.out.println( "choice)" );
-                break;
-            }
-            case XSModelGroup.COMPOSITOR_SEQUENCE: {
-                System.out.println( "sequence)" );
-                break;
-            }
-            }
-            XSObjectList particles = modelGroup.getParticles();
-            for ( int i = 0; i < particles.getLength(); i++ ) {
-                XSParticle particle2 = (XSParticle) particles.item( i );
-                printParticle( particle2, indent + "  " );
-            }
-            break;
-        }
-        case XSConstants.WILDCARD: {
-            System.out.println( "wildcard" );
-            break;
-        }
-        }
-    }
+
 
     @Override
     public String toString() {
