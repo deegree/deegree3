@@ -109,6 +109,14 @@ public interface RasterData {
     public byte[] getNullPixel( byte[] result );
 
     /**
+     * Sets the no data values for this raster
+     * 
+     * @param values
+     *            an array with the null values
+     */
+    public void setNullPixel( byte[] values );
+
+    /**
      * Returns a new RasterData with the same DataType and InterleaveType
      * 
      * @param width

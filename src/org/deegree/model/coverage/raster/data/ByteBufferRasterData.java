@@ -39,6 +39,9 @@ package org.deegree.model.coverage.raster.data;
 
 import java.nio.ByteBuffer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * This abstract class implements the RasterData interface for ByteBuffer based raster.
  * 
@@ -70,6 +73,8 @@ import java.nio.ByteBuffer;
  */
 public abstract class ByteBufferRasterData implements RasterData {
 
+    private static Log LOG = LogFactory.getLog( ByteBufferRasterData.class );
+    
     /**
      * the width of the raster
      */
@@ -321,6 +326,20 @@ public abstract class ByteBufferRasterData implements RasterData {
         }
         System.arraycopy( nodata, 0, result, 0, result.length );
         return result;
+    }
+
+    public void setNullPixel( byte[] values ) {
+        if ( values.length % getDataType().getSize() != 0 ) {
+            LOG.error( "invalid null pixel values" );
+            return;
+        }
+        if ( values.length == nodata.length ) {
+            System.arraycopy( values, 0, nodata, 0, nodata.length );
+        } else {
+            for ( int b = 0; b < getBands(); b++ ) {
+                System.arraycopy( values, 0, nodata, getDataType().getSize()*b, getDataType().getSize() );
+            }
+        }
     }
 
     public byte[] getSample( int x, int y, int band, byte[] result ) {

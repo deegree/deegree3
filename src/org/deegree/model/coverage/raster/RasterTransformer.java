@@ -78,6 +78,8 @@ public class RasterTransformer extends Transformer {
 
     private static Log LOG = LogFactory.getLog( RasterTransformer.class );
 
+    private byte[] backgroundValue;
+
     /**
      * Creates a new RasterTransformer with the given target CRS.
      * 
@@ -205,6 +207,10 @@ public class RasterTransformer extends Transformer {
 
         Interpolation interpolation = InterpolationFactory.getInterpolation( interpolationType, srcRaster );
 
+        if ( backgroundValue != null ) {
+            srcRaster.setNullPixel( backgroundValue );
+        }
+
         // build the new result raster
         byte[] pixel = new byte[dstRaster.getBands() * dstRaster.getDataType().getSize()];
         srcCoords = new float[dstRaster.getWidth() * 2];
@@ -256,5 +262,14 @@ public class RasterTransformer extends Transformer {
 
         return transform( sourceRaster, dstEnvelope, dstWidth, dstHeight, interpolationType );
 
+    }
+
+    /**
+     * Sets the background for the raster transformation.
+     * 
+     * @param backgroundValue
+     */
+    public void setBackgroundValue( byte[] backgroundValue ) {
+        this.backgroundValue = backgroundValue;
     }
 }
