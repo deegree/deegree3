@@ -82,23 +82,24 @@ import org.jaxen.JaxenException;
  * and exporters in deegree. Classes that extend <code>XMLAdapter</code> provide the binding between a certain type of
  * XML documents and their corresponding Java bean representation.
  * <p>
- * <code>XMLAdapter</code> tries to make the process of writing XML parsers as painless as possible. It provides the
- * following functionality:
+ * <code>XMLAdapter</code> tries to make the process of writing custom XML parsers as painless as possible. It
+ * provides the following functionality:
  * <ul>
  * <li>Lookup of nodes using XPath expressions.</li>
- * <li>Convenience methods for the lookup of <i>required</i> nodes. These methods throw an {@link XMLSyntaxException}
- * if the expression does not have a result.</li>
- * <li>Convenience methods for retrieving node values as Java primitives (<code>int</code>, <code>boolean</code>,
- * ...) or Objects (<code>QName</code>, <code>SimpleLink</code>, ...). If the value can not be converted to the
- * expected type, an {@link XMLSyntaxException} is thrown.
- * <li>Convenience methods for loading the XML content from different sources (<code>URL</code>,
- * <code>Reader</code>, <code>InputStream</code>).</li>
- * <li>Easy resolving of relative URLs that occur in the document content.</li>
+ * <li>Lookup of <i>required</i> nodes. These methods throw an {@link XMLParsingException} if the expression does not
+ * have a result.</li>
+ * <li>Convenient retrieving of node values as Java primitives (<code>int</code>, <code>boolean</code>, ...) or
+ * common Objects (<code>QName</code>, <code>SimpleLink</code>, ...). If the value can not be converted to the
+ * expected type, an {@link XMLParsingException} is thrown.
+ * <li>Loading the XML content from different sources (<code>URL</code>, <code>Reader</code>,
+ * <code>InputStream</code>).</li>
+ * <li>Resolving of relative URLs that occur in the document content, i.e. that refer to resources that are located
+ * relative to the document.</li>
  * </ul>
  * </p>
  * <p>
- * Technically, the XML handling is based on <a href="http://ws.apache.org/commons/axiom/">AXIOM (AXis Object Model)</a> and
- * <a href="http://jcp.org/en/jsr/detail?id=173">StAX (Streaming API for XML)</a>.
+ * Technically, the XML handling is based on <a href="http://ws.apache.org/commons/axiom/">AXIOM (AXis Object Model)</a>
+ * on top of <a href="http://jcp.org/en/jsr/detail?id=173">StAX (Streaming API for XML)</a>.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -122,12 +123,12 @@ public class XMLAdapter {
      * Use this URL as SystemID only if the document content cannot be pinpointed to a URL - in this case it may not use
      * any relative references!
      */
-    public static final String DEFAULT_URL = "http://www.deegree.org";
+    public static final String DEFAULT_URL = "http://www.deegree.org/unknownLocation";
 
     /** Root element of the XML contents. */
     protected OMElement rootElement;
 
-    // physical source of the element (used for resolving of relative URLs)
+    // physical source of the element (used for resolving relative URLs in the document)
     private URL systemId;
 
     /**
@@ -138,7 +139,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Creates a new <code>XMLAdapter</code> that loads its content from the given <code>URL</code>.
+     * Creates a new instance that loads its content from the given <code>URL</code>.
      * 
      * @param url
      *            source of the xml content
@@ -151,7 +152,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Creates a new <code>XMLAdapter</code> that loads its content from the given <code>File</code>.
+     * Creates a new instance that loads its content from the given <code>File</code>.
      * 
      * @param file
      *            source of the xml content
@@ -170,7 +171,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Creates a new <code>XMLAdapter</code> that loads its content from the given <code>Reader</code>.
+     * Creates a new instance that loads its content from the given <code>Reader</code>.
      * 
      * @param reader
      *            source of the xml content
@@ -187,7 +188,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Creates a new <code>XMLAdapter</code> instance based on the submitted document.
+     * Creates a new instance that wraps the submitted XML document.
      * 
      * @param doc
      *            xml content
@@ -200,7 +201,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Creates a new <code>XMLFragment</code> instance that encapsulates the given element.
+     * Creates a new instance that wraps the given XML element.
      * 
      * @param rootElement
      *            xml content
@@ -214,7 +215,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Returns the systemId (the physical location of the content).
+     * Returns the systemId (the physical location of the wrapped XML content).
      * 
      * @return the systemId
      */
@@ -223,7 +224,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Sets the systemId (the physical location of the content).
+     * Sets the systemId (the physical location of the wrapped XML content).
      * 
      * @param systemId
      *            systemId (physical location) to set
@@ -233,9 +234,9 @@ public class XMLAdapter {
     }
 
     /**
-     * Returns whether the encapsulated document contains schema references.
+     * Returns whether the wrapped XML element contains schema references.
      * 
-     * @return true, if the document contains schema references, false otherwise
+     * @return true, if the element contains schema references, false otherwise
      */
     public boolean hasSchemas() {
         return rootElement.getAttribute( SCHEMA_ATTRIBUTE_NAME ) != null;
@@ -243,7 +244,7 @@ public class XMLAdapter {
 
     /**
      * Determines the namespace <code>URI</code>s and the bound schema <code>URL</code>s from the
-     * 'xsi:schemaLocation' attribute of the document element.
+     * 'xsi:schemaLocation' attribute of the wrapped XML element.
      * 
      * @return keys are URIs (namespaces), values are URLs (schema locations)
      * @throws XMLProcessingException
@@ -292,8 +293,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes the <code>XMLAdapter</code> with the content from the given <code>URL</code>. Sets the SystemId,
-     * too.
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>URL</code>. Sets the
+     * SystemId, too.
      * 
      * @param url
      *            source of the xml content
@@ -310,7 +311,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes the <code>XMLAdapter</code> with the content from the given <code>InputStream</code>. Sets the
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>InputStream</code>. Sets the
      * SystemId, too.
      * 
      * @param istream
@@ -334,7 +335,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Reads the encoding of the XML document from its header. If no header available
+     * Determines the encoding of an XML document from its header. If no header available
      * <code>CharsetUtils.getSystemCharset()</code> will be returned
      * 
      * @param pbis
@@ -366,10 +367,11 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes the <code>XMLAdapter</code> with the content from the given <code>Reader</code>. Sets the
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code>. Sets the
      * SystemId, too.
      * 
      * @param reader
+     *            source of the XML content
      * @param systemId
      *            can not be null. This string should represent a URL that is related to the passed reader. If this URL
      *            is not available or unknown, the string should contain the value of XMLFragment.DEFAULT_URL
@@ -399,7 +401,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Sets the root element, i.e. the element encapsulated by this <code>XMLAdapter</code>.
+     * Sets the root element, i.e. the XML element encapsulated by this <code>XMLAdapter</code>.
      * 
      * @param rootElement
      *            the root element
@@ -409,7 +411,7 @@ public class XMLAdapter {
     }
 
     /**
-     * Returns the root element, i.e. the element encapsulated by this <code>XMLAdapter</code>.
+     * Returns the root element, i.e. the XML element encapsulated by this <code>XMLAdapter</code>.
      * 
      * @return the root element
      */
@@ -418,10 +420,11 @@ public class XMLAdapter {
     }
 
     /**
-     * Resolves the given URL (which may be relative) against the SystemID of the <code>XMLFragment</code> into a
-     * <code>URL</code> (which is always absolute).
+     * Resolves the given URL (which may be relative) against the SystemID of this <code>XMLAdapter</code> into an
+     * absolute <code>URL</code>.
      * 
      * @param url
+     *            <code>URL</code> to be resolved (may be relative or absolute)
      * @return the resolved URL
      * @throws MalformedURLException
      */
@@ -441,7 +444,7 @@ public class XMLAdapter {
         return resolvedURL;
     }
 
-    public static Object evaluateXPath( XPath xpath, Object context )
+    public Object evaluateXPath( XPath xpath, Object context )
                             throws XMLProcessingException {
         Object result;
         try {
@@ -453,17 +456,17 @@ public class XMLAdapter {
     }
 
     /**
-     * Parses the submitted element as an {@link SimpleLink}.
+     * Parses the submitted XML element as a {@link SimpleLink}.
      * <p>
      * Possible escaping of the attributes "xlink:href", "xlink:role" and "xlink:arcrole" is performed automatically.
      * </p>
      * 
      * @param element
      * @return the object representation of the element
-     * @throws XMLSyntaxException
+     * @throws XMLParsingException
      */
-    public static SimpleLink parseSimpleLink( OMElement element )
-                            throws XMLSyntaxException {
+    public SimpleLink parseSimpleLink( OMElement element )
+                            throws XMLParsingException {
 
         URI href = null;
         URI role = null;
@@ -487,7 +490,7 @@ public class XMLAdapter {
                 arcrole = new URI( null, uriString, null );
             }
         } catch ( URISyntaxException e ) {
-            throw new XMLSyntaxException( "'" + uriString + "' is not a valid URI." );
+            throw new XMLParsingException( this, element, "'" + uriString + "' is not a valid URI." );
         }
 
         return new SimpleLink( href, role, arcrole, title, show, actuate );
@@ -499,11 +502,11 @@ public class XMLAdapter {
      * @param s
      *            the <code>String</code> to be parsed
      * @return corresponding boolean value
-     * @throws XMLSyntaxException
+     * @throws XMLParsingException
      *             if the given <code>String</code> is not a valid instance of <code>xsd:boolean</code>
      */
-    public static boolean parseBoolean( String s )
-                            throws XMLSyntaxException {
+    public boolean parseBoolean( String s )
+                            throws XMLParsingException {
 
         boolean value = false;
         if ( "true".equals( s ) || "1".equals( s ) ) {
@@ -512,7 +515,7 @@ public class XMLAdapter {
             value = false;
         } else {
             String msg = Messages.getMessage( "XML_SYNTAX_ERROR_BOOLEAN", s );
-            throw new XMLSyntaxException( msg );
+            throw new XMLParsingException( this, (OMElement) null, msg );
         }
         return value;
     }
@@ -523,18 +526,18 @@ public class XMLAdapter {
      * @param s
      *            the <code>String</code> to be parsed
      * @return corresponding double value
-     * @throws XMLSyntaxException
+     * @throws XMLParsingException
      *             if the given <code>String</code> is not a valid instance of <code>xsd:double</code>
      */
-    public static double parseDouble( String s )
-                            throws XMLSyntaxException {
+    public double parseDouble( String s )
+                            throws XMLParsingException {
 
         double value = 0.0;
         try {
             value = Double.parseDouble( s );
         } catch ( NumberFormatException e ) {
             String msg = Messages.getMessage( "XML_SYNTAX_ERROR_DOUBLE", s );
-            throw new XMLSyntaxException( msg );
+            throw new XMLParsingException( this, (OMElement) null, msg );
         }
         return value;
     }
@@ -545,18 +548,18 @@ public class XMLAdapter {
      * @param s
      *            the <code>String</code> to be parsed
      * @return corresponding float value
-     * @throws XMLSyntaxException
+     * @throws XMLParsingException
      *             if the given <code>String</code> is not a valid instance of <code>xsd:float</code>
      */
-    public static float parseFloat( String s )
-                            throws XMLSyntaxException {
+    public float parseFloat( String s )
+                            throws XMLParsingException {
 
         float value = 0.0f;
         try {
             value = Float.parseFloat( s );
         } catch ( NumberFormatException e ) {
             String msg = Messages.getMessage( "XML_SYNTAX_ERROR_FLOAT", s );
-            throw new XMLSyntaxException( msg );
+            throw new XMLParsingException( this, (OMElement) null, msg );
         }
         return value;
     }
@@ -567,18 +570,18 @@ public class XMLAdapter {
      * @param s
      *            the <code>String</code> to be parsed
      * @return corresponding integer value
-     * @throws XMLSyntaxException
+     * @throws XMLParsingException
      *             if the given <code>String</code> is not a valid instance of <code>xsd:integer</code>
      */
-    public static int parseInt( String s )
-                            throws XMLSyntaxException {
+    public int parseInt( String s )
+                            throws XMLParsingException {
 
         int value = 0;
         try {
             value = Integer.parseInt( s );
         } catch ( NumberFormatException e ) {
             String msg = Messages.getMessage( "XML_SYNTAX_ERROR_INT", s );
-            throw new XMLSyntaxException( msg );
+            throw new XMLParsingException( this, (OMElement) null, msg );
         }
         return value;
     }
@@ -591,45 +594,45 @@ public class XMLAdapter {
      * @param element
      *            element that provides the namespace context (used to resolve the namespace prefix)
      * @return corresponding QName value
-     * @throws XMLSyntaxException
+     * @throws XMLParsingException
      *             if the given <code>String</code> is not a valid instance of <code>xsd:QName</code>
      */
-    public static QName parseQName( String s, OMElement element )
-                            throws XMLSyntaxException {
+    public QName parseQName( String s, OMElement element )
+                            throws XMLParsingException {
 
         QName value = element.resolveQName( s );
         return value;
     }
 
-    public static OMElement getElement( OMElement context, XPath xpath )
-                            throws XMLProcessingException {
+    public OMElement getElement( OMElement context, XPath xpath )
+                            throws XMLParsingException {
         Object result = getNode( context, xpath );
         if ( !( result instanceof OMElement ) ) {
             String msg = Messages.getMessage( "XML_PARSING_ERROR_NOT_ELEMENT", xpath, context, result.getClass() );
-            throw new XMLProcessingException( msg );
+            throw new XMLParsingException( this, context, msg );
         }
         return (OMElement) result;
     }
 
     @SuppressWarnings("unchecked")
-    public static List<OMElement> getElements( OMElement context, XPath xpath )
-                            throws XMLProcessingException {
+    public List<OMElement> getElements( OMElement context, XPath xpath )
+                            throws XMLParsingException {
         return getNodes( context, xpath );
     }
 
-    public static Object getNode( OMElement context, XPath xpath )
-                            throws XMLProcessingException {
+    public Object getNode( OMElement context, XPath xpath )
+                            throws XMLParsingException {
         Object node;
         try {
             node = getAXIOMXPath( xpath ).selectSingleNode( context );
         } catch ( JaxenException e ) {
-            throw new XMLProcessingException( e.getMessage() );
+            throw new XMLParsingException( this, context, e.getMessage() );
         }
         return node;
     }
 
-    public static boolean getNodeAsBoolean( OMElement context, XPath xpath, boolean defaultValue )
-                            throws XMLProcessingException {
+    public boolean getNodeAsBoolean( OMElement context, XPath xpath, boolean defaultValue )
+                            throws XMLParsingException {
 
         boolean value = defaultValue;
         String s = getNodeAsString( context, xpath, null );
@@ -639,8 +642,8 @@ public class XMLAdapter {
         return value;
     }
 
-    public static double getNodeAsDouble( OMElement context, XPath xpath, double defaultValue )
-                            throws XMLProcessingException {
+    public double getNodeAsDouble( OMElement context, XPath xpath, double defaultValue )
+                            throws XMLParsingException {
 
         double value = defaultValue;
         String s = getNodeAsString( context, xpath, null );
@@ -650,8 +653,8 @@ public class XMLAdapter {
         return value;
     }
 
-    public static float getNodeAsFloat( OMElement context, XPath xpath, float defaultValue )
-                            throws XMLProcessingException {
+    public float getNodeAsFloat( OMElement context, XPath xpath, float defaultValue )
+                            throws XMLParsingException {
 
         float value = defaultValue;
         String s = getNodeAsString( context, xpath, null );
@@ -661,8 +664,8 @@ public class XMLAdapter {
         return value;
     }
 
-    public static int getNodeAsInt( OMElement context, XPath xpath, int defaultValue )
-                            throws XMLProcessingException {
+    public int getNodeAsInt( OMElement context, XPath xpath, int defaultValue )
+                            throws XMLParsingException {
 
         int value = defaultValue;
         String s = getNodeAsString( context, xpath, null );
@@ -672,8 +675,8 @@ public class XMLAdapter {
         return value;
     }
 
-    public static QName getNodeAsQName( OMElement context, XPath xpath, QName defaultValue )
-                            throws XMLProcessingException {
+    public QName getNodeAsQName( OMElement context, XPath xpath, QName defaultValue )
+                            throws XMLParsingException {
 
         QName value = defaultValue;
         Object node = getNode( context, xpath );
@@ -688,14 +691,14 @@ public class XMLAdapter {
                 value = attribute.getOwner().resolveQName( attribute.getAttributeValue() );
             } else {
                 String msg = "Unexpected node type '" + node.getClass() + "'.";
-                throw new XMLProcessingException( msg );
+                throw new XMLParsingException( this, context, msg );
             }
         }
         return value;
     }
 
-    public static String getNodeAsString( OMElement context, XPath xpath, String defaultValue )
-                            throws XMLProcessingException {
+    public String getNodeAsString( OMElement context, XPath xpath, String defaultValue )
+                            throws XMLParsingException {
         String value = defaultValue;
         Object node = getNode( context, xpath );
         if ( node != null ) {
@@ -707,100 +710,106 @@ public class XMLAdapter {
                 value = ( (OMAttribute) node ).getAttributeValue();
             } else {
                 String msg = "Unexpected node type '" + node.getClass() + "'.";
-                throw new XMLProcessingException( msg );
+                throw new XMLParsingException( this, context, msg );
             }
         }
         return value;
     }
 
-    public static List getNodes( OMElement context, XPath xpath )
-                            throws XMLProcessingException {
-        List nodes;
+    public List getNodes( OMElement context, XPath xpath )
+                            throws XMLParsingException {
+        List<?> nodes;
         try {
             nodes = getAXIOMXPath( xpath ).selectNodes( context );
         } catch ( JaxenException e ) {
-            throw new XMLProcessingException( e.getMessage() );
+            throw new XMLParsingException( this, context, e.getMessage() );
         }
         return nodes;
     }
 
-    public static OMElement getRequiredElement( OMElement context, XPath xpath ) {
+    public OMElement getRequiredElement( OMElement context, XPath xpath )
+                            throws XMLParsingException {
         OMElement element = getElement( context, xpath );
         if ( element == null ) {
             String msg = Messages.getMessage( "XML_REQUIRED_ELEMENT_MISSING", xpath, context );
-            throw new XMLProcessingException( msg );
+            throw new XMLParsingException( this, context, msg );
         }
         return element;
     }
 
-    public static List<OMElement> getRequiredElements( OMElement context, XPath xpath ) {
+    public List<OMElement> getRequiredElements( OMElement context, XPath xpath )
+                            throws XMLParsingException {
         List<OMElement> elements = getElements( context, xpath );
         if ( elements.size() == 0 ) {
             String msg = Messages.getMessage( "XML_REQUIRED_ELEMENT_MISSING", xpath, context );
-            throw new XMLProcessingException( msg );
+            throw new XMLParsingException( this, context, msg );
         }
         return elements;
     }
 
-    public static Object getRequiredNode( OMElement context, XPath xpath ) {
+    public Object getRequiredNode( OMElement context, XPath xpath )
+                            throws XMLParsingException {
         Object node = getNode( context, xpath );
         if ( node == null ) {
             String msg = Messages.getMessage( "XML_REQUIRED_NODE_MISSING", xpath, context );
-            throw new XMLProcessingException( msg );
+            throw new XMLParsingException( this, context, msg );
         }
         return node;
     }
 
-    public static boolean getRequiredNodeAsBoolean( OMElement context, XPath xpath ) {
-
+    public boolean getRequiredNodeAsBoolean( OMElement context, XPath xpath )
+                            throws XMLParsingException {
         String s = getRequiredNodeAsString( context, xpath );
         boolean value = parseBoolean( s );
         return value;
     }
 
-    public static double getRequiredNodeAsDouble( OMElement context, XPath xpath ) {
-
+    public double getRequiredNodeAsDouble( OMElement context, XPath xpath )
+                            throws XMLParsingException {
         String s = getRequiredNodeAsString( context, xpath );
         double value = parseDouble( s );
         return value;
     }
 
-    public static float getRequiredNodeAsFloat( OMElement context, XPath xpath ) {
+    public float getRequiredNodeAsFloat( OMElement context, XPath xpath )
+                            throws XMLParsingException {
 
         String s = getRequiredNodeAsString( context, xpath );
         float value = parseFloat( s );
         return value;
     }
 
-    public static int getRequiredNodeAsInteger( OMElement context, XPath xpath ) {
+    public int getRequiredNodeAsInteger( OMElement context, XPath xpath )
+                            throws XMLParsingException {
 
         String s = getRequiredNodeAsString( context, xpath );
         int value = parseInt( s );
         return value;
     }
 
-    public static String getRequiredNodeAsString( OMElement context, XPath xpath ) {
+    public String getRequiredNodeAsString( OMElement context, XPath xpath )
+                            throws XMLParsingException {
 
         String value = getNodeAsString( context, xpath, null );
         if ( value == null ) {
             String msg = Messages.getMessage( "XML_SYNTAX_ERROR_NODE_MISSING", xpath, context );
-            throw new XMLSyntaxException( msg );
+            throw new XMLParsingException(this, context, msg );
         }
         return value;
     }
 
-    public static QName getRequiredNodeAsQName( OMElement context, XPath xpath )
-                            throws XMLProcessingException {
+    public QName getRequiredNodeAsQName( OMElement context, XPath xpath )
+                            throws XMLParsingException {
 
         QName value = getNodeAsQName( context, xpath, null );
         if ( value == null ) {
             String msg = Messages.getMessage( "XML_SYNTAX_ERROR_NODE_MISSING", xpath, context );
-            throw new XMLSyntaxException( msg );
+            throw new XMLParsingException(this, context, msg );
         }
         return value;
     }
 
-    public static List getRequiredNodes( OMElement context, XPath xpath ) {
+    public List getRequiredNodes( OMElement context, XPath xpath ) {
         List nodes = getNodes( context, xpath );
         if ( nodes.size() == 0 ) {
 
@@ -808,7 +817,7 @@ public class XMLAdapter {
         return nodes;
     }
 
-    private static AXIOMXPath getAXIOMXPath( XPath xpath )
+    private AXIOMXPath getAXIOMXPath( XPath xpath )
                             throws JaxenException {
         AXIOMXPath compiledXPath = new AXIOMXPath( xpath.getXPath() );
         Map<String, String> nsMap = xpath.getNamespaceContext().getNamespaceMap();
