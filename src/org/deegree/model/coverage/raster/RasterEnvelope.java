@@ -65,7 +65,7 @@ public class RasterEnvelope {
 
     private double yRes;
 
-    private double delta = 0.000001;
+    private double delta;
 
     private RasterEnvelope() {
         this( 0.0, 0.0, 1.0, -1.0 );
