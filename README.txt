@@ -11,21 +11,21 @@ This part describes all libraries the commons module depends on. If you use one 
 libs please add your package to the "Used for:" list.
 
 
-=== commons-logging ===
-Lib: commons-loggin-1.1.1.jar
-URL: http://commons.apache.org/logging/
-Version: 1.1.1
-Description: The Logging package is an ultra-thin bridge between different logging implementations.
+=== slf4j ===
+Lib: sl4fj-api-1.5.2.jar,slf4j-log4j12-1.5.2.jar,jcl-over-slf4j-1.5.2.jar
+URL: http://www.slf4j.org/
+Version: 1.5.2
+Description: The Simple Logging Facade for Java or (SLF4J) is intended to serve as a simple facade for various logging APIs allowing to the end-user to plug in the desired implementation at deployment time.
 Used for: everything
-Responsible: otonnhofer
+Responsible: schneider
 
 === log4j ===
 Lib: log4j-1.2.15.jar
 URL: http://logging.apache.org/log4j/1.2/index.html
 Version: 1.2.15
 Description: Logging implementation.
-Comments: deegrees default logging impelemtation used by commons-logging
-Used for: everything (indirect by commons-logging)
+Comments: deegrees default logging implementation used by slf4j
+Used for: everything (indirectly by slf4j)
 Responsible: otonnhofer
 
 === jai ===
