@@ -50,11 +50,11 @@ import static org.deegree.model.crs.projections.ProjectionUtils.normalizeLongitu
 
 import javax.vecmath.Point2d;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.exceptions.ProjectionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>TransverseMercator</code> projection has following properties:
@@ -81,7 +81,7 @@ import org.deegree.model.crs.exceptions.ProjectionException;
 
 public class TransverseMercator extends CylindricalProjection {
 
-    private static Log LOG = LogFactory.getLog( TransverseMercator.class );
+    private static Logger LOG = LoggerFactory.getLogger( TransverseMercator.class );
 
     /**
      * Constants used for the forward and inverse transform for the elliptical case of the Transverse Mercator.

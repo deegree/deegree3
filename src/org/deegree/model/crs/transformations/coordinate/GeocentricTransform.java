@@ -46,13 +46,13 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.CompoundCRS;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.coordinatesystems.GeocentricCRS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>GeocentricTransform</code> class is used to create a transformation between a geocentric CRS (having
@@ -68,7 +68,7 @@ import org.deegree.model.crs.coordinatesystems.GeocentricCRS;
 
 public class GeocentricTransform extends CRSTransformation {
 
-    private static Log LOG = LogFactory.getLog( GeocentricTransform.class );
+    private static Logger LOG = LoggerFactory.getLogger( GeocentricTransform.class );
 
     /**
      * Cosine of 67.5 degrees.

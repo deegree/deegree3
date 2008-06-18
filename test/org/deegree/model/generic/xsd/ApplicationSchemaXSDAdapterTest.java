@@ -43,10 +43,13 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic.xsd;
 
+import javax.xml.namespace.QName;
+
 import org.apache.xerces.xs.XSImplementation;
 import org.apache.xerces.xs.XSLoader;
 import org.apache.xerces.xs.XSModel;
 import org.deegree.model.generic.ApplicationSchema;
+import org.deegree.model.generic.schema.ObjectType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -90,11 +93,13 @@ public class ApplicationSchemaXSDAdapterTest {
 //      String schemaURL = "file:///home/schneider/workspace/d3_commons/resources/model/examples/imro2006/IMRO2006.xsd";
 //      String schemaURL = "file:///home/schneider/workspace/d3_commons/resources/model/examples/imro2008/IMRO2008.xsd";
 //        String schemaURL = "file:///home/schneider/workspace/d3_commons/resources/model/examples/philosopher/Philosopher.xsd";
+        String schemaURL = "file:///home/schneider/workspace/vrom_roonline2/docs/spezifikation/IMRO2008_1.0RC/schemas/IMRO2008.xsd";        
 //        String schemaURL = "file:///home/schneider/workspace/d3_commons/resources/model/examples/xplanung/XPlanGml.xsd";        
-        String schemaURL = "file:///home/schneider/workspace/d3_commons/resources/model/examples/generic_xml/test.xsd";
+//        String schemaURL = "file:///home/schneider/workspace/d3_commons/resources/model/examples/generic_xml/test.xsd";
         XSModel model = schemaLoader.loadURI( schemaURL );
         ApplicationSchemaXSDAdapter adapter = new ApplicationSchemaXSDAdapter (model);
         ApplicationSchema appSchema = adapter.parse();
-        System.out.println (appSchema);
+        ObjectType ot = appSchema.getObjectType( new QName ("http://www.geonovum.nl/imro2008", "Bestemmingsplangebied") );
+        System.out.println (ot);
     }
 }

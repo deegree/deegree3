@@ -61,8 +61,6 @@ import java.util.Set;
 import javax.vecmath.Point2d;
 import javax.xml.namespace.QName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLFragment;
@@ -90,6 +88,8 @@ import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
 import org.deegree.model.crs.transformations.polynomial.LeastSquareApproximation;
 import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation;
 import org.deegree.model.i18n.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -162,7 +162,7 @@ import org.xml.sax.SAXException;
 
 public class DeegreeCRSProvider implements CRSProvider {
 
-    private static Log LOG = LogFactory.getLog( DeegreeCRSProvider.class );
+    private static Logger LOG = LoggerFactory.getLogger( DeegreeCRSProvider.class );
 
     /**
      * The standard configuration file, points to deegree-crs-configuration.xml.

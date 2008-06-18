@@ -51,13 +51,13 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.types.QualifiedName;
 import org.deegree.commons.utils.StringUtils;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
 import org.jaxen.dom.DOMXPath;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -81,7 +81,7 @@ import org.w3c.dom.Text;
  */
 public final class XMLTools {
 
-    private static final Log LOG = LogFactory.getLog( XMLTools.class );
+    private static final Logger LOG = LoggerFactory.getLogger( XMLTools.class );
 
     private XMLTools() {
         // hidden constructor to prevent instantiation

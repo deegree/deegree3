@@ -49,8 +49,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class contains static utility methods for handling files and filenames.
@@ -63,7 +63,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class FileUtils {
 
-    private static Log LOG = LogFactory.getLog( FileUtils.class );
+    private static Logger LOG = LoggerFactory.getLogger( FileUtils.class );
 
     /**
      * Returns the filename, without any extension. (Eg. /tmp/foo.txt -> /tmp/foo)

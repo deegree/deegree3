@@ -44,8 +44,6 @@ package org.deegree.model.crs;
 
 import javax.vecmath.Point2d;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -59,6 +57,8 @@ import org.deegree.model.crs.exceptions.CRSConfigurationException;
 import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.crs.projections.cylindric.TransverseMercator;
 import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -74,7 +74,7 @@ import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
  */
 public class CRSFactory {
 
-    private static Log LOG = LogFactory.getLog( CRSFactory.class );
+    private static Logger LOG = LoggerFactory.getLogger( CRSFactory.class );
 
     /**
      * e.g. epgs:4326

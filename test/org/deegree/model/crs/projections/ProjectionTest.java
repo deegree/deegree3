@@ -42,8 +42,6 @@ import javax.vecmath.Point2d;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -51,6 +49,8 @@ import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.exceptions.ProjectionException;
 import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <code>ProjectionTest</code> is the base for all accuracy tests, this class doesn't really test anything.
@@ -93,7 +93,7 @@ public class ProjectionTest extends TestCase {
     protected static final GeographicCRS geographic_4258 = new GeographicCRS( datum_6258, axis_degree,
                                                                               new String[] { "EPSG:4258" } );
 
-    private static Log LOG = LogFactory.getLog( ProjectionTest.class );
+    private static Logger LOG = LoggerFactory.getLogger( ProjectionTest.class );
 
     private final static double METER_EPSILON = 0.15;
 

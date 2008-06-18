@@ -59,9 +59,9 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.i18n.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A helper class to create and send mail.
@@ -77,7 +77,7 @@ import org.deegree.commons.i18n.Messages;
 
 public final class MailHelper {
 
-    private static final Log LOG = LogFactory.getLog( MailHelper.class );
+    private static final Logger LOG = LoggerFactory.getLogger( MailHelper.class );
 
     /**
      * Creates a mail helper to send a message.

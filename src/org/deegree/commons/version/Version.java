@@ -45,7 +45,7 @@ package org.deegree.commons.version;
 
 import java.util.Properties;
 
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 
 /**
  * The version number is created by 3 parts, the first represents the version number, the second a
@@ -93,7 +93,7 @@ public final class Version {
             SVN_REVISION = buildProps.getProperty( "svn.revision" ).trim();
             SVN_PATH = buildProps.getProperty( "svn.path" ).trim();
         } catch ( Exception ex ) {
-            LogFactory.getLog( Version.class ).error( "Error fetching version / build properties: " + ex.getMessage(), ex );
+            LoggerFactory.getLogger( Version.class ).error( "Error fetching version / build properties: " + ex.getMessage(), ex );
         }
     }
 

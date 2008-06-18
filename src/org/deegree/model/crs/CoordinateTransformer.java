@@ -47,12 +47,12 @@ import java.util.Map;
 
 import javax.vecmath.Point3d;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
 import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.crs.transformations.coordinate.CRSTransformation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class for transforming coordinates to new a coordinate reference systems.
@@ -65,9 +65,9 @@ import org.deegree.model.crs.transformations.coordinate.CRSTransformation;
  */
 public class CoordinateTransformer extends Transformer{
 
-    private static Log LOG_TRANSFORM = LogFactory.getLog( CoordinateTransformer.class.getCanonicalName() + ".TransformLogger" );
+    private static Logger LOG_TRANSFORM = LoggerFactory.getLogger( CoordinateTransformer.class.getCanonicalName() + ".TransformLogger" );
 
-    private static Log LOG = LogFactory.getLog( CoordinateTransformer.class );
+    private static Logger LOG = LoggerFactory.getLogger( CoordinateTransformer.class );
 
 
     /**

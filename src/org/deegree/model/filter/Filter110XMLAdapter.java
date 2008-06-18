@@ -58,8 +58,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XMLProcessingException;
@@ -88,6 +86,8 @@ import org.deegree.model.filter.logical.Not;
 import org.deegree.model.filter.logical.Or;
 import org.deegree.model.filter.spatial.SpatialOperator;
 import org.deegree.model.i18n.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Adapter between XML documents that comply to the Filter Encoding Specification 1.1.0 and {@link Filter} objects.
@@ -99,7 +99,7 @@ import org.deegree.model.i18n.Messages;
  */
 public class Filter110XMLAdapter extends XMLAdapter {
 
-    private static final Log LOG = LogFactory.getLog( Filter110XMLAdapter.class );
+    private static final Logger LOG = LoggerFactory.getLogger( Filter110XMLAdapter.class );
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
 

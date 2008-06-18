@@ -39,8 +39,8 @@ package org.deegree.model.coverage.raster.data;
 
 import java.nio.ByteBuffer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This abstract class implements the RasterData interface for ByteBuffer based raster.
@@ -73,7 +73,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public abstract class ByteBufferRasterData implements RasterData {
 
-    private static Log LOG = LogFactory.getLog( ByteBufferRasterData.class );
+    private static Logger LOG = LoggerFactory.getLogger( ByteBufferRasterData.class );
     
     /**
      * the width of the raster

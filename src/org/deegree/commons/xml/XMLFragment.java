@@ -75,10 +75,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.utils.StringUtils;
 import org.exolab.castor.xml.XMLException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -124,7 +124,7 @@ public class XMLFragment implements Serializable {
 
     protected static final String XLNNS = CommonNamespaces.XLNNS;
 
-    private static final Log LOG = LogFactory.getLog( XMLFragment.class );
+    private static final Logger LOG = LoggerFactory.getLogger( XMLFragment.class );
 
     /**
      * Use this URL as SystemID only if an <code>XMLFragment</code> cannot be pinpointed to a URL - in this case it

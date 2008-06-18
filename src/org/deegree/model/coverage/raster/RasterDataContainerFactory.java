@@ -44,9 +44,9 @@ package org.deegree.model.coverage.raster;
 
 import java.util.ServiceLoader;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.coverage.raster.data.RasterDataReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class creates a RasterDataContainer. A RasterDataContainer wraps a RasterDataReader and controls the
@@ -62,7 +62,7 @@ public class RasterDataContainerFactory {
 
     private static ServiceLoader<RasterDataContainerProvider> rasterContainerLoader = ServiceLoader.load( RasterDataContainerProvider.class );
 
-    private static Log LOG = LogFactory.getLog( RasterDataContainerFactory.class );
+    private static Logger LOG = LoggerFactory.getLogger( RasterDataContainerFactory.class );
 
     /**
      * Defines how raster should be loaded/stored.

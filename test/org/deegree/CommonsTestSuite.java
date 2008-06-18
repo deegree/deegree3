@@ -46,12 +46,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <code>CommonsTestSuite</code> the test suite for all test defined in commons
@@ -86,7 +86,7 @@ public class CommonsTestSuite {
     /**
      * Logger for test cases
      */
-    private static final Log LOG = LogFactory.getLog( CommonsTestSuite.class );
+    private static final Logger LOG = LoggerFactory.getLogger( CommonsTestSuite.class );
 
     private static final String packageName = "org.deegree.";
 

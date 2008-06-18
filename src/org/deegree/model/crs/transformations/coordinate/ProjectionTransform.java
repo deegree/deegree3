@@ -44,12 +44,12 @@ import java.util.List;
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.model.crs.exceptions.ProjectionException;
 import org.deegree.model.crs.exceptions.TransformationException;
 import org.deegree.model.crs.projections.Projection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>ProjectionTransform</code> class wraps the access to a projection, by calling it's doProjection.
@@ -64,7 +64,7 @@ import org.deegree.model.crs.projections.Projection;
 
 public class ProjectionTransform extends CRSTransformation {
 
-    private static Log LOG = LogFactory.getLog( ProjectionTransform.class );
+    private static Logger LOG = LoggerFactory.getLogger( ProjectionTransform.class );
 
     private Projection projection;
 

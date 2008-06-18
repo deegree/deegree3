@@ -48,9 +48,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.utils.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class reads and writes raster files. The actual raster loading and writing is handled by {@link RasterReader}
@@ -68,7 +68,7 @@ public class RasterFactory {
 
     private static ServiceLoader<RasterIOProvider> rasterIOLoader = ServiceLoader.load( RasterIOProvider.class );
 
-    private static Log log = LogFactory.getLog( RasterFactory.class );
+    private static Logger log = LoggerFactory.getLogger( RasterFactory.class );
 
     /**
      * Load a raster from a file.

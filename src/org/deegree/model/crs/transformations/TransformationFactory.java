@@ -43,8 +43,6 @@ import javax.vecmath.GMatrix;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
@@ -67,6 +65,8 @@ import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
 import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation;
 import org.deegree.model.crs.utilities.Matrix;
 import org.deegree.model.i18n.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>TransformationFactory</code> class is the central access point for all transformations between different
@@ -94,7 +94,7 @@ import org.deegree.model.i18n.Messages;
  * 
  */
 public class TransformationFactory {
-    private static Log LOG = LogFactory.getLog( TransformationFactory.class );
+    private static Logger LOG = LoggerFactory.getLogger( TransformationFactory.class );
 
     /**
      * The default coordinate transformation factory. Will be constructed only when first needed.

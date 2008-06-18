@@ -53,8 +53,6 @@ import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.xerces.xs.XSAttributeDeclaration;
 import org.apache.xerces.xs.XSAttributeUse;
 import org.apache.xerces.xs.XSComplexTypeDefinition;
@@ -77,6 +75,8 @@ import org.deegree.model.generic.schema.AttributeType;
 import org.deegree.model.generic.schema.ContentModel;
 import org.deegree.model.generic.schema.ObjectType;
 import org.deegree.model.generic.schema.Sequence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add documentation here
@@ -88,7 +88,7 @@ import org.deegree.model.generic.schema.Sequence;
  */
 public class ApplicationSchemaXSDAdapter {
 
-    private Log LOG = LogFactory.getLog( ApplicationSchemaXSDAdapter.class );
+    private Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDAdapter.class );
 
     private XSModel xmlSchema;
 

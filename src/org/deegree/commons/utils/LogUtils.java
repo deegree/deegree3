@@ -46,7 +46,7 @@ import java.io.File;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
 
 /**
  * This class contains static utility methods for writing files when a log is set to debug.
@@ -67,7 +67,7 @@ public class LogUtils {
      *            file to write to
      * @param content
      */
-    public static void writeFile( Log log, File file, String content ) {
+    public static void writeFile( Logger log, File file, String content ) {
         if ( log.isDebugEnabled() ) {
             log.debug( "Writing debug file '" + file.getAbsolutePath() + "'." );
             FileUtils.writeFile( file, content );
@@ -87,7 +87,7 @@ public class LogUtils {
      *            suffix for the temp file name, can be null (then ".tmp" is used)
      * @param content
      */
-    public static void writeTempFile( Log log, String filePrefix, String fileSuffix, String content ) {
+    public static void writeTempFile( Logger log, String filePrefix, String fileSuffix, String content ) {
         if ( log.isDebugEnabled() ) {
             try {
                 File file = File.createTempFile( filePrefix, fileSuffix );
@@ -109,7 +109,7 @@ public class LogUtils {
      * @param data
      *            binary data to be written
      */
-    public static void writeBinaryFile( Log log, File file, byte[] data ) {
+    public static void writeBinaryFile( Logger log, File file, byte[] data ) {
         if ( log.isDebugEnabled() ) {
             log.debug( "Writing binary debug file '" + file.getAbsolutePath() + "'." );
             FileUtils.writeBinaryFile( file, data );
@@ -130,7 +130,7 @@ public class LogUtils {
      * @param data
      *            binary data to be written
      */
-    public static void writeBinaryTempFile( Log log, String filePrefix, String fileSuffix, byte[] data ) {
+    public static void writeBinaryTempFile( Logger log, String filePrefix, String fileSuffix, byte[] data ) {
         if ( log.isDebugEnabled() ) {
             try {
                 File file = File.createTempFile( filePrefix, fileSuffix );

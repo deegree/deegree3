@@ -50,8 +50,6 @@ import java.util.List;
 import javax.media.jai.WarpPolynomial;
 import javax.vecmath.Point3d;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.coverage.raster.data.RasterData;
 import org.deegree.model.coverage.raster.interpolation.Interpolation;
 import org.deegree.model.coverage.raster.interpolation.InterpolationFactory;
@@ -64,6 +62,8 @@ import org.deegree.model.crs.transformations.coordinate.CRSTransformation;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryTransformer;
 import org.deegree.model.geometry.primitive.Envelope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class transforms raster to a taget coordinate system .
@@ -76,7 +76,7 @@ import org.deegree.model.geometry.primitive.Envelope;
  */
 public class RasterTransformer extends Transformer {
 
-    private static Log LOG = LogFactory.getLog( RasterTransformer.class );
+    private static Logger LOG = LoggerFactory.getLogger( RasterTransformer.class );
 
     private byte[] backgroundValue;
 

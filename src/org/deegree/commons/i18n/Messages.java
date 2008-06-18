@@ -51,8 +51,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Responsible for the access to messages that are visible to the user.
@@ -83,7 +83,7 @@ public class Messages {
 
     private static String lang;
     
-    private static Log LOG = LogFactory.getLog( Messages.class );
+    private static Logger LOG = LoggerFactory.getLogger( Messages.class );
 
     /**
      * Initialization done at class loading time.

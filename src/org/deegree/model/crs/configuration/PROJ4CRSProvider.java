@@ -55,8 +55,6 @@ import java.util.Set;
 
 import javax.vecmath.Point2d;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -74,6 +72,8 @@ import org.deegree.model.crs.projections.conic.LambertConformalConic;
 import org.deegree.model.crs.projections.cylindric.TransverseMercator;
 import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
 import org.deegree.model.i18n.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>PROJ4CRSProvider</code> class is capable of parsing the nad/epsg file and use it as a backend for crs's.
@@ -94,7 +94,7 @@ import org.deegree.model.i18n.Messages;
 
 public class PROJ4CRSProvider implements CRSProvider {
 
-    private static Log LOG = LogFactory.getLog( PROJ4CRSProvider.class );
+    private static Logger LOG = LoggerFactory.getLogger( PROJ4CRSProvider.class );
 
     private static int ellipsCount = 0;
 

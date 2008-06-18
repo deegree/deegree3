@@ -46,8 +46,6 @@ import javax.vecmath.Point3d;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.crs.CoordinateTransformer;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
@@ -66,6 +64,8 @@ import org.deegree.model.crs.projections.azimuthal.StereographicAlternative;
 import org.deegree.model.crs.projections.cylindric.TransverseMercator;
 import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <code>TransformationTest</code> a junit test class for testing the accuracy of various transformations.
@@ -79,7 +79,7 @@ import org.junit.Test;
  */
 public class TransformationTest extends TestCase {
 
-    private static Log LOG = LogFactory.getLog( ProjectionTest.class );
+    private static Logger LOG = LoggerFactory.getLogger( ProjectionTest.class );
 
     private final static double METER_EPSILON = 0.15;
 

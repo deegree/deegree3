@@ -43,10 +43,10 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.model.generic.schema.ObjectType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add documentation here
@@ -58,7 +58,7 @@ import org.deegree.model.generic.schema.ObjectType;
  */
 public class DeegreeObjectXMLAdapter extends XMLAdapter {
 
-    private static final Log LOG = LogFactory.getLog( DeegreeObjectXMLAdapter.class );
+    private static final Logger LOG = LoggerFactory.getLogger( DeegreeObjectXMLAdapter.class );
 
     private ApplicationSchema schema;
 

@@ -72,10 +72,10 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.xpath.AXIOMXPath;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.commons.i18n.Messages;
 import org.jaxen.JaxenException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <code>XMLAdapter</code> is the common base class of all hand-written (i.e. not automatically generated) XML parsers
@@ -109,7 +109,7 @@ import org.jaxen.JaxenException;
  */
 public class XMLAdapter {
 
-    private static final Log LOG = LogFactory.getLog( XMLAdapter.class );
+    private static final Logger LOG = LoggerFactory.getLogger( XMLAdapter.class );
 
     protected static NamespaceContext nsContext = CommonNamespaces.getNamespaceContext();
 

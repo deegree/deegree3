@@ -49,9 +49,9 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.generic.schema.ObjectType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Representation of an XML Schema InfoSet that provides a view of its element definitions with a generic
@@ -64,7 +64,7 @@ import org.deegree.model.generic.schema.ObjectType;
  */
 public class ApplicationSchema {
 
-    private Log LOG = LogFactory.getLog( ApplicationSchema.class );
+    private Logger LOG = LoggerFactory.getLogger( ApplicationSchema.class );
 
     // object types defined in the schema
     private Map<QName, ObjectType> nameToOT = new HashMap<QName, ObjectType>();

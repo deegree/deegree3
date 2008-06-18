@@ -50,11 +50,11 @@ import javax.media.jai.WarpPolynomial;
 import javax.media.jai.WarpQuadratic;
 import javax.vecmath.Point3d;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
 import org.deegree.model.i18n.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <code>LeastSquareApproximation</code> is a polynomial transformation which uses the least square method to
@@ -68,7 +68,7 @@ import org.deegree.model.i18n.Messages;
  * 
  */
 public class LeastSquareApproximation extends PolynomialTransformation {
-    private static Log LOG = LogFactory.getLog( LeastSquareApproximation.class );
+    private static Logger LOG = LoggerFactory.getLogger( LeastSquareApproximation.class );
 
     private WarpPolynomial leastSquarePolynomial;
 

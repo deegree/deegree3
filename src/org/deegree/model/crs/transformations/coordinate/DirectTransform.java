@@ -42,11 +42,11 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
 import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>DirectTransform</code> class wraps the access to a polynomial transformation, by calling it's
@@ -62,7 +62,7 @@ import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation
 
 public class DirectTransform extends CRSTransformation {
 
-    private static Log LOG = LogFactory.getLog( DirectTransform.class );
+    private static Logger LOG = LoggerFactory.getLogger( DirectTransform.class );
 
     private final PolynomialTransformation transformation;
 

@@ -37,10 +37,10 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.coverage.raster.data.RasterData;
 import org.deegree.model.coverage.raster.data.RasterDataReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class implements a RasterDataContainer that loads the data on first access.
@@ -59,7 +59,7 @@ public class LazyRasterDataContainer implements RasterDataContainer, RasterDataC
 
     private boolean rasterLoaded = false;
 
-    private static Log log = LogFactory.getLog( LazyRasterDataContainer.class );
+    private static Logger log = LoggerFactory.getLogger( LazyRasterDataContainer.class );
 
     /**
      * Creates an empty LazyRasterDataContainer that loads the raster on demand and stores the raster data in memory.

@@ -51,13 +51,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.model.crs.exceptions.CRSConfigurationException;
 import org.deegree.model.crs.projections.Projection;
 import org.deegree.model.i18n.Messages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>CRSConfiguration</code> creates, instantiates and supplies a configured CRS-Provider. Because only one
@@ -79,7 +79,7 @@ import org.deegree.model.i18n.Messages;
  */
 
 public class CRSConfiguration {
-    private static Log LOG = LogFactory.getLog( CRSConfiguration.class );
+    private static Logger LOG = LoggerFactory.getLogger( CRSConfiguration.class );
 
     private CRSProvider provider;
 
