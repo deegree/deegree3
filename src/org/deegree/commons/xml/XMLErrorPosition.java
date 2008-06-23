@@ -71,7 +71,7 @@ class XMLErrorPosition {
      * @param errorPosition
      */
     XMLErrorPosition( XMLAdapter origin, XMLStreamReader errorPosition ) {
-        systemId = origin.getSystemId().toString();
+        systemId = origin.getSystemId() == null ? "" : origin.getSystemId().toString();
         Location location = errorPosition.getLocation();
         lineNumber = location.getLineNumber();
         columnNumber = location.getColumnNumber();
@@ -83,7 +83,7 @@ class XMLErrorPosition {
      * @param erroneousElement
      */
     XMLErrorPosition( XMLAdapter origin, OMElement erroneousElement ) {
-        systemId = origin.getSystemId().toString();
+        systemId = origin.getSystemId() == null ? "" : origin.getSystemId().toString();
         lineNumber = erroneousElement.getLineNumber();
         columnNumber = -1;
         characterOffset = -1;
