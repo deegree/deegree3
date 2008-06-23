@@ -149,6 +149,7 @@ public class XMLAdapter {
      */
     public XMLAdapter( URL url ) throws IOException, XMLStreamException, FactoryConfigurationError {
         load( url );
+        systemId = new URL(DEFAULT_URL);
     }
 
     /**
@@ -607,6 +608,9 @@ public class XMLAdapter {
     public OMElement getElement( OMElement context, XPath xpath )
                             throws XMLParsingException {
         Object result = getNode( context, xpath );
+        if ( result == null ) {
+            return null;
+        }
         if ( !( result instanceof OMElement ) ) {
             String msg = Messages.getMessage( "XML_PARSING_ERROR_NOT_ELEMENT", xpath, context, result.getClass() );
             throw new XMLParsingException( this, context, msg );
