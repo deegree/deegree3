@@ -1,6 +1,6 @@
 = deegree 3 commons =
 
-This is the documentation for the deegree 3 commons module.
+This is a list of the dependencies of the deegree 3 commons module.
 
 @author last edited by: $Author: $
 @version $Revision: $, $Date: $ 
