@@ -25,6 +25,8 @@ URL: http://www.slf4j.org/
 Version: 1.5.2
 Description: The Simple Logging Facade for Java or (SLF4J) is intended to serve as a simple facade for various logging APIs allowing to the end-user to plug in the desired implementation at deployment time.
 Used for: everything
+License: MIT (aka X11 License), compatible with GNU GPL, see http://www.slf4j.org/license.html
+Origin of files: http://www.slf4j.org/dist/slf4j-1.5.2.tar.gz
 Responsible: schneider
 
 === log4j ===
@@ -34,6 +36,8 @@ Version: 1.2.15
 Description: Logging implementation.
 Comments: deegrees default logging implementation used by slf4j
 Used for: everything (indirectly by slf4j)
+Origin of Files: http://logging.apache.org/log4j/1.2/download.html
+License: The Apache Software License, Version 2.0
 Responsible: otonnhofer
 
 === jai ===
@@ -44,4 +48,6 @@ Description: Java Advanced Imaging, high-level imaging API
 Comments: mlibwrapper_jar contains native implementation of parts of jai
 Used for: - org.deegree.model.crs.transformation (polynomial transformation) 
           - org.deegree.dataaccess.jai (image/raster reading and writing)
+Origin of Files: https://jai.dev.java.net/binary-builds.html
+License: Java Distribution License (JDL)
 Responsible: rbezema, otonnhofer
