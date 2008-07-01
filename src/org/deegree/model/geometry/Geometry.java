@@ -51,6 +51,9 @@ import org.deegree.model.geometry.primitive.Envelope;
  */
 public interface Geometry {
 
+    /**
+     * @return the bounding box of the implementing geometry
+     */
     public Envelope getEnvelope();
 
     /**

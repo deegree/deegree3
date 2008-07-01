@@ -97,8 +97,8 @@ public interface GeometryFactory {
     public void setDescription( String description );
 
     /**
-     * A concrete GeometryFactory possibly supports just a subset of concrete geometries defined by
-     * deegree's geometry interfaces. At least simple geometries must be supported:
+     * A concrete GeometryFactory possibly supports just a subset of concrete geometries defined by deegree's geometry
+     * interfaces. At least simple geometries must be supported:
      * <ul>
      * <li>Point</li>
      * <li>Curve</li>
@@ -110,18 +110,17 @@ public interface GeometryFactory {
      * 
      * @return list of supported geometry classes
      */
-    public List<Class> getSupportedGeometries();
+    public List<Class<?>> getSupportedGeometries();
 
     /**
      * @see #getSupportedGeometries()
      * @param supportedGeometries
      *            list of supported geometry classes
      */
-    public void setSupportedGeometries( List<Class> supportedGeometries );
+    public void setSupportedGeometries( List<Class<?>> supportedGeometries );
 
     /**
-     * Each GeometryFactory should a least support creating Curves with linear interpolation.
-     * Possible values are:
+     * Each GeometryFactory should a least support creating Curves with linear interpolation. Possible values are:
      * <ul>
      * <li>linear</li>
      * <li>geodesic</li>
@@ -145,8 +144,7 @@ public interface GeometryFactory {
     public void setSupportedCurveInterpolations( List<CurveSegment.INTERPOLATION> interpolations );
 
     /**
-     * Each GeometryFactory should a least support creating Surfaces with none interpolation.
-     * Possible values are:
+     * Each GeometryFactory should a least support creating Surfaces with none interpolation. Possible values are:
      * <ul>
      * <li>none</li>
      * <li>planar</li>
@@ -178,12 +176,11 @@ public interface GeometryFactory {
      * @param coordinates
      *            coordinate values
      * @param precision
-     *            precision of the point coordinates in units of the used CRS. This value will be
-     *            used for comparing two points to be equal or not.
+     *            precision of the point coordinates in units of the used CRS. This value will be used for comparing two
+     *            points to be equal or not.
      * @param crs
-     *            points coordinate reference system. If a point does not have a CRS or it is not
-     *            known {@link CRSFactory#createDummyCRS(String)} shall be used instead of
-     *            <code>null</code>
+     *            points coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
     public Point createPoint( double[] coordinates, double precision, CoordinateSystem crs );
@@ -194,51 +191,47 @@ public interface GeometryFactory {
      * @param coordinates
      *            coordinate values
      * @param crs
-     *            points coordinate reference system. If a point does not have a CRS or it is not
-     *            known {@link CRSFactory#createDummyCRS(String)} shall be used instead of
-     *            <code>null</code>
+     *            points coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
     public Point createPoint( double[] coordinates, CoordinateSystem crs );
 
     /**
-     * Creates a {@link Curve} from a two dimensional array of coordinates. Each field of the first
-     * dimension represents one point.
+     * Creates a {@link Curve} from a two dimensional array of coordinates. Each field of the first dimension represents
+     * one point.
      * 
      * @param coordinates
      *            array of curve coordinates
      * @param orientation
      *            orientation of a curve can be positive, negative or unknown
      * @param crs
-     *            curves coordinate reference system. If a point does not have a CRS or it is not
-     *            known {@link CRSFactory#createDummyCRS(String)} shall be used instead of
-     *            <code>null</code>
+     *            curves coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Curve}
      */
     public Curve createCurve( Point[][] coordinates, Curve.ORIENTATION orientation, CoordinateSystem crs );
 
     /**
-     * Creates a segmented {@link Curve} from one or more {@link CurveSegment}s. The last
-     * {@link Point} of i'th segment must equals first {@link Point} of i+1'th segment.
+     * Creates a segmented {@link Curve} from one or more {@link CurveSegment}s. The last {@link Point} of i'th segment
+     * must equals first {@link Point} of i+1'th segment.
      * 
      * @param segments
      *            segments a curve shall be created from
      * @param orientation
      *            orientation of a curve can be positive, negative or unknown
      * @param crs
-     *            curves coordinate reference system. If a point does not have a CRS or it is not
-     *            known {@link CRSFactory#createDummyCRS(String)} shall be used instead of
-     *            <code>null</code>
+     *            curves coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Curve}
      */
     public Curve createCurve( CurveSegment[] segments, Curve.ORIENTATION orientation, CoordinateSystem crs );
 
     /**
-     * Creates a {@link CurveSegment} from a {@link List} of {@link Point}s with a defined
-     * interpolation. The passed interpolation must be supported by the concrete GeometryFactory;
-     * {@link #getSupportedCurveInterpolations()}. The passed type defines the {@link CurveSegment}
-     * class to be used (possibly different kinds of {@link CurveSegment} implementations are
-     * available; see ISO 19107 for details)
+     * Creates a {@link CurveSegment} from a {@link List} of {@link Point}s with a defined interpolation. The passed
+     * interpolation must be supported by the concrete GeometryFactory; {@link #getSupportedCurveInterpolations()}. The
+     * passed type defines the {@link CurveSegment} class to be used (possibly different kinds of {@link CurveSegment}
+     * implementations are available; see ISO 19107 for details)
      * 
      * @param points
      *            list of points to create a {@link CurveSegment} from
@@ -248,12 +241,11 @@ public interface GeometryFactory {
      *            used interpolation
      * @return created {@link CurveSegment}
      */
-    public CurveSegment createCurveSegment( List<Point> points, Class type, CurveSegment.INTERPOLATION interpolation );
+    public CurveSegment createCurveSegment( List<Point> points, Class<?> type, CurveSegment.INTERPOLATION interpolation );
 
     /**
-     * Creates a {@link CurveSegment} from a {@link List} of {@link Point}s with default (linear)
-     * interpolation. Default {@link CurveSegment} of underlying geometry implementation will be
-     * used.
+     * Creates a {@link CurveSegment} from a {@link List} of {@link Point}s with default (linear) interpolation.
+     * Default {@link CurveSegment} of underlying geometry implementation will be used.
      * 
      * @param points
      *            list of points to create a {@link CurveSegment} from
@@ -262,44 +254,40 @@ public interface GeometryFactory {
     public CurveSegment createCurveSegment( List<Point> points );
 
     /**
-     * Creates a {@link Surface} from an array of {@link Curve}s forming the boundary of a
-     * {@link Surface}. The first {@link Curve} forms the outer boundary the following
-     * {@link Curve}s represents holes. The passed interpolation must be supported by the concrete
-     * GeometryFactory; {@link #getSupportedSurfaceInterpolations()}.
+     * Creates a {@link Surface} from an array of {@link Curve}s forming the boundary of a {@link Surface}. The first
+     * {@link Curve} forms the outer boundary the following {@link Curve}s represents holes. The passed interpolation
+     * must be supported by the concrete GeometryFactory; {@link #getSupportedSurfaceInterpolations()}.
      * 
      * @param boundary
      *            surfaces boundary
      * @param interpolation
      *            interpolation to be used
      * @param crs
-     *            surfaces coordinate reference system. If a point does not have a CRS or it is not
-     *            known {@link CRSFactory#createDummyCRS(String)} shall be used instead of
-     *            <code>null</code>
+     *            surfaces coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Surface}
      */
     public Surface createSurface( List<Curve> boundary, SurfacePatch.INTERPOLATION interpolation, CoordinateSystem crs );
 
     /**
-     * creates a {@link Surface} from an array of {@link SurfacePatch}. The passed patches must
-     * touch in a topological sense to form a valid {@link Surface}
+     * creates a {@link Surface} from an array of {@link SurfacePatch}. The passed patches must touch in a topological
+     * sense to form a valid {@link Surface}
      * 
      * @param patches
      *            patches to created a surface
      * @param crs
-     *            surfaces coordinate reference system. If a point does not have a CRS or it is not
-     *            known {@link CRSFactory#createDummyCRS(String)} shall be used instead of
-     *            <code>null</code>
+     *            surfaces coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Surface}
      */
     public Surface createSurface( List<SurfacePatch> patches, CoordinateSystem crs );
 
     /**
-     * Creates a {@link SurfacePatch} from an array of {@link Curve}s forming the boundary of a
-     * {@link SurfacePatch}. The first {@link Curve} forms the outer boundary the following
-     * {@link Curve}s represents holes. The passed interpolation must be supported by the concrete
-     * GeometryFactory; {@link #getSupportedSurfaceInterpolations()}. The passed type defines the
-     * {@link CurveSegment} class to be used (possibly different kinds of {@link SurfacePatch}
-     * implementations are available; see ISO 19107 for details)
+     * Creates a {@link SurfacePatch} from an array of {@link Curve}s forming the boundary of a {@link SurfacePatch}.
+     * The first {@link Curve} forms the outer boundary the following {@link Curve}s represents holes. The passed
+     * interpolation must be supported by the concrete GeometryFactory; {@link #getSupportedSurfaceInterpolations()}.
+     * The passed type defines the {@link CurveSegment} class to be used (possibly different kinds of
+     * {@link SurfacePatch} implementations are available; see ISO 19107 for details)
      * 
      * @param boundary
      *            boundary of the {@link SurfacePatch}
@@ -309,12 +297,12 @@ public interface GeometryFactory {
      *            interporlation to be used
      * @return created {@link SurfacePatch}
      */
-    public SurfacePatch createSurfacePatch( List<Curve> boundary, Class type, SurfacePatch.INTERPOLATION interpolation );
+    public SurfacePatch createSurfacePatch( List<Curve> boundary, Class<?> type, SurfacePatch.INTERPOLATION interpolation );
 
     /**
-     * Creates a {@link SurfacePatch} from an array of {@link Curve}s forming the boundary of a
-     * {@link SurfacePatch}. The first {@link Curve} forms the outer boundary the following
-     * {@link Curve}s represents holes. Default interpolation and type will be used.
+     * Creates a {@link SurfacePatch} from an array of {@link Curve}s forming the boundary of a {@link SurfacePatch}.
+     * The first {@link Curve} forms the outer boundary the following {@link Curve}s represents holes. Default
+     * interpolation and type will be used.
      * 
      * @param boundary
      *            boundary of the {@link SurfacePatch}
@@ -323,17 +311,15 @@ public interface GeometryFactory {
     public SurfacePatch createSurfacePatch( List<Curve> boundary );
 
     /**
-     * Creates a Solid from a from a set of {@link Surface}s forming its outer boundary and 0..n
-     * sets of {@link Surface}s forming its inner boundaries. The support for {@link Solid}s is
-     * optional. An implementation that does not support is shall throw an
-     * {@link UnsupportedOperationException} if this method will be invoked.
+     * Creates a Solid from a from a set of {@link Surface}s forming its outer boundary and 0..n sets of
+     * {@link Surface}s forming its inner boundaries. The support for {@link Solid}s is optional. An implementation
+     * that does not support is shall throw an {@link UnsupportedOperationException} if this method will be invoked.
      * 
      * @param outerboundary
      * @param innerboundaries
      * @param crs
-     *            solids coordinate reference system. If a point does not have a CRS or it is not
-     *            known {@link CRSFactory#createDummyCRS(String)} shall be used instead of
-     *            <code>null</code>
+     *            solids coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Solid}
      */
     public Solid createSolid( Surface[] outerboundary, Surface[][] innerboundaries, CoordinateSystem crs );
@@ -418,12 +404,11 @@ public interface GeometryFactory {
      * @param max
      *            miximum corner coordinates
      * @param precision
-     *            precision of the corner coordinates in units of the used CRS. This value will be
-     *            used for comparing two points to be equal or not.
+     *            precision of the corner coordinates in units of the used CRS. This value will be used for comparing
+     *            two points to be equal or not.
      * @param crs
-     *            evenlopes coordinate reference system. If a point does not have a CRS or it is not
-     *            known {@link CRSFactory#createDummyCRS(String)} shall be used instead of
-     *            <code>null</code>
+     *            evenlopes coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Envelope}
      */
     public Envelope createEnvelope( double[] min, double[] max, double precision, CoordinateSystem crs );
@@ -436,16 +421,15 @@ public interface GeometryFactory {
      * @param max
      *            miximum corner coordinates
      * @param crs
-     *            evenlopes coordinate reference system. If a point does not have a CRS or it is not
-     *            known {@link CRSFactory#createDummyCRS(String)} shall be used instead of
-     *            <code>null</code>
+     *            evenlopes coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Envelope}
      */
     public Envelope createEnvelope( double[] min, double[] max, CoordinateSystem crs );
 
     /**
-     * creates an envelope from a SurfacePatch representing a envelope by being constructed by five
-     * points: minx,miny minx,maxy maxx,maxy maxx,miny minx,miny
+     * creates an envelope from a SurfacePatch representing a envelope by being constructed by five points: minx,miny
+     * minx,maxy maxx,maxy maxx,miny minx,miny
      * 
      * @param patch
      * @return envelope created from a SurfacePatch

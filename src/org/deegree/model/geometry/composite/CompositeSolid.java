@@ -52,6 +52,9 @@ import org.deegree.model.geometry.primitive.Solid;
  */
 public interface CompositeSolid extends CompositeGeometry, Solid {
 
+    /**
+     * @return the solids of this composite solid geometry.
+     */
     public List<Solid> getSolids();
 
 }

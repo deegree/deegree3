@@ -61,7 +61,7 @@ public abstract class AbstractGeometryFactory implements GeometryFactory {
 
     private List<SurfacePatch.INTERPOLATION> surfaceInterpolations;
 
-    private List<Class> geometries;
+    private List<Class<?>> geometries;
 
 
 
@@ -97,7 +97,7 @@ public abstract class AbstractGeometryFactory implements GeometryFactory {
      * 
      * @see org.deegree.model.geometry.GeometryFactory#getSupportedGeometries()
      */
-    public List<Class> getSupportedGeometries() {
+    public List<Class<?>> getSupportedGeometries() {
         return geometries;
     }
 
@@ -134,7 +134,7 @@ public abstract class AbstractGeometryFactory implements GeometryFactory {
     /* (non-Javadoc)
      * @see org.deegree.model.geometry.GeometryFactory#setSupportedGeometries(java.util.List)
      */
-    public void setSupportedGeometries( List<Class> supportedGeometries ) {
+    public void setSupportedGeometries( List<Class<?>> supportedGeometries ) {
         this.geometries = supportedGeometries;   
     }
 

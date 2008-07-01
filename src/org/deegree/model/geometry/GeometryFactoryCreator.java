@@ -38,17 +38,27 @@
 
 package org.deegree.model.geometry;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.model.configuration.GeometryFactories;
-import org.deegree.model.configuration.ModelConfiguration;
-import org.deegree.model.configuration.types.CurveInterpolationType;
-import org.deegree.model.configuration.types.SurfaceInterpolationType;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import org.deegree.commons.utils.FileUtils;
+import org.deegree.model.geometry.configuration.GeometryFactoriesType;
+import org.deegree.model.geometry.configuration.GeometryFactoryType;
+import org.deegree.model.geometry.configuration.ModelConfiguration;
+import org.deegree.model.geometry.configuration.SupportedCurveInterpolationType;
+import org.deegree.model.geometry.configuration.SupportedSurfaceInterpolationType;
 import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.SurfacePatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -65,9 +75,12 @@ public class GeometryFactoryCreator {
     private GeometryFactory geometryFactory;
 
     private static GeometryFactoryCreator creator;
-    
+
+    private static Logger LOG = LoggerFactory.getLogger( GeometryFactoryCreator.class );
+
     /**
      * sigelton access
+     * 
      * @return instance of GeometryFactoryCreator
      */
     public static GeometryFactoryCreator getInstance() {
@@ -81,25 +94,45 @@ public class GeometryFactoryCreator {
 
     /**
      * 
-     *
+     * 
      */
     private GeometryFactoryCreator() {
-        if ( factories == null ) {            
+        if ( factories == null ) {
             factories = new HashMap<String, GeometryFactory>();
+
             try {
-                ModelConfiguration mc = ModelConfiguration.readConfiguration();
-                GeometryFactories gfs = mc.getGeometryFactories();
-                org.deegree.model.configuration.GeometryFactory[] gfArray = gfs.getGeometryFactory();
-                for ( int i = 0; i < gfArray.length; i++ ) {
-                    createGeometryFactory( gfArray[i] );
+                JAXBContext jc = JAXBContext.newInstance( "org.deegree.model.geometry.configuration" );
+                Unmarshaller unmarshaller = jc.createUnmarshaller();
+
+                URL configFile = FileUtils.loadDeegreeConfiguration( GeometryFactoryCreator.class,
+                                                                     "configuration/geometry_configuration.xml" );
+                if ( configFile == null ) {
+                    LOG.error( "Could not load the geometry_configuration.xml file make sure it is located in / or in org/deegree/model/geometry/configuration/" );
+                } else {
+                    ModelConfiguration mc = (ModelConfiguration) unmarshaller.unmarshal( new File(
+                                                                                                   "model_configuration.xml" ) );
+
+                    // ModelConfiguration mc = ModelConfiguration.readConfiguration();
+                    GeometryFactoriesType gfs = mc.getGeometryFactories();
+                    List<GeometryFactoryType> marshalledFactories = gfs.getGeometryFactory();
+                    for ( GeometryFactoryType factory : marshalledFactories ) {
+                        createGeometryFactory( factory );
+                    }
+                    // if no factory has been declared as default -> take the first one
+                    if ( geometryFactory == null ) {
+                        geometryFactory = factories.get( marshalledFactories.get( 0 ).getName() );
+                    }
                 }
-                // if no factory has been declared as default -> take the first one
-                if ( geometryFactory == null ) {
-                    geometryFactory = factories.get( gfArray[0].getName() );
-                }
-            } catch ( Exception e ) {
-                e.printStackTrace();
+            } catch ( JAXBException e ) {
+                LOG.error( e.getMessage(), e );
+            } catch ( ClassNotFoundException e ) {
+                LOG.error( e.getMessage(), e );
+            } catch ( InstantiationException e ) {
+                LOG.error( e.getMessage(), e );
+            } catch ( IllegalAccessException e ) {
+                LOG.error( e.getMessage(), e );
             }
+
         }
     }
 
@@ -110,35 +143,41 @@ public class GeometryFactoryCreator {
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    private void createGeometryFactory( org.deegree.model.configuration.GeometryFactory gf )
+    private void createGeometryFactory( GeometryFactoryType gf )
                             throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         // create a factory instance from its classname
-        Class clzz = Class.forName( gf.getClassName() );
+        Class<?> clzz = Class.forName( gf.getClassName() );
         GeometryFactory factory = (GeometryFactory) clzz.newInstance();
+
         // set name and description
         factory.setName( gf.getName() );
         factory.setDescription( gf.getDescription() );
-        // map CurveInterpolation to CurveSegment.INTERPOLATION and create a list from it
-        // as expected by the factory's setSupportedCurveInterpolations method
-        CurveInterpolationType[] cit = gf.getSupportedCurveInterpolation().getCurveInterpolation();
-        List<CurveSegment.INTERPOLATION> cInter = new ArrayList<CurveSegment.INTERPOLATION>( cit.length );
-        for ( int j = 0; j < cit.length; j++ ) {
-            cInter.add( CurveSegment.INTERPOLATION.valueOf( cit[j].toString() ) );
+
+        // map CurveInterpolation to CurveSegment.INTERPOLATION and create a list as expected by the factory's
+        // setSupportedCurveInterpolations method
+        SupportedCurveInterpolationType cit = gf.getSupportedCurveInterpolation();
+        List<String> configuredInterpolations = cit.getCurveInterpolation();
+        List<CurveSegment.INTERPOLATION> curveInterpolations = new ArrayList<CurveSegment.INTERPOLATION>(
+                                                                                                          configuredInterpolations.size() );
+        for ( String interpolation : configuredInterpolations ) {
+            curveInterpolations.add( CurveSegment.INTERPOLATION.valueOf( interpolation ) );
         }
-        factory.setSupportedCurveInterpolations( cInter );
-        // map SurfaceInterpolation to SurfacePatch.INTERPOLATION and create a list from it
-        // as expected by the factory's setSupportedSurfaceInterpolations method
-        SurfaceInterpolationType[] sit = gf.getSupportedSurfaceInterpolation().getSurfaceInterpolation();
-        List<SurfacePatch.INTERPOLATION> sInter = new ArrayList<SurfacePatch.INTERPOLATION>( sit.length );
-        for ( int j = 0; j < sit.length; j++ ) {
-            sInter.add( SurfacePatch.INTERPOLATION.valueOf( sit[j].toString() ) );
+        factory.setSupportedCurveInterpolations( curveInterpolations );
+
+        // map SurfaceInterpolation to SurfacePatch.INTERPOLATION and create a list as expected by the factory's
+        // setSupportedSurfaceInterpolations method
+        SupportedSurfaceInterpolationType sip = gf.getSupportedSurfaceInterpolation();
+        configuredInterpolations = sip.getSurfaceInterpolation();
+        List<SurfacePatch.INTERPOLATION> surfaceInterpolations = new ArrayList<SurfacePatch.INTERPOLATION>(
+                                                                                                            configuredInterpolations.size() );
+        for ( String interpolation : configuredInterpolations ) {
+            surfaceInterpolations.add( SurfacePatch.INTERPOLATION.valueOf( interpolation ) );
         }
-        factory.setSupportedCurveInterpolations( cInter );
+        factory.setSupportedCurveInterpolations( curveInterpolations );
 
         factories.put( gf.getName(), factory );
         if ( gf.isIsDefault() ) {
-            // if more than one factory is declared as default the least one will be used as
-            // default GeometryFactory
+            // if more than one factory is declared as default the least one will be used as default GeometryFactory
             geometryFactory = factory;
         }
     }
@@ -167,10 +206,11 @@ public class GeometryFactoryCreator {
      * @param supportedSurfaceInterpolation
      * @return list of {@link GeometryFactory} supporting the passed requirements
      */
-    public List<GeometryFactory> findGeometryFactory( List<Class> supportedGeometries,
+    @SuppressWarnings("unused")
+    public List<GeometryFactory> findGeometryFactory( List<Class<?>> supportedGeometries,
                                                       List<CurveSegment.INTERPOLATION> supportedCurveInterpolation,
                                                       List<SurfacePatch.INTERPOLATION> supportedSurfaceInterpolation ) {
-        return null;
+        throw new UnsupportedOperationException( "Not supported yet" );
     }
 
 }

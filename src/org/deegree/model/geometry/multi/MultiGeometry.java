@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -50,6 +50,7 @@ import org.deegree.model.geometry.primitive.Point;
  * @author last edited by: $Author$
  * 
  * @version. $Revision$, $Date$
+ * @param <T> indicating the type of the multi geometry
  */
 public interface MultiGeometry<T> extends Geometry {
 

@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -57,7 +57,54 @@ public interface SurfacePatch {
      * 
      */
     public enum INTERPOLATION {
-        none, planar, spherical, elliptical, conic, tin, bilinear, biquadratic, bicubic, polynomialSpline, rationalSpline, triangulatedSpline
+        /**
+         * No interpolation of the surfaces
+         */
+        none,
+        /**
+         * A planar interpolation of the surfaces.
+         */
+        planar,
+        /**
+         * A spherical interpolation of the surfaces.
+         */        
+        spherical,
+        /**
+         * A elliptical interpolation of the surfaces.
+         */        
+        elliptical,
+        /**
+         * A conic interpolation of the surfaces.
+         */        
+        conic,
+        /**
+         * A tin interpolation of the surfaces.
+         */        
+        tin,
+        /**
+         * A bilinear interpolation of the surfaces.
+         */        
+        bilinear,
+        /**
+         * A biquadratic interpolation of the surfaces.
+         */        
+        biquadratic,
+        /**
+         * A bicubic interpolation of the surfaces.
+         */        
+        bicubic,
+        /**
+         * A polynomialSpline interpolation of the surfaces.
+         */        
+        polynomialSpline,
+        /**
+         * A rationalSpline interpolation of the surfaces.
+         */        
+        rationalSpline,
+        /**
+         * A triangulatedSpline interpolation of the surfaces.
+         */        
+        triangulatedSpline
     }
 
     /**

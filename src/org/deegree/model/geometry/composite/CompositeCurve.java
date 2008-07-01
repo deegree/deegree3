@@ -1,4 +1,4 @@
-//$HeadURL:  $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -56,6 +56,9 @@ import org.deegree.model.geometry.primitive.Curve;
  */
 public interface CompositeCurve extends CompositeGeometry, Curve {
 
+    /**
+     * @return the curves this composite curve.
+     */
     public List<Curve> getCurves();
 
 }

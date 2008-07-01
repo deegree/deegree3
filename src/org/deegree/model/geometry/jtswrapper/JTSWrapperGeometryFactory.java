@@ -141,7 +141,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      *      org.deegree.model.geometry.primitive.CurveSegment.INTERPOLATION)
      */
     public CurveSegment createCurveSegment( List<Point> points, @SuppressWarnings("unused")
-    Class type, @SuppressWarnings("unused")
+    Class<?> type, @SuppressWarnings("unused")
     CurveSegment.INTERPOLATION interpolation ) {
         if ( points == null || points.size() == 0 ) {
             return null;
@@ -251,7 +251,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
      *      org.deegree.model.geometry.primitive.Patch.INTERPOLATION)
      */
     public SurfacePatch createSurfacePatch( List<Curve> boundary, @SuppressWarnings("unused")
-    Class type, @SuppressWarnings("unused")
+    Class<?> type, @SuppressWarnings("unused")
     SurfacePatch.INTERPOLATION interpolation ) {
         if ( boundary == null || boundary.size() == 0 ) {
             return null;

@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -57,8 +57,19 @@ public interface Curve extends Primitive {
      * 
      */
     public enum ORIENTATION {
-        positiv, negativ, unknown
-    };
+        /**
+         * Indicating a positive orientation
+         */
+        positive, 
+        /**
+         * Indicating a negative orientation
+         */
+        negative, 
+        /**
+         * the orientation is not known.
+         */
+        unknown
+    }
 
     /**
      * 

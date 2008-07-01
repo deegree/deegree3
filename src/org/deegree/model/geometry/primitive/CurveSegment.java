@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -55,8 +55,43 @@ public interface CurveSegment {
      * 
      */
     public enum INTERPOLATION {
-        linear, geodesic, circularArc3Points, circularArc2PointWithBulge, elliptical, conic, cubicSpline, polynomialSpline, rationalSpline
-    };
+        /**
+         * A linear interpolation.
+         */
+        linear, 
+        /**
+         * A geodesic interpolation.
+         */
+        geodesic, 
+        /**
+         * A circularArc3Points interpolation.
+         */
+        circularArc3Points, 
+        /**
+         * A circularArc2PointWithBulge interpolation.
+         */
+        circularArc2PointWithBulge, 
+        /**
+         * A elliptical interpolation.
+         */
+        elliptical, 
+        /**
+         * A conic interpolation.
+         */
+        conic, 
+        /**
+         * A cubicSpline interpolation.
+         */
+        cubicSpline, 
+        /**
+         * A polynomialSpline interpolation.
+         */
+        polynomialSpline,
+        /**
+         * A rationalSpline interpolation.
+         */
+        rationalSpline
+    }
 
     /**
      * 

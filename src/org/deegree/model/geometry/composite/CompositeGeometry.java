@@ -1,4 +1,4 @@
-//$HeadURL:  $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -54,5 +54,5 @@ import org.deegree.model.geometry.Geometry;
  * @version. $Revision$, $Date$
  */
 public interface CompositeGeometry extends Geometry {
-
+//A marker interface.
 }
