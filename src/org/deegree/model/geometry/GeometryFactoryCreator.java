@@ -38,7 +38,6 @@
 
 package org.deegree.model.geometry;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,8 +108,7 @@ public class GeometryFactoryCreator {
                 if ( configFile == null ) {
                     LOG.error( "Could not load the geometry_configuration.xml file make sure it is located in / or in org/deegree/model/geometry/configuration/" );
                 } else {
-                    ModelConfiguration mc = (ModelConfiguration) unmarshaller.unmarshal( new File(
-                                                                                                   "model_configuration.xml" ) );
+                    ModelConfiguration mc = (ModelConfiguration) unmarshaller.unmarshal( configFile );
 
                     // ModelConfiguration mc = ModelConfiguration.readConfiguration();
                     GeometryFactoriesType gfs = mc.getGeometryFactories();
