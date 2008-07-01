@@ -48,6 +48,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,9 +57,9 @@ import org.slf4j.LoggerFactory;
  * This class contains static utility methods for handling files and filenames.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author: $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  * 
  */
 public class FileUtils {
@@ -83,6 +84,46 @@ public class FileUtils {
      */
     public static String getFileExtension( File file ) {
         return splitFilename( file ).second;
+    }
+
+    /**
+     * A helper method which will try to load the given configuration file (name) from the root directory before trying
+     * to load it from the package of the given configuration class. Consider following example:
+     * <p>
+     * The org.deegree.model.geometry.GeometryFactory wants to load the File geometry_config.xml located in
+     * org.deegree.model.geometry.configuration (hence the filename will be <i>configuration/geometry_config.xml</i>)<br />.
+     * This method will first try to read geometry_config.xml (<b>without</b> the 'configuration' directory from the
+     * given fileName) from the root directory '/' (e.g. WEB-INF/classes in a serlvet environment)<br />
+     * If this was unsuccessful this method will try to load the file from the given packageName with the relative
+     * fileName appended to it.
+     * 
+     * @param configurationClass
+     *            will be used to read the stream from.
+     * @param fileName
+     *            name of the file to read.
+     * @return the given file handle, or <code>null</code> if the given file could not be read (in either location) or
+     *         either of the given parameters is <code>null</code>.
+     */
+    public static URL loadDeegreeConfiguration( Class<?> configurationClass, String fileName ) {
+        if ( configurationClass == null ) {
+            LOG.debug( "Configuration class is null" );
+            return null;
+        }
+        if ( fileName == null || "".equals( fileName.trim() ) ) {
+            LOG.debug( "The given fileName is null or emtpy" );
+            return null;
+        }
+        int index = fileName.lastIndexOf( "/" );
+        String rootFile = fileName;
+        if ( index != -1 ) {
+            rootFile = fileName.substring( index );
+        }
+
+        URL fileLocation = configurationClass.getResource( "/" + rootFile );
+        if ( fileLocation == null ) {
+            fileLocation = configurationClass.getResource( fileName );
+        }
+        return fileLocation;
     }
 
     /**
@@ -146,7 +187,8 @@ public class FileUtils {
             File tmpFile = File.createTempFile( filePrefix, fileSuffix );
             writeFile( tmpFile, content );
         } catch ( IOException e ) {
-            LOG.error( "Cannot create temporary file for prefix '" + filePrefix + "' and suffix '" + fileSuffix + ".", e );
+            LOG.error( "Cannot create temporary file for prefix '" + filePrefix + "' and suffix '" + fileSuffix + ".",
+                       e );
         }
     }
 
@@ -192,7 +234,8 @@ public class FileUtils {
             File tmpFile = File.createTempFile( filePrefix, fileSuffix );
             writeBinaryFile( tmpFile, data );
         } catch ( IOException e ) {
-            LOG.error( "Cannot create temporary file for prefix '" + filePrefix + "' and suffix '" + fileSuffix + ".", e );
+            LOG.error( "Cannot create temporary file for prefix '" + filePrefix + "' and suffix '" + fileSuffix + ".",
+                       e );
         }
     }
 }
