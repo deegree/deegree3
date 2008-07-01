@@ -38,15 +38,19 @@
 	<property name="src" value="${basedir}/src" />
 	<property name="build" value="${basedir}/classes" />
 	<property name="dist" value="${basedir}/dist" />
-	<!--property name="lib.jar"        value="${app.name}.jar" /-->
+	<property name="lib.jar" value="${app.name}.jar" />
 	<property name="lib" value="${basedir}/lib" />
 	<property name="doc" value="${basedir}/docs" />
 	<property name="resources" value="${basedir}/resources" />
 	<property name="test.src" value="${basedir}/test" />
-	<property name="version.props" value="${src}/org/deegree/framework/version/version.properties" />
-	<property name="buildId.props" value="${src}/org/deegree/framework/version/buildId.properties" />
-	<property name="version.class" value="${src}/org/deegree/commons/Version" />
+	<property name="version.props" value="${src}/org/deegree/commons/version/version.properties" />
+	<property name="buildId.props" value="${src}/org/deegree/commons/version/buildId.properties" />
+	<property name="version.class" value="${src}/org/deegree/commons/version/Version" />
 
+	<property name="oracle.sdo.depending" value="" />
+	<property name="oracle.raster.depending" value="" />
+	<property name="postgis.depending" value="" />
+	<property name="arcsde.depending" value="" />
 
 	<!-- version + buildId properties -->
 	<property file="${version.props}" />
@@ -58,12 +62,9 @@
 		<fileset dir="${lib}">
 			<include name="**/*.jar" />
 		</fileset>
-		<if>
-			<isset property="optional.libs" />
-			<fileset dir="${optional.libs}">
-				<include name="**/*.jar" />
-			</fileset>
-		</if>
+		<fileset dir="${optional.libs}">
+			<include name="**/*.jar" />
+		</fileset>
 	</path>
 
 	<!-- set dependency classpath -->
@@ -75,12 +76,12 @@
 	</path>
 
 
-	<!-- ant contrib optional task def >
+	<!--ant contrib optional task def -->
 	<taskdef resource="net/sf/antcontrib/antlib.xml">
 		<classpath>
 			<pathelement location="${ant.home}/lib/ant-contrib.jar" />
 		</classpath>
-	</taskdef-->
+	</taskdef>
 
 
 	<!-- =================================================================== -->
@@ -159,11 +160,9 @@
 	</target>
 
 	<target name="clean" description="clean build,dist and doc directories">
-		<delete includeemptydirs="true">
-			<fileset dir="${build}" includes="**/*" />
-			<fileset dir="${dist}" includes="**/*" />
-			<fileset dir="${doc}" includes="**/*" />
-		</delete>
+		<delete dir="${build}" />
+		<delete dir="${dist}" />
+		<delete dir="${doc}" />
 	</target>
 
 	<!-- =================================================================== -->
@@ -209,32 +208,28 @@
 				<available classname="oracle.jdbc.OracleDriver" classpathref="build.path" />
 			</and>
 		</condition>
+
 		<available classname="oracle.spatial.georaster.JGeoRaster" property="oracleraster.present" classpathref="build.path" />
+
 		<available classname="com.esri.sde.sdk.client.SeRelease" property="arcsde.present" classpathref="build.path" />
-		<available classname="com.mysql.jdbc.Driver" property="mysql.present" classpathref="build.path" />
+
 		<condition property="postgis.present">
 			<and>
 				<available classname="org.postgis.Geometry" classpathref="build.path" />
 				<available classname="org.postgresql.Driver" classpathref="build.path" />
 			</and>
 		</condition>
-		<!--available classname="org.jboss.logging.Logger" property="jboss.present" classpathref="build.path" /-->
 
-		<!--
-                                     all properties end with a trailing ',' - except the last one.
-                                 check the definition of property 'exclude.classes' below
-                                -->
+		<!-- Set or unset the deegree files to compile which have dependencies to one of the above libs -->
 		<if>
 			<equals arg1="${oraclesdo.present}" arg2="true" />
 			<then>
 				<property name="oracle.exclude.classes" value="" />
 				<echo message="Enabling support for Oracle datastores." />
-				<echo message="Enabling support for security subsystem (FIXME: remove dependency to Oracle)." />
 			</then>
 			<else>
-				<property name="oracle.exclude.classes" value="org/deegree/io/datastore/sql/oracle/**,org/deegree/security/drm/**," />
+				<property name="oracle.exclude.classes" value="${oracle.sdo.depending}" />
 				<echo message="Disabling support for Oracle datastores." />
-				<echo message="Disabling support for security subsystem (FIXME: remove dependency to Oracle)." />
 			</else>
 		</if>
 		<if>
@@ -247,7 +242,8 @@
 				<echo message="Enabling support for Oracle raster." />
 			</then>
 			<else>
-				<property name="oracleraster.exclude.classes" value="org/deegree/io/oraclegeoraster/**,org/deegree/tools/raster/Oracle*,org/deegree/model/coverage/grid/oracle/**," />
+				<!--org/deegree/io/oraclegeoraster/**,org/deegree/tools/raster/Oracle*,org/deegree/model/coverage/grid/oracle/**,-->
+				<property name="oracleraster.exclude.classes" value="${oracle.sdo.depending},${oracle.raster.depending}" />
 				<echo message="Disabling support for Oracle raster." />
 			</else>
 		</if>
@@ -258,19 +254,9 @@
 				<echo message="Enabling support for PostGIS backed datastores." />
 			</then>
 			<else>
-				<property name="postgis.exclude.classes" value="org/deegree/io/datastore/sql/postgis/**,org/deegree/model/coverage/grid/postgres/**," />
+				<!--				org/deegree/io/datastore/sql/postgis/**,org/deegree/model/coverage/grid/postgres/**,-->
+				<property name="postgis.exclude.classes" value="${postgis.depending}" />
 				<echo message="Disabling support for PostGIS backed datastores." />
-			</else>
-		</if>
-		<if>
-			<equals arg1="${mysql.present}" arg2="true" />
-			<then>
-				<property name="mysql.exclude.classes" value="" />
-				<echo message="Enabling support for MySQL backed datastores." />
-			</then>
-			<else>
-				<property name="mysql.exclude.classes" value="org/deegree/io/datastore/sql/mysql/**," />
-				<echo message="Disabling support for MySQL backed datastores." />
 			</else>
 		</if>
 		<if>
@@ -280,52 +266,27 @@
 				<echo message="Enabling support for ArcSDE." />
 			</then>
 			<else>
-				<property name="arcsde.exclude.classes" value="org/deegree/io/sdeapi/**," />
+				<!--org/deegree/io/sdeapi/**,-->
+				<property name="arcsde.exclude.classes" value="${arcsde.depending}" />
 				<echo message="Disabling support for ArcSDE." />
 			</else>
 		</if>
-		<!--if>
-                        <equals arg1="${jboss.present}" arg2="true" />
-                        <then>
-                                <property name="jboss.exclude.classes" value="" />
-                                <echo message="Enabling support for JBossLogger." />
-                        </then>
-                        <else>
-                                <property name="jboss.exclude.classes" value="**/log/JBossLogger.*" />
-                                <echo message="Disabling support for JBossLogger." />
-                        </else>
-                </if-->
-		<property name="exclude.classes" value="${oracle.exclude.classes}${oracleraster.exclude.classes}${arcsde.exclude.classes}${mysql.exclude.classes}${postgis.exclude.classes}" />
+		<property name="exclude.classes" value="${oracle.exclude.classes},${oracleraster.exclude.classes},${arcsde.exclude.classes},${postgis.exclude.classes}" />
 		<echo message="exclude.classes=${exclude.classes}" />
 	</target>
 
-
-	<!--target name="exclude.oraclesdo" unless="oraclesdo.present">
-                <property name="oracle.exclude.classes" value="oracle" />
-        </target>
-        <target name="exclude.oracleraster" unless="oracleraster.present">
-                <property name="oracleraster.exclude.classes" value="oracleraster" />
-        </target>
-        <target name="exclude.arcsde" unless="arcsde.present">
-                <property name="arcsde.exclude.classes" value="arcsde" />
-        </target>
-        <target name="exclude.mysql" unless="mysql.present">
-                <property name="mysql.exclude.classes" value="mysql" />
-        </target>
-        <target name="exclude.postgis" unless="postgis.present">
-                <property name="postgis.exclude.classes" value="postgis" />
-        </target-->
 
 	<!-- =================================================================== -->
 	<!-- create new build number (for next run)                              -->
 	<!-- =================================================================== -->
 
-	<target name="new-build-number" depends="init" description="create new build number (for next run)">
+	<target name="new-build-number">
 		<echo message="creating new build number, previous was ${build.number}" />
 		<buildnumber file="${buildId.props}" />
 		<propertyfile file="${buildId.props}">
 			<entry key="svn.revision" value="${svn.revision.new}" />
 			<entry key="svn.path" value="${svn.path.new}" />
+			<entry key="build.date" value="${init.date}" />
 		</propertyfile>
 	</target>
 
@@ -333,19 +294,14 @@
 	<!-- compiles all sources and copies all required resouces               -->
 	<!-- =================================================================== -->
 
-	<target name="compile" depends="init,exclude-packages" description="compiles all sources and copies all required resouces to the output directory">
-
-		<propertyfile file="${buildId.props}">
-			<entry key="build.date" value="${init.date}" />
-		</propertyfile>
-		<propertycopy property="build.date" from="init.date" override="yes" />
-
+	<target name="compile" depends="init,exclude-packages,new-build-number" description="compiles all sources and copies all required resouces to the output directory">
 		<javac srcdir="${src}" destdir="${build}" excludes="${exclude.classes}" includes="**/*.java" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.true}" source="${source.version}" target="${target.version}">
 			<classpath>
 				<path refid="build.path" />
 			</classpath>
 		</javac>
 		<copy todir="${build}">
+			<!--fileset dir="${src}/META-INF" includes="**/**" /-->
 			<fileset dir="${src}" includes="**/*.properties" />
 			<fileset dir="${src}" includes="**/*.xsl" />
 			<fileset dir="${src}" includes="**/*.xml" />
@@ -361,10 +317,7 @@
 	<!-- =================================================================== -->
 
 	<target name="javadoc" depends="compile" description="creates JavaDoc API">
-		<!-- Create the ${doc}/lib directory -->
-		<mkdir dir="${doc}" />
-
-		<javadoc source="1.5" packagenames="org.*,javax.*" sourcepath="${src}" destdir="${doc}" author="true" version="true" verbose="${debug}" use="true" package="true" linksource="true" excludepackagenames="${exclude.classes}" overview="${src}/overview.html" doctitle="deegree - Java framework for geospatial solutions" windowtitle="deegree framework ${version.number}" header="deegree ${version.number} (${build.date} build-${build.number}-${build.by})" footer="deegree ${version.number} (${build.date} build-${build.number}-${build.by})" maxmemory="512m" encoding="utf-8">
+		<javadoc source="${source.version}" packagenames="org.deegree.*" sourcepath="${src}" destdir="${doc}" author="true" version="true" verbose="${debug}" use="true" package="true" linksource="true" overview="${src}/overview.html" doctitle="deegree - Java framework for geospatial solutions" windowtitle="deegree framework ${version.number}" header="deegree - ${app.name} - ${version.number} (${build.date} build-${build.number}-${build.by})" footer="deegree - ${app.name} - ${version.number} (${build.date} build-${build.number}-${build.by})" maxmemory="512m" encoding="utf-8">
 
 			<bottom>
 				<![CDATA[<p align="center">an open source project founded by <a href="http://www.latlon.de">lat/lon</a>, Bonn, Germany.<BR>
@@ -376,21 +329,10 @@
 			<!-- custom tags -->
 			<tag name="todo" scope="all" description="To do:" />
 			<tag name="TODO" scope="all" description="To do:" />
-			<tag name="bug" scope="all" description="Known bug:" />
-
-			<!-- uml tags... todo? -->
-			<tag name="uml.associationEnd" description="" />
-			<tag name="uml.property" description="" />
-			<tag name="UML" description="" />
-
-			<!-- what is this? -->
-			<tag name="rename" description="rename" />
-			<tag name="revisit" description="revisit" />
-			<tag name="unitof" description="" />
-
-			<tag name="associates" scope="all" description="Together" enabled="false" />
-			<tag name="clientCardinality" scope="all" description="Together" enabled="false" />
-			<tag name="ejb" scope="all" description="Xdoclet" enabled="false" />
+			<tag name="FIXME" scope="all" description="Fix: " />
+			<tag name="fixme" scope="all" description="Fix: " />
+			<tag name="bug" scope="all" description="Known bug: " />
+			<tag name="BUG" scope="all" description="Known bug: " />
 
 			<group title="deegree Coordinate Reference System (crs)" packages="org.deegree.crs*" />
 			<group title="deegree Framework" packages="org.deegree.framework*" />
@@ -404,7 +346,7 @@
 			<group title="deegree Security Framework" packages="org.deegree.security*" />
 			<group title="deegree Standalone Tools" packages="org.deegree.tools.*" />
 
-			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://java.sun.com/javase/6/docs/api/index.html" />
 
 			<classpath>
 				<path refid="build.path" />
@@ -412,13 +354,6 @@
 		</javadoc>
 	</target>
 
-	<!-- ########################################################## -->
-
-
-
-	<!-- ########################################################## -->
-
-	<!--target name="cruisecontrol" depends="clean-all, build-lib" description="target for cruisecontrol"-->
 	<target name="cruisecontrol" depends="clean-all, build-lib, javadoc, test" description="target for cruisecontrol">
 		<echo message="compress jar and javadoc for publishing..." />
 		<tar destfile="${dist}/deegree_jar_apidoc.tgz" compression="gzip" longfile="gnu">
@@ -434,10 +369,27 @@
 
 	<!-- ########################################################## -->
 
-	<target name="build-lib" description="creates the deegree2.jar">
-		<antcall target="new-build-number" />
-		<antcall target="compile" />
-		<echo message="creating deegree libraries ..." />
+	<target name="build-lib" depends="init" description="creates the deegree2.jar">
+		<!-- check if any of the files in sources have been changed, so we do not need to update the build.number-->
+		<outofdate property="needs.compile" value="whatever">
+			<sourcefiles>
+				<fileset dir="${src}" includes="**/**" />
+			</sourcefiles>
+			<targetfiles>
+				<fileset dir="${build}" includes="**/**" />
+			</targetfiles>
+		</outofdate>
+		<if>
+			<isset property="needs.compile" />
+			<then>
+				<antcall target="compile" />
+			</then>
+			<else>
+				<echo message="Using the files in ${build} because they are up-to-date" />
+			</else>
+		</if>
+
+		<echo message="Creating deegree ${app.name} library ..." />
 		<pathconvert pathsep=" " property="used.libs" refid="dependency.path">
 			<flattenmapper />
 			<map from="${lib}/" to="" />
@@ -507,7 +459,6 @@
 		<ant antfile="build-test.xml" dir="." target="cctest" />
 	</target>
 
-
 	<!-- ########################################################## -->
 
 	<target name="clean-all" depends="clean" description="clean all output directories">
@@ -515,5 +466,40 @@
 	</target>
 
 	<!-- ########################################################## -->
+	<description>deegree_services</description>
 
+	<target name="bind_services_metadata">
+		<fail message="The package.name parameter should be specified e.g. -Dpackage.name='org.deegree.test'">
+			<condition>
+				<not>
+					<isset property="package.name" />
+				</not>
+			</condition>
+		</fail>
+		<fail message="The schema.file parameter should be specified e.g. -Dschema.file='resources/schema/test.xsd'">
+			<condition>
+				<not>
+					<isset property="schema.file" />
+				</not>
+			</condition>
+		</fail>
+		<if>
+			<not>
+				<isset property="output.dir" />
+			</not>
+			<then>
+				<echo message="The output.dir parameter was not specified e.g. -Doutput.dir='dist', defaulting to src" />
+				<propertycopy name="output.dir" from="src" override="yes"/>
+			</then>
+		</if>
+		<pathconvert property="class.path" refid="build.path" />
+		<exec dir="${basedir}" executable="xjc">
+			<arg line="-d ${output.dir}" />
+			<arg line="-mark-generated" />
+			<arg line="-p ${package.name}" />
+			<arg line="-classpath ${class.path}" />
+			<arg line="${schema.file}" />
+		</exec>
+		<!--xjc schema="resources/schema/services_metadata.xsd" target="src" package="org.deegree.services.controller.configuration" /-->
+	</target>
 </project>
