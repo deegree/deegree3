@@ -74,6 +74,10 @@
 			<exclude name="${exclude.dependency.jars}" />
 		</fileset>
 	</path>
+	
+	<target name="get_build_path" >
+		<pathconvert property="module.path" refid="build.path"/>
+	</target>
 
 
 	<!--ant contrib optional task def -->
@@ -492,12 +496,21 @@
 				<propertycopy name="output.dir" from="src" override="yes"/>
 			</then>
 		</if>
+	      <if>
+	            <not>
+	                <isset property="other.parameters" />
+	            </not>
+	            <then>
+	                <echo message="The other.parameters parameter was not specified e.g. -Dother.parameters='-jaxb_param test' so not using it" />
+	                <property name="other.parameters" value=""/>
+	            </then>
+	        </if>
 		<pathconvert property="class.path" refid="build.path" />
 		<exec dir="${basedir}" executable="xjc">
 			<arg line="-d ${output.dir}" />
-			<arg line="-mark-generated" />
 			<arg line="-p ${package.name}" />
 			<arg line="-classpath ${class.path}" />
+			<arg line="${other.parameters}"/>
 			<arg line="${schema.file}" />
 		</exec>
 		<!--xjc schema="resources/schema/services_metadata.xsd" target="src" package="org.deegree.services.controller.configuration" /-->
