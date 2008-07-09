@@ -34,7 +34,7 @@
 
 	<property name="target.version" value="1.6" />
 	<property name="source.version" value="1.6" />
-	<property name="app.name" value="commons" />
+	<property name="app.name" value="${ant.project.name}" />
 	<property name="src" value="${basedir}/src" />
 	<property name="build" value="${basedir}/classes" />
 	<property name="dist" value="${basedir}/dist" />
@@ -74,9 +74,11 @@
 			<exclude name="${exclude.dependency.jars}" />
 		</fileset>
 	</path>
-	
-	<target name="get_build_path" >
-		<pathconvert property="module.path" refid="build.path"/>
+
+	<target name="get_build_path">
+		<echo level="info" message="${ant.project.name} - copying local build path." />
+		<pathconvert property="tmp.path" refid="build.path" />
+		<property name="module.path" value="${tmp.path}:${lib.jar}"/>
 	</target>
 
 
@@ -298,20 +300,38 @@
 	<!-- compiles all sources and copies all required resouces               -->
 	<!-- =================================================================== -->
 
-	<target name="compile" depends="init,exclude-packages,new-build-number" description="compiles all sources and copies all required resouces to the output directory">
+	<target name="compile" depends="init,exclude-packages" description="compiles all sources and copies all required resouces to the output directory">
+		<echo level="info" message="Compiling ${ant.project.name} " />
 		<javac srcdir="${src}" destdir="${build}" excludes="${exclude.classes}" includes="**/*.java" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.true}" source="${source.version}" target="${target.version}">
 			<classpath>
 				<path refid="build.path" />
 			</classpath>
 		</javac>
+		<!-- check if any of the files in sources have been changed, so we do not need to update the build.number-->
+		<outofdate property="needs.compile" value="whatever" outputsources="bla">
+			<sourcefiles>
+				<fileset dir="${src}" includes="**/**">
+					<exclude name="**/*.java" />
+					<exclude name="**/package.html" />
+					<exclude name="**/buildId.properties" />
+				</fileset>
+			</sourcefiles>
+			<targetfiles>
+				<fileset dir="${build}" includes="**/**">
+					<exclude name="**/*.class" />
+					<exclude name="**/package.html" />
+					<exclude name="**/buildId.properties" />
+				</fileset>
+			</targetfiles>
+			<sequential>
+				<antcall target="new-build-number" />
+			</sequential>
+		</outofdate>
 		<copy todir="${build}">
-			<!--fileset dir="${src}/META-INF" includes="**/**" /-->
-			<fileset dir="${src}" includes="**/*.properties" />
-			<fileset dir="${src}" includes="**/*.xsl" />
-			<fileset dir="${src}" includes="**/*.xml" />
-			<fileset dir="${src}" includes="**/*.sql" />
-			<fileset dir="${src}" includes="**/*.svg" />
-			<fileset dir="${src}" includes="**/*.html" excludes="**/package.html" />
+			<fileset dir="${src}" includes="**/*.*">
+				<exclude name="**/package.html" />
+				<exclude name="**/*.java" />
+			</fileset>
 		</copy>
 
 	</target>
@@ -374,29 +394,17 @@
 	<!-- ########################################################## -->
 
 	<target name="build-lib" depends="init" description="creates the deegree2.jar">
-		<!-- check if any of the files in sources have been changed, so we do not need to update the build.number-->
-		<outofdate property="needs.compile" value="whatever">
-			<sourcefiles>
-				<fileset dir="${src}" includes="**/**" />
-			</sourcefiles>
-			<targetfiles>
-				<fileset dir="${build}" includes="**/**" />
-			</targetfiles>
-		</outofdate>
-		<if>
-			<isset property="needs.compile" />
-			<then>
-				<antcall target="compile" />
-			</then>
-			<else>
-				<echo message="Using the files in ${build} because they are up-to-date" />
-			</else>
-		</if>
-
 		<echo message="Creating deegree ${app.name} library ..." />
+
+		<!--needed for callers outside of this ant script who want to use this projects jar-->
+		<property name="module.dist" value="${dist}" />
+		<property name="module.jar" value="${lib.jar}" />
+
+		<!-- Set the correct class path in the manifest file of the jar -->
 		<pathconvert pathsep=" " property="used.libs" refid="dependency.path">
 			<flattenmapper />
 			<map from="${lib}/" to="" />
+            <map from="classes" to="" />
 		</pathconvert>
 
 		<jar jarfile="${dist}/${lib.jar}" update="false">
@@ -422,6 +430,8 @@
 			</manifest>
 		</jar>
 	</target>
+
+
 
 	<target name="build-lib-nocompile" depends="init" description="creates the deegree2.jar without compiling">
 		<echo message="creating deegree libraries ..." />
@@ -493,24 +503,24 @@
 			</not>
 			<then>
 				<echo message="The output.dir parameter was not specified e.g. -Doutput.dir='dist', defaulting to src" />
-				<propertycopy name="output.dir" from="src" override="yes"/>
+				<propertycopy name="output.dir" from="src" override="yes" />
 			</then>
 		</if>
-	      <if>
-	            <not>
-	                <isset property="other.parameters" />
-	            </not>
-	            <then>
-	                <echo message="The other.parameters parameter was not specified e.g. -Dother.parameters='-jaxb_param test' so not using it" />
-	                <property name="other.parameters" value=""/>
-	            </then>
-	        </if>
+		<if>
+			<not>
+				<isset property="other.parameters" />
+			</not>
+			<then>
+				<echo message="The other.parameters parameter was not specified e.g. -Dother.parameters='-jaxb_param test' so not using it" />
+				<property name="other.parameters" value="" />
+			</then>
+		</if>
 		<pathconvert property="class.path" refid="build.path" />
 		<exec dir="${basedir}" executable="xjc">
 			<arg line="-d ${output.dir}" />
 			<arg line="-p ${package.name}" />
 			<arg line="-classpath ${class.path}" />
-			<arg line="${other.parameters}"/>
+			<arg line="${other.parameters}" />
 			<arg line="${schema.file}" />
 		</exec>
 		<!--xjc schema="resources/schema/services_metadata.xsd" target="src" package="org.deegree.services.controller.configuration" /-->
