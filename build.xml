@@ -56,6 +56,34 @@
 	<property file="${version.props}" />
 	<property file="${buildId.props}" />
 
+	<!-- Find the ant contrib resources, or give an error message if it could not be found -->
+	<fail message="Could not find the ant-contrib resources, please make sure ant-contrib is located on the your build.path.
+	        ${nl}${nl}${ant.project.name} can only be build with ANT if the ant-contrib.jar is available.
+	        ${nl}Please refer to the installation instruction on http://ant-contrib.sourceforge.net/">
+		<condition>
+			<not>
+				<available resource="net/sf/antcontrib/antlib.xml" />
+			</not>
+		</condition>
+	</fail>
+
+	<!--ant contrib optional task def -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${ant-contrib.jar}" />
+		</classpath>
+	</taskdef>
+
+	<if>
+		<not>
+			<isset property="optional.libs" />
+		</not>
+		<then>
+			<property name="optional.libs" value="${lib}" />
+		</then>
+	</if>
+
+
 	<!-- set build classpath -->
 	<path id="build.path">
 		<pathelement location="${build}" />
@@ -65,6 +93,7 @@
 		<fileset dir="${optional.libs}">
 			<include name="**/*.jar" />
 		</fileset>
+		<!-- find the extra libs in the lib dir of the java-home -->
 	</path>
 
 	<!-- set dependency classpath -->
@@ -75,10 +104,10 @@
 		</fileset>
 	</path>
 
-	<target name="get_build_path">
+	<target name="retreive-project-path">
 		<echo level="info" message="${ant.project.name} - copying local build path." />
 		<pathconvert property="tmp.path" refid="build.path" />
-		<property name="module.path" value="${tmp.path}:${lib.jar}"/>
+		<property name="module.path" value="${tmp.path}:${lib.jar}" />
 	</target>
 
 
@@ -404,7 +433,7 @@
 		<pathconvert pathsep=" " property="used.libs" refid="dependency.path">
 			<flattenmapper />
 			<map from="${lib}/" to="" />
-            <map from="classes" to="" />
+			<map from="classes" to="" />
 		</pathconvert>
 
 		<jar jarfile="${dist}/${lib.jar}" update="false">
