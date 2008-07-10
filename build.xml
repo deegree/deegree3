@@ -422,7 +422,7 @@
 
 	<!-- ########################################################## -->
 
-	<target name="build-lib" depends="init" description="creates the deegree2.jar">
+	<target name="build-lib" depends="compile" description="creates the deegree2.jar">
 		<echo message="Creating deegree ${app.name} library ..." />
 
 		<!--needed for callers outside of this ant script who want to use this projects jar-->
