@@ -114,7 +114,7 @@ public class XMLProcessingException extends RuntimeException {
     }
 
     public String toString() {
-        return message + "\n" + stackTrace;
+        return this.getClass() + ": " + getMessage() + "\n" + stackTrace;
     }
 
     /**
