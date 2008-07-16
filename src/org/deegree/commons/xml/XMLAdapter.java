@@ -65,6 +65,7 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMDocument;
@@ -829,5 +830,98 @@ public class XMLAdapter {
             compiledXPath.addNamespace( prefix, nsMap.get( prefix ) );
         }
         return compiledXPath;
+    }
+
+    /**
+     * Write an element with simple text content into the XMLStream.
+     * 
+     * <p>
+     * Convinience method to write simple elements like:
+     * 
+     * <pre>
+     * &lt;ogc:GeometryOperand&gt;gml:Envelope&lt;/ogc:GeometryOperand&gt;
+     * &lt;gml:upperCorner&gt;90 180&lt;/gml:upperCorner&gt;
+     * </pre>
+     * 
+     * @param writer
+     * @param namespace
+     *            the namespace of the element
+     * @param elemName
+     *            the element name
+     * @param value
+     *            the text value of the element
+     * @throws XMLStreamException
+     */
+    public static void writeElement( XMLStreamWriter writer, String namespace, String elemName, String value )
+                            throws XMLStreamException {
+        writer.writeStartElement( namespace, elemName );
+        writer.writeCharacters( value );
+        writer.writeEndElement();
+    }
+
+    /**
+     * Write an element with a single attribute into the XMLStream.
+     * 
+     * <p>
+     * Convinience method to write simple elements like:
+     * 
+     * <pre>
+     * &lt;ows:Post xlink:href=&quot;http://localhost/&quot; /&gt;
+     * &lt;ogc:TemporalOperator name=&quot;TM_Begins&quot; /&gt;
+     * </pre>
+     * 
+     * @param writer
+     * @param namespace
+     *            the namespace of the element
+     * @param elemName
+     *            the element name
+     * @param attrNS
+     *            the namespace of the attribute, <code>null</null> if the local namespace of the element should be used
+     * @param attrName
+     *            the attribute name
+     * @param attrValue
+     *            the attribute value
+     * @throws XMLStreamException
+     */
+    public static void writeElement( XMLStreamWriter writer, String namespace, String elemName, String attrNS,
+                                 String attrName, String attrValue )
+                            throws XMLStreamException {
+        writer.writeStartElement( namespace, elemName );
+        if ( attrNS == null ) {
+            writer.writeAttribute( attrName, attrValue );
+        } else {
+            writer.writeAttribute( attrNS, attrName, attrValue );
+        }
+        writer.writeEndElement();
+    }
+
+    /**
+     * Write an optional element with simple text content into the XMLStream. If the value is <code>null</code>, than
+     * the element is omitted.
+     * 
+     * <p>
+     * Convinience method to write simple elements like:
+     * 
+     * <pre>
+     * &lt;ogc:GeometryOperand&gt;gml:Envelope&lt;/ogc:GeometryOperand&gt;
+     * &lt;gml:upperCorner&gt;10 -42&lt;/gml:upperCorner&gt;
+     * </pre>
+     * 
+     * @param writer
+     * @param namespace
+     *            the namespace of the element
+     * @param elemName
+     *            the element name
+     * @param value
+     *            the text value of the element
+     * @throws XMLStreamException
+     */
+    public static void writeOptionalElement( XMLStreamWriter writer, String namespace, String elemName, String value )
+                            throws XMLStreamException {
+        if ( value != null ) {
+            writer.writeStartElement( namespace, elemName );
+            writer.writeCharacters( value );
+            writer.writeEndElement();
+        }
     }
 }
