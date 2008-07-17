@@ -38,7 +38,7 @@
  53115 Bonn
  Germany
  E-Mail: greve@giub.uni-bonn.de
- 
+
  ---------------------------------------------------------------------------*/
 
 package org.deegree.commons.xml;
@@ -50,6 +50,7 @@ import java.io.InputStreamReader;
 import java.io.PushbackInputStream;
 import java.io.PushbackReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -70,6 +71,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMException;
 import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.xpath.AXIOMXPath;
@@ -83,17 +85,17 @@ import org.slf4j.LoggerFactory;
  * and exporters in deegree. Classes that extend <code>XMLAdapter</code> provide the binding between a certain type of
  * XML documents and their corresponding Java bean representation.
  * <p>
- * <code>XMLAdapter</code> tries to make the process of writing custom XML parsers as painless as possible. It
- * provides the following functionality:
+ * <code>XMLAdapter</code> tries to make the process of writing custom XML parsers as painless as possible. It provides
+ * the following functionality:
  * <ul>
  * <li>Lookup of nodes using XPath expressions.</li>
  * <li>Lookup of <i>required</i> nodes. These methods throw an {@link XMLParsingException} if the expression does not
  * have a result.</li>
- * <li>Convenient retrieving of node values as Java primitives (<code>int</code>, <code>boolean</code>, ...) or
- * common Objects (<code>QName</code>, <code>SimpleLink</code>, ...). If the value can not be converted to the
- * expected type, an {@link XMLParsingException} is thrown.
- * <li>Loading the XML content from different sources (<code>URL</code>, <code>Reader</code>,
- * <code>InputStream</code>).</li>
+ * <li>Convenient retrieving of node values as Java primitives (<code>int</code>, <code>boolean</code>, ...) or common
+ * Objects (<code>QName</code>, <code>SimpleLink</code>, ...). If the value can not be converted to the expected type,
+ * an {@link XMLParsingException} is thrown.
+ * <li>Loading the XML content from different sources (<code>URL</code>, <code>Reader</code>, <code>InputStream</code>).
+ * </li>
  * <li>Resolving of relative URLs that occur in the document content, i.e. that refer to resources that are located
  * relative to the document.</li>
  * </ul>
@@ -144,13 +146,15 @@ public class XMLAdapter {
      * 
      * @param url
      *            source of the xml content
-     * @throws IOException
-     * @throws FactoryConfigurationError
-     * @throws XMLStreamException
+     * @throws XMLProcessingException
      */
-    public XMLAdapter( URL url ) throws IOException, XMLStreamException, FactoryConfigurationError {
+    public XMLAdapter( URL url ) throws XMLProcessingException {
         load( url );
-        systemId = new URL(DEFAULT_URL);
+        try {
+            systemId = new URL( DEFAULT_URL );
+        } catch ( MalformedURLException e ) {
+            // but it's not malformed
+        }
     }
 
     /**
@@ -158,17 +162,15 @@ public class XMLAdapter {
      * 
      * @param file
      *            source of the xml content
-     * @throws IOException
-     *             if the document could not be read from the file
-     * @throws MalformedURLException
-     *             if the file cannot be transposed to a valid url
-     * @throws FactoryConfigurationError
-     * @throws XMLStreamException
+     * @throws XMLProcessingException
      */
-    public XMLAdapter( File file ) throws MalformedURLException, IOException, XMLStreamException,
-                            FactoryConfigurationError {
+    public XMLAdapter( File file ) throws XMLProcessingException {
         if ( file != null ) {
-            load( file.toURI().toURL() );
+            try {
+                load( file.toURI().toURL() );
+            } catch ( MalformedURLException e ) {
+                throw new XMLProcessingException( e.getMessage(), e );
+            }
         }
     }
 
@@ -181,11 +183,9 @@ public class XMLAdapter {
      *            this string should represent a URL that is related to the passed reader. If this URL is not available
      *            or unknown, the string should contain the value of XMLAdapter.DEFAULT_URL
      * 
-     * @throws IOException
-     * @throws FactoryConfigurationError
-     * @throws XMLStreamException
+     * @throws XMLProcessingException
      */
-    public XMLAdapter( Reader reader, URL systemId ) throws IOException, XMLStreamException, FactoryConfigurationError {
+    public XMLAdapter( Reader reader, URL systemId ) throws XMLProcessingException {
         load( reader, systemId );
     }
 
@@ -245,8 +245,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Determines the namespace <code>URI</code>s and the bound schema <code>URL</code>s from the
-     * 'xsi:schemaLocation' attribute of the wrapped XML element.
+     * Determines the namespace <code>URI</code>s and the bound schema <code>URL</code>s from the 'xsi:schemaLocation'
+     * attribute of the wrapped XML element.
      * 
      * @return keys are URIs (namespaces), values are URLs (schema locations)
      * @throws XMLProcessingException
@@ -295,21 +295,23 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes this <code>XMLAdapter</code> with the content from the given <code>URL</code>. Sets the
-     * SystemId, too.
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>URL</code>. Sets the SystemId,
+     * too.
      * 
      * @param url
      *            source of the xml content
-     * @throws IOException
-     * @throws FactoryConfigurationError
-     * @throws XMLStreamException
+     * @throws XMLProcessingException
      */
     public void load( URL url )
-                            throws IOException, XMLStreamException, FactoryConfigurationError {
+                            throws XMLProcessingException {
         if ( url == null ) {
             throw new IllegalArgumentException( "The given url may not be null" );
         }
-        load( url.openStream(), url );
+        try {
+            load( url.openStream(), url );
+        } catch ( IOException e ) {
+            throw new XMLProcessingException( e.getMessage(), e );
+        }
     }
 
     /**
@@ -322,17 +324,20 @@ public class XMLAdapter {
      *            cannot be null. This string should represent a URL that is related to the passed istream. If this URL
      *            is not available or unknown, the string should contain the value of XMLFragment.DEFAULT_URL
      * 
-     * @throws IOException
-     * @throws FactoryConfigurationError
-     * @throws XMLStreamException
+     * @throws XMLProcessingException
      */
     public void load( InputStream istream, URL systemId )
-                            throws IOException, XMLStreamException, FactoryConfigurationError {
+                            throws XMLProcessingException {
 
         PushbackInputStream pbis = new PushbackInputStream( istream, 1024 );
         String encoding = determineEncoding( pbis );
 
-        InputStreamReader isr = new InputStreamReader( pbis, encoding );
+        InputStreamReader isr;
+        try {
+            isr = new InputStreamReader( pbis, encoding );
+        } catch ( UnsupportedEncodingException e ) {
+            throw new XMLProcessingException( e.getMessage(), e );
+        }
         load( isr, systemId );
     }
 
@@ -342,35 +347,38 @@ public class XMLAdapter {
      * 
      * @param pbis
      * @return encoding of a XML document
-     * @throws IOException
+     * @throws XMLProcessingException
      */
     private String determineEncoding( PushbackInputStream pbis )
-                            throws IOException {
+                            throws XMLProcessingException {
+        try {
+            byte[] b = new byte[80];
+            int rd = pbis.read( b );
+            String s = new String( b ).toLowerCase();
 
-        byte[] b = new byte[80];
-        int rd = pbis.read( b );
-        String s = new String( b ).toLowerCase();
-
-        // TODO think about this
-        String encoding = "UTF-8";
-        if ( s.indexOf( "?>" ) > -1 ) {
-            int p = s.indexOf( "encoding=" );
-            if ( p > -1 ) {
-                StringBuffer sb = new StringBuffer();
-                int k = p + 1 + "encoding=".length();
-                while ( s.charAt( k ) != '"' && s.charAt( k ) != '\'' ) {
-                    sb.append( s.charAt( k++ ) );
+            // TODO think about this
+            String encoding = "UTF-8";
+            if ( s.indexOf( "?>" ) > -1 ) {
+                int p = s.indexOf( "encoding=" );
+                if ( p > -1 ) {
+                    StringBuffer sb = new StringBuffer();
+                    int k = p + 1 + "encoding=".length();
+                    while ( s.charAt( k ) != '"' && s.charAt( k ) != '\'' ) {
+                        sb.append( s.charAt( k++ ) );
+                    }
+                    encoding = sb.toString();
                 }
-                encoding = sb.toString();
             }
+            pbis.unread( b, 0, rd );
+            return encoding;
+        } catch ( IOException e ) {
+            throw new XMLProcessingException( e.getMessage(), e );
         }
-        pbis.unread( b, 0, rd );
-        return encoding;
     }
 
     /**
-     * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code>. Sets the
-     * SystemId, too.
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code>. Sets the SystemId,
+     * too.
      * 
      * @param reader
      *            source of the XML content
@@ -378,28 +386,35 @@ public class XMLAdapter {
      *            can not be null. This string should represent a URL that is related to the passed reader. If this URL
      *            is not available or unknown, the string should contain the value of XMLFragment.DEFAULT_URL
      * 
-     * @throws IOException
-     * @throws FactoryConfigurationError
-     * @throws XMLStreamException
+     * @throws XMLProcessingException
      */
     public void load( Reader reader, URL systemId )
-                            throws IOException, XMLStreamException, FactoryConfigurationError {
+                            throws XMLProcessingException {
+        try {
+            PushbackReader pbr = new PushbackReader( reader, 1024 );
+            int c = pbr.read();
+            if ( c != 65279 && c != 65534 ) {
+                // no BOM (byte order mark)! push char back into reader
+                pbr.unread( c );
+            }
 
-        PushbackReader pbr = new PushbackReader( reader, 1024 );
-        int c = pbr.read();
-        if ( c != 65279 && c != 65534 ) {
-            // no BOM (byte order mark)! push char back into reader
-            pbr.unread( c );
+            if ( systemId == null ) {
+                throw new NullPointerException( "'systemId' must not be null!" );
+            }
+            setSystemId( systemId );
+
+            XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader( pbr );
+            StAXOMBuilder builder = new StAXOMBuilder( parser );
+            rootElement = builder.getDocumentElement();
+        } catch ( IOException e ) {
+            throw new XMLProcessingException( e.getMessage(), e );
+        } catch ( XMLStreamException e ) {
+            throw new XMLProcessingException( e.getMessage(), e );
+        } catch ( OMException e ) {
+            throw new XMLProcessingException( e.getMessage(), e );
+        } catch ( FactoryConfigurationError e ) {
+            throw new XMLProcessingException( e.getMessage(), e );
         }
-
-        if ( systemId == null ) {
-            throw new NullPointerException( "'systemId' must not be null!" );
-        }
-        setSystemId( systemId );
-
-        XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader( pbr );
-        StAXOMBuilder builder = new StAXOMBuilder( parser );
-        rootElement = builder.getDocumentElement();
     }
 
     /**
@@ -798,7 +813,7 @@ public class XMLAdapter {
         String value = getNodeAsString( context, xpath, null );
         if ( value == null ) {
             String msg = Messages.getMessage( "XML_SYNTAX_ERROR_NODE_MISSING", xpath, context );
-            throw new XMLParsingException(this, context, msg );
+            throw new XMLParsingException( this, context, msg );
         }
         return value;
     }
@@ -809,12 +824,13 @@ public class XMLAdapter {
         QName value = getNodeAsQName( context, xpath, null );
         if ( value == null ) {
             String msg = Messages.getMessage( "XML_SYNTAX_ERROR_NODE_MISSING", xpath, context );
-            throw new XMLParsingException(this, context, msg );
+            throw new XMLParsingException( this, context, msg );
         }
         return value;
     }
 
-    public List getRequiredNodes( OMElement context, XPath xpath ) {
+    public List getRequiredNodes( OMElement context, XPath xpath )
+                            throws XMLParsingException {
         List nodes = getNodes( context, xpath );
         if ( nodes.size() == 0 ) {
 
@@ -884,7 +900,7 @@ public class XMLAdapter {
      * @throws XMLStreamException
      */
     public static void writeElement( XMLStreamWriter writer, String namespace, String elemName, String attrNS,
-                                 String attrName, String attrValue )
+                                     String attrName, String attrValue )
                             throws XMLStreamException {
         writer.writeStartElement( namespace, elemName );
         if ( attrNS == null ) {

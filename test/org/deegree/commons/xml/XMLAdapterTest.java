@@ -94,7 +94,7 @@ public class XMLAdapterTest extends XMLAdapter {
 
     @Test
     public void testTypeNameAttribute()
-                            throws XMLStreamException, JaxenException {
+                            throws JaxenException {
 
         OMElement root = getRootElement();
         AXIOMXPath xpath = new AXIOMXPath( "wfs:Query" );
@@ -106,8 +106,7 @@ public class XMLAdapterTest extends XMLAdapter {
     }
 
     @Test
-    public void testGetNode()
-                            throws XMLStreamException, JaxenException {
+    public void testGetNode() {
 
         OMElement root = getRootElement();
 
@@ -121,8 +120,7 @@ public class XMLAdapterTest extends XMLAdapter {
     }
 
     @Test
-    public void testGetNodeAsString()
-                            throws XMLStreamException, JaxenException {
+    public void testGetNodeAsString() {
 
         OMElement root = getRootElement();
 

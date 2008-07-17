@@ -44,10 +44,8 @@
 package org.deegree.model.filter;
 
 
-import java.io.IOException;
 import java.net.URL;
 
-import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -86,7 +84,7 @@ public class Filter110XMLAdapterTest {
     }
 
     @Test    
-    public void parseFilterDocument () throws IOException, XMLStreamException, FactoryConfigurationError {
+    public void parseFilterDocument() {
         Filter110XMLAdapter adapter = new Filter110XMLAdapter ();
         adapter.load( filterURL );
         Filter filter = adapter.parse();
@@ -94,7 +92,7 @@ public class Filter110XMLAdapterTest {
     }
 
     @Test    
-    public void parseBrokenIdFilterDocument () throws IOException, XMLStreamException, FactoryConfigurationError {
+    public void parseBrokenIdFilterDocument() {
         Filter110XMLAdapter adapter = new Filter110XMLAdapter ();
         URL filterURL = Filter110XMLAdapterTest.class.getResource( "testfilter_110_id_broken.xml" );
         adapter.load( filterURL );
@@ -103,7 +101,8 @@ public class Filter110XMLAdapterTest {
     }    
 
     @Test    
-    public void parseAndExportFilterDocument () throws IOException, XMLStreamException, FactoryConfigurationError {
+    public void parseAndExportFilterDocument()
+                            throws XMLStreamException {
 
         Filter110XMLAdapter adapter = new Filter110XMLAdapter ();
         adapter.load( filterURL );
