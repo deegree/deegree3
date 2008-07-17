@@ -1,4 +1,4 @@
-//$HeadURL:$
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -47,14 +47,12 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 /**
- * 
  * This class is a pretty print wrapper for XMLStreamWriter.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class FormattingXMLStreamWriter implements XMLStreamWriter {
 
@@ -89,199 +87,167 @@ public class FormattingXMLStreamWriter implements XMLStreamWriter {
         this.indent = indent;
     }
     
-    @Override
     public void close()
                             throws XMLStreamException {
         s.close();
     }
 
-    @Override
     public void flush()
                             throws XMLStreamException {
         s.flush();
     }
 
-    @Override
     public NamespaceContext getNamespaceContext() {
         return s.getNamespaceContext();
     }
 
-    @Override
     public String getPrefix( String uri )
                             throws XMLStreamException {
         return s.getPrefix( uri );
     }
 
-    @Override
     public Object getProperty( String name )
                             throws IllegalArgumentException {
         return s.getProperty( name );
     }
 
-    @Override
     public void setDefaultNamespace( String uri )
                             throws XMLStreamException {
         s.setDefaultNamespace( uri );
     }
 
-    @Override
     public void setNamespaceContext( NamespaceContext context )
                             throws XMLStreamException {
         s.setNamespaceContext( context );
     }
 
-    @Override
     public void setPrefix( String prefix, String uri )
                             throws XMLStreamException {
         s.setPrefix( prefix, uri );
     }
 
-    @Override
     public void writeAttribute( String localName, String value )
                             throws XMLStreamException {
         s.writeAttribute( localName, value );
     }
 
-    @Override
     public void writeAttribute( String namespaceURI, String localName, String value )
                             throws XMLStreamException {
         s.writeAttribute( namespaceURI, localName, value );
     }
 
-    @Override
     public void writeAttribute( String prefix, String namespaceURI, String localName, String value )
                             throws XMLStreamException {
         s.writeAttribute( prefix, namespaceURI, localName, value );
     }
 
-    @Override
     public void writeCData( String data )
                             throws XMLStreamException {
         s.writeCData( data );
     }
 
-    @Override
     public void writeCharacters( String text )
                             throws XMLStreamException {
         s.writeCharacters( text );
     }
 
-    @Override
     public void writeCharacters( char[] text, int start, int len )
                             throws XMLStreamException {
         s.writeCharacters( text, start, len );
     }
 
-    @Override
     public void writeComment( String data )
                             throws XMLStreamException {
         s.writeComment( data );
     }
 
-    @Override
     public void writeDTD( String dtd )
                             throws XMLStreamException {
         s.writeDTD( dtd );
     }
 
-    @Override
     public void writeDefaultNamespace( String namespaceURI )
                             throws XMLStreamException {
         s.writeDefaultNamespace( namespaceURI );
     }
 
-    @Override
     public void writeEmptyElement( String localName )
                             throws XMLStreamException {
         s.writeEmptyElement( localName );
     }
 
-    @Override
     public void writeEmptyElement( String namespaceURI, String localName )
                             throws XMLStreamException {
         s.writeEmptyElement( namespaceURI, localName );
     }
 
-    @Override
     public void writeEmptyElement( String prefix, String localName, String namespaceURI )
                             throws XMLStreamException {
         s.writeEmptyElement( prefix, localName, namespaceURI );
     }
 
-    @Override
     public void writeEntityRef( String name )
                             throws XMLStreamException {
         s.writeEntityRef( name );
     }
 
-    @Override
     public void writeNamespace( String prefix, String namespaceURI )
                             throws XMLStreamException {
         s.writeNamespace( prefix, namespaceURI );
     }
 
-    @Override
     public void writeProcessingInstruction( String target )
                             throws XMLStreamException {
         s.writeProcessingInstruction( target );
     }
 
-    @Override
     public void writeProcessingInstruction( String target, String data )
                             throws XMLStreamException {
         s.writeProcessingInstruction( target, data );
     }
 
-    @Override
     public void writeStartDocument()
                             throws XMLStreamException {
         s.writeStartDocument();
         s.writeCharacters( "\n" );
     }
 
-    @Override
     public void writeStartDocument( String version )
                             throws XMLStreamException {
         s.writeStartDocument( version );
         s.writeCharacters( "\n" );
     }
 
-    @Override
     public void writeStartDocument( String encoding, String version )
                             throws XMLStreamException {
         s.writeStartDocument( encoding, version );
         s.writeCharacters( "\n" );
     }
 
-    @Override
     public void writeStartElement( String localName )
                             throws XMLStreamException {
         indent();
         s.writeStartElement( localName );
     }
 
-    @Override
-    public void writeStartElement( String namespaceURI, String localName )
+   public void writeStartElement( String namespaceURI, String localName )
                             throws XMLStreamException {
         indent();
         s.writeStartElement( namespaceURI, localName );
     }
 
-    @Override
     public void writeStartElement( String prefix, String localName, String namespaceURI )
                             throws XMLStreamException {
         indent();
         s.writeStartElement( prefix, localName, namespaceURI );
     }
 
-    @Override
     public void writeEndDocument()
                             throws XMLStreamException {
         s.writeEndDocument();
         s.writeCharacters( "\n" );
     }
 
-    @Override
     public void writeEndElement()
                             throws XMLStreamException {
         unindent();
