@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -95,13 +95,16 @@ public class CommonsTestSuite {
      *            will not be evaluated
      */
     public static void main( String[] args ) {
-        CommonsTestSuite suite = new CommonsTestSuite();
-        SuiteClasses annotation = suite.getClass().getAnnotation( SuiteClasses.class );
+        buildTestSuite( CommonsTestSuite.class );
+    }
+
+    public static void buildTestSuite( Class<?> suite ) {
+        SuiteClasses annotation = suite.getAnnotation( SuiteClasses.class );
         Class<?>[] values = annotation.value();
         List<String> testClasses = new LinkedList<String>();
         try {
-            Class<?> test = Class.forName( CommonsTestSuite.class.getName() );
-            URL resource = test.getResource( "CommonsTestSuite.class" );
+            Class<?> test = Class.forName( suite.getName() );
+            URL resource = test.getResource( suite.getSimpleName() + ".class" );
             if ( resource == null ) {
                 LOG.error( "Could not load resource: configuration.properties this is akward" );
             } else {
