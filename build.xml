@@ -1,7 +1,6 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Ant build file for deegree. Requires Apache Ant 1.6 or later.
-    Base build file.
+    Ant build file for d3_commons. Tested with Ant version 1.7.0.
 
     This file is part of deegree.
     This library is free software; you can redistribute it and/or
@@ -9,7 +8,7 @@
     License as published by the Free Software Foundation; either
     version 2.1 of the License, or (at your option) any later version.
 
-    Copyright (C) 2001-2006 by:
+    Copyright (C) 2001-2008 by:
           EXSE, Department of Geography, University of Bonn
           http://www.giub.uni-bonn.de/exse/
           lat/lon GmbH, Bonn, Germany
@@ -19,16 +18,10 @@
     $Revision$, $Date$
     $Author$
 -->
+<project name="d3_commons" default="compile" basedir=".">
 
-<project name="deegree_commons" default="compile" basedir=".">
+	<description>d3_commons - common functionality needed by all deegree modules</description>
 
-	<description>deegree - Java framework for geospatial solutions</description>
-
-	<!--
-	   set global properties for this build
-	   it's recommended to keep these definitions
-	    don't change this 
-	 -->
 	<!-- all properties are read from the build.properties file -->
 	<property file="build.properties" />
 
@@ -494,10 +487,6 @@
 		</jar>
 	</target>
 
-	<!-- =================================================================== -->
-	<!-- Targets which just delegate tasks to other build files.             -->
-	<!-- =================================================================== -->
-
 	<target name="test" depends="compile" description="runs unit tests">
 		<ant antfile="build-test.xml" dir="." target="cctest" />
 	</target>
@@ -509,9 +498,8 @@
 	</target>
 
 	<!-- ########################################################## -->
-	<description>deegree_services</description>
 
-	<target name="bind_services_metadata">
+	<target name="run-xjc">
 		<fail message="The package.name parameter should be specified e.g. -Dpackage.name='org.deegree.test'">
 			<condition>
 				<not>
@@ -552,6 +540,5 @@
 			<arg line="${other.parameters}" />
 			<arg line="${schema.file}" />
 		</exec>
-		<!--xjc schema="resources/schema/services_metadata.xsd" target="src" package="org.deegree.services.controller.configuration" /-->
 	</target>
 </project>
