@@ -1,3 +1,0 @@
-set libs=D:\java\projekte\deegree3_commons\lib\
-C:\Programme\Java\jdk1.5.0_06\bin\java -classpath .;D:\java\projekte\deegree_igeoportal-portlet\WEB-INF\lib\xml-apis-2.0.2.jar;D:\java\projekte\deegree_igeoportal-portlet\WEB-INF\lib\xerces-2.3.0.jar;D:\java\projekte\deegree_igeoportal-portlet\WEB-INF\lib\xalan-2.4.1.jar;%libs%commons\commons-logging.jar;%libs%\log4j\log4j-1.2.9.jar;%libs%castor\castor.jar;%libs%castor\castor-1.1.2.1-codegen.jar org.exolab.castor.builder.SourceGenerator -i D:\java\projekte\deegree3_commons\resources\schema\modelconfiguration.xsd -package org.deegree.model.configuration
-pause
