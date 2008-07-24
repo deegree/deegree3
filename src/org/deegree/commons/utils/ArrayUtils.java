@@ -44,6 +44,7 @@ package org.deegree.commons.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -52,9 +53,9 @@ import java.util.StringTokenizer;
  * StringTools.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author: $
+ * @author last edited by: $Author$
  *
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  *
  */
 public class ArrayUtils {
@@ -104,16 +105,16 @@ public class ArrayUtils {
         // Arrays.asList is cheap and only creates a wrapper
         return join( delimiter, Arrays.asList( objects ) );
     }
-    
+
     /**
-     * Joins a list of objects with given delimiter.
+     * Joins a collection of objects with given delimiter.
      * 
      * @param delimiter
      *            the delimiter to put between every string.
      * @param objects
      * @return the joined string
      */
-    public static String join( String delimiter, List<?> objects ) {
+    public static String join( String delimiter, Collection<?> objects ) {
         StringBuilder sb = new StringBuilder();
         for ( Object part: objects ) {
             sb.append( part.toString() ).append( delimiter );
