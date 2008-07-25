@@ -40,11 +40,6 @@
 	<property name="buildId.props" value="${src}/org/deegree/commons/version/buildId.properties" />
 	<property name="version.class" value="${src}/org/deegree/commons/version/Version" />
 
-	<property name="oracle.sdo.depending" value="" />
-	<property name="oracle.raster.depending" value="" />
-	<property name="postgis.depending" value="" />
-	<property name="arcsde.depending" value="" />
-
 	<!-- version + buildId properties -->
 	<property file="${version.props}" />
 	<property file="${buildId.props}" />
@@ -97,7 +92,7 @@
 		</fileset>
 	</path>
 
-	<target name="retreive-project-path">
+	<target name="retrieve-project-path">
 		<echo level="info" message="${ant.project.name} - copying local build path." />
 		<pathconvert property="tmp.path" refid="build.path" />
 		<property name="module.path" value="${tmp.path}:${lib.jar}" />
@@ -174,8 +169,7 @@
 				</loadfile>
 			</else>
 		</if>
-		<echo message="Using svn revision: ${svn.revision.new}" />
-		<echo message="From svn path: ${svn.path.new}" />
+		<echo message="Using svn revision: ${svn.revision.new} from svn path: ${svn.path.new}" />
 	</target>
 
 	<target name="init" depends="build_info">
@@ -226,85 +220,6 @@
 	</target>
 
 	<!-- =================================================================== -->
-	<!-- find packages to exclude (adapt to available libraries)             -->
-	<!-- =================================================================== -->
-
-	<target name="exclude-packages">
-		<condition property="oraclesdo.present">
-			<and>
-				<available classname="oracle.spatial.geometry.JGeometry" classpathref="build.path" />
-				<available classname="oracle.jdbc.OracleDriver" classpathref="build.path" />
-			</and>
-		</condition>
-
-		<available classname="oracle.spatial.georaster.JGeoRaster" property="oracleraster.present" classpathref="build.path" />
-
-		<available classname="com.esri.sde.sdk.client.SeRelease" property="arcsde.present" classpathref="build.path" />
-
-		<condition property="postgis.present">
-			<and>
-				<available classname="org.postgis.Geometry" classpathref="build.path" />
-				<available classname="org.postgresql.Driver" classpathref="build.path" />
-			</and>
-		</condition>
-
-		<!-- Set or unset the deegree files to compile which have dependencies to one of the above libs -->
-		<if>
-			<equals arg1="${oraclesdo.present}" arg2="true" />
-			<then>
-				<property name="oracle.exclude.classes" value="" />
-				<echo message="Enabling support for Oracle datastores." />
-			</then>
-			<else>
-				<property name="oracle.exclude.classes" value="${oracle.sdo.depending}" />
-				<echo message="Disabling support for Oracle datastores." />
-			</else>
-		</if>
-		<if>
-			<and>
-				<equals arg1="${oraclesdo.present}" arg2="true" />
-				<equals arg1="${oracleraster.present}" arg2="true" />
-			</and>
-			<then>
-				<property name="oracleraster.exclude.classes" value="" />
-				<echo message="Enabling support for Oracle raster." />
-			</then>
-			<else>
-				<!--org/deegree/io/oraclegeoraster/**,org/deegree/tools/raster/Oracle*,org/deegree/model/coverage/grid/oracle/**,-->
-				<property name="oracleraster.exclude.classes" value="${oracle.sdo.depending},${oracle.raster.depending}" />
-				<echo message="Disabling support for Oracle raster." />
-			</else>
-		</if>
-		<if>
-			<equals arg1="${postgis.present}" arg2="true" />
-			<then>
-				<property name="postgis.exclude.classes" value="" />
-				<echo message="Enabling support for PostGIS backed datastores." />
-			</then>
-			<else>
-				<!--				org/deegree/io/datastore/sql/postgis/**,org/deegree/model/coverage/grid/postgres/**,-->
-				<property name="postgis.exclude.classes" value="${postgis.depending}" />
-				<echo message="Disabling support for PostGIS backed datastores." />
-			</else>
-		</if>
-		<if>
-			<equals arg1="${arcsde.present}" arg2="true" />
-			<then>
-				<property name="arcsde.exclude.classes" value="" />
-				<echo message="Enabling support for ArcSDE." />
-			</then>
-			<else>
-				<!--org/deegree/io/sdeapi/**,-->
-				<property name="arcsde.exclude.classes" value="${arcsde.depending}" />
-				<echo message="Disabling support for ArcSDE." />
-			</else>
-		</if>
-		<property name="exclude.classes" value="${oracle.exclude.classes},${oracleraster.exclude.classes},${arcsde.exclude.classes},${postgis.exclude.classes}" />
-		<echo message="exclude.classes=${exclude.classes}" />
-	</target>
-
-
-	<!-- =================================================================== -->
 	<!-- create new build number (for next run)                              -->
 	<!-- =================================================================== -->
 
@@ -322,7 +237,7 @@
 	<!-- compiles all sources and copies all required resouces               -->
 	<!-- =================================================================== -->
 
-	<target name="compile" depends="init,exclude-packages" description="compiles all sources and copies all required resouces to the output directory">
+	<target name="compile" depends="init" description="compiles all sources and copies all required resouces to the output directory">
 		<echo level="info" message="Compiling ${ant.project.name} " />
 		<javac srcdir="${src}" destdir="${build}" excludes="${exclude.classes}" includes="**/*.java" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.true}" source="${source.version}" target="${target.version}">
 			<classpath>
