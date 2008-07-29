@@ -46,13 +46,14 @@ package org.deegree.model.filter;
 
 import java.net.URL;
 
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.junit.XMLAssert;
+import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Assert;
 import org.junit.Test;
+import org.xml.sax.InputSource;
 
 /**
  * TODO add documentation here
@@ -90,11 +91,11 @@ public class Filter110XMLAdapterTest {
         adapter.load( filterURL );
         Filter filter = adapter.parse();
 
-        XMLOutputFactory factory = XMLOutputFactory.newInstance();
-        factory.setProperty("javax.xml.stream.isRepairingNamespaces", Boolean.TRUE);        
-        XMLStreamWriter xmlWriter = factory.createXMLStreamWriter(System.out);
+        XMLMemoryStreamWriter writer = new XMLMemoryStreamWriter();
+        Filter110XMLAdapter.export( filter, writer.getXMLStreamWriter() );
 
-        Filter110XMLAdapter.export( filter, xmlWriter );
-        xmlWriter.flush();
+        String schemaLocation = "file:///home/tonnhofer/workspace/opengis/filter/1.1.0/filter.xsd";
+        XMLAssert.assertValidDocument( schemaLocation, new InputSource( writer.getReader() ) );
+        
     }    
 }
