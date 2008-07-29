@@ -50,8 +50,8 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.junit.After;
-import org.junit.Before;
+import org.deegree.commons.xml.XMLParsingException;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -64,40 +64,21 @@ import org.junit.Test;
  */
 public class Filter110XMLAdapterTest {
 
-    private URL filterURL;
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp()
-                            throws Exception {
-        filterURL = Filter110XMLAdapterTest.class.getResource( "testfilter_110.xml" );
-    }
-
-    /**
-     * @throws java.lang.Exception
-     */
-    @After
-    public void tearDown()
-                            throws Exception {
-    }
-
     @Test    
     public void parseFilterDocument() {
         Filter110XMLAdapter adapter = new Filter110XMLAdapter ();
+        URL filterURL = Filter110XMLAdapterTest.class.getResource( "testfilter_110.xml" );
         adapter.load( filterURL );
         Filter filter = adapter.parse();
-        System.out.println (filter);
+        Assert.assertNotNull (filter);
     }
 
-    @Test    
+    @Test(expected=XMLParsingException.class)    
     public void parseBrokenIdFilterDocument() {
         Filter110XMLAdapter adapter = new Filter110XMLAdapter ();
         URL filterURL = Filter110XMLAdapterTest.class.getResource( "testfilter_110_id_broken.xml" );
         adapter.load( filterURL );
-        Filter filter = adapter.parse();
-        System.out.println (filter);
+        adapter.parse();
     }    
 
     @Test    
@@ -105,6 +86,7 @@ public class Filter110XMLAdapterTest {
                             throws XMLStreamException {
 
         Filter110XMLAdapter adapter = new Filter110XMLAdapter ();
+        URL filterURL = Filter110XMLAdapterTest.class.getResource( "testfilter_110.xml" );
         adapter.load( filterURL );
         Filter filter = adapter.parse();
 
