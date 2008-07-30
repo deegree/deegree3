@@ -43,6 +43,11 @@
 
 package org.deegree.commons.xml;
 
+import static javax.xml.stream.XMLStreamConstants.CDATA;
+import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -850,7 +855,6 @@ public class XMLAdapter {
 
     /**
      * Write an element with simple text content into the XMLStream.
-     * 
      * <p>
      * Convinience method to write simple elements like:
      * 
@@ -938,6 +942,89 @@ public class XMLAdapter {
             writer.writeStartElement( namespace, elemName );
             writer.writeCharacters( value );
             writer.writeEndElement();
+        }
+    }
+
+    /**
+     * Writes an {@link OMElement} (including all attributes and subnodes) into the given {@link XMLStreamWriter}.
+     * 
+     * @param writer
+     *            {@link XMLStreamWriter} that the xml is appended to
+     * @param element
+     *            {@link OMElement} to append
+     * @throws XMLStreamException
+     */
+    public static void writeElement( XMLStreamWriter writer, OMElement element )
+                            throws XMLStreamException {
+        writeElement( writer, element.getXMLStreamReaderWithoutCaching() );
+    }
+
+    /**
+     * Copies an XML element (including all attributes and subnodes) from an {@link XMLStreamReader} into the given
+     * {@link XMLStreamWriter}.
+     * 
+     * @param writer
+     *            {@link XMLStreamWriter} that the xml is appended to
+     * @param inStream
+     *            cursor must point at a <code>START_ELEMENT</code> event and points at the corresponding
+     *            <code>END_ELEMENT</code> event afterwards
+     * @throws XMLStreamException
+     */
+    public static void writeElement( XMLStreamWriter writer, XMLStreamReader inStream )
+                            throws XMLStreamException {
+
+        int openElements = 0;
+        boolean firstRun = true;
+        while ( firstRun || openElements > 0 ) {
+            firstRun = false;
+            int eventType = inStream.getEventType();
+
+            switch ( eventType ) {
+            case CDATA: {
+                writer.writeCData( inStream.getText() );
+                break;
+            }
+            case CHARACTERS: {
+                writer.writeCharacters( inStream.getTextCharacters(), inStream.getTextStart(), inStream.getTextLength() );
+                break;
+            }
+            case END_ELEMENT: {
+                writer.writeEndElement();
+                openElements--;
+                break;
+            }
+            case START_ELEMENT: {
+                writer.writeStartElement( inStream.getPrefix(), inStream.getLocalName(), inStream.getNamespaceURI() );
+                // copy all namespace bindings
+                for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
+                    String nsPrefix = inStream.getNamespacePrefix( i );
+                    String nsURI = inStream.getNamespaceURI( i );
+                    writer.writeNamespace( nsPrefix, nsURI );
+                }
+
+                // copy all attributes
+                for ( int i = 0; i < inStream.getAttributeCount(); i++ ) {
+                    String localName = inStream.getAttributeLocalName( i );
+                    String nsPrefix = inStream.getAttributePrefix( i );
+                    String value = inStream.getAttributeValue( i );
+                    String nsURI = inStream.getAttributeNamespace( i );
+                    if ( nsURI == null ) {
+                        writer.writeAttribute( localName, value );
+                    } else {
+                        writer.writeAttribute( nsPrefix, nsURI, localName, value );
+                    }
+                }
+
+                openElements++;
+                break;
+            }
+            default: {
+                break;
+            }
+            }
+            if ( openElements > 0 ) {
+                inStream.next();
+            }
         }
     }
 }
