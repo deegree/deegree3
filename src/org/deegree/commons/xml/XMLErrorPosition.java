@@ -84,7 +84,7 @@ class XMLErrorPosition {
      */
     XMLErrorPosition( XMLAdapter origin, OMElement erroneousElement ) {
         systemId = origin.getSystemId() == null ? "" : origin.getSystemId().toString();
-        lineNumber = erroneousElement.getLineNumber();
+        lineNumber = erroneousElement == null ? -1 : erroneousElement.getLineNumber();
         columnNumber = -1;
         characterOffset = -1;
     }
