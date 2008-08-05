@@ -469,7 +469,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      *            element to be parsed
      * @return logical operator object
      */
-    private ComparisonOperator parseComparisonOperator( OMElement element ) {
+    public ComparisonOperator parseComparisonOperator( OMElement element ) {
 
         ComparisonOperator comparisonOperator = null;
 
