@@ -51,7 +51,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -60,6 +59,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.ArrayUtils;
+import org.deegree.commons.xml.FixedChildIterator;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XMLProcessingException;
@@ -209,20 +209,20 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * The element must be a {http://www.opengis.net/ogc}Filter element.
      * 
      * @return <code>Filter</code> object
-     * @throws XMLProcessingException
+     * @throws XMLParsingException
      */
     public Filter parse()
-                            throws XMLProcessingException {
+                            throws XMLParsingException {
 
         Filter filter = null;
 
         Iterator<?> childIterator = rootElement.getChildElements();
         if ( !childIterator.hasNext() ) {
             String msg = "ogc:Filter elements must have at least one child.";
-            throw new XMLProcessingException( msg );
+            throw new XMLParsingException( this, rootElement, msg );
         }
 
-        OMElement element = (OMElement) rootElement.getChildElements().next();
+        OMElement element = (OMElement) childIterator.next();
         QName elementName = element.getQName();
         if ( GML_OBJECT_ID_ELEMENT.equals( elementName ) || FEATURE_ID_ELEMENT.equals( elementName ) ) {
             LOG.debug( "Building id filter" );
@@ -295,65 +295,33 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
         switch ( type ) {
         case ADD: {
-             try {
-                Iterator<?> childElementIter = element.getChildElements();
-                Expression param1 = parseExpression( (OMElement) childElementIter.next() );
-                Expression param2 = parseExpression( (OMElement) childElementIter.next() );
-                expression = new Add( param1, param2 );
-                if ( childElementIter.hasNext() ) {
-                    String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
-                    throw new XMLProcessingException( msg );
-                }
-             } catch ( NoSuchElementException e ) {
-                String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
-                throw new XMLProcessingException( msg );
-            }
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+            Expression param1 = parseExpression( childElementIter.next() );
+            Expression param2 = parseExpression( childElementIter.next() );
+            expression = new Add( param1, param2 );
             break;
         }
         case SUB: {
-            try {
-                Iterator<?> childElementIter = element.getChildElements();
-                Expression param1 = parseExpression( (OMElement) childElementIter.next() );
-                Expression param2 = parseExpression( (OMElement) childElementIter.next() );
-                expression = new Sub( param1, param2 );
-                if ( childElementIter.hasNext() ) {
-                    String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
-                    throw new XMLProcessingException( msg );
-                }
-            } catch ( NoSuchElementException e ) {
-                String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
-                throw new XMLProcessingException( msg );
-            }
+
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+            Expression param1 = parseExpression( childElementIter.next() );
+            Expression param2 = parseExpression( childElementIter.next() );
+            expression = new Sub( param1, param2 );
+            break;
         }
         case MUL: {
-            try {
-                Iterator<?> childElementIter = element.getChildElements();
-                Expression param1 = parseExpression( (OMElement) childElementIter.next() );
-                Expression param2 = parseExpression( (OMElement) childElementIter.next() );
-                expression = new Mul( param1, param2 );
-                if ( childElementIter.hasNext() ) {
-                    String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
-                    throw new XMLProcessingException( msg );
-                }
-            } catch ( NoSuchElementException e ) {
-                String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
-                throw new XMLProcessingException( msg );
-            }
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+            Expression param1 = parseExpression( childElementIter.next() );
+            Expression param2 = parseExpression( childElementIter.next() );
+            expression = new Mul( param1, param2 );
+            break;
         }
         case DIV: {
-            try {
-                Iterator<?> childElementIter = element.getChildElements();
-                Expression param1 = parseExpression( (OMElement) childElementIter.next() );
-                Expression param2 = parseExpression( (OMElement) childElementIter.next() );
-                expression = new Div( param1, param2 );
-                if ( childElementIter.hasNext() ) {
-                    String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
-                    throw new XMLProcessingException( msg );
-                }
-            } catch ( NoSuchElementException e ) {
-                String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
-                throw new XMLProcessingException( msg );
-            }
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+            Expression param1 = parseExpression( childElementIter.next() );
+            Expression param2 = parseExpression( childElementIter.next() );
+            expression = new Div( param1, param2 );
+            break;
         }
         case PROPERTY_NAME: {
             expression = new PropertyName( element.getText() );
@@ -370,8 +338,8 @@ public class Filter110XMLAdapter extends XMLAdapter {
                 throw new XMLProcessingException( msg );
             }
             List<Expression> params = new ArrayList<Expression>();
-            Iterator<?> childElementIter = element.getChildElements();
-            Expression param = parseExpression( (OMElement) childElementIter.next() );
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 1 );
+            Expression param = parseExpression( childElementIter.next() );
             params.add( param );
             expression = new Function( name, params );
             break;
@@ -495,39 +463,14 @@ public class Filter110XMLAdapter extends XMLAdapter {
             comparisonOperator = parseBinaryComparisonOperator( element, type );
             break;
         case PROPERTY_IS_BETWEEN:
-            comparisonOperator = parsePropertyIsBetweenOperator( element, type );
+            comparisonOperator = parsePropertyIsBetweenOperator( element );
             break;
         case PROPERTY_IS_LIKE:
             // TODO implement me
             break;
         case PROPERTY_IS_NULL:
-            comparisonOperator = parsePropertyIsNullOperator( element, type );
+            comparisonOperator = parsePropertyIsNullOperator( element );
             break;
-        }
-        return comparisonOperator;
-    }
-
-    private ComparisonOperator parsePropertyIsBetweenOperator( OMElement element, SubType type ) {
-        PropertyIsBetween comparisonOperator = null;
-        Iterator<?> childElementIter = element.getChildElements();
-        Expression expression = null;
-        Expression lowerBoundary = null;
-        Expression upperBoundary = null;
-        boolean matchCase = true;
-        try {
-            OMElement parameterElement = (OMElement) childElementIter.next();
-            expression = parseExpression( parameterElement );
-            lowerBoundary = parseBoundaryExpression( new QName( OGC_NS, "lowerBoundary" ),
-                                                     (OMElement) childElementIter.next() );
-            upperBoundary = parseBoundaryExpression( new QName( OGC_NS, "upperBoundary" ),
-                                                     (OMElement) childElementIter.next() );
-            comparisonOperator = new PropertyIsBetween( expression, lowerBoundary, upperBoundary );
-            if ( childElementIter.hasNext() ) {
-                throw new NoSuchElementException();
-            }
-        } catch ( NoSuchElementException e ) {
-            String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 3 );
-            throw new XMLProcessingException( msg );
         }
         return comparisonOperator;
     }
@@ -537,37 +480,39 @@ public class Filter110XMLAdapter extends XMLAdapter {
             throw new XMLParsingException( this, element, "Error while parsing filter. Expected " + boundary );
         }
         Expression expression;
-        Iterator<?> childElementIter = element.getChildElements();
-        try {
-            OMElement parameterElement = (OMElement) childElementIter.next();
-            expression = parseExpression( parameterElement );
-        } catch ( NoSuchElementException e ) {
-            String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 1 );
-            throw new XMLProcessingException( msg );
-        }
+        FixedChildIterator childElementIter = new FixedChildIterator( element, 1 );
+        OMElement parameterElement = childElementIter.next();
+        expression = parseExpression( parameterElement );
+
         return expression;
     }
 
-    private ComparisonOperator parsePropertyIsNullOperator( OMElement element, SubType type ) {
+    private ComparisonOperator parsePropertyIsNullOperator( OMElement element ) {
         PropertyIsNull comparisonOperator = null;
-        Iterator<?> childElementIter = element.getChildElements();
-        try {
-            OMElement parameterElement = (OMElement) childElementIter.next();
-            Expression.Type expType = elementNameToExpressionType.get( parameterElement.getQName() );
-            if ( expType == null && expType != Expression.Type.PROPERTY_NAME ) {
-                String msg = "Error while parsing ogc:PropertyIsNull. Expected "
-                             + expressionTypeToElementName.get( expType );
-                throw new XMLParsingException( this, element, msg );
-            }
-            comparisonOperator = new PropertyIsNull( new PropertyName( parameterElement.getText() ) );
-            parameterElement = (OMElement) childElementIter.next();
-            if ( childElementIter.hasNext() ) {
-                throw new NoSuchElementException();
-            }
-        } catch ( NoSuchElementException e ) {
-            String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
-            throw new XMLProcessingException( msg );
+        FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+        OMElement parameterElement = childElementIter.next();
+        Expression.Type expType = elementNameToExpressionType.get( parameterElement.getQName() );
+        if ( expType == null && expType != Expression.Type.PROPERTY_NAME ) {
+            String msg = "Error while parsing ogc:PropertyIsNull. Expected "
+                         + expressionTypeToElementName.get( expType );
+            throw new XMLParsingException( this, element, msg );
         }
+        comparisonOperator = new PropertyIsNull( new PropertyName( parameterElement.getText() ) );
+        parameterElement = childElementIter.next();
+        return comparisonOperator;
+    }
+
+    private ComparisonOperator parsePropertyIsBetweenOperator( OMElement element ) {
+        PropertyIsBetween comparisonOperator = null;
+        FixedChildIterator childElementIter = new FixedChildIterator( element, 3 );
+        OMElement parameterElement = childElementIter.next();
+        Expression expression = parseExpression( parameterElement );
+        Expression lowerBoundary = parseBoundaryExpression( new QName( OGC_NS, "lowerBoundary" ),
+                                                            childElementIter.next() );
+        Expression upperBoundary = parseBoundaryExpression( new QName( OGC_NS, "upperBoundary" ),
+                                                            childElementIter.next() );
+        comparisonOperator = new PropertyIsBetween( expression, lowerBoundary, upperBoundary );
+
         return comparisonOperator;
     }
 
@@ -591,23 +536,12 @@ public class Filter110XMLAdapter extends XMLAdapter {
     private BinaryComparisonOperator parseBinaryComparisonOperator( OMElement element, ComparisonOperator.SubType type ) {
 
         BinaryComparisonOperator comparisonOperator = null;
-        Iterator<?> childElementIter = element.getChildElements();
-        Expression parameter1 = null;
-        Expression parameter2 = null;
-        boolean matchCase = true;
-        try {
-            OMElement parameterElement = (OMElement) childElementIter.next();
-            parameter1 = parseExpression( parameterElement );
-            parameterElement = (OMElement) childElementIter.next();
-            parameter2 = parseExpression( parameterElement );
-            if ( childElementIter.hasNext() ) {
-                throw new NoSuchElementException();
-            }
-            matchCase = getNodeAsBoolean( parameterElement, new XPath( "@matchCase", nsContext ), false );
-        } catch ( NoSuchElementException e ) {
-            String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
-            throw new XMLProcessingException( msg );
-        }
+        FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+
+        Expression parameter1 = parseExpression( childElementIter.next() );
+        Expression parameter2 = parseExpression( childElementIter.next() );
+
+        boolean matchCase = getNodeAsBoolean( element, new XPath( "@matchCase", nsContext ), false );
 
         switch ( type ) {
         case PROPERTY_IS_EQUAL_TO:
@@ -659,42 +593,27 @@ public class Filter110XMLAdapter extends XMLAdapter {
                          + elemNames( LogicalOperator.SubType.class, logicalOperatorTypeToElementName ) + ".";
             throw new XMLParsingException( this, element, msg );
         }
-        try {
-            switch ( type ) {
-            case AND: {
-                Iterator<?> childElementIter = element.getChildElements();
-                Operator parameter1 = parseOperator( (OMElement) childElementIter.next() );
-                Operator parameter2 = parseOperator( (OMElement) childElementIter.next() );
-                if ( childElementIter.hasNext() ) {
-                    throw new NoSuchElementException();
-                }
-                logicalOperator = new And( parameter1, parameter2 );
-                break;
-            }
-            case OR: {
-                Iterator<?> childElementIter = element.getChildElements();
-                Operator parameter1 = parseOperator( (OMElement) childElementIter.next() );
-                Operator parameter2 = parseOperator( (OMElement) childElementIter.next() );
-                if ( childElementIter.hasNext() ) {
-                    throw new NoSuchElementException();
-                }
-                logicalOperator = new Or( parameter1, parameter2 );
-            }
-            case NOT: {
-                Iterator<?> childElementIter = element.getChildElements();
-                Operator parameter = parseOperator( (OMElement) childElementIter.next() );
-                if ( childElementIter.hasNext() ) {
-                    throw new NoSuchElementException();
-                }
-                logicalOperator = new Not( parameter );
-                break;
-            }
-            }
-        } catch ( NoSuchElementException e ) {
-            String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
-            throw new XMLProcessingException( msg );
+        switch ( type ) {
+        case AND: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+            Operator parameter1 = parseOperator( childElementIter.next() );
+            Operator parameter2 = parseOperator( childElementIter.next() );
+            logicalOperator = new And( parameter1, parameter2 );
+            break;
         }
-
+        case OR: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+            Operator parameter1 = parseOperator( childElementIter.next() );
+            Operator parameter2 = parseOperator( childElementIter.next() );
+            logicalOperator = new Or( parameter1, parameter2 );
+        }
+        case NOT: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 1 );
+            Operator parameter = parseOperator( childElementIter.next() );
+            logicalOperator = new Not( parameter );
+            break;
+        }
+        }
         return logicalOperator;
     }
 
@@ -948,4 +867,5 @@ public class Filter110XMLAdapter extends XMLAdapter {
         }
         return ArrayUtils.join( ", ", names );
     }
+
 }
