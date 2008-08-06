@@ -48,6 +48,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -58,6 +59,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XMLProcessingException;
@@ -285,8 +287,9 @@ public class Filter110XMLAdapter extends XMLAdapter {
         // check if element name is a valid expression element
         Expression.Type type = elementNameToExpressionType.get( element.getQName() );
         if ( type == null ) {
-            String msg = "Unknown operator element '" + element.getQName() + "'.";
-            throw new XMLProcessingException( msg );
+            String msg = "Error while parsing ogc:expression. Expected one of "
+                         + elemNames( Expression.Type.class, expressionTypeToElementName ) + ". ";
+            throw new XMLParsingException( this, element, msg );
         }
 
         switch ( type ) {
@@ -381,13 +384,9 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * <p>
      * The element must be one of the following types:
      * <ul>
-     * <li>{http://www.opengis.net/ogc}Add</li>
-     * <li>{http://www.opengis.net/ogc}Sub</li>
-     * <li>{http://www.opengis.net/ogc}Div</li>
-     * <li>{http://www.opengis.net/ogc}Mul</li>
-     * <li>{http://www.opengis.net/ogc}PropertyName</li>
-     * <li>{http://www.opengis.net/ogc}Literal</li>
-     * <li>{http://www.opengis.net/ogc}Function</li>
+     * <li> {@link LogicalOperator}</li>
+     * <li> {@link SpatialOperator}</li>
+     * <li> {@link ComparisonOperator}</li>
      * </ul>
      * 
      * @param element
@@ -401,8 +400,11 @@ public class Filter110XMLAdapter extends XMLAdapter {
         // check if element name is a valid operator element
         Operator.Type type = elementNameToOperatorType.get( element.getQName() );
         if ( type == null ) {
-            String msg = "Unknown operator element '" + element.getQName() + "'.";
-            throw new XMLProcessingException( msg );
+            String msg = "Error while parsing ogc:Filter. Expected one of "
+                         + elemNames( Operator.Type.class, logicalOperatorTypeToElementName ) + ", "
+                         + elemNames( Operator.Type.class, spatialOperatorTypeToElementName ) + ", "
+                         + elemNames( Operator.Type.class, comparisonOperatorTypeToElementName );
+            throw new XMLParsingException( this, element, msg );
         }
 
         switch ( type ) {
@@ -475,7 +477,12 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
         // check if element name is a valid comparison operator element
         ComparisonOperator.SubType type = elementNameToComparisonOperatorType.get( element.getQName() );
-        assert type != null;
+        
+        if ( type == null ) {
+            String msg = "Error while parsing ogc:comparsionOps. Expected one of "
+                         + elemNames( ComparisonOperator.SubType.class, comparisonOperatorTypeToElementName ) + ".";
+            throw new XMLParsingException( this, element, msg );
+        }
 
         switch ( type ) {
         case PROPERTY_IS_EQUAL_TO:
@@ -582,8 +589,11 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
         // check if element name is a valid logical operator element
         LogicalOperator.SubType type = elementNameToLogicalOperatorType.get( element.getQName() );
-        assert type != null;
-
+        if ( type == null ) {
+            String msg = "Error while parsing ogc:logicOps. Expected one of "
+                         + elemNames( LogicalOperator.SubType.class, logicalOperatorTypeToElementName ) + ".";
+            throw new XMLParsingException( this, element, msg );
+        }
         try {
             switch ( type ) {
             case AND: {
@@ -855,5 +865,22 @@ public class Filter110XMLAdapter extends XMLAdapter {
         }
 
         writer.writeEndElement();
+    }
+
+    /**
+     * Return a String with all element names of the given enum class.
+     * 
+     * @param enumClass
+     * @param map
+     *            the operator type -> element name map
+     * @return a coma separated list of element names
+     */
+    private static String elemNames( Class<? extends Enum<?>> enumClass, Map<? extends Enum<?>, QName> map ) {
+        List<String> names = new LinkedList<String>();
+        for ( Enum<?> e : enumClass.getEnumConstants() ) {
+            QName qname = map.get( e );
+            names.add( qname.getLocalPart() );
+        }
+        return ArrayUtils.join( ", ", names );
     }
 }
