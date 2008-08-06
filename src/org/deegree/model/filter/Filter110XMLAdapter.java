@@ -215,7 +215,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
         Filter filter = null;
 
-        Iterator childIterator = rootElement.getChildElements();
+        Iterator<?> childIterator = rootElement.getChildElements();
         if ( !childIterator.hasNext() ) {
             String msg = "ogc:Filter elements must have at least one child.";
             throw new XMLProcessingException( msg );
@@ -295,7 +295,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
         switch ( type ) {
         case ADD: {
             try {
-                Iterator childElementIter = element.getChildElements();
+                Iterator<?> childElementIter = element.getChildElements();
                 Expression param1 = parseExpression( (OMElement) childElementIter.next() );
                 Expression param2 = parseExpression( (OMElement) childElementIter.next() );
                 expression = new Add( param1, param2 );
@@ -311,7 +311,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
         }
         case SUB: {
             try {
-                Iterator childElementIter = element.getChildElements();
+                Iterator<?> childElementIter = element.getChildElements();
                 Expression param1 = parseExpression( (OMElement) childElementIter.next() );
                 Expression param2 = parseExpression( (OMElement) childElementIter.next() );
                 expression = new Sub( param1, param2 );
@@ -326,7 +326,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
         }
         case MUL: {
             try {
-                Iterator childElementIter = element.getChildElements();
+                Iterator<?> childElementIter = element.getChildElements();
                 Expression param1 = parseExpression( (OMElement) childElementIter.next() );
                 Expression param2 = parseExpression( (OMElement) childElementIter.next() );
                 expression = new Mul( param1, param2 );
@@ -341,7 +341,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
         }
         case DIV: {
             try {
-                Iterator childElementIter = element.getChildElements();
+                Iterator<?> childElementIter = element.getChildElements();
                 Expression param1 = parseExpression( (OMElement) childElementIter.next() );
                 Expression param2 = parseExpression( (OMElement) childElementIter.next() );
                 expression = new Div( param1, param2 );
@@ -369,7 +369,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
                 throw new XMLProcessingException( msg );
             }
             List<Expression> params = new ArrayList<Expression>();
-            Iterator childElementIter = element.getChildElements();
+            Iterator<?> childElementIter = element.getChildElements();
             Expression param = parseExpression( (OMElement) childElementIter.next() );
             params.add( param );
             expression = new Function( name, params );
@@ -526,7 +526,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
     private BinaryComparisonOperator parseBinaryComparisonOperator( OMElement element, ComparisonOperator.SubType type ) {
 
         BinaryComparisonOperator comparisonOperator = null;
-        Iterator childElementIter = element.getChildElements();
+        Iterator<?> childElementIter = element.getChildElements();
         Expression parameter1 = null;
         Expression parameter2 = null;
         boolean matchCase = true;
@@ -597,7 +597,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
         try {
             switch ( type ) {
             case AND: {
-                Iterator childElementIter = element.getChildElements();
+                Iterator<?> childElementIter = element.getChildElements();
                 Operator parameter1 = parseOperator( (OMElement) childElementIter.next() );
                 Operator parameter2 = parseOperator( (OMElement) childElementIter.next() );
                 if ( childElementIter.hasNext() ) {
@@ -607,7 +607,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
                 break;
             }
             case OR: {
-                Iterator childElementIter = element.getChildElements();
+                Iterator<?> childElementIter = element.getChildElements();
                 Operator parameter1 = parseOperator( (OMElement) childElementIter.next() );
                 Operator parameter2 = parseOperator( (OMElement) childElementIter.next() );
                 if ( childElementIter.hasNext() ) {
@@ -616,7 +616,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
                 logicalOperator = new Or( parameter1, parameter2 );
             }
             case NOT: {
-                Iterator childElementIter = element.getChildElements();
+                Iterator<?> childElementIter = element.getChildElements();
                 Operator parameter = parseOperator( (OMElement) childElementIter.next() );
                 if ( childElementIter.hasNext() ) {
                     throw new NoSuchElementException();
