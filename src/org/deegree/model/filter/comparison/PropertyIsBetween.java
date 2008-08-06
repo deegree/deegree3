@@ -57,11 +57,17 @@ import org.deegree.model.generic.DeegreeObject;
  */
 public class PropertyIsBetween extends ComparisonOperator {
 
-    private Expression upperBoundary;
+    private final Expression upperBoundary;
 
-    private Expression lowerBoundary;
+    private final Expression lowerBoundary;
 
-    private Expression expression;
+    private final Expression expression;
+
+    public PropertyIsBetween( Expression expression, Expression lowerBoundary, Expression upperBoundary ) {
+        this.expression = expression;
+        this.lowerBoundary = lowerBoundary;
+        this.upperBoundary = upperBoundary;
+    }
 
     public SubType getSubType() {
         return SubType.PROPERTY_IS_BETWEEN;
@@ -78,7 +84,22 @@ public class PropertyIsBetween extends ComparisonOperator {
 
     public Expression getExpression() {
         return expression;
-    }     
+    }
+
+    /**
+     * @return the upperBoundary
+     */
+    public Expression getUpperBoundary() {
+        return upperBoundary;
+    }
+
+    /**
+     * @return the lowerBoundary
+     */
+    public Expression getLowerBoundary() {
+        return lowerBoundary;
+    }
+    
     
     public String toString( String indent ) {
         String s = indent + "-PropertyIsBetween\n";

@@ -57,8 +57,12 @@ import org.deegree.model.generic.DeegreeObject;
  */
 public class PropertyIsNull extends ComparisonOperator {
 
-    private PropertyName propName;
+    private final PropertyName propName;
   
+    public PropertyIsNull( PropertyName propName ) {
+        this.propName = propName;
+    }
+    
     public PropertyName getPropertyName () {
         return propName;
     }

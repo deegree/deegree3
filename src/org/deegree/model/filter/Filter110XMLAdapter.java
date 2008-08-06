@@ -75,6 +75,7 @@ import org.deegree.model.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.model.filter.comparison.PropertyIsLike;
 import org.deegree.model.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.model.filter.comparison.PropertyIsNull;
+import org.deegree.model.filter.comparison.ComparisonOperator.SubType;
 import org.deegree.model.filter.expression.Add;
 import org.deegree.model.filter.expression.Div;
 import org.deegree.model.filter.expression.Function;
@@ -294,7 +295,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
         switch ( type ) {
         case ADD: {
-            try {
+             try {
                 Iterator<?> childElementIter = element.getChildElements();
                 Expression param1 = parseExpression( (OMElement) childElementIter.next() );
                 Expression param2 = parseExpression( (OMElement) childElementIter.next() );
@@ -303,7 +304,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
                     String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
                     throw new XMLProcessingException( msg );
                 }
-            } catch ( NoSuchElementException e ) {
+             } catch ( NoSuchElementException e ) {
                 String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
                 throw new XMLProcessingException( msg );
             }
@@ -494,14 +495,78 @@ public class Filter110XMLAdapter extends XMLAdapter {
             comparisonOperator = parseBinaryComparisonOperator( element, type );
             break;
         case PROPERTY_IS_BETWEEN:
-            // TODO implement me
+            comparisonOperator = parsePropertyIsBetweenOperator( element, type );
             break;
         case PROPERTY_IS_LIKE:
             // TODO implement me
             break;
         case PROPERTY_IS_NULL:
-            // TODO implement me
+            comparisonOperator = parsePropertyIsNullOperator( element, type );
             break;
+        }
+        return comparisonOperator;
+    }
+
+    private ComparisonOperator parsePropertyIsBetweenOperator( OMElement element, SubType type ) {
+        PropertyIsBetween comparisonOperator = null;
+        Iterator<?> childElementIter = element.getChildElements();
+        Expression expression = null;
+        Expression lowerBoundary = null;
+        Expression upperBoundary = null;
+        boolean matchCase = true;
+        try {
+            OMElement parameterElement = (OMElement) childElementIter.next();
+            expression = parseExpression( parameterElement );
+            lowerBoundary = parseBoundaryExpression( new QName( OGC_NS, "lowerBoundary" ),
+                                                     (OMElement) childElementIter.next() );
+            upperBoundary = parseBoundaryExpression( new QName( OGC_NS, "upperBoundary" ),
+                                                     (OMElement) childElementIter.next() );
+            comparisonOperator = new PropertyIsBetween( expression, lowerBoundary, upperBoundary );
+            if ( childElementIter.hasNext() ) {
+                throw new NoSuchElementException();
+            }
+        } catch ( NoSuchElementException e ) {
+            String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 3 );
+            throw new XMLProcessingException( msg );
+        }
+        return comparisonOperator;
+    }
+
+    private Expression parseBoundaryExpression( QName boundary, OMElement element ) {
+        if ( !element.getQName().equals( boundary ) ) {
+            throw new XMLParsingException( this, element, "Error while parsing filter. Expected " + boundary );
+        }
+        Expression expression;
+        Iterator<?> childElementIter = element.getChildElements();
+        try {
+            OMElement parameterElement = (OMElement) childElementIter.next();
+            expression = parseExpression( parameterElement );
+        } catch ( NoSuchElementException e ) {
+            String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 1 );
+            throw new XMLProcessingException( msg );
+        }
+        return expression;
+    }
+
+    private ComparisonOperator parsePropertyIsNullOperator( OMElement element, SubType type ) {
+        PropertyIsNull comparisonOperator = null;
+        Iterator<?> childElementIter = element.getChildElements();
+        try {
+            OMElement parameterElement = (OMElement) childElementIter.next();
+            Expression.Type expType = elementNameToExpressionType.get( parameterElement.getQName() );
+            if ( expType == null && expType != Expression.Type.PROPERTY_NAME ) {
+                String msg = "Error while parsing ogc:PropertyIsNull. Expected "
+                             + expressionTypeToElementName.get( expType );
+                throw new XMLParsingException( this, element, msg );
+            }
+            comparisonOperator = new PropertyIsNull( new PropertyName( parameterElement.getText() ) );
+            parameterElement = (OMElement) childElementIter.next();
+            if ( childElementIter.hasNext() ) {
+                throw new NoSuchElementException();
+            }
+        } catch ( NoSuchElementException e ) {
+            String msg = Messages.getMessage( "FILTER_PARSING_WRONG_CHILD_COUNT", element.getQName(), 2 );
+            throw new XMLProcessingException( msg );
         }
         return comparisonOperator;
     }
