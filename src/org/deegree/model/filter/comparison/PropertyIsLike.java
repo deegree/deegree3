@@ -58,15 +58,33 @@ import org.deegree.model.generic.DeegreeObject;
  */
 public class PropertyIsLike extends ComparisonOperator {
 
-    private String wildCard;
+    private final String wildCard;
+
+    private final String singleChar;
+
+    private final String escapeChar;
     
-    private String singleChar;
+    private final PropertyName propName;
     
-    private String escapeChar;
+    private final Literal literal;
     
-    private PropertyName propName;
     
-    private Literal literal;
+
+    /**
+     * @param propName
+     * @param literal
+     * @param wildCard
+     * @param singleChar
+     * @param escapeChar
+     */
+    public PropertyIsLike( PropertyName propName, Literal literal, String wildCard, String singleChar,
+                              String escapeChar ) {
+        this.propName = propName;
+        this.literal = literal;
+        this.wildCard = wildCard;
+        this.singleChar = singleChar;
+        this.escapeChar = escapeChar;
+    }
 
     public PropertyName getPropertyName () {
         return propName;

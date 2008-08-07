@@ -466,7 +466,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
             comparisonOperator = parsePropertyIsBetweenOperator( element );
             break;
         case PROPERTY_IS_LIKE:
-            // TODO implement me
+            comparisonOperator = parsePropertyIsLikeOperator( element );
             break;
         case PROPERTY_IS_NULL:
             comparisonOperator = parsePropertyIsNullOperator( element );
@@ -488,8 +488,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
     }
 
     private ComparisonOperator parsePropertyIsNullOperator( OMElement element ) {
-        PropertyIsNull comparisonOperator = null;
-        FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+        FixedChildIterator childElementIter = new FixedChildIterator( element, 1 );
         OMElement parameterElement = childElementIter.next();
         Expression.Type expType = elementNameToExpressionType.get( parameterElement.getQName() );
         if ( expType == null && expType != Expression.Type.PROPERTY_NAME ) {
@@ -497,13 +496,10 @@ public class Filter110XMLAdapter extends XMLAdapter {
                          + expressionTypeToElementName.get( expType );
             throw new XMLParsingException( this, element, msg );
         }
-        comparisonOperator = new PropertyIsNull( new PropertyName( parameterElement.getText() ) );
-        parameterElement = childElementIter.next();
-        return comparisonOperator;
+        return new PropertyIsNull( new PropertyName( parameterElement.getText() ) );
     }
 
     private ComparisonOperator parsePropertyIsBetweenOperator( OMElement element ) {
-        PropertyIsBetween comparisonOperator = null;
         FixedChildIterator childElementIter = new FixedChildIterator( element, 3 );
         OMElement parameterElement = childElementIter.next();
         Expression expression = parseExpression( parameterElement );
@@ -511,9 +507,26 @@ public class Filter110XMLAdapter extends XMLAdapter {
                                                             childElementIter.next() );
         Expression upperBoundary = parseBoundaryExpression( new QName( OGC_NS, "upperBoundary" ),
                                                             childElementIter.next() );
-        comparisonOperator = new PropertyIsBetween( expression, lowerBoundary, upperBoundary );
-
-        return comparisonOperator;
+        return new PropertyIsBetween( expression, lowerBoundary, upperBoundary );
+    }
+    
+    private ComparisonOperator parsePropertyIsLikeOperator( OMElement element ) {
+        FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+        PropertyName propName = parseTypedExpression( PropertyName.class, childElementIter.next() );
+        Literal literal = parseTypedExpression( Literal.class, childElementIter.next() );
+        String wildCard = getRequiredNodeAsString( element, new XPath( "@wildCard", nsContext ) );
+        String singleChar = getRequiredNodeAsString( element, new XPath( "@singleChar", nsContext ) );
+        String escapeChar = getRequiredNodeAsString( element, new XPath( "@escapeChar", nsContext ) );
+        return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar );
+    }
+    
+    @SuppressWarnings("unchecked")
+    private <T extends Expression> T parseTypedExpression( Class<T> type, OMElement element ) {
+        Expression expression = parseExpression( element );
+        if ( !expression.getClass().equals( type ) ) {
+            throw new XMLParsingException( this, element, "Expected element ogc:" + type.getSimpleName() );
+        }
+        return (T) expression;
     }
 
     /**
