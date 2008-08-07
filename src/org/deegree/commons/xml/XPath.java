@@ -69,4 +69,9 @@ public class XPath {
     public NamespaceContext getNamespaceContext() {
         return nsContext;
     }
+    
+    @Override
+    public String toString() {
+        return xpath;
+    }
 }
