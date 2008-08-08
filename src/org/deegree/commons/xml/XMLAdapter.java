@@ -954,10 +954,10 @@ public class XMLAdapter {
      *            {@link OMElement} to append
      * @throws XMLStreamException
      */
-    public static void writeElement( XMLStreamWriter writer, OMElement element )
-                            throws XMLStreamException {
-        writeElement( writer, element.getXMLStreamReaderWithoutCaching() );
-    }
+//    public static void writeElement( XMLStreamWriter writer, OMElement element )
+//                            throws XMLStreamException {
+//        writeElement( writer, element.getXMLStreamReaderWithoutCaching() );
+//    }
 
     /**
      * Copies an XML element (including all attributes and subnodes) from an {@link XMLStreamReader} into the given
