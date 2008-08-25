@@ -62,6 +62,8 @@ public class UnknownMimeTypeException extends Exception {
 
     /**
      * Creates a exception with the given message and MIME type
+     * @param message 
+     * @param mimeType 
      */
     public UnknownMimeTypeException( String message, String mimeType ) {
         super( message + " : Unknown MIME Type :" + mimeType );

@@ -161,6 +161,7 @@ public interface MailMessage {
      * 
      * @param mimeType
      *            the MIME type as string
+     * @throws UnknownMimeTypeException 
      * 
      * @see #PLAIN_TEXT
      * @see #TEXT_HTML

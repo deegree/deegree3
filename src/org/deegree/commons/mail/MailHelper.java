@@ -84,6 +84,7 @@ public final class MailHelper {
      * 
      */
     public MailHelper() {
+        // empty constructors are not necessary...
     }
 
     /**

@@ -152,6 +152,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
      * 
      * @return Description of the Return Value
      */
+    @Override
     public String toString() {
         return ( "From:" + this.getSender() + ", To:" + this.getReceiver() + ", Subject:" + this.getSubject()
                  + ",Body: " + this.getMessageBody() );
