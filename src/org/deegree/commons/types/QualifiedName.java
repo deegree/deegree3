@@ -58,6 +58,7 @@ import org.deegree.commons.utils.StringUtils;
  * @version $Revision$, $Date$
  * @deprecated
  */
+@Deprecated
 public class QualifiedName implements Serializable {
 
     private static final long serialVersionUID = 5551137348397905772L;
