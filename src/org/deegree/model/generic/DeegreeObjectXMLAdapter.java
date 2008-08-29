@@ -43,6 +43,10 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.model.generic.schema.ObjectType;
 import org.slf4j.Logger;
@@ -79,5 +83,31 @@ public class DeegreeObjectXMLAdapter extends XMLAdapter {
         ObjectType ot = schema.getObjectType( rootElement.getQName() );
 
         return null;
+    }
+
+    public static void export( XMLStreamWriter xmlWriter, DeegreeObject o )
+                            throws XMLStreamException {
+
+        QName elementName = o.getName();
+        xmlWriter.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
+
+        // attributes
+        for ( Attribute attr : o.getAttributes() ) {
+            QName attrName = attr.getName();
+            xmlWriter.writeAttribute( attrName.getNamespaceURI(), attrName.getLocalPart(), attr.getValue() );
+        }
+
+        // contents (DeegreeObject or Text instances)
+        for (Node content : o.getContents()) {
+            if (content instanceof Text) {
+                xmlWriter.writeCharacters( ((Text) content).getValue());
+            } else if (content instanceof DeegreeObject) {
+                export( xmlWriter, o );
+            } else {
+                throw new XMLStreamException ("Unexpected node type: " + content.getClass().getName());
+            }
+        }
+        
+        xmlWriter.writeEndElement();
     }
 }

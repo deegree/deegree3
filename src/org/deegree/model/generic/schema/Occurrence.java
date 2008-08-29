@@ -61,6 +61,8 @@ public class Occurrence<T extends NodeType> {
     
     public Occurrence (T nodeType) {
         this.nodeType = nodeType;
+        this.minOccurs = 1;
+        this.maxOccurs = 1;
     }
 
     public String toString( String indent ) {

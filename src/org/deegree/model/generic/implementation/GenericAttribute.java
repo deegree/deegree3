@@ -43,6 +43,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic.implementation;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.model.generic.Attribute;
 import org.deegree.model.generic.schema.AttributeType;
 
@@ -58,7 +60,19 @@ public class GenericAttribute implements Attribute {
 
     private AttributeType type;
 
+    private String value;
+
     public AttributeType getType() {
         return type;
+    }
+
+    @Override
+    public QName getName() {
+        return type.getName();
+    }
+
+    @Override
+    public String getValue() {
+        return value;
     }
 }

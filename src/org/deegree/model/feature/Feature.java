@@ -55,12 +55,14 @@ import org.deegree.model.generic.DeegreeObject;
  * <p>
  * <ul>
  * <li><a href="http://www.opengeospatial.org/standards/as">Abstract Feature specification</a></li>
- * <li><a href="http://www.opengeospatial.org/standards/sfa">Simple Features Interface Standard (SFS)</li>
+ * <li><a href="http://www.opengeospatial.org/standards/sfa">Simple Features Interface Standard (SFS)</a></li>
  * <li><a href="http://www.opengeospatial.org/standards/gml">GML features: XML encoding for features</a></li>
  * </ul>
  * </p>
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @see Property
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -68,9 +70,9 @@ import org.deegree.model.generic.DeegreeObject;
 public interface Feature extends DeegreeObject {
 
     /**
-     * Returns the schema information for this feature.
+     * Returns the type information for this feature.
      * 
-     * @return the schema information
+     * @return the type information
      */
     public FeatureType getType();
 
@@ -84,9 +86,9 @@ public interface Feature extends DeegreeObject {
     public Object getPropertyValue( QName propName );
 
     /**
-     * Returns all properties of this feature.
+     * Returns all properties of this feature in their original order.
      * 
-     * @return all properties of this feature.
+     * @return all properties of this feature
      */
-    public Property[] getProperties();
+    public Property<?>[] getProperties();
 }

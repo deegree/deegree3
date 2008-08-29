@@ -41,40 +41,38 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic;
+package org.deegree.model.feature;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.generic.schema.AttributeType;
+import org.deegree.model.geometry.Geometry;
 
 /**
- * An <code>Attribute</code> with type information.
- *
+ * A {@link Feature} that does not allow nested features (so called "complex properties") or properties with the same
+ * same that may occur multiple times.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public interface Attribute {
+public interface SimpleFeature extends Feature {
 
     /**
-     * Returns the type information for this attribute node.
+     * Returns the value of the specified property.
      * 
-     * @return the type information
+     * @param propName
+     *            name of the property
+     * @return property value
      */
-    public AttributeType getType();
+    public Object getPropertyValue( QName propName );
 
     /**
-     * Returns the name of this attribute node.
+     * Returns the value of the geometry property.
      * 
-     * @return the name of this attribute node.
+     * @param propName
+     *            name of the property
+     * @return property value
      */
-    public QName getName();
-
-    /**
-     * Returns the value of this attribute node.
-     * 
-     * @return the value of this attribute node.
-     */
-    public String getValue();    
+    public Geometry getGeometryPropertyValue( QName propName );
 }

@@ -41,34 +41,38 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature.implementation;
+package org.deegree.model.feature;
 
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.feature.Feature;
-import org.deegree.model.feature.Property;
 import org.deegree.model.feature.schema.FeatureType;
 import org.deegree.model.generic.Attribute;
 import org.deegree.model.generic.Node;
 
 /**
- * TODO add documentation here
- *
+ * Allows the representation of arbitrary {@link Feature}s.
+ * <p>
+ * Please note that is more efficient to use the {@link SimpleFeature} class if the feature to be represented does
+ * not contain multiple properties with the same name or nested features (complex properties).
+ * </p>
+ * 
+ * @see GenericSimpleFeature
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GenericFeature implements Feature {
 
     private FeatureType ft;
-    
+
     public QName getName() {
         return ft.getName();
-    }    
-    
+    }
+
     public FeatureType getType() {
         return ft;
     }

@@ -43,6 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.generic.implementation.schema;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -53,6 +54,9 @@ import org.deegree.model.generic.implementation.GenericDeegreeObject;
 import org.deegree.model.generic.schema.AttributeType;
 import org.deegree.model.generic.schema.ContentModel;
 import org.deegree.model.generic.schema.ObjectType;
+import org.deegree.model.generic.schema.Occurrence;
+import org.deegree.model.generic.schema.Sequence;
+import org.deegree.model.generic.schema.TextType;
 
 /**
  * TODO add documentation here
@@ -83,6 +87,24 @@ public class GenericObjectType implements ObjectType {
         this.parentType = parentType;
     }
 
+    public GenericObjectType( QName name, TextType textContents) {
+        this.name = name;
+        this.attributes = new ArrayList<AttributeType>();
+
+        List<Occurrence<?>> occurences = new ArrayList<Occurrence<?>>();
+        occurences.add( new Occurrence<TextType>(textContents));
+        this.contents = new Sequence(occurences);
+    }    
+
+    public GenericObjectType( QName name, ObjectType child) {
+        this.name = name;
+        this.attributes = new ArrayList<AttributeType>();
+
+        List<Occurrence<?>> occurences = new ArrayList<Occurrence<?>>();
+        occurences.add( new Occurrence<ObjectType>(child));
+        this.contents = new Sequence(occurences);
+    }    
+    
     public QName getName() {
         return name;
     }

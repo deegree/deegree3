@@ -47,9 +47,23 @@ import javax.xml.namespace.QName;
 
 import org.deegree.model.generic.DeegreeObject;
 
-public interface Property extends DeegreeObject {
+/**
+ * A spatial or non-spatial property of a {@link Feature}.
+ * <p>
+ * Basically, it has a (qualified) name and a value of a certain type.
+ * 
+ * @see Feature
+ * 
+ * @param <T> The class of the <code>Property</code>'s value. 
+ *
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ */
+public interface Property<T> extends DeegreeObject {
 
-    public QName getName ();
-    
-    public Object getValue ();
+    public QName getName();
+
+    public T getValue();
 }
