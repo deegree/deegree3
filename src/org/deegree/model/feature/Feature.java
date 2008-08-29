@@ -49,12 +49,21 @@ import org.deegree.model.feature.schema.FeatureType;
 import org.deegree.model.generic.DeegreeObject;
 
 /**
- * TODO add documentation here
+ * A feature is a structured object with geometric and non-geometric properties.
+ * <p>
+ * This interface is designed to be compatible with the feature concept from the following OGC specifications:
+ * <p>
+ * <ul>
+ * <li><a href="http://www.opengeospatial.org/standards/as">Abstract Feature specification</a></li>
+ * <li><a href="http://www.opengeospatial.org/standards/sfa">Simple Features Interface Standard (SFS)</li>
+ * <li><a href="http://www.opengeospatial.org/standards/gml">GML features: XML encoding for features</a></li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
 public interface Feature extends DeegreeObject {
 
@@ -63,8 +72,8 @@ public interface Feature extends DeegreeObject {
      * 
      * @return the schema information
      */
-    public FeatureType getType();  
-    
+    public FeatureType getType();
+
     /**
      * Returns the value of the specified property.
      * 
