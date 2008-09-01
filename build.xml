@@ -139,34 +139,51 @@
 				</loadfile>
 			</then>
 			<else>
-				<loadfile srcFile=".svn/entries" property="svn.revision.new" failonerror="false">
-					<filterchain>
-						<headfilter lines="1" skip="4" />
-						<tokenfilter>
-							<replacestring from="committed-rev=" to="" />
-						</tokenfilter>
-						<tokenfilter>
-							<replacestring from="&quot;" to="" />
-						</tokenfilter>
-						<tokenfilter>
-							<trim />
-						</tokenfilter>
-					</filterchain>
-				</loadfile>
-				<loadfile srcFile=".svn/entries" property="svn.path.new" failonerror="false">
-					<filterchain>
-						<headfilter lines="1" skip="7" />
-						<tokenfilter>
-							<replacestring from="url=" to="" />
-						</tokenfilter>
-						<tokenfilter>
-							<replacestring from="&quot;" to="" />
-						</tokenfilter>
-						<tokenfilter>
-							<trim />
-						</tokenfilter>
-					</filterchain>
-				</loadfile>
+				<if>
+					<equals arg1="${svn.format}" arg2="9" />
+					<then>
+						<loadfile srcFile=".svn/entries" property="svn.revision.new" failonerror="false">
+							<filterchain>
+								<headfilter lines="1" skip="3" />
+							</filterchain>
+						</loadfile>
+						<loadfile srcFile=".svn/entries" property="svn.path.new" failonerror="false">
+							<filterchain>
+								<headfilter lines="1" skip="4" />
+							</filterchain>
+						</loadfile>
+					</then>
+					<else>
+						<loadfile srcFile=".svn/entries" property="svn.revision.new" failonerror="false">
+							<filterchain>
+								<headfilter lines="1" skip="4" />
+								<tokenfilter>
+									<replacestring from="committed-rev=" to="" />
+								</tokenfilter>
+								<tokenfilter>
+									<replacestring from="&quot;" to="" />
+								</tokenfilter>
+								<tokenfilter>
+									<trim />
+								</tokenfilter>
+							</filterchain>
+						</loadfile>
+						<loadfile srcFile=".svn/entries" property="svn.path.new" failonerror="false">
+							<filterchain>
+								<headfilter lines="1" skip="7" />
+								<tokenfilter>
+									<replacestring from="url=" to="" />
+								</tokenfilter>
+								<tokenfilter>
+									<replacestring from="&quot;" to="" />
+								</tokenfilter>
+								<tokenfilter>
+									<trim />
+								</tokenfilter>
+							</filterchain>
+						</loadfile>
+					</else>
+				</if>
 			</else>
 		</if>
 		<echo message="Using svn revision: ${svn.revision.new} from svn path: ${svn.path.new}" />
