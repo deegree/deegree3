@@ -43,35 +43,23 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature.schema;
 
-import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.feature.Feature;
 
 /**
- * A {@link FeatureType} describes the structure for a class of {@link Feature}s.
- * 
+ * TODO add documentation here
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public interface FeatureType {
+public class GMLApplicationSchema {
+    
+    private Map<QName,FeatureType> featureTypes;
 
-    /**
-     * Returns the name that features of this type have.
-     * <p>
-     * In the GML representation of the feature, this corresponds to the feature element's name.
-     * </p>
-     * 
-     * @return the name of the feature instance
-     */
-    public QName getName();
 
-    /**
-     * 
-     * @return
-     */
-    public List<PropertyDeclaration> getPropertyDeclarations ();    
+   
 }

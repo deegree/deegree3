@@ -41,37 +41,25 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature.schema;
+package org.deegree.model.feature;
 
-import java.util.List;
+import java.util.Map;
 
-import javax.xml.namespace.QName;
-
-import org.deegree.model.feature.Feature;
+import org.deegree.model.feature.schema.FeatureType;
 
 /**
- * A {@link FeatureType} describes the structure for a class of {@link Feature}s.
- * 
+ * TODO add documentation here
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public interface FeatureType {
+public class FeatureBuilder {
 
-    /**
-     * Returns the name that features of this type have.
-     * <p>
-     * In the GML representation of the feature, this corresponds to the feature element's name.
-     * </p>
-     * 
-     * @return the name of the feature instance
-     */
-    public QName getName();
+    public Feature buildFeature (FeatureType ft, String featureId, Map<String,Object> properties) {
+        return null;
+    }
 
-    /**
-     * 
-     * @return
-     */
-    public List<PropertyDeclaration> getPropertyDeclarations ();    
+
 }

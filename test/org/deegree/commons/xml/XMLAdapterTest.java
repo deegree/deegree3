@@ -46,8 +46,13 @@ package org.deegree.commons.xml;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
 
+import java.io.StringWriter;
+
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
@@ -170,5 +175,24 @@ public class XMLAdapterTest extends XMLAdapter {
         } catch ( XMLProcessingException e ) {
             // expected to be thrown (node does not exist)
         }
+    }
+    
+    @Test
+    public void testWriteElement() throws XMLStreamException {
+
+        System.out.println (getRootElement().getLocalName());
+        
+        StringWriter stringWriter = new StringWriter ();
+        XMLOutputFactory factory = XMLOutputFactory.newInstance();
+        factory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
+        XMLStreamWriter writer =  new FormattingXMLStreamWriter( factory.createXMLStreamWriter( stringWriter ) );
+
+        XMLStreamReader inputReader = getRootElement().getXMLStreamReaderWithoutCaching();
+        inputReader.nextTag();
+        
+        getRootElement().serializeAndConsume( writer );
+        
+
+        System.out.println ("HUHU: '" + stringWriter.toString() + "'");
     }
 }

@@ -41,37 +41,34 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature.schema;
 
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
-import org.deegree.model.feature.Feature;
+import org.apache.xerces.xs.XSImplementation;
+import org.apache.xerces.xs.XSLoader;
+import org.apache.xerces.xs.XSModel;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 /**
- * A {@link FeatureType} describes the structure for a class of {@link Feature}s.
+ * TODO add documentation here
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public interface FeatureType {
+public class XSLoaderTest {
 
-    /**
-     * Returns the name that features of this type have.
-     * <p>
-     * In the GML representation of the feature, this corresponds to the feature element's name.
-     * </p>
-     * 
-     * @return the name of the feature instance
-     */
-    public QName getName();
+    public static void main( String[] args )
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
 
-    /**
-     * 
-     * @return
-     */
-    public List<PropertyDeclaration> getPropertyDeclarations ();    
+        System.out.println (System.getProperty( "javax.xml.stream.XMLInputFactory" ));
+        
+        System.setProperty( DOMImplementationRegistry.PROPERTY, "org.apache.xerces.dom.DOMXSImplementationSourceImpl" );
+        DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
+        XSImplementation impl = (XSImplementation) registry.getDOMImplementation( "XS-Loader" );
+        XSLoader schemaLoader = impl.createXSLoader( null );
+
+        XSModel model = schemaLoader.loadURI( "file:////home/schneider/workspace/base/resources/wfs/example/philosopher/featuretypes/Philosopher.xsd" );
+        System.out.println( model );
+    }
 }

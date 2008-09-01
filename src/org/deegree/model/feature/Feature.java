@@ -46,12 +46,11 @@ package org.deegree.model.feature;
 import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.schema.FeatureType;
-import org.deegree.model.generic.DeegreeObject;
 
 /**
- * A feature is a structured object with geometric and non-geometric properties.
+ * A feature is a structured object with named properties. Properties may have geometric and non-geometric values.
  * <p>
- * This interface is designed to be compatible with the feature concept from the following OGC specifications:
+ * The feature interface is designed to be compatible with the feature concept from the following OGC specifications:
  * <p>
  * <ul>
  * <li><a href="http://www.opengeospatial.org/standards/as">Abstract Feature specification</a></li>
@@ -67,8 +66,29 @@ import org.deegree.model.generic.DeegreeObject;
  * 
  * @version $Revision$, $Date$
  */
-public interface Feature extends DeegreeObject {
+public interface Feature {
 
+    /**
+     * Returns the id of the feature.
+     * <p>
+     * In the GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3) or <code>fid</code>
+     * (GML 2) attribute of the feature element.
+     * </p>
+     * 
+     * @return the id of the feature instance
+     */
+    public String getId();
+
+    /**
+     * Returns the name of the feature.
+     * <p>
+     * In the GML representation of the feature, this corresponds to the feature element's name.
+     * </p>
+     * 
+     * @return the name of the feature instance
+     */
+    public QName getName();
+    
     /**
      * Returns the type information for this feature.
      * 

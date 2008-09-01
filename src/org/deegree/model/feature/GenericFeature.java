@@ -54,8 +54,8 @@ import org.deegree.model.generic.Node;
 /**
  * Allows the representation of arbitrary {@link Feature}s.
  * <p>
- * Please note that is more efficient to use the {@link SimpleFeature} class if the feature to be represented does
- * not contain multiple properties with the same name or nested features (complex properties).
+ * Please note that is more efficient to use the {@link GenericSimpleFeature} class if the feature to be represented
+ * does not contain multiple properties or nested features ("complex properties").
  * </p>
  * 
  * @see GenericSimpleFeature
@@ -67,10 +67,19 @@ import org.deegree.model.generic.Node;
  */
 public class GenericFeature implements Feature {
 
+    private String id;
+    
     private FeatureType ft;
 
+    // only used when feature has no type information (ft == null)
+    private QName name;
+
+    public String getId () {
+        return id;
+    }
+    
     public QName getName() {
-        return ft.getName();
+        return ft != null ? ft.getName() : name;
     }
 
     public FeatureType getType() {

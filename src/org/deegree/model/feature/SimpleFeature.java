@@ -48,8 +48,7 @@ import javax.xml.namespace.QName;
 import org.deegree.model.geometry.Geometry;
 
 /**
- * A {@link Feature} that does not allow nested features (so called "complex properties") or properties with the same
- * same that may occur multiple times.
+ * A {@link Feature} that does not allow nested features ("complex properties") or properties that occur multiple times.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

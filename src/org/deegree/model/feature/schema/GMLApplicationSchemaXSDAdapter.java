@@ -41,7 +41,7 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature;
+package org.deegree.model.feature.schema;
 
 /**
  * TODO add documentation here
@@ -51,6 +51,7 @@ package org.deegree.model.feature;
  *
  * @version $Revision:$, $Date:$
  */
-public class GMLApplicationSchema {
+public class GMLApplicationSchemaXSDAdapter {
+
 
 }

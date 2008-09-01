@@ -41,19 +41,21 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.generic;
+package org.deegree.model.generic.implementation.schema;
 
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.xerces.xs.XSImplementation;
-import org.apache.xerces.xs.XSLoader;
-import org.deegree.commons.xml.FormattingXMLStreamWriter;
+import javax.xml.namespace.QName;
+
+import org.deegree.model.generic.schema.AttributeType;
+import org.deegree.model.generic.schema.ObjectType;
+import org.deegree.model.generic.schema.Occurrence;
+import org.deegree.model.generic.schema.Sequence;
+import org.deegree.model.generic.schema.TextType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 /**
  * TODO add documentation here
@@ -63,9 +65,7 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
  * 
  * @version $Revision:$, $Date:$
  */
-public class DeegreeObjectXMLAdapterTest {
-
-    private XSLoader schemaLoader;
+public class DeegreeObjectTypeTest {
 
     /**
      * @throws java.lang.Exception
@@ -73,10 +73,6 @@ public class DeegreeObjectXMLAdapterTest {
     @Before
     public void setUp()
                             throws Exception {
-        System.setProperty( DOMImplementationRegistry.PROPERTY, "org.apache.xerces.dom.DOMXSImplementationSourceImpl" );
-        DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-        XSImplementation impl = (XSImplementation) registry.getDOMImplementation( "XS-Loader" );
-        schemaLoader = impl.createXSLoader( null );
     }
 
     /**
@@ -88,25 +84,25 @@ public class DeegreeObjectXMLAdapterTest {
     }
 
     @Test
-    public void testExport () throws XMLStreamException {
-
-        // build simple deegree object
-        
-        XMLOutputFactory factory = XMLOutputFactory.newInstance();
-        XMLStreamWriter writer = new FormattingXMLStreamWriter(factory.createXMLStreamWriter(System.out));        
-        writer.close();
+    public void testSimpleObjectType() {
+        ObjectType philosopherType = buildSimplePhilosopherObjectType();
+        System.out.println( philosopherType );
     }
-    
-//    @Test
-//    public void testGenericDeegreeObjectMapping()
-//                            throws MalformedURLException, IOException, XMLStreamException, FactoryConfigurationError {
-//
-//        String schemaURL = "file:///home/schneider/workspace/d3_commons/resources/model/examples/ipo/ipo.xsd";
-//        String documentURL = "file:///home/schneider/workspace/d3_commons/resources/model/examples/ipo/ipo.xml";
-//
-//        ApplicationSchema schema = new ApplicationSchemaXSDAdapter( schemaLoader.loadURI( schemaURL ) ).parse();
-////        DeegreeObjectXMLAdapter adapter = new DeegreeObjectXMLAdapter( schema );
-////        adapter.load( new URL( documentURL ) );
-////        DeegreeObject object = adapter.parse();
-//    }
+
+    public static ObjectType buildSimplePhilosopherObjectType() {
+
+        ObjectType countryType = new GenericObjectType( new QName( "Country" ), new GenericTextType() );
+        ObjectType diedInType = new GenericObjectType( new QName( "diedIn" ), countryType );
+        ObjectType nameType = new GenericObjectType( new QName( "name" ), new GenericTextType() );
+
+        List<Occurrence<?>> occurences = new ArrayList<Occurrence<?>>();
+        occurences.add( new Occurrence<ObjectType>( diedInType ) );
+        occurences.add( new Occurrence<ObjectType>( nameType ) );
+
+        ObjectType philosopherType = new GenericObjectType( new QName( "Philosopher" ), new ArrayList<AttributeType>(),
+                                                            new Sequence( occurences ), false, null );
+
+        return philosopherType;
+    }
+
 }

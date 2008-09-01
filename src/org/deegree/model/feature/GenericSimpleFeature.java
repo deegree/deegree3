@@ -43,13 +43,9 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature;
 
-import java.util.List;
-
 import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.schema.FeatureType;
-import org.deegree.model.generic.Attribute;
-import org.deegree.model.generic.Node;
 import org.deegree.model.geometry.Geometry;
 
 /**
@@ -62,6 +58,21 @@ import org.deegree.model.geometry.Geometry;
  */
 public class GenericSimpleFeature implements SimpleFeature {
 
+    private String id;
+    
+    private FeatureType ft;
+
+    // only used when feature has no type information (ft == null)
+    private QName name;
+
+    public String getId () {
+        return id;
+    }
+    
+    public QName getName() {
+        return ft != null ? ft.getName() : name;
+    }    
+    
     /*
      * (non-Javadoc)
      * 
@@ -91,39 +102,6 @@ public class GenericSimpleFeature implements SimpleFeature {
      */
     @Override
     public FeatureType getType() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.generic.DeegreeObject#getAttributes()
-     */
-    @Override
-    public List<Attribute> getAttributes() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.generic.DeegreeObject#getContents()
-     */
-    @Override
-    public List<Node> getContents() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.generic.DeegreeObject#getName()
-     */
-    @Override
-    public QName getName() {
         // TODO Auto-generated method stub
         return null;
     }
