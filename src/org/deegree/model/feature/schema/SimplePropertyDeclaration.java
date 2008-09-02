@@ -43,8 +43,43 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature.schema;
 
-public interface SimplePropertyDeclaration extends PropertyDeclaration {
+import javax.xml.namespace.QName;
 
-    public int getBuiltInType();
+public class SimplePropertyDeclaration implements PropertyDeclaration {
+
+    private QName name;    
+    
+    private int maxOccurs;
+    
+    private int minOccurs;
+
+    private QName xsdType;    
+
+    public SimplePropertyDeclaration (QName name, int minOccurs, int maxOccurs, QName xsdType) {
+        this.name = name;
+        this.minOccurs = minOccurs;
+        this.maxOccurs = maxOccurs;
+        this.xsdType = xsdType;
+    }
+    
+    @Override
+    public QName getName() {
+        return name;
+    }    
+    
+    @Override
+    public int getMaxOccurs() {
+        return maxOccurs;
+    }
+
+    @Override
+    public int getMinOccurs() {
+        return minOccurs;
+    }
+
+    @Override
+    public QName getXSDValueType() {
+        return xsdType;
+    }
     
 }

@@ -97,9 +97,8 @@ public class GenericFeature implements Feature {
         return ft;
     }
 
-    public Property[] getProperties() {
-        // TODO Auto-generated method stub
-        return null;
+    public Property<?>[] getProperties() {
+        return props.toArray(new Property<?>[props.size()]);
     }
 
     public List<Attribute> getAttributes() {

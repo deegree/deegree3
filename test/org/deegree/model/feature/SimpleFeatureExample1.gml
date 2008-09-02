@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<app:Country xmlns:app="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/app schema/SimpleGMLSchema.xsd">
+<app:Country gml:id="COUNTRY_1" xmlns:app="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/app schema/SimpleGMLSchema.xsd">
 	<app:name>France</app:name>
 	<app:boundary>
 		<gml:MultiSurface srsName="EPSG:4326">

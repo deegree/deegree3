@@ -54,9 +54,13 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import junit.framework.Assert;
+
 import org.deegree.model.feature.schema.FeatureType;
 import org.deegree.model.feature.schema.GenericFeatureType;
+import org.deegree.model.feature.schema.GeometryPropertyDeclaration;
 import org.deegree.model.feature.schema.PropertyDeclaration;
+import org.deegree.model.feature.schema.SimplePropertyDeclaration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -75,20 +79,38 @@ public class FeatureGMLAdapterTest {
     @Before
     public void setUp() {
 
+        // manually set up a simple Country feature type                
         List<PropertyDeclaration> propDecls = new ArrayList<PropertyDeclaration>();
+        propDecls.add(new SimplePropertyDeclaration (new QName ("http://www.deegree.org/app", "name"), 1, 1, new QName ("http://www.w3.org/2001/XMLSchema", "string")));
+        propDecls.add(new GeometryPropertyDeclaration (new QName ("http://www.deegree.org/app", "boundary"), 1, 1, new QName ("http://www.opengis.net", "MultiSurfacePropertyType")));        
         
         FeatureType ft = new GenericFeatureType (new QName ("http://www.deegree.org/app", "Country"), propDecls );
         List<FeatureType> fts = new ArrayList<FeatureType>();
         fts.add(ft);
 
         adapter = new FeatureGMLAdapter(fts);
-    }
-    
+    }    
     
     @Test
-    public void testParsing () throws XMLStreamException, FactoryConfigurationError, IOException { 
-        URL docURL = FeatureGMLAdapterTest.class.getResource( "SimpleFeatureExample1.xml" );
+    public void testGenericFeatureParsing () throws XMLStreamException, FactoryConfigurationError, IOException { 
+
+        URL docURL = FeatureGMLAdapterTest.class.getResource( "SimpleFeatureExample1.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(), docURL.openStream() );
+        xmlReader.next();
+        Feature feature = adapter.parseFeature(xmlReader, null);
         xmlReader.close();
-    }    
+        
+        Assert.assertEquals (new QName ("http://www.deegree.org/app", "Country"), feature.getName());
+        Assert.assertEquals ("COUNTRY_1", feature.getId());
+        Assert.assertEquals (2, feature.getProperties().length);
+        Assert.assertEquals ("France", feature.getProperties()[0].getValue());        
+    }
+
+//    public void testFeatureExport () throws XMLStreamException, FactoryConfigurationError, IOException {
+//
+//        XMLStreamWriter xmlWriter = new IndentingXMLStreamWriter(XMLOutputFactory.newInstance().createXMLStreamWriter(System.out));
+//        xmlWriter.setPrefix("app", "http://www.deegree.org/app");
+//        adapter.export(xmlWriter, feature);
+//        xmlWriter.flush();
+//    }
 }

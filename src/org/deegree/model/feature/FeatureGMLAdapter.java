@@ -4,6 +4,7 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -85,18 +86,52 @@ public class FeatureGMLAdapter extends XMLAdapter {
         QName featureName = xmlStream.getName();
         FeatureType ft = lookupFeatureType( xmlStream, featureName );
 
-        LOG.debug( " - parsing feature, gml:id=" + fid + " (begin): " + getCurrentEventInfo( xmlStream ) );
+        LOG.debug( "- parsing feature, gml:id=" + fid + " (begin): " + getCurrentEventInfo( xmlStream ) );
 
         // override defaultSRS with SRS information from boundedBy element (if present)
-        // srsName = XMLTools.getNodeAsString( element, "gml:boundedBy/*[1]/@srsName", nsContext, srsName );
+        // srsName = XMLTools.getNodeAsString( element, "gml:boundedBy/*[1]/@srsName", nsContext, srsName );        
 
         // parse properties
+        Iterator<PropertyDeclaration> declIter = ft.getPropertyDeclarations().iterator();
+        PropertyDeclaration activeDecl = declIter.next();
+        int propOccurences = 0;
+
         List<Property<?>> propertyList = new ArrayList<Property<?>>();
         while ( xmlStream.nextTag() == START_ELEMENT ) {
             QName propName = xmlStream.getName();
             LOG.debug( "- property '" + propName + "'" );
+            
+            if (propName.equals(activeDecl.getName())) {
+                // current property element is equal to active declaration
+                if (activeDecl.getMaxOccurs() != -1 && propOccurences > activeDecl.getMaxOccurs()) {
+                    String msg = Messages.getMessage("ERROR_PROPERTY_TOO_MANY_OCCURENCES", propName, activeDecl.getMaxOccurs(), ft.getName());
+                    throw new XMLParsingException (this, xmlStream, msg);
+                } else {
+                    propOccurences++;
+                }
+            } else {                
+                // current property element is not equal to active declaration
+                while (declIter.hasNext() && !propName.equals(activeDecl.getName())) {
+                    if (propOccurences < activeDecl.getMinOccurs()) {
+                        String msg = null;                    
+                        if (activeDecl.getMinOccurs() == 1) {
+                            msg = Messages.getMessage("ERROR_PROPERTY_MANDATORY", propName, ft.getName());
+                        } else {
+                            msg = Messages.getMessage("ERROR_PROPERTY_TOO_FEW_OCCURENCES", propName, activeDecl.getMinOccurs(), ft.getName());
+                        }                    
+                        throw new XMLParsingException (this, xmlStream, msg);                    
+                    }
+                    activeDecl = declIter.next();
+                    propOccurences = 0;
+                }
+                if (!propName.equals(activeDecl.getName())) {
+                    String msg = Messages.getMessage("ERROR_PROPERTY_UNEXPECTED", propName, ft.getName());
+                    throw new XMLParsingException (this, xmlStream, msg);                        
+                }
+            }
+            
             try {
-                Property<?> property = parseProperty( xmlStream, ft, srsName );
+                Property<?> property = parseProperty( xmlStream, activeDecl, srsName );
                 if ( property != null ) {
                     propertyList.add( property );
                 }
@@ -128,39 +163,35 @@ public class FeatureGMLAdapter extends XMLAdapter {
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event of the property, afterwards points at the
      *            next event after the <code>END_ELEMENT</code> of the property
-     * @param ft
-     *            feature type of the feature that the property belongs to
+     * @param propDecl
+     *            property declaration
      * @param srsName
      *            default SRS for all a descendant geometry properties
      * @return object representation for the given property element.
      * @throws XMLParsingException
      * @throws XMLStreamException
      */
-    public Property parseProperty( XMLStreamReader xmlStream, FeatureType ft, String srsName )
+    public Property parseProperty( XMLStreamReader xmlStream, PropertyDeclaration propDecl, String srsName )
                             throws XMLParsingException, XMLStreamException {
 
         Property property = null;
         QName propertyName = xmlStream.getName();
-        LOG.debug( " - parsing property (begin): " + getCurrentEventInfo( xmlStream ) );
+        LOG.debug( "- parsing property (begin): " + getCurrentEventInfo( xmlStream ) );       
+        LOG.debug( "- property declaration: " + propDecl);
 
-//        PropertyDeclaration pt = ft.getPropertyDeclaration( propertyName );
-        PropertyDeclaration pt = null;
-        if ( pt == null ) {
-            String msg = Messages.getMessage( "ERROR_NO_PROPERTY_TYPE", ft.getName(), propertyName );
-            throw new XMLParsingException( this, xmlStream, msg );
-        }
-        // LOG.debug( " - property type: " + pt.getClass().getName() + ", type code: " + pt.getType() );
-
-        if ( pt instanceof SimplePropertyDeclaration ) {
-            property = new GenericProperty<String>( pt, xmlStream.getElementText().trim() );
-        } else if ( pt instanceof GeometryPropertyDeclaration ) {
+        if ( propDecl instanceof SimplePropertyDeclaration ) {
+            property = new GenericProperty<String>( propDecl, xmlStream.getElementText().trim() );
+        } else if ( propDecl instanceof GeometryPropertyDeclaration ) {
             xmlStream.nextTag();
             // TODO geometry parsing
             // Geometry geometry = StAXGeometryParser.parseGeometry( xmlStream, srsName );
             // property = new GenericProperty (pt, geometry);
+            LOG.debug( "- skipping parsing of '" + xmlStream.getName() + "' -- geometry parsing is not implemented yet" );            
             skipElement( xmlStream );
+            property = new GenericProperty<String>( propDecl, xmlStream.getName().toString() );
+            
             xmlStream.nextTag();
-        } else if ( pt instanceof FeaturePropertyDeclaration ) {
+        } else if ( propDecl instanceof FeaturePropertyDeclaration ) {
             String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
             if ( href != null ) {
                 // remote feature (xlinked content)
@@ -180,7 +211,7 @@ public class FeatureGMLAdapter extends XMLAdapter {
                     throw new XMLParsingException( this, xmlStream, msg );
                 }
                 Feature subFeature = parseFeature( xmlStream, srsName );
-                property = new GenericProperty<Feature>( pt, subFeature );
+                property = new GenericProperty<Feature>( propDecl, subFeature );
                 skipElement( xmlStream );
             }
         }
@@ -254,7 +285,7 @@ public class FeatureGMLAdapter extends XMLAdapter {
         QName propName = property.getName();
         writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
 
-        // TODO really respect property type here
+        // TODO respect property type properly
         Object value = property.getValue();
         if ( value instanceof Feature ) {
             export( writer, (Feature) value );
