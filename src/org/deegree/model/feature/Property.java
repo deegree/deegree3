@@ -45,7 +45,7 @@ package org.deegree.model.feature;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.generic.DeegreeObject;
+import org.deegree.model.feature.schema.PropertyDeclaration;
 
 /**
  * A spatial or non-spatial property of a {@link Feature}.
@@ -61,9 +61,29 @@ import org.deegree.model.generic.DeegreeObject;
  * 
  * @version $Revision$, $Date$
  */
-public interface Property<T> extends DeegreeObject {
+public interface Property<T> {
 
+    /**
+     * Returns the name of the property.
+     * <p>
+     * In a canonical GML representation, this corresponds to the property's element name.
+     * </p>
+     * 
+     * @return the name of the property
+     */    
     public QName getName();
 
+    /**
+     * Returns the type information for this property.
+     * 
+     * @return the type information
+     */    
+    public PropertyDeclaration getType();    
+
+    /**
+     * Returns the value of this property.
+     * 
+     * @return the value of this property
+     */
     public T getValue();
 }

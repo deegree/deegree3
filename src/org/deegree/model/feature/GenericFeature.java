@@ -43,13 +43,14 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.schema.FeatureType;
+import org.deegree.model.feature.schema.GenericFeatureType;
 import org.deegree.model.generic.Attribute;
-import org.deegree.model.generic.Node;
 
 /**
  * Allows the representation of arbitrary {@link Feature}s.
@@ -67,19 +68,29 @@ import org.deegree.model.generic.Node;
  */
 public class GenericFeature implements Feature {
 
-    private String id;
+    private String fid;
     
-    private FeatureType ft;
+    private GenericFeatureType ft;
 
-    // only used when feature has no type information (ft == null)
-    private QName name;
+    private List<Property<?>> props;   
 
-    public String getId () {
-        return id;
+    public GenericFeature (GenericFeatureType ft, String fid, List<Property<?>> props) {
+        this.ft = ft;
+        this.fid = fid;
+        this.props = new ArrayList<Property<?>>(props);
     }
     
+    public String getId () {
+        return fid;
+    }
+
+    @Override
+    public void setId( String fid ) {
+        this.fid = fid;
+    }    
+    
     public QName getName() {
-        return ft != null ? ft.getName() : name;
+        return ft.getName();
     }
 
     public FeatureType getType() {
@@ -91,18 +102,14 @@ public class GenericFeature implements Feature {
         return null;
     }
 
-    public Object getPropertyValue( QName propName ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public List<Attribute> getAttributes() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public List<Node> getContents() {
-        // TODO Auto-generated method stub
-        return null;
+    @Override
+    public void setProperties( List<Property<?>> props )
+                            throws IllegalArgumentException {
+        this.props = new ArrayList<Property<?>> (props);
     }
 }

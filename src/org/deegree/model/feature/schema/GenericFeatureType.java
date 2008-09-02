@@ -41,11 +41,16 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature;
+package org.deegree.model.feature.schema;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.deegree.model.feature.schema.FeatureType;
+import javax.xml.namespace.QName;
+
+import org.deegree.model.feature.Feature;
+import org.deegree.model.feature.GenericFeature;
+import org.deegree.model.feature.Property;
 
 /**
  * TODO add documentation here
@@ -55,11 +60,29 @@ import org.deegree.model.feature.schema.FeatureType;
  *
  * @version $Revision:$, $Date:$
  */
-public class FeatureBuilder {
+public class GenericFeatureType implements FeatureType {
 
-    public Feature buildFeature (FeatureType ft, String featureId, Map<String,Object> properties) {
-        return null;
+    private QName name;
+    
+    private List<PropertyDeclaration> propDecls;
+    
+    public GenericFeatureType (QName name, List<PropertyDeclaration> propDecls) {
+        this.name = name;
+        this.propDecls = new ArrayList<PropertyDeclaration> (propDecls);
     }
 
+    @Override
+    public QName getName() {
+        return name;
+    }
 
+    @Override
+    public List<PropertyDeclaration> getPropertyDeclarations() {
+        return propDecls;
+    }
+
+    @Override
+    public Feature newFeature( String fid, List<Property<?>> props) {
+        return new GenericFeature(this, fid, props);
+    }
 }

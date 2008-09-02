@@ -43,52 +43,26 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.deegree.model.feature.schema.FeatureType;
-import org.deegree.model.feature.schema.GenericFeatureType;
-import org.deegree.model.feature.schema.PropertyDeclaration;
-import org.junit.Before;
-import org.junit.Test;
-
 /**
- * TODO add documentation here
- *
+ * Represents the value of a {@link Feature} property that is specified as a reference to a remote resource.
+ * <p>
+ * In GML, such a property is specified using an xlink attribute with an URI that points to a remote system.
+ * </p>
+ * <p>
+ * NOTE: "Local" external properties are not represented using this class.
+ * </p>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class FeatureGMLAdapterTest {
-    
-    private FeatureGMLAdapter adapter;
-    
-    @Before
-    public void setUp() {
+public class RemoteContent {
 
-        List<PropertyDeclaration> propDecls = new ArrayList<PropertyDeclaration>();
-        
-        FeatureType ft = new GenericFeatureType (new QName ("http://www.deegree.org/app", "Country"), propDecls );
-        List<FeatureType> fts = new ArrayList<FeatureType>();
-        fts.add(ft);
-
-        adapter = new FeatureGMLAdapter(fts);
+    // reference (usually a URL)
+    private String href;
+    
+    public RemoteContent (String href) {
+        this.href = href;
     }
-    
-    
-    @Test
-    public void testParsing () throws XMLStreamException, FactoryConfigurationError, IOException { 
-        URL docURL = FeatureGMLAdapterTest.class.getResource( "SimpleFeatureExample1.xml" );
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(), docURL.openStream() );
-        xmlReader.close();
-    }    
 }

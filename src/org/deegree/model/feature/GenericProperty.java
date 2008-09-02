@@ -43,22 +43,9 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.model.feature.schema.FeatureType;
-import org.deegree.model.feature.schema.GenericFeatureType;
 import org.deegree.model.feature.schema.PropertyDeclaration;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * TODO add documentation here
@@ -68,27 +55,33 @@ import org.junit.Test;
  *
  * @version $Revision:$, $Date:$
  */
-public class FeatureGMLAdapterTest {
-    
-    private FeatureGMLAdapter adapter;
-    
-    @Before
-    public void setUp() {
+public class GenericProperty<T> implements Property<T> {
 
-        List<PropertyDeclaration> propDecls = new ArrayList<PropertyDeclaration>();
-        
-        FeatureType ft = new GenericFeatureType (new QName ("http://www.deegree.org/app", "Country"), propDecls );
-        List<FeatureType> fts = new ArrayList<FeatureType>();
-        fts.add(ft);
+    private PropertyDeclaration declaration;
 
-        adapter = new FeatureGMLAdapter(fts);
+    private T value;
+
+    /**
+     * @param declaration
+     * @param value
+     */
+    public GenericProperty (PropertyDeclaration declaration, T value) {
+        this.declaration = declaration;
+        this.value = value;
     }
     
-    
-    @Test
-    public void testParsing () throws XMLStreamException, FactoryConfigurationError, IOException { 
-        URL docURL = FeatureGMLAdapterTest.class.getResource( "SimpleFeatureExample1.xml" );
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(), docURL.openStream() );
-        xmlReader.close();
-    }    
+    @Override
+    public QName getName() {
+        return declaration.getName();
+    }
+
+    @Override
+    public T getValue() {
+        return value;
+    }
+
+    @Override
+    public PropertyDeclaration getType() {
+        return declaration;
+    }
 }

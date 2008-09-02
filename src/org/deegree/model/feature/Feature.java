@@ -43,6 +43,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature;
 
+import java.util.List;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.schema.FeatureType;
@@ -59,7 +61,7 @@ import org.deegree.model.feature.schema.FeatureType;
  * </ul>
  * </p>
  * 
- * @see Property
+ * @see FeatureBuilder
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -80,6 +82,18 @@ public interface Feature {
     public String getId();
 
     /**
+     * Sets the id of the feature.
+     * <p>
+     * In the GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3) or <code>fid</code>
+     * (GML 2) attribute of the feature element.
+     * </p>
+     * 
+     * @param id
+     *            the id of the feature instance
+     */
+    public void setId( String id );
+
+    /**
      * Returns the name of the feature.
      * <p>
      * In the GML representation of the feature, this corresponds to the feature element's name.
@@ -88,7 +102,7 @@ public interface Feature {
      * @return the name of the feature instance
      */
     public QName getName();
-    
+
     /**
      * Returns the type information for this feature.
      * 
@@ -97,18 +111,19 @@ public interface Feature {
     public FeatureType getType();
 
     /**
-     * Returns the value of the specified property.
-     * 
-     * @param propName
-     *            name of the property
-     * @return property value
-     */
-    public Object getPropertyValue( QName propName );
-
-    /**
-     * Returns all properties of this feature in their original order.
+     * Returns all properties of this feature in order.
      * 
      * @return all properties of this feature
      */
     public Property<?>[] getProperties();
+
+    /**
+     * Called by the {@link FeatureBuilder} during construction to initialize the properties of the feature.
+     * 
+     * @param props
+     * @throws IllegalArgumentException
+     *             if the property names or values are not compatible with the feature type
+     */
+    void setProperties( List<Property<?>> props )
+                            throws IllegalArgumentException;
 }

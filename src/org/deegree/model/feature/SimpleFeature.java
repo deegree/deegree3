@@ -67,11 +67,23 @@ public interface SimpleFeature extends Feature {
     public Object getPropertyValue( QName propName );
 
     /**
+     * Sets the value of the specified property.
+     * 
+     * @param propName
+     *            name of the property to set
+     * @param value new vales of the property 
+     */
+    public void setPropertyValue( QName propName, Object value );
+
+    /**
      * Returns the value of the geometry property.
+     * <p>
+     * NOTE: A simple feature may contain only one geometry property.
+     * </p>
      * 
      * @param propName
      *            name of the property
-     * @return property value
+     * @return geometry property value
      */
     public Geometry getGeometryPropertyValue( QName propName );
 }

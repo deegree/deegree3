@@ -41,24 +41,9 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature;
-
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+package org.deegree.model.feature.schema;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.deegree.model.feature.schema.FeatureType;
-import org.deegree.model.feature.schema.GenericFeatureType;
-import org.deegree.model.feature.schema.PropertyDeclaration;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * TODO add documentation here
@@ -68,27 +53,40 @@ import org.junit.Test;
  *
  * @version $Revision:$, $Date:$
  */
-public class FeatureGMLAdapterTest {
-    
-    private FeatureGMLAdapter adapter;
-    
-    @Before
-    public void setUp() {
+public class GeometryPropertyDeclaration implements PropertyDeclaration {
 
-        List<PropertyDeclaration> propDecls = new ArrayList<PropertyDeclaration>();
-        
-        FeatureType ft = new GenericFeatureType (new QName ("http://www.deegree.org/app", "Country"), propDecls );
-        List<FeatureType> fts = new ArrayList<FeatureType>();
-        fts.add(ft);
+    private QName name;    
+    
+    private int maxOccurs;
+    
+    private int minOccurs;
 
-        adapter = new FeatureGMLAdapter(fts);
+    private QName xsdType;    
+
+    public GeometryPropertyDeclaration (QName name, int minOccurs, int maxOccurs, QName xsdType) {
+        this.name = name;
+        this.minOccurs = minOccurs;
+        this.maxOccurs = maxOccurs;
+        this.xsdType = xsdType;
     }
     
-    
-    @Test
-    public void testParsing () throws XMLStreamException, FactoryConfigurationError, IOException { 
-        URL docURL = FeatureGMLAdapterTest.class.getResource( "SimpleFeatureExample1.xml" );
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(), docURL.openStream() );
-        xmlReader.close();
+    @Override
+    public QName getName() {
+        return name;
     }    
+    
+    @Override
+    public int getMaxOccurs() {
+        return maxOccurs;
+    }
+
+    @Override
+    public int getMinOccurs() {
+        return minOccurs;
+    }
+
+    @Override
+    public QName getXSDValueType() {
+        return xsdType;
+    }
 }

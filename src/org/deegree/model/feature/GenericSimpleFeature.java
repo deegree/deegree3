@@ -43,6 +43,10 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.schema.FeatureType;
@@ -58,57 +62,59 @@ import org.deegree.model.geometry.Geometry;
  */
 public class GenericSimpleFeature implements SimpleFeature {
 
-    private String id;
+    private String fid;
     
     private FeatureType ft;
 
-    // only used when feature has no type information (ft == null)
-    private QName name;
+    // stores the property names and their values (respects the insertion order)
+    private Map<QName, Object> propertyNamesToValues = new LinkedHashMap<QName, Object>();
 
+    @Override
     public String getId () {
-        return id;
+        return fid;
+    }
+
+    @Override
+    public void setId( String fid ) {
+        this.fid = fid;
+    }    
+
+    @Override    
+    public QName getName() {
+        return ft.getName();
+    }    
+
+    @Override
+    public FeatureType getType() {
+        return ft;
     }
     
-    public QName getName() {
-        return ft != null ? ft.getName() : name;
-    }    
-    
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.feature.Feature#getProperties()
-     */
     @Override
     public Property<?>[] getProperties() {
         // TODO Auto-generated method stub
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.feature.Feature#getPropertyValue(javax.xml.namespace.QName)
-     */
     @Override
     public Object getPropertyValue( QName propName ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.feature.Feature#getType()
-     */
-    @Override
-    public FeatureType getType() {
-        // TODO Auto-generated method stub
-        return null;
+        return propertyNamesToValues.get( propName );
     }
 
     @Override
     public Geometry getGeometryPropertyValue( QName propName ) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void setPropertyValue( QName propName, Object value ) {
+        propertyNamesToValues.put( propName, value );
+    }
+
+    @Override
+    public void setProperties( List<Property<?>> props )
+                            throws IllegalArgumentException {
+        // TODO Auto-generated method stub
+        
     }
 }

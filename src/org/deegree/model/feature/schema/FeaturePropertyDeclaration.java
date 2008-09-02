@@ -41,24 +41,8 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
-import org.deegree.model.feature.schema.FeatureType;
-import org.deegree.model.feature.schema.GenericFeatureType;
-import org.deegree.model.feature.schema.PropertyDeclaration;
-import org.junit.Before;
-import org.junit.Test;
+package org.deegree.model.feature.schema;
 
 /**
  * TODO add documentation here
@@ -68,27 +52,12 @@ import org.junit.Test;
  *
  * @version $Revision:$, $Date:$
  */
-public class FeatureGMLAdapterTest {
-    
-    private FeatureGMLAdapter adapter;
-    
-    @Before
-    public void setUp() {
+public interface FeaturePropertyDeclaration extends PropertyDeclaration {
 
-        List<PropertyDeclaration> propDecls = new ArrayList<PropertyDeclaration>();
-        
-        FeatureType ft = new GenericFeatureType (new QName ("http://www.deegree.org/app", "Country"), propDecls );
-        List<FeatureType> fts = new ArrayList<FeatureType>();
-        fts.add(ft);
-
-        adapter = new FeatureGMLAdapter(fts);
-    }
+    /**
+     * 
+     * @return
+     */
+    public FeatureType getValueFeatureType ();
     
-    
-    @Test
-    public void testParsing () throws XMLStreamException, FactoryConfigurationError, IOException { 
-        URL docURL = FeatureGMLAdapterTest.class.getResource( "SimpleFeatureExample1.xml" );
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(), docURL.openStream() );
-        xmlReader.close();
-    }    
 }

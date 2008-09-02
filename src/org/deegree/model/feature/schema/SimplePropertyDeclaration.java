@@ -43,48 +43,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature.schema;
 
-import javax.xml.namespace.QName;
+public interface SimplePropertyDeclaration extends PropertyDeclaration {
 
-/**
- * Declares a named property of a {@link FeatureType}.
- * 
- * @see FeatureType
-
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- *
- * @version $Revision:$, $Date:$
- */
-public interface PropertyDeclaration {
-
-    /**
-     * Returns the name of the declared property.
-     * <p>
-     * In the GML representation, this corresponds to the property's element name.
-     * </p>
-     * 
-     * @return the name of the property
-     */
-    public QName getName();
-
-    /**
-     * Specifies the minimum number of times that this property must be present in a feature instance.
-     * 
-     * @return the minimum number of times that this property must be present
-     */
-    public int getMinOccurs();
-
-    /**
-     * Specifies the maximum number of times that this property must be present in a feature instance.
-     * 
-     * @return the maximum number of times that this property must be present, or -1 (=unbounded)
-     */    
-    public int getMaxOccurs();
-
-    /**
-     * Returns the name of the XML type definition.
-     *
-     * @return the name of the XML type
-     */
-    public QName getXSDValueType();
+    public int getBuiltInType();
+    
 }
