@@ -61,8 +61,6 @@ import org.deegree.model.feature.schema.FeatureType;
  * </ul>
  * </p>
  * 
- * @see FeatureBuilder
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
