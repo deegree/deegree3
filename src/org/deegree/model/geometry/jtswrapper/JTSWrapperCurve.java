@@ -81,7 +81,7 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
         super( precision, crs, coordinateDimension );
         // A JTS geometry is simple; so it has just one segment -> segment and curve are
         // geometrical identic
-        this.segments = new ArrayList<CurveSegment>(1);
+        this.segments = new ArrayList<CurveSegment>( 1 );
         this.segments.add( segment );
         this.orientation = orientation;
         List<Coordinate> coords = new ArrayList<Coordinate>( segment.getPoints().size() );
@@ -95,9 +95,9 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
                 coords.add( new Coordinate( point.getX(), point.getY(), point.getZ() ) );
             }
         }
-        
+
         PrecisionModel pm = jtsFactory.getPrecisionModel();
-        for ( Coordinate coord: coords ) {
+        for ( Coordinate coord : coords ) {
             pm.makePrecise( coord );
         }
 
@@ -112,7 +112,7 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
     public double[] getAsArray() {
         if ( coordinates == null ) {
             LineString ls = (LineString) geometry;
-            coordinates = new double[ls.getNumPoints()];
+            coordinates = new double[ls.getNumPoints() * coordinateDimension];
             int k = 0;
             for ( int i = 0; i < ls.getNumPoints(); i++ ) {
                 Coordinate coord = ls.getPointN( i ).getCoordinate();
@@ -184,7 +184,10 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
      * @see org.deegree.model.geometry.primitive.Curve#getX()
      */
     public double[] getX() {
-        double[] x = new double[coordinates.length];
+        if ( coordinates == null ) {
+            getAsArray();
+        }
+        double[] x = new double[geometry.getNumPoints()];
         int k = 0;
         for ( int i = 0; i < x.length; i++ ) {
             x[i] = coordinates[k];
@@ -199,7 +202,10 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
      * @see org.deegree.model.geometry.primitive.Curve#getY()
      */
     public double[] getY() {
-        double[] y = new double[coordinates.length];
+        if ( coordinates == null ) {
+            getAsArray();
+        }
+        double[] y = new double[geometry.getNumPoints()];
         int k = 1;
         for ( int i = 0; i < y.length; i++ ) {
             y[i] = coordinates[k];
@@ -214,7 +220,10 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
      * @see org.deegree.model.geometry.primitive.Curve#getZ()
      */
     public double[] getZ() {
-        double[] z = new double[coordinates.length];
+        if ( coordinates == null ) {
+            getAsArray();
+        }
+        double[] z = new double[geometry.getNumPoints()];
         if ( coordinateDimension == 3 ) {
             int k = 2;
             for ( int i = 0; i < z.length; i++ ) {
