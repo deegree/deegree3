@@ -43,6 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.deegree.model.feature.schema.FeatureCollectionType;
@@ -57,7 +58,7 @@ import org.deegree.model.feature.schema.FeatureCollectionType;
  * 
  * @version $Revision: 13814 $, $Date: 2008-09-02 20:28:13 +0200 (Di, 02 Sep 2008) $
  */
-public interface FeatureCollection extends Feature, Iterable<Feature>  {
+public interface FeatureCollection extends Feature, Collection<Feature>  {
 
     /**
      * Returns the type information for this feature collection.

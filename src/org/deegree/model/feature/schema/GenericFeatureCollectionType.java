@@ -41,10 +41,16 @@
 
 
  ---------------------------------------------------------------------------*/
-
 package org.deegree.model.feature.schema;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.xml.namespace.QName;
+
+import org.deegree.model.feature.Feature;
+import org.deegree.model.feature.GenericFeatureCollection;
+import org.deegree.model.feature.Property;
 
 /**
  * TODO add documentation here
@@ -54,40 +60,29 @@ import javax.xml.namespace.QName;
  *
  * @version $Revision:$, $Date:$
  */
-public class FeaturePropertyDeclaration implements PropertyDeclaration {
+public class GenericFeatureCollectionType implements FeatureCollectionType {
 
-    private QName name;    
+    private QName name;
     
-    private int maxOccurs;
+    private List<PropertyDeclaration> propDecls;
     
-    private int minOccurs;
-
-    private QName xsdType;    
-
-    public FeaturePropertyDeclaration (QName name, int minOccurs, int maxOccurs, QName xsdType) {
+    public GenericFeatureCollectionType (QName name, List<PropertyDeclaration> propDecls) {
         this.name = name;
-        this.minOccurs = minOccurs;
-        this.maxOccurs = maxOccurs;
-        this.xsdType = xsdType;
+        this.propDecls = new ArrayList<PropertyDeclaration> (propDecls);
     }
-    
+
     @Override
     public QName getName() {
         return name;
-    }    
-    
-    @Override
-    public int getMaxOccurs() {
-        return maxOccurs;
     }
 
     @Override
-    public int getMinOccurs() {
-        return minOccurs;
+    public List<PropertyDeclaration> getPropertyDeclarations() {
+        return propDecls;
     }
 
     @Override
-    public QName getXSDValueType() {
-        return xsdType;
-    }    
+    public Feature newFeature( String fid, List<Property<?>> props) {
+        return new GenericFeatureCollection(this, fid, props);
+    }
 }

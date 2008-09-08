@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/feature/Feature.java $
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -41,53 +41,46 @@
 
 
  ---------------------------------------------------------------------------*/
+package org.deegree.model.gml;
 
-package org.deegree.model.feature.schema;
+import java.util.HashMap;
+import java.util.Map;
 
-import javax.xml.namespace.QName;
+import org.deegree.model.feature.Feature;
+import org.deegree.model.geometry.Geometry;
 
 /**
- * TODO add documentation here
- *
+ * Allows the lookup GML objects
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class FeaturePropertyDeclaration implements PropertyDeclaration {
+public class GMLIdContext {
 
-    private QName name;    
-    
-    private int maxOccurs;
-    
-    private int minOccurs;
+    private Map<String, Object> idToObject = new HashMap<String, Object>();
 
-    private QName xsdType;    
+    private Map<String, Feature> idToFeature = new HashMap<String, Feature>();
 
-    public FeaturePropertyDeclaration (QName name, int minOccurs, int maxOccurs, QName xsdType) {
-        this.name = name;
-        this.minOccurs = minOccurs;
-        this.maxOccurs = maxOccurs;
-        this.xsdType = xsdType;
-    }
-    
-    @Override
-    public QName getName() {
-        return name;
-    }    
-    
-    @Override
-    public int getMaxOccurs() {
-        return maxOccurs;
+    private Map<String, Geometry> idToGeometry = new HashMap<String, Geometry>();
+
+    public Object getObject( String id ) {
+        return idToObject.get( id );
     }
 
-    @Override
-    public int getMinOccurs() {
-        return minOccurs;
+    public Feature getFeature( String id ) {
+        return idToFeature.get( id );
     }
 
-    @Override
-    public QName getXSDValueType() {
-        return xsdType;
-    }    
+    public Geometry getGeometry( String id ) {
+        return idToGeometry.get( id );
+    }
+
+    public void addFeature( Feature feature ) {
+        idToFeature.put( feature.getId(), feature );
+    }
+
+    // public void addGeometry (Geometry geometry) {
+    // }
 }

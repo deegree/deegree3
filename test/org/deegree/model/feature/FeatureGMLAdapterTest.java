@@ -59,11 +59,14 @@ import javax.xml.stream.XMLStreamWriter;
 import junit.framework.Assert;
 
 import org.deegree.commons.xml.FormattingXMLStreamWriter;
+import org.deegree.model.feature.schema.FeaturePropertyDeclaration;
 import org.deegree.model.feature.schema.FeatureType;
+import org.deegree.model.feature.schema.GenericFeatureCollectionType;
 import org.deegree.model.feature.schema.GenericFeatureType;
 import org.deegree.model.feature.schema.GeometryPropertyDeclaration;
 import org.deegree.model.feature.schema.PropertyDeclaration;
 import org.deegree.model.feature.schema.SimplePropertyDeclaration;
+import org.deegree.model.gml.FeatureGMLAdapter;
 import org.junit.Test;
 
 /**
@@ -155,6 +158,51 @@ public class FeatureGMLAdapterTest {
     // xmlWriter.flush();
     // }
 
+    @Test
+    public void testGenericFeatureCollectionParsing()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+
+        List<FeatureType> fts = new ArrayList<FeatureType>();
+                
+        // manually set up a simple "app:Country" feature type
+        List<PropertyDeclaration> propDecls = new ArrayList<PropertyDeclaration>();
+        propDecls.add( new SimplePropertyDeclaration( new QName( "http://www.deegree.org/app", "name" ), 1, 1,
+                                                      new QName( "http://www.w3.org/2001/XMLSchema", "string" ) ) );
+        propDecls.add( new GeometryPropertyDeclaration(
+                                                        new QName( "http://www.deegree.org/app", "boundary" ),
+                                                        1,
+                                                        1,
+                                                        new QName( "http://www.opengis.net", "MultiSurfacePropertyType" ) ) );
+        fts.add (new GenericFeatureType( new QName( "http://www.deegree.org/app", "Country" ), propDecls ));
+        
+        // manually set up "gml:FeatureCollection" feature (collection) type
+        propDecls = new ArrayList<PropertyDeclaration>();
+        propDecls.add( new FeaturePropertyDeclaration( new QName( "http://www.opengis.net/gml", "featureMember" ), 1, -1,
+                                                      new QName( "http://www.opengis.net/gml", "_Feature" ) ) );
+        fts.add (new GenericFeatureCollectionType( new QName( "http://www.opengis.net/gml", "FeatureCollection" ), propDecls ));        
+        FeatureGMLAdapter adapter = new FeatureGMLAdapter( fts );
+
+        URL docURL = FeatureGMLAdapterTest.class.getResource( "SimpleFeatureCollectionExample1.gml" );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.next();
+        Feature feature = adapter.parseFeature( xmlReader, null );
+        xmlReader.close();
+
+//        Assert.assertEquals( new QName( "http://www.deegree.org/app", "Country" ), feature.getName() );
+//        Assert.assertEquals( "COUNTRY_1", feature.getId() );
+//        Assert.assertEquals( 2, feature.getProperties().length );
+//        Assert.assertEquals( "France", feature.getProperties()[0].getValue() );
+
+        XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(
+                                                                   XMLOutputFactory.newInstance().createXMLStreamWriter(
+                                                                                                                         System.out ) );
+        xmlWriter.setPrefix("app", "http://www.deegree.org/app");
+        xmlWriter.setPrefix("gml", "http://www.opengis.net/gml");        
+        adapter.export( xmlWriter, feature );
+        xmlWriter.close();
+    }    
+    
     public static void main( String[] args ) {
 
         System.out.println( "bla: " + new QName( "Country" ) );

@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="http://www.deegree.org/app" xmlns:app="http://www.deegree.org/app" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xsd:schema xmlns:app="http://www.deegree.org/app" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!-- ====================================================================== -->
 	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/feature.xsd"/>
 	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/geometryAggregates.xsd"/>
 	<!-- ====================================================================== -->
-	<xsd:element name="Country" substitutionGroup="gml:_Feature" type="app:CountryType"/>
+	<xsd:element name="Country" type="app:CountryType" substitutionGroup="gml:_Feature"/>
 	<!-- ====================================================================== -->
 	<xsd:complexType name="CountryType">
 		<xsd:complexContent>
 			<xsd:extension base="gml:AbstractFeatureType">
-				<xsd:sequence>
+				<xsd:choice>
 					<!-- simple (string) valued property 'name' -->
-					<xsd:element name="name" type="xsd:string"/>
+					<xsd:element name="name" type="string">
 					<!-- geometry property 'boundary' -->
 					<xsd:element name="boundary" type="gml:MultiSurfacePropertyType"/>
+					<!-- simple (string) valued property 'name' -->
+					<xsd:element name="name"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
 	</xsd:complexType>
-	<!-- ====================================================================== -->	
 </xsd:schema>

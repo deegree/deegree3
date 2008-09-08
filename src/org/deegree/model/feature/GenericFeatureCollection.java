@@ -44,12 +44,14 @@
 package org.deegree.model.feature;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.schema.FeatureCollectionType;
+import org.deegree.model.feature.schema.PropertyDeclaration;
 
 /**
  * TODO add documentation here
@@ -65,7 +67,15 @@ public class GenericFeatureCollection implements FeatureCollection {
 
     private FeatureCollectionType ft;
 
-    private List<Feature> memberFeatures;
+    private List<Feature> memberFeatures = new ArrayList<Feature>();
+
+    private List<Property<?>> nonMemberProps = new ArrayList<Property<?>>();
+
+    private PropertyDeclaration featureMemberDecl;
+
+    private static QName FEATURE_MEMBER = new QName( "http://www.opengis.net/gml", "featureMember" );
+
+    private static QName FEATURE_MEMBERS = new QName( "http://www.opengis.net/gml", "featureMembers" );
 
     /**
      * Creates a new <code>GenericFeatureCollection</code> with type information and content.
@@ -77,7 +87,23 @@ public class GenericFeatureCollection implements FeatureCollection {
     public GenericFeatureCollection( FeatureCollectionType ft, String fid, List<Property<?>> props ) {
         this.ft = ft;
         this.fid = fid;
-        // TODO initialize member features and non-feature properties
+        for ( Property<?> prop : props ) {
+            if ( FEATURE_MEMBER.equals( prop.getName() ) ) {
+                memberFeatures.add( (Feature) prop.getValue() );
+            } else if ( FEATURE_MEMBERS.equals( prop.getName() ) ) {
+                for (Feature feature : (Feature []) prop.getValue()) {
+                    memberFeatures.add( feature );
+                }
+            } else {
+                nonMemberProps.add( prop );
+            }
+        }
+
+        for ( PropertyDeclaration propertyDecl : ft.getPropertyDeclarations()) {
+            if (FEATURE_MEMBER.equals(propertyDecl.getName())) {
+                featureMemberDecl = propertyDecl;
+            }
+        }
     }
 
     /**
@@ -88,7 +114,7 @@ public class GenericFeatureCollection implements FeatureCollection {
      */
     public GenericFeatureCollection( String fid, List<Feature> memberFeatures ) {
         this.fid = fid;
-        this.memberFeatures = new ArrayList<Feature> (memberFeatures);
+        this.memberFeatures = new ArrayList<Feature>( memberFeatures );
     }
 
     @Override
@@ -113,8 +139,15 @@ public class GenericFeatureCollection implements FeatureCollection {
 
     @Override
     public Property<?>[] getProperties() {
-        // TODO Auto-generated method stub
-        return null;
+        Property<?>[] props = new Property<?>[nonMemberProps.size() + memberFeatures.size()];
+        int i = 0;
+        for ( Property<?> property : nonMemberProps ) {
+            props [i++] = property;
+        }
+        for ( Feature feature : memberFeatures ) {
+            props [i++] = new GenericProperty<Feature>(featureMemberDecl, feature);
+        }
+        return props;
     }
 
     @Override
@@ -128,8 +161,80 @@ public class GenericFeatureCollection implements FeatureCollection {
         // TODO Auto-generated method stub
     }
 
+    // -----------------------------------------------------------------------
+    // implementation of List<Feature>
+    // -----------------------------------------------------------------------
+
     @Override
     public Iterator<Feature> iterator() {
         return memberFeatures.iterator();
+    }
+
+    @Override
+    public boolean add( Feature e ) {
+        return false;
+    }
+
+    @Override
+    public boolean addAll( Collection<? extends Feature> c ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void clear() {
+        memberFeatures.clear();
+    }
+
+    @Override
+    public boolean contains( Object o ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean containsAll( Collection<?> c ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return memberFeatures.isEmpty();
+    }
+
+    @Override
+    public boolean remove( Object o ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean removeAll( Collection<?> c ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean retainAll( Collection<?> c ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public int size() {
+        return memberFeatures.size();
+    }
+
+    @Override
+    public Object[] toArray() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public <T> T[] toArray( T[] a ) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
