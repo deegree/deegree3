@@ -9,13 +9,11 @@
 	<xsd:complexType name="CountryType">
 		<xsd:complexContent>
 			<xsd:extension base="gml:AbstractFeatureType">
-				<xsd:choice>
+				<xsd:sequence>
 					<!-- simple (string) valued property 'name' -->
-					<xsd:element name="name" type="string">
+					<xsd:element name="name" type="xsd:string"/>
 					<!-- geometry property 'boundary' -->
 					<xsd:element name="boundary" type="gml:MultiSurfacePropertyType"/>
-					<!-- simple (string) valued property 'name' -->
-					<xsd:element name="name"/>
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

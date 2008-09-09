@@ -63,32 +63,32 @@ import org.deegree.model.geometry.Geometry;
 public class GenericSimpleFeature implements SimpleFeature {
 
     private String fid;
-    
+
     private FeatureType ft;
 
     // stores the property names and their values (respects the insertion order)
     private Map<QName, Object> propertyNamesToValues = new LinkedHashMap<QName, Object>();
 
     @Override
-    public String getId () {
+    public String getId() {
         return fid;
     }
 
     @Override
     public void setId( String fid ) {
         this.fid = fid;
-    }    
+    }
 
-    @Override    
+    @Override
     public QName getName() {
         return ft.getName();
-    }    
+    }
 
     @Override
     public FeatureType getType() {
         return ft;
     }
-    
+
     @Override
     public Property<?>[] getProperties() {
         // TODO Auto-generated method stub
@@ -107,6 +107,16 @@ public class GenericSimpleFeature implements SimpleFeature {
     }
 
     @Override
+    public void setPropertyValue( QName propName, int occurence, Object value ) {
+        if ( occurence != 0 ) {
+            String msg = "Cannot set value of the " + occurence + ". occurence in '" + ft.getName()
+                         + "' feature: multi properties are not allowed in simple features.";
+            throw new IllegalArgumentException( msg );
+        }
+        setPropertyValue( propName, value );
+    }
+
+    @Override
     public void setPropertyValue( QName propName, Object value ) {
         propertyNamesToValues.put( propName, value );
     }
@@ -115,6 +125,5 @@ public class GenericSimpleFeature implements SimpleFeature {
     public void setProperties( List<Property<?>> props )
                             throws IllegalArgumentException {
         // TODO Auto-generated method stub
-        
     }
 }

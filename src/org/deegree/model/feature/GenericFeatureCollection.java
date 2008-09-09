@@ -237,4 +237,9 @@ public class GenericFeatureCollection implements FeatureCollection {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public void setPropertyValue( QName propName, int occurence, Object value ) {
+        // TODO Auto-generated method stub        
+    }
 }

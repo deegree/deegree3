@@ -50,7 +50,9 @@ import org.deegree.model.feature.Feature;
 import org.deegree.model.geometry.Geometry;
 
 /**
- * Allows the lookup GML objects
+ * Allows the lookup of GML objects by the value of their "gml:id" attribute.
+ * <p>
+ * This functionality is needed for resolving local xlink-references during the parsing process of GML documents. 
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

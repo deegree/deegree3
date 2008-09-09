@@ -41,7 +41,7 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature;
+package org.deegree.model.gml;
 
 import java.io.IOException;
 import java.net.URL;
@@ -59,6 +59,7 @@ import javax.xml.stream.XMLStreamWriter;
 import junit.framework.Assert;
 
 import org.deegree.commons.xml.FormattingXMLStreamWriter;
+import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.schema.FeaturePropertyDeclaration;
 import org.deegree.model.feature.schema.FeatureType;
 import org.deegree.model.feature.schema.GenericFeatureCollectionType;

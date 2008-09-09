@@ -50,12 +50,11 @@ import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.schema.FeatureType;
 import org.deegree.model.feature.schema.GenericFeatureType;
-import org.deegree.model.generic.Attribute;
 
 /**
  * Allows the representation of arbitrary {@link Feature}s.
  * <p>
- * Please note that is more efficient to use the {@link GenericSimpleFeature} class if the feature to be represented
+ * Please note that it is more efficient to use the {@link GenericSimpleFeature} class if the feature to be represented
  * does not contain multiple properties or nested features ("complex properties").
  * </p>
  * 
@@ -69,46 +68,50 @@ import org.deegree.model.generic.Attribute;
 public class GenericFeature implements Feature {
 
     private String fid;
-    
+
     private GenericFeatureType ft;
 
-    private List<Property<?>> props;   
+    private List<Property<?>> props;
 
-    public GenericFeature (GenericFeatureType ft, String fid, List<Property<?>> props) {
+    public GenericFeature( GenericFeatureType ft, String fid, List<Property<?>> props ) {
         this.ft = ft;
         this.fid = fid;
-        this.props = new ArrayList<Property<?>>(props);
+        this.props = new ArrayList<Property<?>>( props );
     }
-    
-    public String getId () {
+
+    @Override
+    public String getId() {
         return fid;
     }
 
     @Override
     public void setId( String fid ) {
         this.fid = fid;
-    }    
-    
+    }
+
+    @Override
     public QName getName() {
         return ft.getName();
     }
 
+    @Override
     public FeatureType getType() {
         return ft;
     }
 
+    @Override
     public Property<?>[] getProperties() {
-        return props.toArray(new Property<?>[props.size()]);
-    }
-
-    public List<Attribute> getAttributes() {
-        // TODO Auto-generated method stub
-        return null;
+        return props.toArray( new Property<?>[props.size()] );
     }
 
     @Override
     public void setProperties( List<Property<?>> props )
                             throws IllegalArgumentException {
-        this.props = new ArrayList<Property<?>> (props);
+        this.props = new ArrayList<Property<?>>( props );
+    }
+
+    @Override
+    public void setPropertyValue( QName propName, int occurence, Object value ) {
+        // TODO Auto-generated method stub
     }
 }

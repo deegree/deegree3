@@ -116,6 +116,21 @@ public interface Feature {
     public Property<?>[] getProperties();
 
     /**
+     * Sets the value of a specific occurence of a property with a given name.
+     * 
+     * @param propName
+     *            property name
+     * @param occurence
+     *            index of the property, starting with zero. If the property is not a multi-property (i.e. maxOccurs=1), this
+     *            is always zero.
+     * @param value
+     *            new value of the property
+     * @throws IllegalArgumentException
+     *             if the property names or values are not compatible with the feature type
+     */
+    public void setPropertyValue( QName propName, int occurence, Object value );
+
+    /**
      * Called by the {@link FeatureBuilder} during construction to initialize the properties of the feature.
      * 
      * @param props

@@ -44,7 +44,9 @@
 package org.deegree.model.feature.schema;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -54,21 +56,24 @@ import org.deegree.model.feature.Property;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GenericFeatureType implements FeatureType {
 
     private QName name;
-    
-    private List<PropertyDeclaration> propDecls;
-    
-    public GenericFeatureType (QName name, List<PropertyDeclaration> propDecls) {
+
+    // maps property names to their declaration (LinkedHashMap respects the correct key order)
+    private Map<QName, PropertyDeclaration> propNameToDecl = new LinkedHashMap<QName, PropertyDeclaration>();
+
+    public GenericFeatureType( QName name, List<PropertyDeclaration> propDecls ) {
         this.name = name;
-        this.propDecls = new ArrayList<PropertyDeclaration> (propDecls);
+        for ( PropertyDeclaration propDecl : propDecls ) {
+            propNameToDecl.put( propDecl.getName(), propDecl );
+        }
     }
 
     @Override
@@ -77,12 +82,21 @@ public class GenericFeatureType implements FeatureType {
     }
 
     @Override
+    public PropertyDeclaration getPropertyDeclaration( QName propName ) {
+        return propNameToDecl.get( propName );
+    }    
+    
+    @Override
     public List<PropertyDeclaration> getPropertyDeclarations() {
+        List<PropertyDeclaration> propDecls = new ArrayList<PropertyDeclaration>( propNameToDecl.size() );
+        for ( QName propName : propNameToDecl.keySet() ) {
+            propDecls.add( propNameToDecl.get( propName ) );
+        }
         return propDecls;
     }
 
     @Override
-    public Feature newFeature( String fid, List<Property<?>> props) {
-        return new GenericFeature(this, fid, props);
+    public Feature newFeature( String fid, List<Property<?>> props ) {
+        return new GenericFeature( this, fid, props );
     }
 }

@@ -92,11 +92,8 @@ public class FeatureGMLAdapter extends XMLAdapter {
     // key: feature type name, value: feature type
     private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
-    // key: feature id, value: Feature
-    protected Map<String, Feature> featureMap = new HashMap<String, Feature>();
-
-    // value: XLinkedFeatureProperty
-    // protected Collection<XLinkedFeatureProperty> xlinkProperties = new ArrayList<XLinkedFeatureProperty>();
+    // keeps track of all features (with gml-ids) and properties that use local-xlinks to specifiy the property's value
+    private GMLIdContext idContext;
 
     /**
      * Creates a new <code>FeatureGMLAdapter</code> instance instance that is configured for building features with the
@@ -109,6 +106,7 @@ public class FeatureGMLAdapter extends XMLAdapter {
         for ( FeatureType ft : fts ) {
             ftNameToFt.put( ft.getName(), ft );
         }
+        idContext = new GMLIdContext();
     }
 
     /**
@@ -195,11 +193,11 @@ public class FeatureGMLAdapter extends XMLAdapter {
         feature = ft.newFeature( fid, propertyList );
 
         if ( fid != null && !"".equals( fid ) ) {
-            if ( featureMap.containsKey( fid ) ) {
+            if ( idContext.getObject( fid ) != null ) {
                 String msg = Messages.getMessage( "ERROR_FEATURE_ID_NOT_UNIQUE", fid );
                 throw new XMLParsingException( this, xmlStream, msg );
             }
-            featureMap.put( fid, feature );
+            idContext.addFeature( feature );
         }
 
         return feature;
@@ -324,13 +322,13 @@ public class FeatureGMLAdapter extends XMLAdapter {
                             throws XMLStreamException {
 
         QName featureName = feature.getName();
-        System.out.println ("Exporting " + featureName);        
+        System.out.println( "Exporting " + featureName );
         if ( featureName.getNamespaceURI() == null || featureName.getNamespaceURI().length() == 0 ) {
             writer.writeStartElement( featureName.getLocalPart() );
         } else {
             writer.writeStartElement( featureName.getNamespaceURI(), featureName.getLocalPart() );
         }
-        if (feature.getId() != null) {
+        if ( feature.getId() != null ) {
             writer.writeAttribute( GMLNS, "id", feature.getId() );
         }
         for ( Property<?> prop : feature.getProperties() ) {

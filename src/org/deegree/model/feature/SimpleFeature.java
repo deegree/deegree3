@@ -71,7 +71,7 @@ public interface SimpleFeature extends Feature {
      * 
      * @param propName
      *            name of the property to set
-     * @param value new vales of the property 
+     * @param value new value of the property 
      */
     public void setPropertyValue( QName propName, Object value );
 

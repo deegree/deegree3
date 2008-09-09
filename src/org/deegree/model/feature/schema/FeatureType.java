@@ -71,9 +71,18 @@ public interface FeatureType {
     public QName getName();
 
     /**
-     * Returns the property declarations of this feature type
+     * Returns the declaration of the property with given name.
      * 
-     * @return the property declarations
+     * @param propName
+     *            name of the property
+     * @return the declaration of the property, or null if no such property is defined
+     */
+    public PropertyDeclaration getPropertyDeclaration( QName propName );
+
+    /**
+     * Returns all property declarations of the feature type.
+     * 
+     * @return the property declarations (in order)
      */
     public List<PropertyDeclaration> getPropertyDeclarations();
 
