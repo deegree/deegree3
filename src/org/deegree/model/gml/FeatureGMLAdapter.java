@@ -62,11 +62,11 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.GenericProperty;
 import org.deegree.model.feature.Property;
-import org.deegree.model.feature.schema.FeaturePropertyDeclaration;
-import org.deegree.model.feature.schema.FeatureType;
-import org.deegree.model.feature.schema.GeometryPropertyDeclaration;
-import org.deegree.model.feature.schema.PropertyDeclaration;
-import org.deegree.model.feature.schema.SimplePropertyDeclaration;
+import org.deegree.model.feature.types.FeaturePropertyType;
+import org.deegree.model.feature.types.FeatureType;
+import org.deegree.model.feature.types.GeometryPropertyType;
+import org.deegree.model.feature.types.PropertyType;
+import org.deegree.model.feature.types.SimplePropertyType;
 import org.deegree.model.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,8 +136,8 @@ public class FeatureGMLAdapter extends XMLAdapter {
         // srsName = XMLTools.getNodeAsString( element, "gml:boundedBy/*[1]/@srsName", nsContext, srsName );
 
         // parse properties
-        Iterator<PropertyDeclaration> declIter = ft.getPropertyDeclarations().iterator();
-        PropertyDeclaration activeDecl = declIter.next();
+        Iterator<PropertyType> declIter = ft.getPropertyDeclarations().iterator();
+        PropertyType activeDecl = declIter.next();
         int propOccurences = 0;
 
         List<Property<?>> propertyList = new ArrayList<Property<?>>();
@@ -217,7 +217,7 @@ public class FeatureGMLAdapter extends XMLAdapter {
      * @throws XMLParsingException
      * @throws XMLStreamException
      */
-    public Property<?> parseProperty( XMLStreamReader xmlStream, PropertyDeclaration propDecl, String srsName )
+    public Property<?> parseProperty( XMLStreamReader xmlStream, PropertyType propDecl, String srsName )
                             throws XMLParsingException, XMLStreamException {
 
         Property<?> property = null;
@@ -225,9 +225,9 @@ public class FeatureGMLAdapter extends XMLAdapter {
         LOG.debug( "- parsing property (begin): " + getCurrentEventInfo( xmlStream ) );
         LOG.debug( "- property declaration: " + propDecl );
 
-        if ( propDecl instanceof SimplePropertyDeclaration ) {
+        if ( propDecl instanceof SimplePropertyType ) {
             property = new GenericProperty<String>( propDecl, xmlStream.getElementText().trim() );
-        } else if ( propDecl instanceof GeometryPropertyDeclaration ) {
+        } else if ( propDecl instanceof GeometryPropertyType ) {
             xmlStream.nextTag();
             // TODO geometry parsing
             // Geometry geometry = StAXGeometryParser.parseGeometry( xmlStream, srsName );
@@ -237,7 +237,7 @@ public class FeatureGMLAdapter extends XMLAdapter {
             property = new GenericProperty<String>( propDecl, xmlStream.getName().toString() );
 
             xmlStream.nextTag();
-        } else if ( propDecl instanceof FeaturePropertyDeclaration ) {
+        } else if ( propDecl instanceof FeaturePropertyType ) {
             String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
             if ( href != null ) {
                 // remote feature (xlinked content)

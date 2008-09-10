@@ -44,7 +44,7 @@
 package org.deegree.model.feature;
 
 /**
- * Represents the value of a {@link Feature} property that is specified as a reference to a remote resource.
+ * Represents the value of a {@link Property} that is specified as a reference to a remote resource.
  * <p>
  * In GML, such a property is specified using an xlink attribute with an URI that points to a remote system.
  * </p>

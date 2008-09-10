@@ -47,17 +47,18 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.feature.schema.FeatureType;
+import org.deegree.model.feature.types.FeatureType;
 
 /**
  * A feature is a structured object with named properties. Properties may have geometric and non-geometric values.
  * <p>
- * The feature interface is designed to be compatible with the feature concept from the following OGC specifications:
+ * The feature interface is designed to be compatible with the concepts from the following standards:
  * <p>
  * <ul>
  * <li><a href="http://www.opengeospatial.org/standards/as">Abstract Feature specification</a></li>
  * <li><a href="http://www.opengeospatial.org/standards/sfa">Simple Features Interface Standard (SFS)</a></li>
  * <li><a href="http://www.opengeospatial.org/standards/gml">GML features: XML encoding for features</a></li>
+ * <li>ISO 19109</li>
  * </ul>
  * </p>
  * 

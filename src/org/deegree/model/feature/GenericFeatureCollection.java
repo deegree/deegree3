@@ -50,8 +50,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.feature.schema.FeatureCollectionType;
-import org.deegree.model.feature.schema.PropertyDeclaration;
+import org.deegree.model.feature.types.FeatureCollectionType;
+import org.deegree.model.feature.types.PropertyType;
 
 /**
  * TODO add documentation here
@@ -71,7 +71,7 @@ public class GenericFeatureCollection implements FeatureCollection {
 
     private List<Property<?>> nonMemberProps = new ArrayList<Property<?>>();
 
-    private PropertyDeclaration featureMemberDecl;
+    private PropertyType featureMemberDecl;
 
     private static QName FEATURE_MEMBER = new QName( "http://www.opengis.net/gml", "featureMember" );
 
@@ -99,7 +99,7 @@ public class GenericFeatureCollection implements FeatureCollection {
             }
         }
 
-        for ( PropertyDeclaration propertyDecl : ft.getPropertyDeclarations()) {
+        for ( PropertyType propertyDecl : ft.getPropertyDeclarations()) {
             if (FEATURE_MEMBER.equals(propertyDecl.getName())) {
                 featureMemberDecl = propertyDecl;
             }
@@ -118,7 +118,7 @@ public class GenericFeatureCollection implements FeatureCollection {
     }
 
     @Override
-    public List<Feature> getMemberFeatures() {
+    public List<Feature> getMembers() {
         return memberFeatures;
     }
 

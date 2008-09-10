@@ -49,7 +49,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.feature.schema.FeatureType;
+import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.geometry.Geometry;
 
 /**

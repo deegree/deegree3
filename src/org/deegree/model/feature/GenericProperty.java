@@ -45,7 +45,7 @@ package org.deegree.model.feature;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.feature.schema.PropertyDeclaration;
+import org.deegree.model.feature.types.PropertyType;
 
 /**
  * TODO add documentation here
@@ -57,7 +57,7 @@ import org.deegree.model.feature.schema.PropertyDeclaration;
  */
 public class GenericProperty<T> implements Property<T> {
 
-    private PropertyDeclaration declaration;
+    private PropertyType declaration;
 
     private T value;
 
@@ -65,7 +65,7 @@ public class GenericProperty<T> implements Property<T> {
      * @param declaration
      * @param value
      */
-    public GenericProperty (PropertyDeclaration declaration, T value) {
+    public GenericProperty (PropertyType declaration, T value) {
         this.declaration = declaration;
         this.value = value;
     }
@@ -81,7 +81,7 @@ public class GenericProperty<T> implements Property<T> {
     }
 
     @Override
-    public PropertyDeclaration getType() {
+    public PropertyType getType() {
         return declaration;
     }
 }

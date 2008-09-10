@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/feature/Feature.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -41,37 +41,27 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature;
+package org.deegree.model.gml.schema;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 
-import org.deegree.model.feature.types.FeatureCollectionType;
+import javax.xml.namespace.QName;
+
+import org.deegree.model.feature.types.FeatureType;
+
 
 /**
- * A feature collection is a collection of {@link Feature} instances.
- * 
- * @see Feature
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: mschneider $
- * 
- * @version $Revision: 13814 $, $Date: 2008-09-02 20:28:13 +0200 (Di, 02 Sep 2008) $
+ * TODO add documentation here
+ *
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author:$
+ *
+ * @version $Revision:$, $Date:$
  */
-public interface FeatureCollection extends Feature, Collection<Feature>  {
-
-    /**
-     * Returns the type information for this feature collection.
-     * 
-     * @return the type information
-     */
-    @Override
-    public FeatureCollectionType getType();    
+public class GMLApplicationSchema {
     
-    /**
-     * Returns the features that this collection contains.
-     * 
-     * @return the features that this collection contains.
-     */
-    public List<Feature> getMembers ();
+    private Map<QName,FeatureType> featureTypes;
+
+
+   
 }

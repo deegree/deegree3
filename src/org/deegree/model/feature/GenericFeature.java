@@ -48,8 +48,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.feature.schema.FeatureType;
-import org.deegree.model.feature.schema.GenericFeatureType;
+import org.deegree.model.feature.types.FeatureType;
+import org.deegree.model.feature.types.GenericFeatureType;
 
 /**
  * Allows the representation of arbitrary {@link Feature}s.
