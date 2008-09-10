@@ -41,28 +41,43 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature;
+package org.deegree.model.feature.types;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
 
 /**
- * Represents the value of a {@link Property} that is specified as a reference to a remote resource.
- * <p>
- * In GML, such a property is specified using an xlink attribute with an URI that points to a remote system or a URN.
- * </p>
- * <p>
- * NOTE: "Local" external properties are not represented using this class.
- * </p>
- * 
+ * Defines a number of {@link FeatureType}s and their substitution relations.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public class RemoteContent {
+public class ApplicationSchema {
 
-    // reference (usually a URL)
-    private String href;
+    private Map<QName,FeatureType> ftNameToFt = new HashMap<QName,FeatureType>();
+
+    public FeatureType[] getFeatureTypes () {
+        return null;
+    }    
     
-    public RemoteContent (String href) {
-        this.href = href;
+    public FeatureType getFeatureType (QName ftName) {
+        return ftNameToFt.get( ftName );
     }
+
+    public FeatureType getSubstitutions (FeatureType ft) {
+        return null;
+    }
+
+    public FeatureType getConcreteSubstitutions (FeatureType ft) {
+        return null;
+    }
+    
+    public boolean isValidSubstitution (FeatureType ft, FeatureType substitution ) {
+        return false;
+    }
+    
 }

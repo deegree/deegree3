@@ -63,17 +63,20 @@ import org.deegree.model.feature.Property;
  * @version $Revision:$, $Date:$
  */
 public class GenericFeatureType implements FeatureType {
-
+   
     private QName name;
 
     // maps property names to their declaration (LinkedHashMap respects the correct key order)
     private Map<QName, PropertyType> propNameToDecl = new LinkedHashMap<QName, PropertyType>();
 
-    public GenericFeatureType( QName name, List<PropertyType> propDecls ) {
+    private boolean isAbstract;
+
+    public GenericFeatureType( QName name, List<PropertyType> propDecls, boolean isAbstract ) {
         this.name = name;
         for ( PropertyType propDecl : propDecls ) {
             propNameToDecl.put( propDecl.getName(), propDecl );
         }
+        this.isAbstract = isAbstract;
     }
 
     @Override
@@ -98,5 +101,16 @@ public class GenericFeatureType implements FeatureType {
     @Override
     public Feature newFeature( String fid, List<Property<?>> props ) {
         return new GenericFeature( this, fid, props );
+    }
+
+    @Override
+    public boolean isAbstract() {
+        return isAbstract;
+    }
+
+    @Override
+    public ApplicationSchema getSchema() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

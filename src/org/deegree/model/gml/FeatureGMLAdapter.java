@@ -193,7 +193,7 @@ public class FeatureGMLAdapter extends XMLAdapter {
         feature = ft.newFeature( fid, propertyList );
 
         if ( fid != null && !"".equals( fid ) ) {
-            if ( idContext.getObject( fid ) != null ) {
+            if ( idContext.getFeature( fid ) != null ) {
                 String msg = Messages.getMessage( "ERROR_FEATURE_ID_NOT_UNIQUE", fid );
                 throw new XMLParsingException( this, xmlStream, msg );
             }

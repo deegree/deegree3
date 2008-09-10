@@ -68,12 +68,15 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
     
     // maps property names to their declaration (LinkedHashMap respects the correct key order)
     private Map<QName, PropertyType> propNameToDecl = new LinkedHashMap<QName, PropertyType>();
+
+    private boolean isAbstract;    
     
-    public GenericFeatureCollectionType (QName name, List<PropertyType> propDecls) {
+    public GenericFeatureCollectionType (QName name, List<PropertyType> propDecls, boolean isAbstract) {
         this.name = name;
         for ( PropertyType propDecl : propDecls ) {
             propNameToDecl.put( propDecl.getName(), propDecl );
         }
+        this.isAbstract = isAbstract;
     }
 
     @Override
@@ -98,5 +101,16 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
     @Override
     public Feature newFeature( String fid, List<Property<?>> props) {
         return new GenericFeatureCollection(this, fid, props);
+    }
+
+    @Override
+    public boolean isAbstract() {
+        return isAbstract;
+    }
+
+    @Override
+    public ApplicationSchema getSchema() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

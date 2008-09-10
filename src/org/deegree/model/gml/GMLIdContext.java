@@ -43,16 +43,24 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.gml;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
+
+import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.model.feature.Feature;
-import org.deegree.model.geometry.Geometry;
+import org.deegree.model.feature.Property;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Allows the lookup of GML objects by the value of their "gml:id" attribute.
+ * Allows the lookup of GML objects by the value of their <code>gml:id</code> attribute.
  * <p>
- * This functionality is needed for resolving local xlink-references during the parsing process of GML documents. 
+ * This functionality is essential for resolving local xlink-references at the end of the parsing process of a GML
+ * instance document.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -61,28 +69,65 @@ import org.deegree.model.geometry.Geometry;
  */
 public class GMLIdContext {
 
-    private Map<String, Object> idToObject = new HashMap<String, Object>();
+    private static final Logger LOG = LoggerFactory.getLogger( GMLIdContext.class );
 
     private Map<String, Feature> idToFeature = new HashMap<String, Feature>();
 
-    private Map<String, Geometry> idToGeometry = new HashMap<String, Geometry>();
-
-    public Object getObject( String id ) {
-        return idToObject.get( id );
-    }
-
-    public Feature getFeature( String id ) {
-        return idToFeature.get( id );
-    }
-
-    public Geometry getGeometry( String id ) {
-        return idToGeometry.get( id );
-    }
+    private List<XLinkProperty> xlinkProperties = new ArrayList<XLinkProperty>();
 
     public void addFeature( Feature feature ) {
         idToFeature.put( feature.getId(), feature );
     }
 
-    // public void addGeometry (Geometry geometry) {
-    // }
+    public Feature getFeature( String fid ) {
+        return idToFeature.get (fid);
+    }    
+    
+    public void addXLinkProperty( String featureId, QName propName, int occurence, String targetId ) {
+        xlinkProperties.add( new XLinkProperty( featureId, propName, occurence, targetId ) );
+    }
+
+    /**
+     * @throws XMLProcessingException 
+     */
+    public void resolveXLinks()
+                            throws XMLProcessingException {
+        for ( XLinkProperty prop : xlinkProperties ) {
+            LOG.debug( "Resolving xlink-property with reference to '" + prop.targetId + "'" );
+            Object targetObject = idToFeature.get( prop.targetId );
+            if ( targetObject == null ) {
+                String msg = "Cannot resolve reference to feature with id '" + prop.targetId
+                             + "'. There is no such object in the document.";
+                throw new XMLProcessingException ( msg);
+            }
+            Feature feature = idToFeature.get( prop.featureId );
+            feature.setPropertyValue( prop.propName, prop.occurence, targetObject );
+        }
+    }
+
+    /**
+     * Used to identify a (certain occurrence of a) {@link Property} of a {@link Feature}.
+     * 
+     * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+     * @author last edited by: $Author:$
+     * 
+     * @version $Revision:$, $Date:$
+     */
+    private class XLinkProperty {
+
+        String featureId;
+
+        QName propName;
+
+        int occurence;
+
+        String targetId;
+
+        private XLinkProperty( String featureId, QName propName, int occurence, String targetId ) {
+            this.featureId = featureId;
+            this.propName = propName;
+            this.occurence = occurence;
+            this.targetId = targetId;
+        }
+    }
 }

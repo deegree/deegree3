@@ -87,6 +87,13 @@ public interface FeatureType {
     public List<PropertyType> getPropertyDeclarations();
 
     /**
+     * Returns whether this type is abstract or not.
+     * 
+     * @return true, if this feature type is abstract, false otherwise
+     */
+    public boolean isAbstract();
+
+    /**
      * Creates a new {@link Feature} instance (that is of this type).
      * 
      * @param fid
@@ -96,4 +103,11 @@ public interface FeatureType {
      * @return a new <code>Feature</code> instance
      */
     public Feature newFeature( String fid, List<Property<?>> props );
+
+    /**
+     * Returns the {@link ApplicationSchema} that this feature type belongs to.
+     * 
+     * @return the corresponding <code>ApplicationSchema</code> or null if this feature type has none
+     */
+    public ApplicationSchema getSchema();
 }
