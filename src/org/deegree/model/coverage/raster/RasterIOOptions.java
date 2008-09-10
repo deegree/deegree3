@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL:$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -43,53 +43,63 @@
 package org.deegree.model.coverage.raster;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.deegree.commons.utils.FileUtils;
 
 /**
- * This interface is for abstraction of the raster writing handling.
+ * This class is a container for various RasterIO options.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
- * @version $Revision$
+ * @version $Revision$, $Date$
  * 
  */
-public interface RasterWriter {
-
-    /**
-     * Write the raster into file.
-     * 
-     * @param raster
-     * @param file
-     * @param options
-     *            additional information for the raster writer (format, etc)
-     * @throws IOException
-     *             may be thrown when the file can't be written
-     */
-    public void write( AbstractRaster raster, File file, RasterIOOptions options )
-                            throws IOException;
+public class RasterIOOptions {
     
     /**
-     * Write the raster into strem.
-     * 
-     * @param raster
-     * @param out
-     * @param options
-     *            additional information for the raster writer (format, etc)
-     * @throws IOException
-     *             may be thrown when the file can't be written
+     * This key stores the (output) format.
      */
-    public void write( AbstractRaster raster, OutputStream out, RasterIOOptions options )
-                            throws IOException;
+    public static final String OPT_FORMAT = "FORMAT";
+
+    private final Map<String, String> options = new HashMap<String, String>();
 
     /**
-     * Check if the raster writer is able to write the given raster.
-     * 
-     * @param raster
-     * @param options
-     * @return true if the class can write the raster
+     * @param key
+     * @param value
      */
-    public boolean canWrite( AbstractRaster raster, RasterIOOptions options );
-
+    public void add( String key, String value ) {
+        options.put( key, value );
+    }
+    
+    /**
+     * @param key
+     * @return true if it contains the option
+     */
+    public boolean contains( String key ) {
+        return options.containsKey( key );
+    }
+    
+    /**
+     * @param key
+     * @return the option value or <code>null</code>
+     */
+    public String get( String key ) {
+        return options.get( key );
+    }
+    
+    /**
+     * Return a RasterIOOption object with the format set according to the given file.
+     * 
+     * @param file
+     * @return RasterIOOption proper format.
+     */
+    public static RasterIOOptions forFile( File file ) {
+        RasterIOOptions result = new RasterIOOptions();
+        String ext = FileUtils.getFileExtension( file );
+        result.add( OPT_FORMAT, ext );
+        return result;
+    }
 }

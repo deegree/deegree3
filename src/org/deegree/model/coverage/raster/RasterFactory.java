@@ -44,8 +44,7 @@ package org.deegree.model.coverage.raster;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.OutputStream;
 import java.util.ServiceLoader;
 
 import org.deegree.commons.utils.FileUtils;
@@ -58,10 +57,10 @@ import org.slf4j.LoggerFactory;
  * 
  * TODO use the new, not yet implemented, configuration framework to allow customization of the IO classes
  * 
- * @version $Revision: $
+ * @version $Revision$
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author: $
+ * @author last edited by: $Author$
  * 
  */
 public class RasterFactory {
@@ -98,7 +97,7 @@ public class RasterFactory {
      */
     public static void saveRasterToFile( AbstractRaster raster, File filename )
                             throws IOException {
-        saveRasterToFile( raster, filename, new HashMap<String, String>() );
+        saveRasterToFile( raster, filename, new RasterIOOptions() );
     }
 
     /**
@@ -110,16 +109,39 @@ public class RasterFactory {
      *            map with options for the raster writer
      * @throws IOException
      */
-    public static void saveRasterToFile( AbstractRaster raster, File filename, Map<String, String> options )
+    public static void saveRasterToFile( AbstractRaster raster, File filename, RasterIOOptions options )
                             throws IOException {
-        String format = FileUtils.getFileExtension( filename );
-        RasterWriter writer = getRasterWriter( raster, filename, format, options );
+        if ( !options.contains( RasterIOOptions.OPT_FORMAT ) ) {
+            String format = FileUtils.getFileExtension( filename );
+            options.add( RasterIOOptions.OPT_FORMAT, format );
+        }
+        RasterWriter writer = getRasterWriter( raster, options );
         if ( writer == null ) {
             log.error( "couldn't find raster writer for " + filename );
             throw new IOException( "couldn't find raster writer" );
         }
 
         writer.write( raster, filename, options );
+    }
+
+    /**
+     * Save a raster to a stream.
+     * 
+     * @param raster
+     * @param out
+     * @param options
+     *            map with options for the raster writer
+     * @throws IOException
+     */
+    public static void saveRasterToStream( AbstractRaster raster, OutputStream out, RasterIOOptions options )
+                            throws IOException {
+        RasterWriter writer = getRasterWriter( raster, options );
+        if ( writer == null ) {
+            log.error( "couldn't find raster writer for stream" );
+            throw new IOException( "couldn't find raster writer" );
+        }
+
+        writer.write( raster, out, options );
     }
 
     private static RasterReader getRasterReader( File filename, String format ) {
@@ -132,12 +154,12 @@ public class RasterFactory {
         return null;
     }
 
-    private static RasterWriter getRasterWriter( AbstractRaster raster, File filename, String format,
-                                                 @SuppressWarnings("unused")
-                                                 Map<String, String> options ) {
+    private static RasterWriter getRasterWriter( AbstractRaster raster, RasterIOOptions options ) {
         for ( RasterIOProvider writer : rasterIOLoader ) {
+            String format = options.get( RasterIOOptions.OPT_FORMAT );
             RasterWriter possibleWriter = writer.getRasterWriter( format );
-            if ( possibleWriter != null && possibleWriter.canWrite( raster, filename ) ) {
+            // TODO
+            if ( possibleWriter != null && possibleWriter.canWrite( raster, options ) ) {
                 return possibleWriter;
             }
         }
