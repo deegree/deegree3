@@ -136,7 +136,25 @@ public class ArrayUtils {
         for ( int value: values ) {
             sb.append( Integer.toString( value ) ).append( delimiter );
         }
-        if ( sb.length() > delimiter.length() ) {
+        if ( sb.length() > delimiter.length() ) { // remove last delimiter
+            sb.delete( sb.length() - delimiter.length(), sb.length() );
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Joins a list of <code>double</code>s.
+     * 
+     * @param delimiter
+     * @param values
+     * @return the joined string
+     */
+    public static String join( String delimiter, double[] values ) {
+        StringBuilder sb = new StringBuilder();
+        for ( double value : values ) {
+            sb.append( Double.toString( value ) ).append( delimiter );
+        }
+        if ( sb.length() > delimiter.length() ) { // remove last delimiter
             sb.delete( sb.length() - delimiter.length(), sb.length() );
         }
         return sb.toString();
