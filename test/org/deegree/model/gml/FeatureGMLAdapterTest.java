@@ -60,14 +60,13 @@ import junit.framework.Assert;
 
 import org.deegree.commons.xml.FormattingXMLStreamWriter;
 import org.deegree.model.feature.Feature;
-import org.deegree.model.feature.schema.FeaturePropertyDeclaration;
-import org.deegree.model.feature.schema.FeatureType;
-import org.deegree.model.feature.schema.GenericFeatureCollectionType;
-import org.deegree.model.feature.schema.GenericFeatureType;
-import org.deegree.model.feature.schema.GeometryPropertyDeclaration;
-import org.deegree.model.feature.schema.PropertyDeclaration;
-import org.deegree.model.feature.schema.SimplePropertyDeclaration;
-import org.deegree.model.gml.FeatureGMLAdapter;
+import org.deegree.model.feature.types.FeaturePropertyType;
+import org.deegree.model.feature.types.FeatureType;
+import org.deegree.model.feature.types.GenericFeatureCollectionType;
+import org.deegree.model.feature.types.GenericFeatureType;
+import org.deegree.model.feature.types.GeometryPropertyType;
+import org.deegree.model.feature.types.PropertyType;
+import org.deegree.model.feature.types.SimplePropertyType;
 import org.junit.Test;
 
 /**
@@ -85,16 +84,16 @@ public class FeatureGMLAdapterTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException {
 
         // manually set up a simple "app:Country" feature type
-        List<PropertyDeclaration> propDecls = new ArrayList<PropertyDeclaration>();
-        propDecls.add( new SimplePropertyDeclaration( new QName( "http://www.deegree.org/app", "name" ), 1, 1,
+        List<PropertyType> propDecls = new ArrayList<PropertyType>();
+        propDecls.add( new SimplePropertyType( new QName( "http://www.deegree.org/app", "name" ), 1, 1,
                                                       new QName( "http://www.w3.org/2001/XMLSchema", "string" ) ) );
-        propDecls.add( new GeometryPropertyDeclaration(
+        propDecls.add( new GeometryPropertyType(
                                                         new QName( "http://www.deegree.org/app", "boundary" ),
                                                         1,
                                                         1,
                                                         new QName( "http://www.opengis.net", "MultiSurfacePropertyType" ) ) );
 
-        FeatureType ft = new GenericFeatureType( new QName( "http://www.deegree.org/app", "Country" ), propDecls );
+        FeatureType ft = new GenericFeatureType( new QName( "http://www.deegree.org/app", "Country" ), propDecls, false );
         List<FeatureType> fts = new ArrayList<FeatureType>();
         fts.add( ft );
 
@@ -122,16 +121,16 @@ public class FeatureGMLAdapterTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException {
 
         // manually set up a simple "app:Country" feature type
-        List<PropertyDeclaration> propDecls = new ArrayList<PropertyDeclaration>();
-        propDecls.add( new SimplePropertyDeclaration( new QName( "name" ), 1, 1,
+        List<PropertyType> propDecls = new ArrayList<PropertyType>();
+        propDecls.add( new SimplePropertyType( new QName( "name" ), 1, 1,
                                                       new QName( "http://www.w3.org/2001/XMLSchema", "string" ) ) );
-        propDecls.add( new GeometryPropertyDeclaration(
+        propDecls.add( new GeometryPropertyType(
                                                         new QName( "boundary" ),
                                                         1,
                                                         1,
                                                         new QName( "http://www.opengis.net", "MultiSurfacePropertyType" ) ) );
 
-        FeatureType ft = new GenericFeatureType( new QName( "Country" ), propDecls );
+        FeatureType ft = new GenericFeatureType( new QName( "Country" ), propDecls, false );
         List<FeatureType> fts = new ArrayList<FeatureType>();
         fts.add( ft );
 
@@ -166,21 +165,21 @@ public class FeatureGMLAdapterTest {
         List<FeatureType> fts = new ArrayList<FeatureType>();
                 
         // manually set up a simple "app:Country" feature type
-        List<PropertyDeclaration> propDecls = new ArrayList<PropertyDeclaration>();
-        propDecls.add( new SimplePropertyDeclaration( new QName( "http://www.deegree.org/app", "name" ), 1, 1,
+        List<PropertyType> propDecls = new ArrayList<PropertyType>();
+        propDecls.add( new SimplePropertyType( new QName( "http://www.deegree.org/app", "name" ), 1, 1,
                                                       new QName( "http://www.w3.org/2001/XMLSchema", "string" ) ) );
-        propDecls.add( new GeometryPropertyDeclaration(
+        propDecls.add( new GeometryPropertyType(
                                                         new QName( "http://www.deegree.org/app", "boundary" ),
                                                         1,
                                                         1,
                                                         new QName( "http://www.opengis.net", "MultiSurfacePropertyType" ) ) );
-        fts.add (new GenericFeatureType( new QName( "http://www.deegree.org/app", "Country" ), propDecls ));
+        fts.add (new GenericFeatureType( new QName( "http://www.deegree.org/app", "Country" ), propDecls , false));
         
         // manually set up "gml:FeatureCollection" feature (collection) type
-        propDecls = new ArrayList<PropertyDeclaration>();
-        propDecls.add( new FeaturePropertyDeclaration( new QName( "http://www.opengis.net/gml", "featureMember" ), 1, -1,
+        propDecls = new ArrayList<PropertyType>();
+        propDecls.add( new FeaturePropertyType( new QName( "http://www.opengis.net/gml", "featureMember" ), 1, -1,
                                                       new QName( "http://www.opengis.net/gml", "_Feature" ) ) );
-        fts.add (new GenericFeatureCollectionType( new QName( "http://www.opengis.net/gml", "FeatureCollection" ), propDecls ));        
+        fts.add (new GenericFeatureCollectionType( new QName( "http://www.opengis.net/gml", "FeatureCollection" ), propDecls, false));        
         FeatureGMLAdapter adapter = new FeatureGMLAdapter( fts );
 
         URL docURL = FeatureGMLAdapterTest.class.getResource( "SimpleFeatureCollectionExample1.gml" );
