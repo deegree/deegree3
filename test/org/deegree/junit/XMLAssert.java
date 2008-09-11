@@ -1,4 +1,4 @@
-//$HeadURL:$
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -103,7 +103,7 @@ public class XMLAssert {
         } catch ( MalformedURLException e ) {
             fail( "couldn't parse schema location url (" + schemaLocation + ")" );
         } catch ( SAXException e ) {
-            fail( "couldn't parse schema (" + schemaLocation + ")" );
+            fail( "couldn't parse schema (" + schemaLocation + "): " + e.getMessage() );
         }
         return null;
     }
