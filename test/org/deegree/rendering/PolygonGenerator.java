@@ -51,14 +51,14 @@ import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
 
 /**
- * <code>TriangleGenerator</code>
+ * <code>PolygonGenerator</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class TriangleGenerator {
+public class PolygonGenerator {
 
     private static final Random rnd = new Random();
 
@@ -67,14 +67,44 @@ public class TriangleGenerator {
     /**
      * @param max
      *            generate points between 0 and max
+     * @param offx
+     * @param offy
      * @return a random triangle polygon
      */
-    public static Surface randomTriangle( int max ) {
-        double x = rnd.nextDouble() * max;
-        double y = rnd.nextDouble() * max;
-        Point[][] ps = { { fac.createPoint( new double[] { x, y }, null ),
-                          fac.createPoint( new double[] { rnd.nextDouble() * max, rnd.nextDouble() * max }, null ),
-                          fac.createPoint( new double[] { rnd.nextDouble() * max, rnd.nextDouble() * max }, null ),
+    public static Surface randomTriangle( int max, double offx, double offy ) {
+        double x = rnd.nextDouble() * max + offx;
+        double y = rnd.nextDouble() * max + offy;
+        Point[][] ps = { {
+                          fac.createPoint( new double[] { x, y }, null ),
+                          fac.createPoint(
+                                           new double[] { rnd.nextDouble() * max + offx, rnd.nextDouble() * max + offy },
+                                           null ),
+                          fac.createPoint(
+                                           new double[] { rnd.nextDouble() * max + offx, rnd.nextDouble() * max + offy },
+                                           null ), fac.createPoint( new double[] { x, y }, null ) } };
+        Curve curve = fac.createCurve( ps, unknown, null );
+        SurfacePatch patch = fac.createSurfacePatch( singletonList( curve ) );
+        return fac.createSurface( singletonList( patch ), null );
+    }
+
+    /**
+     * @param max
+     * @param offx
+     * @param offy
+     * @return a random polygon with an edge in each quadrant
+     */
+    public static Surface randomQuad( int max, double offx, double offy ) {
+        double half = max / 2;
+        double x = rnd.nextDouble() * half + offx;
+        double y = rnd.nextDouble() * half + offy;
+        Point[][] ps = { {
+                          fac.createPoint( new double[] { x, y }, null ),
+                          fac.createPoint( new double[] { rnd.nextDouble() * half + half + offx,
+                                                         rnd.nextDouble() * half + offy }, null ),
+                          fac.createPoint( new double[] { rnd.nextDouble() * half + half + offx,
+                                                         rnd.nextDouble() * half + half + offy }, null ),
+                          fac.createPoint( new double[] { rnd.nextDouble() * half + offx,
+                                                         rnd.nextDouble() * half + half + offy }, null ),
                           fac.createPoint( new double[] { x, y }, null ) } };
         Curve curve = fac.createCurve( ps, unknown, null );
         SurfacePatch patch = fac.createSurfacePatch( singletonList( curve ) );

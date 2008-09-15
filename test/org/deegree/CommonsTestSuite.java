@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.rendering.Java2DRenderingTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -75,10 +76,9 @@ import org.slf4j.LoggerFactory;
                 org.deegree.model.crs.projections.conic.LambertConformalConicTest.class,
                 org.deegree.model.crs.projections.cylindric.TransverseMercatorTest.class,
                 org.deegree.model.crs.transformations.TransformationTest.class,
-                org.deegree.model.filter.Filter110XMLAdapterTest.class,
-                org.deegree.model.geometry.GeometryTest.class,
+                org.deegree.model.filter.Filter110XMLAdapterTest.class, org.deegree.model.geometry.GeometryTest.class,
                 org.deegree.model.geometry.jtswrapper.JTSWrapperEnvelopeTest.class,
-                org.deegree.model.geometry.jtswrapper.JTSWrapperPointTest.class })
+                org.deegree.model.geometry.jtswrapper.JTSWrapperPointTest.class, Java2DRenderingTest.class })
 public class CommonsTestSuite {
 
     private static final int DOT_CLASS_LENGTH = ".class".length();
