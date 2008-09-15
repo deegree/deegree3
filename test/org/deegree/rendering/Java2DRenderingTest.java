@@ -45,10 +45,12 @@ import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.System.getProperty;
+import static javax.imageio.ImageIO.read;
 import static javax.imageio.ImageIO.write;
 import static org.deegree.model.geometry.GeometryFactoryCreator.getInstance;
 import static org.deegree.rendering.PolygonGenerator.randomQuad;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -57,6 +59,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -68,6 +71,7 @@ import org.deegree.model.styling.LineStyling;
 import org.deegree.model.styling.PointStyling;
 import org.deegree.model.styling.PolygonStyling;
 import org.deegree.model.styling.components.Fill;
+import org.deegree.model.styling.components.Graphic;
 import org.deegree.model.styling.components.Mark;
 import org.deegree.model.styling.components.Stroke;
 
@@ -195,7 +199,7 @@ public class Java2DRenderingTest extends TestCase {
         r.render( style, geomFac.createPoint( new double[] { 2500, 1000 }, null ) );
 
         g.dispose();
-        long time2 = System.currentTimeMillis();
+        long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
         texts.add( "first line: all the marks in the first line (size 6, gray fill, black line)" );
         texts.add( "second line: all the marks in the second line (size 32, red fill, green line)" );
@@ -230,7 +234,7 @@ public class Java2DRenderingTest extends TestCase {
         }
 
         g.dispose();
-        long time2 = System.currentTimeMillis();
+        long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
         texts.add( "default style lines with line width 0, 1, ..., 9" );
         writeTestImage( img, texts, time2 - time );
@@ -242,6 +246,8 @@ public class Java2DRenderingTest extends TestCase {
     public void testPolygonStyling()
                             throws Exception {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
+        BufferedImage fill = read( new URL( "http://www.imagemagick.org/Usage/thumbnails/thumbnail.gif" ) );
+
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
         GeometryFactory geomFac = getInstance().getGeometryFactory();
@@ -254,18 +260,26 @@ public class Java2DRenderingTest extends TestCase {
         styling.fill = new Fill();
         styling.stroke = new Stroke();
         styling.stroke.color = black;
-        for ( int x = 0; x < 10; ++x ) {
-            styling.stroke.width = x;
-            for ( int y = 0; y < 10; ++y ) {
+        for ( int y = 0; y < 10; ++y ) {
+            if ( y == 0 ) {
+                styling.fill.graphic = new Graphic();
+                styling.fill.graphic.image = fill;
+            } else {
+                styling.fill.graphic = null;
+            }
+            styling.fill.color = new Color( 25 * y, 0, 0 );
+            for ( int x = 0; x < 10; ++x ) {
+                styling.stroke.width = x;
                 Surface triangle = randomQuad( 500, x * 500, y * 500 );
                 r.render( styling, triangle );
             }
         }
 
         g.dispose();
-        long time2 = System.currentTimeMillis();
+        long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
-        texts.add( "polygon style with black lines with line width 0, 1, ..., 9 and default gray fill" );
+        texts.add( "first line: polygon style with black lines with line width 0, 1, ..., 9 and external image fill" );
+        texts.add( "other lines: polygon style with black lines with line width 0, 1, ..., 9 and increasingly red fill" );
         writeTestImage( img, texts, time2 - time );
     }
 
