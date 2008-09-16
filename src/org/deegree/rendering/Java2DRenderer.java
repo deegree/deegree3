@@ -38,6 +38,12 @@
 
 package org.deegree.rendering;
 
+import static java.awt.BasicStroke.CAP_BUTT;
+import static java.awt.BasicStroke.CAP_ROUND;
+import static java.awt.BasicStroke.CAP_SQUARE;
+import static java.awt.BasicStroke.JOIN_BEVEL;
+import static java.awt.BasicStroke.JOIN_MITER;
+import static java.awt.BasicStroke.JOIN_ROUND;
 import static org.deegree.commons.utils.MathUtils.isZero;
 import static org.deegree.commons.utils.MathUtils.round;
 import static org.deegree.rendering.RenderHelper.renderMark;
@@ -49,7 +55,7 @@ import java.awt.Graphics2D;
 import java.awt.TexturePaint;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
-import java.awt.geom.Path2D;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -158,7 +164,48 @@ public class Java2DRenderer implements Renderer {
         if ( stroke.stroke == null && stroke.fill == null ) {
             graphics.setPaint( stroke.color );
         }
-        graphics.setStroke( new BasicStroke( (float) ( stroke.width * scale ) ) );
+
+        int linecap = CAP_SQUARE;
+        if ( stroke.linecap != null ) {
+            switch ( stroke.linecap ) {
+            case BUTT:
+                linecap = CAP_BUTT;
+                break;
+            case ROUND:
+                linecap = CAP_ROUND;
+                break;
+            case SQUARE:
+                linecap = CAP_SQUARE;
+                break;
+            }
+        }
+        int linejoin = JOIN_MITER;
+        float miterLimit = 10;
+        if ( stroke.linejoin != null ) {
+            switch ( stroke.linejoin ) {
+            case BEVEL:
+                linejoin = JOIN_BEVEL;
+                break;
+            case MITRE:
+                linejoin = JOIN_MITER;
+                break;
+            case ROUND:
+                linejoin = JOIN_ROUND;
+                break;
+            }
+        }
+        float dashoffset = (float) ( stroke.dashoffset * scale );
+        float[] dasharray = stroke.dasharray == null ? null : new float[stroke.dasharray.length];
+        if ( stroke.dasharray != null ) {
+            for ( int i = 0; i < stroke.dasharray.length; ++i ) {
+                dasharray[i] = (float) ( stroke.dasharray[i] * scale );
+            }
+        }
+
+        BasicStroke bs = new BasicStroke( (float) ( stroke.width * scale ), linecap, linejoin, miterLimit, dasharray,
+                                          dashoffset );
+
+        graphics.setStroke( bs );
     }
 
     public void render( TextStyling styling, String text, Geometry geom ) {
@@ -208,8 +255,8 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
-    private static Path2D.Double fromCurve( Curve curve ) {
-        Path2D.Double line = new Path2D.Double();
+    private static GeneralPath fromCurve( Curve curve ) {
+        GeneralPath line = new GeneralPath();
         double[] xs = curve.getX();
         double[] ys = curve.getY();
         line.moveTo( xs[0], ys[0] );
@@ -224,7 +271,7 @@ public class Java2DRenderer implements Renderer {
             LOG.warn( "Trying to render point with line styling." );
         }
         if ( geom instanceof Curve ) {
-            Path2D.Double line = fromCurve( (Curve) geom );
+            GeneralPath line = fromCurve( (Curve) geom );
             applyStroke( styling.stroke );
             graphics.draw( line );
         }

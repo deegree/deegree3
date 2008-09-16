@@ -73,7 +73,7 @@ public class Stroke {
     /**
      * Default is null.
      */
-    public String dasharray;
+    public double[] dasharray;
 
     /**
      * Default is 0.
@@ -144,6 +144,11 @@ public class Stroke {
          * 
          */
         SQUARE
+    }
+
+    @Override
+    public String toString() {
+        return "color: " + color + ", linejoin: " + linejoin + ", linecap: " + linecap + ", width: " + width;
     }
 
 }

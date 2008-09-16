@@ -47,8 +47,15 @@ import static java.lang.System.currentTimeMillis;
 import static java.lang.System.getProperty;
 import static javax.imageio.ImageIO.read;
 import static javax.imageio.ImageIO.write;
+import static org.deegree.commons.utils.GeometryUtils.move;
 import static org.deegree.model.geometry.GeometryFactoryCreator.getInstance;
-import static org.deegree.rendering.PolygonGenerator.randomQuad;
+import static org.deegree.model.styling.components.Stroke.LineCap.BUTT;
+import static org.deegree.model.styling.components.Stroke.LineCap.ROUND;
+import static org.deegree.model.styling.components.Stroke.LineCap.SQUARE;
+import static org.deegree.model.styling.components.Stroke.LineJoin.BEVEL;
+import static org.deegree.model.styling.components.Stroke.LineJoin.MITRE;
+import static org.deegree.rendering.GeometryGenerator.randomCurve;
+import static org.deegree.rendering.GeometryGenerator.randomQuad;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -60,12 +67,14 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.deegree.model.geometry.GeometryFactory;
+import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.styling.LineStyling;
 import org.deegree.model.styling.PointStyling;
@@ -74,6 +83,7 @@ import org.deegree.model.styling.components.Fill;
 import org.deegree.model.styling.components.Graphic;
 import org.deegree.model.styling.components.Mark;
 import org.deegree.model.styling.components.Stroke;
+import org.deegree.model.styling.components.Stroke.LineJoin;
 
 /**
  * <code>Java2DRenderingTest</code>
@@ -224,19 +234,66 @@ public class Java2DRenderingTest extends TestCase {
                                                                                                             5000d },
                                                                        null ) );
 
+        List<Curve> curves = new LinkedList<Curve>();
+        for ( int i = 0; i < 10; ++i ) {
+            curves.add( randomCurve( 500, i * 500, 0 ) );
+        }
+
         LineStyling styling = new LineStyling();
-        for ( int x = 0; x < 10; ++x ) {
-            styling.stroke.width = x;
-            for ( int y = 0; y < 10; ++y ) {
-                Surface triangle = randomQuad( 500, x * 500, y * 500 );
-                r.render( styling, triangle );
+        for ( int y = 0; y < 10; ++y ) {
+            switch ( y ) {
+            case 0:
+                break;
+            case 1:
+                styling.stroke.linecap = BUTT;
+                break;
+            case 2:
+                styling.stroke.linecap = ROUND;
+                break;
+            case 3:
+                styling.stroke.linecap = SQUARE;
+                break;
+            case 4:
+                styling.stroke.linecap = BUTT;
+                styling.stroke.linejoin = BEVEL;
+                break;
+            case 5:
+                styling.stroke.linejoin = MITRE;
+                break;
+            case 6:
+                styling.stroke.linejoin = LineJoin.ROUND;
+                break;
+            case 7:
+                styling.stroke.dasharray = new double[] { 15, 15, 17, 5 };
+                break;
+            case 8:
+                styling.stroke.linecap = SQUARE;
+                break;
+            case 9:
+                styling.stroke.linecap = ROUND;
+                break;
+            }
+            Iterator<Curve> iterator = curves.iterator();
+            for ( int x = 0; x < 10; ++x ) {
+                styling.stroke.width = x * 3;
+                Curve curve = (Curve) move( iterator.next(), 0, y * 500 );
+                r.render( styling, curve );
             }
         }
 
         g.dispose();
         long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
-        texts.add( "default style lines with line width 0, 1, ..., 9" );
+        texts.add( "line 1: default style lines with line width 0, 1, ..., 9, ending square" );
+        texts.add( "line 2: default style lines with line width 0, 1, ..., 9, ending square" );
+        texts.add( "line 3: default style lines with line width 0, 1, ..., 9, ending butt" );
+        texts.add( "line 4: default style lines with line width 0, 1, ..., 9, ending round" );
+        texts.add( "line 5: default style lines with line width 0, 1, ..., 9, join bevel" );
+        texts.add( "line 6: default style lines with line width 0, 1, ..., 9, join mitre" );
+        texts.add( "line 7: default style lines with line width 0, 1, ..., 9, join round" );
+        texts.add( "line 8: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5" );
+        texts.add( "line 9: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending square" );
+        texts.add( "line 10: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending round" );
         writeTestImage( img, texts, time2 - time );
     }
 
@@ -256,6 +313,11 @@ public class Java2DRenderingTest extends TestCase {
                                                                                                             5000d },
                                                                        null ) );
 
+        List<Surface> polygons = new LinkedList<Surface>();
+        for ( int i = 0; i < 10; ++i ) {
+            polygons.add( randomQuad( 500, i * 500, 0 ) );
+        }
+
         PolygonStyling styling = new PolygonStyling();
         styling.fill = new Fill();
         styling.stroke = new Stroke();
@@ -268,10 +330,11 @@ public class Java2DRenderingTest extends TestCase {
                 styling.fill.graphic = null;
             }
             styling.fill.color = new Color( 25 * y, 0, 0 );
+            Iterator<Surface> surface = polygons.iterator();
             for ( int x = 0; x < 10; ++x ) {
                 styling.stroke.width = x;
-                Surface triangle = randomQuad( 500, x * 500, y * 500 );
-                r.render( styling, triangle );
+                Surface polygon = (Surface) move( surface.next(), 0, y * 500 );
+                r.render( styling, polygon );
             }
         }
 

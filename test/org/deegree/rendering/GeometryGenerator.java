@@ -51,14 +51,14 @@ import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
 
 /**
- * <code>PolygonGenerator</code>
+ * <code>GeometryGenerator</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PolygonGenerator {
+public class GeometryGenerator {
 
     private static final Random rnd = new Random();
 
@@ -109,6 +109,27 @@ public class PolygonGenerator {
         Curve curve = fac.createCurve( ps, unknown, null );
         SurfacePatch patch = fac.createSurfacePatch( singletonList( curve ) );
         return fac.createSurface( singletonList( patch ), null );
+    }
+
+    /**
+     * @param max
+     * @param offx
+     * @param offy
+     * @return a curve similar to the points of #randomQuad (but without the last)
+     */
+    public static Curve randomCurve( int max, double offx, double offy ) {
+        double half = max / 2;
+        double x = rnd.nextDouble() * half + offx;
+        double y = rnd.nextDouble() * half + offy;
+        Point[][] ps = { {
+                          fac.createPoint( new double[] { x, y }, null ),
+                          fac.createPoint( new double[] { rnd.nextDouble() * half + half + offx,
+                                                         rnd.nextDouble() * half + offy }, null ),
+                          fac.createPoint( new double[] { rnd.nextDouble() * half + half + offx,
+                                                         rnd.nextDouble() * half + half + offy }, null ),
+                          fac.createPoint( new double[] { rnd.nextDouble() * half + offx,
+                                                         rnd.nextDouble() * half + half + offy }, null ) } };
+        return fac.createCurve( ps, unknown, null );
     }
 
 }
