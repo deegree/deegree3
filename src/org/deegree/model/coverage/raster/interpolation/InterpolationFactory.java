@@ -43,19 +43,18 @@
 package org.deegree.model.coverage.raster.interpolation;
 
 import static org.deegree.model.coverage.raster.interpolation.InterpolationType.BILINEAR;
-import static org.deegree.model.coverage.raster.interpolation.InterpolationType.NEAREST_NEIGHBOUR;
+import static org.deegree.model.coverage.raster.interpolation.InterpolationType.NEAREST_NEIGHBOR;
 
 import org.deegree.model.coverage.raster.data.DataType;
 import org.deegree.model.coverage.raster.data.RasterData;
-import org.deegree.model.coverage.raster.interpolation.InterpolationType;
 
 /**
  * Factory for {@link Interpolation}s.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author: $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  * 
  */
 public class InterpolationFactory {
@@ -71,8 +70,8 @@ public class InterpolationFactory {
      *             if no interpolation is found for the given type and raster
      */
     public static Interpolation getInterpolation( InterpolationType type, RasterData rasterData ) {
-        if ( type == NEAREST_NEIGHBOUR ) {
-            return new NearestNeighbourInterpolation( rasterData );
+        if ( type == NEAREST_NEIGHBOR ) {
+            return new NearestNeighborInterpolation( rasterData );
         } else if ( type == BILINEAR ) {
             if ( rasterData.getDataType() == DataType.BYTE ) {
                 return new BiLinearByteInterpolation( rasterData );

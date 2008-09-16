@@ -42,35 +42,42 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster.interpolation;
 
+import java.nio.BufferUnderflowException;
+
+import org.deegree.model.coverage.raster.data.DataType;
+import org.deegree.model.coverage.raster.data.RasterData;
+
 /**
- * Enum for all implemented interpolation types.
+ * This class implements a simple nearest neighbor interpolation. It works with all {@link DataType}s.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * 
  */
-public enum InterpolationType {
+public class NearestNeighborInterpolation implements Interpolation {
+    private RasterData raster;
+
     /**
-     * bilinear interpolation
-     */
-    BILINEAR,
-    /**
-     * nearest neighbor interpolation
-     */
-    NEAREST_NEIGHBOR;
-    
-    /**
-     * Get interpolation for the given string. This method is case insensitive, words can be separated with a
-     * whitespace, minus or underscore.
+     * Create a new nearest neighbor interpolation for given {@link RasterData}.
      * 
-     * @param interpolation
-     * @return the interpolation
+     * @param rasterData
      */
-    public static InterpolationType fromString( String interpolation ) {
-        String key = interpolation.toUpperCase();
-        key = key.replace( "-", "_" );
-        key = key.replace( " ", "_" );
-        return InterpolationType.valueOf( key );
+    public NearestNeighborInterpolation( RasterData rasterData ) {
+        raster = rasterData;
+    }
+
+    public final byte[] getPixel( float x, float y, byte[] result ) {
+        try {
+            raster.getPixel( (int) ( x + 0.5f ), (int) ( y + 0.5f ), result );
+        } catch ( IndexOutOfBoundsException ex ) {
+            raster.getNullPixel( result );
+        } catch ( IllegalArgumentException ex ) {
+            raster.getNullPixel( result );
+        } catch ( BufferUnderflowException ex ) {
+            raster.getNullPixel( result );
+        }
+        return result;
     }
 }
