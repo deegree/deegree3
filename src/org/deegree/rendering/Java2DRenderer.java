@@ -55,7 +55,7 @@ import java.awt.Graphics2D;
 import java.awt.TexturePaint;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
-import java.awt.geom.GeneralPath;
+import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -164,6 +164,11 @@ public class Java2DRenderer implements Renderer {
         if ( stroke.stroke == null && stroke.fill == null ) {
             graphics.setPaint( stroke.color );
         }
+        if ( stroke.fill != null ) {
+            applyGraphicFill( stroke.fill );
+        }
+        if ( stroke.stroke != null ) {
+        }
 
         int linecap = CAP_SQUARE;
         if ( stroke.linecap != null ) {
@@ -255,8 +260,8 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
-    private static GeneralPath fromCurve( Curve curve ) {
-        GeneralPath line = new GeneralPath();
+    private static Path2D.Double fromCurve( Curve curve ) {
+        Path2D.Double line = new Path2D.Double();
         double[] xs = curve.getX();
         double[] ys = curve.getY();
         line.moveTo( xs[0], ys[0] );
@@ -271,8 +276,11 @@ public class Java2DRenderer implements Renderer {
             LOG.warn( "Trying to render point with line styling." );
         }
         if ( geom instanceof Curve ) {
-            GeneralPath line = fromCurve( (Curve) geom );
+            Path2D.Double line = fromCurve( (Curve) geom );
             applyStroke( styling.stroke );
+            if ( !isZero( styling.perpendicularOffset ) ) {
+                graphics.setStroke( new OffsetStroke( styling.perpendicularOffset * scale, graphics.getStroke() ) );
+            }
             graphics.draw( line );
         }
         if ( geom instanceof Surface ) {

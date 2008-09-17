@@ -56,6 +56,7 @@ import static org.deegree.model.styling.components.Stroke.LineJoin.BEVEL;
 import static org.deegree.model.styling.components.Stroke.LineJoin.MITRE;
 import static org.deegree.rendering.GeometryGenerator.randomCurve;
 import static org.deegree.rendering.GeometryGenerator.randomQuad;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -66,6 +67,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -84,6 +86,7 @@ import org.deegree.model.styling.components.Graphic;
 import org.deegree.model.styling.components.Mark;
 import org.deegree.model.styling.components.Stroke;
 import org.deegree.model.styling.components.Stroke.LineJoin;
+import org.slf4j.Logger;
 
 /**
  * <code>Java2DRenderingTest</code>
@@ -95,7 +98,11 @@ import org.deegree.model.styling.components.Stroke.LineJoin;
  */
 public class Java2DRenderingTest extends TestCase {
 
+    private static final Logger LOG = getLogger( Java2DRenderingTest.class );
+
     private static File textFile, perfFile;
+
+    private static BufferedImage fill;
 
     static {
         String tmp = getProperty( "java.io.tmpdir" );
@@ -103,6 +110,13 @@ public class Java2DRenderingTest extends TestCase {
         textFile.delete();
         perfFile = new File( tmp, "performance.txt" );
         perfFile.delete();
+        try {
+            fill = read( new URL( "http://www.imagemagick.org/Usage/thumbnails/thumbnail.gif" ) );
+        } catch ( MalformedURLException e ) {
+            LOG.error( "Unknown error", e );
+        } catch ( IOException e ) {
+            LOG.error( "Unknown error", e );
+        }
     }
 
     private void writeTestImage( RenderedImage img, List<String> expectedTexts, long ms )
@@ -289,6 +303,94 @@ public class Java2DRenderingTest extends TestCase {
         texts.add( "line 3: default style lines with line width 0, 1, ..., 9, ending butt" );
         texts.add( "line 4: default style lines with line width 0, 1, ..., 9, ending round" );
         texts.add( "line 5: default style lines with line width 0, 1, ..., 9, join bevel" );
+        texts.add( "line 6: default style lines with line width 0, 1, ..., 9, join mitre" );
+        texts.add( "line 7: default style lines with line width 0, 1, ..., 9, join round" );
+        texts.add( "line 8: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5" );
+        texts.add( "line 9: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending square" );
+        texts.add( "line 10: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending round" );
+        writeTestImage( img, texts, time2 - time );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testLineStyling2()
+                            throws Exception {
+        BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
+        long time = currentTimeMillis();
+        Graphics2D g = img.createGraphics();
+        GeometryFactory geomFac = getInstance().getGeometryFactory();
+        Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
+                                               geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
+                                                                                                            5000d },
+                                                                       null ) );
+
+        List<Curve> curves = new LinkedList<Curve>();
+        for ( int i = 0; i < 10; ++i ) {
+            curves.add( randomCurve( 500, i * 500, 0 ) );
+        }
+
+        LineStyling styling = new LineStyling();
+        for ( int y = 0; y < 10; ++y ) {
+            switch ( y ) {
+            case 0:
+                styling.stroke.linecap = BUTT;
+                styling.stroke.fill = new Graphic();
+                styling.stroke.fill.image = fill;
+                break;
+            case 1:
+                styling.stroke.dasharray = new double[] { 15, 15, 17, 5 };
+                break;
+            case 2:
+                styling.stroke.fill = null;
+                break;
+            case 3:
+                styling.stroke.dashoffset = 10;
+                break;
+            case 4:
+                styling.perpendicularOffset = 10;
+                styling.stroke.dasharray = null;
+                break;
+            case 5:
+                styling.stroke.linejoin = MITRE;
+                break;
+            case 6:
+                styling.stroke.linejoin = LineJoin.ROUND;
+                break;
+            case 7:
+                break;
+            case 8:
+                styling.stroke.linecap = SQUARE;
+                break;
+            case 9:
+                styling.stroke.linecap = ROUND;
+                break;
+            }
+            Iterator<Curve> iterator = curves.iterator();
+            for ( int x = 0; x < 10; ++x ) {
+                styling.stroke.width = x * 3;
+                Curve curve = (Curve) move( iterator.next(), 0, y * 500 );
+                switch ( y ) {
+                case 4:
+                    styling.perpendicularOffset = 0;
+                    styling.stroke.color = black;
+                    r.render( styling, curve );
+                    styling.stroke.color = red;
+                    styling.perpendicularOffset = 5;
+                    break;
+                }
+                r.render( styling, curve );
+            }
+        }
+
+        g.dispose();
+        long time2 = currentTimeMillis();
+        List<String> texts = new LinkedList<String>();
+        texts.add( "line 1: graphic filled lines with line width 0, 1, ..., 9, ending butt" );
+        texts.add( "line 2: graphic filled lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending butt" );
+        texts.add( "line 3: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending butt" );
+        texts.add( "line 4: same as previous, but with offset = 10" );
+        texts.add( "line 5: perpendicular offset of 1" );
         texts.add( "line 6: default style lines with line width 0, 1, ..., 9, join mitre" );
         texts.add( "line 7: default style lines with line width 0, 1, ..., 9, join round" );
         texts.add( "line 8: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5" );
