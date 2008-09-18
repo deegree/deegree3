@@ -289,7 +289,7 @@ public class Java2DRenderingTest extends TestCase {
             }
             Iterator<Curve> iterator = curves.iterator();
             for ( int x = 0; x < 10; ++x ) {
-                styling.stroke.width = x * 3;
+                styling.stroke.width = x;
                 Curve curve = (Curve) move( iterator.next(), 0, y * 500 );
                 r.render( styling, curve );
             }
@@ -348,14 +348,7 @@ public class Java2DRenderingTest extends TestCase {
                 styling.stroke.dashoffset = 10;
                 break;
             case 4:
-                styling.perpendicularOffset = 10;
                 styling.stroke.dasharray = null;
-                break;
-            case 5:
-                styling.stroke.linejoin = MITRE;
-                break;
-            case 6:
-                styling.stroke.linejoin = LineJoin.ROUND;
                 break;
             case 7:
                 break;
@@ -368,7 +361,7 @@ public class Java2DRenderingTest extends TestCase {
             }
             Iterator<Curve> iterator = curves.iterator();
             for ( int x = 0; x < 10; ++x ) {
-                styling.stroke.width = x * 3;
+                styling.stroke.width = x;
                 Curve curve = (Curve) move( iterator.next(), 0, y * 500 );
                 switch ( y ) {
                 case 4:
@@ -376,7 +369,21 @@ public class Java2DRenderingTest extends TestCase {
                     styling.stroke.color = black;
                     r.render( styling, curve );
                     styling.stroke.color = red;
+                    styling.perpendicularOffset = 1;
+                    break;
+                case 5:
+                    styling.perpendicularOffset = 0;
+                    styling.stroke.color = black;
+                    r.render( styling, curve );
+                    styling.stroke.color = red;
                     styling.perpendicularOffset = 5;
+                    break;
+                case 6:
+                    styling.perpendicularOffset = 0;
+                    styling.stroke.color = black;
+                    r.render( styling, curve );
+                    styling.stroke.color = red;
+                    styling.perpendicularOffset = -5;
                     break;
                 }
                 r.render( styling, curve );
@@ -391,11 +398,15 @@ public class Java2DRenderingTest extends TestCase {
         texts.add( "line 3: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending butt" );
         texts.add( "line 4: same as previous, but with offset = 10" );
         texts.add( "line 5: perpendicular offset of 1" );
-        texts.add( "line 6: default style lines with line width 0, 1, ..., 9, join mitre" );
-        texts.add( "line 7: default style lines with line width 0, 1, ..., 9, join round" );
-        texts.add( "line 8: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5" );
-        texts.add( "line 9: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending square" );
-        texts.add( "line 10: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending round" );
+        // texts.add( "line 6: default style lines with line width 0, 1, ..., 9, join mitre" );
+        // texts.add( "line 7: default style lines with line width 0, 1, ..., 9, join round" );
+        // texts.add( "line 8: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5" );
+        // texts.add(
+        // "line 9: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending square"
+        // );
+        // texts.add(
+        // "line 10: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending round"
+        // );
         writeTestImage( img, texts, time2 - time );
     }
 

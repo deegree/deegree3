@@ -83,14 +83,18 @@ public class OffsetStroke implements Stroke {
         return new double[] { ny / len, -nx / len };
     }
 
-    private static final double[] combineNormals( final double[] n1, final double[] n2 ) {
+    private final double[] calcNewInner( final double px, final double py, final double[] n1, final double[] n2 ) {
+        double nx = px + offset * n1[0];
+        double ny = py + offset * n1[1];
         if ( n2 == null ) {
-            return n1;
+            return new double[] { nx, ny };
         }
-        final double nx = n1[0] + n2[0];
-        final double ny = n1[1] + n2[1];
-        final double len = sqrt( nx * nx + ny * ny );
-        return new double[] { nx / len, ny / len };
+
+        // calc intersection point of the two lines that are parallel to the original geometry lines
+        double ox = px + offset * n2[0];
+        double oy = py + offset * n2[1];
+        double lam = ( n1[1] * oy - ny * n1[1] + n1[0] * ox - nx * n1[0] ) / ( n2[0] * n1[1] - n1[0] * n2[1] );
+        return new double[] { ox + lam * n2[1], oy - lam * n2[0] };
     }
 
     public Shape createStrokedShape( Shape p ) {
@@ -148,17 +152,14 @@ public class OffsetStroke implements Stroke {
                 double[] n1 = normals.poll();
                 double[] n2 = normals.poll();
                 double[] n3 = normals.poll();
-                n1 = combineNormals( n1, n2 );
-                n2 = combineNormals( n2, n3 );
-                n3 = combineNormals( n3, normals.peek() );
-                path.curveTo( pair.second[0] + n1[0] * offset, pair.second[1] + n1[1] * offset, pair.second[2] + n2[0]
-                                                                                                * offset,
-                              pair.second[3] + n2[1] * offset, pair.second[4] + n3[0] * offset, pair.second[5] + n3[1]
-                                                                                                * offset );
+                n1 = calcNewInner( pair.second[0], pair.second[1], n1, n2 );
+                n2 = calcNewInner( pair.second[2], pair.second[3], n2, n3 );
+                n3 = calcNewInner( pair.second[4], pair.second[5], n3, normals.peek() );
+                path.curveTo( n1[0], n1[1], n2[0], n2[1], n3[0], n3[1] );
                 break;
             case SEG_LINETO:
-                n1 = combineNormals( normals.poll(), normals.peek() );
-                path.lineTo( pair.second[0] + n1[0] * offset, pair.second[1] + n1[1] * offset );
+                n1 = calcNewInner( pair.second[0], pair.second[1], normals.poll(), normals.peek() );
+                path.lineTo( n1[0], n1[1] );
                 break;
             case SEG_MOVETO:
                 n1 = normals.peek();
@@ -167,12 +168,9 @@ public class OffsetStroke implements Stroke {
             case SEG_QUADTO:
                 n1 = normals.poll();
                 n2 = normals.poll();
-                n1 = combineNormals( n1, n2 );
-                n2 = combineNormals( n2, normals.peek() );
-                path.quadTo( pair.second[0] + n1[0] * offset, pair.second[1] + n1[1] * offset, pair.second[2] + n2[0]
-                                                                                               * offset, pair.second[3]
-                                                                                                         + n2[1]
-                                                                                                         * offset );
+                n1 = calcNewInner( pair.second[0], pair.second[1], n1, n2 );
+                n2 = calcNewInner( pair.second[2], pair.second[3], n2, normals.peek() );
+                path.quadTo( n1[0], n1[1], n2[0], n2[1] );
                 break;
             }
         }
