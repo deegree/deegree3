@@ -41,42 +41,37 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature.types;
+package org.deegree.model.gml.schema;
 
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.junit.Test;
+
 /**
- * Defines a number of {@link FeatureType}s and their substitution relations.
+ * TODO add documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public class ApplicationSchema {
+public class XSModelGMLAnalyzerTest {
 
-    private Map<QName,FeatureType> ftNameToFt = new HashMap<QName,FeatureType>();
-
-    public FeatureType[] getFeatureTypes () {
-        return null;
-    }    
-    
-    public FeatureType getFeatureType (QName ftName) {
-        return ftNameToFt.get( ftName );
+    @Test
+    public void testPhilosopher() throws ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( this.getClass().getResource( "Philosopher.xsd" ).toString(), GMLVersion.VERSION_31 );
+        List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( "http://www.deegree.org/app", true );
+        for ( XSElementDeclaration featureElementDecl : featureElementDecls ) {
+            System.out.println ("- Feature type: " + featureElementDecl.getName());
+        }
+        List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations( null, true );
+        for ( XSElementDeclaration geometryElementDecl : geometryElementDecls ) {
+            System.out.println ("- Geometry type: " + geometryElementDecl.getName());
+        }        
     }
 
-    public FeatureType getSubstitutions (FeatureType ft) {
-        return null;
-    }
-
-    public FeatureType getConcreteSubstitutions (FeatureType ft) {
-        return null;
-    }
-    
-    public boolean isValidSubstitution (FeatureType ft, FeatureType substitution ) {
-        return false;
-    }    
 }

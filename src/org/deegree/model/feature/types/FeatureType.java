@@ -71,7 +71,7 @@ public interface FeatureType {
     public QName getName();
 
     /**
-     * Returns the declaration of the property with given name.
+     * Returns the declaration of the property with the given name.
      * 
      * @param propName
      *            name of the property

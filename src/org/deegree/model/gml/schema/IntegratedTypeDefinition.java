@@ -41,42 +41,26 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature.types;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.deegree.model.gml.schema;
 
 import javax.xml.namespace.QName;
 
 /**
- * Defines a number of {@link FeatureType}s and their substitution relations.
+ * TODO add documentation here
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public class ApplicationSchema {
+public class IntegratedTypeDefinition extends TypeDefinition {
 
-    private Map<QName,FeatureType> ftNameToFt = new HashMap<QName,FeatureType>();
-
-    public FeatureType[] getFeatureTypes () {
-        return null;
-    }    
-    
-    public FeatureType getFeatureType (QName ftName) {
-        return ftNameToFt.get( ftName );
+    IntegratedTypeDefinition( QName name ) {
+        super (name, null);
     }
 
-    public FeatureType getSubstitutions (FeatureType ft) {
-        return null;
-    }
-
-    public FeatureType getConcreteSubstitutions (FeatureType ft) {
-        return null;
-    }
-    
-    public boolean isValidSubstitution (FeatureType ft, FeatureType substitution ) {
-        return false;
+    String toString (String indent) {
+        String s = indent + "- integrated type: " + name + "\n";
+        return s;
     }    
 }

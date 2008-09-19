@@ -41,42 +41,34 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature.types;
-
-import java.util.HashMap;
-import java.util.Map;
+package org.deegree.model.gml.schema;
 
 import javax.xml.namespace.QName;
 
 /**
- * Defines a number of {@link FeatureType}s and their substitution relations.
- *
+ * Represents an <code>xs:simpleType</code> definition.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class ApplicationSchema {
+class SimpleTypeDefinition extends TypeDefinition {
 
-    private Map<QName,FeatureType> ftNameToFt = new HashMap<QName,FeatureType>();
-
-    public FeatureType[] getFeatureTypes () {
-        return null;
-    }    
-    
-    public FeatureType getFeatureType (QName ftName) {
-        return ftNameToFt.get( ftName );
+    enum VARIETY {
+        /** */
+        ATOMIC,
+        /** */
+        LIST,
+        /** */
+        UNION;
     }
 
-    public FeatureType getSubstitutions (FeatureType ft) {
-        return null;
+    protected SimpleTypeDefinition( QName typeName, TypeDefinition baseType ) {
+        super( typeName, baseType );
     }
 
-    public FeatureType getConcreteSubstitutions (FeatureType ft) {
-        return null;
-    }
-    
-    public boolean isValidSubstitution (FeatureType ft, FeatureType substitution ) {
-        return false;
+    String toString (String indent) {
+        return indent + "- simple type: " + name + ", based on: '" + baseType.getName() + "'\n";
     }    
 }

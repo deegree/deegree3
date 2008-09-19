@@ -41,42 +41,66 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature.types;
+package org.deegree.model.gml.schema;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
 /**
- * Defines a number of {@link FeatureType}s and their substitution relations.
- *
+ * Represents either a <code>xs:simpleType</code> definition or a <code>xs:complexType</code> definition.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class ApplicationSchema {
+abstract class TypeDefinition {
 
-    private Map<QName,FeatureType> ftNameToFt = new HashMap<QName,FeatureType>();
+    // null means: anonymous type
+    protected QName name;
 
-    public FeatureType[] getFeatureTypes () {
-        return null;
+    // can be null (if it is the root of a type hierarchy)
+    protected TypeDefinition baseType;
+
+    protected List<TypeDefinition> directDerivations = new ArrayList<TypeDefinition>();
+
+    protected TypeDefinition( QName name, TypeDefinition baseType ) {
+        this.name = name;
+        this.baseType = baseType;
+    }
+
+    QName getName () {
+        return name;
+    }
+    
+    boolean isAnonymous() {
+        return name == null;
     }    
     
-    public FeatureType getFeatureType (QName ftName) {
-        return ftNameToFt.get( ftName );
+    TypeDefinition getBaseType() {
+        return baseType;
     }
 
-    public FeatureType getSubstitutions (FeatureType ft) {
-        return null;
+    void addDerivedType( TypeDefinition type ) {
+        directDerivations.add( type );
     }
 
-    public FeatureType getConcreteSubstitutions (FeatureType ft) {
-        return null;
+    List<TypeDefinition> getDirectDerivations() {
+        return directDerivations;
     }
     
-    public boolean isValidSubstitution (FeatureType ft, FeatureType substitution ) {
-        return false;
-    }    
+    @Override
+    public String toString () {
+        return toString ("");
+    }
+
+    String toString (String indent) {
+        String s = indent + "- type: " + name + "\n";
+        for ( TypeDefinition childType : directDerivations ) {
+            s += childType.toString( "  " + indent );
+        }
+        return s;
+    }
 }

@@ -205,10 +205,12 @@ public class FeatureGMLAdapterTest {
     
     public static void main( String[] args ) {
 
-        System.out.println( "bla: " + new QName( "Country" ) );
-        System.out.println( "bla: " + new QName( null, "Country" ) );
-
-        System.out.println( "HÄHÄ: '" + new QName( "", "Country" ).getNamespaceURI() + "'" );
-        System.out.println( "HÄHÄ: '" + new QName( null, "Country" ).getNamespaceURI() + "'" );
+        System.out.println( Thread.currentThread().getId());   // 5        
+//        
+//        System.out.println( "bla: " + new QName( "Country" ) );
+//        System.out.println( "bla: " + new QName( null, "Country" ) );
+//
+//        System.out.println( "HÄHÄ: '" + new QName( "", "Country" ).getNamespaceURI() + "'" );
+//        System.out.println( "HÄHÄ: '" + new QName( null, "Country" ).getNamespaceURI() + "'" );
     }
 }

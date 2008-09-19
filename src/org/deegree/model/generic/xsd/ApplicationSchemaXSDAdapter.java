@@ -74,7 +74,6 @@ import org.deegree.model.generic.implementation.schema.GenericObjectType;
 import org.deegree.model.generic.schema.AttributeType;
 import org.deegree.model.generic.schema.ContentModel;
 import org.deegree.model.generic.schema.ObjectType;
-import org.deegree.model.generic.schema.Sequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
