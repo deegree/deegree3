@@ -48,34 +48,36 @@ import javax.xml.namespace.QName;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class FeaturePropertyType implements PropertyType {
 
-    private QName name;    
-    
+    private QName name;
+
     private int maxOccurs;
-    
+
     private int minOccurs;
 
-    private QName xsdType;    
+    private QName valueFtName;
 
-    public FeaturePropertyType (QName name, int minOccurs, int maxOccurs, QName xsdType) {
+    private FeatureType valueFt;
+
+    public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, QName valueFtName ) {
         this.name = name;
         this.minOccurs = minOccurs;
         this.maxOccurs = maxOccurs;
-        this.xsdType = xsdType;
+        this.valueFtName = valueFtName;
     }
-    
+
     @Override
     public QName getName() {
         return name;
-    }    
-    
+    }
+
     @Override
     public int getMaxOccurs() {
         return maxOccurs;
@@ -86,8 +88,39 @@ public class FeaturePropertyType implements PropertyType {
         return minOccurs;
     }
 
+    public QName getFTName() {
+        return valueFtName;
+    }
+
+    public FeatureType getValueFt() {
+        if ( valueFt == null ) {
+            String msg = "Internal error. Reference to feature type '" + valueFtName + "' has not been resolved.";
+            throw new RuntimeException (msg);
+        }
+        return valueFt;
+    }
+
+    public void resolve( FeatureType valueFt ) {
+        if ( valueFt == null ) {
+            String msg = "Internal error. Reference to feature type '" + valueFtName + "' cannot be null.";
+            throw new IllegalArgumentException( msg );
+        }
+        if ( this.valueFt != null ) {
+            String msg = "Internal error. Reference to feature type '" + valueFtName + "' has already been resolved.";
+            throw new IllegalArgumentException( msg );
+        }
+        this.valueFt = valueFt;
+    }
+
+    @Override
+    public String toString() {
+        String s = "- property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+                   + ", value feature type: " + valueFt.getName();
+        return s;
+    }
+
     @Override
     public QName getXSDValueType() {
-        return xsdType;
-    }    
+        return valueFtName;
+    }
 }

@@ -44,7 +44,9 @@
 package org.deegree.model.gml.schema;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -58,6 +60,7 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.deegree.model.feature.types.FeaturePropertyType;
 import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.feature.types.GenericFeatureType;
 import org.deegree.model.feature.types.PropertyType;
@@ -67,7 +70,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add documentation here
+ * Provides convenient access to "relevant" element declarations of a GML schema and allows their retrieval as
+ * {@link FeatureType} objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -80,24 +84,43 @@ public class GMLApplicationSchemaXSDAdapter {
 
     private XSModelGMLAnalyzer analyzer;
 
+    private Map<QName, XSElementDeclaration> ftNameToftElement = new HashMap<QName, XSElementDeclaration>();
+
+    private Map<QName, FeatureType> ftNameToft = new HashMap<QName, FeatureType>();
+
+    // stores all feature property types, so the reference to the contained FeatureType can be resolved,
+    // after all FeatureTypes have been created
+    private List<FeaturePropertyType> featurePropertyTypes = new ArrayList<FeaturePropertyType>();
+
     public GMLApplicationSchemaXSDAdapter( String url, GMLVersion gmlVersion ) throws ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
         analyzer = new XSModelGMLAnalyzer( url, gmlVersion );
+        List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );
+        for ( XSElementDeclaration elementDecl : featureElementDecls ) {
+            QName ftName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+            ftNameToftElement.put( ftName, elementDecl );
+        }        
+    }
+
+    private void resolveFtReferences() {
+        for ( FeaturePropertyType pt : featurePropertyTypes ) {
+            LOG.debug( "Resolving reference to feature type: '" + pt.getFTName () + "'"  );
+            pt.resolve( ftNameToft.get( pt.getFTName() ) );
+        }
     }
 
     public FeatureType[] extractFeatureTypes() {
 
-        List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );
-        FeatureType[] fts = new FeatureType[featureElementDecls.size()];
-        int i = 0;
-        for ( XSElementDeclaration featureElementDecl : featureElementDecls ) {
-            fts[i++] = buildFeatureType( featureElementDecl );
+        for ( QName ftName : ftNameToftElement.keySet() ) {
+            FeatureType ft = buildFeatureType( ftNameToftElement.get( ftName ) );
+            ftNameToft.put( ftName, ft );
         }
-        return fts;
+        resolveFtReferences();        
+        return ftNameToft.values().toArray( new FeatureType[ftNameToft.size()] );
     }
 
     private FeatureType buildFeatureType( XSElementDeclaration featureElementDecl ) {
-        QName ftName = new QName( featureElementDecl.getName(), featureElementDecl.getNamespace() );
+        QName ftName = new QName( featureElementDecl.getNamespace(), featureElementDecl.getName() );
         LOG.debug( "Building feature type declaration: '" + ftName + "'" );
 
         if ( featureElementDecl.getTypeDefinition().getType() == XSTypeDefinition.SIMPLE_TYPE ) {
@@ -136,7 +159,8 @@ public class GMLApplicationSchemaXSDAdapter {
                             XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
                             int minOccurs = particle.getMinOccurs();
                             int maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
-                            addPropertyType( pts, elementDecl2, minOccurs, maxOccurs );
+                            PropertyType pt = buildPropertyType( elementDecl2, minOccurs, maxOccurs );
+                            pts.add( pt );
                         }
                         case XSConstants.WILDCARD: {
                             LOG.warn( "Unhandled particle: WILDCARD" );
@@ -214,7 +238,8 @@ public class GMLApplicationSchemaXSDAdapter {
                     XSElementDeclaration elementDecl = (XSElementDeclaration) particle.getTerm();
                     int minOccurs = particle.getMinOccurs();
                     int maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
-                    addPropertyType( pts, elementDecl, minOccurs, maxOccurs );
+                    PropertyType pt = buildPropertyType( elementDecl, minOccurs, maxOccurs );
+                    pts.add( pt );
                     break;
                 }
                 case XSConstants.WILDCARD: {
@@ -236,22 +261,123 @@ public class GMLApplicationSchemaXSDAdapter {
         }
     }
 
-    private void addPropertyType( List<PropertyType> pts, XSElementDeclaration elementDecl, int minOccurs, int maxOccurs ) {
+    private PropertyType buildPropertyType( XSElementDeclaration elementDecl, int minOccurs, int maxOccurs ) {
+        PropertyType pt = null;
         QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.debug( "*** Found property declaration: '" + elementDecl.getName() + "'." );
         XSTypeDefinition typeDef = elementDecl.getTypeDefinition();
         switch ( typeDef.getTypeCategory() ) {
         case XSTypeDefinition.SIMPLE_TYPE: {
-            SimplePropertyType pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, (XSSimpleType) typeDef );
-            pts.add( pt );
+            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, (XSSimpleType) typeDef );
             break;
         }
         case XSTypeDefinition.COMPLEX_TYPE: {
-            QName typeName = new QName (typeDef.getName(), typeDef.getNamespace());
-            SimplePropertyType pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, typeName );
-            pts.add( pt );
+            pt = buildPropertyType( elementDecl, (XSComplexTypeDefinition) typeDef, minOccurs, maxOccurs );
             break;
         }
         }
+        return pt;
+    }
+
+    private PropertyType buildPropertyType( XSElementDeclaration elementDecl, XSComplexTypeDefinition typeDef,
+                                            int minOccurs, int maxOccurs ) {
+
+        PropertyType pt = null;
+        QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+        LOG.debug( "- Property definition '" + ptName + "' uses a complex type for content definition." );
+        pt = buildFeaturePropertyType( elementDecl, typeDef, minOccurs, maxOccurs );
+        if ( pt == null ) {
+            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, new QName( typeDef.getNamespace(),
+                                                                                  typeDef.getName() ) );
+        }
+        return pt;
+    }
+
+    /**
+     * Analyzes the given complex type definition and returns a {@link FeaturePropertyType} if it defines a feature
+     * property.
+     * 
+     * @param elementDecl
+     * @param typeDef
+     * @param minOccurs
+     * @param maxOccurs
+     * @return corresponding {@link FeaturePropertyType} or null, if declaration does not define a feature property
+     */
+    private FeaturePropertyType buildFeaturePropertyType( XSElementDeclaration elementDecl,
+                                                          XSComplexTypeDefinition typeDef, int minOccurs, int maxOccurs ) {
+
+        QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+        switch ( typeDef.getContentType() ) {
+        case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
+            LOG.debug( "CONTENTTYPE_ELEMENT" );
+            XSParticle particle = typeDef.getParticle();
+            XSTerm term = particle.getTerm();
+            switch ( term.getType() ) {
+            case XSConstants.MODEL_GROUP: {
+                XSModelGroup modelGroup = (XSModelGroup) term;
+                switch ( modelGroup.getCompositor() ) {
+                case XSModelGroup.COMPOSITOR_ALL: {
+                    LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
+                    break;
+                }
+                case XSModelGroup.COMPOSITOR_CHOICE: {
+                    LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
+                    break;
+                }
+                case XSModelGroup.COMPOSITOR_SEQUENCE: {
+                    LOG.debug( "Found sequence." );
+                    XSObjectList sequence = modelGroup.getParticles();
+                    if ( sequence.getLength() != 1 ) {
+                        LOG.debug( "Length = '" + sequence.getLength() + "' -> cannot be a feature property." );
+                        return null;
+                    }
+                    XSParticle particle2 = (XSParticle) sequence.item( 0 );
+                    switch ( particle2.getTerm().getType() ) {
+                    case XSConstants.ELEMENT_DECLARATION: {
+                        XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
+                        int minOccurs2 = particle2.getMinOccurs();
+                        int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
+                        QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
+                        if ( ftNameToftElement.get( elementName ) != null ) {
+                            LOG.debug( "Identified a feature property." );
+                            FeaturePropertyType pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementName );
+                            featurePropertyTypes.add( pt );
+                            return pt;
+                        }
+                    }
+                    case XSConstants.WILDCARD: {
+                        LOG.warn( "Unhandled particle: WILDCARD" );
+                        break;
+                    }
+                    case XSConstants.MODEL_GROUP: {
+                        LOG.warn( "Unhandled particle: MODEL_GROUP" );
+                        break;
+                    }
+                    }
+                    break;
+                }
+                default: {
+                    assert false;
+                }
+                }
+                break;
+            }
+            case XSConstants.WILDCARD: {
+                LOG.warn( "Unhandled particle: WILDCARD" );
+                break;
+            }
+            case XSConstants.ELEMENT_DECLARATION: {
+                LOG.warn( "Unhandled particle: ELEMENT_DECLARATION" );
+                break;
+            }
+            default: {
+                assert false;
+            }
+            }
+            // contents = new Sequence( elements );
+            break;
+        }
+        }
+        return null;
     }
 }

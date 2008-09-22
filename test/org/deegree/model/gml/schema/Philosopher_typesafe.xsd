@@ -8,7 +8,7 @@
   <xsd:complexType name="PhilosopherType">
     <xsd:complexContent>
       <xsd:extension base="gml:AbstractFeatureType">
-        <xsd:sequence>     
+        <xsd:sequence>
           <!-- simple (integer) valued property 'id' (feature id without prefix) -->
           <xsd:element name="id" type="xsd:integer"/>
           <!-- simple (string) valued property 'name' -->
@@ -21,12 +21,12 @@
           <xsd:element name="isAuthorOf" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded"/>
           <!-- simple (date) valued property 'dateOfBirth' -->
           <xsd:element name="dateOfBirth" type="xsd:date"/>
-          <!-- complex valued property 'placeOfBirth' -->
-          <xsd:element name="placeOfBirth" type="gml:FeaturePropertyType"/>
+          <!-- feature property 'placeOfBirth', with typesafe definition (must contain 'app:Place' feature) -->
+          <xsd:element name="placeOfBirth" type="app:PlacePropertyType"/>
           <!-- simple (date) valued property 'dateOfDeath' -->
           <xsd:element name="dateOfDeath" type="xsd:date"/>
-          <!-- complex valued property 'placeOfDeath' -->
-          <xsd:element name="placeOfDeath" type="gml:FeaturePropertyType"/>
+          <!-- feature property 'placeOfDeath', with typesafe definition  (must contain 'app:Place' feature) s-->
+          <xsd:element name="placeOfDeath" type="app:PlacePropertyType"/>
           <!-- complex valued property 'friend' (recursive) -->
           <xsd:element name="friend" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
@@ -47,6 +47,13 @@
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
+  </xsd:complexType>
+  <!-- ====================================================================== -->
+  <xsd:complexType name="PlacePropertyType">
+    <xsd:sequence>
+      <xsd:element ref="app:Place" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="gml:AssociationAttributeGroup"/>
   </xsd:complexType>
   <!-- ====================================================================== -->
   <xsd:element name="Place" type="app:PlaceType" substitutionGroup="gml:_Feature"/>

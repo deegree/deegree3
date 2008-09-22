@@ -120,6 +120,7 @@ public class XSModelAnalyzer {
                 }
             }
         }
+        substitutions.add (elementDecl);
         return substitutions;
     }
 
