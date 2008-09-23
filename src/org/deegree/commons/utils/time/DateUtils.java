@@ -91,7 +91,7 @@ import java.util.regex.Pattern;
  * @version r304 http://anonsvn.jboss.org/repos/dna/trunk/dna-common/src/main/java/org/jboss/dna/common/util/
  * @version $Revision$, $Date$
  */
-public final class DateUtil {
+public final class DateUtils {
 
     private static final String ISO_8601_2004_FORMAT_GMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
@@ -437,7 +437,7 @@ public final class DateUtil {
         return DateFormat.getDateTimeInstance( DateFormat.MEDIUM, DateFormat.LONG, locale ).format( date );
     }
 
-    private DateUtil() {
+    private DateUtils() {
         // Prevent instantiation
     }
 
