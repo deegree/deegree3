@@ -47,45 +47,20 @@ import javax.xml.namespace.QName;
 
 import org.apache.xerces.impl.dv.XSSimpleType;
 
-public class SimplePropertyType implements PropertyType {
-
-    private QName name;
-
-    private int maxOccurs;
-
-    private int minOccurs;
+public class SimplePropertyType extends AbstractPropertyType {
 
     private QName xsdType;
 
     private XSSimpleType typeDef;
 
     public SimplePropertyType( QName name, int minOccurs, int maxOccurs, XSSimpleType typeDef ) {
-        this.name = name;
-        this.minOccurs = minOccurs;
-        this.maxOccurs = maxOccurs;
+        super (name, minOccurs, maxOccurs);
         this.typeDef = typeDef;
     }
 
     public SimplePropertyType( QName name, int minOccurs, int maxOccurs, QName xsdType ) {
-        this.name = name;
-        this.minOccurs = minOccurs;
-        this.maxOccurs = maxOccurs;
+        super (name, minOccurs, maxOccurs);
         this.xsdType = xsdType;
-    }
-
-    @Override
-    public QName getName() {
-        return name;
-    }
-
-    @Override
-    public int getMaxOccurs() {
-        return maxOccurs;
-    }
-
-    @Override
-    public int getMinOccurs() {
-        return minOccurs;
     }
 
     @Override
@@ -95,7 +70,7 @@ public class SimplePropertyType implements PropertyType {
 
     @Override
     public String toString() {
-        String s = "- property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+        String s = "- simple property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
                    + ", xsdType: ";
         if (xsdType != null) {
             s += xsdType;

@@ -46,24 +46,60 @@ package org.deegree.model.feature.types;
 import javax.xml.namespace.QName;
 
 /**
- * TODO add documentation here
- *
+ * Abstract base class for {@link PropertyType}s that defines common fields and methods.
+ * <p>
+ * Common to all {@link PropertyType}s are the following:
+ * <ul>
+ * <li>A (qualified) name</li>
+ * <li>Minimum number of times that a property must be present in a corresponding feature instance (minOccurs)</li>
+ * <li>Maximum number of times that a property must be present in a corresponding feature instance (maxOccurs)</li>
+ * </ul>
+ * </p>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class GeometryPropertyType extends AbstractPropertyType {
+public abstract class AbstractPropertyType implements PropertyType {
 
-    private QName xsdType;    
+    /** The name of the property. */
+    protected QName name;
 
-    public GeometryPropertyType (QName name, int minOccurs, int maxOccurs, QName xsdType) {
-        super (name, minOccurs, maxOccurs);
-        this.xsdType = xsdType;
+    /** The minimum number of times that this property must be present. */
+    protected int minOccurs;
+
+    /** The maximum number of times that this property must be present, or -1 (=unbounded). */
+    protected int maxOccurs;
+
+    /**
+     * Creates a new <code>AbstractPropertyType</code> instance.
+     * 
+     * @param name
+     *            name of the property
+     * @param minOccurs
+     *            minimum number of times that this property must be present
+     * @param maxOccurs
+     *            maximum number of times that this property must be present, or -1 (=unbounded)
+     */
+    protected AbstractPropertyType( QName name, int minOccurs, int maxOccurs ) {
+        this.name = name;
+        this.minOccurs = minOccurs;
+        this.maxOccurs = maxOccurs;
     }
 
     @Override
-    public QName getXSDValueType() {
-        return xsdType;
+    public QName getName() {
+        return name;
+    }
+
+    @Override
+    public int getMinOccurs() {
+        return minOccurs;
+    }
+
+    @Override
+    public int getMaxOccurs() {
+        return maxOccurs;
     }
 }

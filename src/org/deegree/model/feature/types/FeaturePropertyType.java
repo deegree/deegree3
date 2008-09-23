@@ -54,22 +54,14 @@ import javax.xml.namespace.QName;
  * 
  * @version $Revision:$, $Date:$
  */
-public class FeaturePropertyType implements PropertyType {
-
-    private QName name;
-
-    private int maxOccurs;
-
-    private int minOccurs;
+public class FeaturePropertyType extends AbstractPropertyType {
 
     private QName valueFtName;
 
     private FeatureType valueFt;
 
     public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, QName valueFtName ) {
-        this.name = name;
-        this.minOccurs = minOccurs;
-        this.maxOccurs = maxOccurs;
+        super (name, minOccurs, maxOccurs);
         this.valueFtName = valueFtName;
     }
 
@@ -114,7 +106,7 @@ public class FeaturePropertyType implements PropertyType {
 
     @Override
     public String toString() {
-        String s = "- property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+        String s = "- feature property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
                    + ", value feature type: " + valueFt.getName();
         return s;
     }

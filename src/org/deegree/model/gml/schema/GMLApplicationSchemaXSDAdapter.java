@@ -63,6 +63,7 @@ import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.model.feature.types.FeaturePropertyType;
 import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.feature.types.GenericFeatureType;
+import org.deegree.model.feature.types.GeometryPropertyType;
 import org.deegree.model.feature.types.PropertyType;
 import org.deegree.model.feature.types.SimplePropertyType;
 import org.deegree.model.generic.xsd.ApplicationSchemaXSDAdapter;
@@ -380,4 +381,91 @@ public class GMLApplicationSchemaXSDAdapter {
         }
         return null;
     }
+
+    /**
+     * Analyzes the given complex type definition and returns a {@link GeometryPropertyType} if it defines a geometry
+     * property.
+     * 
+     * @param elementDecl
+     * @param typeDef
+     * @param minOccurs
+     * @param maxOccurs
+     * @return corresponding {@link GeometryPropertyType} or null, if declaration does not define a geometry property
+     */
+    private GeometryPropertyType buildGeometryPropertyType( XSElementDeclaration elementDecl,
+                                                          XSComplexTypeDefinition typeDef, int minOccurs, int maxOccurs ) {
+
+        QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+        switch ( typeDef.getContentType() ) {
+        case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
+            LOG.debug( "CONTENTTYPE_ELEMENT" );
+            XSParticle particle = typeDef.getParticle();
+            XSTerm term = particle.getTerm();
+            switch ( term.getType() ) {
+            case XSConstants.MODEL_GROUP: {
+                XSModelGroup modelGroup = (XSModelGroup) term;
+                switch ( modelGroup.getCompositor() ) {
+                case XSModelGroup.COMPOSITOR_ALL: {
+                    LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
+                    break;
+                }
+                case XSModelGroup.COMPOSITOR_CHOICE: {
+                    LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
+                    break;
+                }
+                case XSModelGroup.COMPOSITOR_SEQUENCE: {
+                    LOG.debug( "Found sequence." );
+                    XSObjectList sequence = modelGroup.getParticles();
+                    if ( sequence.getLength() != 1 ) {
+                        LOG.debug( "Length = '" + sequence.getLength() + "' -> cannot be a feature property." );
+                        return null;
+                    }
+                    XSParticle particle2 = (XSParticle) sequence.item( 0 );
+                    switch ( particle2.getTerm().getType() ) {
+                    case XSConstants.ELEMENT_DECLARATION: {
+                        XSElementDeclaration elementDecl2 = (XSElementDeclaration) particle2.getTerm();
+                        int minOccurs2 = particle2.getMinOccurs();
+                        int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
+                        QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
+                        if ( ftNameToftElement.get( elementName ) != null ) {
+                            LOG.debug( "Identified a geoemtry property." );
+                            GeometryPropertyType pt = null;
+                            return pt;
+                        }
+                    }
+                    case XSConstants.WILDCARD: {
+                        LOG.warn( "Unhandled particle: WILDCARD" );
+                        break;
+                    }
+                    case XSConstants.MODEL_GROUP: {
+                        LOG.warn( "Unhandled particle: MODEL_GROUP" );
+                        break;
+                    }
+                    }
+                    break;
+                }
+                default: {
+                    assert false;
+                }
+                }
+                break;
+            }
+            case XSConstants.WILDCARD: {
+                LOG.warn( "Unhandled particle: WILDCARD" );
+                break;
+            }
+            case XSConstants.ELEMENT_DECLARATION: {
+                LOG.warn( "Unhandled particle: ELEMENT_DECLARATION" );
+                break;
+            }
+            default: {
+                assert false;
+            }
+            }
+            // contents = new Sequence( elements );
+            break;
+        }
+        }
+        return null;
+    }    
 }

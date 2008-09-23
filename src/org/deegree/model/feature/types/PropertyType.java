@@ -60,7 +60,7 @@ public interface PropertyType {
     /**
      * Returns the name of the declared property.
      * <p>
-     * In the GML representation, this corresponds to the property's element name.
+     * In a common GML representation, this corresponds to the property's element name.
      * </p>
      * 
      * @return the name of the property
