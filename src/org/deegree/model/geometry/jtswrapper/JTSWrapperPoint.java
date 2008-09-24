@@ -134,15 +134,5 @@ public class JTSWrapperPoint extends JTSWrapperGeometry implements Point {
         }
         return this.pos[2];
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.primitive.Point#getEnvelope()
-     */
-    @Override
-    public Envelope getEnvelope() {
-        throw new UnsupportedOperationException( "envelope for a point is not defined" );
-    }
-    
+   
 }
