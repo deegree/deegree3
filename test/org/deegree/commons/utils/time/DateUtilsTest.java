@@ -181,6 +181,30 @@ public class DateUtilsTest {
     }
     
     @Test
+    public void testDates_yyyy_MM_ddTHHmmssSSS()
+                            throws ParseException {
+        Date date = DateUtils.parseISO8601Date( "1983-02-05T164200.999" );
+        assertTestDate( date );
+        assertUTCTime( 16, 42, 0, 999, date );
+    }
+
+    @Test
+    public void testDates_yyyy_MM_ddTHHmmssSS()
+                            throws ParseException {
+        Date date = DateUtils.parseISO8601Date( "1983-02-05T164200.99" );
+        assertTestDate( date );
+        assertUTCTime( 16, 42, 0, 990, date );
+    }
+    
+    @Test
+    public void testDates_yyyy_MM_ddTHHmmssS()
+                            throws ParseException {
+        Date date = DateUtils.parseISO8601Date( "1983-02-05T164200.9" );
+        assertTestDate( date );
+        assertUTCTime( 16, 42, 0, 900, date );
+    }
+
+    @Test
     public void testDates_yyyy_MM_ddTHH() throws ParseException {
         Date date = DateUtils.parseISO8601Date( "1983-02-05T16" );
         assertTestDate( date );

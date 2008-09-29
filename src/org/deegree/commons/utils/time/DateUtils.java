@@ -260,8 +260,14 @@ public final class DateUtils {
             calendar.set( Calendar.MINUTE, Integer.parseInt( minutesOfHour ) );
         if ( seconds != null )
             calendar.set( Calendar.SECOND, Integer.parseInt( seconds ) );
-        if ( milliseconds != null )
-            calendar.set( Calendar.MILLISECOND, Integer.parseInt( milliseconds ) );
+        if ( milliseconds != null ) {
+            int ms = Integer.parseInt( milliseconds );
+            if ( milliseconds.length() == 1 )
+                ms *= 100;
+            if ( milliseconds.length() == 2 )
+                ms *= 10;
+            calendar.set( Calendar.MILLISECOND, ms );
+        }
         if ( timeZoneHour != null ) {
             int zoneOffsetInMillis = Integer.parseInt( timeZoneHour ) * 60 * 60 * 1000;
             if ( "-".equals( timeZoneSign ) )
