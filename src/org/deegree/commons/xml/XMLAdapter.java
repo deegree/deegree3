@@ -736,14 +736,19 @@ public class XMLAdapter {
         String value = defaultValue;
         Object node = getNode( context, xpath );
         if ( node != null ) {
-            if ( node instanceof OMText ) {
-                value = ( (OMText) node ).getText();
-            } else if ( node instanceof OMElement ) {
-                value = ( (OMElement) node ).getText();
-            } else if ( node instanceof OMAttribute ) {
-                value = ( (OMAttribute) node ).getAttributeValue();
-            } else {
-                String msg = "Unexpected node type '" + node.getClass() + "'.";
+            try {
+                if ( node instanceof OMText ) {
+                    value = ( (OMText) node ).getText();
+                } else if ( node instanceof OMElement ) {
+                    value = ( (OMElement) node ).getText();
+                } else if ( node instanceof OMAttribute ) {
+                    value = ( (OMAttribute) node ).getAttributeValue();
+                } else {
+                    String msg = "Unexpected node type '" + node.getClass() + "'.";
+                    throw new XMLParsingException( this, context, msg );
+                }
+            } catch ( OMException ex ) {
+                String msg = "Internal error while accessing node '" + ex.getMessage() + "'.";
                 throw new XMLParsingException( this, context, msg );
             }
         }
