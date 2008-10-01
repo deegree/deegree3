@@ -173,17 +173,23 @@ public class FormattingXMLStreamWriter implements XMLStreamWriter {
 
     public void writeEmptyElement( String localName )
                             throws XMLStreamException {
+        indent();
         s.writeEmptyElement( localName );
+        unindent();
     }
 
     public void writeEmptyElement( String namespaceURI, String localName )
                             throws XMLStreamException {
+        indent();
         s.writeEmptyElement( namespaceURI, localName );
+        unindent();
     }
 
     public void writeEmptyElement( String prefix, String localName, String namespaceURI )
                             throws XMLStreamException {
+        indent();
         s.writeEmptyElement( prefix, localName, namespaceURI );
+        unindent();
     }
 
     public void writeEntityRef( String name )
