@@ -66,4 +66,11 @@ public class GeometryPropertyType extends AbstractPropertyType {
     public QName getXSDValueType() {
         return xsdType;
     }
+
+    @Override
+    public String toString() {
+        String s = "- geometry property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+                   + ", geometry type: " + xsdType;
+        return s;
+    }    
 }

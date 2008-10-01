@@ -47,9 +47,11 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -67,6 +69,7 @@ import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.feature.types.GeometryPropertyType;
 import org.deegree.model.feature.types.PropertyType;
 import org.deegree.model.feature.types.SimplePropertyType;
+import org.deegree.model.gml.GMLIdContext.XLinkProperty;
 import org.deegree.model.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +84,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FeatureGMLAdapter extends XMLAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( FeatureGMLAdapter.class );
+    private static final Logger LOG = LoggerFactory.getLogger(FeatureGMLAdapter.class);
 
     private static String FID = "fid";
 
@@ -92,21 +95,30 @@ public class FeatureGMLAdapter extends XMLAdapter {
     // key: feature type name, value: feature type
     private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
-    // keeps track of all features (with gml-ids) and properties that use local-xlinks to specifiy the property's value
-    private GMLIdContext idContext;
-
     /**
-     * Creates a new <code>FeatureGMLAdapter</code> instance instance that is configured for building features with the
-     * specified feature types.
+     * Creates a new <code>FeatureGMLAdapter</code> instance instance that is configured for
+     * building features with the specified feature types.
      * 
      * @param fts
      *            feature types
      */
-    public FeatureGMLAdapter( List<FeatureType> fts ) {
-        for ( FeatureType ft : fts ) {
-            ftNameToFt.put( ft.getName(), ft );
+    public FeatureGMLAdapter(FeatureType[] fts) {
+        for (FeatureType ft : fts) {
+            ftNameToFt.put(ft.getName(), ft);
         }
-        idContext = new GMLIdContext();
+    }
+
+    /**
+     * Creates a new <code>FeatureGMLAdapter</code> instance instance that is configured for
+     * building features with the specified feature types.
+     * 
+     * @param fts
+     *            feature types
+     */
+    public FeatureGMLAdapter(List<FeatureType> fts) {
+        for (FeatureType ft : fts) {
+            ftNameToFt.put(ft.getName(), ft);
+        }
     }
 
     /**
@@ -114,26 +126,31 @@ public class FeatureGMLAdapter extends XMLAdapter {
      * <code>XMLStreamReader</code> points at.
      * 
      * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event of the feature element, afterwards points at
-     *            the next event after the <code>END_ELEMENT</code> event of the feature element
+     *            cursor must point at the <code>START_ELEMENT</code> event of the feature element,
+     *            afterwards points at the next event after the <code>END_ELEMENT</code> event of
+     *            the feature element
      * @param srsName
      *            default SRS for all descendant geometry properties
+     * @param idContext
+     *            keeps track of object reference via (local) xlinks
      * @return object representation for the given feature element
      * @throws XMLStreamException
      */
-    public Feature parseFeature( XMLStreamReader xmlStream, String srsName )
-                            throws XMLStreamException {
+    public Feature parseFeature(XMLStreamReader xmlStream, String srsName, GMLIdContext idContext)
+            throws XMLStreamException {
 
         Feature feature = null;
-        String fid = parseFeatureId( xmlStream );
+        String fid = parseFeatureId(xmlStream);
 
         QName featureName = xmlStream.getName();
-        FeatureType ft = lookupFeatureType( xmlStream, featureName );
+        FeatureType ft = lookupFeatureType(xmlStream, featureName);
 
-        LOG.debug( "- parsing feature, gml:id=" + fid + " (begin): " + getCurrentEventInfo( xmlStream ) );
+        LOG.debug("- parsing feature, gml:id=" + fid + " (begin): "
+                + getCurrentEventInfo(xmlStream));
 
         // override defaultSRS with SRS information from boundedBy element (if present)
-        // srsName = XMLTools.getNodeAsString( element, "gml:boundedBy/*[1]/@srsName", nsContext, srsName );
+        // srsName = XMLTools.getNodeAsString( element, "gml:boundedBy/*[1]/@srsName", nsContext,
+        // srsName );
 
         // parse properties
         Iterator<PropertyType> declIter = ft.getPropertyDeclarations().iterator();
@@ -141,63 +158,64 @@ public class FeatureGMLAdapter extends XMLAdapter {
         int propOccurences = 0;
 
         List<Property<?>> propertyList = new ArrayList<Property<?>>();
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
+        while (xmlStream.nextTag() == START_ELEMENT) {
             QName propName = xmlStream.getName();
-            LOG.debug( "- property '" + propName + "'" );
-
-            if ( propName.equals( activeDecl.getName() ) ) {
+            LOG.debug("- property '" + propName + "'");
+            if (propName.equals(activeDecl.getName())) {
                 // current property element is equal to active declaration
-                if ( activeDecl.getMaxOccurs() != -1 && propOccurences > activeDecl.getMaxOccurs() ) {
-                    String msg = Messages.getMessage( "ERROR_PROPERTY_TOO_MANY_OCCURENCES", propName,
-                                                      activeDecl.getMaxOccurs(), ft.getName() );
-                    throw new XMLParsingException( this, xmlStream, msg );
-                } else {
-                    propOccurences++;
+                if (activeDecl.getMaxOccurs() != -1 && propOccurences > activeDecl.getMaxOccurs()) {
+                    String msg = Messages.getMessage("ERROR_PROPERTY_TOO_MANY_OCCURENCES",
+                            propName, activeDecl.getMaxOccurs(), ft.getName());
+                    throw new XMLParsingException(this, xmlStream, msg);
                 }
             } else {
                 // current property element is not equal to active declaration
-                while ( declIter.hasNext() && !propName.equals( activeDecl.getName() ) ) {
-                    if ( propOccurences < activeDecl.getMinOccurs() ) {
+                while (declIter.hasNext() && !propName.equals(activeDecl.getName())) {
+                    if (propOccurences < activeDecl.getMinOccurs()) {
                         String msg = null;
-                        if ( activeDecl.getMinOccurs() == 1 ) {
-                            msg = Messages.getMessage( "ERROR_PROPERTY_MANDATORY", propName, ft.getName() );
+                        if (activeDecl.getMinOccurs() == 1) {
+                            msg = Messages.getMessage("ERROR_PROPERTY_MANDATORY", activeDecl
+                                    .getName(), ft.getName());
                         } else {
-                            msg = Messages.getMessage( "ERROR_PROPERTY_TOO_FEW_OCCURENCES", propName,
-                                                       activeDecl.getMinOccurs(), ft.getName() );
+                            msg = Messages.getMessage("ERROR_PROPERTY_TOO_FEW_OCCURENCES",
+                                    activeDecl.getName(), activeDecl.getMinOccurs(), ft.getName());
                         }
-                        throw new XMLParsingException( this, xmlStream, msg );
+                        throw new XMLParsingException(this, xmlStream, msg);
                     }
                     activeDecl = declIter.next();
                     propOccurences = 0;
                 }
-                if ( !propName.equals( activeDecl.getName() ) ) {
-                    String msg = Messages.getMessage( "ERROR_PROPERTY_UNEXPECTED", propName, ft.getName() );
-                    throw new XMLParsingException( this, xmlStream, msg );
+                if (!propName.equals(activeDecl.getName())) {
+                    String msg = Messages.getMessage("ERROR_PROPERTY_UNEXPECTED", propName, ft
+                            .getName());
+                    throw new XMLParsingException(this, xmlStream, msg);
                 }
             }
 
-            try {
-                Property<?> property = parseProperty( xmlStream, activeDecl, srsName );
-                if ( property != null ) {
-                    propertyList.add( property );
-                }
-            } catch ( XMLParsingException e ) {
-                LOG.debug( "Error parsing property '" + propName + "' of feature '" + featureName + "' with fid: "
-                           + fid + ". " + e.getMessage() );
-                throw e;
+            Property<?> property = parseProperty(xmlStream, activeDecl, srsName, fid,
+                    propOccurences, idContext);
+            if (property != null) {
+                propertyList.add(property);
+            }
+            propOccurences++;
+        }
+
+        LOG.debug(" - parsing feature (end): " + getCurrentEventInfo(xmlStream));
+
+        feature = ft.newFeature(fid, propertyList);
+
+        for (Property<?> property : propertyList) {
+            if (property instanceof XLinkProperty) {
+                ((XLinkProperty) property).setFeature(feature);
             }
         }
 
-        LOG.debug( " - parsing feature (end): " + getCurrentEventInfo( xmlStream ) );
-
-        feature = ft.newFeature( fid, propertyList );
-
-        if ( fid != null && !"".equals( fid ) ) {
-            if ( idContext.getFeature( fid ) != null ) {
-                String msg = Messages.getMessage( "ERROR_FEATURE_ID_NOT_UNIQUE", fid );
-                throw new XMLParsingException( this, xmlStream, msg );
+        if (fid != null && !"".equals(fid)) {
+            if (idContext.getFeature(fid) != null) {
+                String msg = Messages.getMessage("ERROR_FEATURE_ID_NOT_UNIQUE", fid);
+                throw new XMLParsingException(this, xmlStream, msg);
             }
-            idContext.addFeature( feature );
+            idContext.addFeature(feature);
         }
 
         return feature;
@@ -207,61 +225,67 @@ public class FeatureGMLAdapter extends XMLAdapter {
      * Returns the object representation for the given property element.
      * 
      * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event of the property, afterwards points at the
-     *            next event after the <code>END_ELEMENT</code> of the property
+     *            cursor must point at the <code>START_ELEMENT</code> event of the property,
+     *            afterwards points at the next event after the <code>END_ELEMENT</code> of the
+     *            property
      * @param propDecl
      *            property declaration
      * @param srsName
      *            default SRS for all a descendant geometry properties
+     * @param idContext
+     *            keeps track of object reference via (local) xlinks
      * @return object representation for the given property element.
      * @throws XMLParsingException
      * @throws XMLStreamException
      */
-    public Property<?> parseProperty( XMLStreamReader xmlStream, PropertyType propDecl, String srsName )
-                            throws XMLParsingException, XMLStreamException {
+    public Property<?> parseProperty(XMLStreamReader xmlStream, PropertyType propDecl,
+            String srsName, String fid, int occurence, GMLIdContext idContext)
+            throws XMLParsingException, XMLStreamException {
 
         Property<?> property = null;
         QName propertyName = xmlStream.getName();
-        LOG.debug( "- parsing property (begin): " + getCurrentEventInfo( xmlStream ) );
-        LOG.debug( "- property declaration: " + propDecl );
+        LOG.debug("- parsing property (begin): " + getCurrentEventInfo(xmlStream));
+        LOG.debug("- property declaration: " + propDecl);
 
-        if ( propDecl instanceof SimplePropertyType ) {
-            property = new GenericProperty<String>( propDecl, xmlStream.getElementText().trim() );
-        } else if ( propDecl instanceof GeometryPropertyType ) {
+        if (propDecl instanceof SimplePropertyType) {
+            property = new GenericProperty<String>(propDecl, xmlStream.getElementText().trim());
+        } else if (propDecl instanceof GeometryPropertyType) {
             xmlStream.nextTag();
             // TODO geometry parsing
             // Geometry geometry = StAXGeometryParser.parseGeometry( xmlStream, srsName );
             // property = new GenericProperty (pt, geometry);
-            LOG.debug( "- skipping parsing of '" + xmlStream.getName() + "' -- geometry parsing is not implemented yet" );
-            skipElement( xmlStream );
-            property = new GenericProperty<String>( propDecl, xmlStream.getName().toString() );
+            LOG.debug("- skipping parsing of '" + xmlStream.getName()
+                    + "' -- geometry parsing is not implemented yet");
+            skipElement(xmlStream);
+            property = new GenericProperty<String>(propDecl, xmlStream.getName().toString());
 
             xmlStream.nextTag();
-        } else if ( propDecl instanceof FeaturePropertyType ) {
-            String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
-            if ( href != null ) {
+        } else if (propDecl instanceof FeaturePropertyType) {
+            String href = xmlStream.getAttributeValue(CommonNamespaces.XLNNS, "href");
+            if (href != null) {
                 // remote feature (xlinked content)
-                // if ( !href.startsWith( "#" ) ) {
-                // String msg = Messages.format( "ERROR_EXTERNAL_XLINK_NOT_SUPPORTED", href );
-                // throw new XMLParsingException( msg );
-                // } else {
-                // String fid = href.substring( 1 );
-                // property = new XLinkedFeatureProperty( propertyName, fid );
-                // xlinkProperties.add( (XLinkedFeatureProperty) property );
-                // }
+                if (!href.startsWith("#")) {
+                    String msg = Messages.getMessage("ERROR_EXTERNAL_XLINK_NOT_SUPPORTED", href);
+                    throw new XMLParsingException(this, xmlStream, msg);
+                } else {
+                    String targetId = href.substring(1);
+                    property = idContext.addXLinkProperty(fid, propDecl, occurence, targetId);
+                    LOG.debug("Added remote property...");
+                }
                 xmlStream.nextTag();
             } else {
                 // inline feature
-                if ( xmlStream.nextTag() != START_ELEMENT ) {
-                    String msg = Messages.getMessage( "ERROR_INVALID_FEATURE_PROPERTY", propertyName );
-                    throw new XMLParsingException( this, xmlStream, msg );
+                if (xmlStream.nextTag() != START_ELEMENT) {
+                    String msg = Messages
+                            .getMessage("ERROR_INVALID_FEATURE_PROPERTY", propertyName);
+                    throw new XMLParsingException(this, xmlStream, msg);
                 }
-                Feature subFeature = parseFeature( xmlStream, srsName );
-                property = new GenericProperty<Feature>( propDecl, subFeature );
-                skipElement( xmlStream );
+                Feature subFeature = parseFeature(xmlStream, srsName, idContext);
+                property = new GenericProperty<Feature>(propDecl, subFeature);
+                skipElement(xmlStream);
             }
         }
-        LOG.debug( " - parsing property (end): " + getCurrentEventInfo( xmlStream ) );
+        LOG.debug(" - parsing property (end): " + getCurrentEventInfo(xmlStream));
         return property;
     }
 
@@ -278,32 +302,34 @@ public class FeatureGMLAdapter extends XMLAdapter {
      * @throws XMLParsingException
      *             if no feature type with the given name is defined
      */
-    protected FeatureType lookupFeatureType( XMLStreamReader xmlStreamReader, QName ftName )
-                            throws XMLParsingException {
+    protected FeatureType lookupFeatureType(XMLStreamReader xmlStreamReader, QName ftName)
+            throws XMLParsingException {
         FeatureType ft = null;
-        ft = ftNameToFt.get( ftName );
-        if ( ft == null ) {
-            String msg = Messages.getMessage( "ERROR_SCHEMA_FEATURE_TYPE_UNKNOWN", ftName );
-            throw new XMLParsingException( this, xmlStreamReader, msg );
+        ft = ftNameToFt.get(ftName);
+        if (ft == null) {
+            String msg = Messages.getMessage("ERROR_SCHEMA_FEATURE_TYPE_UNKNOWN", ftName);
+            throw new XMLParsingException(this, xmlStreamReader, msg);
         }
         return ft;
     }
 
     /**
-     * Parses the feature id attribute from the feature <code>START_ELEMENT</code> event that the given
-     * <code>XMLStreamReader</code> points to.
+     * Parses the feature id attribute from the feature <code>START_ELEMENT</code> event that the
+     * given <code>XMLStreamReader</code> points to.
      * <p>
-     * Looks after 'gml:id' (GML 3) first, if no such attribute is present, the 'fid' (GML 2) attribute is used.
+     * Looks after 'gml:id' (GML 3) first, if no such attribute is present, the 'fid' (GML 2)
+     * attribute is used.
      * 
      * @param xmlReader
      *            must point to the <code>START_ELEMENT</code> event of the feature
-     * @return the feature id, or "" (empty string) if neither a 'gml:id' nor a 'fid' attribute is present
+     * @return the feature id, or "" (empty string) if neither a 'gml:id' nor a 'fid' attribute is
+     *         present
      */
-    protected String parseFeatureId( XMLStreamReader xmlReader ) {
+    protected String parseFeatureId(XMLStreamReader xmlReader) {
 
-        String fid = xmlReader.getAttributeValue( GMLNS, GMLID );
-        if ( fid == null ) {
-            fid = xmlReader.getAttributeValue( null, FID );
+        String fid = xmlReader.getAttributeValue(GMLNS, GMLID);
+        if (fid == null) {
+            fid = xmlReader.getAttributeValue(null, FID);
         }
 
         // Check that the feature id has the correct form. "fid" and "gml:id" are both based
@@ -311,49 +337,71 @@ public class FeatureGMLAdapter extends XMLAdapter {
         // Thus, they must match the NCName production rule. This means that they may not contain
         // a separating colon (only at the first position a colon is allowed) and must not
         // start with a digit.
-        if ( fid != null && fid.length() > 0 && !fid.matches( "[^\\d][^:]+" ) ) {
-            String msg = Messages.getMessage( "ERROR_INVALID_FEATUREID", fid );
-            throw new IllegalArgumentException( msg );
+        if (fid != null && fid.length() > 0 && !fid.matches("[^\\d][^:]+")) {
+            String msg = Messages.getMessage("ERROR_INVALID_FEATUREID", fid);
+            throw new IllegalArgumentException(msg);
         }
         return fid;
     }
 
-    public void export( XMLStreamWriter writer, Feature feature )
-                            throws XMLStreamException {
+    public void export(XMLStreamWriter writer, Feature feature ) throws XMLStreamException {
+        export(writer, feature, new HashSet<Feature>());
+    }    
+    
+    public void export(XMLStreamWriter writer, Feature feature, Set<Feature> exportedFeatures)
+            throws XMLStreamException {
 
         QName featureName = feature.getName();
-        System.out.println( "Exporting " + featureName );
-        if ( featureName.getNamespaceURI() == null || featureName.getNamespaceURI().length() == 0 ) {
-            writer.writeStartElement( featureName.getLocalPart() );
+        System.out.println("Exporting " + featureName);
+        if (featureName.getNamespaceURI() == null || featureName.getNamespaceURI().length() == 0) {
+            writer.writeStartElement(featureName.getLocalPart());
         } else {
-            writer.writeStartElement( featureName.getNamespaceURI(), featureName.getLocalPart() );
+            writer.writeStartElement(featureName.getNamespaceURI(), featureName.getLocalPart());
         }
-        if ( feature.getId() != null ) {
-            writer.writeAttribute( GMLNS, "id", feature.getId() );
+        if (feature.getId() != null) {
+            writer.writeAttribute(GMLNS, "id", feature.getId());
         }
-        for ( Property<?> prop : feature.getProperties() ) {
-            export( writer, prop );
+        exportedFeatures.add (feature);
+        for (Property<?> prop : feature.getProperties()) {
+            export(writer, prop, exportedFeatures);
         }
         writer.writeEndElement();
     }
 
-    public void export( XMLStreamWriter writer, Property<?> property )
-                            throws XMLStreamException {
+    private void export(XMLStreamWriter writer, Property<?> property, Set<Feature> exportedFeatures)
+            throws XMLStreamException {
 
         QName propName = property.getName();
-        if ( propName.getNamespaceURI() == null || propName.getNamespaceURI().length() == 0 ) {
-            writer.writeStartElement( propName.getLocalPart() );
-        } else {
-            writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
-        }
+
         // TODO respect property type properly
         Object value = property.getValue();
-        if ( value instanceof Feature ) {
-            export( writer, (Feature) value );
-        } else {
-            writer.writeCharacters( value.toString() );
-        }
 
-        writer.writeEndElement();
+        if (value instanceof Feature) {
+            // check if feature has already been exported (avoid cycles)
+            if (exportedFeatures.contains(value)) {
+                if (propName.getNamespaceURI() == null || propName.getNamespaceURI().length() == 0) {
+                    writer.writeEmptyElement(propName.getLocalPart());
+                } else {
+                    writer.writeEmptyElement(propName.getNamespaceURI(), propName.getLocalPart());
+                }                 
+                writer.writeAttribute(XLN_NS, "href", "#" + ((Feature) value).getId());
+            } else {
+                if (propName.getNamespaceURI() == null || propName.getNamespaceURI().length() == 0) {
+                    writer.writeStartElement(propName.getLocalPart());
+                } else {
+                    writer.writeStartElement(propName.getNamespaceURI(), propName.getLocalPart());
+                }                
+                export(writer, (Feature) value, exportedFeatures);
+                writer.writeEndElement();
+            }
+        } else {
+            if (propName.getNamespaceURI() == null || propName.getNamespaceURI().length() == 0) {
+                writer.writeStartElement(propName.getLocalPart());
+            } else {
+                writer.writeStartElement(propName.getNamespaceURI(), propName.getLocalPart());
+            }            
+            writer.writeCharacters(value.toString());
+            writer.writeEndElement();
+        }
     }
 }

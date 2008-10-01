@@ -43,6 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.gml;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -67,6 +68,8 @@ import org.deegree.model.feature.types.GenericFeatureType;
 import org.deegree.model.feature.types.GeometryPropertyType;
 import org.deegree.model.feature.types.PropertyType;
 import org.deegree.model.feature.types.SimplePropertyType;
+import org.deegree.model.gml.schema.GMLApplicationSchemaXSDAdapter;
+import org.deegree.model.gml.schema.GMLVersion;
 import org.junit.Test;
 
 /**
@@ -103,7 +106,8 @@ public class FeatureGMLAdapterTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        Feature feature = adapter.parseFeature( xmlReader, null );
+        GMLIdContext idContext = new GMLIdContext();
+        Feature feature = adapter.parseFeature( xmlReader, null, idContext );
         xmlReader.close();
 
         Assert.assertEquals( new QName( "http://www.deegree.org/app", "Country" ), feature.getName() );
@@ -140,7 +144,8 @@ public class FeatureGMLAdapterTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        Feature feature = adapter.parseFeature( xmlReader, null );
+        GMLIdContext idContext = new GMLIdContext();        
+        Feature feature = adapter.parseFeature( xmlReader, null, idContext );
         xmlReader.close();
 
         Assert.assertEquals( new QName( "Country" ), feature.getName() );
@@ -186,7 +191,8 @@ public class FeatureGMLAdapterTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        Feature feature = adapter.parseFeature( xmlReader, null );
+        GMLIdContext idContext = new GMLIdContext();          
+        Feature feature = adapter.parseFeature( xmlReader, null, idContext );
         xmlReader.close();
 
 //        Assert.assertEquals( new QName( "http://www.deegree.org/app", "Country" ), feature.getName() );
@@ -201,6 +207,33 @@ public class FeatureGMLAdapterTest {
         xmlWriter.setPrefix("gml", "http://www.opengis.net/gml");        
         adapter.export( xmlWriter, feature );
         xmlWriter.close();
+    }    
+
+    @Test
+    public void testParsingPhilosopherFeatureCollection()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        String schemaURL = this.getClass().getResource( "schema/Philosopher_typesafe.xsd").toString();
+        GMLApplicationSchemaXSDAdapter xsdAapter = new GMLApplicationSchemaXSDAdapter (schemaURL, GMLVersion.VERSION_31);
+        FeatureGMLAdapter gmlAdapter = new FeatureGMLAdapter( xsdAapter.extractFeatureTypes() );
+
+        URL docURL = FeatureGMLAdapterTest.class.getResource( "Philosopher_FeatureCollection.xml" );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.next();
+        GMLIdContext idContext = new GMLIdContext();  
+        Feature feature = gmlAdapter.parseFeature( xmlReader, null, idContext );
+        idContext.resolveXLinks();
+        xmlReader.close();
+        
+
+        XMLOutputFactory of = XMLOutputFactory.newInstance();
+        of.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE);
+        XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(of.createXMLStreamWriter(new FileWriter("/tmp/out.gml") ) );
+        xmlWriter.setPrefix("app", "http://www.deegree.org/app");
+        xmlWriter.setPrefix("gml", "http://www.opengis.net/gml");
+        xmlWriter.setPrefix("xlink", "http://www.w3.org/1999/xlink"); 
+        gmlAdapter.export( xmlWriter, feature );
+        xmlWriter.flush();
     }    
     
     public static void main( String[] args ) {

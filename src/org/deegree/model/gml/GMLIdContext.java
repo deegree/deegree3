@@ -43,6 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.gml;
 
+import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +54,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.Property;
+import org.deegree.model.feature.types.PropertyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,8 +85,10 @@ public class GMLIdContext {
         return idToFeature.get (fid);
     }    
     
-    public void addXLinkProperty( String featureId, QName propName, int occurence, String targetId ) {
-        xlinkProperties.add( new XLinkProperty( featureId, propName, occurence, targetId ) );
+    public Property addXLinkProperty( String featureId, PropertyType pt, int occurence, String targetId ) {
+        XLinkProperty prop = new XLinkProperty( featureId, pt, occurence, targetId) ;
+        xlinkProperties.add( prop );
+        return prop;
     }
 
     /**
@@ -96,12 +100,11 @@ public class GMLIdContext {
             LOG.debug( "Resolving xlink-property with reference to '" + prop.targetId + "'" );
             Object targetObject = idToFeature.get( prop.targetId );
             if ( targetObject == null ) {
-                String msg = "Cannot resolve reference to feature with id '" + prop.targetId
+                String msg = "Cannot resolve reference to object with id '" + prop.targetId
                              + "'. There is no such object in the document.";
                 throw new XMLProcessingException ( msg);
             }
-            Feature feature = idToFeature.get( prop.featureId );
-            feature.setPropertyValue( prop.propName, prop.occurence, targetObject );
+            prop.feature.setPropertyValue( prop.getName(), prop.occurence, targetObject );
         }
     }
 
@@ -113,21 +116,43 @@ public class GMLIdContext {
      * 
      * @version $Revision:$, $Date:$
      */
-    private class XLinkProperty {
+    class XLinkProperty implements Property<Object>{
 
         String featureId;
+        
+        Feature feature;
 
-        QName propName;
+        PropertyType pt;
 
         int occurence;
 
         String targetId;
 
-        private XLinkProperty( String featureId, QName propName, int occurence, String targetId ) {
+        private XLinkProperty( String featureId, PropertyType pt, int occurence, String targetId ) {
             this.featureId = featureId;
-            this.propName = propName;
+            this.pt = pt;
             this.occurence = occurence;
             this.targetId = targetId;
+        }
+
+        void setFeature(Feature feature) {
+            this.feature = feature;
+        }
+        
+        @Override
+        public QName getName() {
+            return pt.getName();
+        }
+
+        @Override
+        public PropertyType getType() {
+            return pt;
+        }
+
+        @Override
+        public Object getValue() {
+            // TODO Auto-generated method stub
+            return null;
         }
     }
 }

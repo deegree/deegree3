@@ -50,12 +50,16 @@ import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.feature.types.GenericFeatureType;
+import org.deegree.model.feature.types.PropertyType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Allows the representation of arbitrary {@link Feature}s.
  * <p>
- * Please note that it is more efficient to use the {@link GenericSimpleFeature} class if the feature to be represented
- * does not contain multiple properties or nested features ("complex properties").
+ * Please note that it is more efficient to use the {@link GenericSimpleFeature} class if the
+ * feature to be represented does not contain multiple properties or nested features
+ * ("complex properties").
  * </p>
  * 
  * @see GenericSimpleFeature
@@ -67,16 +71,18 @@ import org.deegree.model.feature.types.GenericFeatureType;
  */
 public class GenericFeature implements Feature {
 
+    private static final Logger LOG = LoggerFactory.getLogger(GenericFeature.class);
+
     private String fid;
 
     private GenericFeatureType ft;
 
     private List<Property<?>> props;
 
-    public GenericFeature( GenericFeatureType ft, String fid, List<Property<?>> props ) {
+    public GenericFeature(GenericFeatureType ft, String fid, List<Property<?>> props) {
         this.ft = ft;
         this.fid = fid;
-        this.props = new ArrayList<Property<?>>( props );
+        this.props = new ArrayList<Property<?>>(props);
     }
 
     @Override
@@ -85,7 +91,7 @@ public class GenericFeature implements Feature {
     }
 
     @Override
-    public void setId( String fid ) {
+    public void setId(String fid) {
         this.fid = fid;
     }
 
@@ -101,17 +107,28 @@ public class GenericFeature implements Feature {
 
     @Override
     public Property<?>[] getProperties() {
-        return props.toArray( new Property<?>[props.size()] );
+        return props.toArray(new Property<?>[props.size()]);
     }
 
     @Override
-    public void setProperties( List<Property<?>> props )
-                            throws IllegalArgumentException {
-        this.props = new ArrayList<Property<?>>( props );
+    public void setProperties(List<Property<?>> props) throws IllegalArgumentException {
+        this.props = new ArrayList<Property<?>>(props);
     }
 
     @Override
-    public void setPropertyValue( QName propName, int occurence, Object value ) {
-        // TODO Auto-generated method stub
+    public void setPropertyValue(QName propName, int occurrence, Object value) {
+        LOG.debug("Setting property value for " + occurrence + ". " + propName + " property");
+        int num = 0;
+        for (int i = 0; i < props.size(); i++) {
+            Property<?> prop = props.get(i);
+            if (prop.getName().equals(propName)) {
+                if (num++ == occurrence) {
+                    PropertyType pt = prop.getType();
+                    props.set(i, new GenericProperty<Object>(pt, value));
+                    LOG.debug("Yep.");
+                    break;
+                }
+            }
+        }
     }
 }

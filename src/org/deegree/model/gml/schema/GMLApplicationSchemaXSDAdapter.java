@@ -86,6 +86,8 @@ public class GMLApplicationSchemaXSDAdapter {
     private XSModelGMLAnalyzer analyzer;
 
     private Map<QName, XSElementDeclaration> ftNameToftElement = new HashMap<QName, XSElementDeclaration>();
+    
+    private Map<QName, XSElementDeclaration> geometryNameToGeometryElement = new HashMap<QName, XSElementDeclaration>();
 
     private Map<QName, FeatureType> ftNameToft = new HashMap<QName, FeatureType>();
 
@@ -100,6 +102,11 @@ public class GMLApplicationSchemaXSDAdapter {
         for ( XSElementDeclaration elementDecl : featureElementDecls ) {
             QName ftName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
             ftNameToftElement.put( ftName, elementDecl );
+        }
+        List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations( null, false );
+        for ( XSElementDeclaration elementDecl : geometryElementDecls ) {
+            QName ftName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+            geometryNameToGeometryElement.put( ftName, elementDecl );
         }        
     }
 
@@ -288,8 +295,13 @@ public class GMLApplicationSchemaXSDAdapter {
         LOG.debug( "- Property definition '" + ptName + "' uses a complex type for content definition." );
         pt = buildFeaturePropertyType( elementDecl, typeDef, minOccurs, maxOccurs );
         if ( pt == null ) {
-            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, new QName( typeDef.getNamespace(),
-                                                                                  typeDef.getName() ) );
+            LOG.debug ("A");
+            pt = buildGeometryPropertyType(elementDecl, typeDef, minOccurs, maxOccurs);
+            if (pt == null) {
+                LOG.debug ("B");
+                pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, new QName( typeDef.getNamespace(),
+                      typeDef.getName() ) );  
+            }            
         }
         return pt;
     }
@@ -427,10 +439,9 @@ public class GMLApplicationSchemaXSDAdapter {
                         int minOccurs2 = particle2.getMinOccurs();
                         int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
                         QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
-                        if ( ftNameToftElement.get( elementName ) != null ) {
-                            LOG.debug( "Identified a geoemtry property." );
-                            GeometryPropertyType pt = null;
-                            return pt;
+                        if ( geometryNameToGeometryElement.get( elementName ) != null ) {
+                            LOG.debug( "Identified a geometry property." );
+                            return new GeometryPropertyType (ptName, minOccurs2, maxOccurs, elementName);
                         }
                     }
                     case XSConstants.WILDCARD: {

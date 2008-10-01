@@ -52,6 +52,8 @@ import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.types.FeatureCollectionType;
 import org.deegree.model.feature.types.PropertyType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add documentation here
@@ -63,6 +65,8 @@ import org.deegree.model.feature.types.PropertyType;
  */
 public class GenericFeatureCollection implements FeatureCollection {
 
+    private static final Logger LOG = LoggerFactory.getLogger( GenericFeatureCollection.class );       
+    
     private String fid;
 
     private FeatureCollectionType ft;
@@ -239,7 +243,7 @@ public class GenericFeatureCollection implements FeatureCollection {
     }
 
     @Override
-    public void setPropertyValue( QName propName, int occurence, Object value ) {
-        // TODO Auto-generated method stub        
+    public void setPropertyValue( QName propName, int occurrence, Object value ) {
+        LOG.debug ("Setting property value for " + occurrence + ". " + propName + " property");       
     }
 }
