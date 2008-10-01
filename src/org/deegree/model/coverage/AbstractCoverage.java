@@ -130,5 +130,9 @@ public abstract class AbstractCoverage {
      */
     public void setCoordinateSystem( CoordinateSystem crs ) {
         this.crs = crs;
+        if ( envelope != null ) {
+            this.envelope = geomFactory.createEnvelope( envelope.getMin().getAsArray(), envelope.getMax().getAsArray(),
+                                                        envelope.getPrecision(), crs );
+        }
     }
 }
