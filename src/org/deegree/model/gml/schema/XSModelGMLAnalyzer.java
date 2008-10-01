@@ -50,6 +50,23 @@ import org.deegree.commons.xml.schema.XSModelAnalyzer;
 
 /**
  * Provides convenient access to "relevant" element declarations of a GML schema.
+ * <p>
+ * An element declaration is relevant if it defines a class of GML objects. Currently, eight types of GML objects exist:
+ * <ul>
+ * <li>feature</li>
+ * <li>geometry</li>
+ * <li>value</li>
+ * <li>topology</li>
+ * <li>crs</li>
+ * <li>time object</li>
+ * <li>coverage</li>
+ * <li>style</li>
+ * </ul>
+ * </p>
+ * <p>
+ * Please refer to chapter 10 of the book "Geography Mark-Up Language - Foundations for the Geo-Web" by Ron Lake et al.
+ * for details.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -68,21 +85,49 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
 
     private XSElementDeclaration abstractGeometryElementDecl;
 
+    private XSElementDeclaration abstractValueElementDecl;
+
+    private XSElementDeclaration abstractTopologyElementDecl;
+
+    private XSElementDeclaration abstractCRSElementDecl;
+
+    private XSElementDeclaration abstractTimeObjectElementDecl;
+
+    private XSElementDeclaration abstractCoverageElementDecl;
+
+    private XSElementDeclaration abstractStyleElementDecl;
+
     public XSModelGMLAnalyzer( String url, GMLVersion mode ) throws ClassCastException, ClassNotFoundException,
                             InstantiationException, IllegalAccessException {
         super( url );
         mode = mode;
         switch ( mode ) {
-        case VERSION_2:
+        case VERSION_2: {
+            abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "_Feature", GML_PRE_32_NS );
+            abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );
+            break;
+        }
         case VERSION_30:
         case VERSION_31: {
             abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "_Feature", GML_PRE_32_NS );
-            abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );
+            abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );            
+            abstractValueElementDecl = xmlSchema.getElementDeclaration( "_Value", GML_PRE_32_NS );
+            abstractTopologyElementDecl = xmlSchema.getElementDeclaration( "_Topology", GML_PRE_32_NS );
+            abstractCRSElementDecl = xmlSchema.getElementDeclaration( "_CRS", GML_PRE_32_NS );
+            abstractTimeObjectElementDecl = xmlSchema.getElementDeclaration( "_TimeObject", GML_PRE_32_NS );
+            abstractCoverageElementDecl = xmlSchema.getElementDeclaration( "_Coverage", GML_PRE_32_NS );
+            abstractStyleElementDecl = xmlSchema.getElementDeclaration( "_Style", GML_PRE_32_NS );
             break;
         }
         case VERSION_32: {
             abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "AbstractFeature", GML_32_NS );
             abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "AbstractGeometry", GML_32_NS );
+            abstractValueElementDecl = xmlSchema.getElementDeclaration( "AbstractValue", GML_32_NS );
+            abstractTopologyElementDecl = xmlSchema.getElementDeclaration( "AbstractTopology", GML_32_NS );
+            abstractCRSElementDecl = xmlSchema.getElementDeclaration( "AbstractCRS", GML_32_NS );
+            abstractTimeObjectElementDecl = xmlSchema.getElementDeclaration( "AbstractTimeObject", GML_32_NS );
+            abstractCoverageElementDecl = xmlSchema.getElementDeclaration( "AbstractCoverage", GML_32_NS );
+            abstractStyleElementDecl = xmlSchema.getElementDeclaration( "AbstractStyle", GML_32_NS );
             break;
         }
         }
@@ -94,5 +139,29 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
 
     public List<XSElementDeclaration> getGeometryElementDeclarations( String namespace, boolean onlyConcrete ) {
         return getSubstitutions( abstractGeometryElementDecl, namespace, onlyConcrete );
+    }
+
+    public List<XSElementDeclaration> getValueElementDeclarations( String namespace, boolean onlyConcrete ) {
+        return getSubstitutions( abstractValueElementDecl, namespace, onlyConcrete );
+    }
+
+    public List<XSElementDeclaration> getTopologyElementDeclarations( String namespace, boolean onlyConcrete ) {
+        return getSubstitutions( abstractTopologyElementDecl, namespace, onlyConcrete );
+    }
+
+    public List<XSElementDeclaration> getCRSElementDeclarations( String namespace, boolean onlyConcrete ) {
+        return getSubstitutions( abstractCRSElementDecl, namespace, onlyConcrete );
+    }
+    
+    public List<XSElementDeclaration> getTimeObjectElementDeclarations( String namespace, boolean onlyConcrete ) {
+        return getSubstitutions( abstractTimeObjectElementDecl, namespace, onlyConcrete );
+    }
+
+    public List<XSElementDeclaration> getCoverageElementDeclarations( String namespace, boolean onlyConcrete ) {
+        return getSubstitutions( abstractCoverageElementDecl, namespace, onlyConcrete );
+    }
+
+    public List<XSElementDeclaration> getStyleElementDeclarations( String namespace, boolean onlyConcrete ) {
+        return getSubstitutions( abstractStyleElementDecl, namespace, onlyConcrete );
     }    
 }
