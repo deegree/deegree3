@@ -43,6 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.gml.schema;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.xerces.xs.XSElementDeclaration;
@@ -95,12 +96,12 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
 
     private XSElementDeclaration abstractCoverageElementDecl;
 
-    private XSElementDeclaration abstractStyleElementDecl;
-
+    private XSElementDeclaration abstractStyleElementDecl;   
+    
     public XSModelGMLAnalyzer( String url, GMLVersion mode ) throws ClassCastException, ClassNotFoundException,
                             InstantiationException, IllegalAccessException {
         super( url );
-        mode = mode;
+        this.mode = mode;
         switch ( mode ) {
         case VERSION_2: {
             abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "_Feature", GML_PRE_32_NS );
@@ -110,7 +111,7 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
         case VERSION_30:
         case VERSION_31: {
             abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "_Feature", GML_PRE_32_NS );
-            abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );            
+            abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );
             abstractValueElementDecl = xmlSchema.getElementDeclaration( "_Value", GML_PRE_32_NS );
             abstractTopologyElementDecl = xmlSchema.getElementDeclaration( "_Topology", GML_PRE_32_NS );
             abstractCRSElementDecl = xmlSchema.getElementDeclaration( "_CRS", GML_PRE_32_NS );
@@ -137,6 +138,37 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
         return getSubstitutions( abstractFeatureElementDecl, namespace, onlyConcrete );
     }
 
+    public List<XSElementDeclaration> getFeatureCollectionElementDeclarations( String namespace, boolean onlyConcrete ) {
+        List<XSElementDeclaration> fcDecls = null;
+
+        switch ( mode ) {
+        case VERSION_2:
+        case VERSION_30:
+        case VERSION_31: {
+            // TODO do this the right way
+            fcDecls = new ArrayList<XSElementDeclaration>();
+            if (xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ) != null) {
+                fcDecls.addAll( getSubstitutions( xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ), namespace,
+                                                  onlyConcrete ));                
+            }
+            if (xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ) != null) {
+                fcDecls.addAll( getSubstitutions( xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ), namespace,
+                                                  onlyConcrete ));                
+            }
+
+            break;
+        }
+        case VERSION_32:
+            // GML 3.2 does not have an abstract feature collection element anymore
+            // Every gml:AbstractFeature having a property whose content model extends gml:AbstractFeatureMemberType is
+            // a feature collection. See OGC 07-061, section 6.5
+            fcDecls = new ArrayList<XSElementDeclaration> ();
+            
+            // TODO            
+        }
+        return fcDecls;
+    }
+
     public List<XSElementDeclaration> getGeometryElementDeclarations( String namespace, boolean onlyConcrete ) {
         return getSubstitutions( abstractGeometryElementDecl, namespace, onlyConcrete );
     }
@@ -152,7 +184,7 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
     public List<XSElementDeclaration> getCRSElementDeclarations( String namespace, boolean onlyConcrete ) {
         return getSubstitutions( abstractCRSElementDecl, namespace, onlyConcrete );
     }
-    
+
     public List<XSElementDeclaration> getTimeObjectElementDeclarations( String namespace, boolean onlyConcrete ) {
         return getSubstitutions( abstractTimeObjectElementDecl, namespace, onlyConcrete );
     }
@@ -163,5 +195,5 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
 
     public List<XSElementDeclaration> getStyleElementDeclarations( String namespace, boolean onlyConcrete ) {
         return getSubstitutions( abstractStyleElementDecl, namespace, onlyConcrete );
-    }    
+    }
 }

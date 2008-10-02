@@ -155,7 +155,9 @@ public class XSModelAnalyzer {
                 }
             }
         }
-        substitutions.add( elementDecl );
+        if (!onlyConcrete || !elementDecl.getAbstract()) {
+            substitutions.add( elementDecl );            
+        }
         return substitutions;
     }
 

@@ -66,8 +66,12 @@ public class XSModelGMLAnalyzerTest {
         XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( this.getClass().getResource( "Philosopher.xsd" ).toString(), GMLVersion.VERSION_31 );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( "http://www.deegree.org/app", true );
         for ( XSElementDeclaration featureElementDecl : featureElementDecls ) {
-            System.out.println ("- Feature type: " + featureElementDecl.getName());
+            System.out.println ("- Feature type: " + featureElementDecl.getName());        
         }
+        List<XSElementDeclaration> featureCollectionElementDecls = analyzer.getFeatureCollectionElementDeclarations( null, true );        
+        for ( XSElementDeclaration featureCollectionElementDecl : featureCollectionElementDecls ) {
+            System.out.println ("- Feature collection type: " + featureCollectionElementDecl.getName());
+        }        
         List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations( null, true );
         for ( XSElementDeclaration geometryElementDecl : geometryElementDecls ) {
             System.out.println ("- Geometry type: " + geometryElementDecl.getName());

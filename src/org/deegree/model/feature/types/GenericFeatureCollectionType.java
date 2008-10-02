@@ -113,4 +113,14 @@ public class GenericFeatureCollectionType implements FeatureCollectionType {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public String toString () {
+        String s = "- Feature collection type '" + name + "', abstract: " + isAbstract;
+        for ( QName ptName : propNameToDecl.keySet() ) {
+            PropertyType pt = propNameToDecl.get( ptName );
+            s += "\n" + pt;
+        }
+        return s;
+    }    
 }

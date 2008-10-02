@@ -1,24 +1,22 @@
 package org.deegree.model.gml.schema;
 
-
 import org.deegree.model.feature.types.FeatureType;
 import org.junit.Test;
 
 public class GMLApplicationSchemaXSDAdapterTest {
 
     @Test
-    public void testParsing () throws ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public void testParsing()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
 
-//        String schemaURL = this.getClass().getResource( "Philosopher_typesafe.xsd").toString();
-        String schemaURL = "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
-        GMLApplicationSchemaXSDAdapter adapter = new GMLApplicationSchemaXSDAdapter (schemaURL, GMLVersion.VERSION_31);        
-        FeatureType [] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+        String schemaURL = this.getClass().getResource( "Philosopher_typesafe.xsd" ).toString();
+        // String schemaURL =
+        // "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
+        GMLApplicationSchemaXSDAdapter adapter = new GMLApplicationSchemaXSDAdapter( schemaURL, GMLVersion.VERSION_31 );
+        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         for ( FeatureType ft : fts ) {
-            if (!ft.getName().getNamespaceURI().equals( "http://www.opengis.net/gml" )) {
-                if (ft.getName().getLocalPart().equals( "BP_Bereich" )) {
-                    System.out.println (ft);                    
-                }
-            }
+            System.out.println( ft );
         }
     }
 }

@@ -93,7 +93,12 @@ public class GenericFeatureCollection implements FeatureCollection {
         this.fid = fid;
         for ( Property<?> prop : props ) {
             if ( FEATURE_MEMBER.equals( prop.getName() ) ) {
-                memberFeatures.add( (Feature) prop.getValue() );
+                // TODO do this a better way                
+                if (prop.getValue() instanceof Feature) {
+                    memberFeatures.add(  (Feature) prop.getValue() );                    
+                } else {
+                    memberFeatures.add(  null );
+                }
             } else if ( FEATURE_MEMBERS.equals( prop.getName() ) ) {
                 for (Feature feature : (Feature []) prop.getValue()) {
                     memberFeatures.add( feature );
@@ -244,6 +249,11 @@ public class GenericFeatureCollection implements FeatureCollection {
 
     @Override
     public void setPropertyValue( QName propName, int occurrence, Object value ) {
-        LOG.debug ("Setting property value for " + occurrence + ". " + propName + " property");       
+        LOG.debug ("Setting property value for " + occurrence + ". " + propName + " property");  
+        if (!propName.equals( FEATURE_MEMBER )) {
+            throw new RuntimeException ("Only property '" + FEATURE_MEMBER + " may be set.");
+        }
+        int featureNum = occurrence - nonMemberProps.size();
+        memberFeatures.set( featureNum, (Feature) value );
     }
 }

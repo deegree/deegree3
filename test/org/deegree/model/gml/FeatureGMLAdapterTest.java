@@ -62,6 +62,7 @@ import junit.framework.Assert;
 
 import org.deegree.commons.xml.FormattingXMLStreamWriter;
 import org.deegree.model.feature.Feature;
+import org.deegree.model.feature.FeatureCollection;
 import org.deegree.model.feature.types.ApplicationSchema;
 import org.deegree.model.feature.types.FeaturePropertyType;
 import org.deegree.model.feature.types.FeatureType;
@@ -294,7 +295,7 @@ public class FeatureGMLAdapterTest {
         XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(
                                                                    of.createXMLStreamWriter( new FileWriter(
                                                                                                              "/home/schneider/out.gml" ) ) );
-        xmlWriter.setPrefix( "imro", "http://www.ravi.nl/imro2006" );
+        xmlWriter.setPrefix( "xplan", "http://www.xplanung.de/xplangml" );
         xmlWriter.setPrefix( "app", "http://www.deegree.org/app" );
         xmlWriter.setPrefix( "gml", "http://www.opengis.net/gml" );
         xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
@@ -319,7 +320,7 @@ public class FeatureGMLAdapterTest {
         Feature feature = gmlAdapter.parseFeature( xmlReader, null, idContext );
         idContext.resolveXLinks();
         xmlReader.close();
-
+        
         XMLOutputFactory of = XMLOutputFactory.newInstance();
         of.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
         XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(

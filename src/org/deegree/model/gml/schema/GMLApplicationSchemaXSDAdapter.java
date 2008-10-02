@@ -64,6 +64,7 @@ import org.deegree.model.feature.types.ApplicationSchema;
 import org.deegree.model.feature.types.CustomComplexPropertyType;
 import org.deegree.model.feature.types.FeaturePropertyType;
 import org.deegree.model.feature.types.FeatureType;
+import org.deegree.model.feature.types.GenericFeatureCollectionType;
 import org.deegree.model.feature.types.GenericFeatureType;
 import org.deegree.model.feature.types.GeometryPropertyType;
 import org.deegree.model.feature.types.PropertyType;
@@ -237,6 +238,11 @@ public class GMLApplicationSchemaXSDAdapter {
         default: {
             assert false;
         }
+        }
+        
+        List<XSElementDeclaration> fcDecls = analyzer.getFeatureCollectionElementDeclarations( null, false );
+        if (fcDecls.contains( featureElementDecl )) {
+            return new GenericFeatureCollectionType( ftName, pts, featureElementDecl.getAbstract() );
         }
 
         return new GenericFeatureType( ftName, pts, featureElementDecl.getAbstract() );
