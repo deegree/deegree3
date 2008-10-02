@@ -18,7 +18,7 @@
           <!-- simple (string) valued property 'subject', located in related table -->
           <xsd:element name="subject" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
           <!-- complex valued property 'isAuthorOf' -->
-          <xsd:element name="isAuthorOf" type="gml:FeaturePropertyType" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="isAuthorOf" type="app:BookPropertyType" minOccurs="0" maxOccurs="unbounded"/>
           <!-- simple (date) valued property 'dateOfBirth' -->
           <xsd:element name="dateOfBirth" type="xsd:date"/>
           <!-- feature property 'placeOfBirth', with typesafe definition (must contain 'app:Place' feature) -->
@@ -33,6 +33,13 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+  <!-- ====================================================================== -->
+  <xsd:complexType name="BookPropertyType">
+    <xsd:sequence>
+      <xsd:element ref="app:Book" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attributeGroup ref="gml:AssociationAttributeGroup"/>
+  </xsd:complexType>  
   <!-- ====================================================================== -->
   <xsd:element name="Book" type="app:BookType" substitutionGroup="gml:_Feature"/>
   <!-- ====================================================================== -->

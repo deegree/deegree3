@@ -11,8 +11,8 @@ public class GMLApplicationSchemaXSDAdapterTest {
 
         String schemaURL = this.getClass().getResource( "Philosopher_typesafe.xsd").toString();
 //        String schemaURL = "file:///home/schneider/workspace/vrom-roonline/resources/schema/1.1RC-adapted/IMRO2006.xsd";
-        GMLApplicationSchemaXSDAdapter adapter = new GMLApplicationSchemaXSDAdapter (schemaURL, GMLVersion.VERSION_31);
-        FeatureType [] fts = adapter.extractFeatureTypes();
+        GMLApplicationSchemaXSDAdapter adapter = new GMLApplicationSchemaXSDAdapter (schemaURL, GMLVersion.VERSION_31);        
+        FeatureType [] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         for ( FeatureType ft : fts ) {
 //            System.out.println (ft.getName().getNamespaceURI());
             if (!ft.getName().getNamespaceURI().equals( "http://www.opengis.net/gml" )) {

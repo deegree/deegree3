@@ -60,6 +60,7 @@ import org.apache.xerces.xs.XSParticle;
 import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
+import org.deegree.model.feature.types.ApplicationSchema;
 import org.deegree.model.feature.types.FeaturePropertyType;
 import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.feature.types.GenericFeatureType;
@@ -71,8 +72,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides convenient access to "relevant" element declarations of a GML schema and allows their retrieval as
- * {@link FeatureType} objects.
+ * Provides convenient access to the {@link FeatureType} hierarchy} defined in an GML schema infoset.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -91,6 +91,9 @@ public class GMLApplicationSchemaXSDAdapter {
 
     private Map<QName, FeatureType> ftNameToft = new HashMap<QName, FeatureType>();
 
+    // key: name of ft A, value: name of ft B (A is in substitionGroup B)
+    private Map<QName,QName> ftSubstitutionGroupRelation = new HashMap<QName, QName>();
+
     // stores all feature property types, so the reference to the contained FeatureType can be resolved,
     // after all FeatureTypes have been created
     private List<FeaturePropertyType> featurePropertyTypes = new ArrayList<FeaturePropertyType>();
@@ -102,6 +105,11 @@ public class GMLApplicationSchemaXSDAdapter {
         for ( XSElementDeclaration elementDecl : featureElementDecls ) {
             QName ftName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
             ftNameToftElement.put( ftName, elementDecl );
+            XSElementDeclaration substitutionElement = elementDecl.getSubstitutionGroupAffiliation();
+            if ( substitutionElement != null ) {
+                QName substitutionElementName = new QName (substitutionElement.getNamespace(), substitutionElement.getName());
+                ftSubstitutionGroupRelation.put( ftName, substitutionElementName );
+            }            
         }
         List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations( null, false );
         for ( XSElementDeclaration elementDecl : geometryElementDecls ) {
@@ -117,14 +125,21 @@ public class GMLApplicationSchemaXSDAdapter {
         }
     }
 
-    public FeatureType[] extractFeatureTypes() {
+    public ApplicationSchema extractFeatureTypeSchema() {
 
         for ( QName ftName : ftNameToftElement.keySet() ) {
             FeatureType ft = buildFeatureType( ftNameToftElement.get( ftName ) );
             ftNameToft.put( ftName, ft );
         }
-        resolveFtReferences();        
-        return ftNameToft.values().toArray( new FeatureType[ftNameToft.size()] );
+        resolveFtReferences();
+        
+        FeatureType [] fts = ftNameToft.values().toArray( new FeatureType[ftNameToft.size()] );
+        Map<FeatureType,FeatureType> ftSubstitution = new HashMap<FeatureType,FeatureType>();
+        for ( QName ftName : ftSubstitutionGroupRelation.keySet() ) {
+            QName substitutionFtName = ftSubstitutionGroupRelation.get( ftName );
+            ftSubstitution.put( ftNameToft.get( ftName ), ftNameToft.get( substitutionFtName ));
+        }
+        return new ApplicationSchema(fts, ftSubstitution);
     }
 
     private FeatureType buildFeatureType( XSElementDeclaration featureElementDecl ) {

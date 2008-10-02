@@ -53,6 +53,12 @@ import org.apache.xerces.xs.XSImplementation;
 import org.apache.xerces.xs.XSLoader;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSObjectList;
+import org.deegree.commons.xml.XMLProcessingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMConfiguration;
+import org.w3c.dom.DOMError;
+import org.w3c.dom.DOMErrorHandler;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 /**
@@ -65,6 +71,8 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
  * @version $Revision:$, $Date:$
  */
 public class XSModelAnalyzer {
+
+    private static final Logger LOG = LoggerFactory.getLogger( XSModelAnalyzer.class );
 
     /** Encapsulates the full information of the XML schema infoset. */
     protected final XSModel xmlSchema;
@@ -85,6 +93,33 @@ public class XSModelAnalyzer {
         DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
         XSImplementation impl = (XSImplementation) registry.getDOMImplementation( "XS-Loader" );
         XSLoader schemaLoader = impl.createXSLoader( null );
+
+        DOMConfiguration config = schemaLoader.getConfig();
+
+        // create and register DOMErrorHandler
+        DOMErrorHandler errorHandler = new DOMErrorHandler() {
+            public boolean handleError( DOMError domError ) {
+                switch ( domError.getSeverity() ) {
+                case DOMError.SEVERITY_WARNING: {
+                    LOG.debug( "DOM warning: " + domError.getMessage() );
+                    break;
+                }
+                case DOMError.SEVERITY_ERROR:
+                case DOMError.SEVERITY_FATAL_ERROR: {
+                    String msg = "Severe error in schema document (line: " + domError.getLocation().getLineNumber()
+                                 + ", column: " + domError.getLocation().getColumnNumber() + ") "
+                                 + domError.getMessage();
+                    throw new XMLProcessingException( msg );
+                }
+                }
+                return false;
+            }
+        };
+        config.setParameter( "error-handler", errorHandler );
+
+        // set validation feature
+        config.setParameter( "validate", Boolean.TRUE );
+
         xmlSchema = schemaLoader.loadURI( url );
     }
 
@@ -120,7 +155,7 @@ public class XSModelAnalyzer {
                 }
             }
         }
-        substitutions.add (elementDecl);
+        substitutions.add( elementDecl );
         return substitutions;
     }
 
