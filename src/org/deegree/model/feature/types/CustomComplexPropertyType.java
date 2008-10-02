@@ -41,32 +41,28 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.commons.xml.schema;
-
-import java.util.List;
+package org.deegree.model.feature.types;
 
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.xs.XSElementDeclaration;
-import org.junit.Test;
+public class CustomComplexPropertyType extends AbstractPropertyType {
 
-/**
- * TODO add documentation here
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
- */
-public class XSModelAnalyzerTest {
+    private QName xsdType;
 
-    @Test
-    public void testPhilosopher() throws ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        XSModelAnalyzer analyzer = new XSModelAnalyzer( "file:///home/schneider/workspace/vrom_roonline2/resources/schema/imro2008/local-IMRO2008.xsd" );
-        List<XSElementDeclaration> featureElements = analyzer.getSubstitutions( new QName ("http://www.opengis.net/gml", "_Feature"), null, true );
-        for ( XSElementDeclaration elementDeclaration : featureElements ) {
-            System.out.println (elementDeclaration.getName());
-        }
+    public CustomComplexPropertyType (QName name, int minOccurs, int maxOccurs, QName xsdType) {
+        super (name, minOccurs, maxOccurs);
+        this.xsdType = xsdType;
     }
 
+    @Override
+    public QName getXSDValueType() {
+        return xsdType;
+    }
+
+    @Override
+    public String toString() {
+        String s = "- custom property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+                   + ", content xsd type: " + xsdType;
+        return s;
+    }          
 }

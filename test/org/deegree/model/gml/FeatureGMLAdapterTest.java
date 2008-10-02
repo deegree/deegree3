@@ -204,6 +204,105 @@ public class FeatureGMLAdapterTest {
     }
 
     @Test
+    public void testParsingIMRO2008FeatureCollection()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException {
+
+        String schemaURL = "file:///home/schneider/workspace/vrom_roonline2/resources/schema/imro2008/local-IMRO2008.xsd";
+        GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
+                                                                                        GMLVersion.VERSION_31 );
+        FeatureGMLAdapter gmlAdapter = new FeatureGMLAdapter( xsdAdapter.extractFeatureTypeSchema() );
+
+        URL docURL = new URL(
+                              "file:///home/schneider/workspace/vrom_roonline2/resources/data/IMRO2008-testplans/NL.IMRO.0964.000matrixplan1-0003.gml" );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.nextTag();
+        GMLIdContext idContext = new GMLIdContext();
+        Feature feature = gmlAdapter.parseFeature( xmlReader, null, idContext );
+        idContext.resolveXLinks();
+        xmlReader.close();
+
+        XMLOutputFactory of = XMLOutputFactory.newInstance();
+        of.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
+        XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(
+                                                                   of.createXMLStreamWriter( new FileWriter(
+                                                                                                             "/home/schneider/out.gml" ) ) );
+        xmlWriter.setPrefix( "imro", "http://www.geonovum.nl/imro/2008/1" );
+        xmlWriter.setPrefix( "app", "http://www.deegree.org/app" );
+        xmlWriter.setPrefix( "gml", "http://www.opengis.net/gml" );
+        xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
+        gmlAdapter.export( xmlWriter, feature );
+        xmlWriter.flush();
+    }
+
+    @Test
+    public void testParsingIMRO2006FeatureCollection()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException {
+
+        String schemaURL = "file:///home/schneider/workspace/vrom_roonline2/resources/schema/imro2006/IMRO2006.xsd";
+        GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
+                                                                                        GMLVersion.VERSION_31 );
+        FeatureGMLAdapter gmlAdapter = new FeatureGMLAdapter( xsdAdapter.extractFeatureTypeSchema() );
+
+        URL docURL = new URL(
+                              "file:///home/schneider/workspace/vrom-roonline/resources/data/testdata_herman_oktober2007/NL.IMRO.00280000-hoekschewaard.gml" );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.nextTag();
+        GMLIdContext idContext = new GMLIdContext();
+        Feature feature = gmlAdapter.parseFeature( xmlReader, null, idContext );
+        idContext.resolveXLinks();
+        xmlReader.close();
+
+        XMLOutputFactory of = XMLOutputFactory.newInstance();
+        of.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
+        XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(
+                                                                   of.createXMLStreamWriter( new FileWriter(
+                                                                                                             "/home/schneider/out.gml" ) ) );
+        xmlWriter.setPrefix( "imro", "http://www.ravi.nl/imro2006" );
+        xmlWriter.setPrefix( "app", "http://www.deegree.org/app" );
+        xmlWriter.setPrefix( "gml", "http://www.opengis.net/gml" );
+        xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
+        gmlAdapter.export( xmlWriter, feature );
+        xmlWriter.flush();
+    }    
+    
+    @Test
+    public void testParsingXPlanGMLFeatureCollection()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException {
+
+        String schemaURL = "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
+        GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
+                                                                                        GMLVersion.VERSION_31 );
+        FeatureGMLAdapter gmlAdapter = new FeatureGMLAdapter( xsdAdapter.extractFeatureTypeSchema() );
+
+        URL docURL = new URL(
+                              "file:///home/schneider/workspace/lkee_xplanung/resources/data/BP2070.gml" );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.nextTag();
+        GMLIdContext idContext = new GMLIdContext();
+        Feature feature = gmlAdapter.parseFeature( xmlReader, null, idContext );
+        idContext.resolveXLinks();
+        xmlReader.close();
+
+        XMLOutputFactory of = XMLOutputFactory.newInstance();
+        of.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
+        XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(
+                                                                   of.createXMLStreamWriter( new FileWriter(
+                                                                                                             "/home/schneider/out.gml" ) ) );
+        xmlWriter.setPrefix( "imro", "http://www.ravi.nl/imro2006" );
+        xmlWriter.setPrefix( "app", "http://www.deegree.org/app" );
+        xmlWriter.setPrefix( "gml", "http://www.opengis.net/gml" );
+        xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
+        gmlAdapter.export( xmlWriter, feature );
+        xmlWriter.flush();
+    }     
+    
+    @Test
     public void testParsingPhilosopherFeatureCollection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {

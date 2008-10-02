@@ -63,6 +63,7 @@ import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.GenericProperty;
 import org.deegree.model.feature.Property;
 import org.deegree.model.feature.types.ApplicationSchema;
+import org.deegree.model.feature.types.CustomComplexPropertyType;
 import org.deegree.model.feature.types.FeaturePropertyType;
 import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.feature.types.GeometryPropertyType;
@@ -120,7 +121,7 @@ public class FeatureGMLAdapter extends XMLAdapter {
      */
     public Feature parseFeature( XMLStreamReader xmlStream, String srsName, GMLIdContext idContext )
                             throws XMLStreamException {
-
+       
         Feature feature = null;
         String fid = parseFeatureId( xmlStream );
 
@@ -226,6 +227,11 @@ public class FeatureGMLAdapter extends XMLAdapter {
 
         if ( propDecl instanceof SimplePropertyType ) {
             property = new GenericProperty<String>( propDecl, xmlStream.getElementText().trim() );
+        } else if ( propDecl instanceof CustomComplexPropertyType ) {
+            LOG.debug( "- skipping parsing of '" + xmlStream.getName() + "' -- custom complex property parsing is not implemented yet" );
+            
+            skipElement( xmlStream );
+            property = new GenericProperty<String>( propDecl, xmlStream.getName().toString() );
         } else if ( propDecl instanceof GeometryPropertyType ) {
             xmlStream.nextTag();
             // TODO geometry parsing

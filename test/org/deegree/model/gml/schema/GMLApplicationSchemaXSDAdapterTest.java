@@ -9,14 +9,15 @@ public class GMLApplicationSchemaXSDAdapterTest {
     @Test
     public void testParsing () throws ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 
-        String schemaURL = this.getClass().getResource( "Philosopher_typesafe.xsd").toString();
-//        String schemaURL = "file:///home/schneider/workspace/vrom-roonline/resources/schema/1.1RC-adapted/IMRO2006.xsd";
+//        String schemaURL = this.getClass().getResource( "Philosopher_typesafe.xsd").toString();
+        String schemaURL = "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
         GMLApplicationSchemaXSDAdapter adapter = new GMLApplicationSchemaXSDAdapter (schemaURL, GMLVersion.VERSION_31);        
         FeatureType [] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         for ( FeatureType ft : fts ) {
-//            System.out.println (ft.getName().getNamespaceURI());
             if (!ft.getName().getNamespaceURI().equals( "http://www.opengis.net/gml" )) {
-            System.out.println (ft);
+                if (ft.getName().getLocalPart().equals( "BP_Bereich" )) {
+                    System.out.println (ft);                    
+                }
             }
         }
     }

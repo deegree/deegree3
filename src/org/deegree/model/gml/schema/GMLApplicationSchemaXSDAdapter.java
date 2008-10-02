@@ -61,6 +61,7 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.model.feature.types.ApplicationSchema;
+import org.deegree.model.feature.types.CustomComplexPropertyType;
 import org.deegree.model.feature.types.FeaturePropertyType;
 import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.feature.types.GenericFeatureType;
@@ -314,7 +315,7 @@ public class GMLApplicationSchemaXSDAdapter {
             pt = buildGeometryPropertyType(elementDecl, typeDef, minOccurs, maxOccurs);
             if (pt == null) {
                 LOG.debug ("B");
-                pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, new QName( typeDef.getNamespace(),
+                pt = new CustomComplexPropertyType( ptName, minOccurs, maxOccurs, new QName( typeDef.getNamespace(),
                       typeDef.getName() ) );  
             }            
         }
@@ -456,7 +457,7 @@ public class GMLApplicationSchemaXSDAdapter {
                         QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
                         if ( geometryNameToGeometryElement.get( elementName ) != null ) {
                             LOG.debug( "Identified a geometry property." );
-                            return new GeometryPropertyType (ptName, minOccurs2, maxOccurs, elementName);
+                            return new GeometryPropertyType (ptName, minOccurs, maxOccurs, elementName);
                         }
                     }
                     case XSConstants.WILDCARD: {
