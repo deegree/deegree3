@@ -189,6 +189,18 @@ public class XMLAdapter {
     }
 
     /**
+     * Creates a new instance that loads its content from the given <code>Reader</code> using the default url.
+     * 
+     * @param reader
+     *            source of the xml content
+     * 
+     * @throws XMLProcessingException
+     */
+    public XMLAdapter( Reader reader ) throws XMLProcessingException {
+        load( reader, DEFAULT_URL );
+    }
+
+    /**
      * Creates a new instance that loads its content from the given <code>Reader</code>.
      * 
      * @param reader
