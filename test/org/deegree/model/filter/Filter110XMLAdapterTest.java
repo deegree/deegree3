@@ -43,9 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter;
 
-
-import java.net.URL;
-
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
@@ -57,38 +54,36 @@ import org.xml.sax.InputSource;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Filter110XMLAdapterTest {
 
-    @Test    
+    @Test
     public void parseFilterDocument() {
-        Filter110XMLAdapter adapter = new Filter110XMLAdapter ();
-        URL filterURL = Filter110XMLAdapterTest.class.getResource( "testfilter_110.xml" );
-        adapter.load( filterURL );
+        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        adapter.load( Filter110XMLAdapterTest.class.getResourceAsStream( "testfilter_110.xml" ) );
         Filter filter = adapter.parse();
-        Assert.assertNotNull (filter);
+        Assert.assertNotNull( filter );
     }
 
-    @Test(expected=XMLParsingException.class)    
+    @Test(expected = XMLParsingException.class)
     public void parseBrokenIdFilterDocument() {
-        Filter110XMLAdapter adapter = new Filter110XMLAdapter ();
-        URL filterURL = Filter110XMLAdapterTest.class.getResource( "testfilter_110_id_broken.xml" );
-        adapter.load( filterURL );
+        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        // URL filterURL = Filter110XMLAdapterTest.class.getResourceAsStream( "testfilter_110_id_broken.xml" );
+        adapter.load( Filter110XMLAdapterTest.class.getResourceAsStream( "testfilter_110_id_broken.xml" ) );
         adapter.parse();
-    }    
+    }
 
-    @Test    
+    @Test
     public void parseAndExportFilterDocument()
                             throws XMLStreamException {
 
-        Filter110XMLAdapter adapter = new Filter110XMLAdapter ();
-        URL filterURL = Filter110XMLAdapterTest.class.getResource( "testfilter_110.xml" );
-        adapter.load( filterURL );
+        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        adapter.load( Filter110XMLAdapterTest.class.getResourceAsStream( "testfilter_110.xml" ) );
         Filter filter = adapter.parse();
 
         XMLMemoryStreamWriter writer = new XMLMemoryStreamWriter();
@@ -96,6 +91,6 @@ public class Filter110XMLAdapterTest {
 
         String schemaLocation = "file:///home/tonnhofer/workspace/opengis/filter/1.1.0/filter.xsd";
         XMLAssert.assertValidDocument( schemaLocation, new InputSource( writer.getReader() ) );
-        
-    }    
+
+    }
 }

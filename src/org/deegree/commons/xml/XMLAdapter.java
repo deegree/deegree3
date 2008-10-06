@@ -99,17 +99,17 @@ import org.slf4j.LoggerFactory;
  * and exporters in deegree. Classes that extend <code>XMLAdapter</code> provide the binding between a certain type of
  * XML documents and their corresponding Java bean representation.
  * <p>
- * <code>XMLAdapter</code> tries to make the process of writing custom XML parsers as painless as possible. It provides
- * the following functionality:
+ * <code>XMLAdapter</code> tries to make the process of writing custom XML parsers as painless as possible. It
+ * provides the following functionality:
  * <ul>
  * <li>Lookup of nodes using XPath expressions.</li>
  * <li>Lookup of <i>required</i> nodes. These methods throw an {@link XMLParsingException} if the expression does not
  * have a result.</li>
- * <li>Convenient retrieving of node values as Java primitives (<code>int</code>, <code>boolean</code>, ...) or common
- * Objects (<code>QName</code>, <code>SimpleLink</code>, ...). If the value can not be converted to the expected type,
- * an {@link XMLParsingException} is thrown.
- * <li>Loading the XML content from different sources (<code>URL</code>, <code>Reader</code>, <code>InputStream</code>).
- * </li>
+ * <li>Convenient retrieving of node values as Java primitives (<code>int</code>, <code>boolean</code>, ...) or
+ * common Objects (<code>QName</code>, <code>SimpleLink</code>, ...). If the value can not be converted to the
+ * expected type, an {@link XMLParsingException} is thrown.
+ * <li>Loading the XML content from different sources (<code>URL</code>, <code>Reader</code>,
+ * <code>InputStream</code>). </li>
  * <li>Resolving of relative URLs that occur in the document content, i.e. that refer to resources that are located
  * relative to the document.</li>
  * </ul>
@@ -146,7 +146,7 @@ public class XMLAdapter {
     protected OMElement rootElement;
 
     // physical source of the element (used for resolving relative URLs in the document)
-    private URL systemId;
+    private String systemId;
 
     /**
      * Creates a new <code>XMLAdapter</code> which is not bound to an XML element.
@@ -164,11 +164,11 @@ public class XMLAdapter {
      */
     public XMLAdapter( URL url ) throws XMLProcessingException {
         load( url );
-        try {
-            systemId = new URL( DEFAULT_URL );
-        } catch ( MalformedURLException e ) {
-            // but it's not malformed
-        }
+        // try {
+        systemId = DEFAULT_URL;
+        // } catch ( MalformedURLException e ) {
+        // // but it's not malformed
+        // }
     }
 
     /**
@@ -183,7 +183,7 @@ public class XMLAdapter {
             try {
                 load( file.toURI().toURL() );
             } catch ( MalformedURLException e ) {
-                throw new XMLProcessingException( e.getMessage(), e );
+                throw new XMLProcessingException( e );
             }
         }
     }
@@ -199,7 +199,7 @@ public class XMLAdapter {
      * 
      * @throws XMLProcessingException
      */
-    public XMLAdapter( Reader reader, URL systemId ) throws XMLProcessingException {
+    public XMLAdapter( Reader reader, String systemId ) throws XMLProcessingException {
         load( reader, systemId );
     }
 
@@ -212,7 +212,7 @@ public class XMLAdapter {
      *            the URL that is the source of the passed doc. If this URL is not available or unknown, the string
      *            should contain the value of XMLFragment.DEFAULT_URL
      */
-    public XMLAdapter( OMDocument doc, URL systemId ) {
+    public XMLAdapter( OMDocument doc, String systemId ) {
         this( doc.getOMDocumentElement(), systemId );
     }
 
@@ -225,7 +225,7 @@ public class XMLAdapter {
      *            the URL that is the source of the passed doc. If this URL is not available or unknown, the string
      *            should contain the value of XMLFragment.DEFAULT_URL
      */
-    public XMLAdapter( OMElement rootElement, URL systemId ) {
+    public XMLAdapter( OMElement rootElement, String systemId ) {
         setRootElement( rootElement );
         setSystemId( systemId );
     }
@@ -235,7 +235,7 @@ public class XMLAdapter {
      * 
      * @return the systemId
      */
-    public URL getSystemId() {
+    public String getSystemId() {
         return systemId;
     }
 
@@ -245,7 +245,7 @@ public class XMLAdapter {
      * @param systemId
      *            systemId (physical location) to set
      */
-    public void setSystemId( URL systemId ) {
+    public void setSystemId( String systemId ) {
         this.systemId = systemId;
     }
 
@@ -259,8 +259,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Determines the namespace <code>URI</code>s and the bound schema <code>URL</code>s from the 'xsi:schemaLocation'
-     * attribute of the wrapped XML element.
+     * Determines the namespace <code>URI</code>s and the bound schema <code>URL</code>s from the
+     * 'xsi:schemaLocation' attribute of the wrapped XML element.
      * 
      * @return keys are URIs (namespaces), values are URLs (schema locations)
      * @throws XMLProcessingException
@@ -309,8 +309,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes this <code>XMLAdapter</code> with the content from the given <code>URL</code>. Sets the SystemId,
-     * too.
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>URL</code>. Sets the
+     * SystemId, too.
      * 
      * @param url
      *            source of the xml content
@@ -322,7 +322,7 @@ public class XMLAdapter {
             throw new IllegalArgumentException( "The given url may not be null" );
         }
         try {
-            load( url.openStream(), url );
+            load( url.openStream(), url.toExternalForm() );
         } catch ( IOException e ) {
             throw new XMLProcessingException( e.getMessage(), e );
         }
@@ -340,7 +340,7 @@ public class XMLAdapter {
      * 
      * @throws XMLProcessingException
      */
-    public void load( InputStream istream, URL systemId )
+    public void load( InputStream istream, String systemId )
                             throws XMLProcessingException {
 
         PushbackInputStream pbis = new PushbackInputStream( istream, 1024 );
@@ -353,6 +353,19 @@ public class XMLAdapter {
             throw new XMLProcessingException( e.getMessage(), e );
         }
         load( isr, systemId );
+    }
+
+    /**
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>InputStream</code> and sets
+     * the system id to the {@link #DEFAULT_URL}
+     * 
+     * @param resourceStream
+     *            to load the xml from.
+     * @throws XMLProcessingException
+     */
+    public void load( InputStream resourceStream )
+                            throws XMLProcessingException {
+        load( resourceStream, DEFAULT_URL );
     }
 
     /**
@@ -391,8 +404,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code>. Sets the SystemId,
-     * too.
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code>. Sets the
+     * SystemId, too.
      * 
      * @param reader
      *            source of the XML content
@@ -402,7 +415,7 @@ public class XMLAdapter {
      * 
      * @throws XMLProcessingException
      */
-    public void load( Reader reader, URL systemId )
+    public void load( Reader reader, String systemId )
                             throws XMLProcessingException {
         try {
             PushbackReader pbr = new PushbackReader( reader, 1024 );
@@ -470,7 +483,7 @@ public class XMLAdapter {
             return file.toURI().toURL();
         }
 
-        URL resolvedURL = new URL( systemId, url );
+        URL resolvedURL = new URL( new URL( systemId ), url );
         LOG.debug( "-> resolvedURL: '" + resolvedURL + "'" );
         return resolvedURL;
     }
@@ -1098,5 +1111,5 @@ public class XMLAdapter {
                 openElements++;
             }
         }
-    }    
+    }
 }

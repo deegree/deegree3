@@ -83,7 +83,7 @@ public class XMLAdapterTest extends XMLAdapter {
     @Before
     public void setUp()
                             throws Exception {
-        load( XMLAdapterTest.class.getResource( "testdocument.xml" ) );
+        load( XMLAdapterTest.class.getResourceAsStream( "testdocument.xml" ) );
         nsContext = new NamespaceContext();
         nsContext.addNamespace( "ogc", "http://www.opengis.net/ogc" );
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
@@ -176,23 +176,23 @@ public class XMLAdapterTest extends XMLAdapter {
             // expected to be thrown (node does not exist)
         }
     }
-    
-    @Test
-    public void testWriteElement() throws XMLStreamException {
 
-        System.out.println (getRootElement().getLocalName());
-        
-        StringWriter stringWriter = new StringWriter ();
+    @Test
+    public void testWriteElement()
+                            throws XMLStreamException {
+
+        System.out.println( getRootElement().getLocalName() );
+
+        StringWriter stringWriter = new StringWriter();
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         factory.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
-        XMLStreamWriter writer =  new FormattingXMLStreamWriter( factory.createXMLStreamWriter( stringWriter ) );
+        XMLStreamWriter writer = new FormattingXMLStreamWriter( factory.createXMLStreamWriter( stringWriter ) );
 
         XMLStreamReader inputReader = getRootElement().getXMLStreamReaderWithoutCaching();
         inputReader.nextTag();
-        
-        getRootElement().serializeAndConsume( writer );
-        
 
-        System.out.println ("HUHU: '" + stringWriter.toString() + "'");
+        getRootElement().serializeAndConsume( writer );
+
+        System.out.println( "HUHU: '" + stringWriter.toString() + "'" );
     }
 }
