@@ -268,8 +268,8 @@ public class FeatureGMLAdapterTest {
         xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         gmlAdapter.export( xmlWriter, feature );
         xmlWriter.flush();
-    }    
-    
+    }
+
     @Test
     public void testParsingXPlanGMLFeatureCollection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
@@ -280,8 +280,7 @@ public class FeatureGMLAdapterTest {
                                                                                         GMLVersion.VERSION_31 );
         FeatureGMLAdapter gmlAdapter = new FeatureGMLAdapter( xsdAdapter.extractFeatureTypeSchema() );
 
-        URL docURL = new URL(
-                              "file:///home/schneider/workspace/lkee_xplanung/resources/data/BP2070.gml" );
+        URL docURL = new URL( "file:///home/schneider/workspace/lkee_xplanung/resources/data/BP2070.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
@@ -301,10 +300,10 @@ public class FeatureGMLAdapterTest {
         xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         gmlAdapter.export( xmlWriter, feature );
         xmlWriter.flush();
-    }     
-    
+    }
+
     @Test
-    public void testParsingPhilosopherFeatureCollection()
+    public FeatureCollection testParsingPhilosopherFeatureCollection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
         String schemaURL = this.getClass().getResource( "schema/Philosopher_typesafe.xsd" ).toString();
@@ -317,20 +316,22 @@ public class FeatureGMLAdapterTest {
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = gmlAdapter.parseFeature( xmlReader, null, idContext );
+        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( xmlReader, null, idContext );
         idContext.resolveXLinks();
-        xmlReader.close();
-        
-        XMLOutputFactory of = XMLOutputFactory.newInstance();
-        of.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
-        XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(
-                                                                   of.createXMLStreamWriter( new FileWriter(
-                                                                                                             "/home/schneider/out.gml" ) ) );
-        xmlWriter.setPrefix( "app", "http://www.deegree.org/app" );
-        xmlWriter.setPrefix( "gml", "http://www.opengis.net/gml" );
-        xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-        gmlAdapter.export( xmlWriter, feature );
-        xmlWriter.flush();
+        return fc;
+
+        // xmlReader.close();
+        //        
+        // XMLOutputFactory of = XMLOutputFactory.newInstance();
+        // of.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
+        // XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(
+        // of.createXMLStreamWriter( new FileWriter(
+        // "/home/schneider/out.gml" ) ) );
+        // xmlWriter.setPrefix( "app", "http://www.deegree.org/app" );
+        // xmlWriter.setPrefix( "gml", "http://www.opengis.net/gml" );
+        // xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
+        // gmlAdapter.export( xmlWriter, feature );
+        // xmlWriter.flush();
     }
 
     public static void main( String[] args ) {
