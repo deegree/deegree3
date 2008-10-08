@@ -44,8 +44,8 @@
 package org.deegree.model.filter.comparison;
 
 import org.deegree.model.filter.FilterEvaluationException;
+import org.deegree.model.filter.MatchableObject;
 import org.deegree.model.filter.expression.PropertyName;
-import org.deegree.model.generic.DeegreeObject;
 
 /**
  * TODO add documentation here
@@ -71,7 +71,7 @@ public class PropertyIsNull extends ComparisonOperator {
         return SubType.PROPERTY_IS_NULL;
     } 
     
-    public boolean evaluate( DeegreeObject object )
+    public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         return propName.evaluate( object ) == null;
     }

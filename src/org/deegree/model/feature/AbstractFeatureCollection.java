@@ -41,7 +41,13 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature.xpath;
+package org.deegree.model.feature;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.deegree.model.filter.Filter;
+import org.deegree.model.filter.FilterEvaluationException;
 
 /**
  * TODO add documentation here
@@ -51,17 +57,15 @@ package org.deegree.model.feature.xpath;
  *
  * @version $Revision:$, $Date:$
  */
-public class NamespaceNode implements Node {
+public abstract class AbstractFeatureCollection extends AbstractFeature implements FeatureCollection {
 
-    @Override
-    public boolean isElement() {
-        return false;
-    }
-
-    @Override
-    public Node getParent() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
+    public List<Feature> getMembers( Filter filter ) throws FilterEvaluationException {        
+        List<Feature> matchingFeatures = new ArrayList<Feature>();
+        for (Feature feature : getMembers()) {
+            if (filter.evaluate( feature )) {
+                matchingFeatures.add( feature ); 
+            }
+        }
+        return matchingFeatures;
+    }   
 }

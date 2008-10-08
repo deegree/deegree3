@@ -44,20 +44,20 @@
 package org.deegree.model.filter.expression;
 
 import org.deegree.model.filter.Expression;
-import org.deegree.model.generic.DeegreeObject;
+import org.deegree.model.filter.MatchableObject;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Literal implements Expression {
 
     private String value;
-       
+
     public Literal( String value ) {
         this.value = value;
     }
@@ -68,14 +68,27 @@ public class Literal implements Expression {
 
     public String getValue() {
         return value;
-    }      
-    
-    public Comparable evaluate( DeegreeObject obj ) {
+    }
+
+    /**
+     * Returns the <code>Literal</code>'s value (to be used in the evaluation of a complexer <code>Expression</code>).
+     * <p>
+     * If the value appears to be numerical, a <code>Double</code> object is returned, else a <code>String</code>.
+     */
+    @Override
+    public Object evaluate( MatchableObject obj ) {
+
+        // try to parse the literal as a double value
+        try {
+            return new Double( value );
+        } catch ( NumberFormatException e ) {
+            // not a double -> eat the exception
+        }
         return value;
     }
 
     public String toString( String indent ) {
         String s = indent + "-Literal ('" + value + "')\n";
         return s;
-    }  
+    }
 }

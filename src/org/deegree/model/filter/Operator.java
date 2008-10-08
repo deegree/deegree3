@@ -43,7 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter;
 
-import org.deegree.model.generic.DeegreeObject;
+import org.deegree.model.feature.Feature;
 
 /**
  * TODO add documentation here
@@ -67,12 +67,12 @@ public interface Operator {
      * Determines the value of the boolean operator.
      * 
      * @param object
-     *            <code>Element</code> to be tested
+     *            <code>PropertyValueProvider</code> to be tested
      * @return true, if the operator evaluates to true, false otherwise
      * @throws FilterEvaluationException
      *             if the evaluation fails
      */
-    boolean evaluate( DeegreeObject object )
+    boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException;
 
     public String toString( String indent );

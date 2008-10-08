@@ -59,7 +59,7 @@ public class FeatureNode extends ElementNode {
     
     private Feature feature;
 
-    FeatureNode (PropertyNode parentNode, Feature feature) {
+    public FeatureNode (PropertyNode parentNode, Feature feature) {
         super (feature.getName());
         this.parentNode = parentNode;
         this.feature = feature;

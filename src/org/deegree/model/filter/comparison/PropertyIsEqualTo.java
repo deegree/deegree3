@@ -45,37 +45,44 @@ package org.deegree.model.filter.comparison;
 
 import org.deegree.model.filter.Expression;
 import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.generic.DeegreeObject;
+import org.deegree.model.filter.MatchableObject;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class PropertyIsEqualTo extends BinaryComparisonOperator {
-    
+
     public PropertyIsEqualTo( Expression param1, Expression param2, boolean matchCase ) {
-        super (param1, param2, matchCase);
+        super( param1, param2, matchCase );
     }
 
     public SubType getSubType() {
         return SubType.PROPERTY_IS_EQUAL_TO;
-    }    
-    
-    public boolean evaluate( DeegreeObject object )
+    }
+
+    public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        Comparable parameter1Value = param1.evaluate( object );
-        Comparable parameter2Value = param2.evaluate( object );
+        Comparable<Object> parameter1Value = checkComparableOrNull( param1.evaluate( object ) );
+        Comparable<Object> parameter2Value = checkComparableOrNull( param2.evaluate( object ) );
+        if ( parameter1Value == null && parameter2Value == null ) {
+            return true;
+        }
+        if ( ( parameter1Value != null && parameter2Value == null )
+             || ( parameter1Value == null && parameter2Value != null ) ) {
+            return false;
+        }
         return parameter1Value.equals( parameter2Value );
     }
 
     public String toString( String indent ) {
         String s = indent + "-PropertyIsEqualTo\n";
-        s += param1.toString (indent + "  ");
-        s += param2.toString (indent + "  ");
+        s += param1.toString( indent + "  " );
+        s += param2.toString( indent + "  " );
         return s;
     }
 }

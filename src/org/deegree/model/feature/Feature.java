@@ -48,6 +48,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.types.FeatureType;
+import org.deegree.model.filter.MatchableObject;
 
 /**
  * A feature is a structured object with named properties. Properties may have geometric and non-geometric values.
@@ -67,7 +68,7 @@ import org.deegree.model.feature.types.FeatureType;
  * 
  * @version $Revision$, $Date$
  */
-public interface Feature {
+public interface Feature extends MatchableObject {
 
     /**
      * Returns the id of the feature.
@@ -132,7 +133,7 @@ public interface Feature {
     public void setPropertyValue( QName propName, int occurence, Object value );
 
     /**
-     * Called by the {@link FeatureBuilder} during construction to initialize the properties of the feature.
+     * Called during construction to initialize the properties of the feature.
      * 
      * @param props
      * @throws IllegalArgumentException

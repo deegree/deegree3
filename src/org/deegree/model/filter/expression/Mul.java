@@ -44,22 +44,24 @@
 package org.deegree.model.filter.expression;
 
 import org.deegree.model.filter.Expression;
+import org.deegree.model.filter.FilterEvaluationException;
+import org.deegree.model.filter.MatchableObject;
 import org.deegree.model.generic.DeegreeObject;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Mul implements Expression {
 
     private Expression param1;
-    
+
     private Expression param2;
-    
+
     public Mul( Expression param1, Expression param2 ) {
         this.param1 = param1;
         this.param2 = param2;
@@ -69,23 +71,35 @@ public class Mul implements Expression {
         return Type.MUL;
     }
 
-    public Expression getParameter1 () {
+    public Expression getParameter1() {
         return param1;
     }
-    
-    public Expression getParameter2 () {
+
+    public Expression getParameter2() {
         return param2;
     }
 
-    public Comparable evaluate( DeegreeObject obj ) {
-        // TODO Auto-generated method stub
-        return null;
+    public Double evaluate( MatchableObject obj )
+                            throws FilterEvaluationException {
+        Object value1 = param1.evaluate( obj );
+        Object value2 = param2.evaluate( obj );
+        if ( !( value1 instanceof Number ) ) {
+            String msg = "Cannot evaluate '" + getType().name() + "' expression on '" + value1
+                         + "'. This is only possible for numerical values.";
+            throw new FilterEvaluationException( msg );
+        }
+        if ( !( value2 instanceof Number ) ) {
+            String msg = "Cannot evaluate '" + getType().name() + "' expression on '" + value2
+                         + "'. This is only possible for numerical values.";
+            throw new FilterEvaluationException( msg );
+        }
+        return ( (Number) value1 ).doubleValue() * ( (Number) value2 ).doubleValue();
     }
 
     public String toString( String indent ) {
         String s = indent + "-Mul\n";
-        s += param1.toString (indent + "  ");
-        s += param2.toString (indent + "  ");
+        s += param1.toString( indent + "  " );
+        s += param2.toString( indent + "  " );
         return s;
-    }    
+    }
 }

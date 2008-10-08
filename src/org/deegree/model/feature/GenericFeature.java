@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GenericFeature implements Feature {
+public class GenericFeature extends AbstractFeature {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenericFeature.class);
 

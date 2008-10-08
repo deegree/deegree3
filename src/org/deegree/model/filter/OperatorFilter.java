@@ -43,7 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter;
 
-import org.deegree.model.generic.DeegreeObject;
+import org.deegree.model.feature.Feature;
 
 /**
  * TODO add documentation here
@@ -73,7 +73,7 @@ public class OperatorFilter implements Filter {
         return rootOperator;
     }    
     
-    public boolean evaluate( DeegreeObject object )
+    public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         return rootOperator.evaluate( object );
     }

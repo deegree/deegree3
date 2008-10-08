@@ -60,7 +60,7 @@ import org.deegree.model.geometry.Geometry;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GenericSimpleFeature implements SimpleFeature {
+public class GenericSimpleFeature extends AbstractFeature implements SimpleFeature {
 
     private String fid;
 

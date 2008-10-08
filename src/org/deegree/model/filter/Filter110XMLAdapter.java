@@ -89,6 +89,7 @@ import org.deegree.model.filter.logical.Not;
 import org.deegree.model.filter.logical.Or;
 import org.deegree.model.filter.spatial.SpatialOperator;
 import org.deegree.model.i18n.Messages;
+import org.jaxen.SimpleNamespaceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -324,7 +325,10 @@ public class Filter110XMLAdapter extends XMLAdapter {
             break;
         }
         case PROPERTY_NAME: {
-            expression = new PropertyName( element.getText() );
+            // TODO build nsContext
+            SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
+            nsContext.addNamespace( "app", "http://www.deegree.org/app" );
+            expression = new PropertyName( element.getText(), nsContext);
             break;
         }
         case LITERAL: {
@@ -496,7 +500,8 @@ public class Filter110XMLAdapter extends XMLAdapter {
                          + expressionTypeToElementName.get( expType );
             throw new XMLParsingException( this, element, msg );
         }
-        return new PropertyIsNull( new PropertyName( parameterElement.getText() ) );
+        // TODO build nsContext
+        return new PropertyIsNull( new PropertyName( parameterElement.getText(), null ) );
     }
 
     private ComparisonOperator parsePropertyIsBetweenOperator( OMElement element ) {

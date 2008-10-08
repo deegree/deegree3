@@ -46,7 +46,8 @@ package org.deegree.model.filter.expression;
 import java.util.List;
 
 import org.deegree.model.filter.Expression;
-import org.deegree.model.generic.DeegreeObject;
+import org.deegree.model.filter.FilterEvaluationException;
+import org.deegree.model.filter.MatchableObject;
 
 /**
  * TODO add documentation here
@@ -77,11 +78,12 @@ public class Function implements Expression {
 
     public List<Expression> getParameters() {
         return params;
-    }    
-    
-    public Comparable evaluate( DeegreeObject obj ) {
-        // TODO Auto-generated method stub
-        return null;
+    }
+
+    public Object evaluate( MatchableObject object )
+                            throws FilterEvaluationException {
+        throw new FilterEvaluationException( "Evaluation of the '" + getType().name()
+                                             + "' expression is not implemented yet." );
     }
 
     public String toString( String indent ) {

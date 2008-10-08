@@ -44,14 +44,14 @@
 package org.deegree.model.filter.spatial;
 
 import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.generic.DeegreeObject;
+import org.deegree.model.filter.MatchableObject;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class BBOX extends SpatialOperator {
@@ -59,11 +59,11 @@ public class BBOX extends SpatialOperator {
     public SubType getSubType() {
         return SubType.BBOX;
     }
-    
-    public boolean evaluate( DeegreeObject object )
+
+    public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
+        throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()
+                                             + "' operator is not implemented yet." );
     }
 
     public String toString( String indent ) {

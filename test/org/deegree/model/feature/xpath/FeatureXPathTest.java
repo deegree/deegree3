@@ -80,7 +80,6 @@ public class FeatureXPathTest {
         fc = new FeatureGMLAdapterTest().testParsingPhilosopherFeatureCollection();
         nsContext = new SimpleNamespaceContext ();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
-        nsContext.addNamespace( "app", "http://www.deegree.org/app" );
     }
     
     @SuppressWarnings("unchecked")
@@ -96,7 +95,7 @@ public class FeatureXPathTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testXPath2 () throws JaxenException {
-        XPath xpath = new FeatureXPath ("gml:featureMember");
+        XPath xpath = new FeatureXPath ("featureMember");
         xpath.setNamespaceContext( nsContext );
         List<Node> selectedNodes = xpath.selectNodes( new FeatureNode (null, fc) );
         Assert.assertEquals( 7, selectedNodes.size() );
@@ -156,5 +155,59 @@ public class FeatureXPathTest {
         PropertyNode propNode = (PropertyNode) selectedNodes.get( 0 );
         Property prop = propNode.getProperty();
         System.out.println (prop.getValue());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testXPath8 () throws JaxenException {
+        XPath xpath = new FeatureXPath ("gml:featureMember[1]/app:Philosopher/app:placeOfBirth/app:Place");
+        xpath.setNamespaceContext( nsContext );
+        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode (null, fc) );
+        Assert.assertEquals( 1, selectedNodes.size() );
+        FeatureNode featureNode = (FeatureNode) selectedNodes.get( 0 );
+        Feature feature = featureNode.getFeature();
+        Assert.assertEquals( "PLACE_2", feature.getId() );
+        
+        xpath = new FeatureXPath ("../..");
+        xpath.setNamespaceContext( nsContext );
+        selectedNodes = xpath.selectNodes( featureNode);
+        Assert.assertEquals( 1, selectedNodes.size() );
+        featureNode = (FeatureNode) selectedNodes.get( 0 );
+        feature = featureNode.getFeature();
+        Assert.assertEquals( "PHILOSOPHER_1", feature.getId() );
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testXPath9 () throws JaxenException {
+        XPath xpath = new FeatureXPath ("gml:featureMember/app:Philosopher[app:id < 3]/app:name");
+        xpath.setNamespaceContext( nsContext );
+        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode (null, fc) );
+        for ( Node node : selectedNodes ) {
+            System.out.println (((PropertyNode) node).getProperty().getValue());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testXPath10 () throws JaxenException {
+        XPath xpath = new FeatureXPath ("gml:featureMember/app:Philosopher/app:friend/app:Philosopher//app:name");
+        xpath.setNamespaceContext( nsContext );
+        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode (null, fc) );
+        for ( Node node : selectedNodes ) {
+            System.out.println (((PropertyNode) node).getProperty().getValue());
+        }
     }    
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testXPath11 () throws JaxenException {
+        XPath xpath = new FeatureXPath ("gml:featureMember/app:Philosopher[@gml:id='PHILOSOPHER_1']");
+        xpath.setNamespaceContext( nsContext );
+        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode (null, fc) );
+        Assert.assertEquals( 1, selectedNodes.size() );
+        FeatureNode featureNode = (FeatureNode) selectedNodes.get( 0 );
+        Feature feature = featureNode.getFeature();
+        Assert.assertEquals( "PHILOSOPHER_1", feature.getId() );
+    }      
 }

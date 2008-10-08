@@ -44,7 +44,10 @@
 package org.deegree.model.filter.expression;
 
 import org.deegree.model.filter.Expression;
-import org.deegree.model.generic.DeegreeObject;
+import org.deegree.model.filter.FilterEvaluationException;
+import org.deegree.model.filter.MatchableObject;
+import org.jaxen.JaxenException;
+import org.jaxen.NamespaceContext;
 
 /**
  * TODO add documentation here
@@ -58,21 +61,43 @@ public class PropertyName implements Expression {
 
     private String propName;
 
-    public PropertyName( String propName ) {
+    private NamespaceContext nsContext;
+
+    public PropertyName( String propName, NamespaceContext nsContext ) {
         this.propName = propName;
+        this.nsContext = nsContext;
     }
 
     public Type getType() {
         return Type.PROPERTY_NAME;
     }
-    
-    public String getPropertyName () {
+
+    public String getPropertyName() {
         return propName;
     }
 
-    public Comparable evaluate( DeegreeObject obj ) {
-        // TODO Auto-generated method stub
-        return null;
+    public NamespaceContext getNsContext() {
+        return nsContext;
+    }
+
+    @Override
+    public Object evaluate( MatchableObject obj )
+                            throws FilterEvaluationException {
+        Object value;
+        try {
+            value = obj.getPropertyValue( this );
+        } catch ( JaxenException e ) {
+            throw new FilterEvaluationException( e.getMessage() );
+        }
+        if ( value instanceof String ) {
+            // try to parse the value as a double value
+            try {
+                return new Double( (String) value );
+            } catch ( NumberFormatException e ) {
+                // not a double -> eat the exception
+            }
+        }
+        return value;
     }
 
     public String toString( String indent ) {

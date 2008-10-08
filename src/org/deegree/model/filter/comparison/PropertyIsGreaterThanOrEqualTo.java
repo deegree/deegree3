@@ -45,7 +45,7 @@ package org.deegree.model.filter.comparison;
 
 import org.deegree.model.filter.Expression;
 import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.generic.DeegreeObject;
+import org.deegree.model.filter.MatchableObject;
 
 /**
  * TODO add documentation here
@@ -58,24 +58,24 @@ import org.deegree.model.generic.DeegreeObject;
 public class PropertyIsGreaterThanOrEqualTo extends BinaryComparisonOperator {
 
     public PropertyIsGreaterThanOrEqualTo( Expression parameter1, Expression parameter2, boolean matchCase ) {
-        super (parameter1, parameter2, matchCase);
+        super( parameter1, parameter2, matchCase );
     }
 
     public SubType getSubType() {
         return SubType.PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO;
-    }    
+    }
 
-    public boolean evaluate( DeegreeObject object )
+    public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        Comparable parameter1Value = param1.evaluate( object );
-        Comparable parameter2Value = param2.evaluate( object );
+        Comparable<Object> parameter1Value = checkComparableOrNull( param1.evaluate( object ) );
+        Comparable<Object> parameter2Value = checkComparableOrNull( param2.evaluate( object ) );
         return parameter1Value.compareTo( parameter2Value ) >= 0;
     }
 
     public String toString( String indent ) {
         String s = indent + "-PropertyIsGreaterThanOrEqualTo\n";
-        s += param1.toString (indent + "  ");
-        s += param2.toString (indent + "  ");
+        s += param1.toString( indent + "  " );
+        s += param2.toString( indent + "  " );
         return s;
-    }     
+    }
 }

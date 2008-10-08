@@ -44,9 +44,9 @@
 package org.deegree.model.filter.comparison;
 
 import org.deegree.model.filter.FilterEvaluationException;
+import org.deegree.model.filter.MatchableObject;
 import org.deegree.model.filter.expression.Literal;
 import org.deegree.model.filter.expression.PropertyName;
-import org.deegree.model.generic.DeegreeObject;
 
 /**
  * TODO add documentation here
@@ -67,8 +67,6 @@ public class PropertyIsLike extends ComparisonOperator {
     private final PropertyName propName;
     
     private final Literal literal;
-    
-    
 
     /**
      * @param propName
@@ -110,9 +108,10 @@ public class PropertyIsLike extends ComparisonOperator {
         return escapeChar;
     }    
     
-    public boolean evaluate( DeegreeObject object )
+    public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        return false;
+        throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()
+                                             + "' operator is not implemented yet." );
     }
 
     public String toString( String indent ) {

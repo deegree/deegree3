@@ -47,6 +47,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.deegree.model.feature.types.FeatureCollectionType;
+import org.deegree.model.filter.Filter;
+import org.deegree.model.filter.FilterEvaluationException;
 
 /**
  * A feature collection is a collection of {@link Feature} instances.
@@ -58,7 +60,7 @@ import org.deegree.model.feature.types.FeatureCollectionType;
  * 
  * @version $Revision: 13814 $, $Date: 2008-09-02 20:28:13 +0200 (Di, 02 Sep 2008) $
  */
-public interface FeatureCollection extends Feature, Collection<Feature>  {
+public interface FeatureCollection extends Feature, Collection<Feature> {
 
     /**
      * Returns the type information for this feature collection.
@@ -66,12 +68,24 @@ public interface FeatureCollection extends Feature, Collection<Feature>  {
      * @return the type information
      */
     @Override
-    public FeatureCollectionType getType();    
-    
+    public FeatureCollectionType getType();
+
     /**
      * Returns the features that this collection contains.
      * 
      * @return the features that this collection contains.
      */
-    public List<Feature> getMembers ();
+    public List<Feature> getMembers();
+
+    /**
+     * Returns the contained features that match the given {@link Filter}.
+     * 
+     * @param filter
+     *            <code>Filter</code> to be applied
+     * @return matching feature instances
+     * @throws FilterEvaluationException
+     *             if an exception occurs during the evaluation of the <code>Filter</code>
+     */
+    public List<Feature> getMembers( Filter filter )
+                            throws FilterEvaluationException;
 }

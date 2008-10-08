@@ -43,7 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature.xpath;
 
-import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.Property;
 
 /**
@@ -60,7 +59,7 @@ public class PropertyNode extends ElementNode {
 
     private Property prop;
 
-    PropertyNode( Feature parentFeature, Property prop ) {
+    PropertyNode( FeatureNode parent, Property prop ) {
         super (prop.getName());
         this.parent = parent;
         this.prop = prop;

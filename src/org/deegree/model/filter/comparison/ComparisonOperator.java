@@ -43,28 +43,36 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.filter.comparison;
 
+import org.deegree.model.filter.FilterEvaluationException;
 import org.deegree.model.filter.Operator;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public abstract class ComparisonOperator implements Operator {
 
     public enum SubType {
-        PROPERTY_IS_EQUAL_TO, PROPERTY_IS_NOT_EQUAL_TO, PROPERTY_IS_LESS_THAN,        
-        PROPERTY_IS_GREATER_THAN, PROPERTY_IS_LESS_THAN_OR_EQUAL_TO,
-        PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO, PROPERTY_IS_LIKE, PROPERTY_IS_NULL,
-        PROPERTY_IS_BETWEEN;
-    }    
-    
-    public Type getType () {
+        PROPERTY_IS_EQUAL_TO, PROPERTY_IS_NOT_EQUAL_TO, PROPERTY_IS_LESS_THAN, PROPERTY_IS_GREATER_THAN, PROPERTY_IS_LESS_THAN_OR_EQUAL_TO, PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO, PROPERTY_IS_LIKE, PROPERTY_IS_NULL, PROPERTY_IS_BETWEEN;
+    }
+
+    public Type getType() {
         return Type.COMPARISON;
-    }   
-    
-    public abstract SubType getSubType ();
+    }
+
+    public abstract SubType getSubType();
+
+    protected Comparable<Object> checkComparableOrNull( Object value )
+                            throws FilterEvaluationException {
+        if ( value != null && !( value instanceof Comparable ) ) {
+            String msg = "Cannot evaluate operator '" + getType().name() + "'. Parameter '" + value
+                         + "' is not 'comparable', i.e. there is no total ordering defined on the value type.";
+            throw new FilterEvaluationException( msg );
+        }
+        return (Comparable<Object>) value;
+    }
 }

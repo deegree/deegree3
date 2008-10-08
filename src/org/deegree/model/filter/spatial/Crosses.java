@@ -44,7 +44,7 @@
 package org.deegree.model.filter.spatial;
 
 import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.generic.DeegreeObject;
+import org.deegree.model.filter.MatchableObject;
 
 /**
  * TODO add documentation here
@@ -60,11 +60,11 @@ public class Crosses extends SpatialOperator {
         return SubType.CROSSES;
     }    
     
-    public boolean evaluate( DeegreeObject object )
-                            throws FilterEvaluationException {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    public boolean evaluate( MatchableObject object )
+    throws FilterEvaluationException {
+throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()
+                     + "' operator is not implemented yet." );
+}
 
     public String toString( String indent ) {
         // TODO Auto-generated method stub

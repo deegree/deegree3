@@ -192,7 +192,7 @@ public class FeatureNavigator extends DefaultNavigator {
         Iterator<?> iter = JaxenConstants.EMPTY_ITERATOR;
         if ( node instanceof FeatureNode ) {
             Feature feature = ( (FeatureNode) node ).getFeature();
-            iter = new PropertyNodeIterator (feature, Arrays.asList( feature.getProperties() ).iterator());
+            iter = new PropertyNodeIterator ((FeatureNode) node, Arrays.asList( feature.getProperties() ).iterator());
         } else if ( node instanceof PropertyNode ) {
             Property prop = ( (PropertyNode) node ).getProperty();
             Object propValue = prop.getValue();
@@ -359,7 +359,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     @Override
     public boolean isNamespace( Object obj ) {
-        return obj instanceof NamespaceNode;
+        return false;
     }
 
     @Override

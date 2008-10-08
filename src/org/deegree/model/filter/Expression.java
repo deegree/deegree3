@@ -62,12 +62,13 @@ public interface Expression {
     public Type getType();    
     
     /**
-     * Determines the value of the expression for the given {@link DeegreeObject}.
+     * Determines the value of the expression for the given {@link MatchableObject}.
      *  
      * @param obj
      * @return the value of the expression
+     * @throws FilterEvaluationException 
      */
-    public Comparable evaluate (DeegreeObject obj);
+    public Object evaluate (MatchableObject obj) throws FilterEvaluationException;
 
     public String toString( String indent );    
 }

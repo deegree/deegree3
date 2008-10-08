@@ -49,6 +49,8 @@ import org.deegree.model.feature.types.PropertyType;
 
 /**
  * TODO add documentation here
+ * 
+ * @param <T> 
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

@@ -46,7 +46,6 @@ package org.deegree.model.feature.xpath;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.Property;
 
 /**
@@ -59,12 +58,12 @@ import org.deegree.model.feature.Property;
  */
 class PropertyNodeIterator implements Iterator<PropertyNode>{
 
-    private Feature parentFeature;    
+    private FeatureNode parent;    
     
     private Iterator<Property<?>> props;
 
-    PropertyNodeIterator(Feature parentFeature, Iterator<Property<?>> props) {
-        this.parentFeature = parentFeature;
+    PropertyNodeIterator(FeatureNode parent, Iterator<Property<?>> props) {
+        this.parent = parent;
         this.props = props;
     } 
     
@@ -78,7 +77,7 @@ class PropertyNodeIterator implements Iterator<PropertyNode>{
         if (!props.hasNext()) {
             throw new NoSuchElementException();
         }
-        return new PropertyNode(parentFeature, props.next());
+        return new PropertyNode(parent, props.next());
     }
 
     @Override

@@ -45,8 +45,6 @@ package org.deegree.model.filter;
 
 import java.util.Set;
 
-import org.deegree.model.generic.DeegreeObject;
-
 /**
  * TODO add documentation here
  * 
@@ -71,7 +69,7 @@ public class IdFilter implements Filter {
         return ids;
     }
 
-    public boolean evaluate( DeegreeObject object )
+    public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         // TODO Auto-generated method stub
         return false;
