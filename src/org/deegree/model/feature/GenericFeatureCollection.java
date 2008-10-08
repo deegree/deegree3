@@ -127,11 +127,6 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     }
 
     @Override
-    public List<Feature> getMembers() {
-        return memberFeatures;
-    }
-
-    @Override
     public String getId() {
         return fid;
     }

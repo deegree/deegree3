@@ -59,13 +59,13 @@ import org.deegree.model.filter.FilterEvaluationException;
  */
 public abstract class AbstractFeatureCollection extends AbstractFeature implements FeatureCollection {
 
-    public List<Feature> getMembers( Filter filter ) throws FilterEvaluationException {        
+    public FeatureCollection getMembers( Filter filter ) throws FilterEvaluationException {        
         List<Feature> matchingFeatures = new ArrayList<Feature>();
-        for (Feature feature : getMembers()) {
+        for (Feature feature : this) {
             if (filter.evaluate( feature )) {
                 matchingFeatures.add( feature ); 
             }
         }
-        return matchingFeatures;
+        return new GenericFeatureCollection (null, matchingFeatures);
     }   
 }

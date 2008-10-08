@@ -1,8 +1,6 @@
 package org.deegree.model.feature;
 
 
-import java.util.List;
-
 import org.deegree.model.filter.Filter;
 import org.deegree.model.filter.Filter110XMLAdapter;
 import org.deegree.model.filter.FilterEvaluationException;
@@ -33,8 +31,8 @@ public class FilterEvaluationTest {
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
 
-        List<Feature> features = fc.getMembers( filter );
-        for ( Feature feature : features ) {
+        FeatureCollection filteredCollection = fc.getMembers( filter );
+        for ( Feature feature : filteredCollection ) {
             System.out.println (feature.getId());
         }
     }
@@ -46,8 +44,8 @@ public class FilterEvaluationTest {
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
 
-        List<Feature> features = fc.getMembers( filter );
-        for ( Feature feature : features ) {
+        FeatureCollection filteredCollection = fc.getMembers( filter );
+        for ( Feature feature : filteredCollection ) {
             System.out.println (feature.getId());
         }
     }    

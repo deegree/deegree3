@@ -44,7 +44,6 @@
 package org.deegree.model.feature;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.deegree.model.feature.types.FeatureCollectionType;
 import org.deegree.model.filter.Filter;
@@ -71,21 +70,14 @@ public interface FeatureCollection extends Feature, Collection<Feature> {
     public FeatureCollectionType getType();
 
     /**
-     * Returns the features that this collection contains.
-     * 
-     * @return the features that this collection contains.
-     */
-    public List<Feature> getMembers();
-
-    /**
      * Returns the contained features that match the given {@link Filter}.
      * 
      * @param filter
      *            <code>Filter</code> to be applied
-     * @return matching feature instances
+     * @return matching feature instances as a new <code>FeatureCollection</code>
      * @throws FilterEvaluationException
      *             if an exception occurs during the evaluation of the <code>Filter</code>
      */
-    public List<Feature> getMembers( Filter filter )
+    public FeatureCollection getMembers( Filter filter )
                             throws FilterEvaluationException;
 }
