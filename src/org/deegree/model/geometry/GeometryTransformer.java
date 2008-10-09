@@ -241,16 +241,16 @@ public class GeometryTransformer extends Transformer {
         List<Point> points = new ArrayList<Point>( pointsPerSide * 4 + 4 );
 
         for ( int i = 0; i <= pointsPerSide + 1; i++ ) {
-            points.add( geomFactory.createPoint( new double[] { x1 + i * xStep, y1 }, precision, null ) );
-            points.add( geomFactory.createPoint( new double[] { x1 + i * xStep, y2 }, precision, null ) );
+            points.add( geomFactory.createPoint( null, new double[] { x1 + i * xStep, y1 }, precision, null ) );
+            points.add( geomFactory.createPoint( null, new double[] { x1 + i * xStep, y2 }, precision, null ) );
         }
 
         for ( int i = 1; i <= pointsPerSide; i++ ) {
-            points.add( geomFactory.createPoint( new double[] { x1, y1 + i * yStep }, precision, null ) );
-            points.add( geomFactory.createPoint( new double[] { x2, y1 + i * yStep }, precision, null ) );
+            points.add( geomFactory.createPoint( null, new double[] { x1, y1 + i * yStep }, precision, null ) );
+            points.add( geomFactory.createPoint( null, new double[] { x2, y1 + i * yStep }, precision, null ) );
         }
 
-        MultiPoint envGeometry = geomFactory.createMultiPoint( points );
+        MultiPoint envGeometry = geomFactory.createMultiPoint(null, points );
         MultiPoint transformedEnvGeometry = transform( envGeometry, trans );
 
         return transformedEnvGeometry.getEnvelope();
@@ -270,7 +270,7 @@ public class GeometryTransformer extends Transformer {
             pos = transform( pos, trans );
             curveSegments[i++] = geomFactory.createCurveSegment( pos );
         }
-        return geomFactory.createCurve( curveSegments, geo.getOrientation(), trans.getTargetCRS() );
+        return geomFactory.createCurve(geo.getId(), curveSegments, geo.getOrientation(), trans.getTargetCRS() );
     }
 
     /**
@@ -284,7 +284,7 @@ public class GeometryTransformer extends Transformer {
         for ( int i = 0; i < geo.getNumberOfGeometries(); i++ ) {
             curves.add( transform( geo.getGeometryAt( i ), trans ) );
         }
-        return geomFactory.createMultiCurve( curves );
+        return geomFactory.createMultiCurve(geo.getId(), curves );
     }
 
     /**
@@ -298,7 +298,7 @@ public class GeometryTransformer extends Transformer {
         for ( Point p : geo.getGeometries() ) {
             points.add( transform( p, trans ) );
         }
-        return geomFactory.createMultiPoint( points );
+        return geomFactory.createMultiPoint(geo.getId(), points );
     }
 
     /**
@@ -312,7 +312,7 @@ public class GeometryTransformer extends Transformer {
         for ( int i = 0; i < geo.getNumberOfGeometries(); i++ ) {
             surfaces.add( transform( geo.getGeometryAt( i ), trans ) );
         }
-        return geomFactory.createMultiSurface( surfaces );
+        return geomFactory.createMultiSurface( geo.getId(), surfaces );
     }
 
     /**
@@ -331,10 +331,10 @@ public class GeometryTransformer extends Transformer {
             tmp = trans.doTransform( coord );
 
             if ( Double.isNaN( point.getZ() ) ) {
-                result.add( geomFactory.createPoint( new double[] { tmp.x, tmp.y }, point.getPrecision(),
+                result.add( geomFactory.createPoint(point.getId(), new double[] { tmp.x, tmp.y }, point.getPrecision(),
                                                      trans.getTargetCRS() ) );
             }
-            result.add( geomFactory.createPoint( new double[] { tmp.x, tmp.y, tmp.z }, point.getPrecision(),
+            result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y, tmp.z }, point.getPrecision(),
                                                  trans.getTargetCRS() ) );
         }
         return result;
@@ -354,10 +354,10 @@ public class GeometryTransformer extends Transformer {
         result = trans.doTransform( coord );
 
         if ( Double.isNaN( geo.getZ() ) ) {
-            return geomFactory.createPoint( new double[] { result.x, result.y }, geo.getPrecision(),
+            return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y }, geo.getPrecision(),
                                             trans.getTargetCRS() );
         }
-        return geomFactory.createPoint( new double[] { result.x, result.y, result.z }, geo.getPrecision(),
+        return geomFactory.createPoint(geo.getId(), new double[] { result.x, result.y, result.z }, geo.getPrecision(),
                                         trans.getTargetCRS() );
     }
 
@@ -378,7 +378,7 @@ public class GeometryTransformer extends Transformer {
             patches.add( geomFactory.createSurfacePatch( boundaries ) );
         }
 
-        return geomFactory.createSurface( patches, trans.getTargetCRS() );
+        return geomFactory.createSurface(geo.getId(), patches, trans.getTargetCRS() );
     }
 
 }

@@ -58,12 +58,13 @@ public class JTSWrapperPoint extends JTSWrapperGeometry implements Point {
 
     /**
      * 
+     * @param id 
      * @param precision
      * @param crs
      * @param pos
      */
-    public JTSWrapperPoint( double precision, CoordinateSystem crs, double[] pos ) {
-        super( precision, crs, pos.length );
+    public JTSWrapperPoint( String id, double precision, CoordinateSystem crs, double[] pos ) {
+        super( id, precision, crs, pos.length );
         this.pos = pos;
         Coordinate coord;
         if ( coordinateDimension == 2 ) {

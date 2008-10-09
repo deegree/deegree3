@@ -46,13 +46,13 @@ package org.deegree.model.identifier;
  * 
  * @version. $Revision: 6251 $, $Date: 2007-03-19 16:59:28 +0100 (Mo, 19 Mrz 2007) $
  */
-public interface Identifiable<T extends Identifier> {
+public interface Identifiable<T> {
 
     /**
      * 
      * @return instance of {@link Identifier} that uniquely identifies an object within the context
      *         of a deegree instance
      */
-    public T getIdentifier();
+    public T getId();
 
 }

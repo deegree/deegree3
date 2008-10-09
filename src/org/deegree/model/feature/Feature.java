@@ -49,6 +49,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.filter.MatchableObject;
+import org.deegree.model.identifier.Identifiable;
 
 /**
  * A feature is a structured object with named properties. Properties may have geometric and non-geometric values.
@@ -68,16 +69,16 @@ import org.deegree.model.filter.MatchableObject;
  * 
  * @version $Revision$, $Date$
  */
-public interface Feature extends MatchableObject {
+public interface Feature extends Identifiable<String>, MatchableObject {
 
     /**
      * Returns the id of the feature.
      * <p>
-     * In the GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3) or <code>fid</code>
-     * (GML 2) attribute of the feature element.
+     * In an GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3 and later) or
+     * <code>fid</code> (GML 2) attribute of the feature element.
      * </p>
      * 
-     * @return the id of the feature instance
+     * @return the id of the feature
      */
     public String getId();
 
@@ -123,8 +124,8 @@ public interface Feature extends MatchableObject {
      * @param propName
      *            property name
      * @param occurence
-     *            index of the property, starting with zero. If the property is not a multi-property (i.e. maxOccurs=1), this
-     *            is always zero.
+     *            index of the property, starting with zero. If the property is not a multi-property (i.e. maxOccurs=1),
+     *            this is always zero.
      * @param value
      *            new value of the property
      * @throws IllegalArgumentException

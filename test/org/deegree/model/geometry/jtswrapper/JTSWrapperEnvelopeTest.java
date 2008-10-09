@@ -42,7 +42,11 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.jtswrapper;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.deegree.model.crs.CRSFactory;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
@@ -56,9 +60,9 @@ import org.junit.Test;
  * 
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author: $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  * 
  */
 public class JTSWrapperEnvelopeTest {
@@ -78,21 +82,21 @@ public class JTSWrapperEnvelopeTest {
     public void setUp()
                             throws Exception {
 
-        min1 = new JTSWrapperPoint( delta, crs, new double[] { 2.0, 3.0 } );
-        max1 = new JTSWrapperPoint( delta, crs, new double[] { 5.0, 7.0 } );
+        min1 = new JTSWrapperPoint( null, delta, crs, new double[] { 2.0, 3.0 } );
+        max1 = new JTSWrapperPoint( null, delta, crs, new double[] { 5.0, 7.0 } );
 
-        min2 = new JTSWrapperPoint( delta, crs, new double[] { -1.0, 5.0 } );
-        max2 = new JTSWrapperPoint( delta, crs, new double[] { 1.0, 11.0 } );
+        min2 = new JTSWrapperPoint( null, delta, crs, new double[] { -1.0, 5.0 } );
+        max2 = new JTSWrapperPoint( null, delta, crs, new double[] { 1.0, 11.0 } );
 
-        min3 = new JTSWrapperPoint( delta, crs, new double[] { 2.5, 3.5 } );
-        max3 = new JTSWrapperPoint( delta, crs, new double[] { 4.5, 6.5 } );
+        min3 = new JTSWrapperPoint( null, delta, crs, new double[] { 2.5, 3.5 } );
+        max3 = new JTSWrapperPoint( null, delta, crs, new double[] { 4.5, 6.5 } );
 
         env1 = new JTSWrapperEnvelope( delta, crs, 2, min1, max1 );
         env2 = new JTSWrapperEnvelope( delta, crs, 2, min2, max2 );
         env3 = new JTSWrapperEnvelope( delta, crs, 2, min3, max3 );
 
         // between both envelopes
-        between = new JTSWrapperPoint( delta, crs, new double[] { 1.5, 6.0 } );
+        between = new JTSWrapperPoint( null, delta, crs, new double[] { 1.5, 6.0 } );
     }
 
     /**
@@ -193,7 +197,7 @@ public class JTSWrapperEnvelopeTest {
     public void testGetConvexHull() {
         assertTrue( env1.getConvexHull().contains( env1 ) );
         assertTrue( env2.getConvexHull().contains( env2 ) );
-        JTSWrapperPoint p = new JTSWrapperPoint( delta, null, new double[] { 6.0, 10.0 } );
+        JTSWrapperPoint p = new JTSWrapperPoint(null, delta, null, new double[] { 6.0, 10.0 } );
         assertFalse( env1.union( env2 ).getConvexHull().contains( p ) );
     }
 

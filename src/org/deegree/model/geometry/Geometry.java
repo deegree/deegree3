@@ -39,6 +39,7 @@ package org.deegree.model.geometry;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.primitive.Envelope;
+import org.deegree.model.identifier.Identifiable;
 
 /**
  * 
@@ -49,7 +50,18 @@ import org.deegree.model.geometry.primitive.Envelope;
  * 
  * @version. $Revision$, $Date$
  */
-public interface Geometry {
+public interface Geometry extends Identifiable<String> {
+    
+    /**
+     * Returns the id of the geometry.
+     * <p>
+     * In an GML representation of the geometry, this corresponds to the <code>gml:id</code> (GML 3 and later) or
+     * <code>gid</code> (GML 2) attribute of the geometry element.
+     * </p>
+     * 
+     * @return the id of the feature
+     */
+    public String getId();    
 
     /**
      * @return the bounding box of the implementing geometry

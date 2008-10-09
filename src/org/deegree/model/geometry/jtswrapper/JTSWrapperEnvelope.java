@@ -64,6 +64,7 @@ class JTSWrapperEnvelope extends JTSWrapperGeometry implements Envelope {
 
     /**
      * 
+     * @param id 
      * @param precision
      * @param crs
      * @param coordinateDimension
@@ -71,7 +72,7 @@ class JTSWrapperEnvelope extends JTSWrapperGeometry implements Envelope {
      * @param max
      */
     JTSWrapperEnvelope( double precision, CoordinateSystem crs, int coordinateDimension, Point min, Point max ) {
-        super( precision, crs, coordinateDimension );
+        super( null, precision, crs, coordinateDimension );
         this.min = min;
         this.max = max;
         Coordinate minCoord = toCoordinate( min );
@@ -126,8 +127,8 @@ class JTSWrapperEnvelope extends JTSWrapperGeometry implements Envelope {
                 max[i] = other.getMax().getAsArray()[i];
             }
         }
-        Point newMin = new JTSWrapperPoint( getPrecision(), getCoordinateSystem(), min );
-        Point newMax = new JTSWrapperPoint( getPrecision(), getCoordinateSystem(), max );
+        Point newMin = new JTSWrapperPoint( null, getPrecision(), getCoordinateSystem(), min );
+        Point newMax = new JTSWrapperPoint( null, getPrecision(), getCoordinateSystem(), max );
 
         return new JTSWrapperEnvelope( getPrecision(), getCoordinateSystem(), coordinateDimension, newMin, newMax );
     }

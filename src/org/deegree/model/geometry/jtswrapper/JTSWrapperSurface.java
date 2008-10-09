@@ -73,13 +73,14 @@ class JTSWrapperSurface extends JTSWrapperGeometry implements Surface {
 
     /**
      * 
+     * @param id 
      * @param precision
      * @param crs
      * @param coordinateDimension
      * @param patch
      */
-    public JTSWrapperSurface( double precision, CoordinateSystem crs, int coordinateDimension, SurfacePatch patch ) {
-        super( precision, crs, coordinateDimension );
+    public JTSWrapperSurface( String id, double precision, CoordinateSystem crs, int coordinateDimension, SurfacePatch patch ) {
+        super( id, precision, crs, coordinateDimension );
         this.patches.add( patch );
 
         CoordinateSequenceFactory fac = CoordinateArraySequenceFactory.instance();

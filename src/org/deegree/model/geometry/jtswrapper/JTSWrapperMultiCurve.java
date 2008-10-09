@@ -63,13 +63,15 @@ public class JTSWrapperMultiCurve extends JTSWrapperGeometry implements MultiCur
     private List<Curve> curves;
 
     /**
+     *
+     * @param id
      * @param curves
      * @param coordinateDimension
      * @param precision
      * @param crs
      */
-    public JTSWrapperMultiCurve( List<Curve> curves, int coordinateDimension, double precision, CoordinateSystem crs ) {
-        super( precision, crs, coordinateDimension );
+    public JTSWrapperMultiCurve( String id, List<Curve> curves, int coordinateDimension, double precision, CoordinateSystem crs ) {
+        super( id, precision, crs, coordinateDimension );
         this.curves = curves;        
         LineString[] ls = new LinearRing[curves.size()];
         int i = 0;

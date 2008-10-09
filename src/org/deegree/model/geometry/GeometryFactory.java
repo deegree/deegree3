@@ -173,6 +173,8 @@ public interface GeometryFactory {
     /**
      * creates a georeferenced point
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param coordinates
      *            coordinate values
      * @param precision
@@ -183,11 +185,14 @@ public interface GeometryFactory {
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
-    public Point createPoint( double[] coordinates, double precision, CoordinateSystem crs );
+    public Point createPoint( String id, double[] coordinates, double precision, CoordinateSystem crs );
 
     /**
-     * creates a georeferenced point with a default precision ({@link #createPoint(double[], double, CoordinateSystem)})
+     * creates a georeferenced point with a default precision (
+     * {@link #createPoint(String, double[], double, CoordinateSystem)})
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param coordinates
      *            coordinate values
      * @param crs
@@ -195,12 +200,14 @@ public interface GeometryFactory {
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
-    public Point createPoint( double[] coordinates, CoordinateSystem crs );
+    public Point createPoint( String id, double[] coordinates, CoordinateSystem crs );
 
     /**
      * Creates a {@link Curve} from a two dimensional array of coordinates. Each field of the first dimension represents
      * one point.
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param coordinates
      *            array of curve coordinates
      * @param orientation
@@ -210,12 +217,14 @@ public interface GeometryFactory {
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Curve}
      */
-    public Curve createCurve( Point[][] coordinates, Curve.ORIENTATION orientation, CoordinateSystem crs );
+    public Curve createCurve( String id, Point[][] coordinates, Curve.ORIENTATION orientation, CoordinateSystem crs );
 
     /**
      * Creates a segmented {@link Curve} from one or more {@link CurveSegment}s. The last {@link Point} of i'th segment
      * must equals first {@link Point} of i+1'th segment.
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param segments
      *            segments a curve shall be created from
      * @param orientation
@@ -225,7 +234,7 @@ public interface GeometryFactory {
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Curve}
      */
-    public Curve createCurve( CurveSegment[] segments, Curve.ORIENTATION orientation, CoordinateSystem crs );
+    public Curve createCurve( String id, CurveSegment[] segments, Curve.ORIENTATION orientation, CoordinateSystem crs );
 
     /**
      * Creates a {@link CurveSegment} from a {@link List} of {@link Point}s with a defined interpolation. The passed
@@ -241,11 +250,12 @@ public interface GeometryFactory {
      *            used interpolation
      * @return created {@link CurveSegment}
      */
-    public CurveSegment createCurveSegment( List<Point> points, Class<?> type, CurveSegment.INTERPOLATION interpolation );
+    public CurveSegment createCurveSegment( List<Point> points, Class<?> type,
+                                            CurveSegment.INTERPOLATION interpolation );
 
     /**
-     * Creates a {@link CurveSegment} from a {@link List} of {@link Point}s with default (linear) interpolation.
-     * Default {@link CurveSegment} of underlying geometry implementation will be used.
+     * Creates a {@link CurveSegment} from a {@link List} of {@link Point}s with default (linear) interpolation. Default
+     * {@link CurveSegment} of underlying geometry implementation will be used.
      * 
      * @param points
      *            list of points to create a {@link CurveSegment} from
@@ -258,6 +268,8 @@ public interface GeometryFactory {
      * {@link Curve} forms the outer boundary the following {@link Curve}s represents holes. The passed interpolation
      * must be supported by the concrete GeometryFactory; {@link #getSupportedSurfaceInterpolations()}.
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param boundary
      *            surfaces boundary
      * @param interpolation
@@ -267,20 +279,23 @@ public interface GeometryFactory {
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Surface}
      */
-    public Surface createSurface( List<Curve> boundary, SurfacePatch.INTERPOLATION interpolation, CoordinateSystem crs );
+    public Surface createSurface( String id, List<Curve> boundary, SurfacePatch.INTERPOLATION interpolation,
+                                  CoordinateSystem crs );
 
     /**
      * creates a {@link Surface} from an array of {@link SurfacePatch}. The passed patches must touch in a topological
      * sense to form a valid {@link Surface}
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param patches
-     *            patches to created a surface
+     *            patches to create a surface
      * @param crs
      *            surfaces coordinate reference system. If a point does not have a CRS or it is not known
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Surface}
      */
-    public Surface createSurface( List<SurfacePatch> patches, CoordinateSystem crs );
+    public Surface createSurface( String id, List<SurfacePatch> patches, CoordinateSystem crs );
 
     /**
      * Creates a {@link SurfacePatch} from an array of {@link Curve}s forming the boundary of a {@link SurfacePatch}.
@@ -297,7 +312,8 @@ public interface GeometryFactory {
      *            interporlation to be used
      * @return created {@link SurfacePatch}
      */
-    public SurfacePatch createSurfacePatch( List<Curve> boundary, Class<?> type, SurfacePatch.INTERPOLATION interpolation );
+    public SurfacePatch createSurfacePatch( List<Curve> boundary, Class<?> type,
+                                            SurfacePatch.INTERPOLATION interpolation );
 
     /**
      * Creates a {@link SurfacePatch} from an array of {@link Curve}s forming the boundary of a {@link SurfacePatch}.
@@ -311,10 +327,12 @@ public interface GeometryFactory {
     public SurfacePatch createSurfacePatch( List<Curve> boundary );
 
     /**
-     * Creates a Solid from a from a set of {@link Surface}s forming its outer boundary and 0..n sets of
-     * {@link Surface}s forming its inner boundaries. The support for {@link Solid}s is optional. An implementation
-     * that does not support is shall throw an {@link UnsupportedOperationException} if this method will be invoked.
+     * Creates a Solid from a from a set of {@link Surface}s forming its outer boundary and 0..n sets of {@link Surface}
+     * s forming its inner boundaries. The support for {@link Solid}s is optional. An implementation that does not
+     * support is shall throw an {@link UnsupportedOperationException} if this method will be invoked.
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param outerboundary
      * @param innerboundaries
      * @param crs
@@ -322,79 +340,97 @@ public interface GeometryFactory {
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Solid}
      */
-    public Solid createSolid( Surface[] outerboundary, Surface[][] innerboundaries, CoordinateSystem crs );
+    public Solid createSolid( String id, Surface[] outerboundary, Surface[][] innerboundaries, CoordinateSystem crs );
 
     /**
      * create an untyped multi geometry a list of {@link Geometry}s
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param geometries
      * @return created {@link MultiGeometry}
      */
-    public MultiGeometry<Geometry> createMultiGeometry( List<Geometry> geometries );
+    public MultiGeometry<Geometry> createMultiGeometry( String id, List<Geometry> geometries );
 
     /**
      * Creates a {@link MultiPoint} from a list of passed {@link Point}s
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param points
      * @return created {@link MultiPoint}
      */
-    public MultiPoint createMultiPoint( List<Point> points );
+    public MultiPoint createMultiPoint( String id, List<Point> points );
 
     /**
      * Creates a {@link MultiCurve} from a list of passed {@link Curve}s
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param curves
      * @return created {@link MultiCurve}
      */
-    public MultiCurve createMultiCurve( List<Curve> curves );
+    public MultiCurve createMultiCurve( String id, List<Curve> curves );
 
     /**
      * Creates a {@link MultiSurface} from a list of passed {@link Surface}s
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param surfaces
      * @return created {@link MultiSurface}
      */
-    public MultiSurface createMultiSurface( List<Surface> surfaces );
+    public MultiSurface createMultiSurface( String id, List<Surface> surfaces );
 
     /**
      * Creates a {@link MultiSolid} from a list of passed {@link Solid}s
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param solids
      * @return created {@link MultiSolid}
      */
-    public MultiSolid createMultiSolid( List<Solid> solids );
+    public MultiSolid createMultiSolid( String id, List<Solid> solids );
 
     /**
      * Creates a {@link CompositeCurve} from a list of passed {@link Curve}s.
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param curves
      * @return created {@link CompositeCurve}
      */
-    public CompositeCurve createCompositeCurve( List<Curve> curves );
+    public CompositeCurve createCompositeCurve( String id, List<Curve> curves );
 
     /**
      * Creates a {@link CompositeSurface} from a list of passed {@link Surface}s.
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param surfaces
      * @return created {@link CompositeSurface}
      */
-    public CompositeSurface createCompositeSurface( List<Surface> surfaces );
+    public CompositeSurface createCompositeSurface( String id, List<Surface> surfaces );
 
     /**
      * Creates a {@link CompositeSolid} from a list of passed {@link Solid}s.
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param solids
      * @return created {@link CompositeSolid}
      */
-    public CompositeSolid createCompositeSolid( List<Solid> solids );
+    public CompositeSolid createCompositeSolid( String id, List<Solid> solids );
 
     /**
      * Creates a general {@link GeometricComplex} from a list of geometries
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param geometries
      * @return created {@link GeometricComplex}
      */
-    public GeometricComplex createGeometricComplex( List<Geometry> geometries );
+    public GeometricComplex createGeometricComplex( String id, List<Geometry> geometries );
 
     /**
      * creates an {@link Envelope} with a defined precision
@@ -416,6 +452,8 @@ public interface GeometryFactory {
     /**
      * creates an {@link Envelope} with default precision
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param min
      *            minimum corner coordinates
      * @param max
@@ -431,9 +469,11 @@ public interface GeometryFactory {
      * creates an envelope from a SurfacePatch representing a envelope by being constructed by five points: minx,miny
      * minx,maxy maxx,maxy maxx,miny minx,miny
      * 
+     * @param id
+     *            identifier of the new geometry instance
      * @param patch
      * @return envelope created from a SurfacePatch
      */
-    public Envelope createEnvelope( SurfacePatch patch );
+    public Envelope createEnvelope( String id, SurfacePatch patch );
 
 }

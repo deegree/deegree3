@@ -68,14 +68,15 @@ public class JTSWrapperGeometryCollection extends JTSWrapperGeometry implements 
     private boolean doContainsSurface = false;
 
     /**
+     * @param id 
      * @param precision
      * @param crs
      * @param coordinateDimension
      * @param geometries
      */
-    public JTSWrapperGeometryCollection( double precision, CoordinateSystem crs, int coordinateDimension,
+    public JTSWrapperGeometryCollection( String id, double precision, CoordinateSystem crs, int coordinateDimension,
                                          List<Geometry> geometries ) {
-        super( precision, crs, coordinateDimension );
+        super( id, precision, crs, coordinateDimension );
         this.geometries = geometries;
         com.vividsolutions.jts.geom.Geometry[] gs = new com.vividsolutions.jts.geom.Geometry[geometries.size()];
         int i = 0;

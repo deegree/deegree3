@@ -70,15 +70,16 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
 
     /**
      * 
+     * @param id
      * @param precision
      * @param crs
      * @param coordinateDimension
      * @param segment
      * @param orientation
      */
-    public JTSWrapperCurve( double precision, CoordinateSystem crs, int coordinateDimension, CurveSegment segment,
+    public JTSWrapperCurve( String id, double precision, CoordinateSystem crs, int coordinateDimension, CurveSegment segment,
                             Curve.ORIENTATION orientation ) {
-        super( precision, crs, coordinateDimension );
+        super( id, precision, crs, coordinateDimension );
         // A JTS geometry is simple; so it has just one segment -> segment and curve are
         // geometrical identic
         this.segments = new ArrayList<CurveSegment>( 1 );

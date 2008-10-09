@@ -79,6 +79,9 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequenceFactory;
  */
 abstract class JTSWrapperGeometry implements Geometry {
 
+    /** id of the geometry object */
+    protected String id;
+    
     /**
      * coordinate dimensions of the geometry
      */
@@ -119,7 +122,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @param crs
      * @param coordinateDimension
      */
-    JTSWrapperGeometry( double precision, CoordinateSystem crs, int coordinateDimension ) {
+    JTSWrapperGeometry( String id, double precision, CoordinateSystem crs, int coordinateDimension ) {
         this.crs = crs;
         this.precision = precision;
         this.coordinateDimension = coordinateDimension;
@@ -127,6 +130,11 @@ abstract class JTSWrapperGeometry implements Geometry {
         jtsFactory = new GeometryFactory( pm, 0 );
     }
 
+    @Override
+    public String getId () {
+        return id;
+    }
+    
     /**
      * this method throws an {@link IllegalArgumentException} if the passed {@link Geometry} is not
      * an instance of a geometry type that can be exported into a JTSGeometry. Allowed types are:
@@ -426,8 +434,8 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @return deegree {@link Point}
      */
     protected Point toPoint( Coordinate coord ) {
-        return Double.isNaN( coord.z ) ? new JTSWrapperPoint( precision, crs, new double[] { coord.x, coord.y } )
-                                      : new JTSWrapperPoint( precision, crs, new double[] { coord.x, coord.y, coord.z } );
+        return Double.isNaN( coord.z ) ? new JTSWrapperPoint( null, precision, crs, new double[] { coord.x, coord.y } )
+                                      : new JTSWrapperPoint( null, precision, crs, new double[] { coord.x, coord.y, coord.z } );
     }
 
     /**
@@ -445,8 +453,8 @@ abstract class JTSWrapperGeometry implements Geometry {
     }
 
     private Envelope wrap( com.vividsolutions.jts.geom.Envelope envelope ) {
-        Point min = new JTSWrapperPoint( precision, crs, new double[] { envelope.getMinX(), envelope.getMinY() } );
-        Point max = new JTSWrapperPoint( precision, crs, new double[] { envelope.getMaxX(), envelope.getMaxY() } );
+        Point min = new JTSWrapperPoint( null, precision, crs, new double[] { envelope.getMinX(), envelope.getMinY() } );
+        Point max = new JTSWrapperPoint( null, precision, crs, new double[] { envelope.getMaxX(), envelope.getMaxY() } );
         return new JTSWrapperEnvelope( precision, crs, 2, min, max );
     }
 
@@ -464,8 +472,7 @@ abstract class JTSWrapperGeometry implements Geometry {
 
     /**
      * Converts a MultiPoint to a MultiPoint.
-     * 
-     * 
+     *
      * @param multi
      *            a MultiPoint object
      * @return the corresponding MultiPoint
@@ -475,7 +482,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         for ( int i = 0; i < multi.getNumGeometries(); i++ ) {
             gmPoints.add( wrap( (com.vividsolutions.jts.geom.Point) multi.getGeometryN( i ) ) );
         }
-        return geomFactory.createMultiPoint( gmPoints );
+        return geomFactory.createMultiPoint( null, gmPoints );
     }
 
     /**
@@ -493,7 +500,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         Point[][] pts = new Point[1][];
         pts[0] = points.toArray( new Point[points.size()] );
 
-        return geomFactory.createCurve( pts, ORIENTATION.unknown, crs );
+        return geomFactory.createCurve(null, pts, ORIENTATION.unknown, crs );
     }
 
     /**
@@ -508,7 +515,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         for ( int i = 0; i < multi.getNumGeometries(); i++ ) {
             curves.add( wrap( (com.vividsolutions.jts.geom.LineString) multi.getGeometryN( i ) ) );
         }
-        return geomFactory.createMultiCurve( curves );
+        return geomFactory.createMultiCurve(null, curves );
     }
 
     /**
@@ -524,14 +531,14 @@ abstract class JTSWrapperGeometry implements Geometry {
         Point[][] ring = new Point[1][];
         List<Point> list = toPoints( polygon.getExteriorRing().getCoordinates() );
         ring[0] = list.toArray( new Point[list.size()] );
-        boundary.add( geomFactory.createCurve( ring, ORIENTATION.unknown, crs ) );
+        boundary.add( geomFactory.createCurve(null, ring, ORIENTATION.unknown, crs ) );
         for ( int i = 0; i < polygon.getNumInteriorRing(); i++ ) {
             list = toPoints( polygon.getInteriorRingN( i ).getCoordinates() );
             ring[0] = list.toArray( new Point[list.size()] );
-            boundary.add( geomFactory.createCurve( ring, ORIENTATION.unknown, crs ) );
+            boundary.add( geomFactory.createCurve(null, ring, ORIENTATION.unknown, crs ) );
         }
 
-        return geomFactory.createSurface( boundary, SurfacePatch.INTERPOLATION.none, crs );
+        return geomFactory.createSurface(null, boundary, SurfacePatch.INTERPOLATION.none, crs );
     }
 
     /**
@@ -547,7 +554,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         for ( int i = 0; i < multiPolygon.getNumGeometries(); i++ ) {
             surfaces.add( wrap( (com.vividsolutions.jts.geom.Polygon) multiPolygon.getGeometryN( i ) ) );
         }
-        return geomFactory.createMultiSurface( surfaces );
+        return geomFactory.createMultiSurface(null, surfaces );
     }
 
     /**
@@ -563,7 +570,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         for ( int i = 0; i < collection.getNumGeometries(); i++ ) {
             geoms.add( wrap( collection.getGeometryN( i ) ) );
         }
-        return geomFactory.createMultiGeometry( geoms );
+        return geomFactory.createMultiGeometry(null, geoms );
     }
 
     public boolean contains( Geometry geometry ) {

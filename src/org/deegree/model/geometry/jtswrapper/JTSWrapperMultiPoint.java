@@ -58,13 +58,14 @@ public class JTSWrapperMultiPoint extends JTSWrapperGeometry implements MultiPoi
 
     /**
      * 
+     * @param id 
      * @param points
      * @param coordinateDimension
      * @param precision
      * @param crs
      */
-    public JTSWrapperMultiPoint( List<Point> points, int coordinateDimension, double precision, CoordinateSystem crs ) {
-        super( precision, crs, coordinateDimension );
+    public JTSWrapperMultiPoint( String id, List<Point> points, int coordinateDimension, double precision, CoordinateSystem crs ) {
+        super( id, precision, crs, coordinateDimension );
         this.points = points;
         com.vividsolutions.jts.geom.Point[] pts = new com.vividsolutions.jts.geom.Point[points.size()];
         int i = 0;

@@ -75,16 +75,15 @@ public class GeometryGenerator {
         double x = rnd.nextDouble() * max + offx;
         double y = rnd.nextDouble() * max + offy;
         Point[][] ps = { {
-                          fac.createPoint( new double[] { x, y }, null ),
-                          fac.createPoint(
-                                           new double[] { rnd.nextDouble() * max + offx, rnd.nextDouble() * max + offy },
-                                           null ),
-                          fac.createPoint(
-                                           new double[] { rnd.nextDouble() * max + offx, rnd.nextDouble() * max + offy },
-                                           null ), fac.createPoint( new double[] { x, y }, null ) } };
-        Curve curve = fac.createCurve( ps, unknown, null );
+                          fac.createPoint( null, new double[] { x, y }, null ),
+                          fac.createPoint( null, new double[] { rnd.nextDouble() * max + offx,
+                                                               rnd.nextDouble() * max + offy }, null ),
+                          fac.createPoint( null, new double[] { rnd.nextDouble() * max + offx,
+                                                               rnd.nextDouble() * max + offy }, null ),
+                          fac.createPoint( null, new double[] { x, y }, null ) } };
+        Curve curve = fac.createCurve( null, ps, unknown, null );
         SurfacePatch patch = fac.createSurfacePatch( singletonList( curve ) );
-        return fac.createSurface( singletonList( patch ), null );
+        return fac.createSurface( null, singletonList( patch ), null );
     }
 
     /**
@@ -98,17 +97,17 @@ public class GeometryGenerator {
         double x = rnd.nextDouble() * half + offx;
         double y = rnd.nextDouble() * half + offy;
         Point[][] ps = { {
-                          fac.createPoint( new double[] { x, y }, null ),
-                          fac.createPoint( new double[] { rnd.nextDouble() * half + half + offx,
-                                                         rnd.nextDouble() * half + offy }, null ),
-                          fac.createPoint( new double[] { rnd.nextDouble() * half + half + offx,
-                                                         rnd.nextDouble() * half + half + offy }, null ),
-                          fac.createPoint( new double[] { rnd.nextDouble() * half + offx,
-                                                         rnd.nextDouble() * half + half + offy }, null ),
-                          fac.createPoint( new double[] { x, y }, null ) } };
-        Curve curve = fac.createCurve( ps, unknown, null );
+                          fac.createPoint( null, new double[] { x, y }, null ),
+                          fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
+                                                               rnd.nextDouble() * half + offy }, null ),
+                          fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
+                                                               rnd.nextDouble() * half + half + offy }, null ),
+                          fac.createPoint( null, new double[] { rnd.nextDouble() * half + offx,
+                                                               rnd.nextDouble() * half + half + offy }, null ),
+                          fac.createPoint( null, new double[] { x, y }, null ) } };
+        Curve curve = fac.createCurve( null, ps, unknown, null );
         SurfacePatch patch = fac.createSurfacePatch( singletonList( curve ) );
-        return fac.createSurface( singletonList( patch ), null );
+        return fac.createSurface( null, singletonList( patch ), null );
     }
 
     /**
@@ -122,14 +121,14 @@ public class GeometryGenerator {
         double x = rnd.nextDouble() * half + offx;
         double y = rnd.nextDouble() * half + offy;
         Point[][] ps = { {
-                          fac.createPoint( new double[] { x, y }, null ),
-                          fac.createPoint( new double[] { rnd.nextDouble() * half + half + offx,
-                                                         rnd.nextDouble() * half + offy }, null ),
-                          fac.createPoint( new double[] { rnd.nextDouble() * half + half + offx,
-                                                         rnd.nextDouble() * half + half + offy }, null ),
-                          fac.createPoint( new double[] { rnd.nextDouble() * half + offx,
-                                                         rnd.nextDouble() * half + half + offy }, null ) } };
-        return fac.createCurve( ps, unknown, null );
+                          fac.createPoint( null, new double[] { x, y }, null ),
+                          fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
+                                                               rnd.nextDouble() * half + offy }, null ),
+                          fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
+                                                               rnd.nextDouble() * half + half + offy }, null ),
+                          fac.createPoint( null, new double[] { rnd.nextDouble() * half + offx,
+                                                               rnd.nextDouble() * half + half + offy }, null ) } };
+        return fac.createCurve( null, ps, unknown, null );
     }
 
 }

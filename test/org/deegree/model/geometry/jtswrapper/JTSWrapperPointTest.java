@@ -55,9 +55,9 @@ import org.junit.Test;
  * 
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author: $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  * 
  */
 public class JTSWrapperPointTest {
@@ -75,9 +75,9 @@ public class JTSWrapperPointTest {
     @Before
     public void setUp()
                             throws Exception {
-        p1 = new JTSWrapperPoint( delta, crs, new double[] { 2.0, 3.0 } );
-        p2 = new JTSWrapperPoint( delta, crs, new double[] { -1.0, 5.0 } );
-        p3 = new JTSWrapperPoint( delta, crs, new double[] { 2.00001, 3.00001 } );
+        p1 = new JTSWrapperPoint( null, delta, crs, new double[] { 2.0, 3.0 } );
+        p2 = new JTSWrapperPoint( null, delta, crs, new double[] { -1.0, 5.0 } );
+        p3 = new JTSWrapperPoint( null, delta, crs, new double[] { 2.00001, 3.00001 } );
     }
 
     /**
@@ -90,7 +90,7 @@ public class JTSWrapperPointTest {
 
     /**
      * Test method for
-     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperPoint#JTSWrapperPoint(double, org.deegree.model.crs.coordinatesystems.CoordinateSystem, double[])}.
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperPoint#JTSWrapperPoint(String, double, org.deegree.model.crs.coordinatesystems.CoordinateSystem, double[])}.
      */
     // @Test
     public void testJTSWrapperPoint() {
@@ -347,8 +347,8 @@ public class JTSWrapperPointTest {
         assertTrue( p1.equals( p3 ) );
         assertFalse( p1.equals( p2 ) );
 
-        JTSWrapperPoint p1_1 = new JTSWrapperPoint( delta, crs, new double[] { 2.0 + ( delta / 5 ), 3.0 } );
-        JTSWrapperPoint p1_2 = new JTSWrapperPoint( delta, crs, new double[] { 2.0 + delta, 3.0 } );
+        JTSWrapperPoint p1_1 = new JTSWrapperPoint( null, delta, crs, new double[] { 2.0 + ( delta / 5 ), 3.0 } );
+        JTSWrapperPoint p1_2 = new JTSWrapperPoint( null, delta, crs, new double[] { 2.0 + delta, 3.0 } );
         assertTrue( p1.equals( p1_1 ) );
         assertFalse( p1.equals( p1_2 ) );
 

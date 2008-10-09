@@ -72,7 +72,7 @@ public class GeometryUtils {
         GeometryFactory fac = GeometryFactoryCreator.getInstance().getGeometryFactory();
         if ( geom instanceof Point ) {
             Point p = (Point) geom;
-            return fac.createPoint( new double[] { p.getX() + offx, p.getY() + offy }, p.getCoordinateSystem() );
+            return fac.createPoint( geom.getId(), new double[] { p.getX() + offx, p.getY() + offy }, p.getCoordinateSystem() );
         }
         if ( geom instanceof Curve ) {
             Curve c = (Curve) geom;
@@ -80,7 +80,7 @@ public class GeometryUtils {
             for ( Point p : c.getPoints() ) {
                 ps.add( (Point) move( p, offx, offy ) );
             }
-            return fac.createCurve( new CurveSegment[] { fac.createCurveSegment( ps ) }, c.getOrientation(),
+            return fac.createCurve( geom.getId(), new CurveSegment[] { fac.createCurveSegment( ps ) }, c.getOrientation(),
                                     c.getCoordinateSystem() );
         }
         if ( geom instanceof Surface ) {
@@ -93,7 +93,7 @@ public class GeometryUtils {
                 }
                 patches.add( fac.createSurfacePatch( curves ) );
             }
-            return fac.createSurface( patches, s.getCoordinateSystem() );
+            return fac.createSurface( geom.getId(), patches, s.getCoordinateSystem() );
         }
 
         return geom;

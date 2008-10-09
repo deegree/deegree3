@@ -1,44 +1,37 @@
-<gml:FeatureCollection
- xmlns:app="http://www.deegree.org/app"
- xmlns:gml="http://www.opengis.net/gml"
- xmlns:wfs="http://www.opengis.net/wfs"
- xmlns:ogc="http://www.opengis.net/ogc"
- xmlns:xlink="http://www.w3.org/1999/xlink"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://www.opengis.net/gml
+<gml:FeatureCollection xmlns:app="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml
 http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app schema/Philosopher_typesafe.xsd">
- <gml:featureMember>
-  <app:Philosopher gml:id="PHILOSOPHER_1">
-   <app:id>1</app:id>
-   <app:name>Karl Marx</app:name>
-   <app:sex>m</app:sex>
-   <app:subject>capital</app:subject>
-   <app:subject>economy</app:subject>
-   <app:subject>labour</app:subject>
-   <app:isAuthorOf>
-    <app:Book>
-     <app:title>Einleitung zur Kritik der Hegelschen Rechtsphilosophie</app:title>
-    </app:Book>
-   </app:isAuthorOf>
-   <app:isAuthorOf>
-    <app:Book>
-     <app:title>Zur Kritik der politischen Ökonomie</app:title>
-    </app:Book>
-   </app:isAuthorOf>
-   <app:dateOfBirth>1818-05-05</app:dateOfBirth>
-   <app:placeOfBirth>
-    <app:Place gml:id="PLACE_2">
-     <app:name>Trier</app:name>
-     <app:country>
-      <app:Country gml:id="COUNTRY_2">
-       <app:name>Germany</app:name>
-       <app:geom>
-        <gml:MultiPolygon srsName="EPSG:4326">
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">7.369014739990234,49.16877746582031
+  <gml:featureMember>
+    <app:Philosopher gml:id="PHILOSOPHER_1">
+      <app:id>1</app:id>
+      <app:name>Karl Marx</app:name>
+      <app:sex>m</app:sex>
+      <app:subject>capital</app:subject>
+      <app:subject>economy</app:subject>
+      <app:subject>labour</app:subject>
+      <app:isAuthorOf>
+        <app:Book>
+          <app:title>Einleitung zur Kritik der Hegelschen Rechtsphilosophie</app:title>
+        </app:Book>
+      </app:isAuthorOf>
+      <app:isAuthorOf>
+        <app:Book>
+          <app:title>Zur Kritik der politischen Ökonomie</app:title>
+        </app:Book>
+      </app:isAuthorOf>
+      <app:dateOfBirth>1818-05-05</app:dateOfBirth>
+      <app:placeOfBirth>
+        <app:Place gml:id="PLACE_2">
+          <app:name>Trier</app:name>
+          <app:country>
+            <app:Country gml:id="COUNTRY_2">
+              <app:name>Germany</app:name>
+              <app:geom>
+                <gml:MultiPolygon gml:id="MULTIPOLYGON_1" srsName="EPSG:4326">
+                  <gml:polygonMember>
+                    <gml:Polygon gml:id="POLYGON_1" srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing gml:id="RING_1">
+                          <gml:coordinates cs="," decimal="." ts=" ">7.369014739990234,49.16877746582031
               7.36402702331543,49.151939392089844 7.289721488952637,49.111663818359375
               7.151666641235352,49.12110900878906 7.090555191040039,49.12749481201172
               7.019443511962891,49.18749237060547 6.929860591888428,49.2202033996582 6.846076011657715,49.21204376220703
@@ -421,15 +414,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               7.6520891189575195,49.04493713378906 7.628055095672607,49.06721878051758
               7.486944198608398,49.164161682128906 7.425555229187012,49.17645263671875
               7.378610610961914,49.172359466552734 7.369014739990234,49.16877746582031</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">8.563610076904297,54.684165954589844
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">8.563610076904297,54.684165954589844
               8.488332748413086,54.68555450439453 8.47833251953125,54.68694305419922
               8.398332595825195,54.710201263427734 8.409859657287598,54.732635498046875
               8.425832748413086,54.742218017578125 8.444721221923828,54.748329162597656
@@ -437,15 +430,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               8.551109313964844,54.753883361816406 8.569721221923828,54.750274658203125
               8.585137367248535,54.7445068359375 8.594860076904297,54.71985626220703
               8.569999694824219,54.687355041503906 8.563610076904297,54.684165954589844</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">13.268054962158203,54.25499725341797
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">13.268054962158203,54.25499725341797
               13.253332138061523,54.25721740722656 13.156110763549805,54.30554962158203
               13.118818283081055,54.33673095703125 13.133956909179688,54.37138366699219
               13.154026985168457,54.375274658203125 13.200553894042969,54.372772216796875
@@ -491,15 +484,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               13.406943321228027,54.265132904052734 13.420970916748047,54.26027297973633
               13.427638053894043,54.2479133605957 13.4269437789917,54.2358283996582 13.395416259765625,54.22166061401367
               13.318609237670898,54.24860382080078 13.268054962158203,54.25499725341797</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">11.273926734924316,54.458736419677734
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">11.273926734924316,54.458736419677734
               11.302221298217773,54.42402267456055 11.312499046325684,54.40833282470703
               11.139165878295898,54.40666198730469 11.12388801574707,54.406944274902344
               11.021048545837402,54.438758850097656 11.009026527404785,54.44721603393555
@@ -508,26 +501,26 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               11.043888092041016,54.51832580566406 11.066804885864258,54.53458023071289
               11.184165954589844,54.519996643066406 11.232221603393555,54.5030517578125
               11.243748664855957,54.494441986083984 11.273926734924316,54.458736419677734</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">10.979442596435547,54.38055419921875
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">10.979442596435547,54.38055419921875
               10.994998931884766,54.38194274902344 11.016456604003906,54.3791618347168
               10.994582176208496,54.37749481201172 10.979442596435547,54.38055419921875</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">14.225555419921875,53.92860412597656
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">14.225555419921875,53.92860412597656
               14.215831756591797,53.899993896484375 14.218887329101562,53.8690185546875
               14.193471908569336,53.874996185302734 14.082498550415039,53.873329162597656
               14.039373397827148,53.86978530883789 14.000276565551758,53.85179901123047
@@ -548,56 +541,56 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               13.965442657470703,54.07323455810547 14.001317024230957,54.06536102294922
               14.104999542236328,53.99860382080078 14.184026718139648,53.94638442993164
               14.214166641235352,53.9324951171875 14.225555419921875,53.92860412597656</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">8.678594589233398,47.69334411621094
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">8.678594589233398,47.69334411621094
               8.67395305633545,47.70285415649414 8.705485343933105,47.711036682128906
               8.710254669189453,47.696807861328125 8.678594589233398,47.69334411621094</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-        </gml:MultiPolygon>
-       </app:geom>
-      </app:Country>
-     </app:country>
-    </app:Place>
-   </app:placeOfBirth>
-   <app:dateOfDeath>1883-03-14</app:dateOfDeath>
-   <app:placeOfDeath>
-    <app:Place gml:id="PLACE_1">
-     <app:name>London</app:name>
-     <app:country>
-      <app:Country gml:id="COUNTRY_3">
-       <app:name>United Kingdom</app:name>
-       <app:geom>
-        <gml:MultiPolygon srsName="EPSG:4326">
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-0.8350000381469727,60.67333221435547
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                </gml:MultiPolygon>
+              </app:geom>
+            </app:Country>
+          </app:country>
+        </app:Place>
+      </app:placeOfBirth>
+      <app:dateOfDeath>1883-03-14</app:dateOfDeath>
+      <app:placeOfDeath>
+        <app:Place gml:id="PLACE_1">
+          <app:name>London</app:name>
+          <app:country>
+            <app:Country gml:id="COUNTRY_3">
+              <app:name>United Kingdom</app:name>
+              <app:geom>
+                <gml:MultiPolygon srsName="EPSG:4326">
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-0.8350000381469727,60.67333221435547
               -0.9355555772781372,60.6744384765625 -0.9620833992958069,60.685272216796875
               -0.9597222805023193,60.711387634277344 -0.9388889074325562,60.79444122314453
               -0.8806945085525513,60.84333038330078 -0.806111216545105,60.840553283691406
               -0.7702777981758118,60.82999801635742 -0.7576389312744141,60.81583023071289
               -0.7636111974716187,60.79332733154297 -0.8197222948074341,60.68888854980469
               -0.8350000381469727,60.67333221435547</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-1.104722261428833,60.48554992675781
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-1.104722261428833,60.48554992675781
               -1.127500057220459,60.48638153076172 -1.141389012336731,60.490966796875
               -1.1702778339385986,60.5272216796875 -1.1830556392669678,60.59888458251953
               -1.1813890933990479,60.62360382080078 -1.1783334016799927,60.63458251953125
@@ -606,15 +599,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -0.9938889145851135,60.722354888916016 -0.982638955116272,60.653465270996094
               -1.0184723138809204,60.51721954345703 -1.0254167318344116,60.50020217895508
               -1.104722261428833,60.48554992675781</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-1.1805555820465088,60.224998474121094
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-1.1805555820465088,60.224998474121094
               -1.1575000286102295,60.19471740722656 -1.1272224187850952,60.146942138671875
               -1.149861216545105,60.13249588012695 -1.166805624961853,60.13735580444336
               -1.1872222423553467,60.127220153808594 -1.2122223377227783,60.10277557373047
@@ -647,15 +640,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -1.165000081062317,60.260135650634766 -1.1953473091125488,60.267913818359375
               -1.1980557441711426,60.255828857421875 -1.1855556964874268,60.230552673339844
               -1.1805555820465088,60.224998474121094</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-2.68583345413208,59.184165954589844
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-2.68583345413208,59.184165954589844
               -2.692152976989746,59.192909240722656 -2.691527843475342,59.21235656738281
               -2.6844449043273926,59.22083282470703 -2.592778205871582,59.290550231933594
               -2.555555820465088,59.30305480957031 -2.534444808959961,59.30499267578125
@@ -663,15 +656,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -2.390139102935791,59.2813835144043 -2.495555877685547,59.2449951171875
               -2.5740280151367188,59.242218017578125 -2.6227779388427734,59.23485565185547
               -2.681389331817627,59.195831298828125 -2.68583345413208,59.184165954589844</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-2.8244447708129883,58.878883361816406
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-2.8244447708129883,58.878883361816406
               -2.869166851043701,58.89332580566406 -2.9700002670288086,58.93943786621094
               -3.008333683013916,58.93999481201172 -3.057222366333008,58.935829162597656
               -3.110555648803711,58.92805480957031 -3.119722366333008,58.92124938964844
@@ -686,15 +679,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -2.9472222328186035,58.998329162597656 -2.852222442626953,58.975555419921875
               -2.793056011199951,58.951385498046875 -2.755833625793457,58.91777038574219
               -2.8244447708129883,58.878883361816406</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-3.231389045715332,58.775550842285156
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-3.231389045715332,58.775550842285156
               -3.296597480773926,58.776939392089844 -3.432569742202759,58.8759651184082
               -3.4151391983032227,58.90735626220703 -3.3980560302734375,58.91722106933594
               -3.3491668701171875,58.92694091796875 -3.3355560302734375,58.92749786376953
@@ -702,15 +695,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -3.1355557441711426,58.802494049072266 -3.139305830001831,58.78569030761719
               -3.160277843475342,58.781105041503906 -3.180833339691162,58.77915954589844
               -3.231389045715332,58.775550842285156</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-2.9394445419311523,58.72999572753906
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-2.9394445419311523,58.72999572753906
               -2.9480557441711426,58.730552673339844 -2.957777976989746,58.734718322753906
               -2.9705557823181152,58.741943359375 -2.9800000190734863,58.750274658203125
               -3.032083511352539,58.82124710083008 -3.0072224140167236,58.832359313964844
@@ -718,15 +711,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -2.896667003631592,58.8376350402832 -2.8863892555236816,58.831939697265625
               -2.8772225379943848,58.82221984863281 -2.9161112308502197,58.732913970947266
               -2.9394445419311523,58.72999572753906</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">1.2624998092651367,51.101661682128906
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">1.2624998092651367,51.101661682128906
               1.2319443225860596,51.100830078125 1.2205555438995361,51.09971618652344
               1.1002776622772217,51.0736083984375 1.086944341659546,51.068603515625 1.0455553531646729,51.0494384765625
               1.0299999713897705,51.04083251953125 0.9977777004241943,51.01902389526367
@@ -1491,15 +1484,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               1.3983333110809326,51.16388702392578 1.390277624130249,51.15415954589844
               1.3688888549804688,51.135826110839844 1.3558331727981567,51.12763595581055
               1.2624998092651367,51.101661682128906</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-6.473889350891113,57.948326110839844
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-6.473889350891113,57.948326110839844
               -6.473333835601807,57.94221878051758 -6.541111946105957,57.915687561035156
               -6.574028015136719,57.91110610961914 -6.624583721160889,57.914859771728516
               -6.6530561447143555,57.91999816894531 -6.664306163787842,57.92555236816406
@@ -1555,15 +1548,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -6.406389236450195,58.105690002441406 -6.393333911895752,58.10166549682617
               -6.355278491973877,58.031524658203125 -6.386111259460449,58.00916290283203
               -6.457777976989746,57.968048095703125 -6.473889350891113,57.948326110839844</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-7.233612060546875,57.50360870361328
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-7.233612060546875,57.50360870361328
               -7.322083950042725,57.50624465942383 -7.327500343322754,57.527496337890625
               -7.325278282165527,57.544166564941406 -7.3477783203125,57.55082702636719
               -7.4116668701171875,57.56805419921875 -7.4555559158325195,57.56388854980469
@@ -1574,15 +1567,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -7.192917346954346,57.68708038330078 -7.0686116218566895,57.636592864990234
               -7.150694847106934,57.5122184753418 -7.168334007263184,57.50804901123047
               -7.233612060546875,57.50360870361328</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-5.847500801086426,57.10527038574219
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-5.847500801086426,57.10527038574219
               -5.859167098999023,57.0927734375 -5.891111373901367,57.062496185302734
               -5.928055763244629,57.038604736328125 -5.939444541931152,57.035552978515625
               -5.9800004959106445,57.026939392089844 -5.998333930969238,57.02360534667969
@@ -1619,30 +1612,30 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -5.664236545562744,57.20575714111328 -5.803611755371094,57.116661071777344
               -5.816389083862305,57.11027526855469 -5.830000877380371,57.106109619140625
               -5.847500801086426,57.10527038574219</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-6.051111221313477,57.324440002441406
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-6.051111221313477,57.324440002441406
               -6.0657639503479,57.327354431152344 -6.079583644866943,57.35096740722656
               -6.078333854675293,57.3941650390625 -6.073056221008301,57.43054962158203
               -6.0644450187683105,57.45291519165039 -6.029722690582275,57.49319076538086
               -6.003055572509766,57.50860595703125 -5.977570056915283,57.491241455078125
               -5.994722843170166,57.34305191040039 -6.006389617919922,57.334999084472656
               -6.026945114135742,57.32860565185547 -6.051111221313477,57.324440002441406</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-7.283333778381348,57.397499084472656
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-7.283333778381348,57.397499084472656
               -7.3169450759887695,57.400550842285156 -7.378055572509766,57.42027282714844
               -7.388055801391602,57.42388153076172 -7.408542156219482,57.448673248291016
               -7.402778148651123,57.46812057495117 -7.354444980621338,57.48888397216797
@@ -1650,15 +1643,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -7.244167327880859,57.47638702392578 -7.203611373901367,57.459163665771484
               -7.203333854675293,57.41693878173828 -7.242083549499512,57.402915954589844
               -7.268889427185059,57.398887634277344 -7.283333778381348,57.397499084472656</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-7.230278015136719,57.09471893310547
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-7.230278015136719,57.09471893310547
               -7.265556335449219,57.103607177734375 -7.287222862243652,57.106109619140625
               -7.3033342361450195,57.106109619140625 -7.333611488342285,57.099998474121094
               -7.359583854675293,57.099578857421875 -7.384028434753418,57.11166000366211
@@ -1671,30 +1664,30 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -7.288056373596191,57.32249450683594 -7.259166717529297,57.152496337890625
               -7.214722633361816,57.11444091796875 -7.215278625488281,57.11027526855469
               -7.225833892822266,57.09693908691406 -7.230278015136719,57.09471893310547</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-7.466944694519043,56.940826416015625
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-7.466944694519043,56.940826416015625
               -7.475277900695801,56.940826416015625 -7.515277862548828,56.94305419921875
               -7.530555725097656,56.94416046142578 -7.554862022399902,56.949440002441406
               -7.560278415679932,56.95791244506836 -7.553611755371094,56.96638488769531
               -7.442639350891113,57.054996490478516 -7.4166669845581055,57.042633056640625
               -7.377083778381348,56.980411529541016 -7.436944961547852,56.943885803222656
               -7.466944694519043,56.940826416015625</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-6.317500114440918,56.934165954589844
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-6.317500114440918,56.934165954589844
               -6.3280558586120605,56.93486022949219 -6.361945152282715,56.946388244628906
               -6.450972557067871,57.003326416015625 -6.415555953979492,57.03277587890625
               -6.393333435058594,57.04388427734375 -6.384166717529297,57.04804992675781
@@ -1704,15 +1697,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -6.255972385406494,56.96235656738281 -6.266667366027832,56.95166015625 -6.27833366394043,56.94444274902344
               -6.298611640930176,56.937217712402344 -6.310556411743164,56.93444061279297
               -6.317500114440918,56.934165954589844</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-6.6783342361450195,56.55554962158203
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-6.6783342361450195,56.55554962158203
               -6.685833930969238,56.556663513183594 -6.69444465637207,56.56944274902344
               -6.697500705718994,56.581661224365234 -6.613889694213867,56.634437561035156
               -6.57388973236084,56.65332794189453 -6.545833587646484,56.666107177734375
@@ -1720,15 +1713,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -6.456007480621338,56.68277359008789 -6.4850006103515625,56.63861083984375
               -6.497361660003662,56.62749481201172 -6.576666831970215,56.58443832397461
               -6.589167594909668,56.579994201660156 -6.6783342361450195,56.55554962158203</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-6.116666793823242,56.65027618408203
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-6.116666793823242,56.65027618408203
               -6.068889617919922,56.638885498046875 -6.056944847106934,56.635826110839844
               -6.039444923400879,56.622772216796875 -5.994584083557129,56.581661224365234
               -5.9727783203125,56.54763412475586 -5.856389045715332,56.5191650390625 -5.79722261428833,56.51319122314453
@@ -1761,15 +1754,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -6.325278282165527,56.53944396972656 -6.337778091430664,56.546661376953125
               -6.321528434753418,56.601524353027344 -6.186667442321777,56.64305114746094
               -6.137222766876221,56.65304946899414 -6.116666793823242,56.65027618408203</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-6.892778396606445,56.43860626220703
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-6.892778396606445,56.43860626220703
               -6.925000190734863,56.43999481201172 -6.972222328186035,56.44916534423828
               -6.989722728729248,56.496246337890625 -6.973333358764648,56.50804901123047
               -6.958056449890137,56.51305389404297 -6.760972499847412,56.54874801635742
@@ -1778,15 +1771,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -6.774167060852051,56.515830993652344 -6.792639255523682,56.51499557495117
               -6.803889274597168,56.5122184753418 -6.879167079925537,56.47194290161133
               -6.892778396606445,56.43860626220703</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-5.971944808959961,55.788330078125
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-5.971944808959961,55.788330078125
               -6.0298614501953125,55.7923583984375 -6.053055763244629,55.80027770996094
               -6.066805839538574,55.80610656738281 -6.074583530426025,55.81360626220703
               -6.079167366027832,55.82666015625 -6.087916851043701,55.87957763671875 -6.084444999694824,55.8941650390625
@@ -1800,15 +1793,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -5.749028205871582,56.060272216796875 -5.845833778381348,55.949440002441406
               -5.904167175292969,55.88249969482422 -5.9469451904296875,55.829994201660156
               -5.971944808959961,55.788330078125</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-6.274444580078125,55.572776794433594
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-6.274444580078125,55.572776794433594
               -6.300556182861328,55.576942443847656 -6.324444770812988,55.58679962158203
               -6.321389675140381,55.61708068847656 -6.285833358764648,55.70722198486328
               -6.252500534057617,55.76923370361328 -6.2622222900390625,55.777217864990234
@@ -1830,15 +1823,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -6.030278205871582,55.720550537109375 -6.026111602783203,55.67930221557617
               -6.038333892822266,55.66999816894531 -6.076666831970215,55.649993896484375
               -6.228889465332031,55.59221649169922 -6.274444580078125,55.572776794433594</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-5.0230560302734375,55.72138214111328
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-5.0230560302734375,55.72138214111328
               -5.032500267028809,55.72319030761719 -5.120417594909668,55.77874755859375
               -5.199583530426025,55.87582778930664 -5.206319808959961,55.89665985107422
               -5.174931049346924,55.91895294189453 -5.160555839538574,55.91527557373047
@@ -1846,15 +1839,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -5.007222652435303,55.779579162597656 -5.005278587341309,55.76777648925781
               -5.008055686950684,55.7287483215332 -5.016388893127441,55.72193908691406
               -5.0230560302734375,55.72138214111328</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-5.171944618225098,55.429443359375
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-5.171944618225098,55.429443359375
               -5.232292175292969,55.431034088134766 -5.283333778381348,55.446937561035156
               -5.292778015136719,55.45111083984375 -5.341250896453857,55.47610855102539
               -5.357222557067871,55.50416564941406 -5.4005560874938965,55.60472106933594
@@ -1868,15 +1861,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -5.084583759307861,55.55485916137695 -5.075972557067871,55.457496643066406
               -5.093334197998047,55.44166564941406 -5.103611946105957,55.43860626220703
               -5.171944618225098,55.429443359375</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-8.171666145324707,54.4638786315918
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-8.171666145324707,54.4638786315918
               -8.046945571899414,54.50721740722656 -7.950834274291992,54.53221893310547
               -7.833611488342285,54.55388641357422 -7.752223014831543,54.594444274902344
               -7.777500152587891,54.62693786621094 -7.852361679077148,54.63388442993164
@@ -1962,15 +1955,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -8.030279159545898,54.357215881347656 -8.045278549194336,54.36138153076172
               -8.05583381652832,54.36638641357422 -8.065555572509766,54.372772216796875
               -8.158056259155273,54.44027328491211 -8.171666145324707,54.4638786315918</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-4.351388931274414,53.12444305419922
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-4.351388931274414,53.12444305419922
               -4.402222633361816,53.125831604003906 -4.478889465332031,53.176666259765625
               -4.494444847106934,53.18943786621094 -4.567500114440918,53.27333068847656
               -4.568056106567383,53.38972091674805 -4.560000419616699,53.39665985107422
@@ -1983,15 +1976,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -4.090000152587891,53.25499725341797 -4.101388931274414,53.247772216796875
               -4.218055725097656,53.20027160644531 -4.325555801391602,53.144996643066406
               -4.351388931274414,53.12444305419922</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">0.8991665840148926,51.357215881347656
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">0.8991665840148926,51.357215881347656
               0.8852777481079102,51.35832977294922 0.7843054533004761,51.3699951171875
               0.7627776861190796,51.37833023071289 0.7452777624130249,51.394439697265625
               0.7379165887832642,51.40430450439453 0.7405555248260498,51.429718017578125
@@ -2000,15 +1993,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               0.9065276980400085,51.417911529541016 0.9336110353469849,51.39624786376953
               0.943888783454895,51.38499450683594 0.946180522441864,51.37339782714844
               0.9047222137451172,51.358055114746094 0.8991665840148926,51.357215881347656</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-1.2825000286102295,50.578887939453125
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-1.2825000286102295,50.578887939453125
               -1.3675000667572021,50.61860656738281 -1.4730556011199951,50.66082763671875
               -1.4963890314102173,50.66791534423828 -1.5122222900390625,50.66888427734375
               -1.5233335494995117,50.66749572753906 -1.538055658340454,50.663604736328125
@@ -2019,55 +2012,55 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -1.1683335304260254,50.60194396972656 -1.1913890838623047,50.593605041503906
               -1.215277910232544,50.58721923828125 -1.2416667938232422,50.582496643066406
               -1.2825000286102295,50.578887939453125</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-        </gml:MultiPolygon>
-       </app:geom>
-      </app:Country>
-     </app:country>
-    </app:Place>
-   </app:placeOfDeath>
-   <app:friend xlink:href="#PHILOSOPHER_2" />
-  </app:Philosopher>
- </gml:featureMember>
- <gml:featureMember>
-  <app:Philosopher gml:id="PHILOSOPHER_2">
-   <app:id>2</app:id>
-   <app:name>Friedrich Engels</app:name>
-   <app:sex>m</app:sex>
-   <app:dateOfBirth>1820-11-28</app:dateOfBirth>
-   <app:placeOfBirth>
-    <app:Place gml:id="PLACE_3">
-     <app:name>Barmen</app:name>
-     <app:country xlink:href="#COUNTRY_2" />
-    </app:Place>
-   </app:placeOfBirth>
-   <app:dateOfDeath>1895-08-05</app:dateOfDeath>
-   <app:placeOfDeath xlink:href="#PLACE_1" />
-   <app:friend xlink:href="#PHILOSOPHER_1" />
-  </app:Philosopher>
- </gml:featureMember>
- <gml:featureMember>
-  <app:Philosopher gml:id="PHILOSOPHER_3">
-   <app:id>3</app:id>
-   <app:name>Jean-Jacques Rousseau</app:name>
-   <app:sex>m</app:sex>
-   <app:dateOfBirth>1712-06-28</app:dateOfBirth>
-   <app:placeOfBirth>
-    <app:Place gml:id="PLACE_4">
-     <app:name>Genf</app:name>
-     <app:country>
-      <app:Country gml:id="COUNTRY_4">
-       <app:name>Switzerland</app:name>
-       <app:geom>
-        <gml:MultiPolygon srsName="EPSG:4326">
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">6.446944236755371,46.839439392089844
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                </gml:MultiPolygon>
+              </app:geom>
+            </app:Country>
+          </app:country>
+        </app:Place>
+      </app:placeOfDeath>
+      <app:friend xlink:href="#PHILOSOPHER_2"/>
+    </app:Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <app:Philosopher gml:id="PHILOSOPHER_2">
+      <app:id>2</app:id>
+      <app:name>Friedrich Engels</app:name>
+      <app:sex>m</app:sex>
+      <app:dateOfBirth>1820-11-28</app:dateOfBirth>
+      <app:placeOfBirth>
+        <app:Place gml:id="PLACE_3">
+          <app:name>Barmen</app:name>
+          <app:country xlink:href="#COUNTRY_2"/>
+        </app:Place>
+      </app:placeOfBirth>
+      <app:dateOfDeath>1895-08-05</app:dateOfDeath>
+      <app:placeOfDeath xlink:href="#PLACE_1"/>
+      <app:friend xlink:href="#PHILOSOPHER_1"/>
+    </app:Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <app:Philosopher gml:id="PHILOSOPHER_3">
+      <app:id>3</app:id>
+      <app:name>Jean-Jacques Rousseau</app:name>
+      <app:sex>m</app:sex>
+      <app:dateOfBirth>1712-06-28</app:dateOfBirth>
+      <app:placeOfBirth>
+        <app:Place gml:id="PLACE_4">
+          <app:name>Genf</app:name>
+          <app:country>
+            <app:Country gml:id="COUNTRY_4">
+              <app:name>Switzerland</app:name>
+              <app:geom>
+                <gml:MultiPolygon srsName="EPSG:4326">
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">6.446944236755371,46.839439392089844
               6.460277557373047,46.89582824707031 6.528332710266113,46.97166442871094
               6.566388130187988,46.97999572753906 6.6324992179870605,46.999996185302734
               6.678333282470703,47.03416442871094 6.699443817138672,47.06388854980469
@@ -2195,37 +2188,37 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               6.1286797523498535,46.588050842285156 6.269165992736816,46.682777404785156
               6.3587493896484375,46.716732025146484 6.434999465942383,46.75804901123047
               6.456874370574951,46.78145217895508 6.446944236755371,46.839439392089844</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-           <gml:innerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">8.710254669189453,47.696807861328125
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                      <gml:innerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">8.710254669189453,47.696807861328125
               8.705485343933105,47.711036682128906 8.67395305633545,47.70285415649414
               8.678594589233398,47.69334411621094 8.710254669189453,47.696807861328125</gml:coordinates>
-            </gml:LinearRing>
-           </gml:innerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-        </gml:MultiPolygon>
-       </app:geom>
-      </app:Country>
-     </app:country>
-    </app:Place>
-   </app:placeOfBirth>
-   <app:dateOfDeath>1778-07-02</app:dateOfDeath>
-   <app:placeOfDeath>
-    <app:Place gml:id="PLACE_6">
-     <app:name>Paris</app:name>
-     <app:country>
-      <app:Country gml:id="COUNTRY_1">
-       <app:name>France</app:name>
-       <app:geom>
-        <gml:MultiPolygon srsName="EPSG:4326">
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">6.243747234344482,46.31550979614258
+                        </gml:LinearRing>
+                      </gml:innerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                </gml:MultiPolygon>
+              </app:geom>
+            </app:Country>
+          </app:country>
+        </app:Place>
+      </app:placeOfBirth>
+      <app:dateOfDeath>1778-07-02</app:dateOfDeath>
+      <app:placeOfDeath>
+        <app:Place gml:id="PLACE_6">
+          <app:name>Paris</app:name>
+          <app:country>
+            <app:Country gml:id="COUNTRY_1">
+              <app:name>France</app:name>
+              <app:geom>
+                <gml:MultiPolygon srsName="EPSG:4326">
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">6.243747234344482,46.31550979614258
               6.229999542236328,46.330204010009766 6.244860649108887,46.35638427734375
               6.295555114746094,46.3941650390625 6.319721698760986,46.4041633605957 6.491944313049316,46.45304870605469
               6.515138626098633,46.458465576171875 6.633610725402832,46.46416473388672
@@ -2659,59 +2652,59 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               6.133263111114502,46.149784088134766 6.187499523162842,46.172080993652344
               6.2455549240112305,46.21833038330078 6.271944046020508,46.261940002441406
               6.243747234344482,46.31550979614258</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-3.576666831970215,48.80388641357422
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-3.576666831970215,48.80388641357422
               -3.5822224617004395,48.80388641357422 -3.582777976989746,48.807220458984375
               -3.5797224044799805,48.809715270996094 -3.5755558013916016,48.81249237060547
               -3.570833683013916,48.812774658203125 -3.5652780532836914,48.81166076660156
               -3.563333511352539,48.80860900878906 -3.5661115646362305,48.80583190917969
               -3.576666831970215,48.80388641357422</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-3.0858335494995117,47.28777313232422
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-3.0858335494995117,47.28777313232422
               -3.1083335876464844,47.295555114746094 -3.118333339691162,47.29804992675781
               -3.1668057441711426,47.303466796875 -3.1888890266418457,47.302772521972656
               -3.2081947326660156,47.30055236816406 -3.219444751739502,47.30458068847656
               -3.2383334636688232,47.31694030761719 -3.2595834732055664,47.37173080444336
               -3.2469444274902344,47.39166259765625 -3.0636112689971924,47.31443786621094
               -3.081666946411133,47.28944396972656 -3.0858335494995117,47.28777313232422</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-1.2841668128967285,46.155548095703125
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-1.2841668128967285,46.155548095703125
               -1.2994446754455566,46.15666198730469 -1.3186111450195312,46.16082763671875
               -1.5069446563720703,46.20416259765625 -1.5205557346343994,46.20915985107422
               -1.532916784286499,46.216522216796875 -1.5513889789581299,46.246036529541016
               -1.5030555725097656,46.25555419921875 -1.4922223091125488,46.25666046142578
               -1.4773613214492798,46.25624465942383 -1.2916667461395264,46.19805145263672
               -1.2579861879348755,46.15968322753906 -1.2841668128967285,46.155548095703125</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">-1.211944580078125,45.80693817138672
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">-1.211944580078125,45.80693817138672
               -1.2397222518920898,45.85888671875 -1.250833511352539,45.87360382080078
               -1.2840278148651123,45.90666198730469 -1.316666841506958,45.923606872558594
               -1.3391668796539307,45.935829162597656 -1.365555763244629,45.95027160644531
@@ -2720,15 +2713,15 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               -1.2733335494995117,45.995826721191406 -1.233055591583252,45.9647216796875
               -1.1712499856948853,45.89131546020508 -1.1819446086883545,45.84777069091797
               -1.19118070602417,45.826175689697266 -1.211944580078125,45.80693817138672</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-         <gml:polygonMember>
-          <gml:Polygon srsName="EPSG:4326">
-           <gml:outerBoundaryIs>
-            <gml:LinearRing>
-             <gml:coordinates cs="," decimal="." ts=" ">8.659442901611328,42.008331298828125
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                  <gml:polygonMember>
+                    <gml:Polygon srsName="EPSG:4326">
+                      <gml:outerBoundaryIs>
+                        <gml:LinearRing>
+                          <gml:coordinates cs="," decimal="." ts=" ">8.659442901611328,42.008331298828125
               8.743193626403809,42.04936981201172 8.681110382080078,42.10638427734375
               8.638887405395508,42.120277404785156 8.608331680297852,42.132774353027344
               8.587221145629883,42.169715881347656 8.570554733276367,42.22166442871094
@@ -2769,76 +2762,76 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
               8.590970993041992,41.96353530883789 8.613609313964844,41.97083282470703
               8.640554428100586,41.968746185302734 8.666387557983398,41.984649658203125
               8.659442901611328,42.008331298828125</gml:coordinates>
-            </gml:LinearRing>
-           </gml:outerBoundaryIs>
-          </gml:Polygon>
-         </gml:polygonMember>
-        </gml:MultiPolygon>
-       </app:geom>
-      </app:Country>
-     </app:country>
-    </app:Place>
-   </app:placeOfDeath>
-  </app:Philosopher>
- </gml:featureMember>
- <gml:featureMember>
-  <app:Philosopher gml:id="PHILOSOPHER_4">
-   <app:id>4</app:id>
-   <app:name>Voltaire</app:name>
-   <app:sex>m</app:sex>
-   <app:dateOfBirth>1694-11-21</app:dateOfBirth>
-   <app:placeOfBirth xlink:href="#PLACE_6" />
-   <app:dateOfDeath>1778-05-30</app:dateOfDeath>
-   <app:placeOfDeath xlink:href="#PLACE_6" />
-  </app:Philosopher>
- </gml:featureMember>
- <gml:featureMember>
-  <app:Philosopher gml:id="PHILOSOPHER_5">
-   <app:id>5</app:id>
-   <app:name>Simone de Beauvoir</app:name>
-   <app:sex>f</app:sex>
-   <app:dateOfBirth>1908-01-09</app:dateOfBirth>
-   <app:placeOfBirth xlink:href="#PLACE_6" />
-   <app:dateOfDeath>1986-04-14</app:dateOfDeath>
-   <app:placeOfDeath xlink:href="#PLACE_6" />
-   <app:friend>
-    <app:Philosopher gml:id="PHILOSOPHER_6">
-     <app:id>6</app:id>
-     <app:name>Jean-Paul Sartre</app:name>
-     <app:sex>m</app:sex>
-     <app:subject>existentialism</app:subject>
-     <app:subject>freedom</app:subject>
-     <app:dateOfBirth>1905-06-21</app:dateOfBirth>
-     <app:placeOfBirth xlink:href="#PLACE_6" />
-     <app:dateOfDeath>1980-04-15</app:dateOfDeath>
-     <app:placeOfDeath xlink:href="#PLACE_6" />
-     <app:friend xlink:href="#PHILOSOPHER_5" />
-     <app:friend>
-      <app:Philosopher gml:id="PHILOSOPHER_7">
-       <app:id>7</app:id>
-       <app:name>Albert Camus</app:name>
-       <app:sex>m</app:sex>
-       <app:subject>existentialism</app:subject>
-       <app:dateOfBirth>1913-11-07</app:dateOfBirth>
-       <app:placeOfBirth>
-        <app:Place gml:id="PLACE_7">
-         <app:name>Mondovi</app:name>
+                        </gml:LinearRing>
+                      </gml:outerBoundaryIs>
+                    </gml:Polygon>
+                  </gml:polygonMember>
+                </gml:MultiPolygon>
+              </app:geom>
+            </app:Country>
+          </app:country>
         </app:Place>
-       </app:placeOfBirth>
-       <app:dateOfDeath>1960-01-04</app:dateOfDeath>
-       <app:placeOfDeath>
-        <app:Place gml:id="PLACE_8">
-         <app:name>Sens</app:name>
-         <app:country xlink:href="#COUNTRY_4" />
-        </app:Place>
-       </app:placeOfDeath>
-       <app:friend xlink:href="#PHILOSOPHER_6" />
-      </app:Philosopher>
-     </app:friend>
+      </app:placeOfDeath>
     </app:Philosopher>
-   </app:friend>
-  </app:Philosopher>
- </gml:featureMember>
- <gml:featureMember xlink:href="#PHILOSOPHER_6" />
- <gml:featureMember xlink:href="#PHILOSOPHER_7" />
+  </gml:featureMember>
+  <gml:featureMember>
+    <app:Philosopher gml:id="PHILOSOPHER_4">
+      <app:id>4</app:id>
+      <app:name>Voltaire</app:name>
+      <app:sex>m</app:sex>
+      <app:dateOfBirth>1694-11-21</app:dateOfBirth>
+      <app:placeOfBirth xlink:href="#PLACE_6"/>
+      <app:dateOfDeath>1778-05-30</app:dateOfDeath>
+      <app:placeOfDeath xlink:href="#PLACE_6"/>
+    </app:Philosopher>
+  </gml:featureMember>
+  <gml:featureMember>
+    <app:Philosopher gml:id="PHILOSOPHER_5">
+      <app:id>5</app:id>
+      <app:name>Simone de Beauvoir</app:name>
+      <app:sex>f</app:sex>
+      <app:dateOfBirth>1908-01-09</app:dateOfBirth>
+      <app:placeOfBirth xlink:href="#PLACE_6"/>
+      <app:dateOfDeath>1986-04-14</app:dateOfDeath>
+      <app:placeOfDeath xlink:href="#PLACE_6"/>
+      <app:friend>
+        <app:Philosopher gml:id="PHILOSOPHER_6">
+          <app:id>6</app:id>
+          <app:name>Jean-Paul Sartre</app:name>
+          <app:sex>m</app:sex>
+          <app:subject>existentialism</app:subject>
+          <app:subject>freedom</app:subject>
+          <app:dateOfBirth>1905-06-21</app:dateOfBirth>
+          <app:placeOfBirth xlink:href="#PLACE_6"/>
+          <app:dateOfDeath>1980-04-15</app:dateOfDeath>
+          <app:placeOfDeath xlink:href="#PLACE_6"/>
+          <app:friend xlink:href="#PHILOSOPHER_5"/>
+          <app:friend>
+            <app:Philosopher gml:id="PHILOSOPHER_7">
+              <app:id>7</app:id>
+              <app:name>Albert Camus</app:name>
+              <app:sex>m</app:sex>
+              <app:subject>existentialism</app:subject>
+              <app:dateOfBirth>1913-11-07</app:dateOfBirth>
+              <app:placeOfBirth>
+                <app:Place gml:id="PLACE_7">
+                  <app:name>Mondovi</app:name>
+                </app:Place>
+              </app:placeOfBirth>
+              <app:dateOfDeath>1960-01-04</app:dateOfDeath>
+              <app:placeOfDeath>
+                <app:Place gml:id="PLACE_8">
+                  <app:name>Sens</app:name>
+                  <app:country xlink:href="#COUNTRY_4"/>
+                </app:Place>
+              </app:placeOfDeath>
+              <app:friend xlink:href="#PHILOSOPHER_6"/>
+            </app:Philosopher>
+          </app:friend>
+        </app:Philosopher>
+      </app:friend>
+    </app:Philosopher>
+  </gml:featureMember>
+  <gml:featureMember xlink:href="#PHILOSOPHER_6"/>
+  <gml:featureMember xlink:href="#PHILOSOPHER_7"/>
 </gml:FeatureCollection>
