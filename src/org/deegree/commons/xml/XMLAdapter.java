@@ -1124,4 +1124,20 @@ public class XMLAdapter {
             }
         }
     }
+    
+    public static String getAttributeValue (XMLStreamReader xmlStream, String localName, String defaultValue) {
+        String attrValue = xmlStream.getAttributeValue( null, localName );
+        if (attrValue == null || attrValue.length() == 0) {
+            attrValue = defaultValue;
+        }
+        return attrValue;
+    }
+
+    public static String getAttributeValue (XMLStreamReader xmlStream, QName name, String defaultValue) {
+        String attrValue = xmlStream.getAttributeValue( name.getNamespaceURI(), name.getLocalPart() );
+        if (attrValue == null || attrValue.length() == 0) {
+            attrValue = defaultValue;
+        }
+        return attrValue;
+    }    
 }
