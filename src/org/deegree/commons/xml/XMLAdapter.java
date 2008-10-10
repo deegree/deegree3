@@ -1116,6 +1116,10 @@ public class XMLAdapter {
 
         int openElements = 1;
         while ( openElements > 0 ) {
+            // this should not be necessary, but IS
+            if (!xmlStream.hasNext()) {
+                throw new NoSuchElementException ();
+            }
             int event = xmlStream.next();
             if ( event == END_ELEMENT ) {
                 openElements--;

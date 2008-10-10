@@ -70,9 +70,11 @@ import org.deegree.model.geometry.multi.MultiGeometry;
 import org.deegree.model.geometry.multi.MultiPoint;
 import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
+import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.Curve.ORIENTATION;
 import org.deegree.model.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -274,10 +276,10 @@ public class GML311GeometryAdapter extends XMLAdapter {
             throw new XMLParsingException( this, xmlStream, msg );
         } else if ( name.equals( "CompositeCurve" ) ) {
             String msg = "Parsing of 'gml:CompositeCurve' elements is not implemented yet.";
-            throw new XMLParsingException( this, xmlStream, msg );            
+            throw new XMLParsingException( this, xmlStream, msg );
         } else if ( name.equals( "OrientableCurve" ) ) {
             String msg = "Parsing of 'gml:OrientableCurve' elements is not implemented yet.";
-            throw new XMLParsingException( this, xmlStream, msg );            
+            throw new XMLParsingException( this, xmlStream, msg );
         } else {
             String msg = "Invalid GML geometry: '" + xmlStream.getName()
                          + "' is not a valid substitution for '_Curve'.";
@@ -313,15 +315,15 @@ public class GML311GeometryAdapter extends XMLAdapter {
         if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
             String name = xmlStream.getLocalName();
             if ( "pos".equals( name ) ) {
-                double[] coords = parseDoubleList( xmlStream );
+                double[] coords = parsePos( xmlStream );
                 point = geomFac.createPoint( gid, coords, lookupCRS( srsName, xmlStream ) );
             } else if ( "coordinates".equals( name ) ) {
-                double[][] coordTuples = parseCoordinatesType( xmlStream );
-                if ( coordTuples.length != 1 ) {
+                List<Point> points = parseCoordinates( xmlStream, srsName );
+                if ( points.size() != 1 ) {
                     String msg = "A gml:Point element must contain exactly one tuple of coordinates.";
                     throw new XMLParsingException( this, xmlStream, msg );
                 }
-                point = geomFac.createPoint( gid, coordTuples[0], lookupCRS( srsName, xmlStream ) );
+                point = points.get( 0 );
             } else if ( "coord".equals( name ) ) {
                 // deprecated since GML 3.0, only included for backward compatibility
                 double[] coords = parseCoordType( xmlStream );
@@ -340,27 +342,94 @@ public class GML311GeometryAdapter extends XMLAdapter {
         skipElement( xmlStream );
         return point;
     }
-    
+
     /**
-     * Returns the object representation of a (&lt;gml:LineString&gt;) element. Consumes all corresponding events from the
-     * given <code>XMLStream</code>.
+     * Returns the object representation of a (&lt;gml:LineString&gt;) element. Consumes all corresponding events from
+     * the given <code>XMLStream</code>.
      * 
      * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:LineString&gt;), afterwards points at
-     *            the next event after the <code>END_ELEMENT</code> (&lt;/gml:LineString&gt;)
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:LineString&gt;), afterwards points
+     *            at the next event after the <code>END_ELEMENT</code> (&lt;/gml:LineString&gt;)
      * @param defaultSrsName
      *            default srs for the geometry, this is only used if the "gml:LineString" has no <code>srsName</code>
      *            attribute
      * @return corresponding {@link Curve} object
      * @throws XMLParsingException
      * @throws XMLStreamException
-     */    
-    public Curve parseLineString( XMLStreamReader xmlStream, String defaultSrsName ) {
-        // TODO Auto-generated method stub
-        return null;
-    }    
+     */
+    public Curve parseLineString( XMLStreamReader xmlStream, String defaultSrsName )
+                            throws XMLStreamException {
 
-    private double[] parseDoubleList( XMLStreamReader xmlStream )
+        String gid = parseGeometryId( xmlStream );
+        String srsName = determineCurrentSrsName( xmlStream, defaultSrsName );
+
+        List<Point> points = null;
+        if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
+            String name = xmlStream.getLocalName();
+            if ( "posList".equals( name ) ) {
+                points = parsePosList( xmlStream, srsName );
+                skipElement( xmlStream );
+            } else if ( "coordinates".equals( name ) ) {
+                points = parseCoordinates( xmlStream, srsName );
+                skipElement( xmlStream );
+            } else {
+                points = new LinkedList<Point>();
+                do {
+                    if ( "pos".equals( name ) ) {
+                        double[] coords = parsePos( xmlStream );
+                        points.add( geomFac.createPoint( gid, coords, lookupCRS( srsName, xmlStream ) ) );
+                    } else if ( "pointProperty".equals( name ) || "pointRep".equals( name ) ) {
+                        points.add( parsePointProperty( xmlStream, srsName));
+                    } else {
+                        String msg = "Error in 'gml:LineString' element.";
+                        throw new XMLParsingException( this, xmlStream, msg );
+                    }
+                } while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT );
+                if ( xmlStream.getEventType() != XMLStreamConstants.END_ELEMENT ) {
+                    // ensure that the stream points to the "gml:LineString" end element event
+                    skipElement( xmlStream );
+                }
+            }
+        }
+
+        if ( points.size() < 2 ) {
+            String msg = "Error in 'gml:LineString' element. Must consist of two points at least.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        }
+
+        CurveSegment curveSegment = geomFac.createCurveSegment( points );
+        return geomFac.createCurve( gid, new CurveSegment[] { curveSegment }, ORIENTATION.positive,
+                                    lookupCRS( srsName, xmlStream ) );
+    }
+
+    /**
+     * TODO handled xlinked content ("xlink:href")
+     * 
+     * @param xmlStream
+     * @return
+     * @throws XMLStreamException
+     */
+    private Point parsePointProperty( XMLStreamReader xmlStream, String defaultSrsName )
+                            throws XMLStreamException {
+        System.out.println (getCurrentEventInfo( xmlStream ));
+        Point point = null;
+        if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
+            System.out.println (getCurrentEventInfo( xmlStream ));
+            // must be a 'gml:Point' element
+            if ( !xmlStream.getLocalName().equals( "Point" ) ) {
+                String msg = "Error in 'gml:pointProperty' element. Expected a 'gml:Point' element.";
+                throw new XMLParsingException( this, xmlStream, msg );
+            }
+            point = parsePoint( xmlStream, defaultSrsName );
+        } else {
+            String msg = "Error in 'gml:pointProperty' element. Expected a 'gml:Point' element.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        }
+        skipElement( xmlStream );
+        return point;
+    }
+
+    private double[] parsePos( XMLStreamReader xmlStream )
                             throws XMLParsingException, XMLStreamException {
         String s = xmlStream.getElementText();
         // don't use String.split(regex) here (speed)
@@ -381,8 +450,49 @@ public class GML311GeometryAdapter extends XMLAdapter {
         return doubles;
     }
 
-    private double[][] parseCoordinatesType( XMLStreamReader xmlStream )
+    private List<Point> parsePosList( XMLStreamReader xmlStream, String defaultSrsName )
                             throws XMLParsingException, XMLStreamException {
+
+        CoordinateSystem crs = lookupCRS( defaultSrsName, xmlStream );
+        int coordDim = crs.getDimension();
+
+        String s = xmlStream.getElementText();
+        // don't use String.split(regex) here (speed)
+        StringTokenizer st = new StringTokenizer( s );
+        List<String> tokens = new ArrayList<String>();
+        while ( st.hasMoreTokens() ) {
+            tokens.add( st.nextToken() );
+        }
+        int numCoords = tokens.size();
+        if ( numCoords % coordDim != 0 ) {
+            String msg = "Cannot parse 'gml:posList': contains " + tokens.size()
+                         + " values, but coordinate dimension is " + coordDim + ". This does not match.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        }
+
+        int numPoints = numCoords / coordDim;
+        List<Point> points = new ArrayList<Point>();
+
+        int tokenPos = 0;
+        for ( int i = 0; i < numPoints; i++ ) {
+            double[] pointCoords = new double[coordDim];
+            for ( int j = 0; j < coordDim; j++ ) {
+                try {
+                    pointCoords[j] = Double.parseDouble( tokens.get( tokenPos++ ) );
+                } catch ( NumberFormatException e ) {
+                    String msg = "Value '" + tokens.get( i ) + "' cannot be parsed as a double.";
+                    throw new XMLParsingException( this, xmlStream, msg );
+                }
+            }
+            points.add( geomFac.createPoint( null, pointCoords, crs ) );
+        }
+        return points;
+    }
+
+    private List<Point> parseCoordinates( XMLStreamReader xmlStream, String defaultSrsName )
+                            throws XMLParsingException, XMLStreamException {
+
+        CoordinateSystem crs = lookupCRS( defaultSrsName, xmlStream );
 
         String decimalSeparator = getAttributeValue( xmlStream, "decimal", "." );
         if ( !".".equals( decimalSeparator ) ) {
@@ -401,8 +511,8 @@ public class GML311GeometryAdapter extends XMLAdapter {
             tuples.add( tupleTokenizer.nextToken() );
         }
 
-        double[][] coordinateTuples = new double[tuples.size()][];
-        for ( int i = 0; i < coordinateTuples.length; i++ ) {
+        List<Point> points = new ArrayList<Point>( tuples.size() );
+        for ( int i = 0; i < tuples.size(); i++ ) {
             StringTokenizer coordinateTokenizer = new StringTokenizer( tuples.get( i ), coordinateSeparator );
             List<String> tokens = new ArrayList<String>();
             while ( coordinateTokenizer.hasMoreTokens() ) {
@@ -417,9 +527,9 @@ public class GML311GeometryAdapter extends XMLAdapter {
                     throw new XMLParsingException( this, xmlStream, msg );
                 }
             }
-            coordinateTuples[i] = tuple;
+            points.add( geomFac.createPoint( null, tuple, crs ) );
         }
-        return coordinateTuples;
+        return points;
     }
 
     private static QName GML_X = new QName( GML_NS, "X" );

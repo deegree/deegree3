@@ -7,12 +7,12 @@
   </pointRep>
   <pointRep>
     <Point gml:id="P2">
-      <pos>7.12 50.72</pos>
+      <pos>9.98 53.55</pos>
     </Point>
   </pointRep>
   <pointRep>
     <Point gml:id="P3">
-      <pos>7.12 50.72</pos>
+      <pos>13.42 52.52</pos>
     </Point>
   </pointRep>
 </LineString>
