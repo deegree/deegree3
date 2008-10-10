@@ -47,12 +47,15 @@ package org.deegree.model.gml;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.model.geometry.primitive.Point;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -66,11 +69,47 @@ import org.junit.Test;
 public class GML311GeometryAdapterTest {
 
     @Test
-    public void parsePoint () throws XMLStreamException, FactoryConfigurationError, IOException {
-        URL docURL = FeatureGMLAdapterTest.class.getResource( "Point1.gml" );
+    public void parsePointPos () throws XMLStreamException, FactoryConfigurationError, IOException {
+        URL docURL = FeatureGMLAdapterTest.class.getResource( "Point1_pos.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
         Point point = new GML311GeometryAdapter().parsePoint(xmlReader, null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType());
+        Assert.assertEquals( new QName ("http://www.opengis.net/gml", "Point"), xmlReader.getName());                    
+        Assert.assertEquals( 7.12, point.getX());
+        Assert.assertEquals( 50.72, point.getY());
+        Assert.assertEquals( 2, point.getCoordinateDimension());
+        Assert.assertEquals( "EPSG:4326", point.getCoordinateSystem().getIdentifier());
     }
+
+    @Test
+    public void parsePointCoordinates () throws XMLStreamException, FactoryConfigurationError, IOException {
+        URL docURL = FeatureGMLAdapterTest.class.getResource( "Point1_coordinates.gml" );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.nextTag();
+        Point point = new GML311GeometryAdapter().parsePoint(xmlReader, null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType());
+        Assert.assertEquals( new QName ("http://www.opengis.net/gml", "Point"), xmlReader.getName());            
+        Assert.assertEquals( 7.12, point.getX());
+        Assert.assertEquals( 50.72, point.getY());
+        Assert.assertEquals( 2, point.getCoordinateDimension());        
+        Assert.assertEquals( "EPSG:4326", point.getCoordinateSystem().getIdentifier());
+    }
+
+    @Test
+    public void parsePointCoord () throws XMLStreamException, FactoryConfigurationError, IOException {
+        URL docURL = FeatureGMLAdapterTest.class.getResource( "Point1_coord.gml" );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.nextTag();
+        Point point = new GML311GeometryAdapter().parsePoint(xmlReader, null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType());
+        Assert.assertEquals( new QName ("http://www.opengis.net/gml", "Point"), xmlReader.getName());                    
+        Assert.assertEquals( 7.12, point.getX());
+        Assert.assertEquals( 50.72, point.getY());
+        Assert.assertEquals( 2, point.getCoordinateDimension());        
+        Assert.assertEquals( "EPSG:4326", point.getCoordinateSystem().getIdentifier());
+    }    
 }

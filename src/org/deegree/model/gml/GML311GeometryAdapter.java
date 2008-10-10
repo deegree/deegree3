@@ -63,6 +63,7 @@ import org.deegree.model.crs.exceptions.CRSConfigurationException;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
+import org.deegree.model.geometry.composite.CompositeCurve;
 import org.deegree.model.geometry.composite.CompositeSurface;
 import org.deegree.model.geometry.multi.MultiCurve;
 import org.deegree.model.geometry.multi.MultiGeometry;
@@ -212,6 +213,82 @@ public class GML311GeometryAdapter extends XMLAdapter {
     }
 
     /**
+     * Returns the object representation for the given <code>gml:_Curve</code> element event that the cursor of the
+     * given <code>XMLStreamReader</code> points at.
+     * <p>
+     * The following concrete substitutions for <code>gml:_Curve</code> are defined:
+     * <table border="1">
+     * <tr>
+     * <th>Geometry element name<br>
+     * (in gml namespace)</th>
+     * <th>Return type<br>
+     * (deegree {@link Geometry})</th>
+     * </tr>
+     * <tr>
+     * <td align="center">LineString</td>
+     * <td align="center">{@link Curve}</td>
+     * </tr>
+     * <tr>
+     * <td align="center">Curve</td>
+     * <td align="center">{@link Curve}</td>
+     * </tr>
+     * <tr>
+     * <td align="center">CompositeCurve</td>
+     * <td align="center">{@link CompositeCurve}</td>
+     * </tr>
+     * <tr>
+     * <td align="center">OrientableCurve</td>
+     * <td align="center">{@link CompositeCurve}</td>
+     * </tr>
+     * </table>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event of the geometry, afterwards points at the
+     *            the <code>END_ELEMENT</code> event of the geometry
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the geometry element has no own
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link Geometry} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "gml:_Curve" element
+     * @throws XMLStreamException
+     */
+    public Curve parseAbstractCurve( XMLStreamReader xmlStream, String defaultSrsName )
+                            throws XMLParsingException, XMLStreamException {
+
+        LOG.debug( " - parsing gml:_Curve (begin): " + getCurrentEventInfo( xmlStream ) );
+
+        Curve curve = null;
+
+        if ( !GML_NS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Invalid gml:_Curve element: " + xmlStream.getName()
+                         + "' is not a GML geometry element. Not in the gml namespace.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        }
+
+        String name = xmlStream.getLocalName();
+        if ( name.equals( "LineString" ) ) {
+            curve = parseLineString( xmlStream, defaultSrsName );
+        } else if ( name.equals( "Curve" ) ) {
+            String msg = "Parsing of 'gml:Curve' elements is not implemented yet.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        } else if ( name.equals( "CompositeCurve" ) ) {
+            String msg = "Parsing of 'gml:CompositeCurve' elements is not implemented yet.";
+            throw new XMLParsingException( this, xmlStream, msg );            
+        } else if ( name.equals( "OrientableCurve" ) ) {
+            String msg = "Parsing of 'gml:OrientableCurve' elements is not implemented yet.";
+            throw new XMLParsingException( this, xmlStream, msg );            
+        } else {
+            String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                         + "' is not a valid substitution for '_Curve'.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        }
+
+        LOG.debug( " - parsing gml:_Curve (end): " + getCurrentEventInfo( xmlStream ) );
+        return curve;
+    }
+
+    /**
      * Returns the object representation of a (&lt;gml:Point&gt;) element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
      * 
@@ -233,7 +310,7 @@ public class GML311GeometryAdapter extends XMLAdapter {
         String srsName = determineCurrentSrsName( xmlStream, defaultSrsName );
 
         // must contain exactly one of the following child elements: "gml:pos", "gml:coordinates" or "gml:coord"
-        if ( xmlStream.nextTag() != XMLStreamConstants.START_ELEMENT ) {
+        if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
             String name = xmlStream.getLocalName();
             if ( "pos".equals( name ) ) {
                 double[] coords = parseDoubleList( xmlStream );
@@ -254,9 +331,34 @@ public class GML311GeometryAdapter extends XMLAdapter {
                              + " or a 'gml:coord' element, but found '" + name + "'.";
                 throw new XMLParsingException( this, xmlStream, msg );
             }
+        } else {
+            String msg = "Error in 'gml:Point' element. Must contain one of the following child elements: 'gml:pos', 'gml:coordinates'"
+                         + " or 'gml:coord'.";
+            throw new XMLParsingException( this, xmlStream, msg );
         }
+        // ensure that the stream points to the "gml:Point" end element event
+        skipElement( xmlStream );
         return point;
     }
+    
+    /**
+     * Returns the object representation of a (&lt;gml:LineString&gt;) element. Consumes all corresponding events from the
+     * given <code>XMLStream</code>.
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:LineString&gt;), afterwards points at
+     *            the next event after the <code>END_ELEMENT</code> (&lt;/gml:LineString&gt;)
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the "gml:LineString" has no <code>srsName</code>
+     *            attribute
+     * @return corresponding {@link Curve} object
+     * @throws XMLParsingException
+     * @throws XMLStreamException
+     */    
+    public Curve parseLineString( XMLStreamReader xmlStream, String defaultSrsName ) {
+        // TODO Auto-generated method stub
+        return null;
+    }    
 
     private double[] parseDoubleList( XMLStreamReader xmlStream )
                             throws XMLParsingException, XMLStreamException {
@@ -301,7 +403,7 @@ public class GML311GeometryAdapter extends XMLAdapter {
 
         double[][] coordinateTuples = new double[tuples.size()][];
         for ( int i = 0; i < coordinateTuples.length; i++ ) {
-            StringTokenizer coordinateTokenizer = new StringTokenizer( coordinateSeparator );
+            StringTokenizer coordinateTokenizer = new StringTokenizer( tuples.get( i ), coordinateSeparator );
             List<String> tokens = new ArrayList<String>();
             while ( coordinateTokenizer.hasMoreTokens() ) {
                 tokens.add( coordinateTokenizer.nextToken() );
@@ -336,13 +438,13 @@ public class GML311GeometryAdapter extends XMLAdapter {
             String msg = "Invalid 'gml:coords' element. Must contain an 'gml:X' element.";
             throw new XMLParsingException( this, xmlStream, msg );
         }
-        double x = parseDouble( xmlStream.getElementText() );        
+        double x = parseDouble( xmlStream.getElementText() );
         event = xmlStream.nextTag();
         if ( event == XMLStreamConstants.END_ELEMENT ) {
             return new double[] { x };
         }
-        
-        // must be a 'gml:Y' element        
+
+        // must be a 'gml:Y' element
         if ( event != XMLStreamConstants.START_ELEMENT || !GML_Y.equals( xmlStream.getName() ) ) {
             String msg = "Invalid 'gml:coords' element. Second child element must be a 'gml:Y' element.";
             throw new XMLParsingException( this, xmlStream, msg );
@@ -408,7 +510,7 @@ public class GML311GeometryAdapter extends XMLAdapter {
      * @return the applicable <code>srsName</code> value, may be null
      */
     private String determineCurrentSrsName( XMLStreamReader xmlStream, String defaultSrsName ) {
-        String srsName = xmlStream.getAttributeValue( null, FID );
+        String srsName = xmlStream.getAttributeValue( null, "srsName" );
         if ( srsName == null || srsName.length() == 0 ) {
             srsName = defaultSrsName;
         }
