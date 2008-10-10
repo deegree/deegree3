@@ -379,7 +379,7 @@ public class GML311GeometryAdapter extends XMLAdapter {
                         double[] coords = parsePos( xmlStream );
                         points.add( geomFac.createPoint( gid, coords, lookupCRS( srsName, xmlStream ) ) );
                     } else if ( "pointProperty".equals( name ) || "pointRep".equals( name ) ) {
-                        points.add( parsePointProperty( xmlStream, srsName));
+                        points.add( parsePointProperty( xmlStream, srsName ) );
                     } else {
                         String msg = "Error in 'gml:LineString' element.";
                         throw new XMLParsingException( this, xmlStream, msg );
@@ -403,6 +403,132 @@ public class GML311GeometryAdapter extends XMLAdapter {
     }
 
     /**
+     * Returns the object representation of a (&lt;gml:Curve&gt;) element. Consumes all corresponding events from the
+     * given <code>XMLStream</code>.
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Curve&gt;), afterwards points at
+     *            the next event after the <code>END_ELEMENT</code> (&lt;/gml:Curve&gt;)
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the "gml:Curve" has no <code>srsName</code>
+     *            attribute
+     * @return corresponding {@link Curve} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public Curve parseCurve( XMLStreamReader xmlStream, String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId( xmlStream );
+        String srsName = determineCurrentSrsName( xmlStream, defaultSrsName );
+
+        xmlStream.nextTag();
+        xmlStream.require( XMLStreamConstants.START_ELEMENT, GML_NS, "segments" );
+        List<CurveSegment> segments = new LinkedList<CurveSegment>();
+
+        while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
+            segments.add (parseCurveSegment( xmlStream, defaultSrsName ));
+        }
+
+        return geomFac.createCurve( gid, segments.toArray( new CurveSegment[segments.size()] ), ORIENTATION.positive,
+                                    lookupCRS( srsName, xmlStream ) );
+    }
+
+    /**
+     * Returns the object representation for the given <code>gml:_CurveSegment</code> element event that the cursor of
+     * the given <code>XMLStreamReader</code> points at.
+     * <p>
+     * GML 3.1.1 defines the following concrete substitutions for <code>gml:CurveSegment</code>:
+     * <ul>
+     * <li><code>LineStringSegment</code></li>
+     * <li><code>ArcString</code></li>
+     * <li><code>ArcStringByBulge</code></li>
+     * <li><code>ArcByCenterPoint</code></li>
+     * <li><code>OffsetCurve</code></li>
+     * <li><code>Clothoid</code></li>
+     * <li><code>GeodesicString</code></li>
+     * <li><code>CubicSpline</code></li>
+     * <li><code>BSpline</code></li>
+     * </ul>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_CurveSegment&gt;), afterwards
+     *            points at the next event after the <code>END_ELEMENT</code> (&lt;/gml:_CurveSegment&gt;)
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the "gml:_CurveSegment" has no <code>srsName</code>
+     *            attribute
+     * @return corresponding {@link Curve} object
+     * @throws XMLParsingException
+     * @throws XMLStreamException
+     */
+    private CurveSegment parseCurveSegment( XMLStreamReader xmlStream, String defaultSrsName ) {
+
+        LOG.debug( " - parsing gml:_CurveSegment (begin): " + getCurrentEventInfo( xmlStream ) );
+
+        CurveSegment segment = null;
+
+        if ( !GML_NS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Invalid gml:_CurveSegment element: " + xmlStream.getName()
+                         + "' is not a GML geometry element. Not in the gml namespace.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        }
+
+        String name = xmlStream.getLocalName();
+        if ( name.equals( "LineStringSegment" ) ) {
+            segment = parseLineStringSegment( xmlStream, defaultSrsName );
+        } else if ( name.equals( "ArcString" ) ) {
+            String msg = "Parsing of 'gml:ArcString' elements is not implemented yet.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        } else if ( name.equals( "ArcStringByBulge" ) ) {
+            String msg = "Parsing of 'gml:ArcStringByBulge' elements is not implemented yet.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        } else if ( name.equals( "ArcByCenterPoint" ) ) {
+            String msg = "Parsing of 'gml:ArcByCenterPoint' elements is not implemented yet.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        } else if ( name.equals( "OffsetCurve" ) ) {
+            String msg = "Parsing of 'gml:OffsetCurve' elements is not implemented yet.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        } else if ( name.equals( "Clothoid" ) ) {
+            String msg = "Parsing of 'gml:Clothoid' elements is not implemented yet.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        } else if ( name.equals( "GeodesicString" ) ) {
+            String msg = "Parsing of 'gml:GeodesicString' elements is not implemented yet.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        } else if ( name.equals( "CubicSpline" ) ) {
+            String msg = "Parsing of 'gml:CubicSpline' elements is not implemented yet.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        } else if ( name.equals( "BSpline" ) ) {
+            String msg = "Parsing of 'gml:BSpline' elements is not implemented yet.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        } else {
+            String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                         + "' is not a valid substitution for '_CurveSegment'.";
+            throw new XMLParsingException( this, xmlStream, msg );
+        }
+
+        LOG.debug( " - parsing gml:_CurveSegment (end): " + getCurrentEventInfo( xmlStream ) );
+        return segment;
+    }
+
+    /**
+     * Returns the object representation of a (&lt;gml:LineStringSegment&gt;) element. Consumes all corresponding events
+     * from the given <code>XMLStream</code>.
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:LineStringSegment&gt;), afterwards
+     *            points at the next event after the <code>END_ELEMENT</code> (&lt;/gml:LineStringSegment&gt;)
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the "gml:LineString" has no <code>srsName</code>
+     *            attribute
+     * @return corresponding {@link Curve} object
+     * @throws XMLParsingException
+     * @throws XMLStreamException
+     */
+    private CurveSegment parseLineStringSegment( XMLStreamReader xmlStream, String defaultSrsName ) {
+        return null;
+    }
+
+    /**
      * TODO handled xlinked content ("xlink:href")
      * 
      * @param xmlStream
@@ -411,10 +537,8 @@ public class GML311GeometryAdapter extends XMLAdapter {
      */
     private Point parsePointProperty( XMLStreamReader xmlStream, String defaultSrsName )
                             throws XMLStreamException {
-        System.out.println (getCurrentEventInfo( xmlStream ));
         Point point = null;
         if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
-            System.out.println (getCurrentEventInfo( xmlStream ));
             // must be a 'gml:Point' element
             if ( !xmlStream.getLocalName().equals( "Point" ) ) {
                 String msg = "Error in 'gml:pointProperty' element. Expected a 'gml:Point' element.";
