@@ -61,7 +61,26 @@ import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
-import org.deegree.model.geometry.primitive.Curve.ORIENTATION;
+import org.deegree.model.geometry.primitive.Curve.Orientation;
+import org.deegree.model.geometry.primitive.curvesegments.Arc;
+import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
+import org.deegree.model.geometry.primitive.curvesegments.ArcByCenterPoint;
+import org.deegree.model.geometry.primitive.curvesegments.ArcString;
+import org.deegree.model.geometry.primitive.curvesegments.ArcStringByBulge;
+import org.deegree.model.geometry.primitive.curvesegments.BSpline;
+import org.deegree.model.geometry.primitive.curvesegments.Bezier;
+import org.deegree.model.geometry.primitive.curvesegments.Circle;
+import org.deegree.model.geometry.primitive.curvesegments.CircleByCenterPoint;
+import org.deegree.model.geometry.primitive.curvesegments.Clothoid;
+import org.deegree.model.geometry.primitive.curvesegments.CubicSpline;
+import org.deegree.model.geometry.primitive.curvesegments.Geodesic;
+import org.deegree.model.geometry.primitive.curvesegments.GeodesicString;
+import org.deegree.model.geometry.primitive.curvesegments.Knot;
+import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.model.geometry.primitive.curvesegments.OffsetCurve;
+import org.deegree.model.geometry.standard.curvesegments.AffinePlacement;
+import org.deegree.model.gml.Angle;
+import org.deegree.model.gml.Length;
 
 /**
  * 
@@ -89,17 +108,16 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Curve createCurve( String id, Point[][] coordinates, ORIENTATION orientation, CoordinateSystem crs ) {
+    public Curve createCurve( String id, Point[][] coordinates, Orientation orientation, CoordinateSystem crs ) {
         CurveSegment[] segments = new CurveSegment[coordinates.length];
         for ( int i = 0; i < segments.length; i++ ) {
-            segments[i] = createCurveSegment( Arrays.asList( coordinates[i] ), JTSWrapperCurveSegment.class,
-                                              CurveSegment.INTERPOLATION.linear );
+            segments[i] = new JTSWrapperLineStringSegment( Arrays.asList( coordinates[i] ));
         }
         return createCurve( id, segments, orientation, crs );
     }
 
     @Override
-    public Curve createCurve( String id, CurveSegment[] segments, ORIENTATION orientation, CoordinateSystem crs ) {
+    public Curve createCurve( String id, CurveSegment[] segments, Orientation orientation, CoordinateSystem crs ) {
         if ( segments == null || segments.length == 0 ) {
             return null;
         }
@@ -111,22 +129,11 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public CurveSegment createCurveSegment( List<Point> points, @SuppressWarnings("unused") Class<?> type,
-                                            @SuppressWarnings("unused") CurveSegment.INTERPOLATION interpolation ) {
+    public LineStringSegment createLineStringSegment( List<Point> points ) {
         if ( points == null || points.size() == 0 ) {
             return null;
         }
-        // JTS just supports simple curves so type will be ignored
-        // the same it true for interpolation; it always will be linear
-        return new JTSWrapperCurveSegment( points );
-    }
-
-    @Override
-    public CurveSegment createCurveSegment( List<Point> points ) {
-        if ( points == null || points.size() == 0 ) {
-            return null;
-        }
-        return new JTSWrapperCurveSegment( points );
+        return new JTSWrapperLineStringSegment( points );
     }
 
     @Override
@@ -185,7 +192,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public SurfacePatch createSurfacePatch( List<Curve> boundary, Class<?> type,
-                                            SurfacePatch.INTERPOLATION interpolation ) {
+                                            SurfacePatch.Interpolation interpolation ) {
         if ( boundary == null || boundary.size() == 0 ) {
             return null;
         }
@@ -222,7 +229,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Surface createSurface( String id, List<Curve> boundary, SurfacePatch.INTERPOLATION interpolation, CoordinateSystem crs ) {
+    public Surface createSurface( String id, List<Curve> boundary, SurfacePatch.Interpolation interpolation, CoordinateSystem crs ) {
         if ( boundary == null || boundary.size() == 0 ) {
             return null;
         }
@@ -267,4 +274,74 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
         return env;
     }
 
+    @Override
+    public ArcString createArcString( List<Point> points ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public ArcStringByBulge createArcStringByBulge( List<Point> points, double[] bulges, List<Point> normals ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public ArcByCenterPoint createArcByCenterPoint( Point midPoint, Length radius, Angle startAngle, Angle endAngle ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public BSpline createBSpline( List<Point> points, int degree, List<Knot> knots, boolean isPolynomial ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public Arc createArc( Point p1, Point p2, Point p3 ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public ArcByBulge createArcByBulge( Point p1, Point p2, double bulge, Point normal ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public Bezier createBezier( List<Point> points, int degree, Knot knot1, Knot knot2 ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public Circle createCircle( Point p1, Point p2, Point p3 ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public CircleByCenterPoint createCircleByCenterPoint( Point midPoint, Length radius, Angle startAngle ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public Clothoid createClothoid( AffinePlacement referenceLocation, double scaleFactor, double startParameter,
+                                    double endParameter ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public CubicSpline createCubicSpline( List<Point> points, Point vectorAtStart, Point vectorAtEnd ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public Geodesic createGeodesic( Point p1, Point p2 ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public GeodesicString createGeodesicString( List<Point> points ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public OffsetCurve createOffsetCurve( Curve baseCurve, Point direction, Length distance ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
 }

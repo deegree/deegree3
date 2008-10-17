@@ -43,17 +43,9 @@
 
 package org.deegree.commons.xml;
 
-import static javax.xml.stream.XMLStreamConstants.ATTRIBUTE;
 import static javax.xml.stream.XMLStreamConstants.CDATA;
 import static javax.xml.stream.XMLStreamConstants.CHARACTERS;
-import static javax.xml.stream.XMLStreamConstants.COMMENT;
-import static javax.xml.stream.XMLStreamConstants.DTD;
-import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
-import static javax.xml.stream.XMLStreamConstants.ENTITY_REFERENCE;
-import static javax.xml.stream.XMLStreamConstants.PROCESSING_INSTRUCTION;
-import static javax.xml.stream.XMLStreamConstants.SPACE;
-import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 import java.io.File;
@@ -76,7 +68,6 @@ import java.util.StringTokenizer;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.Location;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -115,8 +106,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * </p>
  * <p>
- * Technically, the XML handling is based on <a href="http://ws.apache.org/commons/axiom/">AXIOM (AXis Object Model)</a>
- * on top of <a href="http://jcp.org/en/jsr/detail?id=173">StAX (Streaming API for XML)</a>.
+ * Technically, the XML handling is based on <a href="http://ws.apache.org/commons/axiom/">AXIOM (AXis Object Model)</a>.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -1051,97 +1041,5 @@ public class XMLAdapter {
                 inStream.next();
             }
         }
-    }
-
-    /**
-     * Creates printable (debug) information about the event that the cursor of the given <code>XMLStreamReader</code>
-     * currently points at.
-     * 
-     * @param xmlStream
-     *            points at the event to be analysed, the current position of <code>xmlStream</code> is unchanged
-     * @return printable information
-     */
-    public final static String getCurrentEventInfo( XMLStreamReader xmlStream ) {
-        String s = getEventTypeString( xmlStream.getEventType() );
-        if ( xmlStream.getEventType() == START_ELEMENT || xmlStream.getEventType() == END_ELEMENT ) {
-            s += ": " + xmlStream.getName();
-        }
-        Location location = xmlStream.getLocation();
-        s += " at line " + location.getLineNumber() + ", column " + location.getColumnNumber() + " (character offset "
-             + xmlStream.getLocation().getCharacterOffset() + ")";
-        return s;
-    }
-
-    private final static String getEventTypeString( int eventType ) {
-        switch ( eventType ) {
-        case START_ELEMENT:
-            return "START_ELEMENT";
-        case END_ELEMENT:
-            return "END_ELEMENT";
-        case PROCESSING_INSTRUCTION:
-            return "PROCESSING_INSTRUCTION";
-        case CHARACTERS:
-            return "CHARACTERS";
-        case COMMENT:
-            return "COMMENT";
-        case START_DOCUMENT:
-            return "START_DOCUMENT";
-        case END_DOCUMENT:
-            return "END_DOCUMENT";
-        case ENTITY_REFERENCE:
-            return "ENTITY_REFERENCE";
-        case ATTRIBUTE:
-            return "ATTRIBUTE";
-        case DTD:
-            return "DTD";
-        case CDATA:
-            return "CDATA";
-        case SPACE:
-            return "SPACE";
-        }
-        return "UNKNOWN_EVENT_TYPE , " + eventType;
-    }
-
-    /**
-     * Skips all events that belong to the current element (including descendant elements), so that the
-     * <code>XMLStreamReader</code> cursor points at the corresponding <code>END_ELEMENT</code> event.
-     * 
-     * @param xmlStream
-     *            cursor must point at a <code>START_ELEMENT</code> event and points at the corresponding
-     *            <code>END_ELEMENT</code> event afterwards
-     * @throws XMLStreamException
-     */
-    public static void skipElement( XMLStreamReader xmlStream )
-                            throws XMLStreamException {
-
-        int openElements = 1;
-        while ( openElements > 0 ) {
-            // this should not be necessary, but IS
-            if (!xmlStream.hasNext()) {
-                throw new NoSuchElementException ();
-            }
-            int event = xmlStream.next();
-            if ( event == END_ELEMENT ) {
-                openElements--;
-            } else if ( event == START_ELEMENT ) {
-                openElements++;
-            }
-        }
-    }
-    
-    public static String getAttributeValue (XMLStreamReader xmlStream, String localName, String defaultValue) {
-        String attrValue = xmlStream.getAttributeValue( null, localName );
-        if (attrValue == null || attrValue.length() == 0) {
-            attrValue = defaultValue;
-        }
-        return attrValue;
-    }
-
-    public static String getAttributeValue (XMLStreamReader xmlStream, QName name, String defaultValue) {
-        String attrValue = xmlStream.getAttributeValue( name.getNamespaceURI(), name.getLocalPart() );
-        if (attrValue == null || attrValue.length() == 0) {
-            attrValue = defaultValue;
-        }
-        return attrValue;
     }    
 }

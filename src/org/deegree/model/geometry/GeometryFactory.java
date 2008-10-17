@@ -58,6 +58,25 @@ import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
+import org.deegree.model.geometry.primitive.curvesegments.Arc;
+import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
+import org.deegree.model.geometry.primitive.curvesegments.ArcByCenterPoint;
+import org.deegree.model.geometry.primitive.curvesegments.ArcString;
+import org.deegree.model.geometry.primitive.curvesegments.ArcStringByBulge;
+import org.deegree.model.geometry.primitive.curvesegments.BSpline;
+import org.deegree.model.geometry.primitive.curvesegments.Bezier;
+import org.deegree.model.geometry.primitive.curvesegments.Circle;
+import org.deegree.model.geometry.primitive.curvesegments.CircleByCenterPoint;
+import org.deegree.model.geometry.primitive.curvesegments.Clothoid;
+import org.deegree.model.geometry.primitive.curvesegments.CubicSpline;
+import org.deegree.model.geometry.primitive.curvesegments.Geodesic;
+import org.deegree.model.geometry.primitive.curvesegments.GeodesicString;
+import org.deegree.model.geometry.primitive.curvesegments.Knot;
+import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.model.geometry.primitive.curvesegments.OffsetCurve;
+import org.deegree.model.geometry.standard.curvesegments.AffinePlacement;
+import org.deegree.model.gml.Angle;
+import org.deegree.model.gml.Length;
 
 /**
  * 
@@ -135,13 +154,13 @@ public interface GeometryFactory {
      * 
      * @return list of supported curve interpolations
      */
-    public List<CurveSegment.INTERPOLATION> getSupportedCurveInterpolations();
+    public List<CurveSegment.Interpolation> getSupportedCurveInterpolations();
 
     /**
      * @see #getSupportedCurveInterpolations()
      * @param interpolations
      */
-    public void setSupportedCurveInterpolations( List<CurveSegment.INTERPOLATION> interpolations );
+    public void setSupportedCurveInterpolations( List<CurveSegment.Interpolation> interpolations );
 
     /**
      * Each GeometryFactory should a least support creating Surfaces with none interpolation. Possible values are:
@@ -162,13 +181,13 @@ public interface GeometryFactory {
      * 
      * @return list of supported surface interpolations
      */
-    public List<SurfacePatch.INTERPOLATION> getSupportedSurfaceInterpolations();
+    public List<SurfacePatch.Interpolation> getSupportedSurfaceInterpolations();
 
     /**
      * @see #getSupportedSurfaceInterpolations()
      * @param interpolations
      */
-    public void setSupportedSurfaceInterpolations( List<SurfacePatch.INTERPOLATION> interpolations );
+    public void setSupportedSurfaceInterpolations( List<SurfacePatch.Interpolation> interpolations );
 
     /**
      * creates a georeferenced point
@@ -217,7 +236,7 @@ public interface GeometryFactory {
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Curve}
      */
-    public Curve createCurve( String id, Point[][] coordinates, Curve.ORIENTATION orientation, CoordinateSystem crs );
+    public Curve createCurve( String id, Point[][] coordinates, Curve.Orientation orientation, CoordinateSystem crs );
 
     /**
      * Creates a segmented {@link Curve} from one or more {@link CurveSegment}s. The last {@link Point} of i'th segment
@@ -234,34 +253,198 @@ public interface GeometryFactory {
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Curve}
      */
-    public Curve createCurve( String id, CurveSegment[] segments, Curve.ORIENTATION orientation, CoordinateSystem crs );
+    public Curve createCurve( String id, CurveSegment[] segments, Curve.Orientation orientation, CoordinateSystem crs );
 
     /**
-     * Creates a {@link CurveSegment} from a {@link List} of {@link Point}s with a defined interpolation. The passed
-     * interpolation must be supported by the concrete GeometryFactory; {@link #getSupportedCurveInterpolations()}. The
-     * passed type defines the {@link CurveSegment} class to be used (possibly different kinds of {@link CurveSegment}
-     * implementations are available; see ISO 19107 for details)
+     * Creates a {@link LineStringSegment} curve segment.
      * 
      * @param points
-     *            list of points to create a {@link CurveSegment} from
-     * @param type
-     *            concrete {@link CurveSegment}
-     * @param interpolation
-     *            used interpolation
+     *            list of points to create the {@link LineStringSegment} from
      * @return created {@link CurveSegment}
      */
-    public CurveSegment createCurveSegment( List<Point> points, Class<?> type,
-                                            CurveSegment.INTERPOLATION interpolation );
+    public LineStringSegment createLineStringSegment( List<Point> points );
 
     /**
-     * Creates a {@link CurveSegment} from a {@link List} of {@link Point}s with default (linear) interpolation. Default
-     * {@link CurveSegment} of underlying geometry implementation will be used.
+     * Creates an {@link Arc} curve segment.
+     * 
+     * @param p1
+     *            first control point
+     * @param p2
+     *            second control point
+     * @param p3
+     *            third control point
+     * 
+     * @return created {@link Arc}
+     */
+    public Arc createArc( Point p1, Point p2, Point p3 );
+
+    /**
+     * Creates an {@link ArcByBulge} curve segment.
+     * 
+     * @param p1
+     *            first control point
+     * @param p2
+     *            second control point
+     * @param bulge
+     *            height of the arc (multiplier for the normals)
+     * @param normal
+     *            normal vector, in 2D only one coordinate is necessary
+     * @return created {@link ArcStringByBulge}
+     */
+    public ArcByBulge createArcByBulge( Point p1, Point p2, double bulge, Point normal );
+
+    /**
+     * Creates an {@link ArcByCenterPoint} curve segment.
+     * 
+     * @param midPoint
+     * @param radius
+     * @param startAngle
+     * @param endAngle
+     * @return created {@link ArcByCenterPoint}
+     */
+    public ArcByCenterPoint createArcByCenterPoint( Point midPoint, Length radius, Angle startAngle, Angle endAngle );
+
+    /**
+     * Creates an {@link ArcString} curve segment.
      * 
      * @param points
-     *            list of points to create a {@link CurveSegment} from
-     * @return created {@link CurveSegment}
+     *            list of control points, must contain <code>2 * k + 1</code> points
+     * @return created {@link ArcString}
      */
-    public CurveSegment createCurveSegment( List<Point> points );
+    public ArcString createArcString( List<Point> points );
+
+    /**
+     * Creates an {@link ArcStringByBulge} curve segment.
+     * <p>
+     * This variant of the arc computes the mid points of the arcs instead of storing the coordinates directly. The
+     * control point sequence consists of the start and end points of each arc plus the bulge.
+     * 
+     * @param points
+     *            list of control points, must contain at least two points
+     * @param bulges
+     *            heights of the arcs (multipliers for the normals)
+     * @param normals
+     *            normal vectors
+     * @return created {@link ArcStringByBulge}
+     */
+    public ArcStringByBulge createArcStringByBulge( List<Point> points, double[] bulges, List<Point> normals );
+
+    /**
+     * Creates a {@link Bezier} curve segment.
+     * 
+     * @param points
+     *            list of control points
+     * @param degree
+     *            polynomial degree of the spline
+     * @param knot1
+     *            first of the two knots that define the spline basis functions
+     * @param knot2
+     *            second of the two knots that define the spline basis functions
+     * @return created {@link Bezier}
+     */
+    public Bezier createBezier( List<Point> points, int degree, Knot knot1, Knot knot2 );
+
+    /**
+     * Creates a {@link BSpline} curve segment.
+     * 
+     * @param points
+     *            list of control points
+     * @param degree
+     *            polynomial degree of the spline
+     * @param knots
+     *            sequence of distinct knots that define the spline basis functions
+     * @param isPolynomial
+     *            set to true if this is a polynomial spline, otherwise it's a rational spline
+     * @return created {@link BSpline}
+     */
+    public BSpline createBSpline( List<Point> points, int degree, List<Knot> knots, boolean isPolynomial );
+
+    /**
+     * Creates a {@link Circle} curve segment.
+     * 
+     * @param p1
+     *            first control point
+     * @param p2
+     *            second control point
+     * @param p3
+     *            third control point
+     * 
+     * @return created {@link Arc}
+     */
+    public Circle createCircle( Point p1, Point p2, Point p3 );
+
+    /**
+     * Creates an {@link CircleByCenterPoint} curve segment.
+     * 
+     * @param midPoint
+     * @param radius
+     * @param startAngle
+     * @return created {@link CircleByCenterPoint}
+     */
+    public CircleByCenterPoint createCircleByCenterPoint( Point midPoint, Length radius, Angle startAngle );
+
+    /**
+     * Creates an {@link Clothoid} curve segment.
+     * 
+     * @param referenceLocation
+     *            the affine mapping that places the curve defined by the Fresnel Integrals into the coordinate
+     *            reference system of this object
+     * @param scaleFactor
+     *            the value for the constant in the Fresnel's integrals
+     * @param startParameter
+     *            the arc length distance from the inflection point that will be the start point for this curve segment
+     * @param endParameter
+     *            the arc length distance from the inflection point that will be the end point for this curve segment
+     * @return created {@link Clothoid}
+     */
+    public Clothoid createClothoid( AffinePlacement referenceLocation, double scaleFactor, double startParameter,
+                                    double endParameter );
+
+    /**
+     * Creates a {@link Clothoid} curve segment.
+     * 
+     * @param points
+     *            control points, at least two
+     * @param vectorAtStart
+     *            the unit tangent vector at the start point of the spline
+     * @param vectorAtEnd
+     *            the unit tangent vector at the end point of the spline
+     * @return created {@link Clothoid}
+     */
+    public CubicSpline createCubicSpline( List<Point> points, Point vectorAtStart, Point vectorAtEnd );
+
+    /**
+     * Creates a {@link Geodesic} curve segment.
+     * 
+     * @param p1
+     *            first control point
+     * @param p2
+     *            second control point
+     * @return created {@link Geodesic}
+     */
+    public Geodesic createGeodesic( Point p1, Point p2 );
+
+    /**
+     * Creates a {@link GeodesicString} curve segment.
+     * 
+     * @param points
+     *            control points, at least two
+     * @return created {@link GeodesicString}
+     */
+    public GeodesicString createGeodesicString( List<Point> points );
+
+    /**
+     * Creates an {@link OffsetCurve} curve segment.
+     * 
+     * @param baseCurve
+     *            the base geometry
+     * @param direction
+     *            the direction of the offset
+     * @param distance
+     *            the distance from the base curve
+     * @return created {@link GeodesicString}
+     */
+    public OffsetCurve createOffsetCurve( Curve baseCurve, Point direction, Length distance );
 
     /**
      * Creates a {@link Surface} from an array of {@link Curve}s forming the boundary of a {@link Surface}. The first
@@ -279,7 +462,7 @@ public interface GeometryFactory {
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Surface}
      */
-    public Surface createSurface( String id, List<Curve> boundary, SurfacePatch.INTERPOLATION interpolation,
+    public Surface createSurface( String id, List<Curve> boundary, SurfacePatch.Interpolation interpolation,
                                   CoordinateSystem crs );
 
     /**
@@ -313,7 +496,7 @@ public interface GeometryFactory {
      * @return created {@link SurfacePatch}
      */
     public SurfacePatch createSurfacePatch( List<Curve> boundary, Class<?> type,
-                                            SurfacePatch.INTERPOLATION interpolation );
+                                            SurfacePatch.Interpolation interpolation );
 
     /**
      * Creates a {@link SurfacePatch} from an array of {@link Curve}s forming the boundary of a {@link SurfacePatch}.
@@ -452,8 +635,6 @@ public interface GeometryFactory {
     /**
      * creates an {@link Envelope} with default precision
      * 
-     * @param id
-     *            identifier of the new geometry instance
      * @param min
      *            minimum corner coordinates
      * @param max

@@ -38,13 +38,12 @@
  53115 Bonn
  Germany
  E-Mail: greve@giub.uni-bonn.de
- 
+
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
-import javax.xml.stream.XMLStreamReader;
-
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 
 /**
  * Thrown when a syntactic or semantic error has been encountered during the parsing process in an {@link XMLAdapter}.
@@ -69,16 +68,14 @@ public class XMLParsingException extends XMLProcessingException {
     /**
      * Creates a new exception for a parsing error that occured in a StAX-based parsing method.
      * 
-     * @param origin
-     *            {@link XMLAdapter} that determined the error (usually use <code>this</code>)
-     * @param xmlStream
-     *            {@link XMLStreamReader} that points at the erroneous event
+     * @param xmlReader
+     *            {@link XMLStreamReaderWrapper} that encountered the erroneous event
      * @param msg
      *            error information that explains the problem
      */
-    public XMLParsingException( XMLAdapter origin, XMLStreamReader xmlStream, String msg ) {
+    public XMLParsingException( XMLStreamReaderWrapper xmlReader, String msg ) {
         this.msg = msg;
-        this.errorPosition = new XMLErrorPosition( origin, xmlStream );
+        this.errorPosition = new XMLErrorPosition( xmlReader );
     }
 
     /**

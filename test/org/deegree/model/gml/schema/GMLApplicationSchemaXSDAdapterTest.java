@@ -21,5 +21,5 @@ public class GMLApplicationSchemaXSDAdapterTest {
                 System.out.println( ft );
             }
         }
-    }
+    } 
 }

@@ -268,7 +268,8 @@ public class GeometryTransformer extends Transformer {
         for ( CurveSegment segment : geo.getCurveSegments() ) {
             List<Point> pos = segment.getPoints();
             pos = transform( pos, trans );
-            curveSegments[i++] = geomFactory.createCurveSegment( pos );
+            // TODO handle non-linear curve segments
+            curveSegments[i++] = geomFactory.createLineStringSegment( pos );
         }
         return geomFactory.createCurve(geo.getId(), curveSegments, geo.getOrientation(), trans.getTargetCRS() );
     }

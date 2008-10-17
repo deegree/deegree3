@@ -50,7 +50,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.gml.FeatureGMLAdapter;
+import org.deegree.model.gml.GMLFeatureParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

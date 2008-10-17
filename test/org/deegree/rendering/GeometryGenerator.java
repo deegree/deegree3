@@ -40,7 +40,7 @@ package org.deegree.rendering;
 
 import static java.util.Collections.singletonList;
 import static org.deegree.model.geometry.GeometryFactoryCreator.getInstance;
-import static org.deegree.model.geometry.primitive.Curve.ORIENTATION.unknown;
+import static org.deegree.model.geometry.primitive.Curve.Orientation.unknown;
 
 import java.util.Random;
 

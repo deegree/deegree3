@@ -42,6 +42,7 @@ import java.util.List;
 
 import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
  * 
@@ -51,7 +52,7 @@ import org.deegree.model.geometry.primitive.Point;
  * 
  * @version. $Revision$, $Date$
  */
-public class JTSWrapperCurveSegment implements CurveSegment {
+public class JTSWrapperLineStringSegment implements LineStringSegment {
 
     private List<Point> points;
 
@@ -64,7 +65,7 @@ public class JTSWrapperCurveSegment implements CurveSegment {
      * @param points
      *            list of {@link Point}s forming a {@link CurveSegment}
      */
-    public JTSWrapperCurveSegment( List<Point> points ) {
+    public JTSWrapperLineStringSegment( List<Point> points ) {
         this.points = points;
         coordinateDimension = points.get( 0 ).getCoordinateDimension();
     }
@@ -164,9 +165,13 @@ public class JTSWrapperCurveSegment implements CurveSegment {
      * 
      * @see org.deegree.model.geometry.primitive.CurveSegment#getInterpolation()
      */
-    public INTERPOLATION getInterpolation() {
+    public Interpolation getInterpolation() {
         // JTS does not support other interpolations
-        return INTERPOLATION.linear;
+        return Interpolation.linear;
     }
 
+    @Override
+    public LineStringSegment getAsLineStringSegment() {
+        return this;
+    }
 }

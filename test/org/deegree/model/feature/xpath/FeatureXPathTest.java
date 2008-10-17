@@ -49,7 +49,7 @@ import java.util.List;
 import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.FeatureCollection;
 import org.deegree.model.feature.Property;
-import org.deegree.model.gml.FeatureGMLAdapterTest;
+import org.deegree.model.gml.GMLFeatureParserTest;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.XPath;
@@ -77,7 +77,7 @@ public class FeatureXPathTest {
     @Before
     public void setUp()
                             throws Exception {
-        fc = new FeatureGMLAdapterTest().testParsingPhilosopherFeatureCollection();
+        fc = new GMLFeatureParserTest().testParsingPhilosopherFeatureCollection();
         nsContext = new SimpleNamespaceContext ();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
     }

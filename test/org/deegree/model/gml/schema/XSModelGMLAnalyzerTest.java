@@ -43,7 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.gml.schema;
 
-
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -53,29 +52,63 @@ import org.junit.Test;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class XSModelGMLAnalyzerTest {
 
     @Test
-    public void testPhilosopher() throws ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( this.getClass().getResource( "Philosopher.xsd" ).toString(), GMLVersion.VERSION_31 );
-        List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( "http://www.deegree.org/app", true );
+    public void testPhilosopher()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer(
+                                                              this.getClass().getResource( "Philosopher.xsd" ).toString(),
+                                                              GMLVersion.VERSION_31 );
+        List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations(
+                                                                                                 "http://www.deegree.org/app",
+                                                                                                 true );
         for ( XSElementDeclaration featureElementDecl : featureElementDecls ) {
-            System.out.println ("- Feature type: " + featureElementDecl.getName());        
+            System.out.println( "- Feature type: " + featureElementDecl.getName() );
         }
-        List<XSElementDeclaration> featureCollectionElementDecls = analyzer.getFeatureCollectionElementDeclarations( null, true );        
+        List<XSElementDeclaration> featureCollectionElementDecls = analyzer.getFeatureCollectionElementDeclarations(
+                                                                                                                     null,
+                                                                                                                     true );
         for ( XSElementDeclaration featureCollectionElementDecl : featureCollectionElementDecls ) {
-            System.out.println ("- Feature collection type: " + featureCollectionElementDecl.getName());
-        }        
+            System.out.println( "- Feature collection type: " + featureCollectionElementDecl.getName() );
+        }
         List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations( null, true );
         for ( XSElementDeclaration geometryElementDecl : geometryElementDecls ) {
-            System.out.println ("- Geometry type: " + geometryElementDecl.getName());
-        }        
+            System.out.println( "- Geometry type: " + geometryElementDecl.getName() );
+        }
     }
 
+    @Test
+    public void testGML311CurveSegments()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_31 );
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName("http://www.opengis.net/gml", "_CurveSegment"), "http://www.opengis.net/gml", true );
+        for ( XSElementDeclaration elementDecl : elementDecls ) {
+            System.out.println( elementDecl.getName() );
+        }
+    }
+    
+    @Test
+    public void testGML321CurveSegments()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_32 );
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName("http://www.opengis.net/gml/3.2", "AbstractCurveSegment"), "http://www.opengis.net/gml/3.2", true );
+        for ( XSElementDeclaration elementDecl : elementDecls ) {
+            System.out.println( elementDecl.getName() );
+        }
+    }    
 }

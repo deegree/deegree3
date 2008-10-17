@@ -26,7 +26,7 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
             <app:Country gml:id="COUNTRY_2">
               <app:name>Germany</app:name>
               <app:geom>
-                <gml:MultiPolygon gml:id="MULTIPOLYGON_1" srsName="EPSG:4326">
+                <gml:MultiSurface gml:id="MULTIPOLYGON_1" srsName="EPSG:4326">
                   <gml:polygonMember>
                     <gml:Polygon gml:id="POLYGON_1" srsName="EPSG:4326">
                       <gml:outerBoundaryIs>
@@ -556,7 +556,7 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
                       </gml:outerBoundaryIs>
                     </gml:Polygon>
                   </gml:polygonMember>
-                </gml:MultiPolygon>
+                </gml:MultiSurface>
               </app:geom>
             </app:Country>
           </app:country>

@@ -39,9 +39,10 @@ package org.deegree.model.geometry.primitive;
 
 import java.util.List;
 
+import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
+
 /**
- * 
- * 
+ * A <code>CurveSegment</code> is a portion of a {@link Curve} in which a single interpolation method is used.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
@@ -51,38 +52,45 @@ import java.util.List;
 public interface CurveSegment {
 
     /**
-     * known curve segment interpolations
-     * 
+     * All known curve segment interpolations.
      */
-    public enum INTERPOLATION {
+    public enum Interpolation {
         /**
          * A linear interpolation.
          */
-        linear, 
+        linear,
         /**
          * A geodesic interpolation.
          */
-        geodesic, 
+        geodesic,
+        /**
+         * A circularArcCenterPointWithRadius interpolation.
+         */        
+        circularArcCenterPointWithRadius,
         /**
          * A circularArc3Points interpolation.
          */
-        circularArc3Points, 
+        circularArc3Points,        
         /**
          * A circularArc2PointWithBulge interpolation.
          */
-        circularArc2PointWithBulge, 
+        circularArc2PointWithBulge,
         /**
          * A elliptical interpolation.
          */
-        elliptical, 
+        elliptical,
+        /**
+         * A clothoid interpolation.
+         */
+        clothoid,         
         /**
          * A conic interpolation.
          */
-        conic, 
+        conic,
         /**
          * A cubicSpline interpolation.
          */
-        cubicSpline, 
+        cubicSpline,
         /**
          * A polynomialSpline interpolation.
          */
@@ -90,9 +98,9 @@ public interface CurveSegment {
         /**
          * A rationalSpline interpolation.
          */
-        rationalSpline
+        rationalSpline 
     }
-
+    
     /**
      * 
      * @return a segments x-coordinates as an array
@@ -113,9 +121,8 @@ public interface CurveSegment {
 
     /**
      * 
-     * @return all coordinated as an array. The array will be constructed an concatination of the
-     *         arrays of the segements points. For a three dimensional case it looks like:
-     *         [x0,y0,z0,x1,y1,z1, ... ,xn,yn,zn]
+     * @return all coordinated as an array. The array will be constructed an concatination of the arrays of the
+     *         segements points. For a three dimensional case it looks like: [x0,y0,z0,x1,y1,z1, ... ,xn,yn,zn]
      */
     public double[] getAsArray();
 
@@ -127,15 +134,24 @@ public interface CurveSegment {
 
     /**
      * 
-     * @return dimension of a curve segment coordinates (2 for flat surfaces; 3 for surfaces in a 3D
-     *         space)
+     * @return dimension of a curve segment coordinates (2 for flat surfaces; 3 for surfaces in a 3D space)
      */
     public int getCoordinateDimension();
 
     /**
      * 
-     * @return interpolation used by a curve segment
+     * @return interpolation method used by this curve segment
      */
-    public INTERPOLATION getInterpolation();
+    public Interpolation getInterpolation();
 
+    /**
+     * Returns a linear interpolated representation of this <code>CurveSegment</code>.
+     * <p>
+     * Please note that this operation returns an approximated representations if this <code>CurveSegment</code> is not
+     * a {@link LineStringSegment}.
+     * </p>
+     * 
+     * @return a linear interpolated representation of this <code>CurveSegment</code>
+     */
+    public LineStringSegment getAsLineStringSegment();
 }

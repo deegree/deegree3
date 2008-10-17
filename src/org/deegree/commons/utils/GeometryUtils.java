@@ -80,7 +80,8 @@ public class GeometryUtils {
             for ( Point p : c.getPoints() ) {
                 ps.add( (Point) move( p, offx, offy ) );
             }
-            return fac.createCurve( geom.getId(), new CurveSegment[] { fac.createCurveSegment( ps ) }, c.getOrientation(),
+            // TODO handle non-linear curve segments
+            return fac.createCurve( geom.getId(), new CurveSegment[] { fac.createLineStringSegment(  ps ) }, c.getOrientation(),
                                     c.getCoordinateSystem() );
         }
         if ( geom instanceof Surface ) {

@@ -43,7 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.gml;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -61,6 +60,7 @@ import javax.xml.stream.XMLStreamWriter;
 import junit.framework.Assert;
 
 import org.deegree.commons.xml.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.FeatureCollection;
 import org.deegree.model.feature.types.ApplicationSchema;
@@ -83,7 +83,7 @@ import org.junit.Test;
  * 
  * @version $Revision:$, $Date:$
  */
-public class FeatureGMLAdapterTest {
+public class GMLFeatureParserTest {
 
     @Test
     public void testGenericFeatureParsing()
@@ -100,14 +100,15 @@ public class FeatureGMLAdapterTest {
         FeatureType[] fts = new FeatureType[] { ft };
         ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>() );
 
-        FeatureGMLAdapter adapter = new FeatureGMLAdapter( schema );
+        GMLFeatureParser adapter = new GMLFeatureParser( schema );
 
-        URL docURL = FeatureGMLAdapterTest.class.getResource( "SimpleFeatureExample1.gml" );
+        URL docURL = GMLFeatureParserTest.class.getResource( "SimpleFeatureExample1.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = adapter.parseFeature( xmlReader, null, idContext );
+        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
+                                                idContext );
         xmlReader.close();
 
         Assert.assertEquals( new QName( "http://www.deegree.org/app", "Country" ), feature.getName() );
@@ -134,14 +135,15 @@ public class FeatureGMLAdapterTest {
         FeatureType ft = new GenericFeatureType( new QName( "Country" ), propDecls, false );
         FeatureType[] fts = new FeatureType[] { ft };
         ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>() );
-        FeatureGMLAdapter adapter = new FeatureGMLAdapter( schema );
+        GMLFeatureParser adapter = new GMLFeatureParser( schema );
 
-        URL docURL = FeatureGMLAdapterTest.class.getResource( "SimpleFeatureExampleNoNS1.gml" );
+        URL docURL = GMLFeatureParserTest.class.getResource( "SimpleFeatureExampleNoNS1.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = adapter.parseFeature( xmlReader, null, idContext );
+        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
+                                                idContext );
         xmlReader.close();
 
         Assert.assertEquals( new QName( "Country" ), feature.getName() );
@@ -180,28 +182,21 @@ public class FeatureGMLAdapterTest {
         fts[1] = new GenericFeatureCollectionType( new QName( "http://www.opengis.net/gml", "FeatureCollection" ),
                                                    propDecls, false );
         ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>() );
-        FeatureGMLAdapter adapter = new FeatureGMLAdapter( schema );
+        GMLFeatureParser adapter = new GMLFeatureParser( schema );
 
-        URL docURL = FeatureGMLAdapterTest.class.getResource( "SimpleFeatureCollectionExample1.gml" );
+        URL docURL = GMLFeatureParserTest.class.getResource( "SimpleFeatureCollectionExample1.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = adapter.parseFeature( xmlReader, null, idContext );
+        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
+                                                idContext );
         xmlReader.close();
 
         // Assert.assertEquals( new QName( "http://www.deegree.org/app", "Country" ), feature.getName() );
         // Assert.assertEquals( "COUNTRY_1", feature.getId() );
         // Assert.assertEquals( 2, feature.getProperties().length );
         // Assert.assertEquals( "France", feature.getProperties()[0].getValue() );
-
-        XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(
-                                                                   XMLOutputFactory.newInstance().createXMLStreamWriter(
-                                                                                                                         System.out ) );
-        xmlWriter.setPrefix( "app", "http://www.deegree.org/app" );
-        xmlWriter.setPrefix( "gml", "http://www.opengis.net/gml" );
-        adapter.export( xmlWriter, feature );
-        xmlWriter.close();
     }
 
     @Test
@@ -212,7 +207,7 @@ public class FeatureGMLAdapterTest {
         String schemaURL = "file:///home/schneider/workspace/vrom_roonline2/resources/schema/imro2008/local-IMRO2008.xsd";
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
-        FeatureGMLAdapter gmlAdapter = new FeatureGMLAdapter( xsdAdapter.extractFeatureTypeSchema() );
+        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
 
         URL docURL = new URL(
                               "file:///home/schneider/workspace/vrom_roonline2/resources/data/IMRO2008-testplans/NL.IMRO.0964.000matrixplan1-0003.gml" );
@@ -220,21 +215,10 @@ public class FeatureGMLAdapterTest {
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = gmlAdapter.parseFeature( xmlReader, null, idContext );
+        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
+                                                   idContext );
         idContext.resolveXLinks();
         xmlReader.close();
-
-        XMLOutputFactory of = XMLOutputFactory.newInstance();
-        of.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
-        XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(
-                                                                   of.createXMLStreamWriter( new FileWriter(
-                                                                                                             "/home/schneider/out.gml" ) ) );
-        xmlWriter.setPrefix( "imro", "http://www.geonovum.nl/imro/2008/1" );
-        xmlWriter.setPrefix( "app", "http://www.deegree.org/app" );
-        xmlWriter.setPrefix( "gml", "http://www.opengis.net/gml" );
-        xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-        gmlAdapter.export( xmlWriter, feature );
-        xmlWriter.flush();
     }
 
     @Test
@@ -245,7 +229,7 @@ public class FeatureGMLAdapterTest {
         String schemaURL = "file:///home/schneider/workspace/vrom_roonline2/resources/schema/imro2006/IMRO2006.xsd";
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
-        FeatureGMLAdapter gmlAdapter = new FeatureGMLAdapter( xsdAdapter.extractFeatureTypeSchema() );
+        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
 
         URL docURL = new URL(
                               "file:///home/schneider/workspace/vrom-roonline/resources/data/testdata_herman_oktober2007/NL.IMRO.00280000-hoekschewaard.gml" );
@@ -253,21 +237,10 @@ public class FeatureGMLAdapterTest {
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = gmlAdapter.parseFeature( xmlReader, null, idContext );
+        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
+                                                   idContext );
         idContext.resolveXLinks();
         xmlReader.close();
-
-        XMLOutputFactory of = XMLOutputFactory.newInstance();
-        of.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
-        XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(
-                                                                   of.createXMLStreamWriter( new FileWriter(
-                                                                                                             "/home/schneider/out.gml" ) ) );
-        xmlWriter.setPrefix( "imro", "http://www.ravi.nl/imro2006" );
-        xmlWriter.setPrefix( "app", "http://www.deegree.org/app" );
-        xmlWriter.setPrefix( "gml", "http://www.opengis.net/gml" );
-        xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-        gmlAdapter.export( xmlWriter, feature );
-        xmlWriter.flush();
     }
 
     @Test
@@ -278,28 +251,17 @@ public class FeatureGMLAdapterTest {
         String schemaURL = "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
-        FeatureGMLAdapter gmlAdapter = new FeatureGMLAdapter( xsdAdapter.extractFeatureTypeSchema() );
+        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
 
         URL docURL = new URL( "file:///home/schneider/workspace/lkee_xplanung/resources/data/BP2070.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = gmlAdapter.parseFeature( xmlReader, null, idContext );
+        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
+                                                   idContext );
         idContext.resolveXLinks();
         xmlReader.close();
-
-        XMLOutputFactory of = XMLOutputFactory.newInstance();
-        of.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
-        XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(
-                                                                   of.createXMLStreamWriter( new FileWriter(
-                                                                                                             "/home/schneider/out.gml" ) ) );
-        xmlWriter.setPrefix( "xplan", "http://www.xplanung.de/xplangml" );
-        xmlWriter.setPrefix( "app", "http://www.deegree.org/app" );
-        xmlWriter.setPrefix( "gml", "http://www.opengis.net/gml" );
-        xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-        gmlAdapter.export( xmlWriter, feature );
-        xmlWriter.flush();
     }
 
     @Test
@@ -309,39 +271,19 @@ public class FeatureGMLAdapterTest {
         String schemaURL = this.getClass().getResource( "schema/Philosopher_typesafe.xsd" ).toString();
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
-        FeatureGMLAdapter gmlAdapter = new FeatureGMLAdapter( xsdAdapter.extractFeatureTypeSchema() );
+        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
 
-        URL docURL = FeatureGMLAdapterTest.class.getResource( "Philosopher_FeatureCollection.xml" );
+        URL docURL = GMLFeatureParserTest.class.getResource( "Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
-        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( xmlReader, null, idContext );
+        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature(
+                                                                            new XMLStreamReaderWrapper(
+                                                                                                        xmlReader,
+                                                                                                        docURL.toString() ),
+                                                                            null, idContext );
         idContext.resolveXLinks();
         return fc;
-
-        // xmlReader.close();
-        //        
-        // XMLOutputFactory of = XMLOutputFactory.newInstance();
-        // of.setProperty( XMLOutputFactory.IS_REPAIRING_NAMESPACES, Boolean.TRUE );
-        // XMLStreamWriter xmlWriter = new FormattingXMLStreamWriter(
-        // of.createXMLStreamWriter( new FileWriter(
-        // "/home/schneider/out.gml" ) ) );
-        // xmlWriter.setPrefix( "app", "http://www.deegree.org/app" );
-        // xmlWriter.setPrefix( "gml", "http://www.opengis.net/gml" );
-        // xmlWriter.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
-        // gmlAdapter.export( xmlWriter, feature );
-        // xmlWriter.flush();
-    }
-
-    public static void main( String[] args ) {
-
-        System.out.println( Thread.currentThread().getId() ); // 5
-        //        
-        // System.out.println( "bla: " + new QName( "Country" ) );
-        // System.out.println( "bla: " + new QName( null, "Country" ) );
-        //
-        // System.out.println( "HÄHÄ: '" + new QName( "", "Country" ).getNamespaceURI() + "'" );
-        // System.out.println( "HÄHÄ: '" + new QName( null, "Country" ).getNamespaceURI() + "'" );
     }
 }

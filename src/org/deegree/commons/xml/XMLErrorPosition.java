@@ -44,9 +44,9 @@
 package org.deegree.commons.xml;
 
 import javax.xml.stream.Location;
-import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 
 /**
  * Encapsulates information to locate the cause {@link XMLParsingException}.  
@@ -67,12 +67,11 @@ class XMLErrorPosition {
     private int characterOffset;
 
     /**
-     * @param origin
-     * @param errorPosition
+     * @param xmlReader
      */
-    XMLErrorPosition( XMLAdapter origin, XMLStreamReader errorPosition ) {
-        systemId = origin.getSystemId() == null ? "" : origin.getSystemId().toString();
-        Location location = errorPosition.getLocation();
+    XMLErrorPosition( XMLStreamReaderWrapper xmlReader ) {
+        systemId = xmlReader.getSystemId();
+        Location location = xmlReader.getLocation();
         lineNumber = location.getLineNumber();
         columnNumber = location.getColumnNumber();
         characterOffset = location.getCharacterOffset();

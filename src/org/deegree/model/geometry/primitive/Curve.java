@@ -56,7 +56,7 @@ public interface Curve extends Primitive {
      * orientation of a curve
      * 
      */
-    public enum ORIENTATION {
+    public enum Orientation {
         /**
          * Indicating a positive orientation
          */
@@ -107,7 +107,7 @@ public interface Curve extends Primitive {
      * 
      * @return a curves orientation
      */
-    public ORIENTATION getOrientation();
+    public Orientation getOrientation();
 
     /**
      * 

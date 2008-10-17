@@ -155,10 +155,10 @@ public class GeometryFactoryCreator {
         // setSupportedCurveInterpolations method
         SupportedCurveInterpolationType cit = gf.getSupportedCurveInterpolation();
         List<String> configuredInterpolations = cit.getCurveInterpolation();
-        List<CurveSegment.INTERPOLATION> curveInterpolations = new ArrayList<CurveSegment.INTERPOLATION>(
+        List<CurveSegment.Interpolation> curveInterpolations = new ArrayList<CurveSegment.Interpolation>(
                                                                                                           configuredInterpolations.size() );
         for ( String interpolation : configuredInterpolations ) {
-            curveInterpolations.add( CurveSegment.INTERPOLATION.valueOf( interpolation ) );
+            curveInterpolations.add( CurveSegment.Interpolation.valueOf( interpolation ) );
         }
         factory.setSupportedCurveInterpolations( curveInterpolations );
 
@@ -166,10 +166,10 @@ public class GeometryFactoryCreator {
         // setSupportedSurfaceInterpolations method
         SupportedSurfaceInterpolationType sip = gf.getSupportedSurfaceInterpolation();
         configuredInterpolations = sip.getSurfaceInterpolation();
-        List<SurfacePatch.INTERPOLATION> surfaceInterpolations = new ArrayList<SurfacePatch.INTERPOLATION>(
+        List<SurfacePatch.Interpolation> surfaceInterpolations = new ArrayList<SurfacePatch.Interpolation>(
                                                                                                             configuredInterpolations.size() );
         for ( String interpolation : configuredInterpolations ) {
-            surfaceInterpolations.add( SurfacePatch.INTERPOLATION.valueOf( interpolation ) );
+            surfaceInterpolations.add( SurfacePatch.Interpolation.valueOf( interpolation ) );
         }
         factory.setSupportedCurveInterpolations( curveInterpolations );
 
@@ -206,8 +206,8 @@ public class GeometryFactoryCreator {
      */
     @SuppressWarnings("unused")
     public List<GeometryFactory> findGeometryFactory( List<Class<?>> supportedGeometries,
-                                                      List<CurveSegment.INTERPOLATION> supportedCurveInterpolation,
-                                                      List<SurfacePatch.INTERPOLATION> supportedSurfaceInterpolation ) {
+                                                      List<CurveSegment.Interpolation> supportedCurveInterpolation,
+                                                      List<SurfacePatch.Interpolation> supportedSurfaceInterpolation ) {
         throw new UnsupportedOperationException( "Not supported yet" );
     }
 

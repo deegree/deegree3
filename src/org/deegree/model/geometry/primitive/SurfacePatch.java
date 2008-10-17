@@ -56,7 +56,7 @@ public interface SurfacePatch {
      * valid surface patch interpolations.
      * 
      */
-    public enum INTERPOLATION {
+    public enum Interpolation {
         /**
          * No interpolation of the surfaces
          */

@@ -4,7 +4,7 @@ package org.deegree.model.feature;
 import org.deegree.model.filter.Filter;
 import org.deegree.model.filter.Filter110XMLAdapter;
 import org.deegree.model.filter.FilterEvaluationException;
-import org.deegree.model.gml.FeatureGMLAdapterTest;
+import org.deegree.model.gml.GMLFeatureParserTest;
 import org.jaxen.SimpleNamespaceContext;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,7 +19,7 @@ public class FilterEvaluationTest {
     @Before
     public void setUp()
                             throws Exception {
-        fc = new FeatureGMLAdapterTest().testParsingPhilosopherFeatureCollection();
+        fc = new GMLFeatureParserTest().testParsingPhilosopherFeatureCollection();
         nsContext = new SimpleNamespaceContext ();
         nsContext.addNamespace( "app", "http://www.deegree.org/app" );
     }

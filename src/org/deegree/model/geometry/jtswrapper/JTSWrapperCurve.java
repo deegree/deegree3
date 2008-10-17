@@ -66,7 +66,7 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
 
     private List<CurveSegment> segments;
 
-    private Curve.ORIENTATION orientation;
+    private Curve.Orientation orientation;
 
     /**
      * 
@@ -78,7 +78,7 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
      * @param orientation
      */
     public JTSWrapperCurve( String id, double precision, CoordinateSystem crs, int coordinateDimension, CurveSegment segment,
-                            Curve.ORIENTATION orientation ) {
+                            Curve.Orientation orientation ) {
         super( id, precision, crs, coordinateDimension );
         // A JTS geometry is simple; so it has just one segment -> segment and curve are
         // geometrical identic
@@ -163,7 +163,7 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
      * 
      * @see org.deegree.model.geometry.primitive.Curve#getOrientation()
      */
-    public ORIENTATION getOrientation() {
+    public Orientation getOrientation() {
         return orientation;
     }
 

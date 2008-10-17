@@ -57,9 +57,9 @@ public abstract class AbstractGeometryFactory implements GeometryFactory {
 
     private String name;
 
-    private List<CurveSegment.INTERPOLATION> curveInterpolations;
+    private List<CurveSegment.Interpolation> curveInterpolations;
 
-    private List<SurfacePatch.INTERPOLATION> surfaceInterpolations;
+    private List<SurfacePatch.Interpolation> surfaceInterpolations;
 
     private List<Class<?>> geometries;
 
@@ -88,7 +88,7 @@ public abstract class AbstractGeometryFactory implements GeometryFactory {
      * 
      * @see org.deegree.model.geometry.GeometryFactory#getSupportedCurveInterpolations()
      */
-    public List<CurveSegment.INTERPOLATION> getSupportedCurveInterpolations() {
+    public List<CurveSegment.Interpolation> getSupportedCurveInterpolations() {
         return curveInterpolations;
     }
 
@@ -106,7 +106,7 @@ public abstract class AbstractGeometryFactory implements GeometryFactory {
      * 
      * @see org.deegree.model.geometry.GeometryFactory#getSupportedSurfaceInterpolations()
      */
-    public List<SurfacePatch.INTERPOLATION> getSupportedSurfaceInterpolations() {
+    public List<SurfacePatch.Interpolation> getSupportedSurfaceInterpolations() {
         return surfaceInterpolations;
     }
 
@@ -127,7 +127,7 @@ public abstract class AbstractGeometryFactory implements GeometryFactory {
     /* (non-Javadoc)
      * @see org.deegree.model.geometry.GeometryFactory#setSupportedCurveInterpolations(java.util.List)
      */
-    public void setSupportedCurveInterpolations( List<CurveSegment.INTERPOLATION> interpolations ) {
+    public void setSupportedCurveInterpolations( List<CurveSegment.Interpolation> interpolations ) {
         this.curveInterpolations = interpolations;
     }
 
@@ -141,7 +141,7 @@ public abstract class AbstractGeometryFactory implements GeometryFactory {
     /* (non-Javadoc)
      * @see org.deegree.model.geometry.GeometryFactory#setSupportedSurfaceInterpolations(java.util.List)
      */
-    public void setSupportedSurfaceInterpolations( List<SurfacePatch.INTERPOLATION> interpolations ) {
+    public void setSupportedSurfaceInterpolations( List<SurfacePatch.Interpolation> interpolations ) {
         this.surfaceInterpolations = interpolations;
         
     }
