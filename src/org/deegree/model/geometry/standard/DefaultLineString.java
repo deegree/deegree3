@@ -41,67 +41,56 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard.curvesegments;
+package org.deegree.model.geometry.standard;
 
-import org.deegree.model.geometry.primitive.Curve;
+import java.util.List;
+
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.curvesegments.OffsetCurve;
-import org.deegree.model.gml.Length;
+import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.model.geometry.standard.curvesegments.DefaultLineStringSegment;
 
 /**
- * Default implementation of {@link OffsetCurve} segments.
+ * Default implementation of {@link LineString}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultOffsetCurve implements OffsetCurve {
+public class DefaultLineString extends DefaultRing implements LineString {
 
-    private Curve baseCurve;
-
-    private Point direction;
-
-    private Length distance;
-
+    private LineStringSegment singleSegment;    
+    
     /**
-     * Creates a new <code>DefaultOffsetCurve</code> instance from the given parameters.
      * 
-     * @param baseCurve
-     *            the base geometry
-     * @param direction
-     *            the direction of the offset
-     * @param distance
-     *            the distance from the base curve
+     * @param id
+     * @param crs
+     * @param controlPoints
      */
-    public DefaultOffsetCurve( Curve baseCurve, Point direction, Length distance ) {
-        this.baseCurve = baseCurve;
-        this.direction = direction;
-        this.distance = distance;
+    public DefaultLineString( String id, CoordinateSystem crs, List<Point> controlPoints) {
+        super( id, crs, new DefaultLineStringSegment(controlPoints) );
+        singleSegment = (LineStringSegment) getCurveSegments().get( 0 );
+    }    
+
+    @Override
+    public CurveType getCurveType() {
+        return CurveType.LineString;
+    }    
+    
+    @Override
+    public List<Point> getPoints() {
+        return singleSegment.getControlPoints();
     }
 
     @Override
-    public Curve getBaseCurve() {
-        return baseCurve;
-    }
-
-    @Override
-    public Point getDirection() {
-        return direction;
-    }
-
-    @Override
-    public Length getDistance() {
-        return distance;
-    }
-
-    @Override
-    public int getCoordinateDimension() {
-        return baseCurve.getCoordinateDimension();
-    }
-
-    @Override
-    public Interpolation getInterpolation() {
+    public double[] getAsArray() {
         throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public LineString getAsLineString() {
+        return this;
     }
 }

@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -37,6 +37,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive;
 
+import org.deegree.model.geometry.Geometry;
+
 /**
  * 
  * 
@@ -46,7 +48,7 @@ package org.deegree.model.geometry.primitive;
  * 
  * @version. $Revision$, $Date$
  */
-public interface Point extends Primitive {
+public interface Point extends Geometry {
 
     /**
      * 

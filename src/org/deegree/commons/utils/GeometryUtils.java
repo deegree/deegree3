@@ -48,6 +48,7 @@ import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
+import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
  * <code>GeometryUtils</code>
@@ -77,10 +78,14 @@ public class GeometryUtils {
         if ( geom instanceof Curve ) {
             Curve c = (Curve) geom;
             LinkedList<Point> ps = new LinkedList<Point>();
-            for ( Point p : c.getPoints() ) {
+            if (c.getCurveSegments().size() != 1 || !(c.getCurveSegments().get( 0 ) instanceof LineStringSegment)) {
+                // TODO handle non-linear and multiple curve segments
+                throw new IllegalArgumentException();
+            }
+            LineStringSegment segment =( (LineStringSegment) c.getCurveSegments().get( 0 ) ); 
+            for ( Point p : segment.getControlPoints() ) {
                 ps.add( (Point) move( p, offx, offy ) );
             }
-            // TODO handle non-linear curve segments
             return fac.createCurve( geom.getId(), new CurveSegment[] { fac.createLineStringSegment(  ps ) }, c.getOrientation(),
                                     c.getCoordinateSystem() );
         }
@@ -96,8 +101,6 @@ public class GeometryUtils {
             }
             return fac.createSurface( geom.getId(), patches, s.getCoordinateSystem() );
         }
-
         return geom;
     }
-
 }

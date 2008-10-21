@@ -37,7 +37,10 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive.curvesegments;
 
+import java.util.List;
+
 import org.deegree.model.geometry.primitive.CurveSegment;
+import org.deegree.model.geometry.primitive.Point;
 
 /**
  * A <code>GeodesicString</code> is computed from two or more positions and aninterpolation using geodesics defined from
@@ -50,4 +53,11 @@ import org.deegree.model.geometry.primitive.CurveSegment;
  */
 public interface GeodesicString extends CurveSegment {
 
+    /**
+     * Returns the control points of the string.
+     * 
+     * @return the control points of the string
+     */
+    public List<Point> getControlPoints();    
+    
 }

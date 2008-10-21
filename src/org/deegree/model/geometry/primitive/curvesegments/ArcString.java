@@ -37,7 +37,10 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive.curvesegments;
 
+import java.util.List;
+
 import org.deegree.model.geometry.primitive.CurveSegment;
+import org.deegree.model.geometry.primitive.Point;
 
 /**
  * An <code>ArcString</code> is a {@link CurveSegment} that uses three-point circular arc interpolation.
@@ -49,6 +52,17 @@ import org.deegree.model.geometry.primitive.CurveSegment;
  */
 public interface ArcString extends CurveSegment {
 
+    /**
+     * Returns the number of arcs of the string.
+     * 
+     * @return the number of arcs
+     */
     public int getNumArcs();
 
+    /**
+     * Returns the control points of the interpolation.
+     * 
+     * @return the control points of the interpolation
+     */
+    public List<Point> getControlPoints();
 }

@@ -6,10 +6,9 @@ import java.util.List;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.Bezier;
 import org.deegree.model.geometry.primitive.curvesegments.Knot;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
- * Default implementation of {@link Bezier}.
+ * Default implementation of {@link Bezier} segments.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -24,6 +23,15 @@ public class DefaultBezier implements Bezier {
 
     private List<Knot> knots;
 
+    /**
+     * Creates a new <code>DefaultBezier</code> instance from the given parameters.
+     * 
+     * @param controlPoints
+     *            interpolation points
+     * @param polynomialDegree
+     * @param knot1
+     * @param knot2 
+     */
     public DefaultBezier( List<Point> controlPoints, int polynomialDegree, Knot knot1, Knot knot2 ) {
         this.controlPoints = controlPoints;
         this.polynomialDegree = polynomialDegree;
@@ -43,16 +51,6 @@ public class DefaultBezier implements Bezier {
     }
 
     @Override
-    public double[] getAsArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public LineStringSegment getAsLineStringSegment() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getCoordinateDimension() {
         return controlPoints.get( 0 ).getCoordinateDimension();
     }
@@ -63,23 +61,8 @@ public class DefaultBezier implements Bezier {
     }
 
     @Override
-    public List<Point> getPoints() {
+    public List<Point> getControlPoints() {
         return controlPoints;
-    }
-
-    @Override
-    public double[] getX() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getY() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getZ() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

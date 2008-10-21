@@ -43,9 +43,13 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.gml.schema;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
+
+import junit.framework.Assert;
 
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.junit.Test;
@@ -87,18 +91,135 @@ public class XSModelGMLAnalyzerTest {
     }
 
     @Test
+    public void testGML311AggregateElements()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_31 );
+        Set<String> substitutionts = getConcreteSubstitutions( "_GeometricAggregate", analyzer );
+        for ( String string : substitutionts ) {
+            System.out.println (string);
+        }
+        System.out.println (substitutionts.size());
+    }    
+
+    @Test
+    public void testGML311PrimitiveElements()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_31 );
+        Set<String> substitutionts = getConcreteSubstitutions( "_GeometricPrimitive", analyzer );
+        for ( String string : substitutionts ) {
+            System.out.println (string);
+        }
+        System.out.println (substitutionts.size());
+    }
+
+    @Test
+    public void testGML311ImplicitGeometryElements()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_31 );
+        Set<String> substitutionts = getConcreteSubstitutions( "_ImplicitGeometry", analyzer );
+        for ( String string : substitutionts ) {
+            System.out.println (string);
+        }
+        System.out.println (substitutionts.size());
+    }    
+
+    @Test
+    public void testGML311GeometryElements()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_31 );
+        Set<String> substitutionts = getConcreteSubstitutions( "_Curve", analyzer );
+        for ( String string : substitutionts ) {
+            System.out.println (string);
+        }
+        System.out.println (substitutionts.size());
+    }       
+    
+    @Test
+    public void testGML311CurveElements()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_31 );
+        Set<String> substitutionts = getConcreteSubstitutions( "_Curve", analyzer );
+        Assert.assertEquals( 4, substitutionts.size() );
+        Assert.assertTrue( substitutionts.contains( "CompositeCurve" ) );
+        Assert.assertTrue( substitutionts.contains( "Curve" ) );
+        Assert.assertTrue( substitutionts.contains( "LineString" ) );
+        Assert.assertTrue( substitutionts.contains( "OrientableCurve" ) );
+    }
+
+    @Test
+    public void testGML311RingElements()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_31 );
+        Set<String> substitutionts = getConcreteSubstitutions( "_Ring", analyzer );
+        Assert.assertEquals( 2, substitutionts.size() );
+        Assert.assertTrue( substitutionts.contains( "LinearRing" ) );
+        Assert.assertTrue( substitutionts.contains( "Ring" ) );
+    }
+
+    @Test
+    public void testGML311SurfaceElements()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_31 );
+        Set<String> substitutions = getConcreteSubstitutions( "_Surface", analyzer );
+        Assert.assertEquals( 7, substitutions.size() );
+        Assert.assertTrue( substitutions.contains( "CompositeSurface" ) );
+        Assert.assertTrue( substitutions.contains( "OrientableSurface" ) );        
+        Assert.assertTrue( substitutions.contains( "Polygon" ) );
+        Assert.assertTrue( substitutions.contains( "PolyhedralSurface" ) );
+        Assert.assertTrue( substitutions.contains( "Surface" ) );
+        Assert.assertTrue( substitutions.contains( "Tin" ) );
+        Assert.assertTrue( substitutions.contains( "TriangulatedSurface" ) );
+    }    
+
+    @Test
+    public void testGML311SolidElements()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_31 );
+        Set<String> substitutions = getConcreteSubstitutions( "_Solid", analyzer );
+        Assert.assertEquals( 2, substitutions.size() );
+        Assert.assertTrue( substitutions.contains( "CompositeSolid" ) );
+        Assert.assertTrue( substitutions.contains( "Solid" ) );        
+    }      
+    
+    @Test
     public void testGML311CurveSegments()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
         XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_31 );
-        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName("http://www.opengis.net/gml", "_CurveSegment"), "http://www.opengis.net/gml", true );
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml",
+                                                                                        "_CurveSegment" ),
+                                                                             "http://www.opengis.net/gml", true );
         for ( XSElementDeclaration elementDecl : elementDecls ) {
             System.out.println( elementDecl.getName() );
         }
     }
-    
+
     @Test
     public void testGML321CurveSegments()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
@@ -106,9 +227,42 @@ public class XSModelGMLAnalyzerTest {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
         XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_32 );
-        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName("http://www.opengis.net/gml/3.2", "AbstractCurveSegment"), "http://www.opengis.net/gml/3.2", true );
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
+                                                                             new QName(
+                                                                                        "http://www.opengis.net/gml/3.2",
+                                                                                        "AbstractCurveSegment" ),
+                                                                             "http://www.opengis.net/gml/3.2", true );
         for ( XSElementDeclaration elementDecl : elementDecls ) {
             System.out.println( elementDecl.getName() );
         }
+    }
+    
+    @Test
+    public void testGML321GeometryElements()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_32 );
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
+                                                                             new QName(
+                                                                                        "http://www.opengis.net/gml/3.2",
+                                                                                        "AbstractGeometry" ),
+                                                                             "http://www.opengis.net/gml/3.2", true );
+        for ( XSElementDeclaration elementDecl : elementDecls ) {
+            System.out.println( elementDecl.getName() );
+        }
+        System.out.println( elementDecls.size() );
     }    
+
+    private Set<String> getConcreteSubstitutions( String localName, XSModelGMLAnalyzer analyzer ) {
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml",
+                                                                                        localName ),
+                                                                             "http://www.opengis.net/gml", false );
+        HashSet<String> localNames = new HashSet<String>();
+        for ( XSElementDeclaration elementDecl : elementDecls ) {
+            localNames.add( elementDecl.getName() );
+        }
+        return localNames;
+    }
 }

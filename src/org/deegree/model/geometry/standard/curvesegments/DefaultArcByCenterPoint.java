@@ -43,16 +43,13 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.standard.curvesegments;
 
-import java.util.List;
-
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByCenterPoint;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.gml.Angle;
 import org.deegree.model.gml.Length;
 
 /**
- * Default implementation of {@link ArcByCenterPoint}.
+ * Default implementation of {@link ArcByCenterPoint} segments.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -105,42 +102,12 @@ public class DefaultArcByCenterPoint implements ArcByCenterPoint {
     }
 
     @Override
-    public double[] getAsArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public LineStringSegment getAsLineStringSegment() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getCoordinateDimension() {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Interpolation getInterpolation() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Point> getPoints() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getX() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getY() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getZ() {
         throw new UnsupportedOperationException();
     }
 }

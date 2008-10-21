@@ -48,10 +48,9 @@ import java.util.List;
 
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
- * Default implementation of {@link ArcByBulge}.
+ * Default implementation of {@link ArcByBulge} segments.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -112,18 +111,8 @@ public class DefaultArcByBulge implements ArcByBulge {
     }
 
     @Override
-    public double[] getAsArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public LineStringSegment getAsLineStringSegment() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getCoordinateDimension() {
-        return 0;
+        return controlPoints.get( 0 ).getCoordinateDimension();
     }
 
     @Override
@@ -132,22 +121,7 @@ public class DefaultArcByBulge implements ArcByBulge {
     }
 
     @Override
-    public List<Point> getPoints() {
+    public List<Point> getControlPoints() {
         return controlPoints;
-    }
-
-    @Override
-    public double[] getX() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getY() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getZ() {
-        throw new UnsupportedOperationException();
     }
 }

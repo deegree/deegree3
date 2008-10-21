@@ -950,11 +950,14 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * the choice
      * </p>
      * 
+     * @param srsName
+     *            default srs for the points, this is used if no <code>srsName</code> attribute is specified
+     * 
      * @return control points of the curve segment, not null, but size may be zero
      * @throws XMLStreamException
      * @throws XMLParsingException
      */
-    private List<Point> parseControlPoints( String srsName )
+    List<Point> parseControlPoints( String srsName )
                             throws XMLParsingException, XMLStreamException {
 
         List<Point> controlPoints = null;

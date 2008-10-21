@@ -54,7 +54,10 @@ import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Envelope;
+import org.deegree.model.geometry.primitive.LineString;
+import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
@@ -220,6 +223,19 @@ public interface GeometryFactory {
      * @return created {@link Point}
      */
     public Point createPoint( String id, double[] coordinates, CoordinateSystem crs );
+
+    /**
+     * Creates a {@link LineString} geometry.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system
+     * @param points
+     *            list of control points for the line string
+     * @return created {@link LineString}
+     */
+    public LineString createLineString( String id, CoordinateSystem crs, List<Point> points );
 
     /**
      * Creates a {@link Curve} from a two dimensional array of coordinates. Each field of the first dimension represents
@@ -526,7 +542,7 @@ public interface GeometryFactory {
     public Solid createSolid( String id, Surface[] outerboundary, Surface[][] innerboundaries, CoordinateSystem crs );
 
     /**
-     * create an untyped multi geometry a list of {@link Geometry}s
+     * Creates an untyped multi geometry from a list of {@link Geometry}s.
      * 
      * @param id
      *            identifier of the new geometry instance
@@ -536,7 +552,7 @@ public interface GeometryFactory {
     public MultiGeometry<Geometry> createMultiGeometry( String id, List<Geometry> geometries );
 
     /**
-     * Creates a {@link MultiPoint} from a list of passed {@link Point}s
+     * Creates a {@link MultiPoint} from a list of passed {@link Point}s.
      * 
      * @param id
      *            identifier of the new geometry instance
@@ -546,7 +562,7 @@ public interface GeometryFactory {
     public MultiPoint createMultiPoint( String id, List<Point> points );
 
     /**
-     * Creates a {@link MultiCurve} from a list of passed {@link Curve}s
+     * Creates a {@link MultiCurve} from a list of passed {@link Curve}s.
      * 
      * @param id
      *            identifier of the new geometry instance
@@ -556,7 +572,7 @@ public interface GeometryFactory {
     public MultiCurve createMultiCurve( String id, List<Curve> curves );
 
     /**
-     * Creates a {@link MultiSurface} from a list of passed {@link Surface}s
+     * Creates a {@link MultiSurface} from a list of passed {@link Surface}s.
      * 
      * @param id
      *            identifier of the new geometry instance
@@ -566,7 +582,7 @@ public interface GeometryFactory {
     public MultiSurface createMultiSurface( String id, List<Surface> surfaces );
 
     /**
-     * Creates a {@link MultiSolid} from a list of passed {@link Solid}s
+     * Creates a {@link MultiSolid} from a list of passed {@link Solid}s.
      * 
      * @param id
      *            identifier of the new geometry instance
@@ -606,7 +622,7 @@ public interface GeometryFactory {
     public CompositeSolid createCompositeSolid( String id, List<Solid> solids );
 
     /**
-     * Creates a general {@link GeometricComplex} from a list of geometries
+     * Creates a general {@link GeometricComplex} from a list of geometries.
      * 
      * @param id
      *            identifier of the new geometry instance
@@ -657,4 +673,29 @@ public interface GeometryFactory {
      */
     public Envelope createEnvelope( String id, SurfacePatch patch );
 
+    /**
+     * Creates a {@link Ring} from a list of passed {@link Curve}s.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system
+     * @param members
+     *            the <code>Curve</code>s that compose the <code>Ring</code>
+     * @return created {@link Ring}
+     */
+    public Ring createRing( String id, CoordinateSystem crs, List<Curve> members );
+    
+    /**
+     * Creates a simple {@link LinearRing} from a list of passed {@link Point}s.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system
+     * @param points
+     *            the control points
+     * @return created {@link Ring}
+     */
+    public LinearRing createLinearRing( String id, CoordinateSystem crs, List<Point> points );    
 }

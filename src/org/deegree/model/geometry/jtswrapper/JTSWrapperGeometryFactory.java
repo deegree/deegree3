@@ -39,7 +39,6 @@
 package org.deegree.model.geometry.jtswrapper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
@@ -57,7 +56,10 @@ import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Envelope;
+import org.deegree.model.geometry.primitive.LineString;
+import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
@@ -109,31 +111,17 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public Curve createCurve( String id, Point[][] coordinates, Orientation orientation, CoordinateSystem crs ) {
-        CurveSegment[] segments = new CurveSegment[coordinates.length];
-        for ( int i = 0; i < segments.length; i++ ) {
-            segments[i] = new JTSWrapperLineStringSegment( Arrays.asList( coordinates[i] ));
-        }
-        return createCurve( id, segments, orientation, crs );
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
     public Curve createCurve( String id, CurveSegment[] segments, Orientation orientation, CoordinateSystem crs ) {
-        if ( segments == null || segments.length == 0 ) {
-            return null;
-        }
-        Point point = segments[0].getPoints().get( 0 );
-        // JTS does not support Curves (LineStrings) build from different CurveSegments, so
-        // the first segment will build the complete curve
-        return new JTSWrapperCurve( id, point.getPrecision(), crs, point.getCoordinateDimension(), segments[0],
-                                    orientation );
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
     public LineStringSegment createLineStringSegment( List<Point> points ) {
-        if ( points == null || points.size() == 0 ) {
-            return null;
-        }
-        return new JTSWrapperLineStringSegment( points );
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
@@ -222,14 +210,13 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Solid createSolid( String id, Surface[] outerBoundary,
-                              Surface[][] innerBoundaries,
-                              CoordinateSystem crs ) {
+    public Solid createSolid( String id, Surface[] outerBoundary, Surface[][] innerBoundaries, CoordinateSystem crs ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public Surface createSurface( String id, List<Curve> boundary, SurfacePatch.Interpolation interpolation, CoordinateSystem crs ) {
+    public Surface createSurface( String id, List<Curve> boundary, SurfacePatch.Interpolation interpolation,
+                                  CoordinateSystem crs ) {
         if ( boundary == null || boundary.size() == 0 ) {
             return null;
         }
@@ -244,7 +231,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
         if ( patches == null || patches.size() == 0 ) {
             return null;
         }
-        Point point = patches.get( 0 ).getBoundary().get( 0 ).getPoints().get( 0 );
+        Point point = patches.get( 0 ).getBoundary().get( 0 ).getAsLineString().getPoints().get( 0 );
         // JTS does not support Surfaces (Polyons) build from different SurfacePatches, so
         // the first patch will build the complete surface
         return new JTSWrapperSurface( id, point.getPrecision(), crs, point.getCoordinateDimension(), patches.get( 0 ) );
@@ -258,7 +245,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
         return new JTSWrapperEnvelope( precision, crs, 2, p1, p2 );
     }
 
-    @Override    
+    @Override
     public Envelope createEnvelope( double[] min, double[] max, CoordinateSystem crs ) {
         // TODO
         // useful value for precision
@@ -343,5 +330,22 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     @Override
     public OffsetCurve createOffsetCurve( Curve baseCurve, Point direction, Length distance ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public Ring createRing( String id, CoordinateSystem crs, List<Curve> members ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public LineString createLineString( String id, CoordinateSystem crs, List<Point> points ) {
+        return new JTSWrapperLineString( id, points.get( 0 ).getPrecision(), crs,
+                                         points.get( 0 ).getCoordinateDimension(), points );
+    }
+
+    @Override
+    public LinearRing createLinearRing( String id, CoordinateSystem crs, List<Point> points ) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

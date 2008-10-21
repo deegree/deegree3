@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -38,12 +38,11 @@
 package org.deegree.model.geometry.multi;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
 
-
 /**
- * 
- * 
+ * Specialised aggregation type for {@link Surface} objects.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
@@ -53,9 +52,10 @@ import org.deegree.model.geometry.primitive.Surface;
 public interface MultiSurface extends MultiGeometry<Surface> {
 
     /**
-     * Area is calculated as the sum of all contained {@link Surface}s
-     * @return area of a MultiSurface measured in units of the used {@link CoordinateSystem} 
+     * The are of all contained {@link Solid}s measured in units of the used {@link CoordinateSystem}.
+     * 
+     * @return area
      */
-	public double getArea();    
-    
+    public double getArea();
+
 }

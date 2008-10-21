@@ -38,7 +38,10 @@
 
 package org.deegree.model.geometry.jtswrapper;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.multi.MultiSurface;
@@ -100,31 +103,99 @@ public class JTSWrapperMultiSurface extends JTSWrapperGeometry implements MultiS
         return toPoint( geometry.getCentroid().getCoordinate() );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.MultiGeometry#getGeometries()
-     */
-    public List<Surface> getGeometries() {
-        return surfaces;
+    // -----------------------------------------------------------------------
+    // implementation of List<Surface>
+    // -----------------------------------------------------------------------      
+    
+    public void add( int index, Surface element ) {
+        surfaces.add( index, element );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.MultiGeometry#getGeometryAt(int)
-     */
-    public Surface getGeometryAt( int index ) {
-        return (Surface) wrap( ( (MultiPolygon) geometry ).getGeometryN( index ) );
+    public boolean add( Surface e ) {
+        return surfaces.add( e );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.MultiGeometry#getNumberOfGeometries()
-     */
-    public int getNumberOfGeometries() {
-        return ( (MultiPolygon) geometry ).getNumGeometries();
+    public boolean addAll( Collection<? extends Surface> c ) {
+        return surfaces.addAll( c );
     }
 
+    public boolean addAll( int index, Collection<? extends Surface> c ) {
+        return surfaces.addAll( index, c );
+    }
+
+    public void clear() {
+        surfaces.clear();
+    }
+
+    public boolean contains( Object o ) {
+        return surfaces.contains( o );
+    }
+
+    public boolean containsAll( Collection<?> c ) {
+        return surfaces.containsAll( c );
+    }
+
+    public Surface get( int index ) {
+        return surfaces.get( index );
+    }
+
+    public int indexOf( Object o ) {
+        return surfaces.indexOf( o );
+    }
+
+    public boolean isEmpty() {
+        return surfaces.isEmpty();
+    }
+
+    public Iterator<Surface> iterator() {
+        return surfaces.iterator();
+    }
+
+    public int lastIndexOf( Object o ) {
+        return surfaces.lastIndexOf( o );
+    }
+
+    public ListIterator<Surface> listIterator() {
+        return surfaces.listIterator();
+    }
+
+    public ListIterator<Surface> listIterator( int index ) {
+        return surfaces.listIterator( index );
+    }
+
+    public Surface remove( int index ) {
+        return surfaces.remove( index );
+    }
+
+    public boolean remove( Object o ) {
+        return surfaces.remove( o );
+    }
+
+    public boolean removeAll( Collection<?> c ) {
+        return surfaces.removeAll( c );
+    }
+
+    public boolean retainAll( Collection<?> c ) {
+        return surfaces.retainAll( c );
+    }
+
+    public Surface set( int index, Surface element ) {
+        return surfaces.set( index, element );
+    }
+
+    public int size() {
+        return surfaces.size();
+    }
+
+    public List<Surface> subList( int fromIndex, int toIndex ) {
+        return surfaces.subList( fromIndex, toIndex );
+    }
+
+    public Object[] toArray() {
+        return surfaces.toArray();
+    }
+
+    public <T> T[] toArray( T[] a ) {
+        return surfaces.toArray( a );
+    }    
 }

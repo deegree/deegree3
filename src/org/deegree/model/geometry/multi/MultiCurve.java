@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -40,8 +40,7 @@ package org.deegree.model.geometry.multi;
 import org.deegree.model.geometry.primitive.Curve;
 
 /**
- * 
- * 
+ * Specialised aggregation type for {@link Curve} objects.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
@@ -51,9 +50,10 @@ import org.deegree.model.geometry.primitive.Curve;
 public interface MultiCurve extends MultiGeometry<Curve> {
       
     /**
-     * The length of a MultiCurve is calculated as the sum of all contained {@link Curve}s
-     * @return length of a MultiCurve 
+     * The length of a <code>MultiLineString</code> is calculated as the sum of the length of all contained
+     * {@link Curve}s.
+     * 
+     * @return accumulated length
      */
     public double getLength();
-
 }

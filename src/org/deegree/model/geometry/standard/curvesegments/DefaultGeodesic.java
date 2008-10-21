@@ -48,10 +48,9 @@ import java.util.List;
 
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.Geodesic;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
- * Default implementation of {@link Geodesic}.
+ * Default implementation of {@link Geodesic} segments.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -83,16 +82,6 @@ public class DefaultGeodesic implements Geodesic {
     public Point getPoint2() {
         return controlPoints.get( 1 );
     }    
-    
-    @Override
-    public double[] getAsArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public LineStringSegment getAsLineStringSegment() {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public int getCoordinateDimension() {
@@ -105,22 +94,7 @@ public class DefaultGeodesic implements Geodesic {
     }
 
     @Override
-    public List<Point> getPoints() {        
+    public List<Point> getControlPoints() {        
         return controlPoints;
-    }
-
-    @Override
-    public double[] getX() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getY() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getZ() {
-        throw new UnsupportedOperationException();
     }
 }

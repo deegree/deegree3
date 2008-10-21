@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -40,6 +40,7 @@ package org.deegree.model.geometry.primitive;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Geometry;
 
 /**
  * 
@@ -50,7 +51,7 @@ import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
  * 
  * @version. $Revision$, $Date$
  */
-public interface Surface extends Primitive {
+public interface Surface extends Geometry {
 
     /**
      * 

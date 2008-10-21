@@ -48,10 +48,9 @@ import java.util.List;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.BSpline;
 import org.deegree.model.geometry.primitive.curvesegments.Knot;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
- * TODO add documentation here
+ * Default implementation of {@link BSpline} segments.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -76,16 +75,6 @@ public class DefaultBSpline implements BSpline {
     }
 
     @Override
-    public double[] getAsArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public LineStringSegment getAsLineStringSegment() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getCoordinateDimension() {
         return controlPoints.get( 0 ).getCoordinateDimension();
     }
@@ -99,23 +88,8 @@ public class DefaultBSpline implements BSpline {
     }
 
     @Override
-    public List<Point> getPoints() {
+    public List<Point> getControlPoints() {
         return controlPoints;
-    }
-
-    @Override
-    public double[] getX() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getY() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getZ() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

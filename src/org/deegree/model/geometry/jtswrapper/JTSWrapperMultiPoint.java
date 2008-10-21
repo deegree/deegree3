@@ -38,7 +38,10 @@
 
 package org.deegree.model.geometry.jtswrapper;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.multi.MultiPoint;
@@ -82,38 +85,106 @@ public class JTSWrapperMultiPoint extends JTSWrapperGeometry implements MultiPoi
     /*
      * (non-Javadoc)
      * 
-     * @see org.deegree.model.geometry.multi.MultiPoint#getGeometries()
-     */
-    public List<Point> getGeometries() {
-        return points;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.MultiPoint#getGeometryAt(int)
-     */
-    public Point getGeometryAt( int index ) {
-        com.vividsolutions.jts.geom.MultiPoint mp = (com.vividsolutions.jts.geom.MultiPoint) geometry;
-        return toPoint( ( (com.vividsolutions.jts.geom.Point) mp.getGeometryN( index ) ).getCoordinate() );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.deegree.model.geometry.multi.MultiGeometry#getCentroid()
      */
     public Point getCentroid() {
         return toPoint( geometry.getCentroid().getCoordinate() );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.MultiGeometry#getSize()
-     */
-    public int getNumberOfGeometries() {
-        return ( (com.vividsolutions.jts.geom.MultiPoint) geometry ).getNumGeometries();
+    // -----------------------------------------------------------------------
+    // implementation of List<Curve>
+    // -----------------------------------------------------------------------
+    
+    
+    public void add( int index, Point element ) {
+        points.add( index, element );
     }
 
+    public boolean add( Point e ) {
+        return points.add( e );
+    }
+
+    public boolean addAll( Collection<? extends Point> c ) {
+        return points.addAll( c );
+    }
+
+    public boolean addAll( int index, Collection<? extends Point> c ) {
+        return points.addAll( index, c );
+    }
+
+    public void clear() {
+        points.clear();
+    }
+
+    public boolean contains( Object o ) {
+        return points.contains( o );
+    }
+
+    public boolean containsAll( Collection<?> c ) {
+        return points.containsAll( c );
+    }
+
+    public Point get( int index ) {
+        return points.get( index );
+    }
+    
+    public int indexOf( Object o ) {
+        return points.indexOf( o );
+    }
+
+    public boolean isEmpty() {
+        return points.isEmpty();
+    }
+
+    public Iterator<Point> iterator() {
+        return points.iterator();
+    }
+
+    public int lastIndexOf( Object o ) {
+        return points.lastIndexOf( o );
+    }
+
+    public ListIterator<Point> listIterator() {
+        return points.listIterator();
+    }
+
+    public ListIterator<Point> listIterator( int index ) {
+        return points.listIterator( index );
+    }
+
+    public Point remove( int index ) {
+        return points.remove( index );
+    }
+
+    public boolean remove( Object o ) {
+        return points.remove( o );
+    }
+
+    public boolean removeAll( Collection<?> c ) {
+        return points.removeAll( c );
+    }
+
+    public boolean retainAll( Collection<?> c ) {
+        return points.retainAll( c );
+    }
+
+    public Point set( int index, Point element ) {
+        return points.set( index, element );
+    }
+
+    public int size() {
+        return points.size();
+    }
+
+    public List<Point> subList( int fromIndex, int toIndex ) {
+        return points.subList( fromIndex, toIndex );
+    }
+
+    public Object[] toArray() {
+        return points.toArray();
+    }
+
+    public <T> T[] toArray( T[] a ) {
+        return points.toArray( a );
+    }
 }

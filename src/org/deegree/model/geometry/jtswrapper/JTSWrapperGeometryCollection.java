@@ -38,14 +38,15 @@
 
 package org.deegree.model.geometry.jtswrapper;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.Geometry;
-import org.deegree.model.geometry.multi.GeometryCollection;
-import org.deegree.model.geometry.primitive.Curve;
+import org.deegree.model.geometry.multi.MultiGeometry;
 import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.Surface;
 
 /**
  * 
@@ -55,17 +56,10 @@ import org.deegree.model.geometry.primitive.Surface;
  * 
  * @version. $Revision$, $Date$
  */
-public class JTSWrapperGeometryCollection extends JTSWrapperGeometry implements GeometryCollection {
+public class JTSWrapperGeometryCollection extends JTSWrapperGeometry implements MultiGeometry<Geometry> {
 
     private List<Geometry> geometries;
-
-    private boolean doContainsCollections = false;
-
-    private boolean doContainsCurves = false;
-
-    private boolean doContainsPoints = false;
-
-    private boolean doContainsSurface = false;
+    private Collection<?> c;
 
     /**
      * @param id 
@@ -86,73 +80,8 @@ public class JTSWrapperGeometryCollection extends JTSWrapperGeometry implements 
             } else {
                 gs[i++] = export( geom );
             }
-            if ( !doContainsCurves && geom instanceof Curve ) {
-                doContainsCurves = true;
-            } else if ( !doContainsSurface && geom instanceof Surface ) {
-                doContainsSurface = true;
-            } else if ( !doContainsPoints && geom instanceof Point ) {
-                doContainsPoints = true;
-            } else if ( !doContainsCollections && geom instanceof GeometryCollection ) {
-                doContainsCollections = true;
-            }
         }
         geometry = jtsFactory.createGeometryCollection( gs );
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.GeometryCollection#containsCollections()
-     */
-    public boolean containsCollections() {
-        return doContainsCollections;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.GeometryCollection#containsComplexes()
-     */
-    public boolean containsComplexes() {
-        // JTS does not know complex geometries so return will always be false
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.GeometryCollection#containsCurves()
-     */
-    public boolean containsCurves() {
-        return doContainsCurves;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.GeometryCollection#containsPoints()
-     */
-    public boolean containsPoints() {
-        return doContainsPoints;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.GeometryCollection#containsSolids()
-     */
-    public boolean containsSolids() {
-        // JTS does not know Solids so return will always be false
-        return false;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.GeometryCollection#containsSurfaces()
-     */
-    public boolean containsSurfaces() {
-        return doContainsSurface;
     }
 
     /*
@@ -164,33 +93,99 @@ public class JTSWrapperGeometryCollection extends JTSWrapperGeometry implements 
         return toPoint( geometry.getCentroid().getCoordinate() );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.MultiGeometry#getGeometries()
-     */
-    public List<Geometry> getGeometries() {
-        return geometries;
+    // -----------------------------------------------------------------------
+    // implementation of List<Geometry>
+    // -----------------------------------------------------------------------    
+    
+    public boolean add( Geometry e ) {
+        return geometries.add( e );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.MultiGeometry#getGeometryAt(int)
-     */
-    public Geometry getGeometryAt( int index ) {
-        com.vividsolutions.jts.geom.GeometryCollection gc = (com.vividsolutions.jts.geom.GeometryCollection) geometry;
-        return wrap( gc.getGeometryN( index ) );
+    public void add( int index, Geometry element ) {
+        geometries.add( index, element );
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.multi.MultiGeometry#getNumberOfGeometries()
-     */
-    public int getNumberOfGeometries() {
-        com.vividsolutions.jts.geom.GeometryCollection gc = (com.vividsolutions.jts.geom.GeometryCollection) geometry;
-        return gc.getNumGeometries();
+    public boolean addAll( Collection<? extends Geometry> c ) {
+        return geometries.addAll( c );
     }
 
+    public boolean addAll( int index, Collection<? extends Geometry> c ) {
+        return geometries.addAll( index, c );
+    }
+
+    public void clear() {
+        geometries.clear();
+    }
+
+    public boolean contains( Object o ) {
+        return geometries.contains( o );
+    }
+
+    public boolean containsAll( Collection<?> c ) {
+        return geometries.containsAll( c );
+    }
+
+    public Geometry get( int index ) {
+        return geometries.get( index );
+    }
+
+    public int indexOf( Object o ) {
+        return geometries.indexOf( o );
+    }
+
+    public boolean isEmpty() {
+        return geometries.isEmpty();
+    }
+
+    public Iterator<Geometry> iterator() {
+        return geometries.iterator();
+    }
+
+    public int lastIndexOf( Object o ) {
+        return geometries.lastIndexOf( o );
+    }
+
+    public ListIterator<Geometry> listIterator() {
+        return geometries.listIterator();
+    }
+
+    public ListIterator<Geometry> listIterator( int index ) {
+        return geometries.listIterator( index );
+    }
+
+    public Geometry remove( int index ) {
+        return geometries.remove( index );
+    }
+
+    public boolean remove( Object o ) {
+        return geometries.remove( o );
+    }
+
+    public boolean removeAll( Collection<?> c ) {
+        return geometries.removeAll( c );
+    }
+
+    public boolean retainAll( Collection<?> c ) {
+        return geometries.retainAll( c );
+    }
+
+    public Geometry set( int index, Geometry element ) {
+        return geometries.set( index, element );
+    }
+
+    public int size() {
+        return geometries.size();
+    }
+
+    public List<Geometry> subList( int fromIndex, int toIndex ) {
+        return geometries.subList( fromIndex, toIndex );
+    }
+
+    public Object[] toArray() {
+        return geometries.toArray();
+    }
+
+    public <T> T[] toArray( T[] a ) {
+        return geometries.toArray( a );
+    }
 }

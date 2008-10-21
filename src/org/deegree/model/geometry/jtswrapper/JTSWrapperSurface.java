@@ -85,7 +85,7 @@ class JTSWrapperSurface extends JTSWrapperGeometry implements Surface {
 
         CoordinateSequenceFactory fac = CoordinateArraySequenceFactory.instance();
         List<Curve> patchBoundary = patch.getBoundary();
-        List<Point> outer = patchBoundary.get( 0 ).getPoints();
+        List<Point> outer = patchBoundary.get( 0 ).getAsLineString().getPoints();
         Coordinate[] coords = toCoordinates( outer );
 
         LinearRing shell = new LinearRing( fac.create( coords ), jtsFactory );
@@ -94,7 +94,7 @@ class JTSWrapperSurface extends JTSWrapperGeometry implements Surface {
         if ( patchBoundary.size() > 1 ) {
             holes = new LinearRing[patchBoundary.size() - 1];
             for ( int i = 1; i < patchBoundary.size(); i++ ) {
-                coords = toCoordinates( patchBoundary.get( i ).getPoints() );
+                coords = toCoordinates( patchBoundary.get( i ).getAsLineString().getPoints() );
                 holes[i - 1] = new LinearRing( fac.create( coords ), jtsFactory );
             }
         } else {

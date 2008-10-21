@@ -55,11 +55,22 @@ import org.deegree.model.geometry.primitive.Point;
  * @version $Revision:$, $Date:$
  */
 public interface ArcStringByBulge extends CurveSegment {
-
+    
+    /**
+     * Returns the number of arcs of the string.
+     * 
+     * @return the number of arcs
+     */
     public int getNumArcs();
     
     public double [] getBulges();
     
     public List<Point> getNormals();
     
+    /**
+     * Returns the control points of the segment.
+     * 
+     * @return the control points of the segment
+     */
+    public List<Point> getControlPoints();
 }

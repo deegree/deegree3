@@ -37,7 +37,10 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive.curvesegments;
 
+import java.util.List;
+
 import org.deegree.model.geometry.primitive.CurveSegment;
+import org.deegree.model.geometry.primitive.Point;
 
 /**
  * A <code>LineStringSegment</code> is a {@link CurveSegment} that is defined by two or more coordinate tuples, with
@@ -50,4 +53,10 @@ import org.deegree.model.geometry.primitive.CurveSegment;
  */
 public interface LineStringSegment extends CurveSegment {
 
+    /**
+     * Returns the control points of the string.
+     * 
+     * @return the control points of the string
+     */
+    public List<Point> getControlPoints();
 }

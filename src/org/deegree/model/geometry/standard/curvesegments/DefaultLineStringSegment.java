@@ -50,7 +50,7 @@ import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
- * Default implementation of {@link LineStringSegment}.
+ * Default implementation of {@link LineStringSegment} segments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -70,16 +70,6 @@ public class DefaultLineStringSegment implements LineStringSegment {
     public DefaultLineStringSegment( List<Point> points ) {
         this.points = new ArrayList<Point>(points);
     }
-    
-    @Override
-    public double[] getAsArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public LineStringSegment getAsLineStringSegment() {
-        return this;
-    }
 
     @Override
     public int getCoordinateDimension() {
@@ -92,22 +82,7 @@ public class DefaultLineStringSegment implements LineStringSegment {
     }
 
     @Override
-    public List<Point> getPoints() {
+    public List<Point> getControlPoints() {
         return points;
-    }
-
-    @Override
-    public double[] getX() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getY() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getZ() {
-        throw new UnsupportedOperationException();
     }
 }

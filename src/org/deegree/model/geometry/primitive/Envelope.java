@@ -37,6 +37,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive;
 
+import org.deegree.model.geometry.Geometry;
+
 
 /**
  * 
@@ -47,7 +49,7 @@ package org.deegree.model.geometry.primitive;
  * 
  * @version. $Revision$, $Date$
  */
-public interface Envelope extends Primitive {
+public interface Envelope extends Geometry {
 
     /**
      * returns the minimum coordinate of an envelope

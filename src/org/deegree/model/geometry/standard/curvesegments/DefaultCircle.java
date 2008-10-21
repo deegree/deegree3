@@ -47,7 +47,7 @@ import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.Circle;
 
 /**
- * Default implementation of {@link Circle}.
+ * Default implementation of {@link Circle} segments.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

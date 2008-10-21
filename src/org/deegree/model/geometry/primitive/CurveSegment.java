@@ -37,9 +37,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive;
 
-import java.util.List;
-
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
  * A <code>CurveSegment</code> is a portion of a {@link Curve} in which a single interpolation method is used.
@@ -103,37 +100,6 @@ public interface CurveSegment {
     
     /**
      * 
-     * @return a segments x-coordinates as an array
-     */
-    public double[] getX();
-
-    /**
-     * 
-     * @return a segments y-coordinates as an array
-     */
-    public double[] getY();
-
-    /**
-     * 
-     * @return a segments z-coordinates as an array
-     */
-    public double[] getZ();
-
-    /**
-     * 
-     * @return all coordinated as an array. The array will be constructed an concatination of the arrays of the
-     *         segements points. For a three dimensional case it looks like: [x0,y0,z0,x1,y1,z1, ... ,xn,yn,zn]
-     */
-    public double[] getAsArray();
-
-    /**
-     * 
-     * @return points constructing a segments as {@link List}
-     */
-    public List<Point> getPoints();
-
-    /**
-     * 
      * @return dimension of a curve segment coordinates (2 for flat surfaces; 3 for surfaces in a 3D space)
      */
     public int getCoordinateDimension();
@@ -143,15 +109,4 @@ public interface CurveSegment {
      * @return interpolation method used by this curve segment
      */
     public Interpolation getInterpolation();
-
-    /**
-     * Returns a linear interpolated representation of this <code>CurveSegment</code>.
-     * <p>
-     * Please note that this operation returns an approximated representations if this <code>CurveSegment</code> is not
-     * a {@link LineStringSegment}.
-     * </p>
-     * 
-     * @return a linear interpolated representation of this <code>CurveSegment</code>
-     */
-    public LineStringSegment getAsLineStringSegment();
 }

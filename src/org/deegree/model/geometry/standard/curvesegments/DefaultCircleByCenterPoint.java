@@ -49,7 +49,7 @@ import org.deegree.model.gml.Angle;
 import org.deegree.model.gml.Length;
 
 /**
- * Default implementation of {@link CircleByCenterPoint}.
+ * Default implementation of {@link CircleByCenterPoint} segments.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

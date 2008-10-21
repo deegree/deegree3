@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -41,8 +41,7 @@ import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.primitive.Solid;
 
 /**
- * 
- * 
+ * Specialised aggregation type for {@link Solid} objects.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
@@ -52,9 +51,9 @@ import org.deegree.model.geometry.primitive.Solid;
 public interface MultiSolid extends MultiGeometry<Solid> {
 
     /**
-     * A volume will be calculated as the sum of all contained {@link Solid}s
+     * The volume of all contained {@link Solid}s measured in units of the used {@link CoordinateSystem}.
      * 
-     * @return volume of a MultiSolid measured in units of the used {@link CoordinateSystem}
+     * @return volume
      */
     public double getVolume();
 

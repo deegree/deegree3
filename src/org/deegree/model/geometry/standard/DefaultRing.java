@@ -44,6 +44,7 @@
 package org.deegree.model.geometry.standard;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
@@ -51,34 +52,58 @@ import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.model.geometry.standard.curvesegments.DefaultLineStringSegment;
 
 /**
- * Default implementation of {@link Curve}.
+ * Default implementation of {@link Ring}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
+public class DefaultRing extends AbstractDefaultGeometry implements Ring {
 
-    private List<CurveSegment> segments;
+    /** The constituting <code>Curve</code> instances. */
+    protected List<Curve> members;
 
-    private Curve.Orientation orientation;
+    /** The segments of all member curves. */
+    protected List<CurveSegment> segments = new LinkedList<CurveSegment>();
 
     /**
+     * Creates a new <code>DefaultRing</code> instance from the given parameters.
      * 
      * @param id
+     *            identifier of the created geometry object
      * @param crs
-     * @param segments
-     * @param orientation
+     *            coordinate reference system
+     * @param members
+     *            the <code>Curve</code>s that compose the <code>Ring</code>
      */
-    public DefaultCurve( String id, CoordinateSystem crs, List<CurveSegment> segments, Curve.Orientation orientation ) {
+    public DefaultRing( String id, CoordinateSystem crs, List<Curve> members ) {
         super( id, crs );
-        this.segments = new ArrayList<CurveSegment>( segments );
-        this.orientation = orientation;
+        this.members = members;
+        for ( Curve curve : members ) {
+            segments.addAll( curve.getCurveSegments() );
+        }
+    }
+
+    /**
+     * Creates a new <code>DefaultRing</code> instance from a closed {@link DefaultLineString}.
+     * 
+     * @param id
+     *            identifier of the created geometry object
+     * @param crs
+     *            coordinate reference system
+     * @param singleCurve
+     *            closed line string
+     */
+    protected DefaultRing( String id, CoordinateSystem crs, DefaultLineString singleCurve ) {
+        super( id, crs );
+        members = new ArrayList<Curve>( 1 );
+        members.add( singleCurve );
+        segments.addAll( singleCurve.getCurveSegments() );
     }
 
     /**
@@ -86,10 +111,21 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
      * @param crs
      * @param segment
      */
-    public DefaultCurve( String id, CoordinateSystem crs, CurveSegment segment ) {
+    public DefaultRing( String id, CoordinateSystem crs, LineStringSegment segment ) {
         super( id, crs );
-        this.segments = new ArrayList<CurveSegment>( 1 );
+        this.members = new ArrayList<Curve>( 1 );
+        this.members.add( new DefaultLineString( null, crs, segment.getControlPoints() ) );
         this.segments.add( segment );
+    }
+
+    @Override
+    public RingType getRingType() {
+        return RingType.Ring;
+    }
+
+    @Override
+    public LineString getAsLineString() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -103,31 +139,27 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
     }
 
     @Override
+    public CurveType getCurveType() {
+        return CurveType.Curve;
+    }
+
+    @Override
     public double getLength() {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Orientation getOrientation() {
-        return orientation;
+        return Orientation.unknown;
     }
 
     @Override
     public boolean isClosed() {
-        throw new UnsupportedOperationException();
+        return true;
     }
 
     @Override
-    public LineString getAsLineString() {
-        if ( segments.size() != 1 && !( segments.get( 0 ) instanceof LineString ) ) {
-            throw new UnsupportedOperationException();
-        }
-        return new DefaultLineString( null, getCoordinateSystem(),
-                                      ( (LineStringSegment) segments.get( 0 ) ).getControlPoints() );
-    }
-
-    @Override
-    public CurveType getCurveType() {
-        return CurveType.Curve;
+    public List<Curve> getMembers() {
+        return members;
     }
 }

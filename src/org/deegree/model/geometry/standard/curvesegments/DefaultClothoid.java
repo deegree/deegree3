@@ -1,13 +1,9 @@
 package org.deegree.model.geometry.standard.curvesegments;
 
-import java.util.List;
-
-import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.Clothoid;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
- * Default implementation of {@link Clothoid}.
+ * Default implementation of {@link Clothoid} segments.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -66,16 +62,6 @@ public class DefaultClothoid implements Clothoid {
     }
 
     @Override
-    public double[] getAsArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public LineStringSegment getAsLineStringSegment() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getCoordinateDimension() {
         return referenceLocation.getOutDimension();
     }
@@ -83,25 +69,5 @@ public class DefaultClothoid implements Clothoid {
     @Override
     public Interpolation getInterpolation() {
         return Interpolation.clothoid;
-    }
-
-    @Override
-    public List<Point> getPoints() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getX() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getY() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getZ() {
-        throw new UnsupportedOperationException();
     }
 }

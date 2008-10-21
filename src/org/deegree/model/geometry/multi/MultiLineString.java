@@ -37,54 +37,23 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.multi;
 
-import org.deegree.model.geometry.Geometry;
+import org.deegree.model.geometry.primitive.LineString;
 
 /**
+ * Specialised aggregation type for {@link LineString} objects.
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: otonnhofer $
  * 
- * 
- * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
- * 
- * @version. $Revision$, $Date$
- * 
+ * @version. $Revision: 11566 $, $Date: 2008-05-05 12:33:57 +0000 (Mo, 05 Mai 2008) $
  */
-public interface GeometryCollection extends MultiGeometry<Geometry> {
+public interface MultiLineString extends MultiGeometry<LineString> {
 
     /**
+     * The length of a <code>MultiLineString</code> is calculated as the sum of the length of all contained
+     * {@link LineString}s.
      * 
-     * @return true if a collection contains point geometries
+     * @return accumulated length
      */
-    public boolean containsPoints();
-
-    /**
-     * 
-     * @return true if a collection contains curve geometries
-     */
-    public boolean containsCurves();
-
-    /**
-     * 
-     * @return true if a collection contains curve geometries
-     */
-    public boolean containsSurfaces();
-
-    /**
-     * 
-     * @return true if a collection contains solid geometries
-     */
-    public boolean containsSolids();
-
-    /**
-     * 
-     * @return true if a collection contains geometric complexes
-     */
-    public boolean containsComplexes();
-
-    /**
-     * 
-     * @return true if a collection contains geometry collections
-     */
-    public boolean containsCollections();
-
+    public double getLength();
 }

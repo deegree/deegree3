@@ -45,12 +45,12 @@ package org.deegree.model.geometry.standard.curvesegments;
 
 import java.util.List;
 
+import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.ArcStringByBulge;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
- * Default implementation of {@link ArcStringByBulge}.
+ * Default implementation of {@link ArcStringByBulge} segments.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -107,42 +107,17 @@ public class DefaultArcStringByBulge implements ArcStringByBulge {
     }    
     
     @Override
-    public double[] getAsArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public LineStringSegment getAsLineStringSegment() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getCoordinateDimension() {
-        return 0;
+        return controlPoints.get( 0 ).getCoordinateDimension();
     }
 
     @Override
     public Interpolation getInterpolation() {
-        throw new UnsupportedOperationException();
+        return CurveSegment.Interpolation.circularArc2PointWithBulge;
     }
 
     @Override
-    public List<Point> getPoints() {
+    public List<Point> getControlPoints() {
         return controlPoints;
-    }
-
-    @Override
-    public double[] getX() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getY() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getZ() {
-        throw new UnsupportedOperationException();
     }
 }

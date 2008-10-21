@@ -41,67 +41,37 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard.curvesegments;
+package org.deegree.model.geometry.primitive;
 
-import org.deegree.model.geometry.primitive.Curve;
-import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.curvesegments.OffsetCurve;
-import org.deegree.model.gml.Length;
+import java.util.List;
 
 /**
- * Default implementation of {@link OffsetCurve} segments.
+ * The most common case of a {@link Curve}: just one curve segment with linear interpolation between the control points.
+ * <p>
+ * This type corresponds to the following specifications:
+ * <ul>
+ * <li><code>GM_LineString</code> from ISO 19107 ???</li>
+ * <li><code>gml:LineString</code> from GML (2-3.2)</li>
+ * <li><code>LineString</code> from the Simple Feature specification</li>
+ * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultOffsetCurve implements OffsetCurve {
-
-    private Curve baseCurve;
-
-    private Point direction;
-
-    private Length distance;
+public interface LineString extends Curve {
 
     /**
-     * Creates a new <code>DefaultOffsetCurve</code> instance from the given parameters.
      * 
-     * @param baseCurve
-     *            the base geometry
-     * @param direction
-     *            the direction of the offset
-     * @param distance
-     *            the distance from the base curve
+     * @return all coordinated as an array. The array will be constructed an concatination of the arrays of the
+     *         segements points. For a three dimensional case it looks like: [x0,y0,z0,x1,y1,z1, ... ,xn,yn,zn]
      */
-    public DefaultOffsetCurve( Curve baseCurve, Point direction, Length distance ) {
-        this.baseCurve = baseCurve;
-        this.direction = direction;
-        this.distance = distance;
-    }
+    public double[] getAsArray();
 
-    @Override
-    public Curve getBaseCurve() {
-        return baseCurve;
-    }
-
-    @Override
-    public Point getDirection() {
-        return direction;
-    }
-
-    @Override
-    public Length getDistance() {
-        return distance;
-    }
-
-    @Override
-    public int getCoordinateDimension() {
-        return baseCurve.getCoordinateDimension();
-    }
-
-    @Override
-    public Interpolation getInterpolation() {
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * 
+     * @return points constructing a curve as {@link List}
+     */
+    public List<Point> getPoints();
 }

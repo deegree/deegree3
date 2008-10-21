@@ -56,7 +56,10 @@ import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Envelope;
+import org.deegree.model.geometry.primitive.LineString;
+import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
@@ -304,5 +307,20 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     @Override
     public OffsetCurve createOffsetCurve( Curve baseCurve, Point direction, Length distance ) {        
         return new DefaultOffsetCurve (baseCurve, direction, distance);
+    }
+
+    @Override
+    public Ring createRing( String id, CoordinateSystem crs, List<Curve> members ) {
+        return new DefaultRing (id, crs, members);
+    }
+
+    @Override
+    public LinearRing createLinearRing( String id, CoordinateSystem crs, List<Point> points ) {
+        return new DefaultLinearRing(id, crs, points);
+    }    
+    
+    @Override
+    public LineString createLineString( String id, CoordinateSystem crs, List<Point> points ) {
+        return new DefaultLineString (id, crs, points);
     }
 }

@@ -47,10 +47,9 @@ import java.util.List;
 
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.ArcString;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
- * Default implementation of {@link ArcString}.
+ * Default implementation of {@link ArcString} segments.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -61,35 +60,25 @@ public class DefaultArcString implements ArcString {
 
     protected int numArcs;
 
-    protected List<Point> interpolationPoints;    
-    
+    protected List<Point> controlPoints;
+
     /**
      * Creates a new <code>DefaultArcString</code> instance from the given parameters.
      * 
-     * @param interpolationPoints
+     * @param controlPoints
      *            interpolation points
      */
-    public DefaultArcString( List<Point> interpolationPoints ) {
-        if ( interpolationPoints.size() < 3 || interpolationPoints.size() % 2 != 1 ) {
+    public DefaultArcString( List<Point> controlPoints ) {
+        if ( controlPoints.size() < 3 || controlPoints.size() % 2 != 1 ) {
             throw new IllegalArgumentException( "Invalid number of points." );
         }
-        numArcs = interpolationPoints.size() / 2;
-        this.interpolationPoints = interpolationPoints;
-    }   
-
-    @Override
-    public double[] getAsArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public LineStringSegment getAsLineStringSegment() {
-        throw new UnsupportedOperationException();
+        numArcs = controlPoints.size() / 2;
+        this.controlPoints = controlPoints;
     }
 
     @Override
     public int getCoordinateDimension() {
-        return interpolationPoints.get( 0 ).getCoordinateDimension();
+        return controlPoints.get( 0 ).getCoordinateDimension();
     }
 
     @Override
@@ -98,23 +87,8 @@ public class DefaultArcString implements ArcString {
     }
 
     @Override
-    public List<Point> getPoints() {
-        return interpolationPoints;
-    }
-
-    @Override
-    public double[] getX() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getY() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double[] getZ() {
-        throw new UnsupportedOperationException();
+    public List<Point> getControlPoints() {
+        return controlPoints;
     }
 
     @Override

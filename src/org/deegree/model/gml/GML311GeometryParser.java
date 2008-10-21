@@ -43,10 +43,15 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.gml;
 
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -55,25 +60,30 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryFactory;
-import org.deegree.model.geometry.composite.CompositeCurve;
-import org.deegree.model.geometry.composite.CompositeSurface;
-import org.deegree.model.geometry.multi.MultiCurve;
-import org.deegree.model.geometry.multi.MultiGeometry;
-import org.deegree.model.geometry.multi.MultiPoint;
-import org.deegree.model.geometry.multi.MultiSurface;
+import org.deegree.model.geometry.AbstractSolid.SolidType;
+import org.deegree.model.geometry.AbstractSurface.SurfaceType;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.CurveSegment;
-import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Ring;
+import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.SurfacePatch;
+import org.deegree.model.geometry.primitive.Curve.CurveType;
 import org.deegree.model.geometry.primitive.Curve.Orientation;
+import org.deegree.model.geometry.primitive.Ring.RingType;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add documentation here
+ * Parser for geometry and geometry-related constructs from the GML 3.1.1 specification.
+ * <p>
+ * Supports all abstract (8) and concrete (24) geometry elements:
+ * <ul>
+ * <ul>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -90,6 +100,84 @@ public class GML311GeometryParser extends GML311BaseParser {
 
     private final GML311CurveSegmentParser curveSegmentParser;
 
+    // local names of all concrete elements substitutable for "gml:_Curve"
+    private static final Set<String> curveElements = new HashSet<String>();
+
+    // local names of all concrete elements substitutable for "gml:_Ring"
+    private static final Set<String> ringElements = new HashSet<String>();
+
+    // local names of all concrete elements substitutable for "gml:_Surface"
+    private static final Set<String> surfaceElements = new HashSet<String>();
+
+    // local names of all concrete elements substitutable for "gml:_Solid"
+    private static final Set<String> solidElements = new HashSet<String>();
+
+    // local names of all concrete elements substitutable for "gml:_GeometricPrimitive"
+    private static final Set<String> primitiveElements = new HashSet<String>();
+
+    // local names of all concrete elements substitutable for "gml:_GeometricAggregate"
+    private static final Set<String> aggregateElements = new HashSet<String>();
+
+    // local names of all concrete elements substitutable for "gml:_ImplicitGeometry"
+    private static final Set<String> implictGeometryElements = new HashSet<String>();
+
+    // local names of all concrete elements substitutable for "gml:_GeometricComplex"
+    private static final Set<String> complexElements = new HashSet<String>();
+
+    static {
+
+        // substitutions for "gml:_Curve"
+        curveElements.add( "CompositeCurve" );
+        curveElements.add( "Curve" );
+        curveElements.add( "OrientableCurve" );
+        curveElements.add( "LineString" );
+
+        // substitutions for "gml:_Ring"
+        ringElements.add( "LinearRing" );
+        ringElements.add( "Ring" );
+
+        // substitutions for "gml:_Surface"
+        surfaceElements.add( "CompositeSurface" );
+        surfaceElements.add( "OrientableSurface" );
+        surfaceElements.add( "Polygon" );
+        surfaceElements.add( "PolyhedralSurface" );
+        surfaceElements.add( "Surface" );
+        surfaceElements.add( "Tin" );
+        surfaceElements.add( "TriangulatedSurface" );
+
+        // substitutions for "gml:_Solid"
+        surfaceElements.add( "CompositeSolid" );
+        surfaceElements.add( "Solid" );
+
+        // substitutions for "gml:_GeometricPrimitive"
+        primitiveElements.add( "Point" );
+        primitiveElements.addAll( curveElements );
+        primitiveElements.addAll( ringElements );
+        primitiveElements.addAll( surfaceElements );
+        primitiveElements.addAll( solidElements );
+
+        // substitutions for "gml:_GeometricAggregate"
+        aggregateElements.add( "MultiCurve" );
+        aggregateElements.add( "MultiGeometry" );
+        aggregateElements.add( "MultiLineString" );
+        aggregateElements.add( "MultiPoint" );
+        aggregateElements.add( "MultiPolygon" );
+        aggregateElements.add( "MultiSolid" );
+        aggregateElements.add( "MultiSurface" );
+
+        // substitutions for "gml:_ImplicitGeometry"
+        aggregateElements.add( "Grid" );
+        aggregateElements.add( "RectifiedGrid" );
+
+        // GeometricComplex elements
+        // Note: only for technical reasons (XML Schema does not support multiple inheritance), there is no substitution
+        // group "gml:_GeometricComplex"
+        complexElements.add( "CompositeCurve" );
+        complexElements.add( "CompositeSolid" );
+        complexElements.add( "CompositeSurface" );
+        complexElements.add( "GeometricComplex" );
+    }
+
     public GML311GeometryParser( GeometryFactory geomFac, XMLStreamReaderWrapper xmlStream ) {
         super( geomFac, xmlStream );
         curveSegmentParser = new GML311CurveSegmentParser( this, geomFac, xmlStream );
@@ -97,81 +185,25 @@ public class GML311GeometryParser extends GML311BaseParser {
 
     /**
      * Returns the object representation for the given <code>gml:_Geometry</code> element event that the cursor of the
-     * given <code>XMLStreamReader</code> points at.
+     * associated <code>XMLStreamReader</code> points at.
      * <ul>
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Geometry&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt;)</li>
      * </ul>
      * <p>
-     * Currently, the following geometry elements are supported:
-     * <table border="1">
-     * <tr>
-     * <th>Geometry element name<br>
-     * (in gml namespace)</th>
-     * <th>Return type<br>
-     * (deegree {@link Geometry})</th>
-     * </tr>
-     * <tr>
-     * <td align="center">Box/Envelope</td>
-     * <td align="center">{@link Envelope}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">CompositeSurface</td>
-     * <td align="center">{@link CompositeSurface}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">Curve</td>
-     * <td align="center">{@link Curve}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">LinearRing</td>
-     * <td align="center">{@link Curve}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">LineString</td>
-     * <td align="center">{@link Curve}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">MultiCurve</td>
-     * <td align="center">{@link MultiCurve}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">MultiGeometry</td>
-     * <td align="center">{@link MultiGeometry}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">MultiLineString</td>
-     * <td align="center">{@link MultiCurve}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">MultiPoint</td>
-     * <td align="center">{@link MultiPoint}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">MultiPolygon</td>
-     * <td align="center">{@link MultiSurface}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">MultiSurface</td>
-     * <td align="center">{@link MultiSurface}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">Point/Center</td>
-     * <td align="center">{@link Point}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">Polygon</td>
-     * <td align="center">{@link Surface}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">Ring</td>
-     * <td align="center">{@link Curve}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">Surface</td>
-     * <td align="center">{@link Surface}</td>
-     * </tr>
-     * </table>
+     * GML 3.1.1 specifies the following abstract elements to be <b>directly</b> substitutable for
+     * <code>gml:_Geometry</code>:
+     * <ul>
+     * <li><code>_GeometricPrimitive</code></li>
+     * <li><code>_Ring</code></li>
+     * <li><code>_GeometricAggregate</code></li>
+     * <li><code>_GeometricComplex</code></li>
+     * <li><code>_ImplicitGeometry</code></li>
+     * </ul>
+     * <p>
+     * Note: for technical reasons (XML Schema cannot express multiple inheritance) the abstract substitution group
+     * <code>gml:_GeometricComplex</code> is not strictly defined in the GML schemas, but it is described in the
+     * comments.
      * 
      * @param defaultSrsName
      *            default srs for the geometry, this is only used if the geometry element has no own
@@ -195,11 +227,18 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
 
         String name = xmlStream.getLocalName();
-        if ( name.equals( "Point" ) ) {
-            geometry = parsePoint( defaultSrsName );
+        if ( primitiveElements.contains( name ) ) {
+            geometry = parseGeometricPrimitive( defaultSrsName );
+        } else if ( ringElements.contains( name ) ) {
+            geometry = parseAbstractRing( defaultSrsName );
+        } else if ( aggregateElements.contains( name ) ) {
+            geometry = parseGeometricAggregate( defaultSrsName );
+        } else if ( complexElements.contains( name ) ) {
+            geometry = parseAbstractGeometricComplex( defaultSrsName );
+        } else if ( implictGeometryElements.contains( name ) ) {
+            geometry = parseImplicitGeometry( defaultSrsName );
         } else {
-            String msg = "Invalid GML geometry: '" + xmlStream.getName()
-                         + "' is not a (supported) GML geometry element.";
+            String msg = "Invalid GML geometry: '" + xmlStream.getName() + "' is not a GML geometry element.";
             throw new XMLParsingException( xmlStream, msg );
         }
 
@@ -208,34 +247,254 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     /**
-     * Returns the object representation for the given <code>gml:_Curve</code> element event that the cursor of the
-     * given <code>XMLStreamReader</code> points at.
+     * Returns the object representation for the given <code>gml:_GeometricPrimitive</code> element event that the
+     * cursor of the associated <code>XMLStreamReader</code> points at.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_GeometricPrimitive&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
+     * (&lt;/gml:_GeometricPrimitive&gt;)</li>
+     * </ul>
      * <p>
-     * The following concrete substitutions for <code>gml:_Curve</code> are defined:
-     * <table border="1">
-     * <tr>
-     * <th>Geometry element name<br>
-     * (in gml namespace)</th>
-     * <th>Return type<br>
-     * (deegree {@link Geometry})</th>
-     * </tr>
-     * <tr>
-     * <td align="center">LineString</td>
-     * <td align="center">{@link Curve}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">Curve</td>
-     * <td align="center">{@link Curve}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">CompositeCurve</td>
-     * <td align="center">{@link CompositeCurve}</td>
-     * </tr>
-     * <tr>
-     * <td align="center">OrientableCurve</td>
-     * <td align="center">{@link CompositeCurve}</td>
-     * </tr>
-     * </table>
+     * GML 3.1.1 specifies the following elements to be <b>directly</b> substitutable for
+     * <code>gml:_GeometricPrimitive</code>:
+     * <ul>
+     * <li><code>Point</code></li>
+     * <li><code>_Curve</code></li>
+     * <li><code>_Surface</code></li>
+     * <li><code>_Solid</code></li>
+     * </ul>
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the geometry element has no own
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link Geometry} object
+     * @throws XMLParsingException
+     *             if the element is not a valid <code>gml:_GeometricPrimitive</code> element
+     * @throws XMLStreamException
+     */
+    public Geometry parseGeometricPrimitive( String defaultSrsName )
+                            throws XMLParsingException, XMLStreamException {
+
+        LOG.debug( " - parsing gml:_GeometricPrimitive (begin): " + xmlStream.getCurrentEventInfo() );
+
+        Geometry geometry = null;
+
+        if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Invalid gml:_Geometry element: " + xmlStream.getName()
+                         + "' is not a GML geometry element. Not in the gml namespace.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        String name = xmlStream.getLocalName();
+        if ( name.equals( "Point" ) ) {
+            geometry = parsePoint( defaultSrsName );
+        } else if ( curveElements.contains( name ) ) {
+            geometry = parseAbstractCurve( defaultSrsName );
+        } else if ( ringElements.contains( name ) ) {
+            geometry = parseAbstractRing( defaultSrsName );
+        } else if ( surfaceElements.contains( name ) ) {
+            geometry = parseAbstractSurface( defaultSrsName );
+        } else if ( solidElements.contains( name ) ) {
+            geometry = parseAbstractSolid( defaultSrsName );
+        } else {
+            String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                         + "' is not a GML primitive geometry element (gml:_GeometricPrimitive).";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        LOG.debug( " - parsing gml:_GeometricPrimitive (end): " + xmlStream.getCurrentEventInfo() );
+        return geometry;
+    }
+
+    /**
+     * Returns the object representation for the given <code>gml:_GeometricAggregate</code> element event that the
+     * cursor of the given <code>XMLStreamReader</code> points at.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_GeometricAggregate&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
+     * (&lt;/gml:_GeometricAggregate&gt;)</li>
+     * </ul>
+     * <p>
+     * GML 3.1.1 specifies the following concrete elements to be substitutable for <code>gml:_GeometricAggregate</code>:
+     * <ul>
+     * <li><code>MultiCurve</code></li>
+     * <li><code>MultiGeometry</code></li>
+     * <li><code>MultiLineString</code></li>
+     * <li><code>MultiPoint</code></li>
+     * <li><code>MultiPolygon</code></li>
+     * <li><code>MultiSolid</code></li>
+     * <li><code>MultiSurface</code></li>
+     * </ul>
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the geometry element has no own
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link Geometry} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "gml:_GeometricAggregate" element
+     * @throws XMLStreamException
+     */
+    public Geometry parseGeometricAggregate( String defaultSrsName )
+                            throws XMLParsingException, XMLStreamException {
+
+        LOG.debug( " - parsing gml:_GeometricAggregate (begin): " + xmlStream.getCurrentEventInfo() );
+
+        Geometry geometry = null;
+
+        if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Invalid gml:_GeometricAggregate element: " + xmlStream.getName()
+                         + "' is not a GML geometry element. Not in the gml namespace.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        String name = xmlStream.getLocalName();
+        if ( name.equals( "MultiCurve" ) ) {
+        } else if ( name.equals( "MultiGeometry" ) ) {
+        } else if ( name.equals( "MultiLineString" ) ) {
+        } else if ( name.equals( "MultiPoint" ) ) {
+        } else if ( name.equals( "MultiPolygon" ) ) {
+        } else if ( name.equals( "MultiSolid" ) ) {
+        } else if ( name.equals( "MultiSurface" ) ) {
+        } else {
+            String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                         + "' is not a GML aggregate geometry element (gml:_GeometricAggregate).";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        LOG.debug( " - parsing gml:_GeometricAggregate (end): " + xmlStream.getCurrentEventInfo() );
+        return geometry;
+    }
+
+    /**
+     * Returns the object representation for the given <code>gml:_Geometry</code> event with geometric complex semantic
+     * (either <code>gml:CompositeCurve</code>, <code>gml:CompositeSolid</code>, <code>gml:CompositeSurface</code> or
+     * <code>gml:GeometricComplex</code>), that the cursor of the given <code>XMLStreamReader</code> points at.
+     * <p>
+     * 
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event</li>
+     * </ul>
+     * <p>
+     * GML 3.1.1 specifies the following four concrete geometry elements with an geometry complex semantic</code>:
+     * <ul>
+     * <li><code>CompositeCurve</code></li>
+     * <li><code>CompositeSolid</code></li>
+     * <li><code>CompositeSurface</code></li>
+     * <li><code>GeometricComplex</code></li>
+     * </ul>
+     * <p>
+     * NOTE: For technical reasons (XML Schema does not support multiple inheritance), there is no substitution group
+     * <code>gml:_GeometricComplex</code> defined in the GML schemas. However, it is described in the comments.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the geometry element has no own
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link Geometry} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "gml:_Geometry" element with geometric complex semantic
+     * @throws XMLStreamException
+     */
+    public Geometry parseAbstractGeometricComplex( String defaultSrsName )
+                            throws XMLParsingException, XMLStreamException {
+
+        LOG.debug( " - parsing gml:_GeometricComplex (begin): " + xmlStream.getCurrentEventInfo() );
+
+        Geometry geometry = null;
+
+        if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Invalid gml:_GeometricComplex element: " + xmlStream.getName()
+                         + "' is not a GML geometry element. Not in the gml namespace.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        String name = xmlStream.getLocalName();
+        if ( name.equals( "ComplexCurve" ) ) {
+            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
+            throw new XMLParsingException( xmlStream, msg );
+        } else if ( name.equals( "ComplexSolid" ) ) {
+            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
+            throw new XMLParsingException( xmlStream, msg );
+        } else if ( name.equals( "ComplexSurface" ) ) {
+            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
+            throw new XMLParsingException( xmlStream, msg );
+        } else if ( name.equals( "GeometricComplex" ) ) {
+            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
+            throw new XMLParsingException( xmlStream, msg );
+        } else {
+            String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                         + "' is not a (supported) GML geometry element.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        // LOG.debug( " - parsing gml:_GeometricComplex (end): " + xmlStream.getCurrentEventInfo() );
+        // return geometry;
+    }
+
+    /**
+     * Returns the object representation for the given <code>gml:_ImplicitGeometry</code> element event that the cursor
+     * of the associated <code>XMLStreamReader</code> points at.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_ImplicitGeometry&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
+     * (&lt;/gml:_GeometricAggregate&gt;)</li>
+     * </ul>
+     * <p>
+     * GML 3.1.1 specifies the following two concrete elements to be substitutable for
+     * <code>gml:_ImplicitGeometry</code>:
+     * <ul>
+     * <li><code>Grid</code></li>
+     * <li><code>RectifiedGrid</code></li>
+     * </ul>
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the geometry element has no own
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link Geometry} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "gml:_ImplicitGeometry" element
+     * @throws XMLStreamException
+     */
+    public Geometry parseImplicitGeometry( String defaultSrsName )
+                            throws XMLParsingException, XMLStreamException {
+
+        LOG.debug( " - parsing gml:_ImplicitGeometry (begin): " + xmlStream.getCurrentEventInfo() );
+
+        Geometry geometry = null;
+
+        if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Invalid gml:_ImplicitGeometry element: " + xmlStream.getName()
+                         + "' is not a GML geometry element. Not in the gml namespace.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        String name = xmlStream.getLocalName();
+        if ( name.equals( "Grid" ) ) {
+            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
+            throw new XMLParsingException( xmlStream, msg );
+        } else if ( name.equals( "RectifiedGrid" ) ) {
+            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
+            throw new XMLParsingException( xmlStream, msg );
+        } else {
+            String msg = "Invalid GML geometry: '" + xmlStream.getName() + "' is not a GML geometry element.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        // LOG.debug( " - parsing gml:_ImplicitGeometry (end): " + xmlStream.getCurrentEventInfo() );
+        // return geometry;
+    }
+
+    /**
+     * Returns the object representation for the given <code>gml:_Curve</code> element event that the cursor of the
+     * associated <code>XMLStreamReader</code> points at.
+     * <p>
+     * GML 3.1.1 specifies the following elements to be substitutable for <code>gml:_Curve</code>:
+     * <ul>
+     * <li><code>CompositeCurve</code></li>
+     * <li><code>Curve</code></li>
+     * <li><code>LineString</code></li>
+     * <li><code>OrientableCurve</code></li>
+     * </ul>
      * 
      * @param defaultSrsName
      *            default srs for the geometry, this is only used if the geometry element has no own
@@ -248,9 +507,9 @@ public class GML311GeometryParser extends GML311BaseParser {
     public Curve parseAbstractCurve( String defaultSrsName )
                             throws XMLParsingException, XMLStreamException {
 
-        LOG.debug( " - parsing gml:_Curve (begin): " + xmlStream.getCurrentEventInfo() );
-
         Curve curve = null;
+
+        LOG.debug( " - parsing gml:_Curve (begin): " + xmlStream.getCurrentEventInfo() );
 
         if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
             String msg = "Invalid gml:_Curve element: " + xmlStream.getName()
@@ -258,22 +517,31 @@ public class GML311GeometryParser extends GML311BaseParser {
             throw new XMLParsingException( xmlStream, msg );
         }
 
-        String name = xmlStream.getLocalName();
-        if ( name.equals( "LineString" ) ) {
-            curve = parseLineString( defaultSrsName );
-        } else if ( name.equals( "Curve" ) ) {
-            String msg = "Parsing of 'gml:Curve' elements is not implemented yet.";
-            throw new XMLParsingException( xmlStream, msg );
-        } else if ( name.equals( "CompositeCurve" ) ) {
-            String msg = "Parsing of 'gml:CompositeCurve' elements is not implemented yet.";
-            throw new XMLParsingException( xmlStream, msg );
-        } else if ( name.equals( "OrientableCurve" ) ) {
-            String msg = "Parsing of 'gml:OrientableCurve' elements is not implemented yet.";
-            throw new XMLParsingException( xmlStream, msg );
-        } else {
+        CurveType type = null;
+        try {
+            type = CurveType.valueOf( xmlStream.getLocalName() );
+        } catch ( IllegalArgumentException e ) {
             String msg = "Invalid GML geometry: '" + xmlStream.getName()
-                         + "' is not a valid substitution for '_Curve'.";
+                         + "' is not a valid substitution for 'gml:_Curve'.";
             throw new XMLParsingException( xmlStream, msg );
+        }
+
+        switch ( type ) {
+        case Curve: {
+            curve = parseCurve( defaultSrsName );
+            break;
+        }
+        case LineString: {
+            curve = parseLineString( defaultSrsName );
+            break;
+        }
+        case CompositeCurve:
+        case OrientableCurve: {
+            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        default:
+            // cannot happen by construction
         }
 
         LOG.debug( " - parsing gml:_Curve (end): " + xmlStream.getCurrentEventInfo() );
@@ -281,8 +549,186 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     /**
+     * Returns the object representation of a (&lt;gml:_Ring&gt;) element. Consumes all corresponding events from the
+     * associated <code>XMLStream</code>.
+     * <p>
+     * GML 3.1.1 specifies the following elements to be substitutable for <code>gml:_Ring</code>:
+     * <ul>
+     * <li><code>LinearRing</code></li>
+     * <li><code>Ring</code></li>
+     * </ul>
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the geometry element has no own
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link Ring} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "gml:_Ring" element
+     * @throws XMLStreamException
+     */
+    public Ring parseAbstractRing( String defaultSrsName )
+                            throws XMLParsingException, XMLStreamException {
+
+        Ring ring = null;
+
+        LOG.debug( " - parsing gml:_Ring (begin): " + xmlStream.getCurrentEventInfo() );
+
+        if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Invalid gml:_Ring element: " + xmlStream.getName()
+                         + "' is not a GML geometry element. Not in the gml namespace.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        RingType type = null;
+        try {
+            type = RingType.valueOf( xmlStream.getLocalName() );
+        } catch ( IllegalArgumentException e ) {
+            String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                         + "' is not a valid substitution for 'gml:_Ring'.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        switch ( type ) {
+        case LinearRing: {
+            ring = parseLinearRing( defaultSrsName );
+        }
+        case Ring: {
+            ring = parseRing( defaultSrsName );
+            break;
+        }
+        default:
+            // cannot happen by construction
+        }
+
+        LOG.debug( " - parsing gml:_Ring (end): " + xmlStream.getCurrentEventInfo() );
+        return ring;
+    }
+
+    /**
+     * Returns the object representation of a (&lt;gml:_Surface&gt;) element. Consumes all corresponding events from the
+     * associated <code>XMLStream</code>.
+     * <p>
+     * GML 3.1.1 specifies the following seven elements to be substitutable for <code>gml:_Surface</code>:
+     * <ul>
+     * <li><code>Polygon</code></li>
+     * <li><code>CompositeSurface</code></li>
+     * <li><code>OrientableSurface</code></li>
+     * <li><code>PolyhedralSurface</code></li>
+     * <li><code>Surface</code></li>
+     * <li><code>Tin</code></li>
+     * <li><code>TriangulatedSurface</code></li>
+     * </ul>
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the geometry element has no own
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link Geometry} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "gml:_Ring" element
+     * @throws XMLStreamException
+     */
+    public Surface parseAbstractSurface( String defaultSrsName )
+                            throws XMLParsingException, XMLStreamException {
+
+        Surface surface = null;
+
+        LOG.debug( " - parsing gml:_Surface (begin): " + xmlStream.getCurrentEventInfo() );
+
+        if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Invalid gml:_Surface element: " + xmlStream.getName()
+                         + "' is not a GML geometry element. Not in the gml namespace.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        SurfaceType type = null;
+        try {
+            type = SurfaceType.valueOf( xmlStream.getLocalName() );
+        } catch ( IllegalArgumentException e ) {
+            String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                         + "' is not a valid substitution for 'gml:_Surface'.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        switch ( type ) {
+        case Polygon: {
+            surface = parsePolygon( defaultSrsName );
+            break;
+        }
+        case CompositeSurface:
+        case OrientableSurface:
+        case PolyhedralSurface:
+        case Surface:
+        case Tin:
+        case TriangulatedSurface: {
+            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        default:
+            // cannot happen by construction
+        }
+
+        LOG.debug( " - parsing gml:_Surface (end): " + xmlStream.getCurrentEventInfo() );
+        return surface;
+    }
+
+    /**
+     * Returns the object representation of a <code>gml:_Solid</code> element. Consumes all corresponding events from
+     * the associated <code>XMLStream</code>.
+     * <p>
+     * GML 3.1.1 specifies the following two elements to be substitutable for <code>gml:_Solid</code> elements:
+     * <ul>
+     * <li><code>CompositeSolid</code></li>
+     * <li><code>Solid</code></li>
+     * </ul>
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the geometry element has no own
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link Geometry} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "gml:_Ring" element
+     * @throws XMLStreamException
+     */
+    public Solid parseAbstractSolid( String defaultSrsName )
+                            throws XMLParsingException, XMLStreamException {
+
+        Solid solid = null;
+
+        LOG.debug( " - parsing gml:_Solid(begin): " + xmlStream.getCurrentEventInfo() );
+
+        if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Invalid gml:_Surface element: " + xmlStream.getName()
+                         + "' is not a GML geometry element. Not in the gml namespace.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        SolidType type = null;
+        try {
+            type = SolidType.valueOf( xmlStream.getLocalName() );
+        } catch ( IllegalArgumentException e ) {
+            String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                         + "' is not a valid substitution for 'gml:_Solid'.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        switch ( type ) {
+        case CompositeSolid:
+        case Solid: {
+            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        default: {
+            // cannot happen by construction
+        }
+        }
+
+        LOG.debug( " - parsing gml:_Solid (end): " + xmlStream.getCurrentEventInfo() );
+        return solid;
+    }
+
+    /**
      * Returns the object representation of a (&lt;gml:Point&gt;) element. Consumes all corresponding events from the
-     * given <code>XMLStream</code>.
+     * associated <code>XMLStream</code>.
      * <ul>
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Point&gt;)</li>
      * <li>Postcondition: cursor points at the next event after the <code>END_ELEMENT</code> (&lt;/gml:Point&gt;)</li>
@@ -292,6 +738,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            default srs for the geometry, this is used if the "gml:Point" has no <code>srsName</code> attribute
      * @return corresponding {@link Point} object
      * @throws XMLParsingException
+     *             if the element is not a valid <code>gml:Point</code> element
      * @throws XMLStreamException
      */
     public Point parsePoint( String defaultSrsName )
@@ -360,14 +807,15 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     /**
-     * Returns the object representation of a (&lt;gml:LineString&gt;) element. Consumes all corresponding events from
-     * the given <code>XMLStream</code>.
-     *
+     * Returns the object representation of a <code>gml:LineString</code> element. Consumes all corresponding events
+     * from the given <code>XMLStream</code>.
+     * 
      * @param defaultSrsName
-     *            default srs for the geometry, this is only used if the "gml:LineString" has no <code>srsName</code>
-     *            attribute
+     *            default srs for the geometry, this is only used if the <code>gml:LineString</code> has no
+     *            <code>srsName</code> attribute
      * @return corresponding {@link Curve} object
      * @throws XMLParsingException
+     *             if the element is not a valid <code>gml:Curve</code> element
      * @throws XMLStreamException
      */
     public Curve parseLineString( String defaultSrsName )
@@ -416,12 +864,12 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     /**
-     * Returns the object representation of a (&lt;gml:Curve&gt;) element. Consumes all corresponding events from the
-     * given <code>XMLStream</code>.
+     * Returns the object representation of a <code>gml:Curve</code> element. Consumes all corresponding events from the
+     * associated <code>XMLStream</code>.
      * 
      * @param defaultSrsName
-     *            default srs for the geometry, this is only used if the "gml:Curve" has no <code>srsName</code>
-     *            attribute
+     *            default srs for the geometry, this is only used if the <code>gml:Curve</code> has no
+     *            <code>srsName</code> attribute
      * @return corresponding {@link Curve} object
      * @throws XMLStreamException
      * @throws XMLParsingException
@@ -443,6 +891,118 @@ public class GML311GeometryParser extends GML311BaseParser {
         xmlStream.skipElement();
         return geomFac.createCurve( gid, segments.toArray( new CurveSegment[segments.size()] ), Orientation.positive,
                                     lookupCRS( srsName ) );
+    }
+
+    /**
+     * Returns the object representation of a <code>gml:LinearRing</code> element. Consumes all corresponding events
+     * from the associated <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the <code>gml:LinearRing</code> element has no
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link Ring} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public Ring parseLinearRing( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        List<Point> points = curveSegmentParser.parseControlPoints( srsName );
+        if ( points.size() < 4 ) {
+            String msg = "Error in 'gml:LinearRing' element. Must specify at least four points.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "LinearRing" );
+
+        LineStringSegment segment = geomFac.createLineStringSegment( points );
+        Curve curve = geomFac.createCurve( null, new CurveSegment[] { segment }, Orientation.positive,
+                                           lookupCRS( srsName ) );
+        List<Curve> memberCurves = new ArrayList<Curve>( 1 );
+        memberCurves.add( curve );
+        return geomFac.createRing( gid, lookupCRS( srsName ), memberCurves );
+    }
+
+    /**
+     * Returns the object representation of a <code>gml:Ring</code> element. Consumes all corresponding events from the
+     * given <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the <code>gml:Ring</code> element has no
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link Ring} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public Ring parseRing( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        List<Curve> memberCurves = new LinkedList<Curve>();
+
+        while ( xmlStream.nextTag() == START_ELEMENT ) {
+            // must be a 'gml:curveMember' element
+            if ( !xmlStream.getLocalName().equals( "curveMember" ) ) {
+                String msg = "Error in 'gml:Ring' element. Expected a 'gml:curveMembers' element.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            if ( xmlStream.nextTag() != START_ELEMENT ) {
+                String msg = "Error in 'gml:Ring' element. Expected a 'gml:_Curve' element.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            memberCurves.add( parseAbstractCurve( srsName ) );
+            xmlStream.nextTag();
+            xmlStream.require( END_ELEMENT, GMLNS, "curveMember" );
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "Ring" );
+        return geomFac.createRing( gid, lookupCRS( srsName ), memberCurves );
+    }
+
+    /**
+     * Returns the object representation of a (&lt;gml:Polygon&gt;) element. Consumes all corresponding events from the
+     * given <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the "gml:Polygon" has no <code>srsName</code>
+     *            attribute
+     * @return corresponding {@link Surface} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public Surface parsePolygon( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        SurfacePatch exterior = null;
+        List<SurfacePatch> interior = new LinkedList<SurfacePatch>();
+
+        // 0 or 1 exterior element (yes, 0 is possible -- see section 9.2.2.5 of GML spec)
+        if ( xmlStream.nextTag() == START_ELEMENT ) {
+            if ( xmlStream.getLocalName().equals( "exterior" ) ) {
+                xmlStream.nextTag();
+
+                xmlStream.nextTag();
+                xmlStream.require( END_ELEMENT, GMLNS, "exterior" );
+            }
+        }
+
+        // arbitrary number of interior elements
+        while ( xmlStream.getEventType() == START_ELEMENT ) {
+            if ( !xmlStream.getLocalName().equals( "interior" ) ) {
+                String msg = "Error in 'gml:Polygon' element. Expected a 'gml:interior' element.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            xmlStream.nextTag();
+        }
+
+        xmlStream.require( END_ELEMENT, GMLNS, "Polygon" );
+        return null;
     }
 
     /**

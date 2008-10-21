@@ -40,45 +40,41 @@ package org.deegree.model.geometry.multi;
 import java.util.List;
 
 import org.deegree.model.geometry.Geometry;
+import org.deegree.model.geometry.composite.GeometricComplex;
 import org.deegree.model.geometry.primitive.Point;
 
 /**
- * 
- * 
+ * Basic aggregation type for {@link Geometry} objects.
+ * <p>
+ * In contrast to a {@link GeometricComplex}, a <code>MultiGeometry</code> has no constraints on the topological
+ * relations between the contained geometries, i.e. their interiors may intersect.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version. $Revision$, $Date$
- * @param <T> indicating the type of the multi geometry
+ * 
+ * @param <T>
+ *            the type of the contained geometries
  */
-public interface MultiGeometry<T> extends Geometry {
+public interface MultiGeometry<T extends Geometry> extends Geometry, List<T> {
 
+    public enum MultiGeometryType {
+        MultiGeometry,        
+        MultiPoint,        
+        MultiCurve,
+        MultiLineString,
+        MultiSurface,
+        MultiPolygon,
+        MultiSolid
+    }    
+    
     /**
+     * Returns the centroid of the contained geometries.
      * 
-     * @return number of geometries contained in a MultiGeometry
-     */
-    public int getNumberOfGeometries();
-
-    /**
-     * 
-     * @return centroid of a Multigeometry
+     * @return the centroid
      */
     public Point getCentroid();
-
-    /**
-     * 
-     * @return list of geometries contained in a MultiGeometry
-     */
-    public List<T> getGeometries();
-
-    /**
-     * Notice: This is a convenience method; an index of a geometry within a multi geometry is not
-     * significant!
-     * 
-     * @param index
-     * @return {@link Geometry} at the passed index position
-     */
-    public T getGeometryAt( int index );
 
 }

@@ -41,67 +41,63 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard.curvesegments;
+package org.deegree.model.geometry.standard;
 
-import org.deegree.model.geometry.primitive.Curve;
+import java.util.List;
+
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.primitive.LineString;
+import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.curvesegments.OffsetCurve;
-import org.deegree.model.gml.Length;
+import org.deegree.model.geometry.primitive.Ring;
+import org.deegree.model.geometry.standard.curvesegments.DefaultLineStringSegment;
 
 /**
- * Default implementation of {@link OffsetCurve} segments.
+ * Default implementation of {@link Ring}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultOffsetCurve implements OffsetCurve {
-
-    private Curve baseCurve;
-
-    private Point direction;
-
-    private Length distance;
+public class DefaultLinearRing extends DefaultRing implements LinearRing {
 
     /**
-     * Creates a new <code>DefaultOffsetCurve</code> instance from the given parameters.
+     * Creates a new <code>DefaultRing</code> instance from the given parameters.
      * 
-     * @param baseCurve
-     *            the base geometry
-     * @param direction
-     *            the direction of the offset
-     * @param distance
-     *            the distance from the base curve
+     * @param id
+     *            identifier of the created geometry object
+     * @param crs
+     *            coordinate reference system
+     * @param controlPoints
+     *            
      */
-    public DefaultOffsetCurve( Curve baseCurve, Point direction, Length distance ) {
-        this.baseCurve = baseCurve;
-        this.direction = direction;
-        this.distance = distance;
+    public DefaultLinearRing( String id, CoordinateSystem crs, List<Point> controlPoints ) {
+        super( id, crs, new DefaultLineStringSegment(controlPoints));
     }
 
     @Override
-    public Curve getBaseCurve() {
-        return baseCurve;
+    public CurveType getCurveType() {
+        return CurveType.LineString;
+    }        
+    
+    @Override
+    public RingType getRingType() {
+        return RingType.LinearRing;
+    }   
+    
+    @Override
+    public LineString getAsLineString() {
+        return (LineString) members.get( 0 );
     }
 
     @Override
-    public Point getDirection() {
-        return direction;
-    }
-
-    @Override
-    public Length getDistance() {
-        return distance;
-    }
-
-    @Override
-    public int getCoordinateDimension() {
-        return baseCurve.getCoordinateDimension();
-    }
-
-    @Override
-    public Interpolation getInterpolation() {
+    public double[] getAsArray() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public List<Point> getPoints() {
+        return ((LineString) members.get( 0 )).getPoints();
+    }    
 }

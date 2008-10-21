@@ -41,67 +41,29 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard.curvesegments;
+package org.deegree.model.geometry;
 
-import org.deegree.model.geometry.primitive.Curve;
-import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.curvesegments.OffsetCurve;
-import org.deegree.model.gml.Length;
+import org.deegree.model.geometry.primitive.LinearRing;
+import org.deegree.model.geometry.primitive.Ring;
 
 /**
- * Default implementation of {@link OffsetCurve} segments.
+ * Base interface for 2D (surface) geometries.
+ * <p>
+ * The following specialized interfaces exist:
+ * <ul>
+ * <li>{@link LinearRing}</li>
+ * <li>{@link Ring}</li>
+ * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultOffsetCurve implements OffsetCurve {
+public interface AbstractSurface {
 
-    private Curve baseCurve;
-
-    private Point direction;
-
-    private Length distance;
-
-    /**
-     * Creates a new <code>DefaultOffsetCurve</code> instance from the given parameters.
-     * 
-     * @param baseCurve
-     *            the base geometry
-     * @param direction
-     *            the direction of the offset
-     * @param distance
-     *            the distance from the base curve
-     */
-    public DefaultOffsetCurve( Curve baseCurve, Point direction, Length distance ) {
-        this.baseCurve = baseCurve;
-        this.direction = direction;
-        this.distance = distance;
+    public enum SurfaceType {
+        CompositeSurface, OrientableSurface, Polygon, PolyhedralSurface, Surface, Tin, TriangulatedSurface
     }
 
-    @Override
-    public Curve getBaseCurve() {
-        return baseCurve;
-    }
-
-    @Override
-    public Point getDirection() {
-        return direction;
-    }
-
-    @Override
-    public Length getDistance() {
-        return distance;
-    }
-
-    @Override
-    public int getCoordinateDimension() {
-        return baseCurve.getCoordinateDimension();
-    }
-
-    @Override
-    public Interpolation getInterpolation() {
-        throw new UnsupportedOperationException();
-    }
 }

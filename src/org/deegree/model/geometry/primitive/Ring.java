@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/geometry/primitive/Primitive.java $
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -37,39 +37,44 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive;
 
-import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.Geometry;
+import java.util.List;
 
 /**
+ * A <code>Ring</code> is a composition of {@link Curve}s that forms a closed loop.
+ * <p>
+ * Please note that it extends {@link Curve} as well, because it has an inherent curve semantic.
+ * </p>
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author:$
  * 
- * 
- * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
- * 
- * @version. $Revision$, $Date$
+ * @version $Revision:$, $Date:$
  */
-public interface Solid extends Geometry {
+public interface Ring extends Curve {
 
     /**
-     * 
-     * @return volume of a Solid measured in units of the assigned {@link CoordinateSystem}
+     * All ring variants.
      */
-    public double getVolume();
+    public enum RingType {
+
+        /** Just one curve member (with a single segment) with linear interpolation. **/
+        LinearRing,
+
+        /** Generic ring: arbitrary number of members with arbitrary interpolation methods. **/
+        Ring
+    }
 
     /**
+     * Returns the type of ring.
      * 
-     * @return area of a Solids boundary measured in units of the assigend {@link CoordinateSystem}
+     * @return the type of ring
      */
-    public double getArea();
-
+    public RingType getRingType();
+    
     /**
-     * A Solid consists of one outer and 0..n inner boundaries. Each boundary is constructed by at
-     * least four surfaces. The first row of the returned two dimensional array contains the outer
-     * boundary. Inner boudaries are stored within the following rows.
+     * Returns the {@link Curve}s that constitute this {@link Ring}.
      * 
-     * @return boundary of a Solid
+     * @return the constituting curves
      */
-    public Surface[][] getBoundary();
-
+    public List<Curve> getMembers ();
 }

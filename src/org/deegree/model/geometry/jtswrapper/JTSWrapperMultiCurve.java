@@ -39,7 +39,10 @@
 
 package org.deegree.model.geometry.jtswrapper;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.multi.MultiCurve;
@@ -76,7 +79,7 @@ public class JTSWrapperMultiCurve extends JTSWrapperGeometry implements MultiCur
         LineString[] ls = new LinearRing[curves.size()];
         int i = 0;
         for ( Curve curve : curves ) {
-            if ( curve instanceof JTSWrapperCurve ) {
+            if ( curve instanceof JTSWrapperLineString ) {
                 ls[i++] = (LineString) ((JTSWrapperGeometry) curve ).getJTSGeometry();
             } else {
                 ls[i++] = (LineString)export( curve );
@@ -99,25 +102,122 @@ public class JTSWrapperMultiCurve extends JTSWrapperGeometry implements MultiCur
         return toPoint( ((MultiLineString)geometry).getCentroid().getCoordinate() );
     }
 
-    /* (non-Javadoc)
-     * @see org.deegree.model.geometry.multi.MultiGeometry#getGeometries()
-     */
-    public List<Curve> getGeometries() {
-        return curves;
+    // -----------------------------------------------------------------------
+    // implementation of List<Curve>
+    // -----------------------------------------------------------------------    
+
+    @Override
+    public boolean add( Curve e ) {
+        return curves.add( e );
     }
 
-    /* (non-Javadoc)
-     * @see org.deegree.model.geometry.multi.MultiGeometry#getGeometryAt(int)
-     */
-    public Curve getGeometryAt( int index ) {        
-        return (Curve)wrap( geometry.getGeometryN( index ) );
+    @Override
+    public void add( int index, Curve element ) {
+        curves.add( index, element );
     }
 
-    /* (non-Javadoc)
-     * @see org.deegree.model.geometry.multi.MultiGeometry#getNumberOfGeometries()
-     */
-    public int getNumberOfGeometries() {
-        return ((MultiLineString)geometry).getNumGeometries();
+    @Override
+    public boolean addAll( Collection<? extends Curve> c ) {
+        return curves.addAll(c);
     }
 
+    @Override
+    public boolean addAll( int index, Collection<? extends Curve> c ) {
+        return curves.addAll(index, c);
+    }
+
+    @Override
+    public void clear() {
+        curves.clear();
+    }
+
+    @Override
+    public boolean contains( Object o ) {
+        return curves.contains( o );
+    }
+
+    @Override
+    public boolean containsAll( Collection<?> c ) {
+        return curves.containsAll( c );
+    }
+
+    @Override
+    public Curve get( int index ) {     
+        return curves.get( index );
+    }
+
+    @Override
+    public int indexOf( Object o ) {
+        return curves.indexOf (o);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return curves.isEmpty();
+    }
+
+    @Override
+    public Iterator<Curve> iterator() {     
+        return curves.iterator();
+    }
+
+    @Override
+    public int lastIndexOf( Object o ) {
+        return curves.lastIndexOf( o );
+    }
+
+    @Override
+    public ListIterator<Curve> listIterator() {
+        return curves.listIterator();
+    }
+
+    @Override
+    public ListIterator<Curve> listIterator( int index ) {
+        return curves.listIterator(index);
+    }
+
+    @Override
+    public boolean remove( Object o ) {        
+        return curves.remove (o);
+    }
+
+    @Override
+    public Curve remove( int index ) {
+        return curves.remove (index);
+    }
+
+    @Override
+    public boolean removeAll( Collection<?> c ) {
+        return curves.removeAll (c);
+    }
+
+    @Override
+    public boolean retainAll( Collection<?> c ) {
+        return curves.retainAll (c);
+    }
+
+    @Override
+    public Curve set( int index, Curve element ) {
+        return curves.set (index, element);
+    }
+
+    @Override
+    public int size() {
+        return curves.size();
+    }
+
+    @Override
+    public List<Curve> subList( int fromIndex, int toIndex ) {
+        return curves.subList( fromIndex, toIndex );
+    }
+
+    @Override
+    public Object[] toArray() {
+        return curves.toArray();
+    }
+
+    @Override
+    public <T> T[] toArray( T[] a ) {
+        return curves.toArray(a);
+    }
 }

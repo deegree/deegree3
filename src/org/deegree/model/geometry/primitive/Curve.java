@@ -40,18 +40,49 @@ package org.deegree.model.geometry.primitive;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Geometry;
 
 /**
+ * Base interface for 1D (curve) geometries.
  * 
- * 
- * 
+ * @see LineString
+ *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
  * 
  * @version. $Revision$, $Date$
  */
-public interface Curve extends Primitive {
+public interface Curve extends Geometry {
 
+    public enum CurveType {
+        CompositeCurve, Curve, OrientableCurve, LineString
+    }
+
+    /**
+     * Returns the type of curve.
+     * 
+     * @return the type of curve
+     */
+    public CurveType getCurveType ();
+    
+    /**
+     * The boundary of a curve is the set of points at either end of the curve. If the curve is a cycle, the two ends
+     * are identical, and the curve (if topologically closed) is considered to not have a boundary.
+     * 
+     * @return true if the first and last {@link Point} of a curve are identical
+     */
+    public boolean isClosed();    
+    
+    /**
+     * Returns a linear interpolated representation of the curve.
+     * <p>
+     * Please note that this operation returns an approximated version if the curve uses non-linear curve segments.
+     * </p>
+     * 
+     * @return a linear interpolated representation of the curve
+     */
+    public LineString getAsLineString();    
+    
     /**
      * orientation of a curve
      * 
@@ -60,48 +91,16 @@ public interface Curve extends Primitive {
         /**
          * Indicating a positive orientation
          */
-        positive, 
+        positive,
         /**
          * Indicating a negative orientation
          */
-        negative, 
+        negative,
         /**
          * the orientation is not known.
          */
         unknown
     }
-
-    /**
-     * 
-     * @return a curves x-coordinates as an array
-     */
-    public double[] getX();
-
-    /**
-     * 
-     * @return a curves y-coordinates as an array
-     */
-    public double[] getY();
-
-    /**
-     * 
-     * @return a curves z-coordinates as an array
-     */
-    public double[] getZ();
-
-    /**
-     * 
-     * @return all coordinated as an array. The array will be constructed an concatination of the
-     *         arrays of the segements points. For a three dimensional case it looks like:
-     *         [x0,y0,z0,x1,y1,z1, ... ,xn,yn,zn]
-     */
-    public double[] getAsArray();
-
-    /**
-     * 
-     * @return points constructing a curve as {@link List}
-     */
-    public List<Point> getPoints();
 
     /**
      * 
@@ -116,28 +115,17 @@ public interface Curve extends Primitive {
     public double getLength();
 
     /**
-     * The boundary of a curve is the set of points at either end of the curve. If the curve is a
-     * cycle, the two ends are identical, and the curve (if topologically closed) is considered to
-     * not have a boundary.
+     * The boundary of a curve is the set of points at either end of the curve. If the curve is a cycle, the two ends
+     * are identical, and the curve (if topologically closed) is considered to not have a boundary.
      * 
-     * @return boundary of a curve. If a curve does not have a boundary because it is closed an
-     *         empty {@link List} shall be retruned
+     * @return boundary of a curve. If a curve does not have a boundary because it is closed an empty {@link List} shall
+     *         be retruned
      */
     public List<Point> getBoundary();
-
-    /**
-     * The boundary of a curve is the set of points at either end of the curve. If the curve is a
-     * cycle, the two ends are identical, and the curve (if topologically closed) is considered to
-     * not have a boundary.
-     * 
-     * @return true if the first and last {@link Point} of a curve are identical
-     */
-    public boolean isClosed();
 
     /**
      * 
      * @return segments forming a curve. a simple curves consists of one segment
      */
     public List<CurveSegment> getCurveSegments();
-
 }

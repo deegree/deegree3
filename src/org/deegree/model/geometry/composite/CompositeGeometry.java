@@ -47,12 +47,11 @@ import org.deegree.model.geometry.Geometry;
  * intended for use as attribute values in datasets in which the underlying geometry has been
  * decomposed, usually to expose its topological nature.
  * 
- * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
  * 
  * @version. $Revision$, $Date$
  */
 public interface CompositeGeometry extends Geometry {
-//A marker interface.
+    //A marker interface.
 }

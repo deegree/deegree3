@@ -45,6 +45,7 @@ import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.standard.curvesegments.DefaultLineStringSegment;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
@@ -58,7 +59,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
  * 
  * @version. $Revision$, $Date$
  */
-class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
+class JTSWrapperLineString extends JTSWrapperGeometry implements org.deegree.model.geometry.primitive.LineString {
 
     private double[] coordinates;
 
@@ -74,25 +75,23 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
      * @param precision
      * @param crs
      * @param coordinateDimension
-     * @param segment
-     * @param orientation
+     * @param controlPoints
      */
-    public JTSWrapperCurve( String id, double precision, CoordinateSystem crs, int coordinateDimension, CurveSegment segment,
-                            Curve.Orientation orientation ) {
+    public JTSWrapperLineString( String id, double precision, CoordinateSystem crs, int coordinateDimension, List<Point> controlPoints) {
         super( id, precision, crs, coordinateDimension );
+
+        this.pointList = controlPoints;
         // A JTS geometry is simple; so it has just one segment -> segment and curve are
         // geometrical identic
         this.segments = new ArrayList<CurveSegment>( 1 );
-        this.segments.add( segment );
-        this.orientation = orientation;
-        List<Coordinate> coords = new ArrayList<Coordinate>( segment.getPoints().size() );
-        List<Point> points = segment.getPoints();
+        this.segments.add( new DefaultLineStringSegment(controlPoints) );
+        List<Coordinate> coords = new ArrayList<Coordinate>( getPoints().size() );
         if ( coordinateDimension == 2 ) {
-            for ( Point point : points ) {
+            for ( Point point : controlPoints ) {
                 coords.add( new Coordinate( point.getX(), point.getY() ) );
             }
         } else {
-            for ( Point point : points ) {
+            for ( Point point : controlPoints ) {
                 coords.add( new Coordinate( point.getX(), point.getY(), point.getZ() ) );
             }
         }
@@ -101,10 +100,15 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
         for ( Coordinate coord : coords ) {
             pm.makePrecise( coord );
         }
-
         geometry = jtsFactory.createLineString( coords.toArray( new Coordinate[coords.size()] ) );
     }
 
+
+    @Override
+    public CurveType getCurveType() {
+        return CurveType.LineString;
+    }    
+    
     /*
      * (non-Javadoc)
      * 
@@ -182,70 +186,14 @@ class JTSWrapperCurve extends JTSWrapperGeometry implements Curve {
     /*
      * (non-Javadoc)
      * 
-     * @see org.deegree.model.geometry.primitive.Curve#getX()
-     */
-    public double[] getX() {
-        if ( coordinates == null ) {
-            getAsArray();
-        }
-        double[] x = new double[geometry.getNumPoints()];
-        int k = 0;
-        for ( int i = 0; i < x.length; i++ ) {
-            x[i] = coordinates[k];
-            k += coordinateDimension;
-        }
-        return x;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.primitive.Curve#getY()
-     */
-    public double[] getY() {
-        if ( coordinates == null ) {
-            getAsArray();
-        }
-        double[] y = new double[geometry.getNumPoints()];
-        int k = 1;
-        for ( int i = 0; i < y.length; i++ ) {
-            y[i] = coordinates[k];
-            k += coordinateDimension;
-        }
-        return y;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.primitive.Curve#getZ()
-     */
-    public double[] getZ() {
-        if ( coordinates == null ) {
-            getAsArray();
-        }
-        double[] z = new double[geometry.getNumPoints()];
-        if ( coordinateDimension == 3 ) {
-            int k = 2;
-            for ( int i = 0; i < z.length; i++ ) {
-                z[i] = coordinates[k];
-                k += coordinateDimension;
-            }
-        } else {
-            for ( int i = 0; i < z.length; i++ ) {
-                z[i] = Double.NaN;
-            }
-        }
-        return z;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.deegree.model.geometry.primitive.Curve#isClosed()
      */
     public boolean isClosed() {
         return ( (LineString) geometry ).isClosed();
     }
 
+    @Override
+    public org.deegree.model.geometry.primitive.LineString getAsLineString() {
+        return this;
+    }
 }

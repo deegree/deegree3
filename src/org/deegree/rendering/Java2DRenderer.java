@@ -58,6 +58,7 @@ import java.awt.geom.Area;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.primitive.Curve;
@@ -65,6 +66,7 @@ import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
+import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.styling.LineStyling;
 import org.deegree.model.styling.PointStyling;
 import org.deegree.model.styling.PolygonStyling;
@@ -252,22 +254,32 @@ public class Java2DRenderer implements Renderer {
         }
         if ( geom instanceof Curve ) {
             Curve curve = (Curve) geom;
-            double[] xs = curve.getX();
-            double[] ys = curve.getY();
-            for ( int i = 0; i < xs.length; ++i ) {
-                render( styling, xs[i], ys[i] );
+            if (curve.getCurveSegments().size() != 1 || !(curve.getCurveSegments().get( 0 ) instanceof LineStringSegment)) {
+                // TODO handle non-linear and multiple curve segments
+                throw new IllegalArgumentException();
+            }
+            LineStringSegment segment =( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
+            // coordinate representation is still subject to change...
+            for ( Point point : segment.getControlPoints() ) {
+                render( styling, point );
             }
         }
     }
 
     private static Path2D.Double fromCurve( Curve curve ) {
-        Path2D.Double line = new Path2D.Double();
-        double[] xs = curve.getX();
-        double[] ys = curve.getY();
-        line.moveTo( xs[0], ys[0] );
-        for ( int i = 1; i < xs.length; ++i ) {
-            line.lineTo( xs[i], ys[i] );
+        if (curve.getCurveSegments().size() != 1 || !(curve.getCurveSegments().get( 0 ) instanceof LineStringSegment)) {
+            // TODO handle non-linear and multiple curve segments
+            throw new IllegalArgumentException();
         }
+        LineStringSegment segment =( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
+        
+        Path2D.Double line = new Path2D.Double();
+        // coordinate representation is still subject to change...        
+        List<Point> points = segment.getControlPoints();
+        line.moveTo( points.get( 0 ).getX(), points.get( 0 ).getY() );
+        for ( Point point : segment.getControlPoints() ) {
+            line.lineTo( point.getX(), point.getY() );
+        }        
         return line;
     }
 
