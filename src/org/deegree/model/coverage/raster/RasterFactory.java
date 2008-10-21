@@ -44,6 +44,7 @@ package org.deegree.model.coverage.raster;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ServiceLoader;
 
@@ -79,14 +80,49 @@ public class RasterFactory {
      */
     public static AbstractRaster loadRasterFromFile( File filename )
                             throws IOException {
-        String extension = FileUtils.getFileExtension( filename );
-        RasterReader reader = getRasterReader( filename, extension );
+        RasterIOOptions options = RasterIOOptions.forFile( filename );
+        return loadRasterFromFile( filename, options );
+    }
+
+    /**
+     * Load a raster from a file.
+     * 
+     * @param filename
+     *            the filename of the raster
+     * @param options
+     * @return the loaded raster as an AbstractRaster
+     * @throws IOException
+     */
+    public static AbstractRaster loadRasterFromFile( File filename, RasterIOOptions options )
+                            throws IOException {
+        RasterReader reader = getRasterReader( filename, options );
         if ( reader == null ) {
             log.error( "couldn't find raster reader for " + filename );
             throw new IOException( "couldn't find raster reader" );
         }
-        return reader.load( filename );
+        return reader.load( filename, options );
     }
+
+    /**
+     * Load a raster from a stream.
+     * 
+     * @param in
+     * @param options
+     *            map with options for the raster writer
+     * @return the loaded raster as an AbstractRaster
+     * @throws IOException
+     */
+    public static AbstractRaster loadRasterFromStream( InputStream in, RasterIOOptions options )
+                            throws IOException {
+        RasterReader reader = getRasterReader( options );
+        if ( reader == null ) {
+            log.error( "couldn't find raster reader for stream" );
+            throw new IOException( "couldn't find raster reader for stream (" + options + ")" );
+        }
+
+        return reader.load( in, options );
+    }
+    
 
     /**
      * Save a raster to a file.
@@ -144,10 +180,22 @@ public class RasterFactory {
         writer.write( raster, out, options );
     }
 
-    private static RasterReader getRasterReader( File filename, String format ) {
+    private static RasterReader getRasterReader( File filename, RasterIOOptions options ) {
         for ( RasterIOProvider reader : rasterIOLoader ) {
+            String format = options.get( RasterIOOptions.OPT_FORMAT );
             RasterReader possibleReader = reader.getRasterReader( format );
             if ( possibleReader != null && possibleReader.canLoad( filename ) ) {
+                return possibleReader;
+            }
+        }
+        return null;
+    }
+    
+    private static RasterReader getRasterReader( RasterIOOptions options ) {
+        for ( RasterIOProvider reader : rasterIOLoader ) {
+            String format = options.get( RasterIOOptions.OPT_FORMAT );
+            RasterReader possibleReader = reader.getRasterReader( format );
+            if ( possibleReader != null ) {
                 return possibleReader;
             }
         }

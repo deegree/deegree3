@@ -44,14 +44,15 @@ package org.deegree.model.coverage.raster;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * This interface is for abstraction of the raster loading handling.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author: $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $
+ * @version $Revision$
  * 
  */
 public interface RasterReader {
@@ -59,11 +60,24 @@ public interface RasterReader {
      * Read the given raster file into an abstract raster.
      * 
      * @param filename
+     * @param options
      * @return the loaded raster
      * @throws IOException
      *             may be thrown when there is a problem with reading the raster.
      */
-    public AbstractRaster load( File filename )
+    public AbstractRaster load( File filename, RasterIOOptions options )
+                            throws IOException;
+
+    /**
+     * Read the given input stream into an abstract raster.
+     * 
+     * @param stream
+     * @param options
+     * @return the loaded raster
+     * @throws IOException
+     *             may be thrown when there is a problem with reading the raster.
+     */
+    public AbstractRaster load( InputStream stream, RasterIOOptions options )
                             throws IOException;
 
     /**

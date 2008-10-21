@@ -1,4 +1,4 @@
-//$HeadURL:$
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -101,5 +101,10 @@ public class RasterIOOptions {
         String ext = FileUtils.getFileExtension( file );
         result.add( OPT_FORMAT, ext );
         return result;
+    }
+    
+    @Override
+    public String toString() {
+        return options.toString();
     }
 }
