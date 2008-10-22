@@ -40,7 +40,6 @@ package org.deegree.rendering;
 
 import static java.util.Collections.singletonList;
 import static org.deegree.model.geometry.GeometryFactoryCreator.getInstance;
-import static org.deegree.model.geometry.primitive.Curve.Orientation.unknown;
 
 import java.util.Random;
 
@@ -81,7 +80,7 @@ public class GeometryGenerator {
                           fac.createPoint( null, new double[] { rnd.nextDouble() * max + offx,
                                                                rnd.nextDouble() * max + offy }, null ),
                           fac.createPoint( null, new double[] { x, y }, null ) } };
-        Curve curve = fac.createCurve( null, ps, unknown, null );
+        Curve curve = fac.createCurve( null, ps, null );
         SurfacePatch patch = fac.createSurfacePatch( singletonList( curve ) );
         return fac.createSurface( null, singletonList( patch ), null );
     }
@@ -105,7 +104,7 @@ public class GeometryGenerator {
                           fac.createPoint( null, new double[] { rnd.nextDouble() * half + offx,
                                                                rnd.nextDouble() * half + half + offy }, null ),
                           fac.createPoint( null, new double[] { x, y }, null ) } };
-        Curve curve = fac.createCurve( null, ps, unknown, null );
+        Curve curve = fac.createCurve( null, ps, null );
         SurfacePatch patch = fac.createSurfacePatch( singletonList( curve ) );
         return fac.createSurface( null, singletonList( patch ), null );
     }
@@ -128,7 +127,7 @@ public class GeometryGenerator {
                                                                rnd.nextDouble() * half + half + offy }, null ),
                           fac.createPoint( null, new double[] { rnd.nextDouble() * half + offx,
                                                                rnd.nextDouble() * half + half + offy }, null ) } };
-        return fac.createCurve( null, ps, unknown, null );
+        return fac.createCurve( null, ps, null );
     }
 
 }

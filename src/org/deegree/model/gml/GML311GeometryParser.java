@@ -70,7 +70,6 @@ import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
 import org.deegree.model.geometry.primitive.Curve.CurveType;
-import org.deegree.model.geometry.primitive.Curve.Orientation;
 import org.deegree.model.geometry.primitive.Ring.RingType;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.i18n.Messages;
@@ -859,8 +858,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
 
         LineStringSegment singleSegment = geomFac.createLineStringSegment( points );
-        return geomFac.createCurve( gid, new CurveSegment[] { singleSegment }, Orientation.positive,
-                                    lookupCRS( srsName ) );
+        return geomFac.createCurve( gid, new CurveSegment[] { singleSegment }, lookupCRS( srsName ) );
     }
 
     /**
@@ -889,8 +887,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
 
         xmlStream.skipElement();
-        return geomFac.createCurve( gid, segments.toArray( new CurveSegment[segments.size()] ), Orientation.positive,
-                                    lookupCRS( srsName ) );
+        return geomFac.createCurve( gid, segments.toArray( new CurveSegment[segments.size()] ), lookupCRS( srsName ) );
     }
 
     /**
@@ -918,8 +915,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         xmlStream.require( END_ELEMENT, GMLNS, "LinearRing" );
 
         LineStringSegment segment = geomFac.createLineStringSegment( points );
-        Curve curve = geomFac.createCurve( null, new CurveSegment[] { segment }, Orientation.positive,
-                                           lookupCRS( srsName ) );
+        Curve curve = geomFac.createCurve( null, new CurveSegment[] { segment }, lookupCRS( srsName ) );
         List<Curve> memberCurves = new ArrayList<Curve>( 1 );
         memberCurves.add( curve );
         return geomFac.createRing( gid, lookupCRS( srsName ), memberCurves );

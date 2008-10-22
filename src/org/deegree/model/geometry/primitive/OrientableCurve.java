@@ -41,56 +41,33 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard;
-
-import java.util.List;
-
-import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.LineString;
-import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.model.geometry.standard.curvesegments.DefaultLineStringSegment;
+package org.deegree.model.geometry.primitive;
 
 /**
- * Default implementation of {@link LineString}.
+ * An <code>OrientableCurve</code> consists of a wrapped base {@link Curve} and an additional orientation.
+ * <p>
+ * If the orientation is not reversed, then the OrientableCurve is identical to the base curve. If the orientation is
+ * reversed, then the OrientableCurve is related to the base curve with a parameterization that reverses the sense of
+ * the curve traversal.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultLineString extends DefaultCurve implements LineString {
+public interface OrientableCurve extends Curve {
 
-    private LineStringSegment singleSegment;    
-    
     /**
+     * Returns true, if the orientation of the base curve is reversed.
      * 
-     * @param id
-     * @param crs
-     * @param controlPoints
+     * @return true, if the orientation of the base curve is reversed, fale otherwise (identical orientation)
      */
-    public DefaultLineString( String id, CoordinateSystem crs, List<Point> controlPoints) {
-        super( id, crs, new DefaultLineStringSegment(controlPoints) );
-        singleSegment = (LineStringSegment) getCurveSegments().get( 0 );
-    }    
+    public boolean isReversed();
 
-    @Override
-    public CurveType getCurveType() {
-        return CurveType.LineString;
-    }    
-    
-    @Override
-    public List<Point> getPoints() {
-        return singleSegment.getControlPoints();
-    }
-
-    @Override
-    public double[] getAsArray() {
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public LineString getAsLineString() {
-        return this;
-    }
+    /**
+     * Returns the {@link Curve} that this <code>OrientableCurve</code> is based on.
+     * 
+     * @return the base <code>Curve</code>
+     */
+    public Curve getBaseCurve();
 }

@@ -53,7 +53,6 @@ import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
-import org.deegree.model.geometry.primitive.Curve.Orientation;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -498,7 +497,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         Point[][] pts = new Point[1][];
         pts[0] = points.toArray( new Point[points.size()] );
 
-        return geomFactory.createCurve( null, pts, Orientation.unknown, crs );
+        return geomFactory.createCurve( null, pts, crs );
     }
 
     /**
@@ -529,11 +528,11 @@ abstract class JTSWrapperGeometry implements Geometry {
         Point[][] ring = new Point[1][];
         List<Point> list = toPoints( polygon.getExteriorRing().getCoordinates() );
         ring[0] = list.toArray( new Point[list.size()] );
-        boundary.add( geomFactory.createCurve( null, ring, Orientation.unknown, crs ) );
+        boundary.add( geomFactory.createCurve( null, ring, crs ) );
         for ( int i = 0; i < polygon.getNumInteriorRing(); i++ ) {
             list = toPoints( polygon.getInteriorRingN( i ).getCoordinates() );
             ring[0] = list.toArray( new Point[list.size()] );
-            boundary.add( geomFactory.createCurve( null, ring, Orientation.unknown, crs ) );
+            boundary.add( geomFactory.createCurve( null, ring, crs ) );
         }
 
         return geomFactory.createSurface( null, boundary, SurfacePatch.Interpolation.none, crs );

@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.standard.curvesegments.DefaultLineStringSegment;
@@ -66,8 +65,6 @@ class JTSWrapperLineString extends JTSWrapperGeometry implements org.deegree.mod
     private List<Point> pointList;
 
     private List<CurveSegment> segments;
-
-    private Curve.Orientation orientation;
 
     /**
      * 
@@ -160,15 +157,6 @@ class JTSWrapperLineString extends JTSWrapperGeometry implements org.deegree.mod
      */
     public double getLength() {
         return ( (LineString) geometry ).getLength();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.geometry.primitive.Curve#getOrientation()
-     */
-    public Orientation getOrientation() {
-        return orientation;
     }
 
     /*

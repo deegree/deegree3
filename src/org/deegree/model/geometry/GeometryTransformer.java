@@ -275,7 +275,7 @@ public class GeometryTransformer extends Transformer {
             pos = transform( pos, trans );
             curveSegments[i++] = geomFactory.createLineStringSegment( pos );
         }
-        return geomFactory.createCurve( geo.getId(), curveSegments, geo.getOrientation(), trans.getTargetCRS() );
+        return geomFactory.createCurve( geo.getId(), curveSegments, trans.getTargetCRS() );
     }
 
     /**

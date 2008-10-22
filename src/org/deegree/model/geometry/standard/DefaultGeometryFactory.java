@@ -63,7 +63,6 @@ import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
-import org.deegree.model.geometry.primitive.Curve.Orientation;
 import org.deegree.model.geometry.primitive.SurfacePatch.Interpolation;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
@@ -99,6 +98,8 @@ import org.deegree.model.geometry.standard.curvesegments.DefaultLineStringSegmen
 import org.deegree.model.geometry.standard.curvesegments.DefaultOffsetCurve;
 import org.deegree.model.gml.Angle;
 import org.deegree.model.gml.Length;
+
+import com.sun.java.swing.plaf.gtk.GTKConstants.Orientation;
 
 /**
  * 
@@ -144,14 +145,14 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Curve createCurve( String id, Point[][] coordinates, Orientation orientation, CoordinateSystem crs ) {
+    public Curve createCurve( String id, Point[][] coordinates, CoordinateSystem crs ) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Curve createCurve( String id, CurveSegment[] segments, Orientation orientation, CoordinateSystem crs ) {
-        return new DefaultCurve( id, crs, Arrays.asList( segments ), orientation );
+    public Curve createCurve( String id, CurveSegment[] segments, CoordinateSystem crs ) {
+        return new DefaultCurve( id, crs, Arrays.asList( segments ) );
     }
 
     @Override
@@ -295,32 +296,32 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Geodesic createGeodesic( Point p1, Point p2 ) {        
-        return new DefaultGeodesic(p1,p2);
+    public Geodesic createGeodesic( Point p1, Point p2 ) {
+        return new DefaultGeodesic( p1, p2 );
     }
 
     @Override
     public GeodesicString createGeodesicString( List<Point> points ) {
-        return new DefaultGeodesicString(points);
+        return new DefaultGeodesicString( points );
     }
 
     @Override
-    public OffsetCurve createOffsetCurve( Curve baseCurve, Point direction, Length distance ) {        
-        return new DefaultOffsetCurve (baseCurve, direction, distance);
+    public OffsetCurve createOffsetCurve( Curve baseCurve, Point direction, Length distance ) {
+        return new DefaultOffsetCurve( baseCurve, direction, distance );
     }
 
     @Override
     public Ring createRing( String id, CoordinateSystem crs, List<Curve> members ) {
-        return new DefaultRing (id, crs, members);
+        return new DefaultRing( id, crs, members );
     }
 
     @Override
     public LinearRing createLinearRing( String id, CoordinateSystem crs, List<Point> points ) {
-        return new DefaultLinearRing(id, crs, points);
-    }    
-    
+        return new DefaultLinearRing( id, crs, points );
+    }
+
     @Override
     public LineString createLineString( String id, CoordinateSystem crs, List<Point> points ) {
-        return new DefaultLineString (id, crs, points);
+        return new DefaultLineString( id, crs, points );
     }
 }

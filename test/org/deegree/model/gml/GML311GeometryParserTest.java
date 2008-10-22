@@ -73,7 +73,7 @@ import org.junit.Test;
  */
 public class GML311GeometryParserTest {
 
-    private static GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
+    private static GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory("Standard");
 
     @Test
     public void parsePointPos()
@@ -240,7 +240,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Curve" ), xmlReader.getName() );
         Assert.assertEquals( 2, curve.getCurveSegments().size() );
-        Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 0 ).getInterpolation() );
+        Assert.assertEquals( Interpolation.circularArc3Points, curve.getCurveSegments().get( 0 ).getInterpolation() );
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 1 ).getInterpolation() );
     }
 

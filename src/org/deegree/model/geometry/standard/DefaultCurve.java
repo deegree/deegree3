@@ -52,7 +52,6 @@ import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.model.geometry.standard.curvesegments.DefaultLineStringSegment;
 
 /**
  * Default implementation of {@link Curve}.
@@ -66,19 +65,15 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
 
     private List<CurveSegment> segments;
 
-    private Curve.Orientation orientation;
-
     /**
      * 
      * @param id
      * @param crs
      * @param segments
-     * @param orientation
      */
-    public DefaultCurve( String id, CoordinateSystem crs, List<CurveSegment> segments, Curve.Orientation orientation ) {
+    public DefaultCurve( String id, CoordinateSystem crs, List<CurveSegment> segments) {
         super( id, crs );
         this.segments = new ArrayList<CurveSegment>( segments );
-        this.orientation = orientation;
     }
 
     /**
@@ -105,11 +100,6 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
     @Override
     public double getLength() {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Orientation getOrientation() {
-        return orientation;
     }
 
     @Override

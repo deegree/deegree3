@@ -63,7 +63,6 @@ import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
-import org.deegree.model.geometry.primitive.Curve.Orientation;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByCenterPoint;
@@ -110,12 +109,12 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Curve createCurve( String id, Point[][] coordinates, Orientation orientation, CoordinateSystem crs ) {
+    public Curve createCurve( String id, Point[][] coordinates, CoordinateSystem crs ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public Curve createCurve( String id, CurveSegment[] segments, Orientation orientation, CoordinateSystem crs ) {
+    public Curve createCurve( String id, CurveSegment[] segments, CoordinateSystem crs ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 

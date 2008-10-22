@@ -41,12 +41,15 @@ import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.Geometry;
+import org.deegree.model.geometry.composite.CompositeCurve;
 
 /**
- * Base interface for 1D (curve) geometries.
+ * Base interface for 1D (curve) geometries that consists of an arbitrary number of segments.
  * 
+ * @see CompositeCurve
  * @see LineString
- *
+ * @see OrientableCurve
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
  * 
@@ -54,8 +57,18 @@ import org.deegree.model.geometry.Geometry;
  */
 public interface Curve extends Geometry {
 
+    /**
+     * Convenience enum type for handling the different curve variants
+     */
     public enum CurveType {
-        CompositeCurve, Curve, OrientableCurve, LineString
+        /** Generic curve that consists of an arbitrary number of segments */
+        Curve,
+        /** Curve that consists of a single segment */
+        LineString,
+        /** Curve that wraps a base curve with additional orientation */
+        OrientableCurve,
+        /** Curve composited from several base curves */
+        CompositeCurve,
     }
 
     /**
@@ -63,16 +76,16 @@ public interface Curve extends Geometry {
      * 
      * @return the type of curve
      */
-    public CurveType getCurveType ();
-    
+    public CurveType getCurveType();
+
     /**
      * The boundary of a curve is the set of points at either end of the curve. If the curve is a cycle, the two ends
      * are identical, and the curve (if topologically closed) is considered to not have a boundary.
      * 
      * @return true if the first and last {@link Point} of a curve are identical
      */
-    public boolean isClosed();    
-    
+    public boolean isClosed();
+
     /**
      * Returns a linear interpolated representation of the curve.
      * <p>
@@ -81,32 +94,7 @@ public interface Curve extends Geometry {
      * 
      * @return a linear interpolated representation of the curve
      */
-    public LineString getAsLineString();    
-    
-    /**
-     * orientation of a curve
-     * 
-     */
-    public enum Orientation {
-        /**
-         * Indicating a positive orientation
-         */
-        positive,
-        /**
-         * Indicating a negative orientation
-         */
-        negative,
-        /**
-         * the orientation is not known.
-         */
-        unknown
-    }
-
-    /**
-     * 
-     * @return a curves orientation
-     */
-    public Orientation getOrientation();
+    public LineString getAsLineString();
 
     /**
      * 
@@ -124,8 +112,9 @@ public interface Curve extends Geometry {
     public List<Point> getBoundary();
 
     /**
+     * Returns the segments that constitute this curve.
      * 
-     * @return segments forming a curve. a simple curves consists of one segment
+     * @return the segments that constitute this curve
      */
     public List<CurveSegment> getCurveSegments();
 }

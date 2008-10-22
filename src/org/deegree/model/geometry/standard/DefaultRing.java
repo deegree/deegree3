@@ -149,11 +149,6 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     }
 
     @Override
-    public Orientation getOrientation() {
-        return Orientation.unknown;
-    }
-
-    @Override
     public boolean isClosed() {
         return true;
     }

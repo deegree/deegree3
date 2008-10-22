@@ -245,14 +245,12 @@ public interface GeometryFactory {
      *            identifier of the new geometry instance
      * @param coordinates
      *            array of curve coordinates
-     * @param orientation
-     *            orientation of a curve can be positive, negative or unknown
      * @param crs
      *            curves coordinate reference system. If a point does not have a CRS or it is not known
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Curve}
      */
-    public Curve createCurve( String id, Point[][] coordinates, Curve.Orientation orientation, CoordinateSystem crs );
+    public Curve createCurve( String id, Point[][] coordinates, CoordinateSystem crs );
 
     /**
      * Creates a segmented {@link Curve} from one or more {@link CurveSegment}s. The last {@link Point} of i'th segment
@@ -262,14 +260,12 @@ public interface GeometryFactory {
      *            identifier of the new geometry instance
      * @param segments
      *            segments a curve shall be created from
-     * @param orientation
-     *            orientation of a curve can be positive, negative or unknown
      * @param crs
      *            curves coordinate reference system. If a point does not have a CRS or it is not known
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Curve}
      */
-    public Curve createCurve( String id, CurveSegment[] segments, Curve.Orientation orientation, CoordinateSystem crs );
+    public Curve createCurve( String id, CurveSegment[] segments, CoordinateSystem crs );
 
     /**
      * Creates a {@link LineStringSegment} curve segment.

@@ -73,20 +73,21 @@ public class GeometryUtils {
         GeometryFactory fac = GeometryFactoryCreator.getInstance().getGeometryFactory();
         if ( geom instanceof Point ) {
             Point p = (Point) geom;
-            return fac.createPoint( geom.getId(), new double[] { p.getX() + offx, p.getY() + offy }, p.getCoordinateSystem() );
+            return fac.createPoint( geom.getId(), new double[] { p.getX() + offx, p.getY() + offy },
+                                    p.getCoordinateSystem() );
         }
         if ( geom instanceof Curve ) {
             Curve c = (Curve) geom;
             LinkedList<Point> ps = new LinkedList<Point>();
-            if (c.getCurveSegments().size() != 1 || !(c.getCurveSegments().get( 0 ) instanceof LineStringSegment)) {
+            if ( c.getCurveSegments().size() != 1 || !( c.getCurveSegments().get( 0 ) instanceof LineStringSegment ) ) {
                 // TODO handle non-linear and multiple curve segments
                 throw new IllegalArgumentException();
             }
-            LineStringSegment segment =( (LineStringSegment) c.getCurveSegments().get( 0 ) ); 
+            LineStringSegment segment = ( (LineStringSegment) c.getCurveSegments().get( 0 ) );
             for ( Point p : segment.getControlPoints() ) {
                 ps.add( (Point) move( p, offx, offy ) );
             }
-            return fac.createCurve( geom.getId(), new CurveSegment[] { fac.createLineStringSegment(  ps ) }, c.getOrientation(),
+            return fac.createCurve( geom.getId(), new CurveSegment[] { fac.createLineStringSegment( ps ) },
                                     c.getCoordinateSystem() );
         }
         if ( geom instanceof Surface ) {
