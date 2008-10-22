@@ -46,7 +46,8 @@ package org.deegree.model.geometry.primitive;
 import java.util.List;
 
 /**
- * The most common case of a {@link Curve}: just one curve segment with linear interpolation between the control points.
+ * The most common case of a {@link Curve}: consist just of one curve segment with linear interpolation between the
+ * control points.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -63,8 +64,9 @@ public interface LineString extends Curve {
     public double[] getAsArray();
 
     /**
+     * Returns the control points of the <code>LineString</code>.
      * 
-     * @return points constructing a curve as {@link List}
+     * @return the control points
      */
-    public List<Point> getPoints();
+    public List<Point> getControlPoints();
 }

@@ -1,4 +1,4 @@
-// $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -37,28 +37,26 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.composite;
 
-import java.util.List;
-
 import org.deegree.model.geometry.primitive.Surface;
 
 /**
- * A CompositeSurface shall be a complex geometry with all the geometric properties of a surface,
- * and thus can be considered as a type of orientable surface. Essentially, a composite surface is a
- * collection of oriented surfaces that join in pairs on common boundary curves and which, when
- * considered as a whole, form a single surface.
- * 
+ * <code>CompositeSurface</code> is a geometry type with the same geometric properties as the (primitive)
+ * {@link Surface} type. Essentially, it is a collection of surfaces that join in pairs on common boundary curves and
+ * which, when considered as a whole, form a single surface.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
  * 
  * @version. $Revision$, $Date$
  */
-public interface CompositeSurface extends CompositeGeometry, Surface {
+public interface CompositeSurface extends Surface, CompositeGeometry<Surface> {
 
     /**
+     * Must always return {@link Surface.SurfaceType#CompositeSurface}.
      * 
-     * @return {@link Surface}s forming a composite
+     * @return {@link Surface.SurfaceType#CompositeSurface}
      */
-    public List<Surface> getSurfaces();
-
+    @Override
+    public SurfaceType getSurfaceType();        
+    
 }

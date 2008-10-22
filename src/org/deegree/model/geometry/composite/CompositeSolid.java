@@ -37,24 +37,25 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.composite;
 
-import java.util.List;
-
 import org.deegree.model.geometry.primitive.Solid;
 
 /**
- * 
- * 
+ * <code>CompositeSolid</code> is a geometry type with the same geometric properties as the (primitive) {@link Solid}
+ * type. Essentially, it is a collection of solids that join in pairs on common boundary surfaces and which, when
+ * considered as a whole, form a single solid.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
  * 
  * @version. $Revision$, $Date$
  */
-public interface CompositeSolid extends CompositeGeometry, Solid {
+public interface CompositeSolid extends Solid, CompositeGeometry<Solid> {
 
     /**
-     * @return the solids of this composite solid geometry.
+     * Must always return {@link Solid.SolidType#CompositeSolid}.
+     * 
+     * @return {@link Solid.SolidType#CompositeSolid}
      */
-    public List<Solid> getSolids();
-
+    @Override
+    public SolidType getSolidType();    
 }

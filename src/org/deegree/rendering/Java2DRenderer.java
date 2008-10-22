@@ -396,5 +396,4 @@ public class Java2DRenderer implements Renderer {
             render( styling, (Surface) geom );
         }
     }
-
 }

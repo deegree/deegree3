@@ -82,7 +82,7 @@ class JTSWrapperLineString extends JTSWrapperGeometry implements org.deegree.mod
         // geometrical identic
         this.segments = new ArrayList<CurveSegment>( 1 );
         this.segments.add( new DefaultLineStringSegment(controlPoints) );
-        List<Coordinate> coords = new ArrayList<Coordinate>( getPoints().size() );
+        List<Coordinate> coords = new ArrayList<Coordinate>( getControlPoints().size() );
         if ( coordinateDimension == 2 ) {
             for ( Point point : controlPoints ) {
                 coords.add( new Coordinate( point.getX(), point.getY() ) );
@@ -164,7 +164,7 @@ class JTSWrapperLineString extends JTSWrapperGeometry implements org.deegree.mod
      * 
      * @see org.deegree.model.geometry.primitive.Curve#getPoints()
      */
-    public List<Point> getPoints() {
+    public List<Point> getControlPoints() {
         if ( pointList == null ) {
             pointList = toPoints( ( (LineString) geometry ).getCoordinates() );
         }

@@ -46,7 +46,7 @@ package org.deegree.model.geometry.primitive;
 /**
  * An <code>OrientableCurve</code> consists of a wrapped base {@link Curve} and an additional orientation.
  * <p>
- * If the orientation is not reversed, then the <code>OrientableCurve</code> is identical to the base curve. If the
+ * If the orientation is *not* reversed, then the <code>OrientableCurve</code> is identical to the base curve. If the
  * orientation is reversed, then the <code>OrientableCurve</code> is related to the base curve with a parameterization
  * that reverses the sense of the curve traversal.
  * 
@@ -60,7 +60,7 @@ public interface OrientableCurve extends Curve {
     /**
      * Returns whether the orientation of this curve is reversed compared to the base curve.
      * 
-     * @return true, if the orientation is reversed, fasle otherwise (identical orientation)
+     * @return true, if the orientation is reversed, false otherwise
      */
     public boolean isReversed();
 

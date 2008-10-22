@@ -37,28 +37,25 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.composite;
 
-import java.util.List;
-
 import org.deegree.model.geometry.primitive.Curve;
 
 /**
- * CompositeCurve. Composite curves are used to represent features whose geometry could also be
- * represented as curve primitives. From a cartographic point of view, these two representations are
- * not different. From a topological point of view, they are different.<br>
- * a composite curve is a collection of curves whose geometry interface could be satisfied by a
- * single curve (albeit a much more complex one).
- * 
+ * <code>CompositeCurve</code> is a geometry type with the same geometric properties as the (primitive) {@link Curve}
+ * type. It is defined by a sequence of member curves such that the each curve in the sequence ends at the start
+ * point of the subsequent curve in the list.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
  * 
  * @version. $Revision$, $Date$
  */
-public interface CompositeCurve extends CompositeGeometry, Curve {
-
+public interface CompositeCurve extends Curve, CompositeGeometry<Curve> {
+    
     /**
-     * @return the curves this composite curve.
+     * Must always return {@link Curve.CurveType#CompositeCurve}.
+     * 
+     * @return {@link Curve.CurveType#CompositeCurve}
      */
-    public List<Curve> getCurves();
-
+    @Override
+    public CurveType getCurveType();
 }

@@ -45,9 +45,9 @@ import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.AbstractGeometryFactory;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.composite.CompositeCurve;
+import org.deegree.model.geometry.composite.CompositeGeometry;
 import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.composite.CompositeSurface;
-import org.deegree.model.geometry.composite.GeometricComplex;
 import org.deegree.model.geometry.multi.MultiCurve;
 import org.deegree.model.geometry.multi.MultiGeometry;
 import org.deegree.model.geometry.multi.MultiPoint;
@@ -56,6 +56,7 @@ import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Envelope;
+import org.deegree.model.geometry.primitive.GeometricPrimitive;
 import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.OrientableCurve;
@@ -95,17 +96,17 @@ import org.deegree.model.gml.Length;
 public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
 
     @Override
-    public CompositeCurve createCompositeCurve( String id, List<Curve> curves ) {
+    public CompositeCurve createCompositeCurve( String id, CoordinateSystem crs, List<Curve> curves ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public CompositeSolid createCompositeSolid( String id, List<Solid> solids ) {
+    public CompositeSolid createCompositeSolid( String id, CoordinateSystem crs, List<Solid> solids ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public CompositeSurface createCompositeSurface( String id, List<Surface> surfaces ) {
+    public CompositeSurface createCompositeSurface( String id, CoordinateSystem crs,  List<Surface> surfaces ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
@@ -125,7 +126,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public GeometricComplex createGeometricComplex( String id, List<Geometry> geometries ) {
+    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs, List<GeometricPrimitive> memberPrimitives ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
@@ -231,7 +232,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
         if ( patches == null || patches.size() == 0 ) {
             return null;
         }
-        Point point = patches.get( 0 ).getBoundary().get( 0 ).getAsLineString().getPoints().get( 0 );
+        Point point = patches.get( 0 ).getBoundary().get( 0 ).getAsLineString().getControlPoints().get( 0 );
         // JTS does not support Surfaces (Polyons) build from different SurfacePatches, so
         // the first patch will build the complete surface
         return new JTSWrapperSurface( id, point.getPrecision(), crs, point.getCoordinateDimension(), patches.get( 0 ) );

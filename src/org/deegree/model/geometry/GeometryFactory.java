@@ -43,9 +43,9 @@ import java.util.List;
 import org.deegree.model.crs.CRSFactory;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.composite.CompositeCurve;
+import org.deegree.model.geometry.composite.CompositeGeometry;
 import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.composite.CompositeSurface;
-import org.deegree.model.geometry.composite.GeometricComplex;
 import org.deegree.model.geometry.multi.MultiCurve;
 import org.deegree.model.geometry.multi.MultiGeometry;
 import org.deegree.model.geometry.multi.MultiPoint;
@@ -54,6 +54,7 @@ import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Envelope;
+import org.deegree.model.geometry.primitive.GeometricPrimitive;
 import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.OrientableCurve;
@@ -593,40 +594,58 @@ public interface GeometryFactory {
      * 
      * @param id
      *            identifier of the new geometry instance
-     * @param curves
+     * @param crs
+     *            coordinate reference system. If the curve does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @param memberCurves
+     *            curves that constitute the composited curve, each curve must end at the start point of the subsequent
+     *            curve in the list
      * @return created {@link CompositeCurve}
      */
-    public CompositeCurve createCompositeCurve( String id, List<Curve> curves );
+    public CompositeCurve createCompositeCurve( String id, CoordinateSystem crs, List<Curve> memberCurves );
 
     /**
      * Creates a {@link CompositeSurface} from a list of passed {@link Surface}s.
      * 
      * @param id
      *            identifier of the new geometry instance
-     * @param surfaces
+     * @param crs
+     *            coordinate reference system. If the surface does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @param memberSurfaces
+     *            surfaces that constitute the composited surface, the surfaces must join in pairs on common boundary
+     *            curves and must, when considered as a whole, form a single surface
      * @return created {@link CompositeSurface}
      */
-    public CompositeSurface createCompositeSurface( String id, List<Surface> surfaces );
+    public CompositeSurface createCompositeSurface( String id, CoordinateSystem crs, List<Surface> memberSurfaces );
 
     /**
      * Creates a {@link CompositeSolid} from a list of passed {@link Solid}s.
      * 
      * @param id
      *            identifier of the new geometry instance
-     * @param solids
+     * @param crs
+     *            coordinate reference system. If the solid does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @param memberSolids
+     *            solids that constitute the composited solid, the solids must join in pairs on common boundary surfaces
+     *            and which, when considered as a whole, form a single solid
      * @return created {@link CompositeSolid}
      */
-    public CompositeSolid createCompositeSolid( String id, List<Solid> solids );
+    public CompositeSolid createCompositeSolid( String id, CoordinateSystem crs, List<Solid> memberSolids );
 
     /**
-     * Creates a general {@link GeometricComplex} from a list of geometries.
+     * Creates a general {@link CompositeGeometry} from a list of primitive geometries.
      * 
      * @param id
      *            identifier of the new geometry instance
-     * @param geometries
-     * @return created {@link GeometricComplex}
+     * @param crs
+     *            coordinate reference system. If the complex does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @param memberPrimitives
+     * @return created {@link CompositeGeometry}
      */
-    public GeometricComplex createGeometricComplex( String id, List<Geometry> geometries );
+    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs, List<GeometricPrimitive> memberPrimitives );
 
     /**
      * creates an {@link Envelope} with a defined precision

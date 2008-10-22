@@ -48,7 +48,7 @@ import org.deegree.model.geometry.Geometry;
  * 
  * @version. $Revision$, $Date$
  */
-public interface Point extends Geometry {
+public interface Point extends GeometricPrimitive {
 
     /**
      * 

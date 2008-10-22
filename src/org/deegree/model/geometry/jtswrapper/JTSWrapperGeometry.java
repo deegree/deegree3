@@ -279,7 +279,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         
         switch ( curve.getCurveType() ) {
         case LineString: {
-            List<Point> points = ( (org.deegree.model.geometry.primitive.LineString) curve ).getPoints();
+            List<Point> points = ( (org.deegree.model.geometry.primitive.LineString) curve ).getControlPoints();
             geom = jtsFactory.createLineString( toCoordinates( points ) );
         }
         case Curve:
@@ -321,7 +321,7 @@ abstract class JTSWrapperGeometry implements Geometry {
 
         List<Curve> boundary = surface.getBoundary();
         CoordinateSequenceFactory fac = CoordinateArraySequenceFactory.instance();
-        List<Point> outer = boundary.get( 0 ).getAsLineString().getPoints();
+        List<Point> outer = boundary.get( 0 ).getAsLineString().getControlPoints();
         Coordinate[] coords = toCoordinates( outer );
 
         LinearRing shell = new LinearRing( fac.create( coords ), jtsFactory );
@@ -330,7 +330,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         if ( boundary.size() > 1 ) {
             holes = new LinearRing[boundary.size() - 1];
             for ( int i = 1; i < boundary.size(); i++ ) {
-                coords = toCoordinates( boundary.get( i ).getAsLineString().getPoints() );
+                coords = toCoordinates( boundary.get( i ).getAsLineString().getControlPoints() );
                 holes[i - 1] = new LinearRing( fac.create( coords ), jtsFactory );
             }
         }

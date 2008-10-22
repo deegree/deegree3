@@ -97,7 +97,7 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
     }
 
     @Override
-    public List<Point> getPoints() {
-        return ((LineString) members.get( 0 )).getPoints();
+    public List<Point> getControlPoints() {
+        return ((LineString) members.get( 0 )).getControlPoints();
     }    
 }

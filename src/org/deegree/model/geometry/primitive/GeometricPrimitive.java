@@ -41,29 +41,42 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry;
+package org.deegree.model.geometry.primitive;
 
-import org.deegree.model.geometry.primitive.LinearRing;
-import org.deegree.model.geometry.primitive.Ring;
+import org.deegree.model.geometry.Geometry;
+import org.deegree.model.geometry.composite.CompositeCurve;
+import org.deegree.model.geometry.composite.CompositeGeometry;
+import org.deegree.model.geometry.composite.CompositeSolid;
+import org.deegree.model.geometry.composite.CompositeSurface;
 
 /**
- * Base interface for 2D (surface) geometries.
+ * Marker interface for geometric primitives.
  * <p>
- * The following specialized interfaces exist:
+ * For every dimensionality, a specialized interface exists:
  * <ul>
- * <li>{@link LinearRing}</li>
- * <li>{@link Ring}</li>
+ * <li>0D: {@link Point}</li>
+ * <li>1D: {@link Curve}</li>
+ * <li>2D: {@link Surface}</li>
+ * <li>3D: {@link Solid}</li>
  * </ul>
+ * </p>
+ * Please note that the specializations of {@link CompositeGeometry} implement this interface as well:
+ * <ul>
+ * <li>1D: {@link CompositeCurve}</li>
+ * <li>2D: {@link CompositeSurface}</li>
+ * <li>3D: {@link CompositeSolid}</li>
+ * </ul>
+ * This is due to the fact that these types imply a primitive semantic, e.g. a {@link CompositeCurve} is* a
+ * {@link Curve}, because it defines a sequence of curve segments.
+ * <p>
+ * However, the generic {@link CompositeGeometry} is *not* a primitive, because it allows the composition of primitives
+ * with different dimensionality.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public interface AbstractSurface {
-
-    public enum SurfaceType {
-        CompositeSurface, OrientableSurface, Polygon, PolyhedralSurface, Surface, Tin, TriangulatedSurface
-    }
-
+public interface GeometricPrimitive extends Geometry {
+    // simply a marker interface
 }

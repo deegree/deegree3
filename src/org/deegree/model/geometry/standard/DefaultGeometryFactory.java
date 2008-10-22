@@ -45,9 +45,9 @@ import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.AbstractGeometryFactory;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.composite.CompositeCurve;
+import org.deegree.model.geometry.composite.CompositeGeometry;
 import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.composite.CompositeSurface;
-import org.deegree.model.geometry.composite.GeometricComplex;
 import org.deegree.model.geometry.multi.MultiCurve;
 import org.deegree.model.geometry.multi.MultiGeometry;
 import org.deegree.model.geometry.multi.MultiPoint;
@@ -56,6 +56,7 @@ import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Envelope;
+import org.deegree.model.geometry.primitive.GeometricPrimitive;
 import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.OrientableCurve;
@@ -81,6 +82,10 @@ import org.deegree.model.geometry.primitive.curvesegments.GeodesicString;
 import org.deegree.model.geometry.primitive.curvesegments.Knot;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.curvesegments.OffsetCurve;
+import org.deegree.model.geometry.standard.composite.DefaultCompositeCurve;
+import org.deegree.model.geometry.standard.composite.DefaultCompositeGeometry;
+import org.deegree.model.geometry.standard.composite.DefaultCompositeSolid;
+import org.deegree.model.geometry.standard.composite.DefaultCompositeSurface;
 import org.deegree.model.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.model.geometry.standard.curvesegments.DefaultArc;
 import org.deegree.model.geometry.standard.curvesegments.DefaultArcByBulge;
@@ -126,21 +131,24 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public CompositeCurve createCompositeCurve( String id, List<Curve> curves ) {
-        // TODO Auto-generated method stub
-        return null;
+    public CompositeCurve createCompositeCurve( String id, CoordinateSystem crs, List<Curve> memberCurves ) {
+        return new DefaultCompositeCurve( id, crs, memberCurves );
     }
 
     @Override
-    public CompositeSolid createCompositeSolid( String id, List<Solid> solids ) {
-        // TODO Auto-generated method stub
-        return null;
+    public CompositeSolid createCompositeSolid( String id, CoordinateSystem crs, List<Solid> memberSolids ) {
+        return new DefaultCompositeSolid( id, crs, memberSolids );
     }
 
     @Override
-    public CompositeSurface createCompositeSurface( String id, List<Surface> surfaces ) {
-        // TODO Auto-generated method stub
-        return null;
+    public CompositeSurface createCompositeSurface( String id, CoordinateSystem crs, List<Surface> memberSurfaces ) {
+        return new DefaultCompositeSurface( id, crs, memberSurfaces );
+    }
+
+    @Override
+    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs,
+                                                                List<GeometricPrimitive> memberPrimitives ) {
+        return new DefaultCompositeGeometry( id, crs, memberPrimitives );
     }
 
     @Override
@@ -168,12 +176,6 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public Envelope createEnvelope( String id, SurfacePatch patch ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public GeometricComplex createGeometricComplex( String id, List<Geometry> geometries ) {
         // TODO Auto-generated method stub
         return null;
     }

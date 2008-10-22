@@ -152,13 +152,13 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
         Assert.assertEquals( 1, curve.getCurveSegments().size() );
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 0 ).getInterpolation() );
-        Assert.assertEquals( 3, curve.getAsLineString().getPoints().size() );
-        Assert.assertEquals( 7.12, curve.getAsLineString().getPoints().get( 0 ).getX() );
-        Assert.assertEquals( 50.72, curve.getAsLineString().getPoints().get( 0 ).getY() );
-        Assert.assertEquals( 9.98, curve.getAsLineString().getPoints().get( 1 ).getX() );
-        Assert.assertEquals( 53.55, curve.getAsLineString().getPoints().get( 1 ).getY() );
-        Assert.assertEquals( 13.42, curve.getAsLineString().getPoints().get( 2 ).getX() );
-        Assert.assertEquals( 52.52, curve.getAsLineString().getPoints().get( 2 ).getY() );
+        Assert.assertEquals( 3, curve.getAsLineString().getControlPoints().size() );
+        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX() );
+        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY() );
+        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX() );
+        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY() );
+        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX() );
+        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY() );
     }
 
     @Test
@@ -174,13 +174,13 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
         Assert.assertEquals( 1, curve.getCurveSegments().size() );
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 0 ).getInterpolation() );
-        Assert.assertEquals( 3, curve.getAsLineString().getPoints().size() );
-        Assert.assertEquals( 7.12, curve.getAsLineString().getPoints().get( 0 ).getX() );
-        Assert.assertEquals( 50.72, curve.getAsLineString().getPoints().get( 0 ).getY() );
-        Assert.assertEquals( 9.98, curve.getAsLineString().getPoints().get( 1 ).getX() );
-        Assert.assertEquals( 53.55, curve.getAsLineString().getPoints().get( 1 ).getY() );
-        Assert.assertEquals( 13.42, curve.getAsLineString().getPoints().get( 2 ).getX() );
-        Assert.assertEquals( 52.52, curve.getAsLineString().getPoints().get( 2 ).getY() );
+        Assert.assertEquals( 3, curve.getAsLineString().getControlPoints().size() );
+        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX() );
+        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY() );
+        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX() );
+        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY() );
+        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX() );
+        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY() );
     }
 
     @Test
@@ -196,13 +196,13 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
         Assert.assertEquals( 1, curve.getCurveSegments().size() );
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 0 ).getInterpolation() );
-        Assert.assertEquals( 3, curve.getAsLineString().getPoints().size() );
-        Assert.assertEquals( 7.12, curve.getAsLineString().getPoints().get( 0 ).getX() );
-        Assert.assertEquals( 50.72, curve.getAsLineString().getPoints().get( 0 ).getY() );
-        Assert.assertEquals( 9.98, curve.getAsLineString().getPoints().get( 1 ).getX() );
-        Assert.assertEquals( 53.55, curve.getAsLineString().getPoints().get( 1 ).getY() );
-        Assert.assertEquals( 13.42, curve.getAsLineString().getPoints().get( 2 ).getX() );
-        Assert.assertEquals( 52.52, curve.getAsLineString().getPoints().get( 2 ).getY() );
+        Assert.assertEquals( 3, curve.getAsLineString().getControlPoints().size() );
+        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX() );
+        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY() );
+        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX() );
+        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY() );
+        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX() );
+        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY() );
     }
 
     @Test
@@ -219,13 +219,13 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
         Assert.assertEquals( 1, curve.getCurveSegments().size() );
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 0 ).getInterpolation() );
-        Assert.assertEquals( 3, curve.getAsLineString().getPoints().size() );
-        Assert.assertEquals( 7.12, curve.getAsLineString().getPoints().get( 0 ).getX() );
-        Assert.assertEquals( 50.72, curve.getAsLineString().getPoints().get( 0 ).getY() );
-        Assert.assertEquals( 9.98, curve.getAsLineString().getPoints().get( 1 ).getX() );
-        Assert.assertEquals( 53.55, curve.getAsLineString().getPoints().get( 1 ).getY() );
-        Assert.assertEquals( 13.42, curve.getAsLineString().getPoints().get( 2 ).getX() );
-        Assert.assertEquals( 52.52, curve.getAsLineString().getPoints().get( 2 ).getY() );
+        Assert.assertEquals( 3, curve.getAsLineString().getControlPoints().size() );
+        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX() );
+        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY() );
+        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX() );
+        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY() );
+        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX() );
+        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY() );
     }
 
     @Test
@@ -274,7 +274,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 1, ring.getMembers().size() );
         Assert.assertEquals( 1, ring.getMembers().get( 0 ).getCurveSegments().size() );
         Assert.assertTrue( ring.getMembers().get( 0 ).getCurveSegments().get( 0 ) instanceof LineStringSegment );
-        Assert.assertEquals( 7, ring.getMembers().get( 0 ).getAsLineString().getPoints().size() );
+        Assert.assertEquals( 7, ring.getMembers().get( 0 ).getAsLineString().getControlPoints().size() );
     }
 
     @Test
@@ -295,7 +295,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 1, ring.getMembers().get( 1 ).getCurveSegments().size() );
         Assert.assertTrue( ring.getMembers().get( 1 ).getCurveSegments().get( 0 ) instanceof LineStringSegment );
     }
-
+    
     @Test
     public void parsePolygon()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
@@ -307,5 +307,22 @@ public class GML311GeometryParserTest {
         Surface polygon = new GML311GeometryParser( geomFac, xmlReader ).parsePolygon( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Polygon" ), xmlReader.getName() );
+    }
+
+    @Test
+    public void parseCompositeCurve()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
+                                                                       GML311GeometryParserTest.class.getResource( "CompositeCurve.gml" ) );
+        xmlReader.nextTag();
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeCurve" ), xmlReader.getName() );
+        Curve curve = new GML311GeometryParser( geomFac, xmlReader ).parseCompositeCurve( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeCurve" ), xmlReader.getName() );
+        Assert.assertEquals( 3, curve.getCurveSegments().size() );
+        Assert.assertEquals( Interpolation.circularArc3Points, curve.getCurveSegments().get( 0 ).getInterpolation() );
+        Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 1 ).getInterpolation() );
+        Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 2 ).getInterpolation() );
     }
 }

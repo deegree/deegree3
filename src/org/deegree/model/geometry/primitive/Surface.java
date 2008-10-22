@@ -43,15 +43,35 @@ import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.Geometry;
 
 /**
- * 
- * 
+ * <code>Surface</code> instances are 2D-geometries that consist of an arbitrary number of surface patches.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
  * 
  * @version. $Revision$, $Date$
  */
-public interface Surface extends Geometry {
+public interface Surface extends GeometricPrimitive {
+
+    /**
+     * Convenience enum type for discriminating the different surface variants.
+     */
+    public enum SurfaceType {
+        /** Generic surface that consists of an arbitrary number of surface patches. */
+        Surface,
+        /** Surface that consists of a single surface patch. */
+        Polygon,
+        /** Surface composited from multiple members surfaces. */
+        CompositeSurface,
+        /** Surface that wraps a base surface with additional orientation flag. */
+        OrientableSurface, PolyhedralSurface, Tin, TriangulatedSurface
+    }
+
+    /**
+     * Returns the type of surface.
+     * 
+     * @return the type of surface
+     */
+    public SurfaceType getSurfaceType();
 
     /**
      * 
@@ -73,16 +93,14 @@ public interface Surface extends Geometry {
 
     /**
      * 
-     * @return boundaries of a surface. The first {@link Curve} represents the outer boundery the
-     *         following ones the boundaries of the surfaces holes
+     * @return boundaries of a surface. The first {@link Curve} represents the outer boundery the following ones the
+     *         boundaries of the surfaces holes
      */
     public List<Curve> getBoundary();
 
     /**
      * 
-     * @return patches representing a Surface. A simple Surface will always just consists of one
-     *         patch
+     * @return patches representing a Surface. A simple Surface will always just consists of one patch
      */
     public List<SurfacePatch> getPatches();
-
 }

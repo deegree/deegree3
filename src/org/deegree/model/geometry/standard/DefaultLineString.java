@@ -80,7 +80,7 @@ public class DefaultLineString extends DefaultCurve implements LineString {
     }    
     
     @Override
-    public List<Point> getPoints() {
+    public List<Point> getControlPoints() {
         return singleSegment.getControlPoints();
     }
 

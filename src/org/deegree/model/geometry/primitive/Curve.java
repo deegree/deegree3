@@ -40,11 +40,10 @@ package org.deegree.model.geometry.primitive;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.composite.CompositeCurve;
 
 /**
- * Base interface for 1D (curve) geometries that consists of an arbitrary number of segments.
+ * <code>Curve</code>s are 1D-geometries that consist of an arbitrary number of curve segments.
  * 
  * @see CompositeCurve
  * @see LineString
@@ -55,19 +54,19 @@ import org.deegree.model.geometry.composite.CompositeCurve;
  * 
  * @version. $Revision$, $Date$
  */
-public interface Curve extends Geometry {
+public interface Curve extends GeometricPrimitive {
 
     /**
-     * Convenience enum type for handling the different curve variants
+     * Convenience enum type for discriminating the different curve variants.
      */
     public enum CurveType {
-        /** Generic curve that consists of an arbitrary number of segments */
+        /** Generic curve that consists of an arbitrary number of segments. */
         Curve,
-        /** Curve that consists of a single segment */
+        /** Curve that consists of a single segment with linear interpolation. */
         LineString,
-        /** Curve that wraps a base curve with additional orientation */
+        /** Curve that wraps a base curve with additional orientation flag. */
         OrientableCurve,
-        /** Curve composited from several base curves */
+        /** Curve composited from multiple base curves. */
         CompositeCurve,
     }
 
@@ -124,7 +123,7 @@ public interface Curve extends Geometry {
     /**
      * Returns a linear interpolated representation of the curve.
      * <p>
-     * Please note that this operation returns an approximated version if the curve uses non-linear curve segments. 
+     * Please note that this operation returns an approximated version if the curve uses non-linear curve segments.
      * 
      * @return a linear interpolated representation of the curve
      */

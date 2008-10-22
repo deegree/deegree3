@@ -38,19 +38,34 @@
 package org.deegree.model.geometry.primitive;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.Geometry;
 
 /**
- * 
- * 
+ * <code>Solid</code> instances are 3D-geometries that ... 
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
  * 
  * @version. $Revision$, $Date$
  */
-public interface Solid extends Geometry {
+public interface Solid extends GeometricPrimitive {
 
+    /**
+     * Convenience enum type for discriminating the different surface variants.
+     */
+    public enum SolidType {
+        /** Generic solid that consists of an arbitrary number of  */
+        Solid,
+        /** Solid composited from multiple members solids. */
+        CompositeSolid
+    }    
+
+    /**
+     * Returns the type of solid.
+     * 
+     * @return the type of solid
+     */
+    public SolidType getSolidType();    
+    
     /**
      * 
      * @return volume of a Solid measured in units of the assigned {@link CoordinateSystem}

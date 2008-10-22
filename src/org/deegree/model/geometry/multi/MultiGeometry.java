@@ -40,13 +40,14 @@ package org.deegree.model.geometry.multi;
 import java.util.List;
 
 import org.deegree.model.geometry.Geometry;
-import org.deegree.model.geometry.composite.GeometricComplex;
+import org.deegree.model.geometry.composite.CompositeGeometry;
+import org.deegree.model.geometry.primitive.GeometricPrimitive;
 import org.deegree.model.geometry.primitive.Point;
 
 /**
  * Basic aggregation type for {@link Geometry} objects.
  * <p>
- * In contrast to a {@link GeometricComplex}, a <code>MultiGeometry</code> has no constraints on the topological
+ * In contrast to a {@link CompositeGeometry}, a <code>MultiGeometry</code> has no constraints on the topological
  * relations between the contained geometries, i.e. their interiors may intersect.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
@@ -76,5 +77,4 @@ public interface MultiGeometry<T extends Geometry> extends Geometry, List<T> {
      * @return the centroid
      */
     public Point getCentroid();
-
 }
