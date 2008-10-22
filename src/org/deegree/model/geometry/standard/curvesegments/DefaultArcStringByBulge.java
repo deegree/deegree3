@@ -45,9 +45,9 @@ package org.deegree.model.geometry.standard.curvesegments;
 
 import java.util.List;
 
-import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.ArcStringByBulge;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 
 /**
  * Default implementation of {@link ArcStringByBulge} segments.

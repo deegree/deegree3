@@ -50,7 +50,7 @@ import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.composite.CompositeSurface;
 
 /**
- * Marker interface for geometric primitives.
+ * A {@link GeometricPrimitive} are contigous geometries with a single dimensionality.  
  * <p>
  * For every dimensionality, a specialized interface exists:
  * <ul>
@@ -60,7 +60,7 @@ import org.deegree.model.geometry.composite.CompositeSurface;
  * <li>3D: {@link Solid}</li>
  * </ul>
  * </p>
- * Please note that the specializations of {@link CompositeGeometry} implement this interface as well:
+ * Please note that the specializations of {@link CompositeGeometry} extend this interface as well:
  * <ul>
  * <li>1D: {@link CompositeCurve}</li>
  * <li>2D: {@link CompositeSurface}</li>
@@ -78,5 +78,5 @@ import org.deegree.model.geometry.composite.CompositeSurface;
  * @version $Revision:$, $Date:$
  */
 public interface GeometricPrimitive extends Geometry {
-    // simply a marker interface
+    // just a marker interface
 }

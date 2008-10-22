@@ -39,7 +39,7 @@ package org.deegree.model.coverage.raster;
 
 import java.util.List;
 
-import org.deegree.model.geometry.primitive.Envelope;
+import org.deegree.model.geometry.Envelope;
 
 /**
  * This interface wraps tiles and abstracts from the source of the tiles.

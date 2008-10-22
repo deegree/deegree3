@@ -48,7 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.model.coverage.AbstractCoverage;
-import org.deegree.model.geometry.primitive.Envelope;
+import org.deegree.model.geometry.Envelope;
 
 /**
  * This class represents a collection of AbstractRaster, each with a different resolution.

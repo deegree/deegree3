@@ -46,8 +46,8 @@ import static org.junit.Assert.*;
 
 import org.deegree.model.crs.CRSFactory;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
-import org.deegree.model.geometry.primitive.Envelope;
 import org.junit.Before;
 import org.junit.Test;
 

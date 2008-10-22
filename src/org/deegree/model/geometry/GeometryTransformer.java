@@ -55,11 +55,10 @@ import org.deegree.model.geometry.multi.MultiCurve;
 import org.deegree.model.geometry.multi.MultiPoint;
 import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
-import org.deegree.model.geometry.primitive.CurveSegment;
-import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.i18n.Messages;
 

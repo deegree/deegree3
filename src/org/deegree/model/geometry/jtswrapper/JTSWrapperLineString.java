@@ -42,8 +42,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.model.geometry.standard.curvesegments.DefaultLineStringSegment;
 
 import com.vividsolutions.jts.geom.Coordinate;

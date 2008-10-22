@@ -50,8 +50,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.deegree.model.crs.CRSFactory;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
-import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
 import org.junit.Before;
 import org.junit.Test;
@@ -130,7 +130,7 @@ public class JTSWrapperEnvelopeTest {
 
     /**
      * Test method for
-     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperEnvelope#merger(org.deegree.model.geometry.primitive.Envelope)}.
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperEnvelope#merger(org.deegree.model.geometry.Envelope)}.
      */
     @Test
     public void testMerger() {

@@ -40,7 +40,7 @@ package org.deegree.model.coverage.raster;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.model.geometry.primitive.Envelope;
+import org.deegree.model.geometry.Envelope;
 
 /**
  * This class represents an AbstractRaster with multiple ranges.

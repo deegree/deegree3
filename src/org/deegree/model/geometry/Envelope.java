@@ -35,9 +35,9 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.primitive;
+package org.deegree.model.geometry;
 
-import org.deegree.model.geometry.Geometry;
+import org.deegree.model.geometry.primitive.Point;
 
 
 /**

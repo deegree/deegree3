@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryException;
 import org.deegree.model.geometry.GeometryFactoryCreator;
@@ -49,7 +50,6 @@ import org.deegree.model.geometry.multi.MultiGeometry;
 import org.deegree.model.geometry.multi.MultiPoint;
 import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
-import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.SurfacePatch;

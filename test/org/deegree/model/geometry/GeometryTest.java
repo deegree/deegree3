@@ -3,7 +3,6 @@ package org.deegree.model.geometry;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.deegree.model.geometry.primitive.Envelope;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,9 +10,9 @@ import org.junit.Test;
  * Some very basic tests. Just to make sure we can create a GeometryFactory and do some simple operations.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author: $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $ }
+ * @version $Revision$, $Date$ }
  */
 public class GeometryTest {
 

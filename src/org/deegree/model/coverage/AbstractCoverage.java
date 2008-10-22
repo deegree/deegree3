@@ -38,9 +38,9 @@
 package org.deegree.model.coverage;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
-import org.deegree.model.geometry.primitive.Envelope;
 
 /**
  * 

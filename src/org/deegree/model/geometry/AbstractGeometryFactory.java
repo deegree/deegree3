@@ -40,8 +40,8 @@ package org.deegree.model.geometry;
 
 import java.util.List;
 
-import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.SurfacePatch;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 
 /**
  * 

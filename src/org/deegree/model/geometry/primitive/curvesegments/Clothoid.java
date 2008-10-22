@@ -43,7 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive.curvesegments;
 
-import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.standard.curvesegments.AffinePlacement;
 
 /**

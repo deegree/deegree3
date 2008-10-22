@@ -41,9 +41,9 @@ import static org.junit.Assert.*;
 
 import org.deegree.model.coverage.raster.RasterEnvelope.Type;
 import org.deegree.model.coverage.raster.data.RasterRect;
+import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
-import org.deegree.model.geometry.primitive.Envelope;
 import org.junit.Test;
 
 /**
@@ -51,9 +51,9 @@ import org.junit.Test;
  * calculation of raster sizes from envelopes and sub envelopes.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author: $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  * 
  */
 public class RasterEnvelopeTest {

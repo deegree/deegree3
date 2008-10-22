@@ -10,7 +10,6 @@ import junit.framework.Assert;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
-import org.deegree.model.geometry.primitive.CurveSegment.Interpolation;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByCenterPoint;
@@ -25,6 +24,7 @@ import org.deegree.model.geometry.primitive.curvesegments.Geodesic;
 import org.deegree.model.geometry.primitive.curvesegments.GeodesicString;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.curvesegments.OffsetCurve;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.Interpolation;
 import org.junit.Before;
 import org.junit.Test;
 

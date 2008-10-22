@@ -44,8 +44,8 @@
 package org.deegree.model.geometry.standard;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
-import org.deegree.model.geometry.primitive.Envelope;
 
 public abstract class AbstractDefaultGeometry implements Geometry{
 

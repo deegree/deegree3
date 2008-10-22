@@ -35,7 +35,10 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.primitive;
+package org.deegree.model.geometry.primitive.curvesegments;
+
+import org.deegree.model.geometry.primitive.Curve;
+import org.deegree.model.geometry.primitive.Point;
 
 /**
  * A <code>CurveSegment</code> is a portion of a {@link Curve} in which a single interpolation method is used.

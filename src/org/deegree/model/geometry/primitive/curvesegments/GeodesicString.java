@@ -39,7 +39,6 @@ package org.deegree.model.geometry.primitive.curvesegments;
 
 import java.util.List;
 
-import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Point;
 
 /**

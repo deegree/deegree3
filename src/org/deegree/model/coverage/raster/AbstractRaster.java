@@ -38,7 +38,7 @@
 package org.deegree.model.coverage.raster;
 
 import org.deegree.model.coverage.AbstractCoverage;
-import org.deegree.model.geometry.primitive.Envelope;
+import org.deegree.model.geometry.Envelope;
 
 /**
  * This class represents an abstract grid coverage.

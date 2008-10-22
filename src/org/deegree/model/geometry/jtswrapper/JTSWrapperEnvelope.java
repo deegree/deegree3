@@ -39,7 +39,7 @@
 package org.deegree.model.geometry.jtswrapper;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.Envelope;
+import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.primitive.Point;
 
 import com.vividsolutions.jts.geom.Coordinate;

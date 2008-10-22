@@ -38,7 +38,6 @@
 package org.deegree.model.geometry;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.identifier.Identifiable;
 
 /**

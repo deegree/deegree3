@@ -41,9 +41,10 @@ import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.composite.CompositeCurve;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 
 /**
- * <code>Curve</code>s are 1D-geometries that consist of an arbitrary number of curve segments.
+ * <code>Curve</code> instances are 1D-geometries that consist of an arbitrary number of curve segments.
  * 
  * @see CompositeCurve
  * @see LineString
