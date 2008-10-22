@@ -44,6 +44,10 @@ import static java.awt.BasicStroke.CAP_SQUARE;
 import static java.awt.BasicStroke.JOIN_BEVEL;
 import static java.awt.BasicStroke.JOIN_MITER;
 import static java.awt.BasicStroke.JOIN_ROUND;
+import static java.awt.Font.BOLD;
+import static java.awt.Font.ITALIC;
+import static java.awt.Font.PLAIN;
+import static java.awt.geom.AffineTransform.getTranslateInstance;
 import static org.deegree.commons.utils.MathUtils.isZero;
 import static org.deegree.commons.utils.MathUtils.round;
 import static org.deegree.rendering.RenderHelper.renderMark;
@@ -51,8 +55,10 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.TexturePaint;
+import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
@@ -74,6 +80,7 @@ import org.deegree.model.styling.TextStyling;
 import org.deegree.model.styling.components.Fill;
 import org.deegree.model.styling.components.Graphic;
 import org.deegree.model.styling.components.Stroke;
+import org.deegree.rendering.strokes.OffsetStroke;
 import org.slf4j.Logger;
 
 /**
@@ -216,8 +223,62 @@ public class Java2DRenderer implements Renderer {
     }
 
     public void render( TextStyling styling, String text, Geometry geom ) {
-        // TODO Auto-generated method stub
+        int style = styling.font.bold ? BOLD : PLAIN;
+        switch ( styling.font.fontStyle ) {
+        case ITALIC:
+            style += ITALIC;
+            break;
+        case NORMAL:
+            style += PLAIN; // yes, it's zero, but the code looks nicer this way
+            break;
+        case OBLIQUE:
+            LOG.warn( "The oblique font style is not supported, using italic instead." );
+            style += ITALIC; // TODO something better here?
+            break;
+        }
 
+        // use the first matching name, or Dialog, if none was found
+        int size = round( styling.font.fontSize * scale );
+        Font font = new Font( "", style, size );
+        for ( String name : styling.font.fontFamily ) {
+            font = new Font( name, style, size );
+            if ( !font.getFamily().equalsIgnoreCase( "dialog" ) ) {
+                break;
+            }
+        }
+
+        if ( geom instanceof Point ) {
+            Point p = (Point) geom;
+            graphics.setFont( font );
+            AffineTransform transform = graphics.getTransform();
+            graphics.rotate( styling.rotation, p.getX(), p.getY() );
+            TextLayout layout = new TextLayout( text, font, graphics.getFontRenderContext() );
+
+            if ( styling.halo != null ) {
+                applyFill( styling.halo.fill );
+
+                BasicStroke stroke = new BasicStroke( round( 2 * styling.halo.radius * scale ), CAP_BUTT, JOIN_ROUND );
+                graphics.setStroke( stroke );
+                graphics.draw( layout.getOutline( getTranslateInstance( p.getX(), p.getY() ) ) );
+            }
+
+            graphics.setStroke( new BasicStroke() );
+
+            applyFill( styling.fill );
+            layout.draw( graphics, (float) p.getX(), (float) p.getY() );
+
+            graphics.setTransform( transform );
+        }
+        if ( geom instanceof Surface ) {
+            Surface surface = (Surface) geom;
+            for ( SurfacePatch patch : surface.getPatches() ) {
+                for ( Curve curve : patch.getBoundary() ) {
+                    render( styling, text, curve );
+                }
+            }
+        }
+        if ( geom instanceof Curve ) {
+        }
     }
 
     private void render( PointStyling styling, double x, double y ) {
@@ -244,6 +305,7 @@ public class Java2DRenderer implements Renderer {
         if ( geom instanceof Point ) {
             render( styling, ( (Point) geom ).getX(), ( (Point) geom ).getY() );
         }
+        // TODO properly convert'em
         if ( geom instanceof Surface ) {
             Surface surface = (Surface) geom;
             for ( SurfacePatch patch : surface.getPatches() ) {

@@ -41,6 +41,7 @@ package org.deegree.rendering;
 import static java.awt.Color.black;
 import static java.awt.Color.green;
 import static java.awt.Color.red;
+import static java.awt.Color.white;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
@@ -49,6 +50,9 @@ import static javax.imageio.ImageIO.read;
 import static javax.imageio.ImageIO.write;
 import static org.deegree.commons.utils.GeometryUtils.move;
 import static org.deegree.model.geometry.GeometryFactoryCreator.getInstance;
+import static org.deegree.model.styling.components.Font.Style.ITALIC;
+import static org.deegree.model.styling.components.Font.Style.NORMAL;
+import static org.deegree.model.styling.components.Font.Style.OBLIQUE;
 import static org.deegree.model.styling.components.Stroke.LineCap.BUTT;
 import static org.deegree.model.styling.components.Stroke.LineCap.ROUND;
 import static org.deegree.model.styling.components.Stroke.LineCap.SQUARE;
@@ -77,12 +81,15 @@ import junit.framework.TestCase;
 
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.primitive.Curve;
+import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.styling.LineStyling;
 import org.deegree.model.styling.PointStyling;
 import org.deegree.model.styling.PolygonStyling;
+import org.deegree.model.styling.TextStyling;
 import org.deegree.model.styling.components.Fill;
 import org.deegree.model.styling.components.Graphic;
+import org.deegree.model.styling.components.Halo;
 import org.deegree.model.styling.components.Mark;
 import org.deegree.model.styling.components.Stroke;
 import org.deegree.model.styling.components.Stroke.LineJoin;
@@ -148,79 +155,79 @@ public class Java2DRenderingTest extends TestCase {
                                                                        null ) );
 
         PointStyling style = new PointStyling();
-        r.render( style, geomFac.createPoint(null,  new double[] { 100, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 100, 100 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.SQUARE;
-        r.render( style, geomFac.createPoint(null,  new double[] { 200, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 200, 100 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.CIRCLE;
-        r.render( style, geomFac.createPoint(null,  new double[] { 300, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 300, 100 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.TRIANGLE;
-        r.render( style, geomFac.createPoint(null,  new double[] { 400, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 400, 100 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.STAR;
-        r.render( style, geomFac.createPoint(null,  new double[] { 500, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 500, 100 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.CROSS;
-        r.render( style, geomFac.createPoint(null,  new double[] { 600, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 600, 100 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.X;
-        r.render( style, geomFac.createPoint(null,  new double[] { 700, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 700, 100 }, null ) );
 
         style = new PointStyling();
         style.graphic.size = 32;
         style.graphic.mark.fill.color = red;
         style.graphic.mark.stroke.color = green;
-        r.render( style, geomFac.createPoint(null,  new double[] { 500, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 500, 500 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.SQUARE;
-        r.render( style, geomFac.createPoint(null,  new double[] { 1000, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 1000, 500 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.CIRCLE;
-        r.render( style, geomFac.createPoint(null,  new double[] { 1500, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 1500, 500 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.TRIANGLE;
-        r.render( style, geomFac.createPoint(null,  new double[] { 2000, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 2000, 500 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.STAR;
-        r.render( style, geomFac.createPoint(null,  new double[] { 2500, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 2500, 500 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.CROSS;
-        r.render( style, geomFac.createPoint(null,  new double[] { 3000, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 3000, 500 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.X;
-        r.render( style, geomFac.createPoint(null,  new double[] { 3500, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 3500, 500 }, null ) );
 
         style = new PointStyling();
         style.graphic.size = 32;
-        r.render( style, geomFac.createPoint(null,  new double[] { 500, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 500, 1000 }, null ) );
         style.graphic.size = 16;
-        r.render( style, geomFac.createPoint(null,  new double[] { 500, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 500, 1000 }, null ) );
 
         style = new PointStyling();
         style.graphic.size = 32;
-        r.render( style, geomFac.createPoint(null,  new double[] { 1000, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 1000, 1000 }, null ) );
         style.graphic.size = 16;
         style.graphic.anchorPointX = 0;
         style.graphic.anchorPointY = 0;
-        r.render( style, geomFac.createPoint(null,  new double[] { 1000, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 1000, 1000 }, null ) );
 
         style = new PointStyling();
         style.graphic.size = 32;
-        r.render( style, geomFac.createPoint(null,  new double[] { 1500, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 1500, 1000 }, null ) );
         style.graphic.size = 16;
         style.graphic.anchorPointX = 1;
         style.graphic.anchorPointY = 1;
-        r.render( style, geomFac.createPoint(null,  new double[] { 1500, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 1500, 1000 }, null ) );
 
         style = new PointStyling();
         style.graphic.size = 32;
-        r.render( style, geomFac.createPoint(null,  new double[] { 2000, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 2000, 1000 }, null ) );
         style.graphic.size = 16;
         style.graphic.anchorPointX = 0;
         style.graphic.anchorPointY = 0;
         style.graphic.displacementX = -16;
         style.graphic.displacementY = -16;
-        r.render( style, geomFac.createPoint(null,  new double[] { 2000, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 2000, 1000 }, null ) );
 
         style = new PointStyling();
         style.graphic.size = 32;
-        r.render( style, geomFac.createPoint(null,  new double[] { 2500, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 2500, 1000 }, null ) );
         style.graphic.size = 16;
         style.graphic.anchorPointX = 1;
         style.graphic.anchorPointY = 1;
         style.graphic.displacementX = 16;
         style.graphic.displacementY = 16;
-        r.render( style, geomFac.createPoint(null,  new double[] { 2500, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 2500, 1000 }, null ) );
 
         g.dispose();
         long time2 = currentTimeMillis();
@@ -456,6 +463,78 @@ public class Java2DRenderingTest extends TestCase {
         List<String> texts = new LinkedList<String>();
         texts.add( "first line: polygon style with black lines with line width 0, 1, ..., 9 and external image fill" );
         texts.add( "other lines: polygon style with black lines with line width 0, 1, ..., 9 and increasingly red fill" );
+        writeTestImage( img, texts, time2 - time );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testTextStyling()
+                            throws Exception {
+        BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
+        BufferedImage fill = read( new URL( "http://www.imagemagick.org/Usage/thumbnails/thumbnail.gif" ) );
+
+        long time = currentTimeMillis();
+        Graphics2D g = img.createGraphics();
+        GeometryFactory geomFac = getInstance().getGeometryFactory();
+        Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
+                                               geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
+                                                                                                            5000d },
+                                                                       null ) );
+
+        LinkedList<Point> points = new LinkedList<Point>();
+        for ( int i = 0; i < 50; ++i ) {
+            points.add( geomFac.createPoint( null, new double[] { 1000, ( i + 1 ) * 100 }, null ) );
+        }
+
+        String text = "This is a sample text with Umläütß";
+        TextStyling styling = new TextStyling();
+        r.render( styling, text, points.poll() );
+        styling.fill = new Fill();
+        styling.fill.graphic = new Graphic();
+        styling.fill.graphic.image = fill;
+        r.render( styling, text, points.poll() );
+        styling.halo = new Halo();
+        styling.halo.radius = 3;
+        r.render( styling, text, points.poll() );
+        styling.font.fontSize = 18;
+        styling.halo.fill = styling.fill;
+        styling.fill = new Fill();
+        styling.fill.color = black;
+        r.render( styling, text, points.poll() );
+        styling.halo.fill.graphic = null;
+        styling.halo.fill.color = black;
+        styling.halo.radius = 3;
+        styling.fill.color = white;
+        r.render( styling, text, points.poll() );
+        styling.fill.graphic = new Graphic();
+        styling.fill.graphic.image = fill;
+        r.render( styling, text, points.poll() );
+        styling.font.fontStyle = NORMAL;
+        r.render( styling, text, points.poll() );
+        styling.font.fontStyle = OBLIQUE;
+        r.render( styling, text, points.poll() );
+        styling.font.fontStyle = ITALIC;
+        r.render( styling, text, points.poll() );
+        styling.font.bold = true;
+        r.render( styling, text, points.poll() );
+        styling.font.fontFamily.add( "Times New Roman" );
+        r.render( styling, text, points.poll() );
+
+        g.dispose();
+        long time2 = currentTimeMillis();
+        List<String> texts = new LinkedList<String>();
+        texts.add( "standard dialog font, size 10, black" );
+        texts.add( "same, filled with 'image'" );
+        texts.add( "same, with 3 pixel while halo" );
+        texts.add( "same, size 18, color black, halo filled with 'image'" );
+        texts.add( "same, black halo, white color" );
+        texts.add( "same, filled with 'image'" );
+        texts.add( "same" );
+        texts.add( "same, italic font, warning message that 'oblique' is not supported" );
+        texts.add( "same, italic font" );
+        texts.add( "same, bold font" );
+        texts.add( "same, Times New Roman font" );
         writeTestImage( img, texts, time2 - time );
     }
 

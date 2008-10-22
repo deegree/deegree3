@@ -65,7 +65,7 @@ public class GeometryGenerator {
 
     /**
      * @param max
-     *            generate points between 0 and max
+     *            generate points between offx/offy and max + offx/offy
      * @param offx
      * @param offy
      * @return a random triangle polygon
@@ -83,6 +83,18 @@ public class GeometryGenerator {
         Curve curve = fac.createCurve( null, ps, null );
         SurfacePatch patch = fac.createSurfacePatch( singletonList( curve ) );
         return fac.createSurface( null, singletonList( patch ), null );
+    }
+
+    /**
+     * @param max
+     * @param offx
+     * @param offy
+     * @return a random point
+     */
+    public static Point randomPoint( int max, double offx, double offy ) {
+        double x = rnd.nextDouble() * max + offx;
+        double y = rnd.nextDouble() * max + offy;
+        return fac.createPoint( null, new double[] { x, y }, null );
     }
 
     /**
