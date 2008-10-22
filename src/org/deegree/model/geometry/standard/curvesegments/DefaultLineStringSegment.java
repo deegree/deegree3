@@ -51,24 +51,24 @@ import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
  * Default implementation of {@link LineStringSegment} segments.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultLineStringSegment implements LineStringSegment {  
-    
+public class DefaultLineStringSegment implements LineStringSegment {
+
     private List<Point> points;
-    
+
     /**
      * Creates a new <code>DefaultLineStringSegment</code> instance from the given parameters.
-     *
+     * 
      * @param points
      *            interpolation points
      */
     public DefaultLineStringSegment( List<Point> points ) {
-        this.points = new ArrayList<Point>(points);
+        this.points = new ArrayList<Point>( points );
     }
 
     @Override
@@ -77,12 +77,22 @@ public class DefaultLineStringSegment implements LineStringSegment {
     }
 
     @Override
-    public Interpolation getInterpolation() {        
+    public Interpolation getInterpolation() {
         return Interpolation.linear;
     }
 
     @Override
     public List<Point> getControlPoints() {
         return points;
+    }
+
+    @Override
+    public Point getStartPoint() {
+        return points.get( 0 );
+    }
+
+    @Override
+    public Point getEndPoint() {
+        return points.get( points.size() - 1 );
     }
 }

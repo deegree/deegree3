@@ -1,5 +1,6 @@
 package org.deegree.model.geometry.standard.curvesegments;
 
+import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.Clothoid;
 
 /**
@@ -70,4 +71,14 @@ public class DefaultClothoid implements Clothoid {
     public Interpolation getInterpolation() {
         return Interpolation.clothoid;
     }
+
+    @Override
+    public Point getStartPoint() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Point getEndPoint() {
+        throw new UnsupportedOperationException();
+    }    
 }

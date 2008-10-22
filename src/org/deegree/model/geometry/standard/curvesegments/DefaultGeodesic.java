@@ -97,4 +97,14 @@ public class DefaultGeodesic implements Geodesic {
     public List<Point> getControlPoints() {        
         return controlPoints;
     }
+
+    @Override
+    public Point getStartPoint() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Point getEndPoint() {
+        throw new UnsupportedOperationException();
+    }    
 }

@@ -51,24 +51,24 @@ import org.deegree.model.geometry.primitive.curvesegments.GeodesicString;
 
 /**
  * Default implementation of {@link GeodesicString} segments.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultGeodesicString implements GeodesicString {  
-    
+public class DefaultGeodesicString implements GeodesicString {
+
     private List<Point> points;
-    
+
     /**
      * Creates a new <code>DefaultGeodesicString</code> instance from the given parameters.
-     *
+     * 
      * @param points
      *            interpolation points
      */
     public DefaultGeodesicString( List<Point> points ) {
-        this.points = new ArrayList<Point>(points);
+        this.points = new ArrayList<Point>( points );
     }
 
     @Override
@@ -77,12 +77,22 @@ public class DefaultGeodesicString implements GeodesicString {
     }
 
     @Override
-    public Interpolation getInterpolation() {        
+    public Interpolation getInterpolation() {
         return Interpolation.linear;
     }
 
     @Override
     public List<Point> getControlPoints() {
         return points;
+    }
+
+    @Override
+    public Point getStartPoint() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Point getEndPoint() {
+        throw new UnsupportedOperationException();
     }
 }

@@ -74,4 +74,14 @@ public class DefaultBezier implements Bezier {
     public List<Knot> getKnots() {
         return knots;
     }
+
+    @Override
+    public Point getStartPoint() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Point getEndPoint() {
+        throw new UnsupportedOperationException();
+    }    
 }

@@ -37,7 +37,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive;
 
-
 /**
  * A <code>CurveSegment</code> is a portion of a {@link Curve} in which a single interpolation method is used.
  * 
@@ -62,12 +61,12 @@ public interface CurveSegment {
         geodesic,
         /**
          * A circularArcCenterPointWithRadius interpolation.
-         */        
+         */
         circularArcCenterPointWithRadius,
         /**
          * A circularArc3Points interpolation.
          */
-        circularArc3Points,        
+        circularArc3Points,
         /**
          * A circularArc2PointWithBulge interpolation.
          */
@@ -79,7 +78,7 @@ public interface CurveSegment {
         /**
          * A clothoid interpolation.
          */
-        clothoid,         
+        clothoid,
         /**
          * A conic interpolation.
          */
@@ -95,9 +94,9 @@ public interface CurveSegment {
         /**
          * A rationalSpline interpolation.
          */
-        rationalSpline 
+        rationalSpline
     }
-    
+
     /**
      * 
      * @return dimension of a curve segment coordinates (2 for flat surfaces; 3 for surfaces in a 3D space)
@@ -109,4 +108,18 @@ public interface CurveSegment {
      * @return interpolation method used by this curve segment
      */
     public Interpolation getInterpolation();
+
+    /**
+     * Returns the start point of the segment.
+     * 
+     * @return the start point of the segment
+     */
+    public Point getStartPoint();
+
+    /**
+     * Returns the end point of the segment.
+     * 
+     * @return the end point of the segment
+     */
+    public Point getEndPoint();
 }

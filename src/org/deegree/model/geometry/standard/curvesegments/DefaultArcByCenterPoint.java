@@ -110,4 +110,14 @@ public class DefaultArcByCenterPoint implements ArcByCenterPoint {
     public Interpolation getInterpolation() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Point getStartPoint() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Point getEndPoint() {
+        throw new UnsupportedOperationException();
+    }
 }

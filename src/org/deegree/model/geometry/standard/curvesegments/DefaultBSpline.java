@@ -67,6 +67,14 @@ public class DefaultBSpline implements BSpline {
 
     private List<Knot> knots;
 
+    /**
+     * Creates a new <code>DefaultBSpline</code> instance from the given parameters.
+     * 
+     * @param controlPoints
+     * @param polynomialDegree
+     * @param knots
+     * @param isPolynomial
+     */
     public DefaultBSpline( List<Point> controlPoints, int polynomialDegree, List<Knot> knots, boolean isPolynomial ) {
         this.controlPoints = controlPoints;
         this.polynomialDegree = polynomialDegree;
@@ -101,4 +109,14 @@ public class DefaultBSpline implements BSpline {
     public List<Knot> getKnots() {
         return knots;
     }
+
+    @Override
+    public Point getStartPoint() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Point getEndPoint() {
+        throw new UnsupportedOperationException();
+    }    
 }

@@ -245,6 +245,22 @@ public class GML311GeometryParserTest {
     }
 
     @Test
+    public void parseOrientableCurve()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
+                                                                       GML311GeometryParserTest.class.getResource( "OrientableCurve.gml" ) );
+        xmlReader.nextTag();
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "OrientableCurve" ), xmlReader.getName() );
+        Curve curve = new GML311GeometryParser( geomFac, xmlReader ).parseOrientableCurve( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "OrientableCurve" ), xmlReader.getName() );
+        Assert.assertEquals( 2, curve.getCurveSegments().size() );
+        Assert.assertEquals( Interpolation.circularArc3Points, curve.getCurveSegments().get( 0 ).getInterpolation() );
+        Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 1 ).getInterpolation() );
+    }    
+    
+    @Test
     public void parseLinearRing()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(

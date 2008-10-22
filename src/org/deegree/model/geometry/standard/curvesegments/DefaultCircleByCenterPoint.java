@@ -68,5 +68,4 @@ public class DefaultCircleByCenterPoint extends DefaultArcByCenterPoint implemen
     public DefaultCircleByCenterPoint( Point midPoint, Length radius, Angle startAngle ) {
         super( midPoint, radius, startAngle, startAngle );
     }
-
 }

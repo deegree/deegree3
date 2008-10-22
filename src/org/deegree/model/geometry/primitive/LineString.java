@@ -47,13 +47,6 @@ import java.util.List;
 
 /**
  * The most common case of a {@link Curve}: just one curve segment with linear interpolation between the control points.
- * <p>
- * This type corresponds to the following specifications:
- * <ul>
- * <li><code>GM_LineString</code> from ISO 19107 ???</li>
- * <li><code>gml:LineString</code> from GML (2-3.2)</li>
- * <li><code>LineString</code> from the Simple Feature specification</li>
- * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

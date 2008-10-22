@@ -120,4 +120,14 @@ public class DefaultArcStringByBulge implements ArcStringByBulge {
     public List<Point> getControlPoints() {
         return controlPoints;
     }
+
+    @Override
+    public Point getStartPoint() {
+        return controlPoints.get( 0 );
+    }
+
+    @Override
+    public Point getEndPoint() {
+        return controlPoints.get( controlPoints.size() - 1 );
+    }    
 }

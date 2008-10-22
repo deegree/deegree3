@@ -64,6 +64,7 @@ import org.deegree.model.geometry.AbstractSolid.SolidType;
 import org.deegree.model.geometry.AbstractSurface.SurfaceType;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.CurveSegment;
+import org.deegree.model.geometry.primitive.OrientableCurve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
@@ -534,10 +535,13 @@ public class GML311GeometryParser extends GML311BaseParser {
             curve = parseLineString( defaultSrsName );
             break;
         }
-        case CompositeCurve:
-        case OrientableCurve: {
+        case CompositeCurve: {
             String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
             throw new XMLParsingException( xmlStream, msg );
+        }
+        case OrientableCurve: {
+            curve = parseOrientableCurve( defaultSrsName );
+            break;
         }
         default:
             // cannot happen by construction
@@ -890,6 +894,36 @@ public class GML311GeometryParser extends GML311BaseParser {
         return geomFac.createCurve( gid, segments.toArray( new CurveSegment[segments.size()] ), lookupCRS( srsName ) );
     }
 
+    /**
+     * Returns the object representation of a <code>gml:OrientableCurve</code> element. Consumes all corresponding events from the
+     * associated <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the <code>gml:OrientableCurve</code> has no
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link OrientableCurve} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public OrientableCurve parseOrientableCurve( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+        boolean isReversed = !parseOrientation();
+        
+        xmlStream.nextTag();
+        xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "baseCurve" );
+        xmlStream.nextTag();
+        Curve baseCurve = parseAbstractCurve( srsName );
+        xmlStream.nextTag();
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "baseCurve" );
+        xmlStream.nextTag();
+        xmlStream.require( END_ELEMENT, GMLNS, "OrientableCurve" );        
+
+        return geomFac.createOrientableCurve( gid, lookupCRS( srsName ), baseCurve, isReversed );
+    }    
+    
     /**
      * Returns the object representation of a <code>gml:LinearRing</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.

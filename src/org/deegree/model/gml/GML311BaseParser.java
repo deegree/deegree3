@@ -19,6 +19,7 @@ import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.CRSConfigurationException;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +52,11 @@ class GML311BaseParser {
         this.xmlStream = xmlStream;
     }
 
-    protected Point parseDirectPositionType(String defaultSrsName)
+    protected Point parseDirectPositionType( String defaultSrsName )
                             throws XMLParsingException, XMLStreamException {
 
         String srsName = determineCurrentSrsName( defaultSrsName );
-        
+
         String s = xmlStream.getElementText();
         // don't use String.split(regex) here (speed)
         StringTokenizer st = new StringTokenizer( s );
@@ -72,7 +73,7 @@ class GML311BaseParser {
                 throw new XMLParsingException( xmlStream, msg );
             }
         }
-        return geomFac.createPoint( null, doubles, lookupCRS( srsName ));
+        return geomFac.createPoint( null, doubles, lookupCRS( srsName ) );
     }
 
     protected List<Point> parsePosList( String defaultSrsName )
@@ -304,5 +305,23 @@ class GML311BaseParser {
             }
         }
         return doubles;
+    }
+
+    /**
+     * Parses the <code>orientation</code> attribute from element that the associated <code>XMLStreamReader</code>
+     * points to.
+     * 
+     * @return true, if the <code>orientation</attribute> is '+' or not present, false if the attribute is '-'
+     */
+    protected boolean parseOrientation() {
+
+        String orientation = xmlStream.getAttributeValueWDefault( "orientation", "-" );
+        if ( "-".equals( orientation ) ) {
+            return false;
+        } else if ( "+".equals( orientation ) ) {
+            return true;
+        }
+        String msg = "Orientation value (='" + orientation + "') is not valid. Valid values are '-' and '+'.";
+        throw new XMLParsingException( xmlStream, msg );
     }
 }

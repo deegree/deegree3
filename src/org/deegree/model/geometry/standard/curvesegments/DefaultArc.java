@@ -59,21 +59,23 @@ import org.deegree.model.geometry.primitive.curvesegments.Arc;
  */
 public class DefaultArc implements Arc {
 
-    private List<Point> controlPoints = new ArrayList<Point>(3);
+    private List<Point> controlPoints = new ArrayList<Point>( 3 );
 
     /**
      * Creates a new <code>DefaultArc</code> instance from the given parameters.
      * 
-     * @param p1 
-     * @param p2 
-     * @param p3 
+     * @param p1
+     *            first control point
+     * @param p2
+     *            second control point
+     * @param p3
+     *            third control point
      */
     public DefaultArc( Point p1, Point p2, Point p3 ) {
         this.controlPoints.add( p1 );
         this.controlPoints.add( p2 );
         this.controlPoints.add( p3 );
     }
-
 
     @Override
     public Point getPoint1() {
@@ -88,8 +90,8 @@ public class DefaultArc implements Arc {
     @Override
     public Point getPoint3() {
         return controlPoints.get( 2 );
-    }    
-    
+    }
+
     @Override
     public int getCoordinateDimension() {
         return controlPoints.get( 0 ).getCoordinateDimension();
@@ -101,12 +103,22 @@ public class DefaultArc implements Arc {
     }
 
     @Override
-    public List<Point> getControlPoints() {        
+    public List<Point> getControlPoints() {
         return controlPoints;
     }
 
     @Override
     public int getNumArcs() {
         return 1;
+    }
+
+    @Override
+    public Point getStartPoint() {
+        return controlPoints.get( 0 );
+    }
+
+    @Override
+    public Point getEndPoint() {
+        return controlPoints.get( 2 );
     }
 }

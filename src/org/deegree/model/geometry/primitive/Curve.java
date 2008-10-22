@@ -79,22 +79,11 @@ public interface Curve extends Geometry {
     public CurveType getCurveType();
 
     /**
-     * The boundary of a curve is the set of points at either end of the curve. If the curve is a cycle, the two ends
-     * are identical, and the curve (if topologically closed) is considered to not have a boundary.
+     * Returns whether the curve forms a closed loop.
      * 
-     * @return true if the first and last {@link Point} of a curve are identical
+     * @return true, if the curve forms a closed loop, false otherwise
      */
     public boolean isClosed();
-
-    /**
-     * Returns a linear interpolated representation of the curve.
-     * <p>
-     * Please note that this operation returns an approximated version if the curve uses non-linear curve segments.
-     * </p>
-     * 
-     * @return a linear interpolated representation of the curve
-     */
-    public LineString getAsLineString();
 
     /**
      * 
@@ -112,9 +101,32 @@ public interface Curve extends Geometry {
     public List<Point> getBoundary();
 
     /**
+     * Returns the start point of the curve.
+     * 
+     * @return the start point of the curve
+     */
+    public Point getStartPoint();
+
+    /**
+     * Returns the end point of the curve.
+     * 
+     * @return the end point of the curve
+     */
+    public Point getEndPoint();
+
+    /**
      * Returns the segments that constitute this curve.
      * 
      * @return the segments that constitute this curve
      */
     public List<CurveSegment> getCurveSegments();
+
+    /**
+     * Returns a linear interpolated representation of the curve.
+     * <p>
+     * Please note that this operation returns an approximated version if the curve uses non-linear curve segments. 
+     * 
+     * @return a linear interpolated representation of the curve
+     */
+    public LineString getAsLineString();
 }

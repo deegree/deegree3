@@ -58,6 +58,7 @@ import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.LinearRing;
+import org.deegree.model.geometry.primitive.OrientableCurve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
@@ -344,7 +345,11 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public LinearRing createLinearRing( String id, CoordinateSystem crs, List<Point> points ) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public OrientableCurve createOrientableCurve( String id, CoordinateSystem crs, Curve baseCurve, boolean isReversed ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 }

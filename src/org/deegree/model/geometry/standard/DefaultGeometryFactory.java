@@ -58,6 +58,7 @@ import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.LinearRing;
+import org.deegree.model.geometry.primitive.OrientableCurve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
@@ -98,8 +99,6 @@ import org.deegree.model.geometry.standard.curvesegments.DefaultLineStringSegmen
 import org.deegree.model.geometry.standard.curvesegments.DefaultOffsetCurve;
 import org.deegree.model.gml.Angle;
 import org.deegree.model.gml.Length;
-
-import com.sun.java.swing.plaf.gtk.GTKConstants.Orientation;
 
 /**
  * 
@@ -323,5 +322,10 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     @Override
     public LineString createLineString( String id, CoordinateSystem crs, List<Point> points ) {
         return new DefaultLineString( id, crs, points );
+    }
+
+    @Override
+    public OrientableCurve createOrientableCurve( String id, CoordinateSystem crs, Curve baseCurve, boolean isReversed ) {
+        return new DefaultOrientableCurve( id, crs, baseCurve, isReversed );
     }
 }

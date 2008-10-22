@@ -95,4 +95,14 @@ public class DefaultArcString implements ArcString {
     public int getNumArcs() {
         return numArcs;
     }
+
+    @Override
+    public Point getStartPoint() {
+        return controlPoints.get( 0 );
+    }
+
+    @Override
+    public Point getEndPoint() {
+        return controlPoints.get( controlPoints.size() - 1 );
+    }
 }

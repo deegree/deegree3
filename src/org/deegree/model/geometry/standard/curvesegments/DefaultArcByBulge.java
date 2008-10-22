@@ -65,6 +65,16 @@ public class DefaultArcByBulge implements ArcByBulge {
 
     private Point normal;
 
+    /**
+     * Creates a new <code>DefaultArcByBulge</code> instance from the given parameters.
+     * 
+     * @param p1
+     *            first control point
+     * @param p2
+     *            second control point
+     * @param bulge
+     * @param normal
+     */
     public DefaultArcByBulge( Point p1, Point p2, double bulge, Point normal ) {
         this.controlPoints = new ArrayList<Point>();
         controlPoints.add( p1 );
@@ -81,8 +91,8 @@ public class DefaultArcByBulge implements ArcByBulge {
     @Override
     public Point getPoint2() {
         return controlPoints.get( 1 );
-    }        
-    
+    }
+
     @Override
     public double getBulge() {
         return bulge;
@@ -92,7 +102,7 @@ public class DefaultArcByBulge implements ArcByBulge {
     public Point getNormal() {
         return normal;
     }
-    
+
     @Override
     public double[] getBulges() {
         return new double[] { bulge };
@@ -100,7 +110,7 @@ public class DefaultArcByBulge implements ArcByBulge {
 
     @Override
     public List<Point> getNormals() {
-        List<Point> normals = new ArrayList<Point>(1);
+        List<Point> normals = new ArrayList<Point>( 1 );
         normals.add( normal );
         return normals;
     }
@@ -123,5 +133,15 @@ public class DefaultArcByBulge implements ArcByBulge {
     @Override
     public List<Point> getControlPoints() {
         return controlPoints;
+    }
+
+    @Override
+    public Point getStartPoint() {
+        return controlPoints.get( 0 );
+    }
+
+    @Override
+    public Point getEndPoint() {
+        return controlPoints.get( 1 );
     }
 }

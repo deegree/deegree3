@@ -157,4 +157,14 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     public List<Curve> getMembers() {
         return members;
     }
+
+    @Override
+    public Point getStartPoint() {
+        return segments.get( 0 ).getStartPoint();
+    }    
+    
+    @Override
+    public Point getEndPoint() {
+        return getStartPoint();
+    }
 }

@@ -71,7 +71,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
      * @param crs
      * @param segments
      */
-    public DefaultCurve( String id, CoordinateSystem crs, List<CurveSegment> segments) {
+    public DefaultCurve( String id, CoordinateSystem crs, List<CurveSegment> segments ) {
         super( id, crs );
         this.segments = new ArrayList<CurveSegment>( segments );
     }
@@ -119,5 +119,15 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
     @Override
     public CurveType getCurveType() {
         return CurveType.Curve;
+    }
+
+    @Override
+    public Point getStartPoint() {
+        return segments.get( 0 ).getStartPoint();
+    }    
+    
+    @Override
+    public Point getEndPoint() {
+        return segments.get( segments.size() - 1 ).getEndPoint();
     }
 }
