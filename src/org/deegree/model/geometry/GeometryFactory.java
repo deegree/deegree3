@@ -56,6 +56,7 @@ import org.deegree.model.geometry.primitive.CurveSegment;
 import org.deegree.model.geometry.primitive.Envelope;
 import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.LinearRing;
+import org.deegree.model.geometry.primitive.OrientableCurve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
@@ -681,7 +682,7 @@ public interface GeometryFactory {
      * @return created {@link Ring}
      */
     public Ring createRing( String id, CoordinateSystem crs, List<Curve> members );
-    
+
     /**
      * Creates a simple {@link LinearRing} from a list of passed {@link Point}s.
      * 
@@ -693,5 +694,20 @@ public interface GeometryFactory {
      *            the control points
      * @return created {@link Ring}
      */
-    public LinearRing createLinearRing( String id, CoordinateSystem crs, List<Point> points );    
+    public LinearRing createLinearRing( String id, CoordinateSystem crs, List<Point> points );
+
+    /**
+     * Creates an {@link OrientableCurve}.
+     * 
+     * @param id
+     *            identifier of the created geometry object
+     * @param crs
+     *            coordinate reference system
+     * @param baseCurve
+     *            base curve
+     * @param isReversed
+     *            set to true, if the order of the base curve shall be reversed
+     * @return createsd {@link OrientableCurve}
+     */
+    public OrientableCurve createOrientableCurve( String id, CoordinateSystem crs, Curve baseCurve, boolean isReversed );
 }
