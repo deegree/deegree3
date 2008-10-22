@@ -63,7 +63,15 @@ public interface RasterDataContainer {
      * @return RasterData
      */
     public RasterData getRasterData();
-
+    
+    /**
+     * Returns the RasterData as a read-only copy. Only a read-only RasterData supports thread-safe read operations.
+     * 
+     * @return RasterData
+     */
+    public RasterData getReadOnlyRasterData();
+    
+    
     /**
      * Returns the columns / with in pixel of the raster
      * 

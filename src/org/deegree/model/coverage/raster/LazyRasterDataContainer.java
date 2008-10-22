@@ -94,6 +94,11 @@ public class LazyRasterDataContainer implements RasterDataContainer, RasterDataC
         return raster;
     }
 
+    @Override
+    public RasterData getReadOnlyRasterData() {
+        return getRasterData().createReadOnlyCopy();
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -125,4 +130,5 @@ public class LazyRasterDataContainer implements RasterDataContainer, RasterDataC
         }
         return null;
     }
+
 }

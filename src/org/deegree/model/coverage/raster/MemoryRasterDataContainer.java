@@ -108,6 +108,11 @@ public class MemoryRasterDataContainer implements RasterDataContainer, RasterDat
     public RasterData getRasterData() {
         return raster;
     }
+    
+    @Override
+    public RasterData getReadOnlyRasterData() {
+        return getRasterData().createReadOnlyCopy();
+    }
 
     public void setRasterDataReader( RasterDataReader reader ) {
         this.raster = reader.read();

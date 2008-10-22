@@ -153,6 +153,15 @@ public class SimpleRaster extends AbstractRaster {
     public RasterData getRasterData() {
         return rasterDataContainer.getRasterData();
     }
+    
+    /**
+     * Returns a read-only copy of the RasterData of this SimpleRaster
+     * 
+     * @return The raster data of this SimpleRaster (read-only).
+     */
+    public RasterData getReadOnlyRasterData() {
+        return rasterDataContainer.getReadOnlyRasterData();
+    }
 
     @Override
     public SimpleRaster getSubset( Envelope envelope ) {
@@ -160,7 +169,7 @@ public class SimpleRaster extends AbstractRaster {
         RasterRect rasterRect = getRasterEnvelope().convertEnvelopeToRasterCRS( envelope );
         RasterEnvelope rasterEnv = getRasterEnvelope().createSubEnvelope( envelope );
 
-        return new SimpleRaster( getRasterData().getSubset( rasterRect ), envelope, rasterEnv );
+        return new SimpleRaster( getReadOnlyRasterData().getSubset( rasterRect ), envelope, rasterEnv );
     }
 
     @Override
@@ -273,6 +282,7 @@ public class SimpleRaster extends AbstractRaster {
     public void setSubset( Envelope env, AbstractRaster source ) {
         RasterRect rect = getRasterEnvelope().convertEnvelopeToRasterCRS( env );
         SimpleRaster src = source.getSubset( env ).getAsSimpleRaster();
+        // source.getSubset( env ) already returns a copy, no need for getReadOnlyRasterData
         getRasterData().setSubset( rect.x, rect.y, rect.width, rect.height, src.getRasterData() );
     }
 
@@ -280,7 +290,7 @@ public class SimpleRaster extends AbstractRaster {
     public void setSubset( double x, double y, AbstractRaster source ) {
         // calculate position in RasterData
         int offset[] = getRasterEnvelope().convertToRasterCRS( x, y );
-        RasterData sourceRD = source.getAsSimpleRaster().getRasterData();
+        RasterData sourceRD = source.getAsSimpleRaster().getReadOnlyRasterData();
         getRasterData().setSubset( offset[0], offset[1], sourceRD.getWidth(), sourceRD.getHeight(), sourceRD );
     }
 
@@ -288,7 +298,7 @@ public class SimpleRaster extends AbstractRaster {
     public void setSubset( double x, double y, int dstBand, AbstractRaster source ) {
         // calculate position in RasterData
         int offset[] = getRasterEnvelope().convertToRasterCRS( x, y );
-        getRasterData().setSubset( offset[0], offset[1], dstBand, 0, source.getAsSimpleRaster().getRasterData() );
+        getRasterData().setSubset( offset[0], offset[1], dstBand, 0, source.getAsSimpleRaster().getReadOnlyRasterData() );
     }
 
     @Override
@@ -296,7 +306,7 @@ public class SimpleRaster extends AbstractRaster {
         // calculate position in RasterData
         RasterRect rect = getRasterEnvelope().convertEnvelopeToRasterCRS( env );
 
-        getRasterData().setSubset( rect.x, rect.y, dstBand, 0, source.getAsSimpleRaster().getRasterData() );
+        getRasterData().setSubset( rect.x, rect.y, dstBand, 0, source.getAsSimpleRaster().getReadOnlyRasterData() );
     }
 
     @Override

@@ -106,7 +106,7 @@ public abstract class ByteBufferRasterData implements RasterData {
     protected ByteBuffer data;
 
     /**
-     * Creates a new single-band ByteBufferRasterData instance.
+     * Creates a new ByteBufferRasterData instance.
      * 
      * @param dataType
      *            sample data type
@@ -114,9 +114,11 @@ public abstract class ByteBufferRasterData implements RasterData {
      *            size of the raster
      * @param height
      *            size of the raster
+     * @param bands
+     *            number of bands
      */
-    protected ByteBufferRasterData( int width, int height, DataType dataType ) {
-        this( width, height, 1, dataType );
+    protected ByteBufferRasterData( int width, int height, int bands, DataType dataType ) {
+        this( width, height, bands, dataType, true );
     }
 
     /**
@@ -130,8 +132,10 @@ public abstract class ByteBufferRasterData implements RasterData {
      *            size of the raster
      * @param bands
      *            number of bands
+     * @param init
+     *            true if the ByteBuffer should be initialized
      */
-    protected ByteBufferRasterData( int width, int height, int bands, DataType dataType ) {
+    protected ByteBufferRasterData( int width, int height, int bands, DataType dataType, boolean init ) {
         this.width = width;
         this.height = height;
 
@@ -139,6 +143,16 @@ public abstract class ByteBufferRasterData implements RasterData {
         this.dataType = dataType;
 
         this.nodata = new byte[dataType.getSize() * bands];
+        if ( init ) {
+            initByteBuffer();
+        }
+        
+    }
+    
+    /**
+     * Initialize the internal ByteBuffer
+     */
+    protected void initByteBuffer() {
         this.data = createByteBuffer();
     }
 
@@ -147,13 +161,25 @@ public abstract class ByteBufferRasterData implements RasterData {
     }
 
     public abstract ByteBufferRasterData createCompatibleRasterData( int width, int height, int bands );
-
+    
+    /**
+     * @return ByteBufferRasterData with unset data
+     */
+    protected abstract ByteBufferRasterData createCompatibleEmptyRasterData();
+    
     public ByteBufferRasterData createCompatibleRasterData( int bands ) {
         return createCompatibleRasterData( width, height, bands );
     }
 
     public ByteBufferRasterData createCompatibleRasterData() {
         return createCompatibleRasterData( width, height, bands );
+    }
+    
+    @Override
+    public RasterData createReadOnlyCopy() {
+        ByteBufferRasterData copy = createCompatibleEmptyRasterData();
+        copy.data = this.getByteBuffer().asReadOnlyBuffer();
+        return copy;
     }
 
     public final int getBands() {

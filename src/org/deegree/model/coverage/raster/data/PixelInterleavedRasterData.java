@@ -64,10 +64,19 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
     public PixelInterleavedRasterData( int width, int height, int bands, DataType dataType ) {
         super( width, height, bands, dataType );
     }
+    
+    private PixelInterleavedRasterData( int width, int height, int bands, DataType dataType, boolean init ) {
+        super( width, height, bands, dataType, init );
+    }
 
     @Override
     public PixelInterleavedRasterData createCompatibleRasterData( int width, int height, int bands ) {
-        return new PixelInterleavedRasterData( width, height, bands, this.dataType );
+        return new PixelInterleavedRasterData( width, height, bands, this.dataType, true );
+    }
+
+    @Override
+    protected ByteBufferRasterData createCompatibleEmptyRasterData() {
+        return new PixelInterleavedRasterData( width, height, bands, this.dataType, false );
     }
 
     @Override

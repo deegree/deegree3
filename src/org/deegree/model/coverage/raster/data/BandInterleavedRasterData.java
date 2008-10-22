@@ -63,10 +63,19 @@ public class BandInterleavedRasterData extends ByteBufferRasterData {
     public BandInterleavedRasterData( int width, int height, int bands, DataType type ) {
         super( width, height, bands, type );
     }
+    
+    private BandInterleavedRasterData( int width, int height, int bands, DataType type, boolean init ) {
+        super( width, height, bands, type, init );
+    }
 
     @Override
     public BandInterleavedRasterData createCompatibleRasterData( int width, int height, int bands ) {
-        return new BandInterleavedRasterData( width, height, bands, this.dataType );
+        return new BandInterleavedRasterData( width, height, bands, this.dataType, true );
+    }
+
+    @Override
+    protected ByteBufferRasterData createCompatibleEmptyRasterData() {
+        return new BandInterleavedRasterData( width, height, bands, this.dataType, false );
     }
 
     @Override
