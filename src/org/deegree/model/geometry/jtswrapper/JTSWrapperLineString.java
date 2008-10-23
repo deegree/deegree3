@@ -194,4 +194,15 @@ class JTSWrapperLineString extends JTSWrapperGeometry implements org.deegree.mod
     public Point getEndPoint() {
         return pointList.get( pointList.size() -1 );
     }
+
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Curve;
+    }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
+    }
 }

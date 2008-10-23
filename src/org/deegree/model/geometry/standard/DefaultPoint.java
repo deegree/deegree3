@@ -176,4 +176,14 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
     public Geometry union( Geometry geometry ) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Point;
+    }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
+    }
 }

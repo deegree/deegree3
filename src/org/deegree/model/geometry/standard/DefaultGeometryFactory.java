@@ -59,12 +59,12 @@ import org.deegree.model.geometry.primitive.GeometricPrimitive;
 import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.OrientableCurve;
+import org.deegree.model.geometry.primitive.OrientableSurface;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Polygon;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.SurfacePatch;
-import org.deegree.model.geometry.primitive.SurfacePatch.Interpolation;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByCenterPoint;
@@ -82,6 +82,11 @@ import org.deegree.model.geometry.primitive.curvesegments.GeodesicString;
 import org.deegree.model.geometry.primitive.curvesegments.Knot;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.curvesegments.OffsetCurve;
+import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
+import org.deegree.model.geometry.primitive.surfacepatches.Rectangle;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch.Interpolation;
 import org.deegree.model.geometry.standard.composite.DefaultCompositeCurve;
 import org.deegree.model.geometry.standard.composite.DefaultCompositeGeometry;
 import org.deegree.model.geometry.standard.composite.DefaultCompositeSolid;
@@ -102,6 +107,9 @@ import org.deegree.model.geometry.standard.curvesegments.DefaultGeodesic;
 import org.deegree.model.geometry.standard.curvesegments.DefaultGeodesicString;
 import org.deegree.model.geometry.standard.curvesegments.DefaultLineStringSegment;
 import org.deegree.model.geometry.standard.curvesegments.DefaultOffsetCurve;
+import org.deegree.model.geometry.standard.surfacepatches.DefaultPolygonPatch;
+import org.deegree.model.geometry.standard.surfacepatches.DefaultRectangle;
+import org.deegree.model.geometry.standard.surfacepatches.DefaultTriangle;
 import org.deegree.model.gml.Angle;
 import org.deegree.model.gml.Length;
 
@@ -147,7 +155,7 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs,
-                                                                List<GeometricPrimitive> memberPrimitives ) {
+                                                                          List<GeometricPrimitive> memberPrimitives ) {
         return new DefaultCompositeGeometry( id, crs, memberPrimitives );
     }
 
@@ -239,8 +247,7 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public Surface createSurface( String id, List<SurfacePatch> patches, CoordinateSystem crs ) {
-        // TODO Auto-generated method stub
-        return null;
+        return new DefaultSurface( id, crs, patches );
     }
 
     @Override
@@ -329,5 +336,31 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     @Override
     public OrientableCurve createOrientableCurve( String id, CoordinateSystem crs, Curve baseCurve, boolean isReversed ) {
         return new DefaultOrientableCurve( id, crs, baseCurve, isReversed );
+    }
+
+    @Override
+    public Polygon createPolygon( String id, CoordinateSystem crs, Ring exteriorRing, List<Ring> interiorRings ) {
+        return new DefaultPolygon( id, crs, exteriorRing, interiorRings );
+    }
+
+    @Override
+    public PolygonPatch createPolygonPatch( Ring exteriorRing, List<Ring> interiorRings ) {
+        return new DefaultPolygonPatch( exteriorRing, interiorRings );
+    }
+
+    @Override
+    public Rectangle createRectangle( LinearRing exterior ) {
+        return new DefaultRectangle( exterior );
+    }
+
+    @Override
+    public Triangle createTriangle( LinearRing exterior ) {
+        return new DefaultTriangle( exterior );
+    }
+
+    @Override
+    public OrientableSurface createOrientableSurface( String id, CoordinateSystem crs, Surface baseSurface,
+                                                      boolean isReversed ) {
+        return new DefaultOrientableSurface( id, crs, baseSurface, isReversed );
     }
 }

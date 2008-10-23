@@ -52,6 +52,14 @@ import org.deegree.model.geometry.primitive.Point;
 public interface Envelope extends Geometry {
 
     /**
+     * Must always return {@link Geometry.GeometryType#ENVELOPE}.
+     * 
+     * @return {@link Geometry.GeometryType#ENVELOPE}.
+     */
+    @Override
+    public GeometryType getGeometryType();    
+    
+    /**
      * returns the minimum coordinate of an envelope
      * @return minimum coordinate of an envelope
      */

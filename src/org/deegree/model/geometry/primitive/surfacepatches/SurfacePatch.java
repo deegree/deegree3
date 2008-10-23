@@ -35,15 +35,16 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.primitive;
+package org.deegree.model.geometry.primitive.surfacepatches;
 
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.primitive.Curve;
+import org.deegree.model.geometry.primitive.Surface;
 
 /**
- * 
- * 
+ * A {@link SurfacePatch} describes a continuous portion of a {@link Surface}. 
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
@@ -54,7 +55,6 @@ public interface SurfacePatch {
 
     /**
      * valid surface patch interpolations.
-     * 
      */
     public enum Interpolation {
         /**
@@ -126,5 +126,4 @@ public interface SurfacePatch {
      *         space)
      */
     public int getCoordinateDimension();
-
 }

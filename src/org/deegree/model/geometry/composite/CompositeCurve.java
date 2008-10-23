@@ -37,12 +37,13 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.composite;
 
+import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.primitive.Curve;
 
 /**
  * <code>CompositeCurve</code> is a geometry type with the same geometric properties as the (primitive) {@link Curve}
- * type. It is defined by a sequence of member curves such that the each curve in the sequence ends at the start
- * point of the subsequent curve in the list.
+ * type. It is defined by a sequence of member curves such that the each curve in the sequence ends at the start point
+ * of the subsequent curve in the list.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
@@ -50,7 +51,15 @@ import org.deegree.model.geometry.primitive.Curve;
  * @version. $Revision$, $Date$
  */
 public interface CompositeCurve extends Curve, CompositeGeometry<Curve> {
-    
+
+    /**
+     * Must return {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}.
+     * 
+     * @return {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}
+     */
+    @Override
+    public GeometryType getGeometryType();
+
     /**
      * Must always return {@link Curve.CurveType#CompositeCurve}.
      * 

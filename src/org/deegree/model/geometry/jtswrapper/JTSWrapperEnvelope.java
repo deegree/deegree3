@@ -146,5 +146,9 @@ class JTSWrapperEnvelope extends JTSWrapperGeometry implements Envelope {
     public double getWidth() {
         return max.getX() - min.getX();
     }
-    
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.ENVELOPE;
+    }
 }

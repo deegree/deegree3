@@ -40,6 +40,7 @@ package org.deegree.model.geometry.multi;
 import java.util.List;
 
 import org.deegree.model.geometry.Geometry;
+import org.deegree.model.geometry.Geometry.GeometryType;
 import org.deegree.model.geometry.composite.CompositeGeometry;
 import org.deegree.model.geometry.primitive.GeometricPrimitive;
 import org.deegree.model.geometry.primitive.Point;
@@ -70,6 +71,14 @@ public interface MultiGeometry<T extends Geometry> extends Geometry, List<T> {
         MultiPolygon,
         MultiSolid
     }    
+
+    /**
+     * Must always return {@link Geometry.GeometryType#MULTI_GEOMETRY}.
+     * 
+     * @return {@link Geometry.GeometryType#MULTI_GEOMETRY}.
+     */
+    @Override
+    public GeometryType getGeometryType();
     
     /**
      * Returns the centroid of the contained geometries.

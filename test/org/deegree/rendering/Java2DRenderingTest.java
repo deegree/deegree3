@@ -340,33 +340,6 @@ public class Java2DRenderingTest extends TestCase {
 
         LineStyling styling = new LineStyling();
         for ( int y = 0; y < 10; ++y ) {
-            switch ( y ) {
-            case 0:
-                styling.stroke.linecap = BUTT;
-                styling.stroke.fill = new Graphic();
-                styling.stroke.fill.image = fill;
-                break;
-            case 1:
-                styling.stroke.dasharray = new double[] { 15, 15, 17, 5 };
-                break;
-            case 2:
-                styling.stroke.fill = null;
-                break;
-            case 3:
-                styling.stroke.dashoffset = 10;
-                break;
-            case 4:
-                styling.stroke.dasharray = null;
-                break;
-            case 7:
-                break;
-            case 8:
-                styling.stroke.linecap = SQUARE;
-                break;
-            case 9:
-                styling.stroke.linecap = ROUND;
-                break;
-            }
             Iterator<Curve> iterator = curves.iterator();
             for ( int x = 0; x < 10; ++x ) {
                 styling.stroke.width = x;

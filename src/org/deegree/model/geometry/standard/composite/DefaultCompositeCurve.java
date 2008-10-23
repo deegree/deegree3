@@ -229,4 +229,14 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Curve;
+    }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.COMPOSITE_PRIMITIVE;
+    }
 }

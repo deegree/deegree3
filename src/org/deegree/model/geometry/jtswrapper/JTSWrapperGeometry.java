@@ -52,7 +52,7 @@ import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.SurfacePatch;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;

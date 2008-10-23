@@ -167,4 +167,14 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     public Point getEndPoint() {
         return getStartPoint();
     }
+    
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Curve;
+    }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
+    }    
 }

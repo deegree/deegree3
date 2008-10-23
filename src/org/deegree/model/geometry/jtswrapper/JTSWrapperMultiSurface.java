@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Geometry.GeometryType;
 import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
@@ -197,5 +198,10 @@ public class JTSWrapperMultiSurface extends JTSWrapperGeometry implements MultiS
 
     public <T> T[] toArray( T[] a ) {
         return surfaces.toArray( a );
+    }
+    
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.MULTI_GEOMETRY;
     }    
 }

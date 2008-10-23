@@ -1,0 +1,113 @@
+//$HeadURL$
+/*----------------    FILE HEADER  ------------------------------------------
+
+ This file is part of deegree.
+ Copyright (C) 2001-2008 by:
+ EXSE, Department of Geography, University of Bonn
+ http://www.giub.uni-bonn.de/deegree/
+ lat/lon GmbH
+ http://www.lat-lon.de
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ Contact:
+
+ Andreas Poth  
+ lat/lon GmbH 
+ Aennchenstr. 19
+ 53115 Bonn
+ Germany
+ E-Mail: poth@lat-lon.de
+
+ Prof. Dr. Klaus Greve
+ Department of Geography
+ University of Bonn
+ Meckenheimer Allee 166
+ 53115 Bonn
+ Germany
+ E-Mail: greve@giub.uni-bonn.de
+
+
+ ---------------------------------------------------------------------------*/
+package org.deegree.model.geometry.standard.surfacepatches;
+
+import java.util.List;
+
+import org.deegree.model.geometry.primitive.Curve;
+import org.deegree.model.geometry.primitive.LinearRing;
+import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
+
+/**
+ * Default implementation of {@link Triangle}.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author:$
+ * 
+ * @version $Revision:$, $Date:$
+ */
+public class DefaultTriangle implements Triangle {
+
+    private LinearRing exterior;
+
+    /**
+     * Creates a new {@link DefaultTriangle} instance from the given parameters.
+     * 
+     * @param exterior
+     *            ring that contains exactly four planar points, the first and last point must be identical
+     */
+    public DefaultTriangle( LinearRing exterior ) {
+        if (exterior.getControlPoints().size() != 4) {
+            String msg = "The exterior ring of a triangle must contain exactly four points.";
+            throw new IllegalArgumentException(msg);
+        }
+        this.exterior = exterior;
+    }
+
+    @Override
+    public LinearRing getExteriorRing() {
+        return exterior;
+    }
+
+    @Override
+    public Point getPoint1() {
+        return exterior.getControlPoints().get( 0 );
+    }
+
+    @Override
+    public Point getPoint2() {
+        return exterior.getControlPoints().get( 1 );
+    }
+
+    @Override
+    public Point getPoint3() {
+        return exterior.getControlPoints().get( 2 );
+    }
+
+    @Override
+    public double getArea() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Curve> getBoundary() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getCoordinateDimension() {
+        return getPoint1().getCoordinateDimension();
+    }
+}

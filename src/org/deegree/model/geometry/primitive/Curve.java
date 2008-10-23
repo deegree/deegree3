@@ -79,6 +79,14 @@ public interface Curve extends GeometricPrimitive {
     public CurveType getCurveType();
 
     /**
+     * Must always return {@link GeometricPrimitive.PrimitiveType#Curve}.
+     * 
+     * @return {@link GeometricPrimitive.PrimitiveType#Curve}
+     */
+    @Override
+    public PrimitiveType getPrimitiveType();    
+    
+    /**
      * Returns whether the curve forms a closed loop.
      * 
      * @return true, if the curve forms a closed loop, false otherwise

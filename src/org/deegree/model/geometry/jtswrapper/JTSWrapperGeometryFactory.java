@@ -59,11 +59,12 @@ import org.deegree.model.geometry.primitive.GeometricPrimitive;
 import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.OrientableCurve;
+import org.deegree.model.geometry.primitive.OrientableSurface;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Polygon;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.SurfacePatch;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByCenterPoint;
@@ -81,6 +82,10 @@ import org.deegree.model.geometry.primitive.curvesegments.GeodesicString;
 import org.deegree.model.geometry.primitive.curvesegments.Knot;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.curvesegments.OffsetCurve;
+import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
+import org.deegree.model.geometry.primitive.surfacepatches.Rectangle;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
 import org.deegree.model.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.model.gml.Angle;
 import org.deegree.model.gml.Length;
@@ -351,6 +356,32 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public OrientableCurve createOrientableCurve( String id, CoordinateSystem crs, Curve baseCurve, boolean isReversed ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public Polygon createPolygon( String id, CoordinateSystem crs, Ring exteriorRing, List<Ring> interiorRings ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public PolygonPatch createPolygonPatch( Ring exteriorRing, List<Ring> interiorRings ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public Rectangle createRectangle( LinearRing exterior ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public Triangle createTriangle( LinearRing exterior ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public OrientableSurface createOrientableSurface( String id, CoordinateSystem crs, Surface baseSurface,
+                                                      boolean isReversed ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 }

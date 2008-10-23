@@ -40,6 +40,7 @@ package org.deegree.model.geometry.primitive;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 
 /**
  * <code>Surface</code> instances are 2D-geometries that consist of an arbitrary number of surface patches.
@@ -73,6 +74,14 @@ public interface Surface extends GeometricPrimitive {
     public SurfaceType getSurfaceType();
 
     /**
+     * Must always return {@link GeometricPrimitive.PrimitiveType#Surface}.
+     * 
+     * @return {@link GeometricPrimitive.PrimitiveType#Surface}
+     */
+    @Override
+    public PrimitiveType getPrimitiveType();
+    
+    /**
      * 
      * @return area of a Surface measured in units of the assigned {@link CoordinateSystem}
      */
@@ -98,8 +107,9 @@ public interface Surface extends GeometricPrimitive {
     public List<Curve> getBoundary();
 
     /**
+     * Returns the patches that constitute this surface.
      * 
-     * @return patches representing a Surface. A simple Surface will always just consists of one patch
+     * @return the patches that constitute this surface
      */
     public List<SurfacePatch> getPatches();
 }

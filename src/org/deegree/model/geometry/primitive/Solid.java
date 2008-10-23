@@ -50,7 +50,7 @@ import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 public interface Solid extends GeometricPrimitive {
 
     /**
-     * Convenience enum type for discriminating the different surface variants.
+     * Convenience enum type for discriminating the different solid variants.
      */
     public enum SolidType {
         /** Generic solid that consists of an arbitrary number of  */
@@ -65,6 +65,14 @@ public interface Solid extends GeometricPrimitive {
      * @return the type of solid
      */
     public SolidType getSolidType();    
+
+    /**
+     * Must always return {@link GeometricPrimitive.PrimitiveType#Solid}.
+     * 
+     * @return {@link GeometricPrimitive.PrimitiveType#Solid}
+     */
+    @Override
+    public PrimitiveType getPrimitiveType();    
     
     /**
      * 

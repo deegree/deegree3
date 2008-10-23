@@ -220,4 +220,9 @@ public class JTSWrapperMultiCurve extends JTSWrapperGeometry implements MultiCur
     public <T> T[] toArray( T[] a ) {
         return curves.toArray(a);
     }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.MULTI_GEOMETRY;
+    }
 }

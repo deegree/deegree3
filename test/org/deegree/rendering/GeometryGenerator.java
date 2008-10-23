@@ -48,7 +48,7 @@ import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.SurfacePatch;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 
 /**
  * <code>GeometryGenerator</code>
@@ -62,7 +62,7 @@ public class GeometryGenerator {
 
     private static final Random rnd = new Random();
 
-    private static final GeometryFactory fac = getInstance().getGeometryFactory();
+    private static final GeometryFactory fac = getInstance().getGeometryFactory("Standard");
 
     /**
      * @param max

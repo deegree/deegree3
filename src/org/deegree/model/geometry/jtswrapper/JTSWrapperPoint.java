@@ -135,5 +135,14 @@ public class JTSWrapperPoint extends JTSWrapperGeometry implements Point {
         }
         return this.pos[2];
     }
-   
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Point;
+    }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
+    }
 }

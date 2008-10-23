@@ -219,6 +219,21 @@ public class XSModelGMLAnalyzerTest {
             System.out.println( elementDecl.getName() );
         }
     }
+    
+    @Test
+    public void testGML311SurfacePatches()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_31 );
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml",
+                                                                                        "_SurfacePatch" ),
+                                                                             "http://www.opengis.net/gml", true );
+        for ( XSElementDeclaration elementDecl : elementDecls ) {
+            System.out.println( elementDecl.getName() );
+        }
+    }
 
     @Test
     public void testGML321CurveSegments()
@@ -236,6 +251,21 @@ public class XSModelGMLAnalyzerTest {
             System.out.println( elementDecl.getName() );
         }
     }
+
+    @Test
+    public void testGML321SurfacePatches()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
+        XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.VERSION_32 );
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml/3.2",
+                                                                                        "AbstractSurfacePatch" ),
+                                                                             "http://www.opengis.net/gml/3.2", true );
+        for ( XSElementDeclaration elementDecl : elementDecls ) {
+            System.out.println( elementDecl.getName() );
+        }
+    }    
     
     @Test
     public void testGML321GeometryElements()

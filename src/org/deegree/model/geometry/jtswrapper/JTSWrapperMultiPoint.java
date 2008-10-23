@@ -187,4 +187,9 @@ public class JTSWrapperMultiPoint extends JTSWrapperGeometry implements MultiPoi
     public <T> T[] toArray( T[] a ) {
         return points.toArray( a );
     }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.MULTI_GEOMETRY;
+    }
 }

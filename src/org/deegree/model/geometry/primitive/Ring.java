@@ -39,6 +39,8 @@ package org.deegree.model.geometry.primitive;
 
 import java.util.List;
 
+import org.deegree.model.geometry.primitive.GeometricPrimitive.PrimitiveType;
+
 /**
  * A <code>Ring</code> is a composition of {@link Curve}s that forms a closed loop.
  * <p>
@@ -70,6 +72,14 @@ public interface Ring extends Curve {
      * @return the type of ring
      */
     public RingType getRingType();
+
+    /**
+     * Must always return {@link GeometricPrimitive.PrimitiveType#Curve}.
+     * 
+     * @return {@link GeometricPrimitive.PrimitiveType#Curve}
+     */
+    @Override
+    public PrimitiveType getPrimitiveType();    
     
     /**
      * Returns the {@link Curve}s that constitute this {@link Ring}.

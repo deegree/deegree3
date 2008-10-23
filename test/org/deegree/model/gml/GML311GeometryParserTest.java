@@ -53,10 +53,15 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
+import org.deegree.model.geometry.composite.CompositeSurface;
 import org.deegree.model.geometry.primitive.Curve;
+import org.deegree.model.geometry.primitive.OrientableSurface;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Polygon;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.Ring.RingType;
+import org.deegree.model.geometry.primitive.Surface.SurfaceType;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.Interpolation;
@@ -300,15 +305,50 @@ public class GML311GeometryParserTest {
     public void parsePolygon()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "Ring.gml" ) );
+                                                                       GML311GeometryParserTest.class.getResource( "Polygon.gml" ) );
         xmlReader.nextTag();
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Polygon" ), xmlReader.getName() );
-        Surface polygon = new GML311GeometryParser( geomFac, xmlReader ).parsePolygon( null );
+        Polygon polygon = new GML311GeometryParser( geomFac, xmlReader ).parsePolygon( null );
+        Assert.assertEquals( SurfaceType.Polygon, polygon.getSurfaceType() );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Polygon" ), xmlReader.getName() );
+        Assert.assertEquals( RingType.LinearRing, polygon.getExteriorRing().getRingType() );
+        Assert.assertEquals( 2, polygon.getInteriorRings().size() );
+        Assert.assertEquals( RingType.LinearRing, polygon.getInteriorRings().get( 0 ).getRingType() );
+        Assert.assertEquals( RingType.LinearRing, polygon.getInteriorRings().get( 1 ).getRingType() );
     }
+    
+    @Test
+    public void parseSurface()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
+                                                                       GML311GeometryParserTest.class.getResource( "Surface.gml" ) );
+        xmlReader.nextTag();
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Surface" ), xmlReader.getName() );
+        Surface surface = new GML311GeometryParser( geomFac, xmlReader ).parseSurface( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Surface" ), xmlReader.getName() );
+        Assert.assertEquals( SurfaceType.Surface, surface.getSurfaceType() );
+        Assert.assertEquals( 2, surface.getPatches().size() );
+    }  
 
+    @Test
+    public void parseOrientablSurface()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
+                                                                       GML311GeometryParserTest.class.getResource( "OrientableSurface.gml" ) );
+        xmlReader.nextTag();
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "OrientableSurface" ), xmlReader.getName() );
+        OrientableSurface surface = new GML311GeometryParser( geomFac, xmlReader ).parseOrientableSurface( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "OrientableSurface" ), xmlReader.getName() );
+        Assert.assertEquals( SurfaceType.OrientableSurface, surface.getSurfaceType() );
+        Assert.assertEquals( 2, surface.getPatches().size() );
+    }    
+    
     @Test
     public void parseCompositeCurve()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
@@ -325,4 +365,18 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 1 ).getInterpolation() );
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 2 ).getInterpolation() );
     }
+
+    @Test
+    public void parseCompositeSurface()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
+                                                                       GML311GeometryParserTest.class.getResource( "CompositeSurface.gml" ) );
+        xmlReader.nextTag();
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeSurface" ), xmlReader.getName() );
+        CompositeSurface surface = new GML311GeometryParser( geomFac, xmlReader ).parseCompositeSurface( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeSurface" ), xmlReader.getName() );
+        Assert.assertEquals( 3, surface.getPatches().size() );
+    }     
 }

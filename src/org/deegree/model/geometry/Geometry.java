@@ -50,7 +50,30 @@ import org.deegree.model.identifier.Identifiable;
  * @version. $Revision$, $Date$
  */
 public interface Geometry extends Identifiable<String> {
-    
+
+    /**
+     * Convenience enum type for discriminating the different geometry variants.
+     */
+    public enum GeometryType {
+        /** Envelope */
+        ENVELOPE,
+        /** Primitive geometry */
+        PRIMITIVE_GEOMETRY,
+        /** Composited geometry */
+        COMPOSITE_GEOMETRY,
+        /** Composited primitive (geometry type has both a primitive and a composite semantic) */
+        COMPOSITE_PRIMITIVE,
+        /** Multi geometry */
+        MULTI_GEOMETRY,
+    }
+
+    /**
+     * Returns the type of geometry.
+     * 
+     * @return the type of geometry
+     */
+    public GeometryType getGeometryType();
+
     /**
      * Returns the id of the geometry.
      * <p>
@@ -60,7 +83,7 @@ public interface Geometry extends Identifiable<String> {
      * 
      * @return the id of the feature
      */
-    public String getId();    
+    public String getId();
 
     /**
      * @return the bounding box of the implementing geometry

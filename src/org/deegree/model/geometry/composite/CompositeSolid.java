@@ -37,6 +37,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.composite;
 
+import org.deegree.model.geometry.Geometry;
+import org.deegree.model.geometry.Geometry.GeometryType;
 import org.deegree.model.geometry.primitive.Solid;
 
 /**
@@ -51,6 +53,14 @@ import org.deegree.model.geometry.primitive.Solid;
  */
 public interface CompositeSolid extends Solid, CompositeGeometry<Solid> {
 
+    /**
+     * Must return {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}.
+     * 
+     * @return {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}
+     */
+    @Override
+    public GeometryType getGeometryType();    
+    
     /**
      * Must always return {@link Solid.SolidType#CompositeSolid}.
      * 

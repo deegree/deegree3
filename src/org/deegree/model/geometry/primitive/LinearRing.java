@@ -43,6 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive;
 
+
 /**
  * TODO add documentation here
  *
@@ -53,4 +54,11 @@ package org.deegree.model.geometry.primitive;
  */
 public interface LinearRing extends Ring, LineString {
 
+    /**
+     * Must always return {@link GeometricPrimitive.PrimitiveType#Curve}.
+     * 
+     * @return {@link GeometricPrimitive.PrimitiveType#Curve}
+     */
+    @Override
+    public PrimitiveType getPrimitiveType();
 }

@@ -37,6 +37,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.composite;
 
+import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.primitive.Surface;
 
 /**
@@ -51,6 +52,14 @@ import org.deegree.model.geometry.primitive.Surface;
  */
 public interface CompositeSurface extends Surface, CompositeGeometry<Surface> {
 
+    /**
+     * Must return {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}.
+     * 
+     * @return {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}
+     */
+    @Override
+    public GeometryType getGeometryType();
+    
     /**
      * Must always return {@link Surface.SurfaceType#CompositeSurface}.
      * 

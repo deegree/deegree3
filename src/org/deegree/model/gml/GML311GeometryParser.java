@@ -47,7 +47,6 @@ import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,18 +65,21 @@ import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.composite.CompositeSurface;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.GeometricPrimitive;
+import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.OrientableCurve;
+import org.deegree.model.geometry.primitive.OrientableSurface;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Polygon;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.SurfacePatch;
 import org.deegree.model.geometry.primitive.Curve.CurveType;
 import org.deegree.model.geometry.primitive.Ring.RingType;
 import org.deegree.model.geometry.primitive.Solid.SolidType;
 import org.deegree.model.geometry.primitive.Surface.SurfaceType;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,6 +106,8 @@ public class GML311GeometryParser extends GML311BaseParser {
     private static String GMLID = "id";
 
     private final GML311CurveSegmentParser curveSegmentParser;
+
+    private final GML311SurfacePatchParser surfacePatchParser;
 
     // local names of all concrete elements substitutable for "gml:_Curve"
     private static final Set<String> curveElements = new HashSet<String>();
@@ -186,6 +190,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     public GML311GeometryParser( GeometryFactory geomFac, XMLStreamReaderWrapper xmlStream ) {
         super( geomFac, xmlStream );
         curveSegmentParser = new GML311CurveSegmentParser( this, geomFac, xmlStream );
+        surfacePatchParser = new GML311SurfacePatchParser( this, geomFac, xmlStream );
     }
 
     /**
@@ -572,8 +577,6 @@ public class GML311GeometryParser extends GML311BaseParser {
 
         Ring ring = null;
 
-        LOG.debug( " - parsing gml:_Ring (begin): " + xmlStream.getCurrentEventInfo() );
-
         if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
             String msg = "Invalid gml:_Ring element: " + xmlStream.getName()
                          + "' is not a GML geometry element. Not in the gml namespace.";
@@ -592,6 +595,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         switch ( type ) {
         case LinearRing: {
             ring = parseLinearRing( defaultSrsName );
+            break;
         }
         case Ring: {
             ring = parseRing( defaultSrsName );
@@ -600,8 +604,6 @@ public class GML311GeometryParser extends GML311BaseParser {
         default:
             // cannot happen by construction
         }
-
-        LOG.debug( " - parsing gml:_Ring (end): " + xmlStream.getCurrentEventInfo() );
         return ring;
     }
 
@@ -649,17 +651,23 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
 
         switch ( type ) {
-        case Polygon: {
-            surface = parsePolygon( defaultSrsName );
-            break;
-        }
         case CompositeSurface: {
             surface = parseCompositeSurface( defaultSrsName );
             break;
         }
-        case OrientableSurface:
+        case OrientableSurface: {
+            surface = parseOrientableSurface( defaultSrsName );
+            break;            
+        }        
+        case Polygon: {
+            surface = parsePolygon( defaultSrsName );
+            break;
+        }
+        case Surface: {
+            surface = parseSurface( defaultSrsName );
+            break;
+        }
         case PolyhedralSurface:
-        case Surface:
         case Tin:
         case TriangulatedSurface: {
             String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
@@ -932,7 +940,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws XMLParsingException
      */
-    public Ring parseLinearRing( String defaultSrsName )
+    public LinearRing parseLinearRing( String defaultSrsName )
                             throws XMLStreamException {
 
         String gid = parseGeometryId();
@@ -944,12 +952,7 @@ public class GML311GeometryParser extends GML311BaseParser {
             throw new XMLParsingException( xmlStream, msg );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "LinearRing" );
-
-        LineStringSegment segment = geomFac.createLineStringSegment( points );
-        Curve curve = geomFac.createCurve( null, new CurveSegment[] { segment }, lookupCRS( srsName ) );
-        List<Curve> memberCurves = new ArrayList<Curve>( 1 );
-        memberCurves.add( curve );
-        return geomFac.createRing( gid, lookupCRS( srsName ), memberCurves );
+        return geomFac.createLinearRing( gid, lookupCRS( srsName ), points );
     }
 
     /**
@@ -996,42 +999,128 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @param defaultSrsName
      *            default srs for the geometry, this is only used if the "gml:Polygon" has no <code>srsName</code>
      *            attribute
-     * @return corresponding {@link Surface} object
+     * @return corresponding {@link Polygon} object
      * @throws XMLStreamException
      * @throws XMLParsingException
      */
-    public Surface parsePolygon( String defaultSrsName )
+    public Polygon parsePolygon( String defaultSrsName )
                             throws XMLStreamException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
 
-        SurfacePatch exterior = null;
-        List<SurfacePatch> interior = new LinkedList<SurfacePatch>();
+        Ring exteriorRing = null;
+        List<Ring> interiorRings = new LinkedList<Ring>();
 
-        // 0 or 1 exterior element (yes, 0 is possible -- see section 9.2.2.5 of GML spec)
+        // 0 or 1 exterior/outerBoundaryIs element (yes, 0 is possible -- see section 9.2.2.5 of GML spec)
         if ( xmlStream.nextTag() == START_ELEMENT ) {
             if ( xmlStream.getLocalName().equals( "exterior" ) ) {
-                xmlStream.nextTag();
-
+                if ( xmlStream.nextTag() != START_ELEMENT ) {
+                    String msg = "Error in 'gml:Polygon' element. Expected a 'gml:_Ring' element.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                exteriorRing = parseAbstractRing( srsName );
                 xmlStream.nextTag();
                 xmlStream.require( END_ELEMENT, GMLNS, "exterior" );
-            }
-        }
-
-        // arbitrary number of interior elements
-        while ( xmlStream.getEventType() == START_ELEMENT ) {
-            if ( !xmlStream.getLocalName().equals( "interior" ) ) {
-                String msg = "Error in 'gml:Polygon' element. Expected a 'gml:interior' element.";
-                throw new XMLParsingException( xmlStream, msg );
+            } else if ( xmlStream.getLocalName().equals( "outerBoundaryIs" ) ) {
+                if ( xmlStream.nextTag() != START_ELEMENT ) {
+                    String msg = "Error in 'gml:Polygon' element. Expected a 'gml:LinearRing' element.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                exteriorRing = parseLinearRing( srsName );
+                xmlStream.nextTag();
+                xmlStream.require( END_ELEMENT, GMLNS, "outerBoundaryIs" );
             }
             xmlStream.nextTag();
         }
 
+        // arbitrary number of interior/innerBoundaryIs elements
+        while ( xmlStream.getEventType() == START_ELEMENT ) {
+            if ( xmlStream.getLocalName().equals( "interior" ) ) {
+                if ( xmlStream.nextTag() != START_ELEMENT ) {
+                    String msg = "Error in 'gml:Polygon' element. Expected a 'gml:_Ring' element.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                interiorRings.add( parseAbstractRing( srsName ) );
+                xmlStream.nextTag();
+                xmlStream.require( END_ELEMENT, GMLNS, "interior" );
+            } else if ( xmlStream.getLocalName().equals( "innerBoundaryIs" ) ) {
+                if ( xmlStream.nextTag() != START_ELEMENT ) {
+                    String msg = "Error in 'gml:Polygon' element. Expected a 'gml:LinearRing' element.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                interiorRings.add( parseLinearRing( srsName ) );
+                xmlStream.nextTag();
+                xmlStream.require( END_ELEMENT, GMLNS, "innerBoundaryIs" );
+            } else {
+                String msg = "Error in 'gml:Polygon' element. Expected a 'gml:interior' or a 'gml:innerBoundaryIs' element.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            xmlStream.nextTag();
+        }
         xmlStream.require( END_ELEMENT, GMLNS, "Polygon" );
-        return null;
+        return geomFac.createPolygon( gid, lookupCRS( srsName ), exteriorRing, interiorRings );
     }
 
+    /**
+     * Returns the object representation of a (&lt;gml:Polygon&gt;) element. Consumes all corresponding events from the
+     * given <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the "gml:Polygon" has no <code>srsName</code>
+     *            attribute
+     * @return corresponding {@link Surface} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public Surface parseSurface( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        List<SurfacePatch> memberPatches = new LinkedList<SurfacePatch>();
+        xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, GMLNS, "patches" );
+        while ( xmlStream.nextTag() == START_ELEMENT ) {
+            memberPatches.add( surfacePatchParser.parseSurfacePatch( srsName ) );
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "patches" );
+        xmlStream.nextTag();
+        xmlStream.require( END_ELEMENT, GMLNS, "Surface" );
+        return geomFac.createSurface( gid, memberPatches, lookupCRS( srsName ) );
+    }
+
+    /**
+     * Returns the object representation of a <code>gml:OrientableSurface</code> element. Consumes all corresponding
+     * events from the associated <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the <code>gml:OrientableSurface</code> has no
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link OrientableSurface} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public OrientableSurface parseOrientableSurface( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+        boolean isReversed = !parseOrientation();
+
+        xmlStream.nextTag();
+        xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "baseSurface" );
+        xmlStream.nextTag();
+        Surface baseSurface = parseAbstractSurface( srsName );
+        xmlStream.nextTag();
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "baseSurface" );
+        xmlStream.nextTag();
+        xmlStream.require( END_ELEMENT, GMLNS, "OrientableSurface" );
+
+        return geomFac.createOrientableSurface( gid, lookupCRS( srsName ), baseSurface, isReversed );
+    }    
+    
     /**
      * Returns the object representation of a <code>gml:CompositeCurve</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
@@ -1107,8 +1196,8 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     /**
-     * Returns the object representation of a <code>gml:CompositeSolid</code> element. Consumes all corresponding
-     * events from the associated <code>XMLStream</code>.
+     * Returns the object representation of a <code>gml:CompositeSolid</code> element. Consumes all corresponding events
+     * from the associated <code>XMLStream</code>.
      * 
      * @param defaultSrsName
      *            default srs for the geometry, this is only used if the <code>gml:CompositeSolid</code> has no
@@ -1141,7 +1230,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeSolid" );
         return geomFac.createCompositeSolid( gid, lookupCRS( srsName ), memberSolids );
-    }    
+    }
 
     /**
      * Returns the object representation of a <code>gml:CompositeGeometry</code> element. Consumes all corresponding
@@ -1178,8 +1267,8 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeGeometry" );
         return geomFac.createCompositeGeometry( gid, lookupCRS( srsName ), memberSolids );
-    }    
-    
+    }
+
     /**
      * Parses the geometry id attribute from the geometry <code>START_ELEMENT</code> event that the given
      * <code>XMLStreamReader</code> points to.

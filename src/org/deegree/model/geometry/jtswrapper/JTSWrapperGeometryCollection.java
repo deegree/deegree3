@@ -188,4 +188,9 @@ public class JTSWrapperGeometryCollection extends JTSWrapperGeometry implements 
     public <T> T[] toArray( T[] a ) {
         return geometries.toArray( a );
     }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.MULTI_GEOMETRY;
+    }
 }

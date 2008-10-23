@@ -171,10 +171,8 @@ public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements
         return memberPrimitives.toArray( a );
     }
 
-    // -----------------------------------------------------------------------
-    // delegate methods for List<GeometricPrimitive>
-    // -----------------------------------------------------------------------        
-
-
-
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.COMPOSITE_GEOMETRY;
+    }
 }

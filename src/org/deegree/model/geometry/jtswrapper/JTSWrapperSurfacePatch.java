@@ -40,7 +40,7 @@ package org.deegree.model.geometry.jtswrapper;
 import java.util.List;
 
 import org.deegree.model.geometry.primitive.Curve;
-import org.deegree.model.geometry.primitive.SurfacePatch;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 
 /**
  * 

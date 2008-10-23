@@ -236,4 +236,14 @@ public class DefaultOrientableCurve implements OrientableCurve {
     public Geometry union( Geometry geometry ) {
         return baseCurve.union( geometry );
     }
+    
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Curve;
+    }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
+    }    
 }

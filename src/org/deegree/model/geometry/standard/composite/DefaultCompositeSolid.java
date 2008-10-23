@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Geometry.GeometryType;
 import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
@@ -204,4 +205,14 @@ public class DefaultCompositeSolid extends AbstractDefaultGeometry implements Co
     public <T> T[] toArray( T[] a ) {
         return memberSolids.toArray( a );
     }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Solid;
+    }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.COMPOSITE_PRIMITIVE;
+    } 
 }

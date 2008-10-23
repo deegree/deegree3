@@ -66,10 +66,14 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
     private List<CurveSegment> segments;
 
     /**
+     * Creates a new {@link DefaultCurve} instance from the given parameters.
      * 
      * @param id
+     *            identifier of the created geometry object
      * @param crs
+     *            coordinate reference system
      * @param segments
+     *            segments that constitute the curve
      */
     public DefaultCurve( String id, CoordinateSystem crs, List<CurveSegment> segments ) {
         super( id, crs );
@@ -124,10 +128,20 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
     @Override
     public Point getStartPoint() {
         return segments.get( 0 ).getStartPoint();
-    }    
-    
+    }
+
     @Override
     public Point getEndPoint() {
         return segments.get( segments.size() - 1 ).getEndPoint();
+    }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Curve;
+    }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
     }
 }

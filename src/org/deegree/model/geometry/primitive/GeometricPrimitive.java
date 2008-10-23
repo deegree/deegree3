@@ -50,7 +50,7 @@ import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.composite.CompositeSurface;
 
 /**
- * A {@link GeometricPrimitive} are contigous geometries with a single dimensionality.  
+ * A {@link GeometricPrimitive} is a contigous geometries with single dimensionality.
  * <p>
  * For every dimensionality, a specialized interface exists:
  * <ul>
@@ -78,5 +78,35 @@ import org.deegree.model.geometry.composite.CompositeSurface;
  * @version $Revision:$, $Date:$
  */
 public interface GeometricPrimitive extends Geometry {
-    // just a marker interface
+
+    /**
+     * Convenience enum type for discriminating the different primitive variants.
+     */
+    public enum PrimitiveType {
+        /** 0-dimensional primitive */
+        Point,
+        /** 1-dimensional primitive */
+        Curve,
+        /** 2-dimensional primitive */
+        Surface,
+        /** 3-dimensional primitive */
+        Solid
+    }
+
+    /**
+     * Returns the type of primitive.
+     * 
+     * @return the type of primitive
+     */
+    public PrimitiveType getPrimitiveType();
+
+    /**
+     * Must either return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY} or
+     * {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}.
+     * 
+     * @return either {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY} or
+     *         {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}
+     */
+    @Override
+    public GeometryType getGeometryType();     
 }

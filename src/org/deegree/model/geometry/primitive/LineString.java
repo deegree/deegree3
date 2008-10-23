@@ -57,6 +57,14 @@ import java.util.List;
 public interface LineString extends Curve {
 
     /**
+     * Must always return {@link GeometricPrimitive.PrimitiveType#Curve}.
+     * 
+     * @return {@link GeometricPrimitive.PrimitiveType#Curve}
+     */
+    @Override
+    public PrimitiveType getPrimitiveType();
+    
+    /**
      * 
      * @return all coordinated as an array. The array will be constructed an concatination of the arrays of the
      *         segements points. For a three dimensional case it looks like: [x0,y0,z0,x1,y1,z1, ... ,xn,yn,zn]

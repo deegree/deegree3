@@ -38,6 +38,8 @@
 package org.deegree.model.geometry.primitive;
 
 import org.deegree.model.geometry.Geometry;
+import org.deegree.model.geometry.Geometry.GeometryType;
+
 
 /**
  * 
@@ -50,6 +52,22 @@ import org.deegree.model.geometry.Geometry;
  */
 public interface Point extends GeometricPrimitive {
 
+    /**
+     * Must always return {@link GeometricPrimitive.PrimitiveType#Point}.
+     * 
+     * @return {@link GeometricPrimitive.PrimitiveType#Point}
+     */
+    @Override
+    public PrimitiveType getPrimitiveType();
+    
+    /**
+     * Must either return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY}.
+     * 
+     * @return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY}
+     */
+    @Override
+    public GeometryType getGeometryType();     
+    
     /**
      * 
      * @return x coordinate of a point

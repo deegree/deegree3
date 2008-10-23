@@ -45,7 +45,7 @@ import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.SurfacePatch;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequenceFactory;
@@ -165,5 +165,15 @@ class JTSWrapperSurface extends JTSWrapperGeometry implements Surface {
      */
     public double getPerimeter() {
         return ( (Polygon) geometry ).getLength();
+    }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Surface;
+    }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
     }
 }

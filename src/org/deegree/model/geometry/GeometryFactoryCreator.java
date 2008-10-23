@@ -54,8 +54,8 @@ import org.deegree.model.geometry.configuration.GeometryFactoryType;
 import org.deegree.model.geometry.configuration.ModelConfiguration;
 import org.deegree.model.geometry.configuration.SupportedCurveInterpolationType;
 import org.deegree.model.geometry.configuration.SupportedSurfaceInterpolationType;
-import org.deegree.model.geometry.primitive.SurfacePatch;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

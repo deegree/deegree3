@@ -56,11 +56,12 @@ import org.deegree.model.geometry.primitive.GeometricPrimitive;
 import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.OrientableCurve;
+import org.deegree.model.geometry.primitive.OrientableSurface;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Polygon;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.SurfacePatch;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByCenterPoint;
@@ -78,6 +79,10 @@ import org.deegree.model.geometry.primitive.curvesegments.GeodesicString;
 import org.deegree.model.geometry.primitive.curvesegments.Knot;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.curvesegments.OffsetCurve;
+import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
+import org.deegree.model.geometry.primitive.surfacepatches.Rectangle;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
 import org.deegree.model.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.model.gml.Angle;
 import org.deegree.model.gml.Length;
@@ -604,6 +609,33 @@ public interface GeometryFactory {
     public CompositeCurve createCompositeCurve( String id, CoordinateSystem crs, List<Curve> memberCurves );
 
     /**
+     * Creates a {@link Polygon} surface.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system. If the polygon does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @param exteriorRing
+     *            ring that defines the outer boundary, this may be null (see section 9.2.2.5 of GML spec)
+     * @param interiorRings
+     *            list of rings that define the inner boundaries, may be empty or null
+     * @return created {@link Polygon}
+     */
+    public Polygon createPolygon( String id, CoordinateSystem crs, Ring exteriorRing, List<Ring> interiorRings );
+
+    /**
+     * Creates a {@link PolygonPatch} surface patch.
+     * 
+     * @param exteriorRing
+     *            ring that defines the outer boundary, this may be null (see section 9.2.2.5 of GML spec)
+     * @param interiorRings
+     *            list of rings that define the inner boundaries, may be empty or null
+     * @return created {@link PolygonPatch}
+     */    
+    public PolygonPatch createPolygonPatch( Ring exteriorRing, List<Ring> interiorRings );
+
+    /**
      * Creates a {@link CompositeSurface} from a list of passed {@link Surface}s.
      * 
      * @param id
@@ -644,7 +676,8 @@ public interface GeometryFactory {
      * @param memberPrimitives
      * @return created {@link CompositeGeometry}
      */
-    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs, List<GeometricPrimitive> memberPrimitives );
+    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs,
+                                                                          List<GeometricPrimitive> memberPrimitives );
 
     /**
      * creates an {@link Envelope} with a defined precision
@@ -724,8 +757,41 @@ public interface GeometryFactory {
      * @param baseCurve
      *            base curve
      * @param isReversed
-     *            set to true, if the order of the base curve shall be reversed
-     * @return createsd {@link OrientableCurve}
+     *            set to true, if the orientation of the base curve shall be reversed
+     * @return created {@link OrientableCurve}
      */
     public OrientableCurve createOrientableCurve( String id, CoordinateSystem crs, Curve baseCurve, boolean isReversed );
+
+    /**
+     * Creates a {@link Triangle} surface patch.
+     * 
+     * @param exterior
+     *            ring that contains exactly four planar points, the first and last point must be coincident
+     * @return created {@link Triangle}
+     */    
+    public Triangle createTriangle(LinearRing exterior);
+
+    /**
+     * Creates a {@link Rectangle} surface patch.
+     * 
+     * @param exterior
+     *            ring that contains exactly five planar points, the first and last point must be coincident
+     * @return created {@link Rectangle}
+     */    
+    public Rectangle createRectangle(LinearRing exterior);
+
+    /**
+     * Creates an {@link OrientableSurface}.
+     * 
+     * @param id
+     *            identifier of the created geometry object
+     * @param crs
+     *            coordinate reference system
+     * @param baseSurface
+     *            base surface
+     * @param isReversed
+     *            set to true, if the orientation of the base surface shall be reversed
+     * @return created {@link OrientableCurve}
+     */
+    public OrientableSurface createOrientableSurface( String id, CoordinateSystem crs, Surface baseSurface, boolean isReversed );    
 }

@@ -50,11 +50,12 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Geometry.GeometryType;
 import org.deegree.model.geometry.composite.CompositeSurface;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.SurfacePatch;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
 
 /**
@@ -224,4 +225,14 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
     public <T> T[] toArray( T[] a ) {
         return memberSurfaces.toArray( a );
     }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Surface;
+    }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.COMPOSITE_PRIMITIVE;
+    }     
 }
