@@ -38,6 +38,7 @@
 
 package org.deegree.rendering;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.deegree.model.geometry.GeometryFactoryCreator.getInstance;
 
@@ -61,7 +62,7 @@ public class GeometryGenerator {
 
     private static final Random rnd = new Random();
 
-    private static final GeometryFactory fac = getInstance().getGeometryFactory( "Standard" );
+    private static final GeometryFactory fac = getInstance().getGeometryFactory();
 
     /**
      * @param max
@@ -131,15 +132,15 @@ public class GeometryGenerator {
         double half = max / 2;
         double x = rnd.nextDouble() * half + offx;
         double y = rnd.nextDouble() * half + offy;
-        Point[][] ps = { {
-                          fac.createPoint( null, new double[] { x, y }, null ),
-                          fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
-                                                               rnd.nextDouble() * half + offy }, null ),
-                          fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
-                                                               rnd.nextDouble() * half + half + offy }, null ),
-                          fac.createPoint( null, new double[] { rnd.nextDouble() * half + offx,
-                                                               rnd.nextDouble() * half + half + offy }, null ) } };
-        return fac.createCurve( null, ps, null );
+        Point[] ps = {
+                      fac.createPoint( null, new double[] { x, y }, null ),
+                      fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
+                                                           rnd.nextDouble() * half + offy }, null ),
+                      fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
+                                                           rnd.nextDouble() * half + half + offy }, null ),
+                      fac.createPoint( null, new double[] { rnd.nextDouble() * half + offx,
+                                                           rnd.nextDouble() * half + half + offy }, null ) };
+        return fac.createLineString( null, null, asList( ps ) );
     }
 
 }
