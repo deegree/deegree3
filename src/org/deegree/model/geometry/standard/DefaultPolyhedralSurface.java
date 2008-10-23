@@ -43,67 +43,81 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.standard;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.model.crs.CRSFactory;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.Polygon;
-import org.deegree.model.geometry.primitive.Ring;
+import org.deegree.model.geometry.primitive.Curve;
+import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.PolyhedralSurface;
+import org.deegree.model.geometry.primitive.TriangulatedSurface;
+import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
-import org.deegree.model.geometry.standard.surfacepatches.DefaultPolygonPatch;
 
 /**
- * Default implementation of {@link Polygon}.
+ * Default implementation of {@link PolyhedralSurface}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public class DefaultPolygon extends DefaultSurface implements Polygon {
+public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements PolyhedralSurface {
 
-    private Ring exteriorRing;
-
-    private List<Ring> interiorRings;
+    private List<?> patches;
 
     /**
-     * Creates a new {@link DefaultPolygon} instance from the given parameters.
+     * Creates a new {@link DefaultPolyhedralSurface} instance from the given parameters.
      * 
      * @param id
-     *            identifier of the new geometry instance
+     *            identifier of the created geometry object
      * @param crs
-     *            coordinate reference system. If the polygon does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
-     * @param exteriorRing
-     *            ring that defines the outer boundary, may be null (see section 9.2.2.5 of GML spec)
-     * @param interiorRings
-     *            list of rings that define the inner boundaries, may be empty or null
+     *            coordinate reference system
+     * @param patches
+     *            patches that constitute the surface
      */
-    public DefaultPolygon (String id, CoordinateSystem crs, Ring exteriorRing, List<Ring> interiorRings) {
-        super (id, crs, createPatchList( exteriorRing, interiorRings ));
-        this.exteriorRing = exteriorRing;
-        this.interiorRings = interiorRings;
+    public DefaultPolyhedralSurface (String id, CoordinateSystem crs, List<PolygonPatch> patches) {
+        super (id, crs);
+        this.patches = patches;
     }
     
-    private static List<SurfacePatch> createPatchList(Ring exteriorRing, List<Ring> interiorRings) {
-        List<SurfacePatch> patches = new ArrayList<SurfacePatch>(1);
-        patches.add (new DefaultPolygonPatch(exteriorRing, interiorRings));
-        return patches;
+    @Override
+    public double getArea() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Ring getExteriorRing() {
-        return exteriorRing;
+    public List<Curve> getBoundary() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<Ring> getInteriorRings() {
-        return interiorRings;
+    public Point getCentroid() {
+        throw new UnsupportedOperationException();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SurfacePatch> getPatches() {        
+        return (List<SurfacePatch>) patches;
+    }
+
+    @Override
+    public double getPerimeter() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Surface;
     }
 
     @Override
     public SurfaceType getSurfaceType() {
-        return SurfaceType.Polygon;
-    }    
+        return SurfaceType.PolyhedralSurface;
+    }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
+    }
 }

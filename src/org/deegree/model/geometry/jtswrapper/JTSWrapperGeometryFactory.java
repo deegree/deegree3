@@ -62,9 +62,11 @@ import org.deegree.model.geometry.primitive.OrientableCurve;
 import org.deegree.model.geometry.primitive.OrientableSurface;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Polygon;
+import org.deegree.model.geometry.primitive.PolyhedralSurface;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.TriangulatedSurface;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByCenterPoint;
@@ -382,6 +384,16 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     @Override
     public OrientableSurface createOrientableSurface( String id, CoordinateSystem crs, Surface baseSurface,
                                                       boolean isReversed ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public PolyhedralSurface createPolyhedralSurface( String id, CoordinateSystem crs, List<PolygonPatch> memberPatches ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public TriangulatedSurface createTriangulatedSurface( String id, CoordinateSystem crs, List<Triangle> memberPatches ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 }

@@ -61,8 +61,6 @@ import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.Rectangle;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handles the parsing of <code>gml:_SurfacePatch</code> elements, i.e concrete element declarations that are in the
@@ -183,7 +181,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
      */
-    private PolygonPatch parsePolygonPatch( String defaultSrsName )
+    PolygonPatch parsePolygonPatch( String defaultSrsName )
                             throws XMLParsingException, XMLStreamException {
 
         validateInterpolationAttribute( xmlStream, "planar" );
@@ -283,7 +281,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
      */
-    private Triangle parseTriangle( String defaultSrsName )
+    Triangle parseTriangle( String defaultSrsName )
                             throws XMLStreamException {
 
         validateInterpolationAttribute( xmlStream, "planar" );

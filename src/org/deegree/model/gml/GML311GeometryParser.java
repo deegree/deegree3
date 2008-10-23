@@ -70,16 +70,21 @@ import org.deegree.model.geometry.primitive.OrientableCurve;
 import org.deegree.model.geometry.primitive.OrientableSurface;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Polygon;
+import org.deegree.model.geometry.primitive.PolyhedralSurface;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.Tin;
+import org.deegree.model.geometry.primitive.TriangulatedSurface;
 import org.deegree.model.geometry.primitive.Curve.CurveType;
 import org.deegree.model.geometry.primitive.Ring.RingType;
 import org.deegree.model.geometry.primitive.Solid.SolidType;
 import org.deegree.model.geometry.primitive.Surface.SurfaceType;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
 import org.deegree.model.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -663,15 +668,21 @@ public class GML311GeometryParser extends GML311BaseParser {
             surface = parsePolygon( defaultSrsName );
             break;
         }
+        case PolyhedralSurface: {
+            surface = parsePolyhedralSurface( defaultSrsName );
+            break;
+        }        
         case Surface: {
             surface = parseSurface( defaultSrsName );
             break;
         }
-        case PolyhedralSurface:
-        case Tin:
         case TriangulatedSurface: {
-            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
-            throw new XMLParsingException( xmlStream, msg );
+            surface = parseTriangulatedSurface( defaultSrsName );
+            break;
+        }        
+        case Tin: {
+            surface = parseTin( defaultSrsName );
+            break;
         }
         default:
             // cannot happen by construction
@@ -1063,11 +1074,11 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     /**
-     * Returns the object representation of a (&lt;gml:Polygon&gt;) element. Consumes all corresponding events from the
+     * Returns the object representation of a (&lt;gml:Surface&gt;) element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
      * 
      * @param defaultSrsName
-     *            default srs for the geometry, this is only used if the "gml:Polygon" has no <code>srsName</code>
+     *            default srs for the geometry, this is only used if the "gml:Surface" has no <code>srsName</code>
      *            attribute
      * @return corresponding {@link Surface} object
      * @throws XMLStreamException
@@ -1091,6 +1102,86 @@ public class GML311GeometryParser extends GML311BaseParser {
         return geomFac.createSurface( gid, memberPatches, lookupCRS( srsName ) );
     }
 
+    /**
+     * Returns the object representation of a (&lt;gml:PolyhedralSurface&gt;) element. Consumes all corresponding events from the
+     * given <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the "gml:PolyhedralSurface" has no <code>srsName</code>
+     *            attribute
+     * @return corresponding {@link PolyhedralSurface} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public PolyhedralSurface parsePolyhedralSurface( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        List<PolygonPatch> memberPatches = new LinkedList<PolygonPatch>();
+        xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, GMLNS, "polygonPatches" );
+        while ( xmlStream.nextTag() == START_ELEMENT ) {
+            memberPatches.add( surfacePatchParser.parsePolygonPatch( srsName ) );
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "polygonPatches" );
+        xmlStream.nextTag();
+        xmlStream.require( END_ELEMENT, GMLNS, "PolyhedralSurface" );
+        return geomFac.createPolyhedralSurface( gid, lookupCRS( srsName ), memberPatches );
+    }
+
+    /**
+     * Returns the object representation of a (&lt;TriangulatedSurface&gt;) element. Consumes all corresponding events from the
+     * given <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the "gml:TriangulatedSurface" has no <code>srsName</code>
+     *            attribute
+     * @return corresponding {@link TriangulatedSurface} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public TriangulatedSurface parseTriangulatedSurface( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        List<Triangle> memberPatches = new LinkedList<Triangle>();
+        xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, GMLNS, "trianglePatches" );
+        while ( xmlStream.nextTag() == START_ELEMENT ) {
+            memberPatches.add( surfacePatchParser.parseTriangle( srsName ) );
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "trianglePatches" );
+        xmlStream.nextTag();
+        xmlStream.require( END_ELEMENT, GMLNS, "TriangulatedSurface" );
+        return geomFac.createTriangulatedSurface( gid, lookupCRS( srsName ), memberPatches );
+    }
+
+    /**
+     * Returns the object representation of a (&lt;Tin&gt;) element. Consumes all corresponding events from the
+     * given <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the "gml:Tin" has no <code>srsName</code>
+     *            attribute
+     * @return corresponding {@link Tin} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public Tin parseTin( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        xmlStream.nextTag();
+        xmlStream.require( END_ELEMENT, GMLNS, "Tin" );
+        return null;
+    }    
+    
     /**
      * Returns the object representation of a <code>gml:OrientableSurface</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.

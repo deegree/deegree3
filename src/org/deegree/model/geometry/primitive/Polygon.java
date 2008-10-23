@@ -45,10 +45,8 @@ package org.deegree.model.geometry.primitive;
 
 import java.util.List;
 
-import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
-
 /**
- * A <code>Polygon</code> is a {@link Surface} that consists of one planar {@link SurfacePatch}.
+ * A <code>Polygon</code> is a {@link Surface} that consists of one single planar patch.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -57,6 +55,14 @@ import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
  */
 public interface Polygon extends Surface {
 
+    /**
+     * Must always return {@link SurfaceType.SurfaceType#Polygon}.
+     * 
+     * @return {@link SurfaceType.SurfaceType#Polygon}
+     */
+    @Override
+    public SurfaceType getSurfaceType();
+    
     /**
      * Returns the exterior ring of the polygon.
      * <p>

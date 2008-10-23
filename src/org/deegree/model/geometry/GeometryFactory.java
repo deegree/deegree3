@@ -59,9 +59,11 @@ import org.deegree.model.geometry.primitive.OrientableCurve;
 import org.deegree.model.geometry.primitive.OrientableSurface;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Polygon;
+import org.deegree.model.geometry.primitive.PolyhedralSurface;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.TriangulatedSurface;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByCenterPoint;
@@ -793,5 +795,31 @@ public interface GeometryFactory {
      *            set to true, if the orientation of the base surface shall be reversed
      * @return created {@link OrientableCurve}
      */
-    public OrientableSurface createOrientableSurface( String id, CoordinateSystem crs, Surface baseSurface, boolean isReversed );    
+    public OrientableSurface createOrientableSurface( String id, CoordinateSystem crs, Surface baseSurface, boolean isReversed );
+
+    /**
+     * Creates a {@link PolyhedralSurface}.
+     * 
+     * @param id
+     *            identifier of the created geometry object
+     * @param crs
+     *            coordinate reference system
+     * @param memberPatches
+     *            patches that constitute the surface
+     * @return created {@link PolyhedralSurface}
+     */
+    public PolyhedralSurface createPolyhedralSurface( String id, CoordinateSystem crs, List<PolygonPatch> memberPatches);
+
+    /**
+     * Creates a {@link TriangulatedSurface}.
+     * 
+     * @param id
+     *            identifier of the created geometry object
+     * @param crs
+     *            coordinate reference system
+     * @param memberPatches
+     *            patches that constitute the surface
+     * @return created {@link TriangulatedSurface}
+     */
+    public TriangulatedSurface createTriangulatedSurface( String id, CoordinateSystem crs, List<Triangle> memberPatches);    
 }
