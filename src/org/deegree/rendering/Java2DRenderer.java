@@ -222,6 +222,34 @@ public class Java2DRenderer implements Renderer {
         graphics.setStroke( bs );
     }
 
+    private void render( TextStyling styling, Font font, String text, Point p ) {
+        double x = p.getX() + styling.displacementX * scale;
+        double y = p.getY() + styling.displacementY * scale;
+        graphics.setFont( font );
+        AffineTransform transform = graphics.getTransform();
+        graphics.rotate( styling.rotation, x, y );
+        TextLayout layout = new TextLayout( text, font, graphics.getFontRenderContext() );
+        double width = layout.getBounds().getWidth();
+        double height = layout.getBounds().getHeight();
+        double px = x - styling.anchorPointX * width; // width/height already include the scale through the font render context
+        double py = y + styling.anchorPointY * height;
+
+        if ( styling.halo != null ) {
+            applyFill( styling.halo.fill );
+
+            BasicStroke stroke = new BasicStroke( round( 2 * styling.halo.radius * scale ), CAP_BUTT, JOIN_ROUND );
+            graphics.setStroke( stroke );
+            graphics.draw( layout.getOutline( getTranslateInstance( px, py ) ) );
+        }
+
+        graphics.setStroke( new BasicStroke() );
+
+        applyFill( styling.fill );
+        layout.draw( graphics, (float) px, (float) py );
+
+        graphics.setTransform( transform );
+    }
+
     public void render( TextStyling styling, String text, Geometry geom ) {
         int style = styling.font.bold ? BOLD : PLAIN;
         switch ( styling.font.fontStyle ) {
@@ -248,26 +276,7 @@ public class Java2DRenderer implements Renderer {
         }
 
         if ( geom instanceof Point ) {
-            Point p = (Point) geom;
-            graphics.setFont( font );
-            AffineTransform transform = graphics.getTransform();
-            graphics.rotate( styling.rotation, p.getX(), p.getY() );
-            TextLayout layout = new TextLayout( text, font, graphics.getFontRenderContext() );
-
-            if ( styling.halo != null ) {
-                applyFill( styling.halo.fill );
-
-                BasicStroke stroke = new BasicStroke( round( 2 * styling.halo.radius * scale ), CAP_BUTT, JOIN_ROUND );
-                graphics.setStroke( stroke );
-                graphics.draw( layout.getOutline( getTranslateInstance( p.getX(), p.getY() ) ) );
-            }
-
-            graphics.setStroke( new BasicStroke() );
-
-            applyFill( styling.fill );
-            layout.draw( graphics, (float) p.getX(), (float) p.getY() );
-
-            graphics.setTransform( transform );
+            render( styling, font, text, (Point) geom );
         }
         if ( geom instanceof Surface ) {
             Surface surface = (Surface) geom;
@@ -316,11 +325,12 @@ public class Java2DRenderer implements Renderer {
         }
         if ( geom instanceof Curve ) {
             Curve curve = (Curve) geom;
-            if (curve.getCurveSegments().size() != 1 || !(curve.getCurveSegments().get( 0 ) instanceof LineStringSegment)) {
+            if ( curve.getCurveSegments().size() != 1
+                 || !( curve.getCurveSegments().get( 0 ) instanceof LineStringSegment ) ) {
                 // TODO handle non-linear and multiple curve segments
                 throw new IllegalArgumentException();
             }
-            LineStringSegment segment =( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
+            LineStringSegment segment = ( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
             // coordinate representation is still subject to change...
             for ( Point point : segment.getControlPoints() ) {
                 render( styling, point );
@@ -329,19 +339,19 @@ public class Java2DRenderer implements Renderer {
     }
 
     private static Path2D.Double fromCurve( Curve curve ) {
-        if (curve.getCurveSegments().size() != 1 || !(curve.getCurveSegments().get( 0 ) instanceof LineStringSegment)) {
+        if ( curve.getCurveSegments().size() != 1 || !( curve.getCurveSegments().get( 0 ) instanceof LineStringSegment ) ) {
             // TODO handle non-linear and multiple curve segments
             throw new IllegalArgumentException();
         }
-        LineStringSegment segment =( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
-        
+        LineStringSegment segment = ( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
+
         Path2D.Double line = new Path2D.Double();
-        // coordinate representation is still subject to change...        
+        // coordinate representation is still subject to change...
         List<Point> points = segment.getControlPoints();
         line.moveTo( points.get( 0 ).getX(), points.get( 0 ).getY() );
         for ( Point point : segment.getControlPoints() ) {
             line.lineTo( point.getX(), point.getY() );
-        }        
+        }
         return line;
     }
 

@@ -71,6 +71,26 @@ public class TextStyling {
     public double rotation;
 
     /**
+     * Default is 0.
+     */
+    public double displacementX;
+
+    /**
+     * Default is 0.
+     */
+    public double displacementY;
+
+    /**
+     * Default is 0.5.
+     */
+    public double anchorPointX = .5;
+
+    /**
+     * Default is 0.5.
+     */
+    public double anchorPointY = .5;
+
+    /**
      * Default is no line placement.
      */
     public LinePlacement linePlacement;

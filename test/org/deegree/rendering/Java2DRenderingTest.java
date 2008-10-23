@@ -44,6 +44,7 @@ import static java.awt.Color.red;
 import static java.awt.Color.white;
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.io.File.createTempFile;
+import static java.lang.Math.PI;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.System.getProperty;
 import static javax.imageio.ImageIO.read;
@@ -484,7 +485,7 @@ public class Java2DRenderingTest extends TestCase {
 
         LinkedList<Point> points = new LinkedList<Point>();
         for ( int i = 0; i < 50; ++i ) {
-            points.add( geomFac.createPoint( null, new double[] { 1000, ( i + 1 ) * 100 }, null ) );
+            points.add( geomFac.createPoint( null, new double[] { 2500, ( i + 1 ) * 150 }, null ) );
         }
 
         String text = "This is a sample text with Umläütß";
@@ -520,6 +521,23 @@ public class Java2DRenderingTest extends TestCase {
         r.render( styling, text, points.poll() );
         styling.font.fontFamily.add( "Times New Roman" );
         r.render( styling, text, points.poll() );
+        r.render( styling, text, points.peek() );
+        styling.rotation = PI;
+        r.render( styling, text, points.poll() );
+        styling.rotation = PI / 2;
+        r.render( styling, text, points.poll() );
+        styling.rotation = 0;
+        r.render( styling, text, points.peek() );
+        styling.displacementX = -10;
+        styling.displacementY = -10;
+        r.render( styling, text, points.poll() );
+        styling.displacementX = 0;
+        styling.displacementY = 0;
+        styling.anchorPointX = 0;
+        r.render( styling, text, points.peek() );
+        styling.anchorPointX = 1;
+        r.render( styling, text, points.poll() );
+        r.render( styling, text, points.poll() );
 
         g.dispose();
         long time2 = currentTimeMillis();
@@ -535,6 +553,11 @@ public class Java2DRenderingTest extends TestCase {
         texts.add( "same, italic font" );
         texts.add( "same, bold font" );
         texts.add( "same, Times New Roman font" );
+        texts.add( "same, once normal, once rotated by 180°, should be on top on each other" );
+        texts.add( "same, rotated by 90° clockwise" );
+        texts.add( "same, no rotation, one normal, one displaced by 10 pixels to left and top" );
+        texts.add( "same, one ending in the middle of the screen, one starting there" );
+        texts.add( "same, only one ending in the middle of the screen" );
         writeTestImage( img, texts, time2 - time );
     }
 
