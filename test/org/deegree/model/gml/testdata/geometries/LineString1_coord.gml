@@ -5,7 +5,11 @@
     <Y>50.72</Y>
   </coord>
   <coord>
-    <X>7.12</X>
-    <Y>50.72</Y>
+    <X>9.98</X>
+    <Y>53.55</Y>
   </coord>
+  <coord>
+    <X>13.42</X>
+    <Y>52.52</Y>
+  </coord>  
 </LineString>

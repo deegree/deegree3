@@ -1,5 +1,5 @@
 <gml:FeatureCollection xmlns:app="http://www.deegree.org/app" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml
-http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app schema/Philosopher_typesafe.xsd">
+http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app ../../schema/Philosopher_typesafe.xsd">
   <gml:featureMember>
     <app:Philosopher gml:id="PHILOSOPHER_1">
       <app:id>1</app:id>
@@ -26,7 +26,7 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
             <app:Country gml:id="COUNTRY_2">
               <app:name>Germany</app:name>
               <app:geom>
-                <gml:MultiSurface gml:id="MULTIPOLYGON_1" srsName="EPSG:4326">
+                <gml:MultiPolygon gml:id="MULTIPOLYGON_1" srsName="EPSG:4326">
                   <gml:polygonMember>
                     <gml:Polygon gml:id="POLYGON_1" srsName="EPSG:4326">
                       <gml:outerBoundaryIs>
@@ -556,7 +556,7 @@ http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.deegree.org/app sch
                       </gml:outerBoundaryIs>
                     </gml:Polygon>
                   </gml:polygonMember>
-                </gml:MultiSurface>
+                </gml:MultiPolygon>
               </app:geom>
             </app:Country>
           </app:country>

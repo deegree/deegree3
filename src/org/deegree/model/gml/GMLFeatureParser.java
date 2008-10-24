@@ -66,6 +66,8 @@ import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.feature.types.GeometryPropertyType;
 import org.deegree.model.feature.types.PropertyType;
 import org.deegree.model.feature.types.SimplePropertyType;
+import org.deegree.model.geometry.Geometry;
+import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.gml.GMLIdContext.XLinkProperty;
 import org.deegree.model.i18n.Messages;
 import org.slf4j.Logger;
@@ -232,12 +234,12 @@ public class GMLFeatureParser extends XMLAdapter {
             property = new GenericProperty<String>( propDecl, xmlStream.getName().toString() );
         } else if ( propDecl instanceof GeometryPropertyType ) {
             xmlStream.nextTag();
-            // TODO geometry parsing
-            // Geometry geometry = StAXGeometryParser.parseGeometry( xmlStream, srsName );
-            // property = new GenericProperty (pt, geometry);
-            LOG.debug( "- skipping parsing of '" + xmlStream.getName() + "' -- geometry parsing is not implemented yet" );
-            xmlStream.skipElement();
-            property = new GenericProperty<String>( propDecl, xmlStream.getName().toString() );
+            // TODO don't create a new instance every time
+            GML311GeometryParser geometryParser = new GML311GeometryParser(
+                                                                            GeometryFactoryCreator.getInstance().getGeometryFactory(),
+                                                                            xmlStream );            
+            Geometry geometry = geometryParser.parseGeometry( srsName );
+            property = new GenericProperty<Geometry>(propDecl, geometry);
             xmlStream.nextTag();
         } else if ( propDecl instanceof FeaturePropertyType ) {
             String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );

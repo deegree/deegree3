@@ -63,8 +63,16 @@ import org.deegree.model.geometry.composite.CompositeCurve;
 import org.deegree.model.geometry.composite.CompositeGeometry;
 import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.composite.CompositeSurface;
+import org.deegree.model.geometry.multi.MultiCurve;
+import org.deegree.model.geometry.multi.MultiGeometry;
+import org.deegree.model.geometry.multi.MultiLineString;
+import org.deegree.model.geometry.multi.MultiPoint;
+import org.deegree.model.geometry.multi.MultiPolygon;
+import org.deegree.model.geometry.multi.MultiSolid;
+import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.GeometricPrimitive;
+import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.OrientableCurve;
 import org.deegree.model.geometry.primitive.OrientableSurface;
@@ -81,7 +89,6 @@ import org.deegree.model.geometry.primitive.Ring.RingType;
 import org.deegree.model.geometry.primitive.Solid.SolidType;
 import org.deegree.model.geometry.primitive.Surface.SurfaceType;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
@@ -361,12 +368,19 @@ public class GML311GeometryParser extends GML311BaseParser {
 
         String name = xmlStream.getLocalName();
         if ( name.equals( "MultiCurve" ) ) {
+            geometry = parseMultiCurve( defaultSrsName );
         } else if ( name.equals( "MultiGeometry" ) ) {
+            geometry = parseMultiGeometry( defaultSrsName );
         } else if ( name.equals( "MultiLineString" ) ) {
+            geometry = parseMultiLineString( defaultSrsName );
         } else if ( name.equals( "MultiPoint" ) ) {
+            geometry = parseMultiPoint( defaultSrsName );
         } else if ( name.equals( "MultiPolygon" ) ) {
+            geometry = parseMultiPolygon( defaultSrsName );
         } else if ( name.equals( "MultiSolid" ) ) {
+            geometry = parseMultiSolid( defaultSrsName );
         } else if ( name.equals( "MultiSurface" ) ) {
+            geometry = parseMultiSurface( defaultSrsName );
         } else {
             String msg = "Invalid GML geometry: '" + xmlStream.getName()
                          + "' is not a GML aggregate geometry element (gml:_GeometricAggregate).";
@@ -828,7 +842,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *             if the element is not a valid <code>gml:Curve</code> element
      * @throws XMLStreamException
      */
-    public Curve parseLineString( String defaultSrsName )
+    public LineString parseLineString( String defaultSrsName )
                             throws XMLStreamException {
 
         String gid = parseGeometryId();
@@ -851,6 +865,10 @@ public class GML311GeometryParser extends GML311BaseParser {
                         points.add( geomFac.createPoint( gid, coords, lookupCRS( srsName ) ) );
                     } else if ( "pointProperty".equals( name ) || "pointRep".equals( name ) ) {
                         points.add( parsePointProperty( srsName ) );
+                    } else if ( "coord".equals( name ) ) {
+                        // deprecated since GML 3.0, only included for backward compatibility
+                        double[] coords = parseCoordType();
+                        points.add( geomFac.createPoint( gid, coords, lookupCRS( srsName ) ) );
                     } else {
                         String msg = "Error in 'gml:LineString' element.";
                         throw new XMLParsingException( xmlStream, msg );
@@ -867,9 +885,7 @@ public class GML311GeometryParser extends GML311BaseParser {
             String msg = "Error in 'gml:LineString' element. Must consist of two points at least.";
             throw new XMLParsingException( xmlStream, msg );
         }
-
-        LineStringSegment singleSegment = geomFac.createLineStringSegment( points );
-        return geomFac.createCurve( gid, new CurveSegment[] { singleSegment }, lookupCRS( srsName ) );
+        return geomFac.createLineString( gid, lookupCRS( srsName ), points );
     }
 
     /**
@@ -1402,6 +1418,303 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "GeometricComplex" );
         return geomFac.createCompositeGeometry( gid, lookupCRS( srsName ), memberSolids );
+    }
+
+    /**
+     * Returns the object representation of a <code>gml:MultiPoint</code> element. Consumes all corresponding events
+     * from the associated <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the <code>gml:MultiPoint</code> has no
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link MultiPoint} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public MultiPoint parseMultiPoint( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        List<Point> members = new LinkedList<Point>();
+
+        while ( xmlStream.nextTag() == START_ELEMENT ) {
+            String localName = xmlStream.getLocalName();
+            if ( localName.equals( "pointMember" ) ) {
+                xmlStream.nextTag();
+                xmlStream.require( START_ELEMENT, GMLNS, "Point" );
+                members.add( parsePoint( srsName ) );
+                xmlStream.require( END_ELEMENT, GMLNS, "Point" );
+                xmlStream.nextTag();
+            } else if ( localName.equals( "pointMembers" ) ) {
+                while ( xmlStream.nextTag() == START_ELEMENT ) {
+                    xmlStream.require( START_ELEMENT, GMLNS, "Point" );
+                    members.add( parsePoint( srsName ) );
+                }
+                // pointMembers may only occur once (and behind all pointMember) elements
+                xmlStream.nextTag();
+                break;
+            } else {
+                String msg = "Invalid 'gml:MultiPoint' element: unexpected element '" + localName
+                             + "'. Expected 'pointMember' or 'pointMembers'.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "MultiPoint" );
+        return geomFac.createMultiPoint( gid, lookupCRS( srsName ), members );
+    }
+
+    /**
+     * Returns the object representation of a <code>gml:MultiCurve</code> element. Consumes all corresponding events
+     * from the associated <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the <code>gml:MultiCurve</code> has no
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link MultiCurve} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public MultiCurve parseMultiCurve( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        List<Curve> members = new LinkedList<Curve>();
+
+        while ( xmlStream.nextTag() == START_ELEMENT ) {
+            String localName = xmlStream.getLocalName();
+            if ( localName.equals( "curveMember" ) ) {
+                if ( xmlStream.nextTag() != START_ELEMENT ) {
+                    String msg = "Invalid 'gml:MultiCurve' element: expected a 'gml:_Curve' element.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                members.add( parseAbstractCurve( srsName ) );
+                xmlStream.nextTag();
+            } else if ( localName.equals( "curveMembers" ) ) {
+                while ( xmlStream.nextTag() == START_ELEMENT ) {
+                    members.add( parseAbstractCurve( srsName ) );
+                }
+                // curveMembers may only occur once (and behind all curveMember) elements
+                xmlStream.nextTag();
+                break;
+            } else {
+                String msg = "Invalid 'gml:MultiCurve' element: unexpected element '" + localName
+                             + "'. Expected 'curveMember' or 'curveMembers'.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "MultiCurve" );
+        return geomFac.createMultiCurve( gid, lookupCRS( srsName ), members );
+    }
+
+    /**
+     * Returns the object representation of a <code>gml:MultiLineString</code> element. Consumes all corresponding
+     * events from the associated <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the <code>gml:MultiLineString</code> has no
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link MultiLineString} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public MultiLineString parseMultiLineString( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        List<LineString> members = new LinkedList<LineString>();
+
+        while ( xmlStream.nextTag() == START_ELEMENT ) {
+            String localName = xmlStream.getLocalName();
+            if ( localName.equals( "lineStringMember" ) ) {
+                xmlStream.nextTag();
+                xmlStream.require( START_ELEMENT, GMLNS, "LineString" );
+                members.add( parseLineString( srsName ) );
+                xmlStream.nextTag();
+            } else {
+                String msg = "Invalid 'gml:MultiLineString' element: unexpected element '" + localName
+                             + "'. Expected 'lineStringMember'.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "MultiLineString" );
+        return geomFac.createMultiLineString( gid, lookupCRS( srsName ), members );
+    }
+
+    /**
+     * Returns the object representation of a <code>gml:MultiSurface</code> element. Consumes all corresponding events
+     * from the associated <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the <code>gml:MultiSurface</code> has no
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link MultiSurface} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public MultiSurface parseMultiSurface( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        List<Surface> members = new LinkedList<Surface>();
+
+        while ( xmlStream.nextTag() == START_ELEMENT ) {
+            String localName = xmlStream.getLocalName();
+            if ( localName.equals( "surfaceMember" ) ) {
+                if ( xmlStream.nextTag() != START_ELEMENT ) {
+                    String msg = "Invalid 'gml:MultiSurface' element: expected a 'gml:_Surface' element.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                members.add( parseAbstractSurface( srsName ) );
+                xmlStream.nextTag();
+            } else if ( localName.equals( "surfaceMembers" ) ) {
+                while ( xmlStream.nextTag() == START_ELEMENT ) {
+                    members.add( parseAbstractSurface( srsName ) );
+                }
+                // surfaceMembers may only occur once (and behind all surfaceMember) elements
+                xmlStream.nextTag();
+                break;
+            } else {
+                String msg = "Invalid 'gml:MultiSurface' element: unexpected element '" + localName
+                             + "'. Expected 'surfaceMember' or 'surfaceMembers'.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "MultiSurface" );
+        return geomFac.createMultiSurface( gid, lookupCRS( srsName ), members );
+    }
+
+    /**
+     * Returns the object representation of a <code>gml:MultiPolygon</code> element. Consumes all corresponding events
+     * from the associated <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the <code>gml:MultiPolygon</code> has no
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link MultiPolygon} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public MultiPolygon parseMultiPolygon( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        List<Polygon> members = new LinkedList<Polygon>();
+
+        while ( xmlStream.nextTag() == START_ELEMENT ) {
+            String localName = xmlStream.getLocalName();
+            if ( localName.equals( "polygonMember" ) ) {
+                xmlStream.nextTag();
+                xmlStream.require( START_ELEMENT, GMLNS, "Polygon" );
+                members.add( parsePolygon( srsName ) );
+                xmlStream.nextTag();
+            } else {
+                String msg = "Invalid 'gml:MultiPolygon' element: unexpected element '" + localName
+                             + "'. Expected 'polygonMember'.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "MultiPolygon" );
+        return geomFac.createMultiPolygon( gid, lookupCRS( srsName ), members );
+    }
+
+    /**
+     * Returns the object representation of a <code>gml:MultiSolid</code> element. Consumes all corresponding events
+     * from the associated <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the <code>gml:MultiSolid</code> has no
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link MultiSolid} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public MultiSolid parseMultiSolid( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        List<Solid> members = new LinkedList<Solid>();
+
+        while ( xmlStream.nextTag() == START_ELEMENT ) {
+            String localName = xmlStream.getLocalName();
+            if ( localName.equals( "solidMember" ) ) {
+                if ( xmlStream.nextTag() != START_ELEMENT ) {
+                    String msg = "Invalid 'gml:MultiSolid' element: expected a 'gml:_Solid' element.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                members.add( parseAbstractSolid( srsName ) );
+                xmlStream.nextTag();
+            } else if ( localName.equals( "solidMembers" ) ) {
+                while ( xmlStream.nextTag() == START_ELEMENT ) {
+                    members.add( parseAbstractSolid( srsName ) );
+                }
+                // solidMembers may only occur once (and behind all surfaceMember) elements
+                xmlStream.nextTag();
+                break;
+            } else {
+                String msg = "Invalid 'gml:MultiSolid' element: unexpected element '" + localName
+                             + "'. Expected 'solidMember' or 'solidMembers'.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "MultiSolid" );
+        return geomFac.createMultiSolid( gid, lookupCRS( srsName ), members );
+    }
+
+    /**
+     * Returns the object representation of a <code>gml:MultiGeometry</code> element. Consumes all corresponding events
+     * from the associated <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the <code>gml:MultiGeometry</code> has no
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link MultiGeometry} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public MultiGeometry<Geometry> parseMultiGeometry( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        List<Geometry> members = new LinkedList<Geometry>();
+
+        while ( xmlStream.nextTag() == START_ELEMENT ) {
+            String localName = xmlStream.getLocalName();
+            if ( localName.equals( "geometryMember" ) ) {
+                if ( xmlStream.nextTag() != START_ELEMENT ) {
+                    String msg = "Invalid 'gml:MultiGeometry' element: expected a 'gml:_Geometry' element.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                members.add( parseGeometry( srsName ) );
+                xmlStream.nextTag();
+            } else if ( localName.equals( "geometryMembers" ) ) {
+                while ( xmlStream.nextTag() == START_ELEMENT ) {
+                    members.add( parseGeometry( srsName ) );
+                }
+                // geometryMembers may only occur once (and behind all surfaceMember) elements
+                xmlStream.nextTag();
+                break;
+            } else {
+                String msg = "Invalid 'gml:MultiGeometry' element: unexpected element '" + localName
+                             + "'. Expected 'geometryMember' or 'geometryMembers'.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "MultiGeometry" );
+        return geomFac.createMultiGeometry( gid, lookupCRS( srsName ), members );
     }
 
     /**

@@ -51,11 +51,19 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.composite.CompositeGeometry;
 import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.composite.CompositeSurface;
+import org.deegree.model.geometry.multi.MultiCurve;
+import org.deegree.model.geometry.multi.MultiGeometry;
+import org.deegree.model.geometry.multi.MultiLineString;
+import org.deegree.model.geometry.multi.MultiPoint;
+import org.deegree.model.geometry.multi.MultiPolygon;
+import org.deegree.model.geometry.multi.MultiSolid;
+import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.OrientableSurface;
 import org.deegree.model.geometry.primitive.Point;
@@ -65,6 +73,7 @@ import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.TriangulatedSurface;
+import org.deegree.model.geometry.primitive.Curve.CurveType;
 import org.deegree.model.geometry.primitive.Ring.RingType;
 import org.deegree.model.geometry.primitive.Solid.SolidType;
 import org.deegree.model.geometry.primitive.Surface.SurfaceType;
@@ -226,6 +235,26 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY() );
     }
 
+    @Test
+    public void parseLineStringCoord()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = getParser( "LineString1_coord.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
+        Curve curve = (Curve) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
+        Assert.assertEquals( 1, curve.getCurveSegments().size() );
+        Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 0 ).getInterpolation() );
+        Assert.assertEquals( 3, curve.getAsLineString().getControlPoints().size() );
+        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX() );
+        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY() );
+        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX() );
+        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY() );
+        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX() );
+        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY() );
+    }    
+    
     @Test
     public void parseCurve()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
@@ -448,6 +477,129 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 1 ).getInterpolation() );        
     }    
 
+    @Test
+    public void parseMultiPoint()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = getParser( "MultiPoint.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPoint" ), xmlReader.getName() );
+        MultiPoint aggregate = (MultiPoint) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPoint" ), xmlReader.getName() );
+        Assert.assertEquals( 3, aggregate.size() );
+    }    
+
+    @Test
+    public void parseMultiPoint2()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = getParser( "MultiPoint_members.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPoint" ), xmlReader.getName() );
+        MultiPoint aggregate = (MultiPoint) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPoint" ), xmlReader.getName() );
+        Assert.assertEquals( 3, aggregate.size() );
+    }
+
+    @Test
+    public void parseMultiPoint3()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = getParser( "MultiPoint_mixed.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPoint" ), xmlReader.getName() );
+        MultiPoint aggregate = (MultiPoint) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPoint" ), xmlReader.getName() );
+        Assert.assertEquals( 6, aggregate.size() );
+    }      
+
+    @Test
+    public void parseMultiCurve()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = getParser( "MultiCurve.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiCurve" ), xmlReader.getName() );
+        MultiCurve aggregate = (MultiCurve) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiCurve" ), xmlReader.getName() );
+        Assert.assertEquals( 2, aggregate.size() );
+        Assert.assertEquals( CurveType.Curve, aggregate.get(0).getCurveType() );
+        Assert.assertEquals( CurveType.CompositeCurve, aggregate.get(1).getCurveType() );
+    }    
+
+    @Test
+    public void parseMultiSurface()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = getParser( "MultiSurface.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiSurface" ), xmlReader.getName() );
+        MultiSurface aggregate = (MultiSurface) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiSurface" ), xmlReader.getName() );
+        Assert.assertEquals( 2, aggregate.size() );
+        Assert.assertEquals( SurfaceType.Surface, aggregate.get(0).getSurfaceType() );
+        Assert.assertEquals( SurfaceType.TriangulatedSurface, aggregate.get(1).getSurfaceType() );        
+    }    
+
+    @Test
+    public void parseMultiPolygon()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = getParser( "MultiPolygon.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPolygon" ), xmlReader.getName() );
+        MultiPolygon aggregate = (MultiPolygon) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiPolygon" ), xmlReader.getName() );
+        Assert.assertEquals( 2, aggregate.size() );
+        Assert.assertEquals( SurfaceType.Polygon, aggregate.get(0).getSurfaceType() );
+        Assert.assertEquals( SurfaceType.Polygon, aggregate.get(1).getSurfaceType() );        
+    }
+
+    @Test
+    public void parseMultiSolid()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = getParser( "MultiSolid.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiSolid" ), xmlReader.getName() );
+        MultiSolid aggregate = (MultiSolid) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiSolid" ), xmlReader.getName() );
+        Assert.assertEquals( 2, aggregate.size() );
+        Assert.assertEquals( SolidType.Solid, aggregate.get(0).getSolidType() );
+        Assert.assertEquals( SolidType.CompositeSolid, aggregate.get(1).getSolidType() );        
+    }
+
+    @Test
+    public void parseMultiGeometry()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = getParser( "MultiGeometry.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
+        MultiGeometry<Geometry> aggregate = (MultiGeometry<Geometry>) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
+        Assert.assertEquals( 5, aggregate.size() );
+        Assert.assertTrue( aggregate.get( 0 ) instanceof Point );
+        Assert.assertTrue( aggregate.get( 1 ) instanceof Point );
+        Assert.assertTrue( aggregate.get( 2 ) instanceof Curve );
+        Assert.assertTrue( aggregate.get( 3 ) instanceof MultiSurface );
+        Assert.assertTrue( aggregate.get( 4 ) instanceof CompositeSolid );
+    }    
+    
+    @Test
+    public void parseMultiLineString()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = getParser( "MultiLineString.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiLineString" ), xmlReader.getName() );
+        MultiLineString aggregate = (MultiLineString) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiLineString" ), xmlReader.getName() );
+        Assert.assertEquals( 2, aggregate.size() );
+        Assert.assertEquals( CurveType.LineString, aggregate.get(0).getCurveType() );
+        Assert.assertEquals( CurveType.LineString, aggregate.get(1).getCurveType() );
+    }    
+    
     private XMLStreamReaderWrapper getParser( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(

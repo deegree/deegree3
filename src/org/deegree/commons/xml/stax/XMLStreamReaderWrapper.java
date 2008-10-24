@@ -227,7 +227,8 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
         try {
             reader.require( type, namespaceURI, localName );
         } catch ( XMLStreamException e ) {
-            throw new XMLParsingException( this, e.getMessage() );
+            String msg = "Expected {" + namespaceURI + "}" + localName + ", but found: " + getCurrentEventInfo();
+            throw new XMLParsingException( this, msg);
         }
     }    
     

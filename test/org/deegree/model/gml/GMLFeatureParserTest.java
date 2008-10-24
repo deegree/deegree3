@@ -85,6 +85,8 @@ import org.junit.Test;
  */
 public class GMLFeatureParserTest {
 
+    private static final String BASE_DIR = "testdata/features/";
+
     @Test
     public void testGenericFeatureParsing()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
@@ -102,7 +104,7 @@ public class GMLFeatureParserTest {
 
         GMLFeatureParser adapter = new GMLFeatureParser( schema );
 
-        URL docURL = GMLFeatureParserTest.class.getResource( "SimpleFeatureExample1.gml" );
+        URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "SimpleFeatureExample1.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
@@ -137,7 +139,7 @@ public class GMLFeatureParserTest {
         ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>() );
         GMLFeatureParser adapter = new GMLFeatureParser( schema );
 
-        URL docURL = GMLFeatureParserTest.class.getResource( "SimpleFeatureExampleNoNS1.gml" );
+        URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "SimpleFeatureExampleNoNS1.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
@@ -184,7 +186,7 @@ public class GMLFeatureParserTest {
         ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>() );
         GMLFeatureParser adapter = new GMLFeatureParser( schema );
 
-        URL docURL = GMLFeatureParserTest.class.getResource( "SimpleFeatureCollectionExample1.gml" );
+        URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "SimpleFeatureCollectionExample1.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
@@ -265,7 +267,7 @@ public class GMLFeatureParserTest {
     }
 
     @Test
-    public FeatureCollection testParsingPhilosopherFeatureCollection()
+    public void testParsingPhilosopherFeatureCollection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
         String schemaURL = this.getClass().getResource( "schema/Philosopher_typesafe.xsd" ).toString();
@@ -273,7 +275,7 @@ public class GMLFeatureParserTest {
                                                                                         GMLVersion.VERSION_31 );
         GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
 
-        URL docURL = GMLFeatureParserTest.class.getResource( "Philosopher_FeatureCollection.xml" );
+        URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
@@ -284,6 +286,5 @@ public class GMLFeatureParserTest {
                                                                                                         docURL.toString() ),
                                                                             null, idContext );
         idContext.resolveXLinks();
-        return fc;
     }
 }
