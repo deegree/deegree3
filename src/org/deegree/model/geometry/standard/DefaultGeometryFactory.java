@@ -173,14 +173,12 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public Envelope createEnvelope( double[] min, double[] max, double precision, CoordinateSystem crs ) {
-        // TODO Auto-generated method stub
-        return null;
+        return new DefaultEnvelope( null, crs, new DefaultPoint( null, crs, min ), new DefaultPoint( null, crs, max ) );
     }
 
     @Override
     public Envelope createEnvelope( double[] min, double[] max, CoordinateSystem crs ) {
-        // TODO Auto-generated method stub
-        return null;
+        return new DefaultEnvelope( null, crs, new DefaultPoint( null, crs, min ), new DefaultPoint( null, crs, max ) );
     }
 
     @Override
@@ -343,16 +341,16 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public PolyhedralSurface createPolyhedralSurface( String id, CoordinateSystem crs, List<PolygonPatch> memberPatches ) {
-        return new DefaultPolyhedralSurface(id, crs, memberPatches);
+        return new DefaultPolyhedralSurface( id, crs, memberPatches );
     }
 
     @Override
     public TriangulatedSurface createTriangulatedSurface( String id, CoordinateSystem crs, List<Triangle> memberPatches ) {
-        return new DefaultTriangulatedSurface(id, crs, memberPatches);
+        return new DefaultTriangulatedSurface( id, crs, memberPatches );
     }
 
     @Override
     public Solid createSolid( String id, CoordinateSystem crs, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
-        return new DefaultSolid (id, crs, exteriorSurface, interiorSurfaces);
+        return new DefaultSolid( id, crs, exteriorSurface, interiorSurfaces );
     }
 }
