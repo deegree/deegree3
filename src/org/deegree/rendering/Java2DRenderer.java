@@ -61,11 +61,12 @@ import java.awt.TexturePaint;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
-import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Path2D.Double;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+import org.deegree.commons.utils.GeometryUtils;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.primitive.Curve;
@@ -81,6 +82,7 @@ import org.deegree.model.styling.components.Fill;
 import org.deegree.model.styling.components.Graphic;
 import org.deegree.model.styling.components.Stroke;
 import org.deegree.rendering.strokes.OffsetStroke;
+import org.deegree.rendering.strokes.TextStroke;
 import org.slf4j.Logger;
 
 /**
@@ -231,7 +233,8 @@ public class Java2DRenderer implements Renderer {
         TextLayout layout = new TextLayout( text, font, graphics.getFontRenderContext() );
         double width = layout.getBounds().getWidth();
         double height = layout.getBounds().getHeight();
-        double px = x - styling.anchorPointX * width; // width/height already include the scale through the font render context
+        double px = x - styling.anchorPointX * width; // width/height already include the scale through the font render
+        // context
         double py = y + styling.anchorPointY * height;
 
         if ( styling.halo != null ) {
@@ -248,6 +251,19 @@ public class Java2DRenderer implements Renderer {
         layout.draw( graphics, (float) px, (float) py );
 
         graphics.setTransform( transform );
+    }
+
+    private void render( TextStyling styling, Font font, String text, Curve c ) {
+        applyFill( styling.fill );
+        java.awt.Stroke stroke = new TextStroke( text, font, true, styling.linePlacement.repeat );
+        if ( !isZero( styling.linePlacement.perpendicularOffset ) ) {
+            stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset, stroke );
+        }
+
+        graphics.setStroke( new BasicStroke() );
+        Double line = fromCurve( c );
+
+        graphics.draw( line );
     }
 
     public void render( TextStyling styling, String text, Geometry geom ) {
@@ -280,13 +296,20 @@ public class Java2DRenderer implements Renderer {
         }
         if ( geom instanceof Surface ) {
             Surface surface = (Surface) geom;
-            for ( SurfacePatch patch : surface.getPatches() ) {
-                for ( Curve curve : patch.getBoundary() ) {
-                    render( styling, text, curve );
+            if ( styling.linePlacement != null ) {
+                for ( SurfacePatch patch : surface.getPatches() ) {
+                    for ( Curve curve : patch.getBoundary() ) {
+                        render( styling, font, text, curve );
+                    }
                 }
+            } else {
+                render( styling, font, text, surface.getCentroid() );
             }
         }
         if ( geom instanceof Curve ) {
+            if ( styling.linePlacement != null ) {
+                render( styling, font, text, (Curve) geom );
+            }
         }
     }
 
@@ -338,17 +361,19 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
-    private static Path2D.Double fromCurve( Curve curve ) {
+    private static Double fromCurve( Curve curve ) {
+        curve = curve.getAsLineString();
         if ( curve.getCurveSegments().size() != 1 || !( curve.getCurveSegments().get( 0 ) instanceof LineStringSegment ) ) {
             // TODO handle non-linear and multiple curve segments
             throw new IllegalArgumentException();
         }
         LineStringSegment segment = ( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
 
-        Path2D.Double line = new Path2D.Double();
+        Double line = new Double();
         // coordinate representation is still subject to change...
         List<Point> points = segment.getControlPoints();
         line.moveTo( points.get( 0 ).getX(), points.get( 0 ).getY() );
+        points.remove( 0 );
         for ( Point point : segment.getControlPoints() ) {
             line.lineTo( point.getX(), point.getY() );
         }
@@ -356,11 +381,15 @@ public class Java2DRenderer implements Renderer {
     }
 
     public void render( LineStyling styling, Geometry geom ) {
+        if ( LOG.isTraceEnabled() ) {
+            LOG.trace( "Drawing " + geom + " with " + styling );
+        }
+
         if ( geom instanceof Point ) {
             LOG.warn( "Trying to render point with line styling." );
         }
         if ( geom instanceof Curve ) {
-            Path2D.Double line = fromCurve( (Curve) geom );
+            Double line = fromCurve( (Curve) geom );
             applyStroke( styling.stroke );
             if ( !isZero( styling.perpendicularOffset ) ) {
                 graphics.setStroke( new OffsetStroke( styling.perpendicularOffset * scale, graphics.getStroke() ) );
@@ -406,4 +435,5 @@ public class Java2DRenderer implements Renderer {
             render( styling, (Surface) geom );
         }
     }
+
 }

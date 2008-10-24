@@ -44,6 +44,9 @@ import static java.awt.geom.PathIterator.SEG_LINETO;
 import static java.awt.geom.PathIterator.SEG_MOVETO;
 import static java.awt.geom.PathIterator.SEG_QUADTO;
 import static java.lang.Math.sqrt;
+import static org.deegree.commons.utils.GeometryUtils.prettyPrintShape;
+import static org.deegree.commons.utils.MathUtils.isZero;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -52,6 +55,7 @@ import java.awt.geom.PathIterator;
 import java.util.LinkedList;
 
 import org.deegree.commons.utils.Pair;
+import org.slf4j.Logger;
 
 /**
  * <code>OffsetStroke</code>
@@ -62,6 +66,8 @@ import org.deegree.commons.utils.Pair;
  * @version $Revision$, $Date$
  */
 public class OffsetStroke implements Stroke {
+
+    private static final Logger LOG = getLogger( OffsetStroke.class );
 
     private final double offset;
 
@@ -79,6 +85,10 @@ public class OffsetStroke implements Stroke {
     private static final double[] calcNormal( final double x1, final double y1, final double x2, final double y2 ) {
         final double nx = x2 - x1;
         final double ny = y2 - y1;
+        if ( isZero( nx ) && isZero( ny ) ) {
+            LOG.warn( "Two subsequent points in a curve have been the same. Using the first of the two points instead of the normal..." );
+            return new double[] { x1, y1 };
+        }
         final double len = sqrt( nx * nx + ny * ny );
         return new double[] { ny / len, -nx / len };
     }
@@ -173,6 +183,11 @@ public class OffsetStroke implements Stroke {
                 path.quadTo( n1[0], n1[1], n2[0], n2[1] );
                 break;
             }
+        }
+
+        if ( LOG.isTraceEnabled() ) {
+            LOG.trace( "Original shape: " + prettyPrintShape( p ) );
+            LOG.trace( "Offset shape: " + prettyPrintShape( path ) );
         }
 
         return stroke.createStrokedShape( path );

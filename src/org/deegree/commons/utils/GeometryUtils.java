@@ -38,16 +38,23 @@
 
 package org.deegree.commons.utils;
 
+import static java.awt.geom.PathIterator.SEG_CLOSE;
+import static java.awt.geom.PathIterator.SEG_CUBICTO;
+import static java.awt.geom.PathIterator.SEG_LINETO;
+import static java.awt.geom.PathIterator.SEG_MOVETO;
+import static java.awt.geom.PathIterator.SEG_QUADTO;
+import static org.deegree.model.geometry.GeometryFactoryCreator.getInstance;
+
+import java.awt.Shape;
+import java.awt.geom.PathIterator;
 import java.util.LinkedList;
 
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryFactory;
-import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.Curve;
+import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 
 /**
@@ -64,31 +71,25 @@ public class GeometryUtils {
      * Moves the coordinates of a geometry.
      * 
      * @param geom
-     *            use only surfaces, curves or points, and only with dim == 2
+     *            use only surfaces, line strings or points, and only with dim == 2
      * @param offx
      * @param offy
      * @return the moved geometry
      */
     public static Geometry move( Geometry geom, double offx, double offy ) {
-        GeometryFactory fac = GeometryFactoryCreator.getInstance().getGeometryFactory();
+        GeometryFactory fac = getInstance().getGeometryFactory();
         if ( geom instanceof Point ) {
             Point p = (Point) geom;
             return fac.createPoint( geom.getId(), new double[] { p.getX() + offx, p.getY() + offy },
                                     p.getCoordinateSystem() );
         }
-        if ( geom instanceof Curve ) {
-            Curve c = (Curve) geom;
+        if ( geom instanceof LineString ) {
+            LineString c = (LineString) geom;
             LinkedList<Point> ps = new LinkedList<Point>();
-            if ( c.getCurveSegments().size() != 1 || !( c.getCurveSegments().get( 0 ) instanceof LineStringSegment ) ) {
-                // TODO handle non-linear and multiple curve segments
-                throw new IllegalArgumentException();
-            }
-            LineStringSegment segment = ( (LineStringSegment) c.getCurveSegments().get( 0 ) );
-            for ( Point p : segment.getControlPoints() ) {
+            for ( Point p : c.getControlPoints() ) {
                 ps.add( (Point) move( p, offx, offy ) );
             }
-            return fac.createCurve( geom.getId(), new CurveSegment[] { fac.createLineStringSegment( ps ) },
-                                    c.getCoordinateSystem() );
+            return fac.createLineString( geom.getId(), c.getCoordinateSystem(), ps );
         }
         if ( geom instanceof Surface ) {
             Surface s = (Surface) geom;
@@ -104,4 +105,59 @@ public class GeometryUtils {
         }
         return geom;
     }
+
+    /**
+     * @param shape
+     * @return a string representation of the shape
+     */
+    public static String prettyPrintShape( Shape shape ) {
+        StringBuilder sb = new StringBuilder();
+        PathIterator iter = shape.getPathIterator( null );
+        double[] coords = new double[6];
+        boolean closed = false;
+
+        while ( !iter.isDone() ) {
+            switch ( iter.currentSegment( coords ) ) {
+            case SEG_CLOSE:
+                sb.append( "]" );
+                closed = true;
+                break;
+            case SEG_CUBICTO:
+                sb.append( ", cubic to [" );
+                sb.append( coords[0] + ", " );
+                sb.append( coords[1] + ", " );
+                sb.append( coords[2] + ", " );
+                sb.append( coords[3] + ", " );
+                sb.append( coords[4] + ", " );
+                sb.append( coords[5] + "]" );
+                break;
+            case SEG_LINETO:
+                sb.append( ", line to [" );
+                sb.append( coords[0] + ", " );
+                sb.append( coords[1] + "]" );
+                break;
+            case SEG_MOVETO:
+                sb.append( "[move to [" );
+                sb.append( coords[0] + ", " );
+                sb.append( coords[1] + "]" );
+                closed = false;
+                break;
+            case SEG_QUADTO:
+                sb.append( ", quadratic to [" );
+                sb.append( coords[0] + ", " );
+                sb.append( coords[1] + ", " );
+                sb.append( coords[2] + ", " );
+                sb.append( coords[3] + "]" );
+                break;
+            }
+            iter.next();
+        }
+
+        if ( !closed ) {
+            sb.append( "]" );
+        }
+
+        return sb.toString();
+    }
+
 }

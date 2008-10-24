@@ -38,6 +38,8 @@
 
 package org.deegree.model.styling;
 
+import static org.deegree.commons.utils.MathUtils.isZero;
+
 import org.deegree.model.styling.components.Stroke;
 
 /**
@@ -59,4 +61,11 @@ public class LineStyling {
      * Default is 0.
      */
     public double perpendicularOffset;
+
+    @Override
+    public String toString() {
+        return "LineStyling [" + stroke
+               + ( isZero( perpendicularOffset ) ? "" : ( ", Perpendicular offset: " + perpendicularOffset ) ) + "]";
+    }
+
 }

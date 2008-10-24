@@ -62,7 +62,7 @@ public class GeometryGenerator {
 
     private static final Random rnd = new Random();
 
-    private static final GeometryFactory fac = getInstance().getGeometryFactory("Standard");
+    private static final GeometryFactory fac = getInstance().getGeometryFactory();
 
     /**
      * @param max
@@ -74,14 +74,14 @@ public class GeometryGenerator {
     public static Surface randomTriangle( int max, double offx, double offy ) {
         double x = rnd.nextDouble() * max + offx;
         double y = rnd.nextDouble() * max + offy;
-        Point[][] ps = { {
-                          fac.createPoint( null, new double[] { x, y }, null ),
-                          fac.createPoint( null, new double[] { rnd.nextDouble() * max + offx,
-                                                               rnd.nextDouble() * max + offy }, null ),
-                          fac.createPoint( null, new double[] { rnd.nextDouble() * max + offx,
-                                                               rnd.nextDouble() * max + offy }, null ),
-                          fac.createPoint( null, new double[] { x, y }, null ) } };
-        Curve curve = fac.createCurve( null, ps, null );
+        Point[] ps = {
+                      fac.createPoint( null, new double[] { x, y }, null ),
+                      fac.createPoint( null, new double[] { rnd.nextDouble() * max + offx,
+                                                           rnd.nextDouble() * max + offy }, null ),
+                      fac.createPoint( null, new double[] { rnd.nextDouble() * max + offx,
+                                                           rnd.nextDouble() * max + offy }, null ),
+                      fac.createPoint( null, new double[] { x, y }, null ) };
+        Curve curve = fac.createLineString( null, null, asList( ps ) );
         SurfacePatch patch = fac.createSurfacePatch( singletonList( curve ) );
         return fac.createSurface( null, singletonList( patch ), null );
     }
@@ -108,16 +108,16 @@ public class GeometryGenerator {
         double half = max / 2;
         double x = rnd.nextDouble() * half + offx;
         double y = rnd.nextDouble() * half + offy;
-        Point[][] ps = { {
-                          fac.createPoint( null, new double[] { x, y }, null ),
-                          fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
-                                                               rnd.nextDouble() * half + offy }, null ),
-                          fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
-                                                               rnd.nextDouble() * half + half + offy }, null ),
-                          fac.createPoint( null, new double[] { rnd.nextDouble() * half + offx,
-                                                               rnd.nextDouble() * half + half + offy }, null ),
-                          fac.createPoint( null, new double[] { x, y }, null ) } };
-        Curve curve = fac.createCurve( null, ps, null );
+        Point[] ps = {
+                      fac.createPoint( null, new double[] { x, y }, null ),
+                      fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
+                                                           rnd.nextDouble() * half + offy }, null ),
+                      fac.createPoint( null, new double[] { rnd.nextDouble() * half + half + offx,
+                                                           rnd.nextDouble() * half + half + offy }, null ),
+                      fac.createPoint( null, new double[] { rnd.nextDouble() * half + offx,
+                                                           rnd.nextDouble() * half + half + offy }, null ),
+                      fac.createPoint( null, new double[] { x, y }, null ) };
+        Curve curve = fac.createLineString( null, null, asList( ps ) );
         SurfacePatch patch = fac.createSurfacePatch( singletonList( curve ) );
         return fac.createSurface( null, singletonList( patch ), null );
     }

@@ -39,6 +39,7 @@
 package org.deegree.model.styling.components;
 
 import java.awt.Color;
+import java.util.Arrays;
 
 /**
  * <code>Stroke</code>
@@ -148,7 +149,17 @@ public class Stroke {
 
     @Override
     public String toString() {
-        return "color: " + color + ", linejoin: " + linejoin + ", linecap: " + linecap + ", width: " + width;
+        return "Stroke [color: "
+               + color
+               + ( linejoin == null ? "" : ( ", linejoin: " + linejoin ) )
+               + ( linecap == null ? "" : ( ", linecap: " + linecap ) )
+               + ", width: "
+               + width
+               + ( dasharray == null ? ""
+                                    : ( ", dashoffset: " + dashoffset + ", dasharray: " + Arrays.toString( dasharray ) ) )
+               + ( stroke == null ? ""
+                                 : ( stroke + ", stroke-gap: " + strokeGap + ", stroke-initial-gap" + strokeInitialGap ) )
+               + ( fill == null ? "" : fill ) + "]";
     }
 
 }

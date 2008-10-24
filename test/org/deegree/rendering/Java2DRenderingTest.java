@@ -73,7 +73,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -91,6 +90,7 @@ import org.deegree.model.styling.TextStyling;
 import org.deegree.model.styling.components.Fill;
 import org.deegree.model.styling.components.Graphic;
 import org.deegree.model.styling.components.Halo;
+import org.deegree.model.styling.components.LinePlacement;
 import org.deegree.model.styling.components.Mark;
 import org.deegree.model.styling.components.Stroke;
 import org.deegree.model.styling.components.Stroke.LineJoin;
@@ -110,16 +110,31 @@ public class Java2DRenderingTest extends TestCase {
 
     private static File textFile, perfFile;
 
+    // setting this to true will delete all rendering_* files in your temporary directory!
+    private static final boolean INTERACTIVE_TESTS = false;
+
     private static BufferedImage fill;
 
     static {
-        String tmp = getProperty( "java.io.tmpdir" );
-        textFile = new File( tmp, "rendering.txt" );
-        textFile.delete();
-        perfFile = new File( tmp, "performance.txt" );
-        perfFile.delete();
+        if ( INTERACTIVE_TESTS ) {
+            String tmp = getProperty( "java.io.tmpdir" );
+            textFile = new File( tmp, "rendering.txt" );
+            textFile.delete();
+            perfFile = new File( tmp, "performance.txt" );
+            perfFile.delete();
+
+            File[] fs = new File( tmp ).listFiles();
+            if ( fs != null ) {
+                for ( File f : fs ) {
+                    if ( f.getName().startsWith( "rendering_" ) ) {
+                        f.delete();
+                    }
+                }
+            }
+        }
+
         try {
-            fill = read( new URL( "http://www.imagemagick.org/Usage/thumbnails/thumbnail.gif" ) );
+            fill = read( Java2DRenderingTest.class.getResource( "logo-deegree.png" ) );
         } catch ( MalformedURLException e ) {
             LOG.error( "Unknown error", e );
         } catch ( IOException e ) {
@@ -129,16 +144,18 @@ public class Java2DRenderingTest extends TestCase {
 
     private void writeTestImage( RenderedImage img, List<String> expectedTexts, long ms )
                             throws IOException {
-        File tmp = createTempFile( "rendering_", ".png" );
-        PrintWriter out = new PrintWriter( new OutputStreamWriter( new FileOutputStream( textFile, true ), "UTF-8" ) );
-        for ( String str : expectedTexts ) {
-            out.println( tmp.getName() + ": " + str );
+        if ( INTERACTIVE_TESTS ) {
+            File tmp = createTempFile( "rendering_", ".png" );
+            PrintWriter out = new PrintWriter( new OutputStreamWriter( new FileOutputStream( textFile, true ), "UTF-8" ) );
+            for ( String str : expectedTexts ) {
+                out.println( tmp.getName() + ": " + str );
+            }
+            out.close();
+            out = new PrintWriter( new OutputStreamWriter( new FileOutputStream( perfFile, true ), "UTF-8" ) );
+            out.println( tmp.getName() + " was created in " + ms + "ms" );
+            out.close();
+            write( img, "png", tmp );
         }
-        out.close();
-        out = new PrintWriter( new OutputStreamWriter( new FileOutputStream( perfFile, true ), "UTF-8" ) );
-        out.println( tmp.getName() + " was created in " + ms + "ms" );
-        out.close();
-        write( img, "png", tmp );
     }
 
     /**
@@ -332,7 +349,6 @@ public class Java2DRenderingTest extends TestCase {
                                                geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
                                                                                                             5000d },
                                                                        null ) );
-
         List<Curve> curves = new LinkedList<Curve>();
         for ( int i = 0; i < 10; ++i ) {
             curves.add( randomCurve( 500, i * 500, 0 ) );
@@ -340,6 +356,33 @@ public class Java2DRenderingTest extends TestCase {
 
         LineStyling styling = new LineStyling();
         for ( int y = 0; y < 10; ++y ) {
+            switch ( y ) {
+            case 0:
+                styling.stroke.linecap = BUTT;
+                styling.stroke.fill = new Graphic();
+                styling.stroke.fill.image = fill;
+                break;
+            case 1:
+                styling.stroke.dasharray = new double[] { 15, 15, 17, 5 };
+                break;
+            case 2:
+                styling.stroke.fill = null;
+                break;
+            case 3:
+                styling.stroke.dashoffset = 10;
+                break;
+            case 4:
+                styling.stroke.dasharray = null;
+                break;
+            case 7:
+                break;
+            case 8:
+                styling.stroke.linecap = SQUARE;
+                break;
+            case 9:
+                styling.stroke.linecap = ROUND;
+                break;
+            }
             Iterator<Curve> iterator = curves.iterator();
             for ( int x = 0; x < 10; ++x ) {
                 styling.stroke.width = x;
@@ -397,7 +440,6 @@ public class Java2DRenderingTest extends TestCase {
     public void testPolygonStyling()
                             throws Exception {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
-        BufferedImage fill = read( new URL( "http://www.imagemagick.org/Usage/thumbnails/thumbnail.gif" ) );
 
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
@@ -446,7 +488,6 @@ public class Java2DRenderingTest extends TestCase {
     public void testTextStyling()
                             throws Exception {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
-        BufferedImage fill = read( new URL( "http://www.imagemagick.org/Usage/thumbnails/thumbnail.gif" ) );
 
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
@@ -531,6 +572,49 @@ public class Java2DRenderingTest extends TestCase {
         texts.add( "same, no rotation, one normal, one displaced by 10 pixels to left and top" );
         texts.add( "same, one ending in the middle of the screen, one starting there" );
         texts.add( "same, only one ending in the middle of the screen" );
+        writeTestImage( img, texts, time2 - time );
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void testTextStyling2()
+                            throws Exception {
+        BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
+
+        long time = currentTimeMillis();
+        Graphics2D g = img.createGraphics();
+        GeometryFactory geomFac = getInstance().getGeometryFactory();
+        Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
+                                               geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
+                                                                                                            5000d },
+                                                                       null ) );
+
+        LinkedList<Curve> curves = new LinkedList<Curve>();
+        for ( int i = 0; i < 10; ++i ) {
+            curves.add( randomCurve( 500, i * 500, 0 ) );
+        }
+
+        LineStyling lineStyle = new LineStyling();
+        String text = "This is a sample text with Umläütß";
+        TextStyling styling = new TextStyling();
+        styling.linePlacement = new LinePlacement();
+        styling.linePlacement.repeat = true;
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+
+        g.dispose();
+        long time2 = currentTimeMillis();
+        List<String> texts = new LinkedList<String>();
+        texts.add( "standard dialog font, size 10, black" );
         writeTestImage( img, texts, time2 - time );
     }
 
