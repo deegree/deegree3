@@ -111,7 +111,7 @@ public class Java2DRenderingTest extends TestCase {
     private static File textFile, perfFile;
 
     // setting this to true will delete all rendering_* files in your temporary directory!
-    private static final boolean INTERACTIVE_TESTS = false;
+    private static final boolean INTERACTIVE_TESTS = true;
 
     private static BufferedImage fill;
 
@@ -596,12 +596,16 @@ public class Java2DRenderingTest extends TestCase {
         }
 
         LineStyling lineStyle = new LineStyling();
-        String text = "This is a sample text with Umläütß";
+        lineStyle.stroke.width = 20;
+        String text = "Mean Street";
         TextStyling styling = new TextStyling();
         styling.linePlacement = new LinePlacement();
-        styling.linePlacement.repeat = true;
+        styling.font.fontSize = 20;
+        styling.font.fontFamily.add( "Lucida Sans" );
+        styling.font.fontFamily.add( "Comic Sans" );
         r.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
+        styling.linePlacement.repeat = true;
         r.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
         r.render( lineStyle, curves.peek() );
