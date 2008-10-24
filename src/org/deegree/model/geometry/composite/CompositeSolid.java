@@ -38,7 +38,6 @@
 package org.deegree.model.geometry.composite;
 
 import org.deegree.model.geometry.Geometry;
-import org.deegree.model.geometry.Geometry.GeometryType;
 import org.deegree.model.geometry.primitive.Solid;
 
 /**
