@@ -59,6 +59,8 @@ import org.deegree.model.geometry.primitive.Ring;
  */
 public interface PolygonPatch extends SurfacePatch {
 
+    public List<? extends Ring> getBoundaryRings();
+    
     /**
      * Returns the exterior ring of the polygon.
      * <p>
@@ -76,6 +78,5 @@ public interface PolygonPatch extends SurfacePatch {
      * 
      * @return the interior rings (holes) of the polygon, list may be empty (but not null)
      */
-    public List<Ring> getInteriorRings();    
-    
+    public List<Ring> getInteriorRings();
 }

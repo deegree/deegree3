@@ -43,11 +43,13 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.standard.surfacepatches;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.surfacepatches.Rectangle;
 
 /**
@@ -107,12 +109,17 @@ public class DefaultRectangle implements Rectangle {
     }
 
     @Override
-    public List<Curve> getBoundary() {
-        throw new UnsupportedOperationException();
+    public int getCoordinateDimension() {
+        return getPoint1().getCoordinateDimension();
     }
 
     @Override
-    public int getCoordinateDimension() {
-        return getPoint1().getCoordinateDimension();
+    public List<Ring> getInteriorRings() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<LinearRing> getBoundaryRings() {
+        return Collections.singletonList( exterior);
     }
 }

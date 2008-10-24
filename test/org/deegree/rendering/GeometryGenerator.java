@@ -39,7 +39,6 @@
 package org.deegree.rendering;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static org.deegree.model.geometry.GeometryFactoryCreator.getInstance;
 
 import java.util.Random;
@@ -47,8 +46,7 @@ import java.util.Random;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.model.geometry.primitive.Polygon;
 
 /**
  * <code>GeometryGenerator</code>
@@ -71,7 +69,7 @@ public class GeometryGenerator {
      * @param offy
      * @return a random triangle polygon
      */
-    public static Surface randomTriangle( int max, double offx, double offy ) {
+    public static Polygon randomTriangle( int max, double offx, double offy ) {
         double x = rnd.nextDouble() * max + offx;
         double y = rnd.nextDouble() * max + offy;
         Point[] ps = {
@@ -81,9 +79,7 @@ public class GeometryGenerator {
                       fac.createPoint( null, new double[] { rnd.nextDouble() * max + offx,
                                                            rnd.nextDouble() * max + offy }, null ),
                       fac.createPoint( null, new double[] { x, y }, null ) };
-        Curve curve = fac.createLineString( null, null, asList( ps ) );
-        SurfacePatch patch = fac.createSurfacePatch( singletonList( curve ) );
-        return fac.createSurface( null, singletonList( patch ), null );
+        return fac.createPolygon( null, null, fac.createLinearRing( null, null, asList( ps ) ), null );
     }
 
     /**
@@ -104,7 +100,7 @@ public class GeometryGenerator {
      * @param offy
      * @return a random polygon with an edge in each quadrant
      */
-    public static Surface randomQuad( int max, double offx, double offy ) {
+    public static Polygon randomQuad( int max, double offx, double offy ) {
         double half = max / 2;
         double x = rnd.nextDouble() * half + offx;
         double y = rnd.nextDouble() * half + offy;
@@ -117,9 +113,7 @@ public class GeometryGenerator {
                       fac.createPoint( null, new double[] { rnd.nextDouble() * half + offx,
                                                            rnd.nextDouble() * half + half + offy }, null ),
                       fac.createPoint( null, new double[] { x, y }, null ) };
-        Curve curve = fac.createLineString( null, null, asList( ps ) );
-        SurfacePatch patch = fac.createSurfacePatch( singletonList( curve ) );
-        return fac.createSurface( null, singletonList( patch ), null );
+        return fac.createPolygon( null, null, fac.createLinearRing( null, null, asList( ps ) ), null );
     }
 
     /**

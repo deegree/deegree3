@@ -87,25 +87,25 @@ class JTSWrapperSurface extends JTSWrapperGeometry implements Surface {
     public JTSWrapperSurface( String id, double precision, CoordinateSystem crs, int coordinateDimension, SurfacePatch patch ) {
         super( id, precision, crs, coordinateDimension );
         this.patches.add( patch );
-
-        CoordinateSequenceFactory fac = CoordinateArraySequenceFactory.instance();
-        List<Curve> patchBoundary = patch.getBoundary();
-        List<Point> outer = patchBoundary.get( 0 ).getAsLineString().getControlPoints();
-        Coordinate[] coords = toCoordinates( outer );
-
-        LinearRing shell = new LinearRing( fac.create( coords ), jtsFactory );
-
-        LinearRing[] holes = null;
-        if ( patchBoundary.size() > 1 ) {
-            holes = new LinearRing[patchBoundary.size() - 1];
-            for ( int i = 1; i < patchBoundary.size(); i++ ) {
-                coords = toCoordinates( patchBoundary.get( i ).getAsLineString().getControlPoints() );
-                holes[i - 1] = new LinearRing( fac.create( coords ), jtsFactory );
-            }
-        } else {
-            holes = new LinearRing[0];
-        }
-        geometry = jtsFactory.createPolygon( shell, holes );
+//
+//        CoordinateSequenceFactory fac = CoordinateArraySequenceFactory.instance();
+//        List<Curve> patchBoundary = patch.getBoundaries();
+//        List<Point> outer = patchBoundary.get( 0 ).getAsLineString().getControlPoints();
+//        Coordinate[] coords = toCoordinates( outer );
+//
+//        LinearRing shell = new LinearRing( fac.create( coords ), jtsFactory );
+//
+//        LinearRing[] holes = null;
+//        if ( patchBoundary.size() > 1 ) {
+//            holes = new LinearRing[patchBoundary.size() - 1];
+//            for ( int i = 1; i < patchBoundary.size(); i++ ) {
+//                coords = toCoordinates( patchBoundary.get( i ).getAsLineString().getControlPoints() );
+//                holes[i - 1] = new LinearRing( fac.create( coords ), jtsFactory );
+//            }
+//        } else {
+//            holes = new LinearRing[0];
+//        }
+//        geometry = jtsFactory.createPolygon( shell, holes );
     }
 
     /*

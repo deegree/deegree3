@@ -55,10 +55,13 @@ import org.deegree.model.geometry.multi.MultiCurve;
 import org.deegree.model.geometry.multi.MultiPoint;
 import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
+import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.i18n.Messages;
 
@@ -375,11 +378,29 @@ public class GeometryTransformer extends Transformer {
 
         List<SurfacePatch> patches = new ArrayList<SurfacePatch>( geo.getPatches().size() );
         for ( SurfacePatch patch : geo.getPatches() ) {
-            List<Curve> boundaries = new ArrayList<Curve>( patch.getBoundary().size() );
-            for ( Curve ring : patch.getBoundary() ) {
-                boundaries.add( transform( ring, trans ) );
+            if ( patch instanceof PolygonPatch ) {
+                Ring exterior = ( (PolygonPatch) patch ).getExteriorRing();
+                LinearRing transformedExteriorRing = null;
+                if ( exterior != null ) {
+                    transformedExteriorRing = geomFactory.createLinearRing(
+                                                                            exterior.getId(),
+                                                                            exterior.getCoordinateSystem(),
+                                                                            transform(
+                                                                                       exterior.getAsLineString().getControlPoints(),
+                                                                                       trans ) );
+                }
+                List<Ring> interiorRings = ( (PolygonPatch) patch ).getInteriorRings();
+                List<Ring> transformedInteriorRings = new ArrayList<Ring>( interiorRings.size() );
+                for ( Ring interior : interiorRings ) {
+                    transformedInteriorRings.add( geomFactory.createLinearRing(
+                                                                                interior.getId(),
+                                                                                interior.getCoordinateSystem(),
+                                                                                transform(
+                                                                                           interior.getAsLineString().getControlPoints(),
+                                                                                           trans ) ) );
+                }
+                patches.add( geomFactory.createPolygonPatch( transformedExteriorRing, transformedInteriorRings ) );
             }
-            patches.add( geomFactory.createSurfacePatch( boundaries ) );
         }
         return geomFactory.createSurface( geo.getId(), patches, trans.getTargetCRS() );
     }

@@ -467,25 +467,6 @@ public interface GeometryFactory {
     public OffsetCurve createOffsetCurve( Curve baseCurve, Point direction, Length distance );
 
     /**
-     * Creates a {@link Surface} from an array of {@link Curve}s forming the boundary of a {@link Surface}. The first
-     * {@link Curve} forms the outer boundary the following {@link Curve}s represents holes. The passed interpolation
-     * must be supported by the concrete GeometryFactory; {@link #getSupportedSurfaceInterpolations()}.
-     * 
-     * @param id
-     *            identifier of the new geometry instance
-     * @param boundary
-     *            surfaces boundary
-     * @param interpolation
-     *            interpolation to be used
-     * @param crs
-     *            surfaces coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
-     * @return created {@link Surface}
-     */
-    public Surface createSurface( String id, List<Curve> boundary, SurfacePatch.Interpolation interpolation,
-                                  CoordinateSystem crs );
-
-    /**
      * creates a {@link Surface} from an array of {@link SurfacePatch}. The passed patches must touch in a topological
      * sense to form a valid {@link Surface}
      * 
@@ -499,35 +480,6 @@ public interface GeometryFactory {
      * @return created {@link Surface}
      */
     public Surface createSurface( String id, List<SurfacePatch> patches, CoordinateSystem crs );
-
-    /**
-     * Creates a {@link SurfacePatch} from an array of {@link Curve}s forming the boundary of a {@link SurfacePatch}.
-     * The first {@link Curve} forms the outer boundary the following {@link Curve}s represents holes. The passed
-     * interpolation must be supported by the concrete GeometryFactory; {@link #getSupportedSurfaceInterpolations()}.
-     * The passed type defines the {@link CurveSegment} class to be used (possibly different kinds of
-     * {@link SurfacePatch} implementations are available; see ISO 19107 for details)
-     * 
-     * @param boundary
-     *            boundary of the {@link SurfacePatch}
-     * @param type
-     *            concrete type of the {@link SurfacePatch}
-     * @param interpolation
-     *            interporlation to be used
-     * @return created {@link SurfacePatch}
-     */
-    public SurfacePatch createSurfacePatch( List<Curve> boundary, Class<?> type,
-                                            SurfacePatch.Interpolation interpolation );
-
-    /**
-     * Creates a {@link SurfacePatch} from an array of {@link Curve}s forming the boundary of a {@link SurfacePatch}.
-     * The first {@link Curve} forms the outer boundary the following {@link Curve}s represents holes. Default
-     * interpolation and type will be used.
-     * 
-     * @param boundary
-     *            boundary of the {@link SurfacePatch}
-     * @return created {@link SurfacePatch}
-     */
-    public SurfacePatch createSurfacePatch( List<Curve> boundary );
 
     /**
      * Creates an untyped multi geometry from a list of {@link Geometry}s.

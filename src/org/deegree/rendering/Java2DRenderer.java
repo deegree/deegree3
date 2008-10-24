@@ -66,13 +66,13 @@ import java.awt.geom.Path2D.Double;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-import org.deegree.commons.utils.GeometryUtils;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.styling.LineStyling;
 import org.deegree.model.styling.PointStyling;
@@ -298,8 +298,13 @@ public class Java2DRenderer implements Renderer {
             Surface surface = (Surface) geom;
             if ( styling.linePlacement != null ) {
                 for ( SurfacePatch patch : surface.getPatches() ) {
-                    for ( Curve curve : patch.getBoundary() ) {
-                        render( styling, font, text, curve );
+                    if (patch instanceof PolygonPatch) {
+                        PolygonPatch polygonPatch = (PolygonPatch) patch;
+                        for ( Curve curve : polygonPatch.getBoundaryRings()) {
+                            render( styling, font, text, curve );
+                        }
+                    } else {
+                        throw new IllegalArgumentException("Cannot render non-planar surfaces.");
                     }
                 }
             } else {
@@ -339,11 +344,16 @@ public class Java2DRenderer implements Renderer {
         }
         // TODO properly convert'em
         if ( geom instanceof Surface ) {
-            Surface surface = (Surface) geom;
+            Surface surface = (Surface) geom;            
             for ( SurfacePatch patch : surface.getPatches() ) {
-                for ( Curve curve : patch.getBoundary() ) {
-                    render( styling, curve );
-                }
+                if (patch instanceof PolygonPatch) {
+                    PolygonPatch polygonPatch = (PolygonPatch) patch;
+                    for ( Curve curve : polygonPatch.getBoundaryRings()) {
+                        render( styling, curve );
+                    }
+                } else {
+                    throw new IllegalArgumentException("Cannot render non-planar surfaces.");
+                }                
             }
         }
         if ( geom instanceof Curve ) {
@@ -399,8 +409,13 @@ public class Java2DRenderer implements Renderer {
         if ( geom instanceof Surface ) {
             Surface surface = (Surface) geom;
             for ( SurfacePatch patch : surface.getPatches() ) {
-                for ( Curve curve : patch.getBoundary() ) {
-                    render( styling, curve );
+                if (patch instanceof PolygonPatch) {
+                    PolygonPatch polygonPatch = (PolygonPatch) patch;
+                    for ( Curve curve : polygonPatch.getBoundaryRings()) {
+                        render( styling, curve );
+                    }
+                } else {
+                    throw new IllegalArgumentException("Cannot render non-planar surfaces.");
                 }
             }
         }
@@ -408,19 +423,24 @@ public class Java2DRenderer implements Renderer {
 
     private void render( PolygonStyling styling, Surface surface ) {
         for ( SurfacePatch patch : surface.getPatches() ) {
-            Area polygon = null;
-            for ( Curve curve : patch.getBoundary() ) {
-                if ( polygon == null ) {
-                    polygon = new Area( fromCurve( curve ) );
-                } else {
-                    polygon.subtract( new Area( fromCurve( curve ) ) );
+            if (patch instanceof PolygonPatch) {
+                PolygonPatch polygonPatch = (PolygonPatch) patch;
+                Area polygon = null;
+                for ( Curve curve : polygonPatch.getBoundaryRings() ) {
+                    if ( polygon == null ) {
+                        polygon = new Area( fromCurve( curve ) );
+                    } else {
+                        polygon.subtract( new Area( fromCurve( curve ) ) );
+                    }
                 }
-            }
 
-            applyFill( styling.fill );
-            graphics.fill( polygon );
-            applyStroke( styling.stroke );
-            graphics.draw( polygon );
+                applyFill( styling.fill );
+                graphics.fill( polygon );
+                applyStroke( styling.stroke );
+                graphics.draw( polygon );
+            } else {
+                throw new IllegalArgumentException("Cannot render non-planar surfaces.");
+            }            
         }
     }
 

@@ -81,7 +81,7 @@ public class JTSWrapperSurfacePatch implements SurfacePatch {
      * 
      * @see org.deegree.model.geometry.primitive.SurfacePatch#getBoundary()
      */
-    public List<Curve> getBoundary() {
+    public List<Curve> getBoundaries() {
         return boundary;
     }
 

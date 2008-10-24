@@ -37,14 +37,11 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive.surfacepatches;
 
-import java.util.List;
-
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Surface;
 
 /**
- * A {@link SurfacePatch} describes a continuous portion of a {@link Surface}. 
+ * A {@link SurfacePatch} describes a continuous portion of a {@link Surface}.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
@@ -67,52 +64,45 @@ public interface SurfacePatch {
         planar,
         /**
          * A spherical interpolation of the surfaces.
-         */        
+         */
         spherical,
         /**
          * A elliptical interpolation of the surfaces.
-         */        
+         */
         elliptical,
         /**
          * A conic interpolation of the surfaces.
-         */        
+         */
         conic,
         /**
          * A tin interpolation of the surfaces.
-         */        
+         */
         tin,
         /**
          * A bilinear interpolation of the surfaces.
-         */        
+         */
         bilinear,
         /**
          * A biquadratic interpolation of the surfaces.
-         */        
+         */
         biquadratic,
         /**
          * A bicubic interpolation of the surfaces.
-         */        
+         */
         bicubic,
         /**
          * A polynomialSpline interpolation of the surfaces.
-         */        
+         */
         polynomialSpline,
         /**
          * A rationalSpline interpolation of the surfaces.
-         */        
+         */
         rationalSpline,
         /**
          * A triangulatedSpline interpolation of the surfaces.
-         */        
+         */
         triangulatedSpline
     }
-
-    /**
-     * 
-     * @return boundaries of a surface patch. The first {@link Curve} represents the outer boundery the
-     *         following ones the boundaries of the patches holes
-     */
-    public List<Curve> getBoundary();
 
     /**
      * 
@@ -122,8 +112,7 @@ public interface SurfacePatch {
 
     /**
      * 
-     * @return dimension of a surfaces coordinates (2 for flat surfaces; 3 for surfaces in a 3D
-     *         space)
+     * @return dimension of a surfaces coordinates (2 for flat surfaces; 3 for surfaces in a 3D space)
      */
     public int getCoordinateDimension();
 }

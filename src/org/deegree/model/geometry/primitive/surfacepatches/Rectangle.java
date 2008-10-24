@@ -43,18 +43,20 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive.surfacepatches;
 
+import java.util.List;
+
 import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.Point;
 
 /**
- * A {@link Rectangle} is a {@link SurfacePatch} defined by four planar points.  
+ * A {@link Rectangle} is a {@link PolygonPatch} defined by four planar points.  
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public interface Rectangle extends SurfacePatch {
+public interface Rectangle extends PolygonPatch {
 
     /**
      * Returns the first of the four control points.
@@ -89,5 +91,9 @@ public interface Rectangle extends SurfacePatch {
      * 
      * @return the exterior ring
      */
+    @Override
     public LinearRing getExteriorRing();
+    
+    @Override
+    public List<LinearRing> getBoundaryRings();    
 }

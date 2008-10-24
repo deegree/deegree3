@@ -43,11 +43,12 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.standard.surfacepatches;
 
+import java.util.Collections;
 import java.util.List;
 
-import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
 
 /**
@@ -73,7 +74,7 @@ public class DefaultTriangle implements Triangle {
             String msg = "The exterior ring of a triangle must contain exactly four points.";
             throw new IllegalArgumentException(msg);
         }
-        this.exterior = exterior;
+        this.exterior = exterior;   
     }
 
     @Override
@@ -102,12 +103,17 @@ public class DefaultTriangle implements Triangle {
     }
 
     @Override
-    public List<Curve> getBoundary() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getCoordinateDimension() {
         return getPoint1().getCoordinateDimension();
     }
+
+    @Override
+    public List<Ring> getInteriorRings() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<LinearRing> getBoundaryRings() {
+        return Collections.singletonList( exterior );
+    }    
 }

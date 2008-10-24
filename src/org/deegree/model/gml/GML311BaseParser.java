@@ -19,7 +19,6 @@ import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.CRSConfigurationException;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +79,7 @@ class GML311BaseParser {
                             throws XMLParsingException, XMLStreamException {
 
         CoordinateSystem crs = lookupCRS( determineCurrentSrsName( defaultSrsName ) );
-        int coordDim = crs.getDimension();
+        int coordDim = determineCoordDimensions( crs.getDimension());
 
         String s = xmlStream.getElementText();
         // don't use String.split(regex) here (speed)
@@ -323,5 +322,26 @@ class GML311BaseParser {
         }
         String msg = "Orientation value (='" + orientation + "') is not valid. Valid values are '-' and '+'.";
         throw new XMLParsingException( xmlStream, msg );
+    }
+
+    /**
+     * Applies a simple heuristic to determine the number of coordinate dimensions.
+     * 
+     * @param defaultCoordDimensions
+     *            default coordinate dimensionality, this is returned if the element has no <code>srsDimension</code>
+     *            attribute 
+     * @return coordinate dimensionality
+     */
+    protected int determineCoordDimensions( int defaultCoordDimensions ) {
+
+        String srsDimension = xmlStream.getAttributeValueWDefault( "srsDimension", ""  + defaultCoordDimensions);
+        int coordDimensions = 0;
+        try {
+            coordDimensions = Integer.parseInt( srsDimension );
+        } catch (NumberFormatException e) {
+            String msg = "Value of srsDimension attribute (='" + srsDimension + "') is not a valid integer.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        return coordDimensions;
     }
 }

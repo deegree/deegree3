@@ -43,6 +43,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive.surfacepatches;
 
+import java.util.List;
+
 import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.Point;
 
@@ -54,7 +56,7 @@ import org.deegree.model.geometry.primitive.Point;
  * 
  * @version $Revision:$, $Date:$
  */
-public interface Triangle extends SurfacePatch {
+public interface Triangle extends PolygonPatch {
 
     /**
      * Returns the first of the three control points.
@@ -82,5 +84,9 @@ public interface Triangle extends SurfacePatch {
      * 
      * @return the exterior ring
      */
+    @Override
     public LinearRing getExteriorRing();
+
+    @Override
+    public List<LinearRing> getBoundaryRings();    
 }

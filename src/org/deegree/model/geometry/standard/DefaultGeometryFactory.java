@@ -88,7 +88,6 @@ import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.Rectangle;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
-import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch.Interpolation;
 import org.deegree.model.geometry.standard.composite.DefaultCompositeCurve;
 import org.deegree.model.geometry.standard.composite.DefaultCompositeGeometry;
 import org.deegree.model.geometry.standard.composite.DefaultCompositeSolid;
@@ -236,26 +235,8 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Surface createSurface( String id, List<Curve> boundary, Interpolation interpolation, CoordinateSystem crs ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public Surface createSurface( String id, List<SurfacePatch> patches, CoordinateSystem crs ) {
         return new DefaultSurface( id, crs, patches );
-    }
-
-    @Override
-    public SurfacePatch createSurfacePatch( List<Curve> boundary, Class<?> type, Interpolation interpolation ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public SurfacePatch createSurfacePatch( List<Curve> boundary ) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

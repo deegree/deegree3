@@ -43,9 +43,10 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.standard.surfacepatches;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 
@@ -62,6 +63,8 @@ public class DefaultPolygonPatch implements PolygonPatch {
     private Ring exteriorRing;
 
     private List<Ring> interiorRings;
+    
+    private List<Ring> allBoundaries;
 
     /**
      * Creates a new {@link DefaultPolygonPatch} instance from the given parameters.
@@ -74,6 +77,16 @@ public class DefaultPolygonPatch implements PolygonPatch {
     public DefaultPolygonPatch ( Ring exteriorRing, List<Ring> interiorRings) {
         this.exteriorRing = exteriorRing;
         this.interiorRings = interiorRings;
+        if (interiorRings == null) {
+            this.interiorRings = Collections.emptyList();
+        }
+        this.allBoundaries = new LinkedList<Ring>();
+        if (exteriorRing != null) {
+            allBoundaries.add( exteriorRing );
+        }
+        if (interiorRings != null) {
+            allBoundaries.addAll( interiorRings );
+        }
     }
 
     @Override
@@ -87,11 +100,6 @@ public class DefaultPolygonPatch implements PolygonPatch {
     }
 
     @Override
-    public List<Curve> getBoundary() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Ring getExteriorRing() {
         return exteriorRing;
     }
@@ -99,5 +107,10 @@ public class DefaultPolygonPatch implements PolygonPatch {
     @Override
     public List<Ring> getInteriorRings() {
         return interiorRings;
+    }
+
+    @Override
+    public List<Ring> getBoundaryRings() {
+        return allBoundaries;
     }
 }

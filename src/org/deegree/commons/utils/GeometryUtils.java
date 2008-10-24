@@ -47,14 +47,18 @@ import static org.deegree.model.geometry.GeometryFactoryCreator.getInstance;
 
 import java.awt.Shape;
 import java.awt.geom.PathIterator;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.primitive.Curve;
-import org.deegree.model.geometry.primitive.LineString;
+import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 
 /**
@@ -83,27 +87,54 @@ public class GeometryUtils {
             return fac.createPoint( geom.getId(), new double[] { p.getX() + offx, p.getY() + offy },
                                     p.getCoordinateSystem() );
         }
-        if ( geom instanceof LineString ) {
-            LineString c = (LineString) geom;
+        if ( geom instanceof Curve ) {
+            Curve c = (Curve) geom;
             LinkedList<Point> ps = new LinkedList<Point>();
-            for ( Point p : c.getControlPoints() ) {
+            for ( Point p : c.getAsLineString().getControlPoints() ) {
                 ps.add( (Point) move( p, offx, offy ) );
             }
             return fac.createLineString( geom.getId(), c.getCoordinateSystem(), ps );
         }
         if ( geom instanceof Surface ) {
             Surface s = (Surface) geom;
-            LinkedList<SurfacePatch> patches = new LinkedList<SurfacePatch>();
+            LinkedList<SurfacePatch> movedPatches = new LinkedList<SurfacePatch>();
             for ( SurfacePatch patch : s.getPatches() ) {
-                LinkedList<Curve> curves = new LinkedList<Curve>();
-                for ( Curve c : patch.getBoundary() ) {
-                    curves.add( (Curve) move( c, offx, offy ) );
+                if ( patch instanceof PolygonPatch ) {
+                    Ring exterior = ( (PolygonPatch) patch ).getExteriorRing();
+                    LinearRing movedExteriorRing = null;
+                    if ( exterior != null ) {
+                        movedExteriorRing = fac.createLinearRing( exterior.getId(), exterior.getCoordinateSystem(),
+                                                                  move( exterior.getAsLineString().getControlPoints(),
+                                                                        offx, offy ) );
+                    }
+                    List<Ring> interiorRings = ( (PolygonPatch) patch ).getInteriorRings();
+                    List<Ring> movedInteriorRings = new ArrayList<Ring>( interiorRings.size() );
+                    for ( Ring interior : interiorRings ) {
+                        movedInteriorRings.add( fac.createLinearRing(
+                                                                      interior.getId(),
+                                                                      interior.getCoordinateSystem(),
+                                                                      move(
+                                                                            interior.getAsLineString().getControlPoints(),
+                                                                            offx, offy ) ) );
+                    }
+                    movedPatches.add( fac.createPolygonPatch( movedExteriorRing, movedInteriorRings ) );
+                } else {
+                    throw new UnsupportedOperationException( "Cannot move non-planar surface patches." );
                 }
-                patches.add( fac.createSurfacePatch( curves ) );
             }
-            return fac.createSurface( geom.getId(), patches, s.getCoordinateSystem() );
+            return fac.createSurface( geom.getId(), movedPatches, geom.getCoordinateSystem() );
         }
         return geom;
+    }
+
+    private static List<Point> move( List<Point> points, double offx, double offy ) {
+        List<Point> movedPoints = new ArrayList<Point>( points.size() );
+        GeometryFactory fac = getInstance().getGeometryFactory();
+        for ( Point point : points ) {
+            double[] movedCoordinates = new double[] { point.getX() + offx, point.getY() + offy };
+            movedPoints.add( fac.createPoint( point.getId(), movedCoordinates, point.getCoordinateSystem() ) );
+        }
+        return movedPoints;
     }
 
     /**
@@ -156,8 +187,6 @@ public class GeometryUtils {
         if ( !closed ) {
             sb.append( "]" );
         }
-
         return sb.toString();
     }
-
 }

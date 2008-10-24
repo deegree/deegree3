@@ -38,7 +38,6 @@
 
 package org.deegree.model.geometry.jtswrapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
@@ -187,25 +186,6 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public SurfacePatch createSurfacePatch( List<Curve> boundary, Class<?> type,
-                                            SurfacePatch.Interpolation interpolation ) {
-        if ( boundary == null || boundary.size() == 0 ) {
-            return null;
-        }
-        // JTS just supports simple surfaces/polygons so type will be ignored
-        // the same it true for interpolation; it always will be none
-        return new JTSWrapperSurfacePatch( boundary );
-    }
-
-    @Override
-    public SurfacePatch createSurfacePatch( List<Curve> boundary ) {
-        if ( boundary == null || boundary.size() == 0 ) {
-            return null;
-        }
-        return new JTSWrapperSurfacePatch( boundary );
-    }
-
-    @Override
     public Point createPoint( String id, double[] coordinates, double precision, CoordinateSystem crs ) {
         return new JTSWrapperPoint( id, precision, crs, coordinates );
     }
@@ -218,26 +198,15 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Surface createSurface( String id, List<Curve> boundary, SurfacePatch.Interpolation interpolation,
-                                  CoordinateSystem crs ) {
-        if ( boundary == null || boundary.size() == 0 ) {
-            return null;
-        }
-        SurfacePatch patch = createSurfacePatch( boundary, JTSWrapperSurfacePatch.class, interpolation );
-        List<SurfacePatch> list = new ArrayList<SurfacePatch>( 1 );
-        list.add( patch );
-        return createSurface( id, list, crs );
-    }
-
-    @Override
     public Surface createSurface( String id, List<SurfacePatch> patches, CoordinateSystem crs ) {
         if ( patches == null || patches.size() == 0 ) {
             return null;
         }
-        Point point = patches.get( 0 ).getBoundary().get( 0 ).getAsLineString().getControlPoints().get( 0 );
-        // JTS does not support Surfaces (Polyons) build from different SurfacePatches, so
-        // the first patch will build the complete surface
-        return new JTSWrapperSurface( id, point.getPrecision(), crs, point.getCoordinateDimension(), patches.get( 0 ) );
+//        Point point = patches.get( 0 ).getBoundaries().get( 0 ).getAsLineString().getControlPoints().get( 0 );
+//        // JTS does not support Surfaces (Polyons) build from different SurfacePatches, so
+//        // the first patch will build the complete surface
+//        return new JTSWrapperSurface( id, point.getPrecision(), crs, point.getCoordinateDimension(), patches.get( 0 ) );
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -257,11 +226,12 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public Envelope createEnvelope( String id, SurfacePatch patch ) {
-        Envelope env = patch.getBoundary().get( 0 ).getEnvelope();
-        for ( int i = 1; i < patch.getBoundary().size(); i++ ) {
-            env = env.merger( patch.getBoundary().get( i ).getEnvelope() );
-        }
-        return env;
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+//        Envelope env = patch.getBoundaries().get( 0 ).getEnvelope();
+//        for ( int i = 1; i < patch.getBoundaries().size(); i++ ) {
+//            env = env.merger( patch.getBoundaries().get( i ).getEnvelope() );
+//        }
+//        return env;
     }
 
     @Override

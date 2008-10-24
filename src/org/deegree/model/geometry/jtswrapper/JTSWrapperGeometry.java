@@ -524,18 +524,19 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @return the corresponding Surface object
      */
     private Surface wrap( Polygon polygon ) {
-        List<Curve> boundary = new ArrayList<Curve>( polygon.getNumInteriorRing() + 1 );
-        Point[][] ring = new Point[1][];
-        List<Point> list = toPoints( polygon.getExteriorRing().getCoordinates() );
-        ring[0] = list.toArray( new Point[list.size()] );
-        boundary.add( geomFactory.createCurve( null, ring, crs ) );
-        for ( int i = 0; i < polygon.getNumInteriorRing(); i++ ) {
-            list = toPoints( polygon.getInteriorRingN( i ).getCoordinates() );
-            ring[0] = list.toArray( new Point[list.size()] );
-            boundary.add( geomFactory.createCurve( null, ring, crs ) );
-        }
-
-        return geomFactory.createSurface( null, boundary, SurfacePatch.Interpolation.none, crs );
+        return null;
+//        List<Curve> boundary = new ArrayList<Curve>( polygon.getNumInteriorRing() + 1 );
+//        Point[][] ring = new Point[1][];
+//        List<Point> list = toPoints( polygon.getExteriorRing().getCoordinates() );
+//        ring[0] = list.toArray( new Point[list.size()] );
+//        boundary.add( geomFactory.createCurve( null, ring, crs ) );
+//        for ( int i = 0; i < polygon.getNumInteriorRing(); i++ ) {
+//            list = toPoints( polygon.getInteriorRingN( i ).getCoordinates() );
+//            ring[0] = list.toArray( new Point[list.size()] );
+//            boundary.add( geomFactory.createCurve( null, ring, crs ) );
+//        }
+//
+//        return geomFactory.createSurface( null, boundary, SurfacePatch.Interpolation.none, crs );
     }
 
     /**
