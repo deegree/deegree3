@@ -77,7 +77,7 @@ public class FeatureXPathTest {
     @Before
     public void setUp()
                             throws Exception {
-        fc = new GMLFeatureParserTest().testParsingPhilosopherFeatureCollection();
+//        fc = new GMLFeatureParserTest().testParsingPhilosopherFeatureCollection();
         nsContext = new SimpleNamespaceContext ();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
     }

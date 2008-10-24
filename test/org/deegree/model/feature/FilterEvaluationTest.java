@@ -19,7 +19,7 @@ public class FilterEvaluationTest {
     @Before
     public void setUp()
                             throws Exception {
-        fc = new GMLFeatureParserTest().testParsingPhilosopherFeatureCollection();
+//        fc = new GMLFeatureParserTest().testParsingPhilosopherFeatureCollection();
         nsContext = new SimpleNamespaceContext ();
         nsContext.addNamespace( "app", "http://www.deegree.org/app" );
     }
