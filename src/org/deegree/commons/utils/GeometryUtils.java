@@ -43,9 +43,11 @@ import static java.awt.geom.PathIterator.SEG_CUBICTO;
 import static java.awt.geom.PathIterator.SEG_LINETO;
 import static java.awt.geom.PathIterator.SEG_MOVETO;
 import static java.awt.geom.PathIterator.SEG_QUADTO;
+import static java.lang.Math.sqrt;
 import static org.deegree.model.geometry.GeometryFactoryCreator.getInstance;
 
 import java.awt.Shape;
+import java.awt.geom.FlatteningPathIterator;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -60,6 +62,7 @@ import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.rendering.strokes.TextStroke;
 
 /**
  * <code>GeometryUtils</code>
@@ -189,4 +192,50 @@ public class GeometryUtils {
         }
         return sb.toString();
     }
+    /**
+     * This method flattens the path with a flatness parameter of 1.
+     * 
+     * @author Jerry Huxtable
+     * @see TextStroke
+     * @param shape
+     * @return the path length
+     */
+    public static float measurePathLength( Shape shape ) {
+        PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), 1 );
+        float points[] = new float[6];
+        float moveX = 0, moveY = 0;
+        float lastX = 0, lastY = 0;
+        float thisX = 0, thisY = 0;
+        int type = 0;
+        float total = 0;
+
+        while ( !it.isDone() ) {
+            type = it.currentSegment( points );
+            switch ( type ) {
+            case PathIterator.SEG_MOVETO:
+                moveX = lastX = points[0];
+                moveY = lastY = points[1];
+                break;
+
+            case PathIterator.SEG_CLOSE:
+                points[0] = moveX;
+                points[1] = moveY;
+                // Fall into....
+
+            case PathIterator.SEG_LINETO:
+                thisX = points[0];
+                thisY = points[1];
+                float dx = thisX - lastX;
+                float dy = thisY - lastY;
+                total += (float) sqrt( dx * dx + dy * dy );
+                lastX = thisX;
+                lastY = thisY;
+                break;
+            }
+            it.next();
+        }
+
+        return total;
+    }
+
 }

@@ -16,6 +16,9 @@ limitations under the License.
 
 package org.deegree.rendering.strokes;
 
+import static java.lang.Math.atan2;
+import static java.lang.Math.sqrt;
+
 import java.awt.Font;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -37,11 +40,10 @@ import java.awt.geom.Point2D;
  * @version $Revision$, $Date$
  */
 public class TextStroke implements Stroke {
+
     private String text;
 
     private Font font;
-
-    private boolean stretchToFit = false;
 
     private boolean repeat = false;
 
@@ -52,45 +54,36 @@ public class TextStroke implements Stroke {
     /**
      * @param text
      * @param font
-     */
-    public TextStroke( String text, Font font ) {
-        this( text, font, true, false );
-    }
-
-    /**
-     * @param text
-     * @param font
-     * @param stretchToFit
      * @param repeat
      */
-    public TextStroke( String text, Font font, boolean stretchToFit, boolean repeat ) {
+    public TextStroke( String text, Font font, boolean repeat ) {
         this.text = text;
         this.font = font;
-        this.stretchToFit = stretchToFit;
         this.repeat = repeat;
+        if ( repeat && !text.endsWith( " " ) ) {
+            this.text = text + " ";
+        }
     }
 
     public Shape createStrokedShape( Shape shape ) {
-        FontRenderContext frc = new FontRenderContext( null, true, true );
+        FontRenderContext frc = new FontRenderContext( null, false, false );
         GlyphVector glyphVector = font.createGlyphVector( frc, text );
 
         GeneralPath result = new GeneralPath();
         PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
-        float points[] = new float[6];
-        float moveX = 0, moveY = 0;
-        float lastX = 0, lastY = 0;
-        float thisX = 0, thisY = 0;
+        double points[] = new double[6];
+        double moveX = 0, moveY = 0;
+        double lastX = 0, lastY = 0;
+        double thisX = 0, thisY = 0;
         int type = 0;
-        float next = 0;
+        double next = 0;
         int currentChar = 0;
         int length = glyphVector.getNumGlyphs();
 
         if ( length == 0 )
             return result;
 
-        float factor = stretchToFit ? measurePathLength( shape ) / (float) glyphVector.getLogicalBounds().getWidth()
-                                   : 1.0f;
-        float nextAdvance = 0;
+        double nextAdvance = 0;
 
         while ( currentChar < length && !it.isDone() ) {
             type = it.currentSegment( points );
@@ -111,27 +104,28 @@ public class TextStroke implements Stroke {
             case PathIterator.SEG_LINETO:
                 thisX = points[0];
                 thisY = points[1];
-                float dx = thisX - lastX;
-                float dy = thisY - lastY;
-                float distance = (float) Math.sqrt( dx * dx + dy * dy );
+                double dx = thisX - lastX;
+                double dy = thisY - lastY;
+                double distance = sqrt( dx * dx + dy * dy );
                 if ( distance >= next ) {
-                    float r = 1.0f / distance;
-                    float angle = (float) Math.atan2( dy, dx );
+                    double r = 1.0f / distance;
+                    double angle = atan2( dy, dx );
                     while ( currentChar < length && distance >= next ) {
                         Shape glyph = glyphVector.getGlyphOutline( currentChar );
                         Point2D p = glyphVector.getGlyphPosition( currentChar );
-                        float px = (float) p.getX();
-                        float py = (float) p.getY();
-                        float x = lastX + next * dx * r;
-                        float y = lastY + next * dy * r;
-                        float advance = nextAdvance;
+                        double px = p.getX();
+                        double py = p.getY();
+                        double x = lastX + next * dx * r;
+                        double y = lastY + next * dy * r;
+                        double advance = nextAdvance;
                         nextAdvance = currentChar < length - 1 ? glyphVector.getGlyphMetrics( currentChar + 1 ).getAdvance() * 0.5f
-                                                              : 0;
+                                                              : advance;
                         t.setToTranslation( x, y );
                         t.rotate( angle );
                         t.translate( -px - advance, -py );
+                        t.translate( -glyph.getBounds2D().getWidth() / 2, glyph.getBounds().getHeight() / 2 );
                         result.append( t.createTransformedShape( glyph ), false );
-                        next += ( advance + nextAdvance ) * factor;
+                        next += ( advance + nextAdvance );
                         currentChar++;
                         if ( repeat )
                             currentChar %= length;
@@ -146,48 +140,6 @@ public class TextStroke implements Stroke {
         }
 
         return result;
-    }
-
-    /**
-     * @param shape
-     * @return the path length
-     */
-    public static float measurePathLength( Shape shape ) {
-        PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
-        float points[] = new float[6];
-        float moveX = 0, moveY = 0;
-        float lastX = 0, lastY = 0;
-        float thisX = 0, thisY = 0;
-        int type = 0;
-        float total = 0;
-
-        while ( !it.isDone() ) {
-            type = it.currentSegment( points );
-            switch ( type ) {
-            case PathIterator.SEG_MOVETO:
-                moveX = lastX = points[0];
-                moveY = lastY = points[1];
-                break;
-
-            case PathIterator.SEG_CLOSE:
-                points[0] = moveX;
-                points[1] = moveY;
-                // Fall into....
-
-            case PathIterator.SEG_LINETO:
-                thisX = points[0];
-                thisY = points[1];
-                float dx = thisX - lastX;
-                float dy = thisY - lastY;
-                total += (float) Math.sqrt( dx * dx + dy * dy );
-                lastX = thisX;
-                lastY = thisY;
-                break;
-            }
-            it.next();
-        }
-
-        return total;
     }
 
 }
