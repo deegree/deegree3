@@ -43,7 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.standard.surfacepatches;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 

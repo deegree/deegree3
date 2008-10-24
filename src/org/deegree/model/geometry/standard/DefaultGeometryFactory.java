@@ -51,7 +51,9 @@ import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.composite.CompositeSurface;
 import org.deegree.model.geometry.multi.MultiCurve;
 import org.deegree.model.geometry.multi.MultiGeometry;
+import org.deegree.model.geometry.multi.MultiLineString;
 import org.deegree.model.geometry.multi.MultiPoint;
+import org.deegree.model.geometry.multi.MultiPolygon;
 import org.deegree.model.geometry.multi.MultiSolid;
 import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
@@ -88,6 +90,13 @@ import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.Rectangle;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
+import org.deegree.model.geometry.standard.aggregate.DefaultMultiCurve;
+import org.deegree.model.geometry.standard.aggregate.DefaultMultiGeometry;
+import org.deegree.model.geometry.standard.aggregate.DefaultMultiLineString;
+import org.deegree.model.geometry.standard.aggregate.DefaultMultiPoint;
+import org.deegree.model.geometry.standard.aggregate.DefaultMultiPolygon;
+import org.deegree.model.geometry.standard.aggregate.DefaultMultiSolid;
+import org.deegree.model.geometry.standard.aggregate.DefaultMultiSurface;
 import org.deegree.model.geometry.standard.composite.DefaultCompositeCurve;
 import org.deegree.model.geometry.standard.composite.DefaultCompositeGeometry;
 import org.deegree.model.geometry.standard.composite.DefaultCompositeSolid;
@@ -190,36 +199,6 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     @Override
     public LineStringSegment createLineStringSegment( List<Point> points ) {
         return new DefaultLineStringSegment( points );
-    }
-
-    @Override
-    public MultiCurve createMultiCurve( String id, List<Curve> curves ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public MultiGeometry<Geometry> createMultiGeometry( String id, List<Geometry> geometries ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public MultiPoint createMultiPoint( String id, List<Point> points ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public MultiSolid createMultiSolid( String id, List<Solid> solids ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public MultiSurface createMultiSurface( String id, List<Surface> surfaces ) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override
@@ -353,4 +332,39 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     public Solid createSolid( String id, CoordinateSystem crs, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
         return new DefaultSolid( id, crs, exteriorSurface, interiorSurfaces );
     }
+
+    @Override
+    public MultiPoint createMultiPoint( String id, CoordinateSystem crs, List<Point> members ) {
+        return new DefaultMultiPoint(id, crs, members);
+    }
+
+    @Override
+    public MultiCurve createMultiCurve( String id, CoordinateSystem crs, List<Curve> members ) {
+        return new DefaultMultiCurve(id, crs, members);
+    }
+
+    @Override
+    public MultiLineString createMultiLineString( String id, CoordinateSystem crs, List<LineString> members ) {
+        return new DefaultMultiLineString(id, crs, members);
+    }    
+    
+    @Override
+    public MultiSurface createMultiSurface( String id, CoordinateSystem crs, List<Surface> members ) {
+        return new DefaultMultiSurface(id, crs, members);
+    }
+
+    @Override
+    public MultiPolygon createMultiPolygon( String id, CoordinateSystem crs, List<Polygon> members ) {
+        return new DefaultMultiPolygon(id, crs, members);
+    }
+    
+    @Override
+    public MultiSolid createMultiSolid( String id, CoordinateSystem crs, List<Solid> members ) {
+        return new DefaultMultiSolid(id, crs, members);
+    }
+
+    @Override
+    public MultiGeometry<Geometry> createMultiGeometry( String id, CoordinateSystem crs, List<Geometry> members ) {
+        return new DefaultMultiGeometry<Geometry>(id, crs, members);
+    }    
 }

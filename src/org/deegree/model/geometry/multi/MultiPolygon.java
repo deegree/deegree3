@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/geometry/multi/MultiSurface.java $
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2007 by:
@@ -38,20 +38,20 @@
 package org.deegree.model.geometry.multi;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.Polygon;
 
 /**
- * Specialised aggregation type for {@link Surface} objects.
+ * Specialised aggregation type for {@link Polygon} objects.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: mschneider $
  * 
- * @version. $Revision$, $Date$
+ * @version. $Revision: 14373 $, $Date: 2008-10-21 20:16:09 +0200 (Di, 21 Okt 2008) $
  */
-public interface MultiSurface extends MultiGeometry<Surface> {
+public interface MultiPolygon extends MultiGeometry<Polygon> {
 
     /**
-     * The are of all contained {@link Surface}s measured in units of the used {@link CoordinateSystem}.
+     * The are of all contained {@link Polygon}s measured in units of the used {@link CoordinateSystem}.
      * 
      * @return area
      */

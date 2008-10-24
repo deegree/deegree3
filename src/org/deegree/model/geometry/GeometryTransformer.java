@@ -253,7 +253,7 @@ public class GeometryTransformer extends Transformer {
             points.add( geomFactory.createPoint( null, new double[] { x2, y1 + i * yStep }, precision, null ) );
         }
 
-        MultiPoint envGeometry = geomFactory.createMultiPoint( null, points );
+        MultiPoint envGeometry = geomFactory.createMultiPoint( null, envelope.getCoordinateSystem(), points );
         MultiPoint transformedEnvGeometry = transform( envGeometry, trans );
 
         return transformedEnvGeometry.getEnvelope();
@@ -291,7 +291,7 @@ public class GeometryTransformer extends Transformer {
         for ( int i = 0; i < geo.size(); i++ ) {
             curves.add( transform( geo.get( i ), trans ) );
         }
-        return geomFactory.createMultiCurve( geo.getId(), curves );
+        return geomFactory.createMultiCurve( geo.getId(), geo.getCoordinateSystem(), curves );
     }
 
     /**
@@ -305,7 +305,7 @@ public class GeometryTransformer extends Transformer {
         for ( Point p : geo ) {
             points.add( transform( p, trans ) );
         }
-        return geomFactory.createMultiPoint( geo.getId(), points );
+        return geomFactory.createMultiPoint( geo.getId(), geo.getCoordinateSystem(), points );
     }
 
     /**
@@ -319,7 +319,7 @@ public class GeometryTransformer extends Transformer {
         for ( int i = 0; i < geo.size(); i++ ) {
             surfaces.add( transform( geo.get( i ), trans ) );
         }
-        return geomFactory.createMultiSurface( geo.getId(), surfaces );
+        return geomFactory.createMultiSurface( geo.getId(), geo.getCoordinateSystem(), surfaces );
     }
 
     /**

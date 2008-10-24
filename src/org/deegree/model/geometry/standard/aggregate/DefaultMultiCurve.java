@@ -41,34 +41,39 @@
 
 
  ---------------------------------------------------------------------------*/
+package org.deegree.model.geometry.standard.aggregate;
 
-import org.apache.xerces.xs.XSImplementation;
-import org.apache.xerces.xs.XSLoader;
-import org.apache.xerces.xs.XSModel;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import java.util.List;
+
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.multi.MultiCurve;
+import org.deegree.model.geometry.primitive.Curve;
 
 /**
- * TODO add documentation here
- * 
+ * Default implementation of {@link MultiCurve}.
+ *  
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class XSLoaderTest {
-
-    public static void main( String[] args )
-                            throws ClassCastException, ClassNotFoundException, InstantiationException,
-                            IllegalAccessException {
-
-        System.out.println (System.getProperty( "javax.xml.stream.XMLInputFactory" ));
-        
-        System.setProperty( DOMImplementationRegistry.PROPERTY, "org.apache.xerces.dom.DOMXSImplementationSourceImpl" );
-        DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-        XSImplementation impl = (XSImplementation) registry.getDOMImplementation( "XS-Loader" );
-        XSLoader schemaLoader = impl.createXSLoader( null );
-
-        XSModel model = schemaLoader.loadURI( "file:////home/schneider/workspace/base/resources/wfs/example/philosopher/featuretypes/Philosopher.xsd" );
-        System.out.println( model );
+public class DefaultMultiCurve extends DefaultMultiGeometry<Curve> implements MultiCurve {
+    
+    /**
+     * Creates a new {@link DefaultMultiCurve} from the given parameters.
+     * 
+     * @param id
+     *            identifier of the created geometry object
+     * @param crs
+     *            coordinate reference system
+     * @param members
+     */
+    public DefaultMultiCurve( String id, CoordinateSystem crs, List<Curve> members ) {
+        super( id, crs, members );
     }
+    
+    @Override
+    public double getLength() {
+        throw new UnsupportedOperationException();
+    }    
 }

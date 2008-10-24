@@ -48,7 +48,9 @@ import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.composite.CompositeSurface;
 import org.deegree.model.geometry.multi.MultiCurve;
 import org.deegree.model.geometry.multi.MultiGeometry;
+import org.deegree.model.geometry.multi.MultiLineString;
 import org.deegree.model.geometry.multi.MultiPoint;
+import org.deegree.model.geometry.multi.MultiPolygon;
 import org.deegree.model.geometry.multi.MultiSolid;
 import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
@@ -482,71 +484,6 @@ public interface GeometryFactory {
     public Surface createSurface( String id, List<SurfacePatch> patches, CoordinateSystem crs );
 
     /**
-     * Creates an untyped multi geometry from a list of {@link Geometry}s.
-     * 
-     * @param id
-     *            identifier of the new geometry instance
-     * @param geometries
-     * @return created {@link MultiGeometry}
-     */
-    public MultiGeometry<Geometry> createMultiGeometry( String id, List<Geometry> geometries );
-
-    /**
-     * Creates a {@link MultiPoint} from a list of passed {@link Point}s.
-     * 
-     * @param id
-     *            identifier of the new geometry instance
-     * @param points
-     * @return created {@link MultiPoint}
-     */
-    public MultiPoint createMultiPoint( String id, List<Point> points );
-
-    /**
-     * Creates a {@link MultiCurve} from a list of passed {@link Curve}s.
-     * 
-     * @param id
-     *            identifier of the new geometry instance
-     * @param curves
-     * @return created {@link MultiCurve}
-     */
-    public MultiCurve createMultiCurve( String id, List<Curve> curves );
-
-    /**
-     * Creates a {@link MultiSurface} from a list of passed {@link Surface}s.
-     * 
-     * @param id
-     *            identifier of the new geometry instance
-     * @param surfaces
-     * @return created {@link MultiSurface}
-     */
-    public MultiSurface createMultiSurface( String id, List<Surface> surfaces );
-
-    /**
-     * Creates a {@link MultiSolid} from a list of passed {@link Solid}s.
-     * 
-     * @param id
-     *            identifier of the new geometry instance
-     * @param solids
-     * @return created {@link MultiSolid}
-     */
-    public MultiSolid createMultiSolid( String id, List<Solid> solids );
-
-    /**
-     * Creates a {@link CompositeCurve} from a list of passed {@link Curve}s.
-     * 
-     * @param id
-     *            identifier of the new geometry instance
-     * @param crs
-     *            coordinate reference system. If the curve does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
-     * @param memberCurves
-     *            curves that constitute the composited curve, each curve must end at the start point of the subsequent
-     *            curve in the list
-     * @return created {@link CompositeCurve}
-     */
-    public CompositeCurve createCompositeCurve( String id, CoordinateSystem crs, List<Curve> memberCurves );
-
-    /**
      * Creates a {@link Polygon} surface.
      * 
      * @param id
@@ -572,50 +509,6 @@ public interface GeometryFactory {
      * @return created {@link PolygonPatch}
      */
     public PolygonPatch createPolygonPatch( Ring exteriorRing, List<Ring> interiorRings );
-
-    /**
-     * Creates a {@link CompositeSurface} from a list of passed {@link Surface}s.
-     * 
-     * @param id
-     *            identifier of the new geometry instance
-     * @param crs
-     *            coordinate reference system. If the surface does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
-     * @param memberSurfaces
-     *            surfaces that constitute the composited surface, the surfaces must join in pairs on common boundary
-     *            curves and must, when considered as a whole, form a single surface
-     * @return created {@link CompositeSurface}
-     */
-    public CompositeSurface createCompositeSurface( String id, CoordinateSystem crs, List<Surface> memberSurfaces );
-
-    /**
-     * Creates a {@link CompositeSolid} from a list of passed {@link Solid}s.
-     * 
-     * @param id
-     *            identifier of the new geometry instance
-     * @param crs
-     *            coordinate reference system. If the solid does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
-     * @param memberSolids
-     *            solids that constitute the composited solid, the solids must join in pairs on common boundary surfaces
-     *            and which, when considered as a whole, form a single solid
-     * @return created {@link CompositeSolid}
-     */
-    public CompositeSolid createCompositeSolid( String id, CoordinateSystem crs, List<Solid> memberSolids );
-
-    /**
-     * Creates a general {@link CompositeGeometry} from a list of primitive geometries.
-     * 
-     * @param id
-     *            identifier of the new geometry instance
-     * @param crs
-     *            coordinate reference system. If the complex does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
-     * @param memberPrimitives
-     * @return created {@link CompositeGeometry}
-     */
-    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs,
-                                                                          List<GeometricPrimitive> memberPrimitives );
 
     /**
      * creates an {@link Envelope} with a defined precision
@@ -775,4 +668,160 @@ public interface GeometryFactory {
      * @return created {@link Solid}
      */
     public Solid createSolid( String id, CoordinateSystem crs, Surface exteriorSurface, List<Surface> interiorSurfaces );
+
+    /**
+     * Creates an untyped multi geometry from a list of {@link Geometry}s.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            shall be used instead of <code>null</code>
+     * @param geometries
+     * @return created {@link MultiGeometry}
+     */
+    public MultiGeometry<Geometry> createMultiGeometry( String id, CoordinateSystem crs, List<Geometry> geometries );
+
+    /**
+     * Creates a {@link MultiPoint} from a list of passed {@link Point}s.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            shall be used instead of <code>null</code>
+     * @param members
+     *            points that constitute the collection
+     * @return created {@link MultiPoint}
+     */
+    public MultiPoint createMultiPoint( String id, CoordinateSystem crs, List<Point> members );
+
+    /**
+     * Creates a {@link MultiCurve} from a list of passed {@link Curve}s.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            shall be used instead of <code>null</code>
+     * @param members
+     *            curves that constitute the collection
+     * @return created {@link MultiCurve}
+     */
+    public MultiCurve createMultiCurve( String id, CoordinateSystem crs, List<Curve> members );
+
+    /**
+     * Creates a {@link MultiCurve} from a list of passed {@link LineString}s.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            shall be used instead of <code>null</code>
+     * @param members
+     *            curves that constitute the collection
+     * @return created {@link MultiLineString}
+     */
+    public MultiLineString createMultiLineString( String id, CoordinateSystem crs, List<LineString> members );
+
+    /**
+     * Creates a {@link MultiSurface} from a list of passed {@link Surface}s.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            shall be used instead of <code>null</code>
+     * @param members
+     *            surfaces that constitute the collection
+     * @return created {@link MultiSurface}
+     */
+    public MultiSurface createMultiSurface( String id, CoordinateSystem crs, List<Surface> members );
+
+    /**
+     * Creates a {@link MultiPolygon} from a list of passed {@link Polygon}s.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            shall be used instead of <code>null</code>
+     * @param members
+     *            polygons that constitute the collection
+     * @return created {@link MultiPolygon}
+     */
+    public MultiPolygon createMultiPolygon( String id, CoordinateSystem crs, List<Polygon> members );
+
+    /**
+     * Creates a {@link MultiSolid} from a list of passed {@link Solid}s.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            shall be used instead of <code>null</code>
+     * @param members
+     *            solids that constitute the collection
+     * @return created {@link MultiSolid}
+     */
+    public MultiSolid createMultiSolid( String id, CoordinateSystem crs, List<Solid> members );
+
+    /**
+     * Creates a {@link CompositeCurve} from a list of passed {@link Curve}s.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system. If the curve does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @param members
+     *            curves that constitute the composited curve, each curve must end at the start point of the subsequent
+     *            curve in the list
+     * @return created {@link CompositeCurve}
+     */
+    public CompositeCurve createCompositeCurve( String id, CoordinateSystem crs, List<Curve> members );
+
+    /**
+     * Creates a {@link CompositeSurface} from a list of passed {@link Surface}s.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system. If the surface does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @param memberSurfaces
+     *            surfaces that constitute the composited surface, the surfaces must join in pairs on common boundary
+     *            curves and must, when considered as a whole, form a single surface
+     * @return created {@link CompositeSurface}
+     */
+    public CompositeSurface createCompositeSurface( String id, CoordinateSystem crs, List<Surface> memberSurfaces );
+
+    /**
+     * Creates a {@link CompositeSolid} from a list of passed {@link Solid}s.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system. If the solid does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @param memberSolids
+     *            solids that constitute the composited solid, the solids must join in pairs on common boundary surfaces
+     *            and which, when considered as a whole, form a single solid
+     * @return created {@link CompositeSolid}
+     */
+    public CompositeSolid createCompositeSolid( String id, CoordinateSystem crs, List<Solid> memberSolids );
+
+    /**
+     * Creates a general {@link CompositeGeometry} from a list of primitive geometries.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            coordinate reference system. If the complex does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @param memberPrimitives
+     * @return created {@link CompositeGeometry}
+     */
+    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs,
+                                                                          List<GeometricPrimitive> memberPrimitives );
 }

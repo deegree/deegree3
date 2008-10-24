@@ -50,7 +50,9 @@ import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.composite.CompositeSurface;
 import org.deegree.model.geometry.multi.MultiCurve;
 import org.deegree.model.geometry.multi.MultiGeometry;
+import org.deegree.model.geometry.multi.MultiLineString;
 import org.deegree.model.geometry.multi.MultiPoint;
+import org.deegree.model.geometry.multi.MultiPolygon;
 import org.deegree.model.geometry.multi.MultiSolid;
 import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
@@ -137,50 +139,46 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public MultiCurve createMultiCurve( String id, List<Curve> curves ) {
+    public MultiCurve createMultiCurve( String id, CoordinateSystem crs, List<Curve> curves ) {
         if ( curves == null || curves.size() == 0 ) {
             return null;
         }
         double precision = curves.get( 0 ).getPrecision();
-        CoordinateSystem crs = curves.get( 0 ).getCoordinateSystem();
         int coordinateDimension = curves.get( 0 ).getCoordinateDimension();
         return new JTSWrapperMultiCurve( id, curves, coordinateDimension, precision, crs );
     }
 
     @Override
-    public MultiGeometry<Geometry> createMultiGeometry( String id, List<Geometry> geometries ) {
+    public MultiGeometry<Geometry> createMultiGeometry( String id, CoordinateSystem crs, List<Geometry> geometries ) {
         if ( geometries == null || geometries.size() == 0 ) {
             return null;
         }
         double precision = geometries.get( 0 ).getPrecision();
-        CoordinateSystem crs = geometries.get( 0 ).getCoordinateSystem();
         int coordinateDimension = geometries.get( 0 ).getCoordinateDimension();
         return new JTSWrapperGeometryCollection( id, precision, crs, coordinateDimension, geometries );
     }
 
     @Override
-    public MultiPoint createMultiPoint( String id, List<Point> points ) {
+    public MultiPoint createMultiPoint( String id, CoordinateSystem crs, List<Point> points ) {
         if ( points == null || points.size() == 0 ) {
             return null;
         }
         double precision = points.get( 0 ).getPrecision();
-        CoordinateSystem crs = points.get( 0 ).getCoordinateSystem();
         int coordinateDimension = points.get( 0 ).getCoordinateDimension();
         return new JTSWrapperMultiPoint( id, points, coordinateDimension, precision, crs );
     }
 
     @Override
-    public MultiSolid createMultiSolid( String id, List<Solid> solids ) {
+    public MultiSolid createMultiSolid( String id, CoordinateSystem crs, List<Solid> solids ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public MultiSurface createMultiSurface( String id, List<Surface> surfaces ) {
+    public MultiSurface createMultiSurface( String id, CoordinateSystem crs, List<Surface> surfaces ) {
         if ( surfaces == null || surfaces.size() == 0 ) {
             return null;
         }
         double precision = surfaces.get( 0 ).getPrecision();
-        CoordinateSystem crs = surfaces.get( 0 ).getCoordinateSystem();
         int coordinateDimension = surfaces.get( 0 ).getCoordinateDimension();
         return new JTSWrapperMultiSurface( id, surfaces, coordinateDimension, precision, crs );
     }
@@ -365,5 +363,17 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     @Override
     public Solid createSolid( String id, CoordinateSystem crs, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public MultiLineString createMultiLineString( String id, CoordinateSystem crs, List<LineString> members ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public MultiPolygon createMultiPolygon( String id, CoordinateSystem crs, List<Polygon> members ) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

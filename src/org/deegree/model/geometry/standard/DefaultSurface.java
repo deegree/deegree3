@@ -46,7 +46,6 @@ package org.deegree.model.geometry.standard;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;

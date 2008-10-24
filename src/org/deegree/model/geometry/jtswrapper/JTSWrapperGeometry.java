@@ -52,7 +52,6 @@ import org.deegree.model.geometry.multi.MultiSurface;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -68,7 +67,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequenceFactory;
 
 /**
- *
+ * 
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
@@ -259,7 +258,7 @@ abstract class JTSWrapperGeometry implements Geometry {
     private com.vividsolutions.jts.geom.MultiPoint export( MultiPoint gmMultiPoint ) {
         com.vividsolutions.jts.geom.Point[] points = new com.vividsolutions.jts.geom.Point[gmMultiPoint.size()];
         int i = 0;
-        for ( Point point : gmMultiPoint) {
+        for ( Point point : gmMultiPoint ) {
             points[i++] = export( point );
         }
         return jtsFactory.createMultiPoint( points );
@@ -274,9 +273,9 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @return the corresponding LineString object
      */
     private LineString export( Curve curve ) {
-        
+
         LineString geom = null;
-        
+
         switch ( curve.getCurveType() ) {
         case LineString: {
             List<Point> points = ( (org.deegree.model.geometry.primitive.LineString) curve ).getControlPoints();
@@ -320,22 +319,22 @@ abstract class JTSWrapperGeometry implements Geometry {
     private Polygon export( Surface surface ) {
 
         throw new UnsupportedOperationException();
-//        List<Curve> boundary = surface.getBoundary();
-//        CoordinateSequenceFactory fac = CoordinateArraySequenceFactory.instance();
-//        List<Point> outer = boundary.get( 0 ).getAsLineString().getControlPoints();
-//        Coordinate[] coords = toCoordinates( outer );
-//
-//        LinearRing shell = new LinearRing( fac.create( coords ), jtsFactory );
-//
-//        LinearRing[] holes = new LinearRing[0];
-//        if ( boundary.size() > 1 ) {
-//            holes = new LinearRing[boundary.size() - 1];
-//            for ( int i = 1; i < boundary.size(); i++ ) {
-//                coords = toCoordinates( boundary.get( i ).getAsLineString().getControlPoints() );
-//                holes[i - 1] = new LinearRing( fac.create( coords ), jtsFactory );
-//            }
-//        }
-//        return jtsFactory.createPolygon( shell, holes );
+        // List<Curve> boundary = surface.getBoundary();
+        // CoordinateSequenceFactory fac = CoordinateArraySequenceFactory.instance();
+        // List<Point> outer = boundary.get( 0 ).getAsLineString().getControlPoints();
+        // Coordinate[] coords = toCoordinates( outer );
+        //
+        // LinearRing shell = new LinearRing( fac.create( coords ), jtsFactory );
+        //
+        // LinearRing[] holes = new LinearRing[0];
+        // if ( boundary.size() > 1 ) {
+        // holes = new LinearRing[boundary.size() - 1];
+        // for ( int i = 1; i < boundary.size(); i++ ) {
+        // coords = toCoordinates( boundary.get( i ).getAsLineString().getControlPoints() );
+        // holes[i - 1] = new LinearRing( fac.create( coords ), jtsFactory );
+        // }
+        // }
+        // return jtsFactory.createPolygon( shell, holes );
     }
 
     /**
@@ -480,7 +479,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         for ( int i = 0; i < multi.getNumGeometries(); i++ ) {
             gmPoints.add( wrap( (com.vividsolutions.jts.geom.Point) multi.getGeometryN( i ) ) );
         }
-        return geomFactory.createMultiPoint( null, gmPoints );
+        return geomFactory.createMultiPoint( null, crs, gmPoints );
     }
 
     /**
@@ -513,7 +512,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         for ( int i = 0; i < multi.getNumGeometries(); i++ ) {
             curves.add( wrap( (com.vividsolutions.jts.geom.LineString) multi.getGeometryN( i ) ) );
         }
-        return geomFactory.createMultiCurve( null, curves );
+        return geomFactory.createMultiCurve( null, crs, curves );
     }
 
     /**
@@ -526,18 +525,18 @@ abstract class JTSWrapperGeometry implements Geometry {
      */
     private Surface wrap( Polygon polygon ) {
         return null;
-//        List<Curve> boundary = new ArrayList<Curve>( polygon.getNumInteriorRing() + 1 );
-//        Point[][] ring = new Point[1][];
-//        List<Point> list = toPoints( polygon.getExteriorRing().getCoordinates() );
-//        ring[0] = list.toArray( new Point[list.size()] );
-//        boundary.add( geomFactory.createCurve( null, ring, crs ) );
-//        for ( int i = 0; i < polygon.getNumInteriorRing(); i++ ) {
-//            list = toPoints( polygon.getInteriorRingN( i ).getCoordinates() );
-//            ring[0] = list.toArray( new Point[list.size()] );
-//            boundary.add( geomFactory.createCurve( null, ring, crs ) );
-//        }
-//
-//        return geomFactory.createSurface( null, boundary, SurfacePatch.Interpolation.none, crs );
+        // List<Curve> boundary = new ArrayList<Curve>( polygon.getNumInteriorRing() + 1 );
+        // Point[][] ring = new Point[1][];
+        // List<Point> list = toPoints( polygon.getExteriorRing().getCoordinates() );
+        // ring[0] = list.toArray( new Point[list.size()] );
+        // boundary.add( geomFactory.createCurve( null, ring, crs ) );
+        // for ( int i = 0; i < polygon.getNumInteriorRing(); i++ ) {
+        // list = toPoints( polygon.getInteriorRingN( i ).getCoordinates() );
+        // ring[0] = list.toArray( new Point[list.size()] );
+        // boundary.add( geomFactory.createCurve( null, ring, crs ) );
+        // }
+        //
+        // return geomFactory.createSurface( null, boundary, SurfacePatch.Interpolation.none, crs );
     }
 
     /**
@@ -553,7 +552,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         for ( int i = 0; i < multiPolygon.getNumGeometries(); i++ ) {
             surfaces.add( wrap( (com.vividsolutions.jts.geom.Polygon) multiPolygon.getGeometryN( i ) ) );
         }
-        return geomFactory.createMultiSurface( null, surfaces );
+        return geomFactory.createMultiSurface( null, crs, surfaces );
     }
 
     /**
@@ -569,7 +568,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         for ( int i = 0; i < collection.getNumGeometries(); i++ ) {
             geoms.add( wrap( collection.getGeometryN( i ) ) );
         }
-        return geomFactory.createMultiGeometry( null, geoms );
+        return geomFactory.createMultiGeometry( null, crs, geoms );
     }
 
     public boolean contains( Geometry geometry ) {

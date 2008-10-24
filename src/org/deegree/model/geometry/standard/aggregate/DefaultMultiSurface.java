@@ -41,76 +41,39 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard;
+package org.deegree.model.geometry.standard.aggregate;
 
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.PolyhedralSurface;
-import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
-import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.model.geometry.multi.MultiSurface;
+import org.deegree.model.geometry.primitive.Surface;
 
 /**
- * Default implementation of {@link PolyhedralSurface}.
- *
+ * Default implementation of {@link MultiSurface}.
+ *  
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements PolyhedralSurface {
-
-    private List<?> patches;
-
+public class DefaultMultiSurface extends DefaultMultiGeometry<Surface> implements MultiSurface {
+    
     /**
-     * Creates a new {@link DefaultPolyhedralSurface} instance from the given parameters.
+     * Creates a new {@link DefaultMultiSurface} from the given parameters.
      * 
      * @param id
      *            identifier of the created geometry object
      * @param crs
      *            coordinate reference system
-     * @param patches
-     *            patches that constitute the surface
+     * @param members
      */
-    public DefaultPolyhedralSurface (String id, CoordinateSystem crs, List<PolygonPatch> patches) {
-        super (id, crs);
-        this.patches = patches;
+    public DefaultMultiSurface( String id, CoordinateSystem crs, List<Surface> members ) {
+        super( id, crs, members );
     }
-    
+
     @Override
     public double getArea() {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Point getCentroid() {
-        throw new UnsupportedOperationException();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<SurfacePatch> getPatches() {        
-        return (List<SurfacePatch>) patches;
-    }
-
-    @Override
-    public double getPerimeter() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Surface;
-    }
-
-    @Override
-    public SurfaceType getSurfaceType() {
-        return SurfaceType.PolyhedralSurface;
-    }
-
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
     }
 }
