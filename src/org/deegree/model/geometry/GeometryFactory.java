@@ -530,22 +530,6 @@ public interface GeometryFactory {
     public SurfacePatch createSurfacePatch( List<Curve> boundary );
 
     /**
-     * Creates a Solid from a from a set of {@link Surface}s forming its outer boundary and 0..n sets of {@link Surface}
-     * s forming its inner boundaries. The support for {@link Solid}s is optional. An implementation that does not
-     * support is shall throw an {@link UnsupportedOperationException} if this method will be invoked.
-     * 
-     * @param id
-     *            identifier of the new geometry instance
-     * @param outerboundary
-     * @param innerboundaries
-     * @param crs
-     *            solids coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
-     * @return created {@link Solid}
-     */
-    public Solid createSolid( String id, Surface[] outerboundary, Surface[][] innerboundaries, CoordinateSystem crs );
-
-    /**
      * Creates an untyped multi geometry from a list of {@link Geometry}s.
      * 
      * @param id
@@ -634,7 +618,7 @@ public interface GeometryFactory {
      * @param interiorRings
      *            list of rings that define the inner boundaries, may be empty or null
      * @return created {@link PolygonPatch}
-     */    
+     */
     public PolygonPatch createPolygonPatch( Ring exteriorRing, List<Ring> interiorRings );
 
     /**
@@ -770,8 +754,8 @@ public interface GeometryFactory {
      * @param exterior
      *            ring that contains exactly four planar points, the first and last point must be coincident
      * @return created {@link Triangle}
-     */    
-    public Triangle createTriangle(LinearRing exterior);
+     */
+    public Triangle createTriangle( LinearRing exterior );
 
     /**
      * Creates a {@link Rectangle} surface patch.
@@ -779,8 +763,8 @@ public interface GeometryFactory {
      * @param exterior
      *            ring that contains exactly five planar points, the first and last point must be coincident
      * @return created {@link Rectangle}
-     */    
-    public Rectangle createRectangle(LinearRing exterior);
+     */
+    public Rectangle createRectangle( LinearRing exterior );
 
     /**
      * Creates an {@link OrientableSurface}.
@@ -795,7 +779,8 @@ public interface GeometryFactory {
      *            set to true, if the orientation of the base surface shall be reversed
      * @return created {@link OrientableCurve}
      */
-    public OrientableSurface createOrientableSurface( String id, CoordinateSystem crs, Surface baseSurface, boolean isReversed );
+    public OrientableSurface createOrientableSurface( String id, CoordinateSystem crs, Surface baseSurface,
+                                                      boolean isReversed );
 
     /**
      * Creates a {@link PolyhedralSurface}.
@@ -808,7 +793,7 @@ public interface GeometryFactory {
      *            patches that constitute the surface
      * @return created {@link PolyhedralSurface}
      */
-    public PolyhedralSurface createPolyhedralSurface( String id, CoordinateSystem crs, List<PolygonPatch> memberPatches);
+    public PolyhedralSurface createPolyhedralSurface( String id, CoordinateSystem crs, List<PolygonPatch> memberPatches );
 
     /**
      * Creates a {@link TriangulatedSurface}.
@@ -821,5 +806,21 @@ public interface GeometryFactory {
      *            patches that constitute the surface
      * @return created {@link TriangulatedSurface}
      */
-    public TriangulatedSurface createTriangulatedSurface( String id, CoordinateSystem crs, List<Triangle> memberPatches);    
+    public TriangulatedSurface createTriangulatedSurface( String id, CoordinateSystem crs, List<Triangle> memberPatches );
+
+    /**
+     * Creates a {@link Solid}.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param crs
+     *            solids coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @param exteriorSurface
+     *            the exterior surface (shell) of the solid, may be null
+     * @param interiorSurfaces
+     *            the interior surfaces of the solid, may be null or empty
+     * @return created {@link Solid}
+     */
+    public Solid createSolid( String id, CoordinateSystem crs, Surface exteriorSurface, List<Surface> interiorSurfaces );
 }

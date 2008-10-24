@@ -45,8 +45,10 @@ package org.deegree.model.geometry.primitive;
 
 import java.util.List;
 
+import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
+
 /**
- * A <code>Polygon</code> is a {@link Surface} that consists of one single planar patch.
+ * A <code>Polygon</code> is a {@link Surface} that consists of one single planar patch ({@link PolygonPatch}).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -56,17 +58,17 @@ import java.util.List;
 public interface Polygon extends Surface {
 
     /**
-     * Must always return {@link SurfaceType.SurfaceType#Polygon}.
+     * Must always return {@link Surface.SurfaceType#Polygon}.
      * 
-     * @return {@link SurfaceType.SurfaceType#Polygon}
+     * @return {@link Surface.SurfaceType#Polygon}
      */
     @Override
     public SurfaceType getSurfaceType();
-    
+
     /**
      * Returns the exterior ring of the polygon.
      * <p>
-     * Please note that the exterior may be empty (null). The following explanation is from the GML 3.1.1 spec (section
+     * Please note that this method may return null. The following explanation is from the GML 3.1.1 spec (section
      * 9.2.2.5): In the normal 2D case, one of these rings is distinguished as being the exterior boundary. In a general
      * manifold this is not always possible, in which case all boundaries shall be listed as interior boundaries, and
      * the exterior will be empty.

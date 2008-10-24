@@ -160,8 +160,8 @@ public class GML311GeometryParser extends GML311BaseParser {
         surfaceElements.add( "TriangulatedSurface" );
 
         // substitutions for "gml:_Solid"
-        surfaceElements.add( "CompositeSolid" );
-        surfaceElements.add( "Solid" );
+        solidElements.add( "CompositeSolid" );
+        solidElements.add( "Solid" );
 
         // substitutions for "gml:_GeometricPrimitive"
         primitiveElements.add( "Point" );
@@ -713,8 +713,6 @@ public class GML311GeometryParser extends GML311BaseParser {
 
         Solid solid = null;
 
-        LOG.debug( " - parsing gml:_Solid(begin): " + xmlStream.getCurrentEventInfo() );
-
         if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
             String msg = "Invalid gml:_Surface element: " + xmlStream.getName()
                          + "' is not a GML geometry element. Not in the gml namespace.";
@@ -731,8 +729,11 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
 
         switch ( type ) {
-        case CompositeSolid:
         case Solid: {
+            solid = parseSolid( defaultSrsName );
+            break;
+        }        
+        case CompositeSolid: {
             String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
             throw new XMLParsingException( xmlStream, msg );
         }
@@ -740,8 +741,6 @@ public class GML311GeometryParser extends GML311BaseParser {
             // cannot happen by construction
         }
         }
-
-        LOG.debug( " - parsing gml:_Solid (end): " + xmlStream.getCurrentEventInfo() );
         return solid;
     }
 
@@ -1210,6 +1209,60 @@ public class GML311GeometryParser extends GML311BaseParser {
         xmlStream.require( END_ELEMENT, GMLNS, "OrientableSurface" );
 
         return geomFac.createOrientableSurface( gid, lookupCRS( srsName ), baseSurface, isReversed );
+    }    
+
+    /**
+     * Returns the object representation of a (&lt;gml:Solid&gt;) element. Consumes all corresponding events from the
+     * given <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the geometry, this is only used if the "gml:Solid" has no <code>srsName</code>
+     *            attribute
+     * @return corresponding {@link Solid} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public Solid parseSolid( String defaultSrsName )
+                            throws XMLStreamException {
+
+        String gid = parseGeometryId();
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        Surface exteriorSurface = null;
+        List<Surface> interiorSurfaces = new LinkedList<Surface>();
+
+        // 0 or 1 exterior element (yes, 0 is possible -- see section 9.2.2.5 of GML spec)
+        if ( xmlStream.nextTag() == START_ELEMENT ) {
+            if ( xmlStream.getLocalName().equals( "exterior" ) ) {
+                if ( xmlStream.nextTag() != START_ELEMENT ) {
+                    String msg = "Error in 'gml:Solid' element. Expected a 'gml:_Surface' element.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                exteriorSurface = parseAbstractSurface( srsName );
+                xmlStream.nextTag();
+                xmlStream.require( END_ELEMENT, GMLNS, "exterior" );
+            }
+            xmlStream.nextTag();
+        }
+
+        // arbitrary number of interior elements
+        while ( xmlStream.getEventType() == START_ELEMENT ) {
+            if ( xmlStream.getLocalName().equals( "interior" ) ) {
+                if ( xmlStream.nextTag() != START_ELEMENT ) {
+                    String msg = "Error in 'gml:Solid' element. Expected a 'gml:_Surface' element.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                interiorSurfaces.add( parseAbstractSurface( srsName ) );
+                xmlStream.nextTag();
+                xmlStream.require( END_ELEMENT, GMLNS, "interior" );
+            } else {
+                String msg = "Error in 'gml:Solid' element. Expected a 'gml:interior' element.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            xmlStream.nextTag();
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "Solid" );
+        return geomFac.createSolid( gid, lookupCRS( srsName ), exteriorSurface, interiorSurfaces );
     }    
     
     /**

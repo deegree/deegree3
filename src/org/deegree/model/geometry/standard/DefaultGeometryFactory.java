@@ -236,12 +236,6 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Solid createSolid( String id, Surface[] outerboundary, Surface[][] innerboundaries, CoordinateSystem crs ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public Surface createSurface( String id, List<Curve> boundary, Interpolation interpolation, CoordinateSystem crs ) {
         // TODO Auto-generated method stub
         return null;
@@ -374,5 +368,10 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     @Override
     public TriangulatedSurface createTriangulatedSurface( String id, CoordinateSystem crs, List<Triangle> memberPatches ) {
         return new DefaultTriangulatedSurface(id, crs, memberPatches);
+    }
+
+    @Override
+    public Solid createSolid( String id, CoordinateSystem crs, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
+        return new DefaultSolid (id, crs, exteriorSurface, interiorSurfaces);
     }
 }

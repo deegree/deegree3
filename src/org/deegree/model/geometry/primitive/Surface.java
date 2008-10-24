@@ -40,7 +40,9 @@ package org.deegree.model.geometry.primitive;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
 
 /**
  * <code>Surface</code> instances are 2D-geometries that consist of an arbitrary number of surface patches.
@@ -58,12 +60,16 @@ public interface Surface extends GeometricPrimitive {
     public enum SurfaceType {
         /** Generic surface that consists of an arbitrary number of surface patches. */
         Surface,
-        /** Surface that consists of a single surface patch. */
+        /** Surface that consists of a single planar surface patch ({@link PolygonPatch}). */
         Polygon,
+        /** Surface that consists of {@link PolygonPatch}es only. */
+        PolyhedralSurface,
+        /** Surface that consists of {@link Triangle}s only. */
+        TriangulatedSurface, Tin,
         /** Surface composited from multiple members surfaces. */
         CompositeSurface,
         /** Surface that wraps a base surface with additional orientation flag. */
-        OrientableSurface, PolyhedralSurface, Tin, TriangulatedSurface
+        OrientableSurface,
     }
 
     /**
@@ -80,7 +86,7 @@ public interface Surface extends GeometricPrimitive {
      */
     @Override
     public PrimitiveType getPrimitiveType();
-    
+
     /**
      * 
      * @return area of a Surface measured in units of the assigned {@link CoordinateSystem}

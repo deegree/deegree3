@@ -214,5 +214,17 @@ public class DefaultCompositeSolid extends AbstractDefaultGeometry implements Co
     @Override
     public GeometryType getGeometryType() {
         return GeometryType.COMPOSITE_PRIMITIVE;
+    }
+
+    @Override
+    public Surface getExteriorSurface() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Surface> getInteriorSurfaces() {
+        // TODO Auto-generated method stub
+        return null;
     } 
 }

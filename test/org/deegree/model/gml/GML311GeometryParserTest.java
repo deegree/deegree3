@@ -60,9 +60,11 @@ import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Polygon;
 import org.deegree.model.geometry.primitive.PolyhedralSurface;
 import org.deegree.model.geometry.primitive.Ring;
+import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.TriangulatedSurface;
 import org.deegree.model.geometry.primitive.Ring.RingType;
+import org.deegree.model.geometry.primitive.Solid.SolidType;
 import org.deegree.model.geometry.primitive.Surface.SurfaceType;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
@@ -80,14 +82,15 @@ import org.junit.Test;
  */
 public class GML311GeometryParserTest {
 
-    private static GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory("Standard");
+    private static GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory( "Standard" );
+
+    private static final String BASE_DIR = "testdata/geometries/";
 
     @Test
     public void parsePointPos()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "Point1_pos.gml" ) );
-        xmlReader.nextTag();
+
+        XMLStreamReaderWrapper xmlReader = getParser( "Point1_pos.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
         Point point = (Point) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -102,9 +105,7 @@ public class GML311GeometryParserTest {
     @Test
     public void parsePointCoordinates()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "Point1_coordinates.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "Point1_coordinates.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
         Point point = (Point) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -119,9 +120,7 @@ public class GML311GeometryParserTest {
     @Test
     public void parsePointCoord()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "Point1_coord.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "Point1_coord.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
         Point point = (Point) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -136,9 +135,7 @@ public class GML311GeometryParserTest {
     @Test
     public void parseLineStringPos()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "LineString1_pos.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "LineString1_pos.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
         Curve curve = (Curve) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -149,9 +146,7 @@ public class GML311GeometryParserTest {
     @Test
     public void parseLineStringPosList()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "LineString1_posList.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "LineString1_posList.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
         Curve curve = (Curve) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -171,9 +166,7 @@ public class GML311GeometryParserTest {
     @Test
     public void parseLineStringCoordinates()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "LineString1_coordinates.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "LineString1_coordinates.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
         Curve curve = (Curve) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -193,9 +186,7 @@ public class GML311GeometryParserTest {
     @Test
     public void parseLineStringPointProperty()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "LineString1_pointProperty.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "LineString1_pointProperty.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
         Curve curve = (Curve) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -215,10 +206,7 @@ public class GML311GeometryParserTest {
     @Test
     public void parseLineStringPointRep()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "LineString1_pointRep.gml" ) );
-
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "LineString1_pointRep.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
         Curve curve = (Curve) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -238,9 +226,7 @@ public class GML311GeometryParserTest {
     @Test
     public void parseCurve()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "Curve.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "Curve.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Curve" ), xmlReader.getName() );
         Curve curve = (Curve) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -254,9 +240,7 @@ public class GML311GeometryParserTest {
     @Test
     public void parseOrientableCurve()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "OrientableCurve.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "OrientableCurve.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "OrientableCurve" ), xmlReader.getName() );
         Curve curve = (Curve) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -265,14 +249,12 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 2, curve.getCurveSegments().size() );
         Assert.assertEquals( Interpolation.circularArc3Points, curve.getCurveSegments().get( 0 ).getInterpolation() );
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 1 ).getInterpolation() );
-    }    
-    
+    }
+
     @Test
     public void parseLinearRing()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "LinearRing.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "LinearRing.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LinearRing" ), xmlReader.getName() );
         Ring ring = (Ring) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -287,9 +269,7 @@ public class GML311GeometryParserTest {
     @Test
     public void parseRing()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "Ring.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "Ring.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Ring" ), xmlReader.getName() );
         Ring ring = (Ring) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -302,13 +282,11 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 1, ring.getMembers().get( 1 ).getCurveSegments().size() );
         Assert.assertTrue( ring.getMembers().get( 1 ).getCurveSegments().get( 0 ) instanceof LineStringSegment );
     }
-    
+
     @Test
     public void parsePolygon()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "Polygon.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "Polygon.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Polygon" ), xmlReader.getName() );
         Polygon polygon = (Polygon) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -320,13 +298,11 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( RingType.LinearRing, polygon.getInteriorRings().get( 0 ).getRingType() );
         Assert.assertEquals( RingType.LinearRing, polygon.getInteriorRings().get( 1 ).getRingType() );
     }
-    
+
     @Test
     public void parseSurface()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "Surface.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "Surface.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Surface" ), xmlReader.getName() );
         Surface surface = (Surface) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -334,14 +310,12 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Surface" ), xmlReader.getName() );
         Assert.assertEquals( SurfaceType.Surface, surface.getSurfaceType() );
         Assert.assertEquals( 2, surface.getPatches().size() );
-    }  
+    }
 
     @Test
     public void parsePolyhedralSurface()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "PolyhedralSurface.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "PolyhedralSurface.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "PolyhedralSurface" ), xmlReader.getName() );
         PolyhedralSurface surface = (PolyhedralSurface) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -349,14 +323,12 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "PolyhedralSurface" ), xmlReader.getName() );
         Assert.assertEquals( SurfaceType.PolyhedralSurface, surface.getSurfaceType() );
         Assert.assertEquals( 2, surface.getPatches().size() );
-    }     
+    }
 
     @Test
     public void parseTriangulatedSurface()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "TriangulatedSurface.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "TriangulatedSurface.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "TriangulatedSurface" ), xmlReader.getName() );
         TriangulatedSurface surface = (TriangulatedSurface) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -364,14 +336,12 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "TriangulatedSurface" ), xmlReader.getName() );
         Assert.assertEquals( SurfaceType.TriangulatedSurface, surface.getSurfaceType() );
         Assert.assertEquals( 3, surface.getPatches().size() );
-    }    
-    
+    }
+
     @Test
     public void parseOrientableSurface()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "OrientableSurface.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "OrientableSurface.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "OrientableSurface" ), xmlReader.getName() );
         OrientableSurface surface = (OrientableSurface) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -379,14 +349,24 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "OrientableSurface" ), xmlReader.getName() );
         Assert.assertEquals( SurfaceType.OrientableSurface, surface.getSurfaceType() );
         Assert.assertEquals( 2, surface.getPatches().size() );
-    }    
-    
+    }
+
+    @Test
+    public void parseSolid()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = getParser( "Solid.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Solid" ), xmlReader.getName() );
+        Solid solid = (Solid) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Solid" ), xmlReader.getName() );
+        Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
+    }
+
     @Test
     public void parseCompositeCurve()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "CompositeCurve.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "CompositeCurve.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeCurve" ), xmlReader.getName() );
         Curve curve = (Curve) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
@@ -401,14 +381,21 @@ public class GML311GeometryParserTest {
     @Test
     public void parseCompositeSurface()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( "CompositeSurface.gml" ) );
-        xmlReader.nextTag();
+        XMLStreamReaderWrapper xmlReader = getParser( "CompositeSurface.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeSurface" ), xmlReader.getName() );
         CompositeSurface surface = (CompositeSurface) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeSurface" ), xmlReader.getName() );
         Assert.assertEquals( 3, surface.getPatches().size() );
-    }     
+    }
+
+    private XMLStreamReaderWrapper getParser( String fileName )
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
+                                                                       GML311SurfacePatchParserTest.class.getResource( BASE_DIR
+                                                                                                                       + fileName ) );
+        xmlReader.nextTag();
+        return xmlReader;
+    }
 }

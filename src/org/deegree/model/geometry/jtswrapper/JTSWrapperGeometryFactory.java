@@ -218,11 +218,6 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Solid createSolid( String id, Surface[] outerBoundary, Surface[][] innerBoundaries, CoordinateSystem crs ) {
-        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
-    }
-
-    @Override
     public Surface createSurface( String id, List<Curve> boundary, SurfacePatch.Interpolation interpolation,
                                   CoordinateSystem crs ) {
         if ( boundary == null || boundary.size() == 0 ) {
@@ -394,6 +389,11 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public TriangulatedSurface createTriangulatedSurface( String id, CoordinateSystem crs, List<Triangle> memberPatches ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public Solid createSolid( String id, CoordinateSystem crs, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 }

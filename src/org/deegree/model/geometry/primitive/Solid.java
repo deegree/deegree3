@@ -37,12 +37,15 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive;
 
+import java.util.List;
+
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 
 /**
- * <code>Solid</code> instances are 3D-geometries that ... 
+ * <code>Solid</code> instances are 3D-geometries that ...
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version. $Revision$, $Date$
@@ -53,18 +56,18 @@ public interface Solid extends GeometricPrimitive {
      * Convenience enum type for discriminating the different solid variants.
      */
     public enum SolidType {
-        /** Generic solid that consists of an arbitrary number of  */
+        /** Generic solid that consists of an arbitrary number of */
         Solid,
         /** Solid composited from multiple members solids. */
         CompositeSolid
-    }    
+    }
 
     /**
      * Returns the type of solid.
      * 
      * @return the type of solid
      */
-    public SolidType getSolidType();    
+    public SolidType getSolidType();
 
     /**
      * Must always return {@link GeometricPrimitive.PrimitiveType#Solid}.
@@ -72,8 +75,8 @@ public interface Solid extends GeometricPrimitive {
      * @return {@link GeometricPrimitive.PrimitiveType#Solid}
      */
     @Override
-    public PrimitiveType getPrimitiveType();    
-    
+    public PrimitiveType getPrimitiveType();
+
     /**
      * 
      * @return volume of a Solid measured in units of the assigned {@link CoordinateSystem}
@@ -87,12 +90,29 @@ public interface Solid extends GeometricPrimitive {
     public double getArea();
 
     /**
-     * A Solid consists of one outer and 0..n inner boundaries. Each boundary is constructed by at
-     * least four surfaces. The first row of the returned two dimensional array contains the outer
-     * boundary. Inner boudaries are stored within the following rows.
+     * A Solid consists of one outer and 0..n inner boundaries. Each boundary is constructed by at least four surfaces.
+     * The first row of the returned two dimensional array contains the outer boundary. Inner boudaries are stored
+     * within the following rows.
      * 
      * @return boundary of a Solid
      */
     public Surface[][] getBoundary();
 
+    /**
+     * Returns the exterior surface (shell) of the solid.
+     * <p>
+     * Please note that this method may return null. The following explanation is from the GML 3.1.1 schema
+     * (geometryPrimitives.xsd): In normal 3-dimensional Euclidean space, one (composite) surface is distinguished as
+     * the exterior. In the more general case, this is not always possible.
+     * 
+     * @return the exterior surface, or null if no surface is distinguished as being the exterior boundary
+     */
+    public Surface getExteriorSurface();
+
+    /**
+     * Returns the interior surfaces of the solid.
+     * 
+     * @return the interior surfaces, list may be empty (but not null)
+     */
+    public List<Surface> getInteriorSurfaces();
 }
