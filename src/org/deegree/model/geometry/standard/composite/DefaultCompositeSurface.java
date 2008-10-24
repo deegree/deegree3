@@ -50,7 +50,6 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.Geometry.GeometryType;
 import org.deegree.model.geometry.composite.CompositeSurface;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
@@ -103,11 +102,6 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
             sum += member.getArea();
         }
         return sum;
-    }
-
-    @Override
-    public List<Curve> getBoundary() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

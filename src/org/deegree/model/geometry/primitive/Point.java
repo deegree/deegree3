@@ -38,12 +38,9 @@
 package org.deegree.model.geometry.primitive;
 
 import org.deegree.model.geometry.Geometry;
-import org.deegree.model.geometry.Geometry.GeometryType;
-
 
 /**
- * 
- * 
+ * 0-dimensional primitive.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
@@ -59,15 +56,15 @@ public interface Point extends GeometricPrimitive {
      */
     @Override
     public PrimitiveType getPrimitiveType();
-    
+
     /**
      * Must either return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY}.
      * 
      * @return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY}
      */
     @Override
-    public GeometryType getGeometryType();     
-    
+    public GeometryType getGeometryType();
+
     /**
      * 
      * @return x coordinate of a point
@@ -89,14 +86,14 @@ public interface Point extends GeometricPrimitive {
     /**
      * 
      * @param dimension
-     * @return coordinate of passed dimension. If passed dimension is not supported by a point
-     *         Double.NAN will be returned
+     * @return coordinate of passed dimension. If passed dimension is not supported by a point Double.NAN will be
+     *         returned
      */
     public double get( int dimension );
 
     /**
      * 
-     * @return a points coordinates as an array 
+     * @return a points coordinates as an array
      */
     public double[] getAsArray();
 

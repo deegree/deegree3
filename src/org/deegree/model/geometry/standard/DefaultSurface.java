@@ -84,11 +84,6 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     }
 
     @Override
-    public List<Curve> getBoundary() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Point getCentroid() {
         throw new UnsupportedOperationException();
     }

@@ -46,7 +46,6 @@ package org.deegree.model.geometry.standard;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.TriangulatedSurface;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
@@ -81,11 +80,6 @@ public class DefaultTriangulatedSurface extends AbstractDefaultGeometry implemen
     
     @Override
     public double getArea() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Curve> getBoundary() {
         throw new UnsupportedOperationException();
     }
 

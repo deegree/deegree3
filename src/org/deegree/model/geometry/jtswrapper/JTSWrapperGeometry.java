@@ -319,22 +319,23 @@ abstract class JTSWrapperGeometry implements Geometry {
      */
     private Polygon export( Surface surface ) {
 
-        List<Curve> boundary = surface.getBoundary();
-        CoordinateSequenceFactory fac = CoordinateArraySequenceFactory.instance();
-        List<Point> outer = boundary.get( 0 ).getAsLineString().getControlPoints();
-        Coordinate[] coords = toCoordinates( outer );
-
-        LinearRing shell = new LinearRing( fac.create( coords ), jtsFactory );
-
-        LinearRing[] holes = new LinearRing[0];
-        if ( boundary.size() > 1 ) {
-            holes = new LinearRing[boundary.size() - 1];
-            for ( int i = 1; i < boundary.size(); i++ ) {
-                coords = toCoordinates( boundary.get( i ).getAsLineString().getControlPoints() );
-                holes[i - 1] = new LinearRing( fac.create( coords ), jtsFactory );
-            }
-        }
-        return jtsFactory.createPolygon( shell, holes );
+        throw new UnsupportedOperationException();
+//        List<Curve> boundary = surface.getBoundary();
+//        CoordinateSequenceFactory fac = CoordinateArraySequenceFactory.instance();
+//        List<Point> outer = boundary.get( 0 ).getAsLineString().getControlPoints();
+//        Coordinate[] coords = toCoordinates( outer );
+//
+//        LinearRing shell = new LinearRing( fac.create( coords ), jtsFactory );
+//
+//        LinearRing[] holes = new LinearRing[0];
+//        if ( boundary.size() > 1 ) {
+//            holes = new LinearRing[boundary.size() - 1];
+//            for ( int i = 1; i < boundary.size(); i++ ) {
+//                coords = toCoordinates( boundary.get( i ).getAsLineString().getControlPoints() );
+//                holes[i - 1] = new LinearRing( fac.create( coords ), jtsFactory );
+//            }
+//        }
+//        return jtsFactory.createPolygon( shell, holes );
     }
 
     /**

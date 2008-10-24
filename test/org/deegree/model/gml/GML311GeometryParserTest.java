@@ -53,6 +53,7 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
+import org.deegree.model.geometry.composite.CompositeGeometry;
 import org.deegree.model.geometry.composite.CompositeSolid;
 import org.deegree.model.geometry.composite.CompositeSurface;
 import org.deegree.model.geometry.primitive.Curve;
@@ -406,10 +407,45 @@ public class GML311GeometryParserTest {
         XMLStreamReaderWrapper xmlReader = getParser( "CompositeSolid.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeSolid" ), xmlReader.getName() );
-        CompositeSolid solid = (CompositeSolid) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        CompositeSolid compositeSolid = (CompositeSolid) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeSolid" ), xmlReader.getName() );
-        Assert.assertEquals( SolidType.CompositeSolid, solid.getSolidType() );
+        Assert.assertEquals( SolidType.CompositeSolid, compositeSolid.getSolidType() );
+        Solid solid = compositeSolid.get( 0 );
+        Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
+        Assert.assertEquals( "EPSG:31466", solid.getCoordinateSystem().getIdentifier() );
+        Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
+        Assert.assertEquals( 2568786.096, ((PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 )).getExteriorRing().getStartPoint().getX() );
+        Assert.assertEquals( 5662881.386, ((PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 )).getExteriorRing().getStartPoint().getY() );
+        Assert.assertEquals( 60.3842642785516, ((PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 )).getExteriorRing().getStartPoint().getZ() );        
+        Assert.assertEquals( 2568786.096, ((PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 )).getExteriorRing().getEndPoint().getX() );
+        Assert.assertEquals( 5662881.386, ((PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 )).getExteriorRing().getEndPoint().getY() );
+        Assert.assertEquals( 60.3842642785516, ((PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 )).getExteriorRing().getEndPoint().getZ() );        
+    }
+
+    @Test
+    public void parseGeometricComplex()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = getParser( "GeometricComplex.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "GeometricComplex" ), xmlReader.getName() );
+        CompositeGeometry compositeGeometry = (CompositeGeometry) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "GeometricComplex" ), xmlReader.getName() );
+        Solid solid = (Solid) compositeGeometry.get( 0 );
+        Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
+        Assert.assertEquals( "EPSG:31466", solid.getCoordinateSystem().getIdentifier() );
+        Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
+        Assert.assertEquals( 2568786.096, ((PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 )).getExteriorRing().getStartPoint().getX() );
+        Assert.assertEquals( 5662881.386, ((PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 )).getExteriorRing().getStartPoint().getY() );
+        Assert.assertEquals( 60.3842642785516, ((PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 )).getExteriorRing().getStartPoint().getZ() );        
+        Assert.assertEquals( 2568786.096, ((PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 )).getExteriorRing().getEndPoint().getX() );
+        Assert.assertEquals( 5662881.386, ((PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 )).getExteriorRing().getEndPoint().getY() );
+        Assert.assertEquals( 60.3842642785516, ((PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 )).getExteriorRing().getEndPoint().getZ() );
+        Curve curve = (Curve) compositeGeometry.get( 1 );
+        Assert.assertEquals( 2, curve.getCurveSegments().size() );
+        Assert.assertEquals( Interpolation.circularArc3Points, curve.getCurveSegments().get( 0 ).getInterpolation() );
+        Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 1 ).getInterpolation() );        
     }    
 
     private XMLStreamReaderWrapper getParser( String fileName )

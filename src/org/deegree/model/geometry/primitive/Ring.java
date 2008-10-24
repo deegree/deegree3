@@ -39,8 +39,6 @@ package org.deegree.model.geometry.primitive;
 
 import java.util.List;
 
-import org.deegree.model.geometry.primitive.GeometricPrimitive.PrimitiveType;
-
 /**
  * A <code>Ring</code> is a composition of {@link Curve}s that forms a closed loop.
  * <p>

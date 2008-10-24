@@ -378,11 +378,11 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     /**
-     * Returns the object representation for the given <code>gml:_Geometry</code> event with geometric complex semantic
-     * (either <code>gml:CompositeCurve</code>, <code>gml:CompositeSolid</code>, <code>gml:CompositeSurface</code> or
-     * <code>gml:GeometricComplex</code>), that the cursor of the given <code>XMLStreamReader</code> points at.
+     * Returns the object representation for the given <code>gml:_Geometry</code> event that represents a geometric
+     * complex (either <code>gml:CompositeCurve</code>, <code>gml:CompositeSolid</code>,
+     * <code>gml:CompositeSurface</code> or <code>gml:GeometricComplex</code>), that the cursor of the given
+     * <code>XMLStreamReader</code> points at.
      * <p>
-     * 
      * <ul>
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event</li>
@@ -407,12 +407,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      *             if the element is not a valid "gml:_Geometry" element with geometric complex semantic
      * @throws XMLStreamException
      */
-    public Geometry parseAbstractGeometricComplex( String defaultSrsName )
+    public CompositeGeometry<? extends GeometricPrimitive> parseAbstractGeometricComplex( String defaultSrsName )
                             throws XMLParsingException, XMLStreamException {
 
-        LOG.debug( " - parsing gml:_GeometricComplex (begin): " + xmlStream.getCurrentEventInfo() );
-
-        Geometry geometry = null;
+        CompositeGeometry<? extends GeometricPrimitive> geometry = null;
 
         if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
             String msg = "Invalid gml:_GeometricComplex element: " + xmlStream.getName()
@@ -421,26 +419,20 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
 
         String name = xmlStream.getLocalName();
-        if ( name.equals( "ComplexCurve" ) ) {
-            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
-            throw new XMLParsingException( xmlStream, msg );
-        } else if ( name.equals( "ComplexSolid" ) ) {
-            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
-            throw new XMLParsingException( xmlStream, msg );
-        } else if ( name.equals( "ComplexSurface" ) ) {
-            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
-            throw new XMLParsingException( xmlStream, msg );
+        if ( name.equals( "CompositeCurve" ) ) {
+            geometry = parseCompositeCurve( defaultSrsName );
+        } else if ( name.equals( "CompositeSolid" ) ) {
+            geometry = parseCompositeSolid( defaultSrsName );
+        } else if ( name.equals( "CompositeSurface" ) ) {
+            geometry = parseCompositeSurface( defaultSrsName );
         } else if ( name.equals( "GeometricComplex" ) ) {
-            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
-            throw new XMLParsingException( xmlStream, msg );
+            geometry = parseGeometricComplex( defaultSrsName );
         } else {
             String msg = "Invalid GML geometry: '" + xmlStream.getName()
                          + "' is not a (supported) GML geometry element.";
             throw new XMLParsingException( xmlStream, msg );
         }
-
-        // LOG.debug( " - parsing gml:_GeometricComplex (end): " + xmlStream.getCurrentEventInfo() );
-        // return geometry;
+        return geometry;
     }
 
     /**
@@ -662,8 +654,8 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
         case OrientableSurface: {
             surface = parseOrientableSurface( defaultSrsName );
-            break;            
-        }        
+            break;
+        }
         case Polygon: {
             surface = parsePolygon( defaultSrsName );
             break;
@@ -671,7 +663,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         case PolyhedralSurface: {
             surface = parsePolyhedralSurface( defaultSrsName );
             break;
-        }        
+        }
         case Surface: {
             surface = parseSurface( defaultSrsName );
             break;
@@ -679,7 +671,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         case TriangulatedSurface: {
             surface = parseTriangulatedSurface( defaultSrsName );
             break;
-        }        
+        }
         case Tin: {
             surface = parseTin( defaultSrsName );
             break;
@@ -732,10 +724,10 @@ public class GML311GeometryParser extends GML311BaseParser {
         case Solid: {
             solid = parseSolid( defaultSrsName );
             break;
-        }        
+        }
         case CompositeSolid: {
-            String msg = "Parsing of 'gml:" + xmlStream.getLocalName() + "' elements is not implemented yet.";
-            throw new XMLParsingException( xmlStream, msg );
+            solid = parseCompositeSolid( defaultSrsName );
+            break;
         }
         default: {
             // cannot happen by construction
@@ -1102,12 +1094,12 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     /**
-     * Returns the object representation of a (&lt;gml:PolyhedralSurface&gt;) element. Consumes all corresponding events from the
-     * given <code>XMLStream</code>.
+     * Returns the object representation of a (&lt;gml:PolyhedralSurface&gt;) element. Consumes all corresponding events
+     * from the given <code>XMLStream</code>.
      * 
      * @param defaultSrsName
-     *            default srs for the geometry, this is only used if the "gml:PolyhedralSurface" has no <code>srsName</code>
-     *            attribute
+     *            default srs for the geometry, this is only used if the "gml:PolyhedralSurface" has no
+     *            <code>srsName</code> attribute
      * @return corresponding {@link PolyhedralSurface} object
      * @throws XMLStreamException
      * @throws XMLParsingException
@@ -1131,12 +1123,12 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     /**
-     * Returns the object representation of a (&lt;TriangulatedSurface&gt;) element. Consumes all corresponding events from the
-     * given <code>XMLStream</code>.
+     * Returns the object representation of a (&lt;TriangulatedSurface&gt;) element. Consumes all corresponding events
+     * from the given <code>XMLStream</code>.
      * 
      * @param defaultSrsName
-     *            default srs for the geometry, this is only used if the "gml:TriangulatedSurface" has no <code>srsName</code>
-     *            attribute
+     *            default srs for the geometry, this is only used if the "gml:TriangulatedSurface" has no
+     *            <code>srsName</code> attribute
      * @return corresponding {@link TriangulatedSurface} object
      * @throws XMLStreamException
      * @throws XMLParsingException
@@ -1160,12 +1152,11 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     /**
-     * Returns the object representation of a (&lt;Tin&gt;) element. Consumes all corresponding events from the
-     * given <code>XMLStream</code>.
+     * Returns the object representation of a (&lt;Tin&gt;) element. Consumes all corresponding events from the given
+     * <code>XMLStream</code>.
      * 
      * @param defaultSrsName
-     *            default srs for the geometry, this is only used if the "gml:Tin" has no <code>srsName</code>
-     *            attribute
+     *            default srs for the geometry, this is only used if the "gml:Tin" has no <code>srsName</code> attribute
      * @return corresponding {@link Tin} object
      * @throws XMLStreamException
      * @throws XMLParsingException
@@ -1179,8 +1170,8 @@ public class GML311GeometryParser extends GML311BaseParser {
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Tin" );
         return null;
-    }    
-    
+    }
+
     /**
      * Returns the object representation of a <code>gml:OrientableSurface</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
@@ -1209,7 +1200,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         xmlStream.require( END_ELEMENT, GMLNS, "OrientableSurface" );
 
         return geomFac.createOrientableSurface( gid, lookupCRS( srsName ), baseSurface, isReversed );
-    }    
+    }
 
     /**
      * Returns the object representation of a (&lt;gml:Solid&gt;) element. Consumes all corresponding events from the
@@ -1263,8 +1254,8 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "Solid" );
         return geomFac.createSolid( gid, lookupCRS( srsName ), exteriorSurface, interiorSurfaces );
-    }    
-    
+    }
+
     /**
      * Returns the object representation of a <code>gml:CompositeCurve</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
@@ -1387,7 +1378,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws XMLParsingException
      */
-    public CompositeGeometry<GeometricPrimitive> parseCompositeGeometry( String defaultSrsName )
+    public CompositeGeometry<GeometricPrimitive> parseGeometricComplex( String defaultSrsName )
                             throws XMLStreamException {
 
         String gid = parseGeometryId();
@@ -1398,18 +1389,18 @@ public class GML311GeometryParser extends GML311BaseParser {
         while ( xmlStream.nextTag() == START_ELEMENT ) {
             // must be a 'gml:element' element
             if ( !xmlStream.getLocalName().equals( "element" ) ) {
-                String msg = "Error in 'gml:CompositeGeometry' element. Expected a 'gml:element' element.";
+                String msg = "Error in 'gml:GeometricComplex' element. Expected a 'gml:element' element.";
                 throw new XMLParsingException( xmlStream, msg );
             }
             if ( xmlStream.nextTag() != START_ELEMENT ) {
-                String msg = "Error in 'gml:CompositeSolid' element. Expected a 'gml:element' element.";
+                String msg = "Error in 'gml:GeometricComplex' element. Expected a 'gml:element' element.";
                 throw new XMLParsingException( xmlStream, msg );
             }
             memberSolids.add( parseGeometricPrimitive( srsName ) );
             xmlStream.nextTag();
             xmlStream.require( END_ELEMENT, GMLNS, "element" );
         }
-        xmlStream.require( END_ELEMENT, GMLNS, "CompositeGeometry" );
+        xmlStream.require( END_ELEMENT, GMLNS, "GeometricComplex" );
         return geomFac.createCompositeGeometry( gid, lookupCRS( srsName ), memberSolids );
     }
 

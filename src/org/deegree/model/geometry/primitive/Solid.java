@@ -90,15 +90,6 @@ public interface Solid extends GeometricPrimitive {
     public double getArea();
 
     /**
-     * A Solid consists of one outer and 0..n inner boundaries. Each boundary is constructed by at least four surfaces.
-     * The first row of the returned two dimensional array contains the outer boundary. Inner boudaries are stored
-     * within the following rows.
-     * 
-     * @return boundary of a Solid
-     */
-    public Surface[][] getBoundary();
-
-    /**
      * Returns the exterior surface (shell) of the solid.
      * <p>
      * Please note that this method may return null. The following explanation is from the GML 3.1.1 schema

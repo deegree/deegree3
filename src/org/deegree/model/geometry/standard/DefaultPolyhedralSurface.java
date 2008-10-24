@@ -86,11 +86,6 @@ public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements
     }
 
     @Override
-    public List<Curve> getBoundary() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Point getCentroid() {
         throw new UnsupportedOperationException();
     }

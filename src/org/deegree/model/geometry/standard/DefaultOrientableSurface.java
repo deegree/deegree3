@@ -141,10 +141,6 @@ public class DefaultOrientableSurface implements OrientableSurface {
         return baseSurface.getArea();
     }
 
-    public List<Curve> getBoundary() {
-        return baseSurface.getBoundary();
-    }
-
     public Geometry getBuffer( double distance ) {
         return baseSurface.getBuffer( distance );
     }

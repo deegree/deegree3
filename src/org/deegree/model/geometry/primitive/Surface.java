@@ -45,7 +45,8 @@ import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
 
 /**
- * <code>Surface</code> instances are 2D-geometries that consist of an arbitrary number of surface patches.
+ * <code>Surface</code> instances are 2D-geometries that consist of an arbitrary number of surface patches which are not
+ * necessarily planar.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
@@ -58,13 +59,13 @@ public interface Surface extends GeometricPrimitive {
      * Convenience enum type for discriminating the different surface variants.
      */
     public enum SurfaceType {
-        /** Generic surface that consists of an arbitrary number of surface patches. */
+        /** Generic surface that consists of an arbitrary number of surface patches which are not necessarily planar. */
         Surface,
         /** Surface that consists of a single planar surface patch ({@link PolygonPatch}). */
         Polygon,
-        /** Surface that consists of {@link PolygonPatch}es only. */
+        /** Surface that consists of (planar) {@link PolygonPatch}es only. */
         PolyhedralSurface,
-        /** Surface that consists of {@link Triangle}s only. */
+        /** Surface that consists of (planar) {@link Triangle}s only. */
         TriangulatedSurface, Tin,
         /** Surface composited from multiple members surfaces. */
         CompositeSurface,
@@ -104,13 +105,6 @@ public interface Surface extends GeometricPrimitive {
      * @return centroid of a Surface
      */
     public Point getCentroid();
-
-    /**
-     * 
-     * @return boundaries of a surface. The first {@link Curve} represents the outer boundery the following ones the
-     *         boundaries of the surfaces holes
-     */
-    public List<Curve> getBoundary();
 
     /**
      * Returns the patches that constitute this surface.

@@ -114,11 +114,6 @@ public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
     }
 
     @Override
-    public Surface[][] getBoundary() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public double getVolume() {
         throw new UnsupportedOperationException();
     }    
