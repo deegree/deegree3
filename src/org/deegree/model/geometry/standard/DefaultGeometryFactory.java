@@ -68,6 +68,7 @@ import org.deegree.model.geometry.primitive.PolyhedralSurface;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.Tin;
 import org.deegree.model.geometry.primitive.TriangulatedSurface;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
@@ -129,6 +130,7 @@ import org.deegree.model.geometry.standard.primitive.DefaultPolyhedralSurface;
 import org.deegree.model.geometry.standard.primitive.DefaultRing;
 import org.deegree.model.geometry.standard.primitive.DefaultSolid;
 import org.deegree.model.geometry.standard.primitive.DefaultSurface;
+import org.deegree.model.geometry.standard.primitive.DefaultTin;
 import org.deegree.model.geometry.standard.primitive.DefaultTriangulatedSurface;
 import org.deegree.model.geometry.standard.surfacepatches.DefaultPolygonPatch;
 import org.deegree.model.geometry.standard.surfacepatches.DefaultRectangle;
@@ -339,6 +341,12 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     @Override
     public TriangulatedSurface createTriangulatedSurface( String id, CoordinateSystem crs, List<Triangle> memberPatches ) {
         return new DefaultTriangulatedSurface( id, crs, memberPatches );
+    }
+
+    @Override
+    public Tin createTin( String id, CoordinateSystem crs, List<LineString> stopLines,
+                                          List<LineString> breakLines, Length maxLength, List<Point> controlPoints ) {
+        return new DefaultTin( id, crs, stopLines, breakLines, maxLength, controlPoints );
     }
 
     @Override

@@ -67,6 +67,7 @@ import org.deegree.model.geometry.primitive.PolyhedralSurface;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.Tin;
 import org.deegree.model.geometry.primitive.TriangulatedSurface;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
@@ -367,13 +368,17 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public MultiLineString createMultiLineString( String id, CoordinateSystem crs, List<LineString> members ) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
     public MultiPolygon createMultiPolygon( String id, CoordinateSystem crs, List<Polygon> members ) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
+    }
+
+    @Override
+    public Tin createTin( String id, CoordinateSystem crs, List<LineString> stopLines,
+                                          List<LineString> breakLines, Length maxLength, List<Point> controlPoints ) {
+        throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 }

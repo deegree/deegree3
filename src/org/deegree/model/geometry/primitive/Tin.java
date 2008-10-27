@@ -37,10 +37,19 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive;
 
-import org.deegree.model.geometry.primitive.Surface.SurfaceType;
+import java.util.List;
+
+import org.deegree.model.gml.Length;
 
 /**
- * A {@link Surface} that ...
+ * A {@link Tin} is a {@link TriangulatedSurface} that uses the Delauny algorithm or a similar algorithm complemented
+ * with consideration of breaklines, stoplines, and maximum length of triangle sides. These networks satisfy the
+ * Delauny's criterion away from the modifications: Foreeach triangle in the network, the circle passing through its
+ * vertices does not contain, in its interior, the vertex of any other triangle.
+ * <p>
+ * NOTE: In GML 3.1.1, <code>gml:TinType</code> extends <code>gml:TriangulatedSurface</code>. This means that a
+ * <code>gml:Tin</code> element contains both trianglePatches and controlPoint properties!? This is apparently
+ * redundant, and consequently (?) GML 3.2.1 only allows the controlPoint property...
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: mschneider $
@@ -50,11 +59,18 @@ import org.deegree.model.geometry.primitive.Surface.SurfaceType;
 public interface Tin extends Surface {
 
     /**
-     * Must always return {@link SurfaceType.SurfaceType#Tin}.
+     * Must always return {@link Surface.SurfaceType#Tin}.
      * 
-     * @return {@link SurfaceType.SurfaceType#Tin}
+     * @return {@link Surface.SurfaceType#Tin}
      */
     @Override
-    public SurfaceType getSurfaceType();       
-    
+    public SurfaceType getSurfaceType();
+
+    public List<LineString> getStopLines();
+
+    public List<LineString> getBreakLines();
+
+    public Length getMaxLength();
+
+    public List<Point> getControlPoints();
 }

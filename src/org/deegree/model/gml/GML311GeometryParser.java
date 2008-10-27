@@ -57,6 +57,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.composite.CompositeCurve;
@@ -89,6 +90,7 @@ import org.deegree.model.geometry.primitive.Ring.RingType;
 import org.deegree.model.geometry.primitive.Solid.SolidType;
 import org.deegree.model.geometry.primitive.Surface.SurfaceType;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
+import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
@@ -238,8 +240,6 @@ public class GML311GeometryParser extends GML311BaseParser {
     public Geometry parseGeometry( String defaultSrsName )
                             throws XMLParsingException, XMLStreamException {
 
-        LOG.debug( " - parsing gml:_Geometry (begin): " + xmlStream.getCurrentEventInfo() );
-
         Geometry geometry = null;
 
         if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
@@ -263,8 +263,6 @@ public class GML311GeometryParser extends GML311BaseParser {
             String msg = "Invalid GML geometry: '" + xmlStream.getName() + "' is not a GML geometry element.";
             throw new XMLParsingException( xmlStream, msg );
         }
-
-        LOG.debug( " - parsing gml:_Geometry (end): " + xmlStream.getCurrentEventInfo() );
         return geometry;
     }
 
@@ -356,8 +354,6 @@ public class GML311GeometryParser extends GML311BaseParser {
     public Geometry parseGeometricAggregate( String defaultSrsName )
                             throws XMLParsingException, XMLStreamException {
 
-        LOG.debug( " - parsing gml:_GeometricAggregate (begin): " + xmlStream.getCurrentEventInfo() );
-
         Geometry geometry = null;
 
         if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
@@ -386,8 +382,6 @@ public class GML311GeometryParser extends GML311BaseParser {
                          + "' is not a GML aggregate geometry element (gml:_GeometricAggregate).";
             throw new XMLParsingException( xmlStream, msg );
         }
-
-        LOG.debug( " - parsing gml:_GeometricAggregate (end): " + xmlStream.getCurrentEventInfo() );
         return geometry;
     }
 
@@ -476,8 +470,6 @@ public class GML311GeometryParser extends GML311BaseParser {
     public Geometry parseImplicitGeometry( String defaultSrsName )
                             throws XMLParsingException, XMLStreamException {
 
-        LOG.debug( " - parsing gml:_ImplicitGeometry (begin): " + xmlStream.getCurrentEventInfo() );
-
         Geometry geometry = null;
 
         if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
@@ -497,8 +489,6 @@ public class GML311GeometryParser extends GML311BaseParser {
             String msg = "Invalid GML geometry: '" + xmlStream.getName() + "' is not a GML geometry element.";
             throw new XMLParsingException( xmlStream, msg );
         }
-
-        // LOG.debug( " - parsing gml:_ImplicitGeometry (end): " + xmlStream.getCurrentEventInfo() );
         // return geometry;
     }
 
@@ -1170,6 +1160,10 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a (&lt;Tin&gt;) element. Consumes all corresponding events from the given
      * <code>XMLStream</code>.
+     * <p>
+     * Note: GML 3.1.1 specifies both "gml:trianglePatches" and "gml:controlPoint" properties for "gml:Tin". This is
+     * apparently redundant, and consequently (?) GML 3.2.1 only allows the controlPoint property here. This method
+     * copes with this by only using the controlPoints for building the {@link Tin} object.
      * 
      * @param defaultSrsName
      *            default srs for the geometry, this is only used if the "gml:Tin" has no <code>srsName</code> attribute
@@ -1184,8 +1178,50 @@ public class GML311GeometryParser extends GML311BaseParser {
         String srsName = determineCurrentSrsName( defaultSrsName );
 
         xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, GMLNS, "trianglePatches" );
+        while ( xmlStream.nextTag() == START_ELEMENT ) {
+            // validate syntactically, but ignore the content for building the geometry
+            surfacePatchParser.parseTriangle( srsName );
+        }
+        xmlStream.require( END_ELEMENT, GMLNS, "trianglePatches" );
+
+        List<List<LineStringSegment>> stopLines = new LinkedList<List<LineStringSegment>>();
+        if ( xmlStream.nextTag() == START_ELEMENT ) {
+            while ( xmlStream.getLocalName().equals( "stopLines" ) ) {
+                List<LineStringSegment> segments = new LinkedList<LineStringSegment>();
+                while ( xmlStream.nextTag() == START_ELEMENT ) {
+                    xmlStream.require( START_ELEMENT, GMLNS, "LineStringSegment" );
+                    segments.add( curveSegmentParser.parseLineStringSegment( defaultSrsName ) );
+                    xmlStream.require( END_ELEMENT, GMLNS, "LineStringSegment" );
+                }
+                xmlStream.require( END_ELEMENT, GMLNS, "stopLines" );
+                stopLines.add( segments );
+                xmlStream.nextTag();
+            }
+        }
+
+        List<List<LineStringSegment>> breakLines = new LinkedList<List<LineStringSegment>>();
+        if ( xmlStream.getEventType() == START_ELEMENT ) {
+            while ( xmlStream.getLocalName().equals( "breakLines" ) ) {
+                List<LineStringSegment> segments = new LinkedList<LineStringSegment>();
+                while ( xmlStream.nextTag() == START_ELEMENT ) {
+                    xmlStream.require( START_ELEMENT, GMLNS, "LineStringSegment" );
+                    segments.add( curveSegmentParser.parseLineStringSegment( defaultSrsName ) );
+                    xmlStream.require( END_ELEMENT, GMLNS, "LineStringSegment" );
+                }
+                xmlStream.require( END_ELEMENT, GMLNS, "breakLines" );
+                breakLines.add( segments );
+                xmlStream.nextTag();
+            }
+        }
+
+        Length maxLength = parseLengthType();
+        List<Point> controlPoints = new LinkedList<Point>();
+
+        xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Tin" );
         return null;
+        // return geomFac.createTin( gid, lookupCRS( srsName ), stopLines, breakLines, maxLength, controlPoints );
     }
 
     /**
@@ -1715,6 +1751,73 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiGeometry" );
         return geomFac.createMultiGeometry( gid, lookupCRS( srsName ), members );
+    }
+
+    /**
+     * Returns the object representation of a <code>gml:Envelope</code> element. Consumes all corresponding events from
+     * the associated <code>XMLStream</code>.
+     * 
+     * @param defaultSrsName
+     *            default srs for the envelope, this is only used if the <code>gml:Envelope</code> has no
+     *            <code>srsName</code> attribute itself
+     * @return corresponding {@link Envelope} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     */
+    public Envelope parseEnvelope( String defaultSrsName )
+                            throws XMLParsingException, XMLStreamException {
+
+        String srsName = determineCurrentSrsName( defaultSrsName );
+
+        double[] lowerCorner = null;
+        double[] upperCorner = null;
+
+        // must contain exactly one of the following child elements: "gml:lowerCorner", "gml:coord", "gml:pos" or
+        // "gml:coordinates"
+        if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
+            String name = xmlStream.getLocalName();
+            if ( "lowerCorner".equals( name ) ) {
+                lowerCorner = parseDoubleList();
+                xmlStream.require( END_ELEMENT, GMLNS, "lowerCorner" );
+                xmlStream.nextTag();
+                xmlStream.require( START_ELEMENT, GMLNS, "upperCorner" );
+                upperCorner = parseDoubleList();
+                xmlStream.require( END_ELEMENT, GMLNS, "upperCorner" );
+            } else if ( "coord".equals( name ) ) {
+                lowerCorner = parseCoordType();
+                xmlStream.require( END_ELEMENT, GMLNS, "coord" );
+                xmlStream.nextTag();
+                xmlStream.require( START_ELEMENT, GMLNS, "coord" );
+                upperCorner = parseCoordType();
+                xmlStream.require( END_ELEMENT, GMLNS, "coord" );
+            } else if ( "pos".equals( name ) ) {
+                lowerCorner = parseDoubleList();
+                xmlStream.require( END_ELEMENT, GMLNS, "pos" );
+                xmlStream.nextTag();
+                xmlStream.require( START_ELEMENT, GMLNS, "pos" );
+                upperCorner = parseDoubleList();
+                xmlStream.require( END_ELEMENT, GMLNS, "pos" );
+            } else if ( "coordinates".equals( name ) ) {
+                List<Point> coords = parseCoordinates( srsName );
+                if ( coords.size() != 2 ) {
+                    String msg = "Error in 'gml:Envelope' element, if 'gml:coordinates' is used, it must specify the coordinates of two points.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                lowerCorner = coords.get( 0 ).getAsArray();
+                upperCorner = coords.get( 1 ).getAsArray();
+            } else {
+                String msg = "Error in 'gml:Envelope' element. Expected either a 'gml:lowerCorner', 'gml:coord'"
+                             + " 'gml:pos' or 'gml:coordinates' element, but found '" + name + "'.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
+        } else {
+            String msg = "Error in 'gml:Envelope' element. Must contain one of the following child elements: 'gml:lowerCorner', 'gml:coord'"
+                         + " 'gml:pos' or 'gml:coordinates'.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        xmlStream.nextTag();
+        xmlStream.require( END_ELEMENT, GMLNS, "Envelope" );
+        return geomFac.createEnvelope( lowerCorner, upperCorner, lookupCRS( srsName ) );
     }
 
     /**

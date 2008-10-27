@@ -1,3 +1,46 @@
+//$HeadURL$
+/*----------------    FILE HEADER  ------------------------------------------
+
+ This file is part of deegree.
+ Copyright (C) 2001-2008 by:
+ EXSE, Department of Geography, University of Bonn
+ http://www.giub.uni-bonn.de/deegree/
+ lat/lon GmbH
+ http://www.lat-lon.de
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ Contact:
+
+ Andreas Poth  
+ lat/lon GmbH 
+ Aennchenstr. 19
+ 53115 Bonn
+ Germany
+ E-Mail: poth@lat-lon.de
+
+ Prof. Dr. Klaus Greve
+ Department of Geography
+ University of Bonn
+ Meckenheimer Allee 166
+ 53115 Bonn
+ Germany
+ E-Mail: greve@giub.uni-bonn.de
+
+
+ ---------------------------------------------------------------------------*/
 package org.deegree.model.gml;
 
 import java.io.IOException;
@@ -28,6 +71,15 @@ import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.Interpola
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Tests that check the correct parsing of GML 3.1.1 curve segments, i.e. of elements that are substitutable for
+ * <code>gml:_CurveSegment</code>.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author:$
+ * 
+ * @version $Revision:$, $Date:$
+ */
 public class GML311CurveSegmentParserTest {
 
     private GeometryFactory geomFac;
@@ -190,7 +242,7 @@ public class GML311CurveSegmentParserTest {
         Assert.assertEquals( 2.0, circle.getPoint2().getY() );
         Assert.assertEquals( -2.0, circle.getPoint3().getX() );
         Assert.assertEquals( 0.0, circle.getPoint3().getY() );
-    }    
+    }
 
     @Test
     public void parseCircleByCenterPoint()
@@ -206,29 +258,29 @@ public class GML311CurveSegmentParserTest {
         Assert.assertEquals( "whatever#degrees", arc.getStartAngle().getUomUri() );
         Assert.assertEquals( 0.0, arc.getEndAngle().getValue() );
         Assert.assertEquals( "whatever#degrees", arc.getEndAngle().getUomUri() );
-    }    
+    }
 
     @Test
     public void parseClothoid()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         GML311CurveSegmentParser parser = getParser( "Clothoid.gml" );
         Clothoid segment = (Clothoid) parser.parseCurveSegment( "EPSG:4326" );
-        Assert.assertEquals( 47.0, segment.getReferenceLocation().getLocation().getX());
-        Assert.assertEquals( 11.0, segment.getReferenceLocation().getLocation().getY());
-        Assert.assertEquals( 13.0, segment.getReferenceLocation().getLocation().getZ());
-        Assert.assertEquals( 2, segment.getReferenceLocation().getRefDirections().size());
-        Assert.assertEquals( 3.0, segment.getReferenceLocation().getRefDirections().get( 0 ).getX());
-        Assert.assertEquals( 4.0, segment.getReferenceLocation().getRefDirections().get( 0 ).getY());
-        Assert.assertEquals( 8.0, segment.getReferenceLocation().getRefDirections().get( 0 ).getZ());
-        Assert.assertEquals( 5.0, segment.getReferenceLocation().getRefDirections().get( 1 ).getX());
-        Assert.assertEquals( 6.0, segment.getReferenceLocation().getRefDirections().get( 1 ).getY());
-        Assert.assertEquals( 9.0, segment.getReferenceLocation().getRefDirections().get( 1 ).getZ());        
+        Assert.assertEquals( 47.0, segment.getReferenceLocation().getLocation().getX() );
+        Assert.assertEquals( 11.0, segment.getReferenceLocation().getLocation().getY() );
+        Assert.assertEquals( 13.0, segment.getReferenceLocation().getLocation().getZ() );
+        Assert.assertEquals( 2, segment.getReferenceLocation().getRefDirections().size() );
+        Assert.assertEquals( 3.0, segment.getReferenceLocation().getRefDirections().get( 0 ).getX() );
+        Assert.assertEquals( 4.0, segment.getReferenceLocation().getRefDirections().get( 0 ).getY() );
+        Assert.assertEquals( 8.0, segment.getReferenceLocation().getRefDirections().get( 0 ).getZ() );
+        Assert.assertEquals( 5.0, segment.getReferenceLocation().getRefDirections().get( 1 ).getX() );
+        Assert.assertEquals( 6.0, segment.getReferenceLocation().getRefDirections().get( 1 ).getY() );
+        Assert.assertEquals( 9.0, segment.getReferenceLocation().getRefDirections().get( 1 ).getZ() );
         Assert.assertEquals( 2, segment.getReferenceLocation().getInDimension() );
         Assert.assertEquals( 3, segment.getReferenceLocation().getOutDimension() );
         Assert.assertEquals( 0.9, segment.getScaleFactor() );
         Assert.assertEquals( -2.5, segment.getStartParameter() );
         Assert.assertEquals( 3.0, segment.getEndParameter() );
-    }    
+    }
 
     @Test
     public void parseCubicSpline()
@@ -242,11 +294,11 @@ public class GML311CurveSegmentParserTest {
         Assert.assertEquals( 0.0, segment.getControlPoints().get( 1 ).getY() );
         Assert.assertEquals( -6.0, segment.getControlPoints().get( 2 ).getX() );
         Assert.assertEquals( 1.0, segment.getControlPoints().get( 2 ).getY() );
-        Assert.assertEquals( 0.0, segment.getVectorAtStart().getX());
-        Assert.assertEquals( -1.0, segment.getVectorAtStart().getY());
-        Assert.assertEquals( -1.0, segment.getVectorAtEnd().getX());
-        Assert.assertEquals( 1.0, segment.getVectorAtEnd().getY());        
-    }    
+        Assert.assertEquals( 0.0, segment.getVectorAtStart().getX() );
+        Assert.assertEquals( -1.0, segment.getVectorAtStart().getY() );
+        Assert.assertEquals( -1.0, segment.getVectorAtEnd().getX() );
+        Assert.assertEquals( 1.0, segment.getVectorAtEnd().getY() );
+    }
 
     @Test
     public void parseGeodesic()
@@ -258,8 +310,8 @@ public class GML311CurveSegmentParserTest {
         Assert.assertEquals( 0.0, segment.getControlPoints().get( 0 ).getY() );
         Assert.assertEquals( 0.0, segment.getControlPoints().get( 1 ).getX() );
         Assert.assertEquals( 2.0, segment.getControlPoints().get( 1 ).getY() );
-    }     
-    
+    }
+
     @Test
     public void parseGeodesicString()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
@@ -272,8 +324,8 @@ public class GML311CurveSegmentParserTest {
         Assert.assertEquals( 2.0, segment.getControlPoints().get( 1 ).getY() );
         Assert.assertEquals( -2.0, segment.getControlPoints().get( 2 ).getX() );
         Assert.assertEquals( 0.0, segment.getControlPoints().get( 2 ).getY() );
-    }    
-    
+    }
+
     @Test
     public void parseLineStringSegment()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
@@ -287,15 +339,16 @@ public class GML311CurveSegmentParserTest {
         Assert.assertEquals( -2.0, arc.getControlPoints().get( 2 ).getX() );
         Assert.assertEquals( 0.0, arc.getControlPoints().get( 2 ).getY() );
     }
-    
+
     @Test
     public void parseOffsetCurve()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         GML311CurveSegmentParser parser = getParser( "OffsetCurve.gml" );
-        OffsetCurve segment = (OffsetCurve) parser.parseCurveSegment( null );
-        
-        // TODO
-    }    
+        OffsetCurve segment = (OffsetCurve) parser.parseCurveSegment( "EPSG:4326" );
+        Assert.assertEquals( 1.0, segment.getDistance().getValue() );
+        Assert.assertEquals( 0.0, segment.getDirection().getX() );
+        Assert.assertEquals( 1.0, segment.getDirection().getY() );
+    }
 
     private GML311CurveSegmentParser getParser( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {

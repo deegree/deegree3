@@ -65,6 +65,7 @@ import org.deegree.model.geometry.primitive.PolyhedralSurface;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.Tin;
 import org.deegree.model.geometry.primitive.TriangulatedSurface;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByBulge;
@@ -652,6 +653,23 @@ public interface GeometryFactory {
      * @return created {@link TriangulatedSurface}
      */
     public TriangulatedSurface createTriangulatedSurface( String id, CoordinateSystem crs, List<Triangle> memberPatches );
+
+    /**
+     * Creates a {@link Tin}.
+     * 
+     * @param id
+     *            identifier of the created geometry object
+     * @param crs
+     *            coordinate reference system
+     * @param stopLines 
+     * @param breakLines 
+     * @param maxLength 
+     * @param controlPoints 
+     * @return created {@link Tin}
+     */
+    public Tin createTin( String id, CoordinateSystem crs, List<LineString> stopLines,
+                                                          List<LineString> breakLines, Length maxLength,
+                                                          List<Point> controlPoints );
 
     /**
      * Creates a {@link Solid}.

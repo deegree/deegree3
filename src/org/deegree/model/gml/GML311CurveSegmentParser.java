@@ -83,7 +83,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Handles the parsing of <code>gml:_CurveSegment</code> elements, i.e concrete element declarations that are in the
- * substitution group of <code>gml:_CurveSegment</code>.
+ * substitution group <code>gml:_CurveSegment</code>.
  * <p>
  * This class handles all 15 concrete substitutions for <code>gml:_CurveSegment</code> that are defined in GML 3.1.1:
  * <ul>
@@ -877,7 +877,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @throws XMLParsingException
      * @throws XMLStreamException
      */
-    private LineStringSegment parseLineStringSegment( String defaultSrsName )
+    LineStringSegment parseLineStringSegment( String defaultSrsName )
                             throws XMLParsingException, XMLStreamException {
 
         validateInterpolationAttribute( xmlStream, "linear" );
@@ -913,11 +913,13 @@ class GML311CurveSegmentParser extends GML311BaseParser {
         xmlStream.nextTag();
         Curve baseCurve = geometryParser.parseAbstractCurve( defaultSrsName );
         xmlStream.nextTag();
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "offsetBase" );
+        xmlStream.nextTag();
         xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "distance" );
         Length distance = parseLengthType();
         Point direction = null;
         if ( xmlStream.nextTag() == START_ELEMENT ) {
-            xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "direction" );
+            xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "refDirection" );
             direction = parseDirectPositionType( defaultSrsName );
             xmlStream.nextTag();
         }
