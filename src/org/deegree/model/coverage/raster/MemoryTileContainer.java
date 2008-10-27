@@ -91,7 +91,7 @@ public class MemoryTileContainer implements TileContainer {
      * @param raster
      *            new tile
      */
-    public void addTile( AbstractRaster raster ) {
+    public synchronized void addTile( AbstractRaster raster ) {
         if ( this.envelope == null ) {
             this.envelope = raster.getEnvelope();
         } else {
