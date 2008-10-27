@@ -146,11 +146,11 @@ public interface RasterData {
     public RasterData createCompatibleRasterData();
 
     /**
-     * Creates a read-only copy of this RasterData. The result may share the same data as the original.
+     * Return a read-only version of this RasterData. The result shares the same data as the original.
      * 
      * @return a read-only RasterData
      */
-    public RasterData createReadOnlyCopy();
+    public RasterData asReadOnly();
 
     /**
      * Returns a sample as byte array, regardless of the DataType. i.e. a FLOAT DataType results in a four byte array

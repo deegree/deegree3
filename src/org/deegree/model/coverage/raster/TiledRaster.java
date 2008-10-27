@@ -129,6 +129,9 @@ public class TiledRaster extends AbstractRaster {
                 // TODO remove after touches-bug is fixed
             }
         }
+        if ( resultTC.getRasterEnvelope() == null ) {
+            throw new IndexOutOfBoundsException( "no intersection between TiledRaster and requested subset" );
+        }
 
         return result;
     }

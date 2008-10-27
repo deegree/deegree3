@@ -176,7 +176,7 @@ public abstract class ByteBufferRasterData implements RasterData {
     }
     
     @Override
-    public RasterData createReadOnlyCopy() {
+    public RasterData asReadOnly() {
         ByteBufferRasterData copy = createCompatibleEmptyRasterData();
         copy.data = this.getByteBuffer().asReadOnlyBuffer();
         return copy;

@@ -111,7 +111,7 @@ public class MemoryRasterDataContainer implements RasterDataContainer, RasterDat
     
     @Override
     public RasterData getReadOnlyRasterData() {
-        return getRasterData().createReadOnlyCopy();
+        return getRasterData().asReadOnly();
     }
 
     public void setRasterDataReader( RasterDataReader reader ) {

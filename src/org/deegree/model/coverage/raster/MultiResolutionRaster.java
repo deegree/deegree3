@@ -114,42 +114,6 @@ public class MultiResolutionRaster extends AbstractCoverage {
     }
 
     /**
-     * Returns a scaled raster.
-     * 
-     * @param env
-     *            bbox for the new scaled raster
-     * @param width
-     *            width in pixel of the output raster
-     * @param height
-     *            height in pixel of the output raster
-     * @return new scaled raster
-     */
-    public AbstractRaster getSubset( Envelope env, int width, int height ) {
-        double xres = env.getWidth() / width;
-
-        AbstractRaster result = getRaster( Math.abs( xres ) );
-        result = result.getSubset( env );
-        return result.getAsSimpleRaster().getSubset( env, width, height );
-    }
-
-    /**
-     * Returns a scaled raster.
-     * 
-     * @param env
-     *            bbox for the new scaled raster
-     * @param res
-     *            resolution of the scaled raster
-     * @return new scaled raster
-     */
-    public AbstractRaster getSubset( Envelope env, double res ) {
-        AbstractRaster result = getRaster( Math.abs( res ) );
-        result = result.getSubset( env );
-        int width = (int) ( env.getWidth() / res );
-        int height = (int) ( env.getHeight() / res );
-        return result.getAsSimpleRaster().getSubset( env, width, height );
-    }
-
-    /**
      * Returns a list with the highest resolution of every level. The list is sorted ascending (from highest to lowest
      * resolution).
      * 

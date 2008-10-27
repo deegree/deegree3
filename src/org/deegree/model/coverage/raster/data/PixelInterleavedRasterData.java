@@ -150,33 +150,4 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
         }
     }
 
-    // scaling code, to be moved in an external package
-    // public RasterData getSubset( int outWidth, int outHeight ) {
-    // PixelInterleavedRasterData result = createCompatibleRasterData( outWidth, outHeight, bands );
-    // double xStep = (double) width / outWidth;
-    // double yStep = (double) height / outHeight;
-    //
-    // byte[] tmp = new byte[getPixelStride()];
-    //
-    // double xSrc = 0;
-    // double ySrc = 0;
-    //
-    // ByteBuffer srcBuf = this.getByteBuffer();
-    // ByteBuffer destBuf = result.getByteBuffer();
-    // destBuf.rewind();
-    //
-    // for ( int yDest = 0; yDest < outHeight; yDest++ ) {
-    // xSrc = 0;
-    // for ( int xDest = 0; xDest < outWidth; xDest++ ) {
-    // srcBuf.position( calculatePos( (int) xSrc, (int) ySrc ) );
-    // srcBuf.get( tmp );
-    // destBuf.put( tmp );
-    // xSrc += xStep;
-    // }
-    // ySrc += yStep;
-    // }
-    //
-    // return result;
-    // }
-
 }

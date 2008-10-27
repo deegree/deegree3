@@ -148,7 +148,12 @@ public class RasterTransformer extends Transformer {
         Envelope dataEnv = dataEnvGeom.getEnvelope();
 
         // get the data we need as a simple raster (can be a part of a large tiled raster)
-        AbstractRaster source = sourceRaster.getSubset( dataEnv );
+        AbstractRaster source;
+        try {
+            source = sourceRaster.getSubset( dataEnv );
+        } catch ( IndexOutOfBoundsException ex ) {
+            throw new TransformationException( "no source data found" );
+        }
         if ( LOG.isDebugEnabled() ) {
             File tmpFile = null;
             try {

@@ -96,7 +96,7 @@ public class LazyRasterDataContainer implements RasterDataContainer, RasterDataC
 
     @Override
     public RasterData getReadOnlyRasterData() {
-        return getRasterData().createReadOnlyCopy();
+        return getRasterData().asReadOnly();
     }
 
     /*
