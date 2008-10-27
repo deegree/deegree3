@@ -344,8 +344,8 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Tin createTin( String id, CoordinateSystem crs, List<LineString> stopLines,
-                                          List<LineString> breakLines, Length maxLength, List<Point> controlPoints ) {
+    public Tin createTin( String id, CoordinateSystem crs, List<List<LineStringSegment>> stopLines,
+                          List<List<LineStringSegment>> breakLines, Length maxLength, List<Point> controlPoints ) {
         return new DefaultTin( id, crs, stopLines, breakLines, maxLength, controlPoints );
     }
 
@@ -356,36 +356,36 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public MultiPoint createMultiPoint( String id, CoordinateSystem crs, List<Point> members ) {
-        return new DefaultMultiPoint(id, crs, members);
+        return new DefaultMultiPoint( id, crs, members );
     }
 
     @Override
     public MultiCurve createMultiCurve( String id, CoordinateSystem crs, List<Curve> members ) {
-        return new DefaultMultiCurve(id, crs, members);
+        return new DefaultMultiCurve( id, crs, members );
     }
 
     @Override
     public MultiLineString createMultiLineString( String id, CoordinateSystem crs, List<LineString> members ) {
-        return new DefaultMultiLineString(id, crs, members);
-    }    
-    
+        return new DefaultMultiLineString( id, crs, members );
+    }
+
     @Override
     public MultiSurface createMultiSurface( String id, CoordinateSystem crs, List<Surface> members ) {
-        return new DefaultMultiSurface(id, crs, members);
+        return new DefaultMultiSurface( id, crs, members );
     }
 
     @Override
     public MultiPolygon createMultiPolygon( String id, CoordinateSystem crs, List<Polygon> members ) {
-        return new DefaultMultiPolygon(id, crs, members);
+        return new DefaultMultiPolygon( id, crs, members );
     }
-    
+
     @Override
     public MultiSolid createMultiSolid( String id, CoordinateSystem crs, List<Solid> members ) {
-        return new DefaultMultiSolid(id, crs, members);
+        return new DefaultMultiSolid( id, crs, members );
     }
 
     @Override
     public MultiGeometry<Geometry> createMultiGeometry( String id, CoordinateSystem crs, List<Geometry> members ) {
-        return new DefaultMultiGeometry<Geometry>(id, crs, members);
-    }    
+        return new DefaultMultiGeometry<Geometry>( id, crs, members );
+    }
 }

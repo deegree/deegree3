@@ -20,12 +20,12 @@
 			<posList>2 0 0 2 -2 0</posList>
 		</LineStringSegment>
 		<LineStringSegment interpolation="linear">
-			<posList>2 0 0 2 -2 0</posList>
+			<posList>2 0 0 2 -8 0</posList>
 		</LineStringSegment>
 	</stopLines>
 	<stopLines>
 		<LineStringSegment interpolation="linear">
-			<posList>2 0 0 2 -2 0</posList>
+			<posList>2 0 0 2 -6 0</posList>
 		</LineStringSegment>
 	</stopLines>
 	<breakLines>
@@ -33,7 +33,7 @@
 			<posList>2 0 0 2 -2 0</posList>
 		</LineStringSegment>
 	</breakLines>
-	<maxLength uom="http://bogus...#metres">15</maxLength>
+	<maxLength uom="http://bogus...#metres">15.0</maxLength>
 	<controlPoint>
 		<posList>0.0 0.0 1.0 2.0 3.0 4.0</posList>
 	</controlPoint>

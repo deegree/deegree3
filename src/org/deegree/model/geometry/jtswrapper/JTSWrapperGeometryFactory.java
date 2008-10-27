@@ -115,7 +115,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public CompositeSurface createCompositeSurface( String id, CoordinateSystem crs,  List<Surface> surfaces ) {
+    public CompositeSurface createCompositeSurface( String id, CoordinateSystem crs, List<Surface> surfaces ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
@@ -135,7 +135,8 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs, List<GeometricPrimitive> memberPrimitives ) {
+    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs,
+                                                                          List<GeometricPrimitive> memberPrimitives ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
@@ -201,10 +202,11 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
         if ( patches == null || patches.size() == 0 ) {
             return null;
         }
-//        Point point = patches.get( 0 ).getBoundaries().get( 0 ).getAsLineString().getControlPoints().get( 0 );
-//        // JTS does not support Surfaces (Polyons) build from different SurfacePatches, so
-//        // the first patch will build the complete surface
-//        return new JTSWrapperSurface( id, point.getPrecision(), crs, point.getCoordinateDimension(), patches.get( 0 ) );
+        // Point point = patches.get( 0 ).getBoundaries().get( 0 ).getAsLineString().getControlPoints().get( 0 );
+        // // JTS does not support Surfaces (Polyons) build from different SurfacePatches, so
+        // // the first patch will build the complete surface
+        // return new JTSWrapperSurface( id, point.getPrecision(), crs, point.getCoordinateDimension(), patches.get( 0 )
+        // );
         throw new UnsupportedOperationException();
     }
 
@@ -226,11 +228,11 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     @Override
     public Envelope createEnvelope( String id, SurfacePatch patch ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
-//        Envelope env = patch.getBoundaries().get( 0 ).getEnvelope();
-//        for ( int i = 1; i < patch.getBoundaries().size(); i++ ) {
-//            env = env.merger( patch.getBoundaries().get( i ).getEnvelope() );
-//        }
-//        return env;
+        // Envelope env = patch.getBoundaries().get( 0 ).getEnvelope();
+        // for ( int i = 1; i < patch.getBoundaries().size(); i++ ) {
+        // env = env.merger( patch.getBoundaries().get( i ).getEnvelope() );
+        // }
+        // return env;
     }
 
     @Override
@@ -377,8 +379,8 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Tin createTin( String id, CoordinateSystem crs, List<LineString> stopLines,
-                                          List<LineString> breakLines, Length maxLength, List<Point> controlPoints ) {
+    public Tin createTin( String id, CoordinateSystem crs, List<List<LineStringSegment>> stopLines,
+                          List<List<LineStringSegment>> breakLines, Length maxLength, List<Point> controlPoints ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 }

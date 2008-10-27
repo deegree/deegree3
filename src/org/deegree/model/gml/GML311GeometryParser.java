@@ -762,7 +762,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
 
-        // must contain exactly one of the following child elements: "gml:pos", "gml:coordinates" or "gml:coord"
+        // must contain one of the following child elements: "gml:pos", "gml:coordinates" or "gml:coord"
         if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
             String name = xmlStream.getLocalName();
             if ( "pos".equals( name ) ) {
@@ -779,6 +779,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 // deprecated since GML 3.0, only included for backward compatibility
                 double[] coords = parseCoordType();
                 point = geomFac.createPoint( gid, coords, lookupCRS( srsName ) );
+                
             } else {
                 String msg = "Error in 'gml:Point' element. Expected either a 'gml:pos', 'gml:coordinates'"
                              + " or a 'gml:coord' element, but found '" + name + "'.";
@@ -789,8 +790,8 @@ public class GML311GeometryParser extends GML311BaseParser {
                          + " or 'gml:coord'.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        // ensure that the stream points to the "gml:Point" end element event
-        xmlStream.skipElement();
+        xmlStream.nextTag();
+        xmlStream.require( END_ELEMENT, GMLNS, "Point" );
         return point;
     }
 
@@ -816,7 +817,7 @@ public class GML311GeometryParser extends GML311BaseParser {
             String msg = "Error in 'gml:pointProperty' element. Expected a 'gml:Point' element.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.skipElement();
+        xmlStream.nextTag();
         return point;
     }
 
@@ -843,10 +844,10 @@ public class GML311GeometryParser extends GML311BaseParser {
             String name = xmlStream.getLocalName();
             if ( "posList".equals( name ) ) {
                 points = parsePosList( srsName );
-                xmlStream.skipElement();
+                xmlStream.nextTag();
             } else if ( "coordinates".equals( name ) ) {
                 points = parseCoordinates( srsName );
-                xmlStream.skipElement();
+                xmlStream.nextTag();
             } else {
                 points = new LinkedList<Point>();
                 do {
@@ -864,10 +865,6 @@ public class GML311GeometryParser extends GML311BaseParser {
                         throw new XMLParsingException( xmlStream, msg );
                     }
                 } while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT );
-                if ( xmlStream.getEventType() != XMLStreamConstants.END_ELEMENT ) {
-                    // ensure that the stream points to the "gml:LineString" end element event
-                    xmlStream.skipElement();
-                }
             }
         }
 
@@ -903,7 +900,8 @@ public class GML311GeometryParser extends GML311BaseParser {
             segments.add( curveSegmentParser.parseCurveSegment( srsName ) );
         }
 
-        xmlStream.skipElement();
+        xmlStream.nextTag();
+        xmlStream.require( END_ELEMENT, GMLNS, "Curve" );
         return geomFac.createCurve( gid, segments.toArray( new CurveSegment[segments.size()] ), lookupCRS( srsName ) );
     }
 
@@ -1180,7 +1178,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "trianglePatches" );
         while ( xmlStream.nextTag() == START_ELEMENT ) {
-            // validate syntactically, but ignore the content for building the geometry
+            // validate syntactically, but ignore the content for instantiating the geometry
             surfacePatchParser.parseTriangle( srsName );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "trianglePatches" );
@@ -1191,7 +1189,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 List<LineStringSegment> segments = new LinkedList<LineStringSegment>();
                 while ( xmlStream.nextTag() == START_ELEMENT ) {
                     xmlStream.require( START_ELEMENT, GMLNS, "LineStringSegment" );
-                    segments.add( curveSegmentParser.parseLineStringSegment( defaultSrsName ) );
+                    segments.add( curveSegmentParser.parseLineStringSegment( srsName ) );
                     xmlStream.require( END_ELEMENT, GMLNS, "LineStringSegment" );
                 }
                 xmlStream.require( END_ELEMENT, GMLNS, "stopLines" );
@@ -1206,7 +1204,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 List<LineStringSegment> segments = new LinkedList<LineStringSegment>();
                 while ( xmlStream.nextTag() == START_ELEMENT ) {
                     xmlStream.require( START_ELEMENT, GMLNS, "LineStringSegment" );
-                    segments.add( curveSegmentParser.parseLineStringSegment( defaultSrsName ) );
+                    segments.add( curveSegmentParser.parseLineStringSegment( srsName ) );
                     xmlStream.require( END_ELEMENT, GMLNS, "LineStringSegment" );
                 }
                 xmlStream.require( END_ELEMENT, GMLNS, "breakLines" );
@@ -1215,13 +1213,41 @@ public class GML311GeometryParser extends GML311BaseParser {
             }
         }
 
+        xmlStream.require( START_ELEMENT, GMLNS, "maxLength" );
         Length maxLength = parseLengthType();
-        List<Point> controlPoints = new LinkedList<Point>();
-
         xmlStream.nextTag();
+
+        List<Point> controlPoints = null;
+        xmlStream.require( START_ELEMENT, GMLNS, "controlPoint" );
+        if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
+            String name = xmlStream.getLocalName();
+            if ( "posList".equals( name ) ) {
+                controlPoints = parsePosList( srsName );
+                xmlStream.nextTag();
+            } else {
+                controlPoints = new LinkedList<Point>();
+                do {
+                    if ( "pos".equals( name ) ) {
+                        double[] coords = parseDoubleList();
+                        controlPoints.add( geomFac.createPoint( gid, coords, lookupCRS( srsName ) ) );
+                    } else if ( "pointProperty".equals( name ) ) {
+                        controlPoints.add( parsePointProperty( srsName ) );
+                    } else {
+                        String msg = "Error in 'gml:Tin' element.";
+                        throw new XMLParsingException( xmlStream, msg );
+                    }
+                } while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT );
+            }
+        }
+        xmlStream.nextTag();
+
+        if ( controlPoints.size() < 3 ) {
+            String msg = "Error in 'gml:Tin' element. Must specify three control points (=one triangle) at least.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
         xmlStream.require( END_ELEMENT, GMLNS, "Tin" );
-        return null;
-        // return geomFac.createTin( gid, lookupCRS( srsName ), stopLines, breakLines, maxLength, controlPoints );
+        return geomFac.createTin( gid, lookupCRS( srsName ), stopLines, breakLines, maxLength, controlPoints );
     }
 
     /**

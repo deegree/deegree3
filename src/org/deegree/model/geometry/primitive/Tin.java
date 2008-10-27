@@ -39,6 +39,7 @@ package org.deegree.model.geometry.primitive;
 
 import java.util.List;
 
+import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.gml.Length;
 
 /**
@@ -66,9 +67,9 @@ public interface Tin extends Surface {
     @Override
     public SurfaceType getSurfaceType();
 
-    public List<LineString> getStopLines();
+    public List<List<LineStringSegment>> getStopLines();
 
-    public List<LineString> getBreakLines();
+    public List<List<LineStringSegment>> getBreakLines();
 
     public Length getMaxLength();
 

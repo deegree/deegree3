@@ -46,9 +46,9 @@ package org.deegree.model.geometry.standard.primitive;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Tin;
+import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.model.gml.Length;
@@ -63,9 +63,9 @@ import org.deegree.model.gml.Length;
  */
 public class DefaultTin extends AbstractDefaultGeometry implements Tin {
 
-    private List<LineString> stopLines;
+    private List<List<LineStringSegment>> stopLines;
 
-    private List<LineString> breakLines;
+    private List<List<LineStringSegment>> breakLines;
 
     private Length maxLength;
 
@@ -83,7 +83,7 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
      * @param maxLength 
      * @param controlPoints 
      */
-    public DefaultTin( String id, CoordinateSystem crs, List<LineString> stopLines, List<LineString> breakLines,
+    public DefaultTin( String id, CoordinateSystem crs, List<List<LineStringSegment>> stopLines, List<List<LineStringSegment>> breakLines,
                        Length maxLength, List<Point> controlPoints ) {
         super( id, crs );
         this.stopLines = stopLines;
@@ -128,12 +128,12 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
     }
 
     @Override
-    public List<LineString> getStopLines() {
+    public List<List<LineStringSegment>> getStopLines() {
         return stopLines;
     }
 
     @Override
-    public List<LineString> getBreakLines() {
+    public List<List<LineStringSegment>> getBreakLines() {
         return breakLines;
     }
 

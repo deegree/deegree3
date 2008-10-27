@@ -661,15 +661,14 @@ public interface GeometryFactory {
      *            identifier of the created geometry object
      * @param crs
      *            coordinate reference system
-     * @param stopLines 
-     * @param breakLines 
-     * @param maxLength 
-     * @param controlPoints 
+     * @param stopLines
+     * @param breakLines
+     * @param maxLength
+     * @param controlPoints
      * @return created {@link Tin}
      */
-    public Tin createTin( String id, CoordinateSystem crs, List<LineString> stopLines,
-                                                          List<LineString> breakLines, Length maxLength,
-                                                          List<Point> controlPoints );
+    public Tin createTin( String id, CoordinateSystem crs, List<List<LineStringSegment>> stopLines,
+                          List<List<LineStringSegment>> breakLines, Length maxLength, List<Point> controlPoints );
 
     /**
      * Creates a {@link Solid}.

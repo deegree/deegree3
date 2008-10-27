@@ -372,17 +372,23 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 3, surface.getPatches().size() );
     }
 
-//    @Test
-//    public void parseTin()
-//                            throws XMLStreamException, FactoryConfigurationError, IOException {
-//        XMLStreamReaderWrapper xmlReader = getParser( "Tin.gml" );
-//        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
-//        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Tin" ), xmlReader.getName() );
-//        Tin surface = (Tin) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
-//        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
-//        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Tin" ), xmlReader.getName() );
-//        Assert.assertEquals( SurfaceType.Tin, surface.getSurfaceType() );
-//    }    
+    @Test
+    public void parseTin()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = getParser( "Tin.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Tin" ), xmlReader.getName() );
+        Tin surface = (Tin) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Tin" ), xmlReader.getName() );
+        Assert.assertEquals( SurfaceType.Tin, surface.getSurfaceType() );
+        Assert.assertEquals( 2, surface.getStopLines().size() );        
+        Assert.assertEquals( 1, surface.getBreakLines().size() );
+        Assert.assertEquals( 15.0, surface.getMaxLength().getValue() );
+        Assert.assertEquals( 3, surface.getControlPoints().size() );
+        Assert.assertEquals( 3.0, surface.getControlPoints().get(2).getX() );
+        Assert.assertEquals( 4.0, surface.getControlPoints().get(2).getY() );
+    }    
 
     @Test
     public void parseOrientableSurface()
