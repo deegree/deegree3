@@ -46,7 +46,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.rendering.Java2DRenderingTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -65,7 +64,8 @@ import org.slf4j.LoggerFactory;
  */
 @RunWith(Suite.class)
 @SuiteClasses( { org.deegree.commons.utils.ArrayToolsTest.class, org.deegree.commons.utils.FileUtilsTest.class,
-                org.deegree.commons.utils.StringToolsTest.class, org.deegree.commons.xml.XMLAdapterTest.class,
+                org.deegree.commons.utils.StringToolsTest.class, org.deegree.commons.utils.time.DateUtilsTest.class,
+                org.deegree.commons.xml.XMLAdapterTest.class, org.deegree.commons.xml.schema.XSModelAnalyzerTest.class,
                 org.deegree.model.coverage.raster.RasterEnvelopeTest.class,
                 org.deegree.model.crs.components.UnitTest.class,
                 org.deegree.model.crs.configuration.DeegreeCRSProviderTest.class,
@@ -76,9 +76,22 @@ import org.slf4j.LoggerFactory;
                 org.deegree.model.crs.projections.conic.LambertConformalConicTest.class,
                 org.deegree.model.crs.projections.cylindric.TransverseMercatorTest.class,
                 org.deegree.model.crs.transformations.TransformationTest.class,
-                org.deegree.model.filter.Filter110XMLAdapterTest.class, org.deegree.model.geometry.GeometryTest.class,
+                org.deegree.model.feature.FilterEvaluationTest.class,
+                org.deegree.model.feature.xpath.FeatureXPathTest.class,
+                org.deegree.model.filter.Filter110XMLAdapterTest.class,
+                org.deegree.model.generic.DeegreeObjectXMLAdapterTest.class,
+                org.deegree.model.generic.implementation.schema.DeegreeObjectTypeTest.class,
+                org.deegree.model.generic.xsd.ApplicationSchemaXSDAdapterTest.class,
+                org.deegree.model.geometry.GeometryTest.class,
                 org.deegree.model.geometry.jtswrapper.JTSWrapperEnvelopeTest.class,
-                org.deegree.model.geometry.jtswrapper.JTSWrapperPointTest.class, Java2DRenderingTest.class })
+                org.deegree.model.geometry.jtswrapper.JTSWrapperPointTest.class,
+                org.deegree.model.gml.GML311CurveSegmentParserTest.class,
+                org.deegree.model.gml.GML311GeometryParserTest.class,
+                org.deegree.model.gml.GML311SurfacePatchParserTest.class,
+                org.deegree.model.gml.GMLFeatureParserTest.class,
+                org.deegree.model.gml.schema.GMLApplicationSchemaXSDAdapterTest.class,
+                org.deegree.model.gml.schema.XSModelGMLAnalyzerTest.class,
+                org.deegree.rendering.Java2DRenderingTest.class })
 public class CommonsTestSuite {
 
     private static final int DOT_CLASS_LENGTH = ".class".length();
