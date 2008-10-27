@@ -64,10 +64,17 @@ import org.slf4j.LoggerFactory;
  * @author last edited by: $Author$
  * 
  */
+
 public class RasterFactory {
-
-    private static ServiceLoader<RasterIOProvider> rasterIOLoader = ServiceLoader.load( RasterIOProvider.class );
-
+    private static class ThreadLocalServiceLoader extends ThreadLocal<ServiceLoader<RasterIOProvider>> {
+        @Override
+        public ServiceLoader<RasterIOProvider> initialValue() {
+            return ServiceLoader.load( RasterIOProvider.class );
+        }
+    }
+    @SuppressWarnings("synthetic-access")
+    private static ThreadLocalServiceLoader serviceLoader = new ThreadLocalServiceLoader();
+    
     private static Logger log = LoggerFactory.getLogger( RasterFactory.class );
 
     /**
@@ -179,9 +186,13 @@ public class RasterFactory {
 
         writer.write( raster, out, options );
     }
+    
+    private static ServiceLoader<RasterIOProvider> getRasterIOLoader() {
+        return serviceLoader.get();
+    }
 
     private static RasterReader getRasterReader( File filename, RasterIOOptions options ) {
-        for ( RasterIOProvider reader : rasterIOLoader ) {
+        for ( RasterIOProvider reader : getRasterIOLoader() ) {
             String format = options.get( RasterIOOptions.OPT_FORMAT );
             RasterReader possibleReader = reader.getRasterReader( format );
             if ( possibleReader != null && possibleReader.canLoad( filename ) ) {
@@ -192,7 +203,7 @@ public class RasterFactory {
     }
     
     private static RasterReader getRasterReader( RasterIOOptions options ) {
-        for ( RasterIOProvider reader : rasterIOLoader ) {
+        for ( RasterIOProvider reader : getRasterIOLoader() ) {
             String format = options.get( RasterIOOptions.OPT_FORMAT );
             RasterReader possibleReader = reader.getRasterReader( format );
             if ( possibleReader != null ) {
@@ -203,7 +214,7 @@ public class RasterFactory {
     }
 
     private static RasterWriter getRasterWriter( AbstractRaster raster, RasterIOOptions options ) {
-        for ( RasterIOProvider writer : rasterIOLoader ) {
+        for ( RasterIOProvider writer : getRasterIOLoader() ) {
             String format = options.get( RasterIOOptions.OPT_FORMAT );
             RasterWriter possibleWriter = writer.getRasterWriter( format );
             // TODO
