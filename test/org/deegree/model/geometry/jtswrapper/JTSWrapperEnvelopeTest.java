@@ -130,11 +130,11 @@ public class JTSWrapperEnvelopeTest {
 
     /**
      * Test method for
-     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperEnvelope#merger(org.deegree.model.geometry.Envelope)}.
+     * {@link org.deegree.model.geometry.jtswrapper.JTSWrapperEnvelope#merge(org.deegree.model.geometry.Envelope)}.
      */
     @Test
     public void testMerger() {
-        Envelope merge = env1.merger( env2 );
+        Envelope merge = env1.merge( env2 );
         assertEquals( 6.0, merge.getWidth() );
         assertEquals( 8.0, merge.getHeight() );
     }

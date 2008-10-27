@@ -72,12 +72,12 @@ public interface Envelope extends Geometry {
     public Point getMax();
     
     /**
-     * merges to envelopes into one
+     * merges two envelopes into one
      * 
      * @param other
      * @return merged envelope
      */
-    public Envelope merger(Envelope other);
+    public Envelope merge(Envelope other);
     
     /**
      * returns the width of an envelope

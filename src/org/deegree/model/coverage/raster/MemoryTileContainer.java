@@ -95,7 +95,7 @@ public class MemoryTileContainer implements TileContainer {
         if ( this.envelope == null ) {
             this.envelope = raster.getEnvelope();
         } else {
-            this.envelope = this.envelope.merger( raster.getEnvelope() );
+            this.envelope = this.envelope.merge( raster.getEnvelope() );
         }
         if ( this.rasterEnvelope == null ) {
             this.rasterEnvelope = raster.getRasterEnvelope();

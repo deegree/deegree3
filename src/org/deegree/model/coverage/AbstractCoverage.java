@@ -114,7 +114,7 @@ public abstract class AbstractCoverage {
         if ( this.envelope == null ) {
             this.envelope = envelope;
         } else {
-            this.envelope = this.envelope.merger( envelope );
+            this.envelope = this.envelope.merge( envelope );
         }
     }
 

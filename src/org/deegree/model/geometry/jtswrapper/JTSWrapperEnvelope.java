@@ -112,7 +112,7 @@ class JTSWrapperEnvelope extends JTSWrapperGeometry implements Envelope {
      * 
      * @see org.deegree.model.geometry.primitive.Envelope#merger(org.deegree.model.geometry.primitive.Envelope)
      */
-    public Envelope merger( Envelope other ) {
+    public Envelope merge( Envelope other ) {
         double[] min = new double[coordinateDimension];
         double[] max = new double[coordinateDimension];
         for ( int i = 0; i < coordinateDimension; i++ ) {

@@ -97,7 +97,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
     }
 
     @Override
-    public Envelope merger( Envelope other ) {
+    public Envelope merge( Envelope other ) {
         int coordinateDimension = max.getCoordinateDimension();
         double[] min = new double[coordinateDimension];
         double[] max = new double[coordinateDimension];
