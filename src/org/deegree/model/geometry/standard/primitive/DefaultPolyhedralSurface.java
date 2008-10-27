@@ -41,56 +41,77 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard;
+package org.deegree.model.geometry.standard.primitive;
 
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.model.geometry.standard.curvesegments.DefaultLineStringSegment;
+import org.deegree.model.geometry.primitive.PolyhedralSurface;
+import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
 
 /**
- * Default implementation of {@link LineString}.
- * 
+ * Default implementation of {@link PolyhedralSurface}.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public class DefaultLineString extends DefaultCurve implements LineString {
+public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements PolyhedralSurface {
 
-    private LineStringSegment singleSegment;    
-    
+    private List<?> patches;
+
     /**
+     * Creates a new {@link DefaultPolyhedralSurface} instance from the given parameters.
      * 
      * @param id
+     *            identifier of the created geometry object
      * @param crs
-     * @param controlPoints
+     *            coordinate reference system
+     * @param patches
+     *            patches that constitute the surface
      */
-    public DefaultLineString( String id, CoordinateSystem crs, List<Point> controlPoints) {
-        super( id, crs, new DefaultLineStringSegment(controlPoints) );
-        singleSegment = (LineStringSegment) getCurveSegments().get( 0 );
-    }    
-
-    @Override
-    public CurveType getCurveType() {
-        return CurveType.LineString;
-    }    
+    public DefaultPolyhedralSurface (String id, CoordinateSystem crs, List<PolygonPatch> patches) {
+        super (id, crs);
+        this.patches = patches;
+    }
     
     @Override
-    public List<Point> getControlPoints() {
-        return singleSegment.getControlPoints();
-    }
-
-    @Override
-    public double[] getAsArray() {
+    public double getArea() {
         throw new UnsupportedOperationException();
     }
-    
+
     @Override
-    public LineString getAsLineString() {
-        return this;
+    public Point getCentroid() {
+        throw new UnsupportedOperationException();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SurfacePatch> getPatches() {        
+        return (List<SurfacePatch>) patches;
+    }
+
+    @Override
+    public double getPerimeter() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Surface;
+    }
+
+    @Override
+    public SurfaceType getSurfaceType() {
+        return SurfaceType.PolyhedralSurface;
+    }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
     }
 }

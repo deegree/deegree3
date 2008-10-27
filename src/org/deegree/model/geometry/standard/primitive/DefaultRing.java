@@ -41,7 +41,7 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard;
+package org.deegree.model.geometry.standard.primitive;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -54,6 +54,7 @@ import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link Ring}.

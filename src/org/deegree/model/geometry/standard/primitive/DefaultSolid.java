@@ -41,74 +41,81 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard;
+package org.deegree.model.geometry.standard.primitive;
 
 import java.util.List;
 
+import org.deegree.model.crs.CRSFactory;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
 
 /**
- * Default implementation of {@link Surface}.
+ * Default implementation of {@link Solid}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
+public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
 
-    private List<SurfacePatch> patches;
+    private Surface exteriorSurface;
+
+    private List<Surface> interiorSurfaces;
 
     /**
-     * Creates a new {@link DefaultSurface} instance from the given parameters.
+     * Creates a new {@link DefaultSolid} instance from the given parameters.
      * 
      * @param id
-     *            identifier of the created geometry object
+     *            identifier of the new geometry instance
      * @param crs
-     *            coordinate reference system
-     * @param patches
-     *            patches that constitute the surface
+     *            solids coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @param exteriorSurface
+     *            the exterior surface (shell) of the solid, may be null
+     * @param interiorSurfaces
+     *            the interior surfaces of the solid, may be null or empty
      */
-    public DefaultSurface (String id, CoordinateSystem crs, List<SurfacePatch> patches) {
+    public DefaultSolid (String id, CoordinateSystem crs, Surface exteriorSurface, List<Surface> interiorSurfaces) {
         super (id, crs);
-        this.patches = patches;
-    }
-    
+        this.exteriorSurface = exteriorSurface;
+        this.interiorSurfaces = interiorSurfaces;
+    }    
+
     @Override
-    public double getArea() {
-        throw new UnsupportedOperationException();
+    public Surface getExteriorSurface() {
+        return exteriorSurface;
     }
 
     @Override
-    public Point getCentroid() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<SurfacePatch> getPatches() {        
-        return patches;
-    }
-
-    @Override
-    public double getPerimeter() {
-        throw new UnsupportedOperationException();
+    public List<Surface> getInteriorSurfaces() {
+        return interiorSurfaces;
     }
 
     @Override
     public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Surface;
+        return PrimitiveType.Solid;
     }
 
     @Override
-    public SurfaceType getSurfaceType() {
-        return SurfaceType.Surface;
+    public SolidType getSolidType() {
+        return SolidType.Solid;
     }
 
     @Override
     public GeometryType getGeometryType() {
         return GeometryType.PRIMITIVE_GEOMETRY;
     }
+
+    @Override
+    public double getArea() {
+       throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public double getVolume() {
+        throw new UnsupportedOperationException();
+    }    
 }

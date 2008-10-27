@@ -41,7 +41,7 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard;
+package org.deegree.model.geometry.standard.primitive;
 
 import java.util.Arrays;
 
@@ -49,6 +49,7 @@ import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link Point}.

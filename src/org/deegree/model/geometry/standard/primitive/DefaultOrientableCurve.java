@@ -42,52 +42,53 @@
 
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.geometry.standard;
+package org.deegree.model.geometry.standard.primitive;
 
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
-import org.deegree.model.geometry.primitive.OrientableSurface;
+import org.deegree.model.geometry.primitive.Curve;
+import org.deegree.model.geometry.primitive.LineString;
+import org.deegree.model.geometry.primitive.OrientableCurve;
 import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 
 /**
- * Default implementation of {@link OrientableSurface}.
+ * Default implementation of {@link OrientableCurve}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultOrientableSurface implements OrientableSurface {
+public class DefaultOrientableCurve implements OrientableCurve {
 
     private String id;
 
     private CoordinateSystem crs;
 
-    private Surface baseSurface;
+    private Curve baseCurve;
 
     private boolean isReversed;
 
     /**
-     * Creates a new <code>DefaultOrientableSurface</code> instance from the given parameters.
+     * Creates a new <code>DefaultOrientableCurve</code> instance from the given parameters.
      * 
      * @param id
      *            identifier of the created geometry object
      * @param crs
      *            coordinate reference system
-     * @param baseSurface
-     *            base surface
+     * @param baseCurve
+     *            base curve
      * @param isReversed
-     *            set to true, if the orientation of the base Surface shall be reversed
+     *            set to true, if the order of the base curve shall be reversed
      */
-    public DefaultOrientableSurface( String id, CoordinateSystem crs, Surface baseSurface, boolean isReversed ) {
+    public DefaultOrientableCurve( String id, CoordinateSystem crs, Curve baseCurve, boolean isReversed ) {
         this.id = id;
         this.crs = crs;
-        this.baseSurface = baseSurface;
+        this.baseCurve = baseCurve;
         this.isReversed = isReversed;
     }
 
@@ -99,108 +100,150 @@ public class DefaultOrientableSurface implements OrientableSurface {
     @Override
     public CoordinateSystem getCoordinateSystem() {
         return crs;
-    }    
-
-    @Override    
-    public SurfaceType getSurfaceType() {
-        return SurfaceType.OrientableSurface;
     }
 
     @Override
-    public Surface getBaseSurface() {
-        return baseSurface;
+    public LineString getAsLineString() {
+        return baseCurve.getAsLineString();
+    }
+
+    @Override
+    public List<CurveSegment> getCurveSegments() {
+        return baseCurve.getCurveSegments();
+    }
+
+    @Override
+    public CurveType getCurveType() {
+        return CurveType.OrientableCurve;
+    }
+
+    @Override
+    public Curve getBaseCurve() {
+        return baseCurve;
     }
 
     @Override
     public boolean isReversed() {
         return isReversed;
+    }
+
+    @Override
+    public Point getEndPoint() {
+        if (isReversed) {
+            return baseCurve.getStartPoint();
+        }
+        return baseCurve.getEndPoint();
+    }
+
+    @Override
+    public Point getStartPoint() {
+        if (isReversed) {
+            return baseCurve.getEndPoint();
+        }
+        return baseCurve.getStartPoint();
     }    
     
     // -----------------------------------------------------------------------
-    // Surface methods that are just delegated to the wrapped base surface
-    // -----------------------------------------------------------------------    
-    
+    // Curve methods that are just delegated to the wrapped base curve
+    // -----------------------------------------------------------------------
+
+    @Override
     public boolean contains( Geometry geometry ) {
-        return baseSurface.contains( geometry );
+        return baseCurve.contains( geometry );
     }
 
+    @Override
     public Geometry difference( Geometry geometry ) {
-        return baseSurface.difference( geometry );
+        return baseCurve.difference( geometry );
     }
 
+    @Override
     public double distance( Geometry geometry ) {
-        return baseSurface.distance( geometry );
+        return baseCurve.distance( geometry );
     }
 
+    @Override
     public boolean equals( Geometry geometry ) {
-        return baseSurface.equals( geometry );
+        return baseCurve.equals( geometry );
     }
 
-    public double getArea() {
-        return baseSurface.getArea();
+    @Override
+    public List<Point> getBoundary() {
+        return baseCurve.getBoundary();
     }
 
+    @Override
     public Geometry getBuffer( double distance ) {
-        return baseSurface.getBuffer( distance );
+        return baseCurve.getBuffer( distance );
     }
 
-    public Point getCentroid() {
-        return baseSurface.getCentroid();
-    }
-
+    @Override
     public Geometry getConvexHull() {
-        return baseSurface.getConvexHull();
+        return baseCurve.getConvexHull();
     }
 
+    @Override
     public int getCoordinateDimension() {
-        return baseSurface.getCoordinateDimension();
+        return baseCurve.getCoordinateDimension();
     }
 
+    @Override
     public Envelope getEnvelope() {
-        return baseSurface.getEnvelope();
+        return baseCurve.getEnvelope();
     }
 
-    public GeometryType getGeometryType() {
-        return baseSurface.getGeometryType();
+    @Override
+    public double getLength() {
+        return baseCurve.getLength();
     }
 
-    public List<SurfacePatch> getPatches() {
-        return baseSurface.getPatches();
-    }
-
-    public double getPerimeter() {
-        return baseSurface.getPerimeter();
-    }
-
+    @Override
     public double getPrecision() {
-        return baseSurface.getPrecision();
+        return baseCurve.getPrecision();
     }
 
-    public PrimitiveType getPrimitiveType() {
-        return baseSurface.getPrimitiveType();
-    }
-
+    @Override
     public Geometry intersection( Geometry geometry ) {
-        return baseSurface.intersection( geometry );
+        return baseCurve.intersection( geometry );
     }
 
+    @Override
     public boolean intersects( Geometry geometry ) {
-        return baseSurface.intersects( geometry );
+        return baseCurve.intersects( geometry );
     }
 
+    @Override
     public boolean isBeyond( Geometry geometry, double distance ) {
-        return baseSurface.isBeyond( geometry, distance );
+        return baseCurve.isBeyond( geometry, distance );
     }
 
+    @Override
+    public boolean isClosed() {
+        return baseCurve.isClosed();
+    }
+
+    @Override
     public boolean isWithin( Geometry geometry ) {
-        return baseSurface.isWithin( geometry );
+        return baseCurve.isWithin( geometry );
     }
 
+    @Override
     public boolean isWithinDistance( Geometry geometry, double distance ) {
-        return baseSurface.isWithinDistance( geometry, distance );
+        return baseCurve.isWithinDistance( geometry, distance );
     }
 
+    @Override
     public Geometry union( Geometry geometry ) {
-        return baseSurface.union( geometry );
+        return baseCurve.union( geometry );
     }
+    
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Curve;
+    }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
+    }    
 }

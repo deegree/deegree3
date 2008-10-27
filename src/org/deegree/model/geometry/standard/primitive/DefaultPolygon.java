@@ -41,76 +41,69 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard;
+package org.deegree.model.geometry.standard.primitive;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.model.crs.CRSFactory;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.TriangulatedSurface;
+import org.deegree.model.geometry.primitive.Polygon;
+import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
-import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
+import org.deegree.model.geometry.standard.surfacepatches.DefaultPolygonPatch;
 
 /**
- * Default implementation of {@link TriangulatedSurface}.
+ * Default implementation of {@link Polygon}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public class DefaultTriangulatedSurface extends AbstractDefaultGeometry implements TriangulatedSurface {
+public class DefaultPolygon extends DefaultSurface implements Polygon {
 
-    private List<?> patches;
+    private Ring exteriorRing;
+
+    private List<Ring> interiorRings;
 
     /**
-     * Creates a new {@link DefaultTriangulatedSurface} instance from the given parameters.
+     * Creates a new {@link DefaultPolygon} instance from the given parameters.
      * 
      * @param id
-     *            identifier of the created geometry object
+     *            identifier of the new geometry instance
      * @param crs
-     *            coordinate reference system
-     * @param patches
-     *            patches that constitute the surface
+     *            coordinate reference system. If the polygon does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @param exteriorRing
+     *            ring that defines the outer boundary, may be null (see section 9.2.2.5 of GML spec)
+     * @param interiorRings
+     *            list of rings that define the inner boundaries, may be empty or null
      */
-    public DefaultTriangulatedSurface (String id, CoordinateSystem crs, List<Triangle> patches) {
-        super (id, crs);
-        this.patches = patches;
+    public DefaultPolygon (String id, CoordinateSystem crs, Ring exteriorRing, List<Ring> interiorRings) {
+        super (id, crs, createPatchList( exteriorRing, interiorRings ));
+        this.exteriorRing = exteriorRing;
+        this.interiorRings = interiorRings;
     }
     
-    @Override
-    public double getArea() {
-        throw new UnsupportedOperationException();
+    private static List<SurfacePatch> createPatchList(Ring exteriorRing, List<Ring> interiorRings) {
+        List<SurfacePatch> patches = new ArrayList<SurfacePatch>(1);
+        patches.add (new DefaultPolygonPatch(exteriorRing, interiorRings));
+        return patches;
     }
 
     @Override
-    public Point getCentroid() {
-        throw new UnsupportedOperationException();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<SurfacePatch> getPatches() {        
-        return (List<SurfacePatch>) patches;
+    public Ring getExteriorRing() {
+        return exteriorRing;
     }
 
     @Override
-    public double getPerimeter() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Surface;
+    public List<Ring> getInteriorRings() {
+        return interiorRings;
     }
 
     @Override
     public SurfaceType getSurfaceType() {
-        return SurfaceType.TriangulatedSurface;
-    }
-
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
-    }
+        return SurfaceType.Polygon;
+    }    
 }

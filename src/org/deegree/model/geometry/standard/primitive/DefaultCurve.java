@@ -41,7 +41,7 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard;
+package org.deegree.model.geometry.standard.primitive;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +52,7 @@ import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link Curve}.

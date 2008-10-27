@@ -41,80 +41,77 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard;
+package org.deegree.model.geometry.standard.primitive;
 
 import java.util.List;
 
-import org.deegree.model.crs.CRSFactory;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.primitive.Solid;
-import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.TriangulatedSurface;
+import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
+import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
 
 /**
- * Default implementation of {@link Solid}.
+ * Default implementation of {@link TriangulatedSurface}.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
+public class DefaultTriangulatedSurface extends AbstractDefaultGeometry implements TriangulatedSurface {
 
-    private Surface exteriorSurface;
-
-    private List<Surface> interiorSurfaces;
+    private List<?> patches;
 
     /**
-     * Creates a new {@link DefaultSolid} instance from the given parameters.
+     * Creates a new {@link DefaultTriangulatedSurface} instance from the given parameters.
      * 
      * @param id
-     *            identifier of the new geometry instance
+     *            identifier of the created geometry object
      * @param crs
-     *            solids coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
-     * @param exteriorSurface
-     *            the exterior surface (shell) of the solid, may be null
-     * @param interiorSurfaces
-     *            the interior surfaces of the solid, may be null or empty
+     *            coordinate reference system
+     * @param patches
+     *            patches that constitute the surface
      */
-    public DefaultSolid (String id, CoordinateSystem crs, Surface exteriorSurface, List<Surface> interiorSurfaces) {
+    public DefaultTriangulatedSurface (String id, CoordinateSystem crs, List<Triangle> patches) {
         super (id, crs);
-        this.exteriorSurface = exteriorSurface;
-        this.interiorSurfaces = interiorSurfaces;
-    }    
-
+        this.patches = patches;
+    }
+    
     @Override
-    public Surface getExteriorSurface() {
-        return exteriorSurface;
+    public double getArea() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<Surface> getInteriorSurfaces() {
-        return interiorSurfaces;
+    public Point getCentroid() {
+        throw new UnsupportedOperationException();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SurfacePatch> getPatches() {        
+        return (List<SurfacePatch>) patches;
+    }
+
+    @Override
+    public double getPerimeter() {
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Solid;
+        return PrimitiveType.Surface;
     }
 
     @Override
-    public SolidType getSolidType() {
-        return SolidType.Solid;
+    public SurfaceType getSurfaceType() {
+        return SurfaceType.TriangulatedSurface;
     }
 
     @Override
     public GeometryType getGeometryType() {
         return GeometryType.PRIMITIVE_GEOMETRY;
     }
-
-    @Override
-    public double getArea() {
-       throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double getVolume() {
-        throw new UnsupportedOperationException();
-    }    
 }
