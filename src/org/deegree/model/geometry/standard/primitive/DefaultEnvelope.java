@@ -40,21 +40,27 @@ package org.deegree.model.geometry.standard.primitive;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
+import org.deegree.model.geometry.GeometryFactory;
+import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link Envelope}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope {
 
+    private static GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
+
+    private static double DELTA = 0.001;
+
     private Point max;
-    
+
     private Point min;
 
     /**
@@ -64,11 +70,11 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
      *            identifier of the created geometry object
      * @param crs
      *            coordinate reference system
-     * @param min 
-     * @param max 
-     */    
+     * @param min
+     * @param max
+     */
     public DefaultEnvelope( String id, CoordinateSystem crs, Point min, Point max ) {
-        super (id, crs);
+        super( id, crs );
         this.min = min;
         this.max = max;
     }
@@ -101,23 +107,160 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
     @Override
     public Geometry intersection( Geometry geometry ) {
         Geometry result = null;
-        switch (geometry.getGeometryType()) {
+        switch ( geometry.getGeometryType() ) {
         case ENVELOPE: {
             Envelope other = (Envelope) geometry;
+
+            double minX1 = this.getMin().getX();
+            double minY1 = this.getMin().getY();
+            double maxX1 = this.getMax().getX();
+            double maxY1 = this.getMax().getY();
+
+            double minX2 = other.getMin().getX();
+            double minY2 = other.getMin().getY();
+            double maxX2 = other.getMax().getX();
+            double maxY2 = other.getMax().getY();
+
+            if ( this.intersects( other ) ) {
+                double newMinX;
+                double newMinY;
+                double newMaxX;
+                double newMaxY;
+
+                if ( minX2 > minX1 ) {
+                    newMinX = minX2;
+                } else {
+                    newMinX = minX1;
+                }
+                if ( maxX1 > maxX2 ) {
+                    newMaxX = maxX2;
+                } else {
+                    newMaxX = maxX1;
+                }
+
+                if ( minY2 > minY1 ) {
+                    newMinY = minY2;
+                } else {
+                    newMinY = minY1;
+                }
+                if ( maxY1 > maxY2 ) {
+                    newMaxY = maxY2;
+                } else {
+                    newMaxY = maxY1;
+                }
+
+                result = geomFactory.createEnvelope( new double[] { newMinX, newMinY },
+                                                     new double[] { newMaxX, newMaxY }, DELTA, null );
+            }
+            break;
+
+        }
+        default: {
             throw new UnsupportedOperationException();
         }
-        default : {
-            throw new UnsupportedOperationException();
         }
-        }
-//        return result;
+        return result;
     }
 
     @Override
     public boolean intersects( Geometry geometry ) {
-        throw new UnsupportedOperationException();
-    }    
-    
+
+        switch ( geometry.getGeometryType() ) {
+        case ENVELOPE: {
+            Envelope other = (Envelope) geometry;
+
+            double minX1 = this.getMin().getX();
+            double minY1 = this.getMin().getY();
+            double maxX1 = this.getMax().getX();
+            double maxY1 = this.getMax().getY();
+
+            double minX2 = other.getMin().getX();
+            double minY2 = other.getMin().getY();
+            double maxX2 = other.getMax().getX();
+            double maxY2 = other.getMax().getY();
+
+            // special case: the passed envelope lays completly inside this envelope
+            if ( other.contains( this ) ) {
+                return true;
+            }
+
+            // left or right border of the passed envelope lays inside the y-band of this envelope
+            if ( ( minX2 >= minX1 && minX2 <= maxX1 ) || ( maxX2 <= maxX1 && maxX2 >= minX1 ) ) {
+                if ( minY2 <= maxY1 && maxY2 >= minY1 ) {
+                    return true;
+                }
+            }
+
+            // top or bottom border of the passed envelope lays inside the x-band of this envelope
+            if ( ( minY2 >= minY1 && minY2 <= maxY1 ) || ( maxY2 <= maxY1 && maxY2 >= minY1 ) ) {
+                if ( minX2 <= maxX1 && maxX2 >= minX1 ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        default: {
+            throw new UnsupportedOperationException();
+        }
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.model.geometry.standard.AbstractDefaultGeometry#contains(org.deegree.model.geometry.Geometry)
+     */
+    @Override
+    public boolean contains( Geometry geometry ) {
+        switch ( geometry.getGeometryType() ) {
+        case ENVELOPE: {
+            Envelope other = (Envelope) geometry;
+
+            double minX1 = this.getMin().getX();
+            double minY1 = this.getMin().getY();
+            double maxX1 = this.getMax().getX();
+            double maxY1 = this.getMax().getY();
+
+            double minX2 = other.getMin().getX();
+            double minY2 = other.getMin().getY();
+            double maxX2 = other.getMax().getX();
+            double maxY2 = other.getMax().getY();
+
+            if ( minX2 >= minX1 && maxX2 <= maxX1 && minY2 >= minY1 && maxY2 <= maxY1 ) {
+                return true;
+            }
+
+            return false;
+        }
+        default: {
+            throw new UnsupportedOperationException();
+        }
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.model.geometry.standard.AbstractDefaultGeometry#equals(org.deegree.model.geometry.Geometry)
+     */
+    @Override
+    public boolean equals( Geometry geometry ) {
+        switch ( geometry.getGeometryType() ) {
+        case ENVELOPE: {
+            Envelope other = (Envelope) geometry;
+            if ( this.getMin().getX() == other.getMin().getX() && this.getMin().getY() == other.getMin().getY()
+                 && this.getMax().getX() == other.getMax().getX() && this.getMax().getY() == other.getMax().getY() ) {
+                return true;
+            }
+            return false;
+        }
+        default: {
+            throw new UnsupportedOperationException();
+        }
+        }
+    }
+
     @Override
     public Envelope merge( Envelope other ) {
         int coordinateDimension = max.getCoordinateDimension();
@@ -137,6 +280,6 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
         }
         Point newMin = new DefaultPoint( null, getCoordinateSystem(), min );
         Point newMax = new DefaultPoint( null, getCoordinateSystem(), min );
-        return new DefaultEnvelope(null, getCoordinateSystem(), newMin, newMax);
+        return new DefaultEnvelope( null, getCoordinateSystem(), newMin, newMax );
     }
 }
