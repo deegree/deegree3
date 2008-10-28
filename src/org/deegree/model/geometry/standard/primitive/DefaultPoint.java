@@ -140,7 +140,7 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
 
     @Override
     public Envelope getEnvelope() {
-        throw new UnsupportedOperationException();
+        return new DefaultEnvelope( null, crs, this, this );
     }
 
     @Override
