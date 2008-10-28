@@ -78,7 +78,17 @@ public class RasterTransformer extends Transformer {
 
     private static Logger LOG = LoggerFactory.getLogger( RasterTransformer.class );
 
+    private final int polynomialOrder = 3;
+
+    private final int refPointsGridSize = 10;
+
     private byte[] backgroundValue;
+
+    private int dstWidth;
+
+    private int dstHeight;
+
+    private CoordinateSystem srcCRS;
 
     /**
      * Creates a new RasterTransformer with the given target CRS.
@@ -130,10 +140,48 @@ public class RasterTransformer extends Transformer {
     public SimpleRaster transform( AbstractRaster sourceRaster, Envelope dstEnvelope, int dstWidth, int dstHeight,
                                    InterpolationType interpolationType )
                             throws TransformationException {
-        SimpleRaster result = null;
-        CoordinateSystem srcCRS = sourceRaster.getCoordinateSystem();
-        GeometryTransformer srcTransf = new GeometryTransformer( srcCRS );
+        this.dstWidth = dstWidth;
+        this.dstHeight = dstHeight;
+        this.srcCRS = sourceRaster.getCoordinateSystem();
 
+        AbstractRaster source = createSourceRaster( sourceRaster, dstEnvelope );
+        RasterData srcRaster = source.getAsSimpleRaster().getRasterData();
+
+        RasterData dstRaster = srcRaster.createCompatibleRasterData( dstWidth, dstHeight, srcRaster.getBands() );
+        RasterEnvelope srcREnv = source.getRasterEnvelope();
+        RasterEnvelope dstREnv = new RasterEnvelope( dstEnvelope, dstWidth, dstHeight );
+
+        WarpPolynomial warp = createWarp( srcREnv, dstREnv );
+
+        Interpolation interpolation = InterpolationFactory.getInterpolation( interpolationType, srcRaster );
+
+        if ( backgroundValue != null ) {
+            srcRaster.setNullPixel( backgroundValue );
+        }
+
+        // build the new result raster
+        byte[] pixel = new byte[dstRaster.getBands() * dstRaster.getDataType().getSize()];
+        float[] srcCoords = new float[dstRaster.getWidth() * 2];
+        for ( int y = 0; y < dstRaster.getHeight(); y++ ) {
+            // look-up the pixel positions in the source raster for every pixel in this row
+            warp.warpRect( 0, y, dstRaster.getWidth(), 1, srcCoords );
+            for ( int x = 0; x < dstRaster.getWidth(); x++ ) {
+                // get the interpolated pixel and set the value into the result raster
+                interpolation.getPixel( srcCoords[x * 2], srcCoords[x * 2 + 1], pixel );
+                dstRaster.setPixel( x, y, pixel );
+            }
+        }
+
+        return new SimpleRaster( dstRaster, dstEnvelope, dstREnv );
+    }
+
+    /**
+     * Create a new raster that contains all data we need for the transformation.
+     */
+    private AbstractRaster createSourceRaster( AbstractRaster sourceRaster, Envelope dstEnvelope )
+                            throws TransformationException {
+        GeometryTransformer srcTransf = new GeometryTransformer( srcCRS );
+        
         // the envelope from which we need data
         Envelope workEnv = (Envelope) srcTransf.transform( dstEnvelope, getTargetCRS() );
 
@@ -155,35 +203,19 @@ public class RasterTransformer extends Transformer {
             throw new TransformationException( "no source data found" );
         }
         if ( LOG.isDebugEnabled() ) {
-            File tmpFile = null;
-            try {
-                tmpFile = File.createTempFile( "transform-src", ".tiff" );
-                LOG.debug( "writing the source raster of the transformation to " + tmpFile );
-                RasterFactory.saveRasterToFile( source, tmpFile );
-            } catch ( IOException e ) {
-                LOG.error( "couldn't write debug file " + tmpFile );
-                e.printStackTrace();
-            }
+            debugRasterFile( source );
         }
-        RasterData srcRaster = source.getAsSimpleRaster().getRasterData();
+        return source;
+    }
 
-        RasterData dstRaster = srcRaster.createCompatibleRasterData( dstWidth, dstHeight, srcRaster.getBands() );
-        RasterEnvelope srcREnv = source.getRasterEnvelope();
-        RasterEnvelope dstREnv = new RasterEnvelope( dstEnvelope, dstWidth, dstHeight );
-
-        // now we create our polynomial warp for the raster transformation. we create a grid on the new result
-        // raster and calculate the pixel position in the source raster.
-        int refPointsGridSize = 10;
+    private WarpPolynomial createWarp( RasterEnvelope srcREnv, RasterEnvelope dstREnv )
+                            throws TransformationException {
+        int k = 0;
         // create/calculate reference points
-        float dx = ( dstRaster.getWidth() - 1 ) / (float) ( refPointsGridSize - 1 );
-        float dy = ( dstRaster.getHeight() - 1 ) / (float) ( refPointsGridSize - 1 );
+        float dx = ( dstWidth - 1 ) / (float) ( refPointsGridSize - 1 );
+        float dy = ( dstHeight - 1 ) / (float) ( refPointsGridSize - 1 );
         float[] srcCoords = new float[refPointsGridSize * refPointsGridSize * 2];
         float[] dstCoords = new float[refPointsGridSize * refPointsGridSize * 2];
-        int k = 0;
-
-        CRSTransformation transform = createCRSTransformation( srcCRS );
-        transform.inverse();
-
         List<Point3d> points = new ArrayList<Point3d>( refPointsGridSize * refPointsGridSize );
         for ( int j = 0; j < refPointsGridSize; j++ ) {
             for ( int i = 0; i < refPointsGridSize; i++ ) {
@@ -194,44 +226,28 @@ public class RasterTransformer extends Transformer {
                 k += 2;
             }
         }
-        // transform all grid points
-        List<Point3d> resultList = transform.doTransform( points );
+        List<Point3d> resultList = transformDstToSrc( points );
+        
         k = 0;
         for ( Point3d point : resultList ) {
             double[] srcRCoords = srcREnv.convertToRasterCRSDouble( point.x, point.y );
             srcCoords[k] = (float) srcRCoords[0];
             srcCoords[k + 1] = (float) srcRCoords[1];
-            // System.err.println( String.format( "%.4f %.4f -> %.4f %.4f ", srcCoords[k], srcCoords[k + 1],
-            // dstCoords[k], dstCoords[k + 1] ) );
             k += 2;
         }
 
         // create a best fit polynomial for out grid
         WarpPolynomial warp = WarpPolynomial.createWarp( srcCoords, 0, dstCoords, 0, srcCoords.length, 1f, 1f, 1f, 1f,
-                                                         3 );
+                                                         polynomialOrder );
+        return warp;
+    }
 
-        Interpolation interpolation = InterpolationFactory.getInterpolation( interpolationType, srcRaster );
-
-        if ( backgroundValue != null ) {
-            srcRaster.setNullPixel( backgroundValue );
-        }
-
-        // build the new result raster
-        byte[] pixel = new byte[dstRaster.getBands() * dstRaster.getDataType().getSize()];
-        srcCoords = new float[dstRaster.getWidth() * 2];
-        for ( int y = 0; y < dstRaster.getHeight(); y++ ) {
-            // look-up the pixel positions in the source raster for every pixel in this row
-            warp.warpRect( 0, y, dstRaster.getWidth(), 1, srcCoords );
-            for ( int x = 0; x < dstRaster.getWidth(); x++ ) {
-                // get the interpolated pixel and set the value into the result raster
-                interpolation.getPixel( srcCoords[x * 2], srcCoords[x * 2 + 1], pixel );
-                dstRaster.setPixel( x, y, pixel );
-            }
-        }
-
-        result = new SimpleRaster( dstRaster, dstEnvelope, dstREnv );
-
-        return result;
+    private List<Point3d> transformDstToSrc( List<Point3d> points )
+                            throws TransformationException {
+        // transform all grid points
+        CRSTransformation transform = createCRSTransformation( srcCRS );
+        transform.inverse();
+        return transform.doTransform( points );
     }
 
     /**
@@ -276,5 +292,17 @@ public class RasterTransformer extends Transformer {
      */
     public void setBackgroundValue( byte[] backgroundValue ) {
         this.backgroundValue = backgroundValue;
+    }
+
+    private void debugRasterFile( AbstractRaster source ) {
+        File tmpFile = null;
+        try {
+            tmpFile = File.createTempFile( "transform-src", ".tiff" );
+            LOG.debug( "writing the source raster of the transformation to " + tmpFile );
+            RasterFactory.saveRasterToFile( source, tmpFile );
+        } catch ( IOException e ) {
+            LOG.error( "couldn't write debug file " + tmpFile );
+            e.printStackTrace();
+        }
     }
 }
