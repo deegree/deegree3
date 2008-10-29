@@ -268,6 +268,11 @@ public class Java2DRenderer implements Renderer {
     }
 
     public void render( TextStyling styling, String text, Geometry geom ) {
+        if ( geom == null ) {
+            LOG.debug( "Trying to render null geometry." );
+            return;
+        }
+
         int style = styling.font.bold ? BOLD : PLAIN;
         switch ( styling.font.fontStyle ) {
         case ITALIC:
@@ -340,6 +345,11 @@ public class Java2DRenderer implements Renderer {
     }
 
     public void render( PointStyling styling, Geometry geom ) {
+        if ( geom == null ) {
+            LOG.debug( "Trying to render null geometry." );
+            return;
+        }
+
         if ( geom instanceof Point ) {
             render( styling, ( (Point) geom ).getX(), ( (Point) geom ).getY() );
         }
@@ -395,6 +405,11 @@ public class Java2DRenderer implements Renderer {
     }
 
     public void render( LineStyling styling, Geometry geom ) {
+        if ( geom == null ) {
+            LOG.debug( "Trying to render null geometry." );
+            return;
+        }
+
         if ( LOG.isTraceEnabled() ) {
             LOG.trace( "Drawing " + geom + " with " + styling );
         }
@@ -449,6 +464,11 @@ public class Java2DRenderer implements Renderer {
     }
 
     public void render( PolygonStyling styling, Geometry geom ) {
+        if ( geom == null ) {
+            LOG.debug( "Trying to render null geometry." );
+            return;
+        }
+
         if ( geom instanceof Point ) {
             LOG.warn( "Trying to render point with polygon styling." );
         }

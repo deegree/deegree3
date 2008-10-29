@@ -591,7 +591,7 @@ public class Java2DRenderingTest extends TestCase {
                                                                        null ) );
 
         LinkedList<Curve> curves = new LinkedList<Curve>();
-        for ( int i = 0; i < 9; ++i ) {
+        for ( int i = 0; i < 8; ++i ) {
             curves.add( randomCurve( 500, i * 600, 100 ) );
         }
 
@@ -607,6 +607,12 @@ public class Java2DRenderingTest extends TestCase {
         r.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
         styling.linePlacement.repeat = true;
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
         r.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
         r.render( lineStyle, curves.peek() );
