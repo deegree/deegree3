@@ -601,7 +601,7 @@ public class Java2DRenderingTest extends TestCase {
         LineStyling lineStyle = new LineStyling();
         lineStyle.stroke.width = 20;
         lineStyle.stroke.linecap = BUTT;
-        String text = "Mean Street";
+        String text = "geeky Street";
         TextStyling styling = new TextStyling();
         styling.linePlacement = new LinePlacement();
         styling.font.fontSize = 15;
@@ -620,7 +620,7 @@ public class Java2DRenderingTest extends TestCase {
         r.render( styling, text, curves.poll() );
         r.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
-        styling.linePlacement.perpendicularOffset = 5;
+        styling.linePlacement.perpendicularOffset = 17.5;
         r.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
         r.render( lineStyle, curves.peek() );
@@ -640,6 +640,7 @@ public class Java2DRenderingTest extends TestCase {
         texts.add( "first line: renders gray lines width 20, inside a text with size 15." );
         texts.add( "Text should start immediately inside the line. First geometry should include" );
         texts.add( "the text once, the others repeated." );
+        texts.add( "second line: renders the same text directly above the gray line (perpendicular offset)" );
         writeTestImage( img, texts, time2 - time );
     }
 }

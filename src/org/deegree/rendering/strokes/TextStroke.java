@@ -61,6 +61,8 @@ public class TextStroke implements Stroke {
 
     private FontRenderContext frc;
 
+    private double lineHeight;
+
     private static final float FLATNESS = 1;
 
     /**
@@ -73,6 +75,7 @@ public class TextStroke implements Stroke {
         this.font = font;
         this.repeat = repeat;
         frc = new FontRenderContext( null, false, false );
+        lineHeight = font.getLineMetrics( text, frc ).getHeight();
     }
 
     private Pair<Boolean, GeneralPath> tryWordWise( Shape shape ) {
@@ -167,7 +170,7 @@ public class TextStroke implements Stroke {
                 AffineTransform t = new AffineTransform();
                 t.setToTranslation( lastx, lasty );
                 t.rotate( angle );
-                t.translate( 0, text.getBounds2D().getHeight() / 2 );
+                t.translate( 0, lineHeight / 4 );
 
                 pair.second.append( t.createTransformedShape( text ), false );
 
