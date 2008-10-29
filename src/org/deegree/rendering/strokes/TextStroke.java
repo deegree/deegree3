@@ -16,8 +16,14 @@ limitations under the License.
 
 package org.deegree.rendering.strokes;
 
+import static java.awt.geom.PathIterator.SEG_CLOSE;
+import static java.awt.geom.PathIterator.SEG_LINETO;
+import static java.awt.geom.PathIterator.SEG_MOVETO;
 import static java.lang.Math.atan2;
 import static java.lang.Math.sqrt;
+import static java.util.Arrays.asList;
+import static org.deegree.commons.utils.GeometryUtils.measurePathLengths;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Font;
 import java.awt.Shape;
@@ -29,6 +35,10 @@ import java.awt.geom.FlatteningPathIterator;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
+import java.util.LinkedList;
+
+import org.deegree.commons.utils.Pair;
+import org.slf4j.Logger;
 
 /**
  * <code>TextStroke</code>
@@ -41,13 +51,15 @@ import java.awt.geom.Point2D;
  */
 public class TextStroke implements Stroke {
 
+    private static final Logger LOG = getLogger( TextStroke.class );
+
     private String text;
 
     private Font font;
 
     private boolean repeat = false;
 
-    private AffineTransform t = new AffineTransform();
+    private FontRenderContext frc;
 
     private static final float FLATNESS = 1;
 
@@ -60,13 +72,105 @@ public class TextStroke implements Stroke {
         this.text = text;
         this.font = font;
         this.repeat = repeat;
-        if ( repeat && !text.endsWith( " " ) ) {
-            this.text = text + " ";
+        frc = new FontRenderContext( null, false, false );
+    }
+
+    private Pair<Boolean, GeneralPath> tryWordWise( Shape shape ) {
+        Pair<Boolean, GeneralPath> pair = new Pair<Boolean, GeneralPath>();
+
+        LinkedList<String> words = new LinkedList<String>( asList( text.split( "\\s" ) ) );
+        LinkedList<String> wordsCopy = new LinkedList<String>();
+        wordsCopy.addAll( words );
+
+        LinkedList<Double> lengths = measurePathLengths( shape );
+
+        if ( words.size() > lengths.size() ) {
+            pair.first = false;
+            return pair;
         }
+
+        while ( words.size() > 0 && lengths.size() > 0 ) {
+            GlyphVector vec = font.createGlyphVector( frc, words.poll() );
+            double vecLength = vec.getOutline().getBounds2D().getWidth();
+            double segLength = lengths.poll();
+
+            if ( vecLength > segLength ) {
+                pair.first = false;
+                return pair;
+            }
+
+            if ( words.isEmpty() && repeat ) {
+                words.addAll( wordsCopy );
+            }
+        }
+
+        words.clear();
+        words.addAll( wordsCopy );
+
+        pair.first = true;
+        pair.second = new GeneralPath();
+
+        PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
+        double points[] = new double[6];
+
+        double movex = 0, movey = 0, lastx = 0, lasty = 0;
+
+        while ( !it.isDone() ) {
+            int type = it.currentSegment( points );
+            switch ( type ) {
+            case SEG_MOVETO:
+                movex = lastx = points[0];
+                movey = lasty = points[1];
+                pair.second.moveTo( movex, movey );
+                break;
+
+            case SEG_CLOSE:
+                points[0] = movex;
+                points[1] = movey;
+                // Fall into....
+
+            case SEG_LINETO:
+                if ( words.isEmpty() && !repeat ) {
+                    break;
+                } else if ( words.isEmpty() ) {
+                    words.addAll( wordsCopy );
+                }
+
+                double px = points[0];
+                double py = points[1];
+                double dx = px - lastx;
+                double dy = py - lasty;
+                double angle = atan2( dy, dx );
+
+                GlyphVector vec = font.createGlyphVector( frc, words.poll() );
+                Shape text = vec.getOutline();
+
+                AffineTransform t = new AffineTransform();
+                t.setToTranslation( lastx, lasty );
+                t.rotate( angle );
+                t.translate( 0, text.getBounds2D().getHeight() / 2 );
+
+                pair.second.append( t.createTransformedShape( text ), false );
+
+                lastx = px;
+                lasty = py;
+                break;
+            }
+            it.next();
+        }
+
+        return pair;
     }
 
     public Shape createStrokedShape( Shape shape ) {
-        FontRenderContext frc = new FontRenderContext( null, false, false );
+        Pair<Boolean, GeneralPath> pair = tryWordWise( shape );
+        if ( pair.first ) {
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "Rendered text '" + text + "' word wise." );
+            }
+            return pair.second;
+        }
+
         GlyphVector glyphVector = font.createGlyphVector( frc, text );
 
         GeneralPath result = new GeneralPath();
@@ -120,6 +224,7 @@ public class TextStroke implements Stroke {
                         double advance = nextAdvance;
                         nextAdvance = currentChar < length - 1 ? glyphVector.getGlyphMetrics( currentChar + 1 ).getAdvance() * 0.5f
                                                               : advance;
+                        AffineTransform t = new AffineTransform();
                         t.setToTranslation( x, y );
                         t.rotate( angle );
                         t.translate( -px - advance, -py );
@@ -137,6 +242,10 @@ public class TextStroke implements Stroke {
                 break;
             }
             it.next();
+        }
+
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( "Rendered text '" + text + "' character wise." );
         }
 
         return result;

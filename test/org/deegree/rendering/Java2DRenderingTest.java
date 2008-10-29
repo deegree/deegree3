@@ -591,16 +591,17 @@ public class Java2DRenderingTest extends TestCase {
                                                                        null ) );
 
         LinkedList<Curve> curves = new LinkedList<Curve>();
-        for ( int i = 0; i < 10; ++i ) {
-            curves.add( randomCurve( 500, i * 500, 0 ) );
+        for ( int i = 0; i < 9; ++i ) {
+            curves.add( randomCurve( 500, i * 600, 100 ) );
         }
 
         LineStyling lineStyle = new LineStyling();
         lineStyle.stroke.width = 20;
+        lineStyle.stroke.linecap = BUTT;
         String text = "Mean Street";
         TextStyling styling = new TextStyling();
         styling.linePlacement = new LinePlacement();
-        styling.font.fontSize = 20;
+        styling.font.fontSize = 15;
         styling.font.fontFamily.add( "Lucida Sans" );
         styling.font.fontFamily.add( "Comic Sans" );
         r.render( lineStyle, curves.peek() );

@@ -192,22 +192,23 @@ public class GeometryUtils {
         }
         return sb.toString();
     }
+
     /**
      * This method flattens the path with a flatness parameter of 1.
      * 
      * @author Jerry Huxtable
      * @see TextStroke
      * @param shape
-     * @return the path length
+     * @return the path segment lengths
      */
-    public static float measurePathLength( Shape shape ) {
+    public static LinkedList<Double> measurePathLengths( Shape shape ) {
         PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), 1 );
-        float points[] = new float[6];
-        float moveX = 0, moveY = 0;
-        float lastX = 0, lastY = 0;
-        float thisX = 0, thisY = 0;
+        double points[] = new double[6];
+        double moveX = 0, moveY = 0;
+        double lastX = 0, lastY = 0;
+        double thisX = 0, thisY = 0;
         int type = 0;
-        float total = 0;
+        LinkedList<Double> res = new LinkedList<Double>();
 
         while ( !it.isDone() ) {
             type = it.currentSegment( points );
@@ -225,9 +226,9 @@ public class GeometryUtils {
             case PathIterator.SEG_LINETO:
                 thisX = points[0];
                 thisY = points[1];
-                float dx = thisX - lastX;
-                float dy = thisY - lastY;
-                total += (float) sqrt( dx * dx + dy * dy );
+                double dx = thisX - lastX;
+                double dy = thisY - lastY;
+                res.add( sqrt( dx * dx + dy * dy ) );
                 lastX = thisX;
                 lastY = thisY;
                 break;
@@ -235,7 +236,7 @@ public class GeometryUtils {
             it.next();
         }
 
-        return total;
+        return res;
     }
 
 }
