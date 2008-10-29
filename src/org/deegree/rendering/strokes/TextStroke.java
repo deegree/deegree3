@@ -81,6 +81,7 @@ public class TextStroke implements Stroke {
         LinkedList<String> words = new LinkedList<String>( asList( text.split( "\\s" ) ) );
         LinkedList<String> wordsCopy = new LinkedList<String>();
         wordsCopy.addAll( words );
+        LinkedList<String> wordsToRender = new LinkedList<String>();
 
         LinkedList<Double> lengths = measurePathLengths( shape );
 
@@ -90,22 +91,43 @@ public class TextStroke implements Stroke {
         }
 
         while ( words.size() > 0 && lengths.size() > 0 ) {
-            GlyphVector vec = font.createGlyphVector( frc, words.poll() );
+            String word = words.poll();
+            GlyphVector vec = font.createGlyphVector( frc, word );
             double vecLength = vec.getOutline().getBounds2D().getWidth();
-            double segLength = lengths.poll();
+            double segLength = lengths.poll() - font.getSize2D();
+            System.out.println(font.getSize2D() + "/" + vecLength + "/" + segLength);
 
             if ( vecLength > segLength ) {
                 pair.first = false;
                 return pair;
             }
 
+            String newWord = word;
+            words.addFirst( word );
+            do {
+                word = newWord;
+                words.poll();
+
+                if ( words.isEmpty() && repeat ) {
+                    words.addAll( wordsCopy );
+                }
+
+                if ( words.isEmpty() ) {
+                    break;
+                }
+
+                newWord += " " + words.peek();
+
+                vec = font.createGlyphVector( frc, newWord );
+                vecLength = vec.getOutline().getBounds2D().getWidth();
+            } while ( vecLength < segLength );
+
             if ( words.isEmpty() && repeat ) {
                 words.addAll( wordsCopy );
             }
-        }
 
-        words.clear();
-        words.addAll( wordsCopy );
+            wordsToRender.add( word );
+        }
 
         pair.first = true;
         pair.second = new GeneralPath();
@@ -130,10 +152,8 @@ public class TextStroke implements Stroke {
                 // Fall into....
 
             case SEG_LINETO:
-                if ( words.isEmpty() && !repeat ) {
+                if ( wordsToRender.isEmpty() ) {
                     break;
-                } else if ( words.isEmpty() ) {
-                    words.addAll( wordsCopy );
                 }
 
                 double px = points[0];
@@ -142,7 +162,7 @@ public class TextStroke implements Stroke {
                 double dy = py - lasty;
                 double angle = atan2( dy, dx );
 
-                GlyphVector vec = font.createGlyphVector( frc, words.poll() );
+                GlyphVector vec = font.createGlyphVector( frc, wordsToRender.poll() );
                 Shape text = vec.getOutline();
 
                 AffineTransform t = new AffineTransform();
