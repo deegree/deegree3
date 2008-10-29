@@ -95,7 +95,6 @@ public class TextStroke implements Stroke {
             GlyphVector vec = font.createGlyphVector( frc, word );
             double vecLength = vec.getOutline().getBounds2D().getWidth();
             double segLength = lengths.poll() - font.getSize2D();
-            System.out.println(font.getSize2D() + "/" + vecLength + "/" + segLength);
 
             if ( vecLength > segLength ) {
                 pair.first = false;
