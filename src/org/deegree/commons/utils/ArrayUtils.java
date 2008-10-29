@@ -49,14 +49,14 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * This is a collection of some methods that work with arrays and lists, like join or removeAll. It is complementary to the
- * StringTools.
- *
+ * This is a collection of some methods that work with arrays and lists, like join or removeAll. It is complementary to
+ * the StringTools.
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class ArrayUtils {
     /**
@@ -69,15 +69,15 @@ public class ArrayUtils {
      */
     public static String[] removeAll( String[] array, String token ) {
         ArrayList<String> vec = new ArrayList<String>();
-        
-        for ( String part: array ) {
+
+        for ( String part : array ) {
             if ( !part.equals( token ) ) {
                 vec.add( part );
             }
         }
-        return vec.toArray( new String[]{} );
+        return vec.toArray( new String[] {} );
     }
-    
+
     /**
      * Joins a list of strings with given delimiter.
      * 
@@ -91,7 +91,7 @@ public class ArrayUtils {
         // Arrays.asList is cheap and only creates a wrapper
         return join( delimiter, Arrays.asList( strings ) );
     }
-    
+
     /**
      * Joins a list of objects with given delimiter.
      * 
@@ -116,7 +116,7 @@ public class ArrayUtils {
      */
     public static String join( String delimiter, Collection<?> objects ) {
         StringBuilder sb = new StringBuilder();
-        for ( Object part: objects ) {
+        for ( Object part : objects ) {
             sb.append( part.toString() ).append( delimiter );
         }
         if ( sb.length() > delimiter.length() ) {
@@ -124,16 +124,17 @@ public class ArrayUtils {
         }
         return sb.toString();
     }
-    
+
     /**
      * Joins a list of <code>int</code>s.
+     * 
      * @param delimiter
      * @param values
      * @return the joined string
      */
     public static String join( String delimiter, int[] values ) {
         StringBuilder sb = new StringBuilder();
-        for ( int value: values ) {
+        for ( int value : values ) {
             sb.append( Integer.toString( value ) ).append( delimiter );
         }
         if ( sb.length() > delimiter.length() ) { // remove last delimiter
@@ -159,7 +160,7 @@ public class ArrayUtils {
         }
         return sb.toString();
     }
-    
+
     /**
      * Checks if the array contains the string <code>value</code>. This method is case insensitive.
      * 
@@ -173,7 +174,7 @@ public class ArrayUtils {
         if ( target == null || value == null ) {
             return false;
         }
-        for ( String part: target ) {
+        for ( String part : target ) {
             if ( value.equalsIgnoreCase( part ) ) {
                 return true;
             }
@@ -181,7 +182,7 @@ public class ArrayUtils {
 
         return false;
     }
-    
+
     /**
      * parse a string and return its tokens as array
      * 
@@ -220,81 +221,7 @@ public class ArrayUtils {
 
         return kw;
     }
-    
-    /**
-     * convert the array of string like [(x1,y1),(x2,y2)...] into an array of double [x1,y1,x2,y2...]
-     * 
-     * @param s
-     * @param delimiter
-     * 
-     * @return the array representation of the given String
-     */
-    public static double[] toArrayDouble( String s, String delimiter ) {
-        if ( s == null ) {
-            return null;
-        }
 
-        if ( s.equals( "" ) ) {
-            return null;
-        }
-
-        StringTokenizer st = new StringTokenizer( s, delimiter );
-
-        ArrayList<String> vec = new ArrayList<String>( st.countTokens() );
-
-        for ( int i = 0; st.hasMoreTokens(); i++ ) {
-            String t = st.nextToken().replace( ' ', '+' );
-
-            if ( ( t != null ) && ( t.length() > 0 ) ) {
-                vec.add( t.trim().replace( ',', '.' ) );
-            }
-        }
-
-        double[] array = new double[vec.size()];
-
-        for ( int i = 0; i < vec.size(); i++ ) {
-            array[i] = Double.parseDouble( vec.get( i ) );
-        }
-
-        return array;
-    }
-    
-    /**
-     * convert the array of string like [(x1,y1),(x2,y2)...] into an array of float values [x1,y1,x2,y2...]
-     * 
-     * @param s
-     * @param delimiter
-     * 
-     * @return the array representation of the given String
-     */
-    public static float[] toArrayFloat( String s, String delimiter ) {
-        if ( s == null ) {
-            return null;
-        }
-
-        if ( s.equals( "" ) ) {
-            return null;
-        }
-
-        StringTokenizer st = new StringTokenizer( s, delimiter );
-
-        ArrayList<String> vec = new ArrayList<String>( st.countTokens() );
-        for ( int i = 0; st.hasMoreTokens(); i++ ) {
-            String t = st.nextToken().replace( ' ', '+' );
-            if ( ( t != null ) && ( t.length() > 0 ) ) {
-                vec.add( t.trim().replace( ',', '.' ) );
-            }
-        }
-
-        float[] array = new float[vec.size()];
-
-        for ( int i = 0; i < vec.size(); i++ ) {
-            array[i] = Float.parseFloat( vec.get( i ) );
-        }
-
-        return array;
-    }
-    
     /**
      * parse a string and return its tokens as typed List. empty fields will be removed from the list.
      * 
@@ -329,7 +256,7 @@ public class ArrayUtils {
 
         return vec;
     }
-    
+
     /**
      * deletes all double entries from the submitted array
      * 
