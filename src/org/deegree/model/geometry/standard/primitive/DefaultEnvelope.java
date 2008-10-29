@@ -279,7 +279,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
             }
         }
         Point newMin = new DefaultPoint( null, getCoordinateSystem(), min );
-        Point newMax = new DefaultPoint( null, getCoordinateSystem(), min );
+        Point newMax = new DefaultPoint( null, getCoordinateSystem(), max );
         return new DefaultEnvelope( null, getCoordinateSystem(), newMin, newMax );
     }
 }
