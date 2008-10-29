@@ -68,7 +68,8 @@ public abstract class AbstractDefaultGeometry implements Geometry{
 
     @Override
     public double getPrecision() {
-        throw new UnsupportedOperationException();
+    	// TODO return real precision
+        return 0.0000001;
     }
 
     @Override

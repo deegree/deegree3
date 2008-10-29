@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.multi.MultiGeometry;
 import org.deegree.model.geometry.primitive.Point;
@@ -188,5 +189,15 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
     @SuppressWarnings("hiding")
     public <T> T[] toArray( T[] a ) {
         return members.toArray( a );
+    }
+    
+    @Override
+    public Envelope getEnvelope() {
+        // TODO NullEnvelope for emtpy aggregates? or throw an exception?
+        Envelope result = get( 0 ).getEnvelope();
+        for ( Geometry geom : this ) {
+            result = result.merge( geom.getEnvelope() );
+        }
+        return result;
     }
 }

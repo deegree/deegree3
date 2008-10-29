@@ -100,7 +100,10 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
 
     @Override
     public double getZ() {
-        return coordinates[2];
+        if ( coordinates.length > 2 ) {
+            return coordinates[2];
+        }
+        return Double.NaN;
     }
 
     @Override
@@ -141,11 +144,6 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
     @Override
     public Envelope getEnvelope() {
         return new DefaultEnvelope( null, crs, this, this );
-    }
-
-    @Override
-    public double getPrecision() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -282,4 +282,9 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
         Point newMax = new DefaultPoint( null, getCoordinateSystem(), max );
         return new DefaultEnvelope( null, getCoordinateSystem(), newMin, newMax );
     }
+    
+    @Override
+    public Envelope getEnvelope() {
+        return this;
+    }
 }
