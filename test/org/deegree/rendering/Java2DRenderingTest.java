@@ -591,8 +591,11 @@ public class Java2DRenderingTest extends TestCase {
                                                                        null ) );
 
         LinkedList<Curve> curves = new LinkedList<Curve>();
-        for ( int i = 0; i < 8; ++i ) {
-            curves.add( randomCurve( 500, i * 600, 100 ) );
+        for ( int i = 0; i < 6; ++i ) {
+            curves.add( randomCurve( 700, i * 800, 100 ) );
+        }
+        for ( int i = 0; i < 6; ++i ) {
+            curves.add( randomCurve( 700, i * 800, 1000 ) );
         }
 
         LineStyling lineStyle = new LineStyling();
@@ -617,6 +620,15 @@ public class Java2DRenderingTest extends TestCase {
         r.render( styling, text, curves.poll() );
         r.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
+        styling.linePlacement.perpendicularOffset = 5;
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
         r.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
         r.render( lineStyle, curves.peek() );
@@ -625,8 +637,9 @@ public class Java2DRenderingTest extends TestCase {
         g.dispose();
         long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
-        texts.add( "standard dialog font, size 10, black" );
+        texts.add( "first line: renders gray lines width 20, inside a text with size 15." );
+        texts.add( "Text should start immediately inside the line. First geometry should include" );
+        texts.add( "the text once, the others repeated." );
         writeTestImage( img, texts, time2 - time );
     }
-
 }
