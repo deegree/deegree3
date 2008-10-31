@@ -422,15 +422,6 @@ public class Java2DRenderingTest extends TestCase {
         texts.add( "line 3: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending butt" );
         texts.add( "line 4: same as previous, but with offset = 10" );
         texts.add( "line 5: perpendicular offset of 1" );
-        // texts.add( "line 6: default style lines with line width 0, 1, ..., 9, join mitre" );
-        // texts.add( "line 7: default style lines with line width 0, 1, ..., 9, join round" );
-        // texts.add( "line 8: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5" );
-        // texts.add(
-        // "line 9: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending square"
-        // );
-        // texts.add(
-        // "line 10: default style lines with line width 0, 1, ..., 9, dashed with pattern 15, 15, 17, 5, ending round"
-        // );
         writeTestImage( img, texts, time2 - time );
     }
 
@@ -591,11 +582,10 @@ public class Java2DRenderingTest extends TestCase {
                                                                        null ) );
 
         LinkedList<Curve> curves = new LinkedList<Curve>();
-        for ( int i = 0; i < 6; ++i ) {
-            curves.add( randomCurve( 700, i * 800, 100 ) );
-        }
-        for ( int i = 0; i < 6; ++i ) {
-            curves.add( randomCurve( 700, i * 800, 1000 ) );
+        for ( int y = 0; y < 4; ++y ) {
+            for ( int i = 0; i < 6; ++i ) {
+                curves.add( randomCurve( 700, i * 800, 100 + 800 * y ) );
+            }
         }
 
         LineStyling lineStyle = new LineStyling();
@@ -633,14 +623,48 @@ public class Java2DRenderingTest extends TestCase {
         r.render( styling, text, curves.poll() );
         r.render( lineStyle, curves.peek() );
         r.render( styling, text, curves.poll() );
+        styling.linePlacement.perpendicularOffset = 0;
+        styling.linePlacement.initialGap = 20;
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        styling.linePlacement.gap = 10;
+        styling.font.fontSize = 12;
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
+        r.render( lineStyle, curves.peek() );
+        r.render( styling, text, curves.poll() );
 
         g.dispose();
         long time2 = currentTimeMillis();
         List<String> texts = new LinkedList<String>();
+        texts.add( "Note: this text may not produce good tests every time (it depends on the length of the random line strings)." );
+        texts.add( "Run the test again to see if the mentioned features cannot be found." );
+        texts.add( "There is also a word wise text rendering and a character wise rendering." );
+        texts.add( "The word wise rendering is only applied if possible, ie, if the words fit properly on the lines." );
         texts.add( "first line: renders gray lines width 20, inside a text with size 15." );
         texts.add( "Text should start immediately inside the line. First geometry should include" );
         texts.add( "the text once, the others repeated." );
         texts.add( "second line: renders the same text directly above the gray line (perpendicular offset)" );
+        texts.add( "third line: renders with initial gap of 20" );
+        texts.add( "fourth line: renders with initial gap of 20 and gap of 10 (with text size 12)" );
         writeTestImage( img, texts, time2 - time );
     }
 }

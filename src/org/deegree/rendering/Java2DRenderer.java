@@ -81,7 +81,6 @@ import org.deegree.model.styling.TextStyling;
 import org.deegree.model.styling.components.Fill;
 import org.deegree.model.styling.components.Graphic;
 import org.deegree.model.styling.components.Stroke;
-import org.deegree.rendering.strokes.CompositeStroke;
 import org.deegree.rendering.strokes.OffsetStroke;
 import org.deegree.rendering.strokes.TextStroke;
 import org.slf4j.Logger;
@@ -257,7 +256,7 @@ public class Java2DRenderer implements Renderer {
 
     private void render( TextStyling styling, Font font, String text, Curve c ) {
         applyFill( styling.fill );
-        java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement.repeat );
+        java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement, scale );
         if ( !isZero( styling.linePlacement.perpendicularOffset ) ) {
             stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset * scale, stroke );
         }

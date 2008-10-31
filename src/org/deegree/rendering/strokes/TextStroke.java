@@ -23,6 +23,7 @@ import static java.lang.Math.atan2;
 import static java.lang.Math.sqrt;
 import static java.util.Arrays.asList;
 import static org.deegree.commons.utils.GeometryUtils.measurePathLengths;
+import static org.deegree.commons.utils.MathUtils.isZero;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Font;
@@ -38,6 +39,7 @@ import java.awt.geom.Point2D;
 import java.util.LinkedList;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.model.styling.components.LinePlacement;
 import org.slf4j.Logger;
 
 /**
@@ -57,80 +59,147 @@ public class TextStroke implements Stroke {
 
     private Font font;
 
-    private boolean repeat = false;
-
     private FontRenderContext frc;
 
     private double lineHeight;
 
     private static final float FLATNESS = 1;
 
+    private final LinePlacement linePlacement;
+
+    private final double scale;
+
     /**
      * @param text
      * @param font
-     * @param repeat
+     * @param linePlacement
+     * @param scale
      */
-    public TextStroke( String text, Font font, boolean repeat ) {
+    public TextStroke( String text, Font font, LinePlacement linePlacement, double scale ) {
         this.text = text;
         this.font = font;
-        this.repeat = repeat;
+        this.linePlacement = linePlacement;
+        this.scale = scale;
         frc = new FontRenderContext( null, false, false );
         lineHeight = font.getLineMetrics( text, frc ).getHeight();
     }
 
+    // the code for this function may benefit from a good refactoring idea
+    // I had none that was practical.
+    // the method returnes (true, path) if rendering word wise is possible
+    // and (false, null) if not
     private Pair<Boolean, GeneralPath> tryWordWise( Shape shape ) {
+        // two steps: first a list is prepared that describes what to render where
+        // second the list is rendered
+
+        // first step: iterates over the segment lengths and the words to render
         Pair<Boolean, GeneralPath> pair = new Pair<Boolean, GeneralPath>();
 
         LinkedList<String> words = new LinkedList<String>( asList( text.split( "\\s" ) ) );
         LinkedList<String> wordsCopy = new LinkedList<String>();
         wordsCopy.addAll( words );
-        LinkedList<String> wordsToRender = new LinkedList<String>();
+        LinkedList<StringOrGap> wordsToRender = new LinkedList<StringOrGap>();
 
         LinkedList<Double> lengths = measurePathLengths( shape );
 
-        if ( words.size() > lengths.size() ) {
-            pair.first = false;
-            return pair;
+        // things to consider: initial gaps, gaps, whether to repeat the string
+        // algorithm sketch:
+        // try to match as many words on each line segment as possible (taking into account gap length)
+        // if a segment is encountered that is smaller than the current word length, return false
+        // (even if maybe the next segment would be fitting, the empty segment would just not look nice, so better abort
+        // here)
+        // the list will contain StringOrGap objects (a choice between a String, a gap or a end of line tag)
+        // So if some gap[1]/word[1-*] combination fits the segment, all of them are added to the list, as well as an
+        // end of line tag. Then, the next segment is considered. If repeat is on, the words list will never be empty
+        // and the loop will run until the segment lengths list is empty.
+        // TODO: Optimization: do not add Strings, add the GlyphVectors
+        double currentGap = isZero( linePlacement.initialGap ) ? 0 : ( linePlacement.initialGap * scale );
+        if ( !isZero( currentGap ) ) {
+            StringOrGap sog = new StringOrGap();
+            sog.gap = currentGap;
+            wordsToRender.add( sog );
         }
 
         while ( words.size() > 0 && lengths.size() > 0 ) {
             String word = words.poll();
             GlyphVector vec = font.createGlyphVector( frc, word );
-            double vecLength = vec.getOutline().getBounds2D().getWidth();
-            double segLength = lengths.poll() - font.getSize2D();
+            double vecLength = currentGap + vec.getOutline().getBounds2D().getWidth();
+            double segLength = lengths.poll() - font.getSize2D(); // at least it works for line angles < 90°
 
             if ( vecLength > segLength ) {
                 pair.first = false;
                 return pair;
             }
 
+            currentGap = 0;
+
             String newWord = word;
             words.addFirst( word );
-            do {
-                word = newWord;
+
+            double totalLength = 0;
+            do { // do/while because at least one word has to be added
                 words.poll();
 
-                if ( words.isEmpty() && repeat ) {
-                    words.addAll( wordsCopy );
-                }
+                boolean justInserted = false;
 
-                if ( words.isEmpty() ) {
+                if ( words.isEmpty() && linePlacement.repeat ) {
+                    // in this case, the words list has to be filled again. Also the gap has to be considered.
+                    words.addAll( wordsCopy );
+
+                    StringOrGap sog = new StringOrGap();
+                    sog.string = newWord;
+                    wordsToRender.add( sog );
+                    justInserted = true; // set this flag so the adding at the end of the loop won't happen again with
+                    // the same string.
+
+                    totalLength += font.createGlyphVector( frc, word ).getOutline().getBounds2D().getWidth();
+                    newWord = "";
+                    if ( !isZero( linePlacement.gap ) ) {
+                        sog = new StringOrGap();
+                        sog.gap = linePlacement.gap * scale;
+                        totalLength += sog.gap;
+                        wordsToRender.add( sog );
+                    }
+                } else if ( words.isEmpty() ) {
+                    // in this case, the last word can be rendered, and the loop terminates
+                    StringOrGap sog = new StringOrGap();
+                    sog.string = newWord;
+                    wordsToRender.add( sog );
                     break;
                 }
 
-                newWord += " " + words.peek();
+                newWord = ( newWord.equals( "" ) ? "" : newWord + " " ) + words.peek();
 
-                vec = font.createGlyphVector( frc, newWord );
-                vecLength = vec.getOutline().getBounds2D().getWidth();
-            } while ( vecLength < segLength );
+                vecLength = font.createGlyphVector( frc, newWord ).getOutline().getBounds2D().getWidth();
+                if ( !justInserted && ( totalLength + vecLength >= segLength ) ) {
+                    // the normal case, one or more words have been fit, and the current word does overflow the length
+                    // -> add the word
+                    StringOrGap sog = new StringOrGap();
+                    sog.string = word;
+                    wordsToRender.add( sog );
+                }
 
-            if ( words.isEmpty() && repeat ) {
-                words.addAll( wordsCopy );
+                word = newWord;
+
+            } while ( totalLength + vecLength < segLength );
+
+            StringOrGap sog = new StringOrGap();
+            sog.newLine = true;
+
+            // the next segment will be considered, so add a end of line tag. If the last StringOrGap was a gap, insert
+            // the end of line BEFORE the gap.
+            if ( wordsToRender.getLast().string == null ) {
+                wordsToRender.add( wordsToRender.size() - 1, sog );
+            } else {
+                wordsToRender.add( sog );
             }
 
-            wordsToRender.add( word );
         }
 
+        LOG.trace( "Rendering the word/gap list: " + wordsToRender );
+
+        // prepare for second run - now actually doing something
+        // this just iterates over the path and creates the final shape to render.
         pair.first = true;
         pair.second = new GeneralPath();
 
@@ -154,6 +223,7 @@ public class TextStroke implements Stroke {
                 // Fall into....
 
             case SEG_LINETO:
+
                 if ( wordsToRender.isEmpty() ) {
                     break;
                 }
@@ -164,15 +234,38 @@ public class TextStroke implements Stroke {
                 double dy = py - lasty;
                 double angle = atan2( dy, dx );
 
-                GlyphVector vec = font.createGlyphVector( frc, wordsToRender.poll() );
-                Shape text = vec.getOutline();
+                double length = 0;
 
-                AffineTransform t = new AffineTransform();
-                t.setToTranslation( lastx, lasty );
-                t.rotate( angle );
-                t.translate( 0, lineHeight / 4 );
+                StringOrGap sog = wordsToRender.poll();
 
-                pair.second.append( t.createTransformedShape( text ), false );
+                // render all pieces until the next EOL
+                while ( !sog.newLine ) {
+                    double gap = 0;
+                    // add all gaps in the list (will normally only be one)
+                    while ( sog.string == null && !sog.newLine ) {
+                        gap += sog.gap;
+                        sog = wordsToRender.poll();
+                    }
+
+                    GlyphVector vec = font.createGlyphVector( frc, sog.string );
+                    Shape text = vec.getOutline();
+
+                    // straightforward: move to the beginning of the segment
+                    // rotate so text direction fits the line
+                    // move to current position of part
+                    // the lineHeight / 4 centers the text center line on the line
+                    AffineTransform t = new AffineTransform();
+                    t.setToTranslation( lastx, lasty );
+                    t.rotate( angle );
+                    t.translate( gap + length, lineHeight / 4 );
+
+                    pair.second.append( t.createTransformedShape( text ), false );
+
+                    length += gap + text.getBounds2D().getWidth();
+
+                    sog = wordsToRender.poll();
+
+                }
 
                 lastx = px;
                 lasty = py;
@@ -254,7 +347,7 @@ public class TextStroke implements Stroke {
                         result.append( t.createTransformedShape( glyph ), false );
                         next += ( advance + nextAdvance );
                         currentChar++;
-                        if ( repeat )
+                        if ( linePlacement.repeat )
                             currentChar %= length;
                     }
                 }
@@ -271,6 +364,19 @@ public class TextStroke implements Stroke {
         }
 
         return result;
+    }
+
+    class StringOrGap {
+        String string;
+
+        double gap;
+
+        boolean newLine;
+
+        @Override
+        public String toString() {
+            return newLine ? "[eol]" : ( string == null ? "" + gap : string );
+        }
     }
 
 }
