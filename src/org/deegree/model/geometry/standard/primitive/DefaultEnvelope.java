@@ -42,6 +42,7 @@ import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
+import org.deegree.model.geometry.primitive.GeometricPrimitive;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
 
@@ -153,7 +154,6 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
                                                      new double[] { newMaxX, newMaxY }, DELTA, null );
             }
             break;
-
         }
         default: {
             throw new UnsupportedOperationException();
@@ -200,8 +200,28 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
             return false;
         }
+        case PRIMITIVE_GEOMETRY: {
+            GeometricPrimitive primitive = (GeometricPrimitive) geometry;
+            switch ( primitive.getPrimitiveType() ) {
+            case Point: {
+                Point point = (Point) primitive;
+                double px = point.getX();
+                double py = point.getY();
+                double minX1 = this.getMin().getX();
+                double minY1 = this.getMin().getY();
+                double maxX1 = this.getMax().getX();
+                double maxY1 = this.getMax().getY();
+                return px >= minX1 && px <= maxX1 && py >= minY1 && py <= maxY1; 
+            }
+            default: {
+                throw new UnsupportedOperationException( "Intersects not implemented for Envelope/"
+                                                         + primitive.getPrimitiveType().name() );
+            }
+            }
+        }
         default: {
-            throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException( "Intersects not implemented for Envelope/"
+                                                     + geometry.getGeometryType().name() );
         }
         }
     }
@@ -282,7 +302,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
         Point newMax = new DefaultPoint( null, getCoordinateSystem(), max );
         return new DefaultEnvelope( null, getCoordinateSystem(), newMin, newMax );
     }
-    
+
     @Override
     public Envelope getEnvelope() {
         return this;
