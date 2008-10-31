@@ -185,7 +185,7 @@ public class TiledRaster extends AbstractRaster {
                     continue;
                 }
                 Envelope subsetEnv = intersec.getEnvelope();
-                result.setSubset( r.getEnvelope(), r.getSubset( subsetEnv ).getAsSimpleRaster() );
+                result.setSubset( subsetEnv, r );
             }
         }
 
