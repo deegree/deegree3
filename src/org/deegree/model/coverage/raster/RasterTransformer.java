@@ -145,7 +145,7 @@ public class RasterTransformer extends Transformer {
         this.srcCRS = sourceRaster.getCoordinateSystem();
 
         AbstractRaster source = createSourceRaster( sourceRaster, dstEnvelope );
-        RasterData srcRaster = source.getAsSimpleRaster().getRasterData();
+        RasterData srcRaster = source.getAsSimpleRaster().getReadOnlyRasterData();
 
         RasterData dstRaster = srcRaster.createCompatibleRasterData( dstWidth, dstHeight, srcRaster.getBands() );
         RasterEnvelope srcREnv = source.getRasterEnvelope();
