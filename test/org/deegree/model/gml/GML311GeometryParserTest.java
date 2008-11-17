@@ -80,6 +80,7 @@ import org.deegree.model.geometry.primitive.Ring.RingType;
 import org.deegree.model.geometry.primitive.Solid.SolidType;
 import org.deegree.model.geometry.primitive.Surface.SurfaceType;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.Interpolation;
 import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
@@ -87,7 +88,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Tests that check the correct parsing of GML 3.1.1 geometry elements.
+ * Tests that check the correct parsing of GML 3.1.1 geometry elements (elements substitutable for
+ * <code>gml:_Geometry</code> and <code>gml:Envelope</code>).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -382,13 +384,13 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Tin" ), xmlReader.getName() );
         Assert.assertEquals( SurfaceType.Tin, surface.getSurfaceType() );
-        Assert.assertEquals( 2, surface.getStopLines().size() );        
+        Assert.assertEquals( 2, surface.getStopLines().size() );
         Assert.assertEquals( 1, surface.getBreakLines().size() );
         Assert.assertEquals( 15.0, surface.getMaxLength().getValue() );
         Assert.assertEquals( 3, surface.getControlPoints().size() );
-        Assert.assertEquals( 3.0, surface.getControlPoints().get(2).getX() );
-        Assert.assertEquals( 4.0, surface.getControlPoints().get(2).getY() );
-    }    
+        Assert.assertEquals( 3.0, surface.getControlPoints().get( 2 ).getX() );
+        Assert.assertEquals( 4.0, surface.getControlPoints().get( 2 ).getY() );
+    }
 
     @Test
     public void parseOrientableSurface()
@@ -665,12 +667,12 @@ public class GML311GeometryParserTest {
         Envelope envelope = new GML311GeometryParser( geomFac, xmlReader ).parseEnvelope( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Envelope" ), xmlReader.getName() );
-        Assert.assertEquals (11.0, envelope.getMin().getX());
-        Assert.assertEquals (22.0, envelope.getMin().getY());
-        Assert.assertEquals (44.0, envelope.getMax().getX());
-        Assert.assertEquals (88.0, envelope.getMax().getY());        
+        Assert.assertEquals( 11.0, envelope.getMin().getX() );
+        Assert.assertEquals( 22.0, envelope.getMin().getY() );
+        Assert.assertEquals( 44.0, envelope.getMax().getX() );
+        Assert.assertEquals( 88.0, envelope.getMax().getY() );
         Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getIdentifier() );
-    }    
+    }
 
     @Test
     public void parseEnvelopeCoord()
@@ -681,12 +683,12 @@ public class GML311GeometryParserTest {
         Envelope envelope = new GML311GeometryParser( geomFac, xmlReader ).parseEnvelope( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Envelope" ), xmlReader.getName() );
-        Assert.assertEquals (11.0, envelope.getMin().getX());
-        Assert.assertEquals (22.0, envelope.getMin().getY());
-        Assert.assertEquals (44.0, envelope.getMax().getX());
-        Assert.assertEquals (88.0, envelope.getMax().getY());        
+        Assert.assertEquals( 11.0, envelope.getMin().getX() );
+        Assert.assertEquals( 22.0, envelope.getMin().getY() );
+        Assert.assertEquals( 44.0, envelope.getMax().getX() );
+        Assert.assertEquals( 88.0, envelope.getMax().getY() );
         Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getIdentifier() );
-    }     
+    }
 
     @Test
     public void parseEnvelopePos()
@@ -697,10 +699,10 @@ public class GML311GeometryParserTest {
         Envelope envelope = new GML311GeometryParser( geomFac, xmlReader ).parseEnvelope( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Envelope" ), xmlReader.getName() );
-        Assert.assertEquals (11.0, envelope.getMin().getX());
-        Assert.assertEquals (22.0, envelope.getMin().getY());
-        Assert.assertEquals (44.0, envelope.getMax().getX());
-        Assert.assertEquals (88.0, envelope.getMax().getY());        
+        Assert.assertEquals( 11.0, envelope.getMin().getX() );
+        Assert.assertEquals( 22.0, envelope.getMin().getY() );
+        Assert.assertEquals( 44.0, envelope.getMax().getX() );
+        Assert.assertEquals( 88.0, envelope.getMax().getY() );
         Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getIdentifier() );
     }
 
@@ -713,13 +715,13 @@ public class GML311GeometryParserTest {
         Envelope envelope = new GML311GeometryParser( geomFac, xmlReader ).parseEnvelope( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Envelope" ), xmlReader.getName() );
-        Assert.assertEquals (11.0, envelope.getMin().getX());
-        Assert.assertEquals (22.0, envelope.getMin().getY());
-        Assert.assertEquals (44.0, envelope.getMax().getX());
-        Assert.assertEquals (88.0, envelope.getMax().getY());        
+        Assert.assertEquals( 11.0, envelope.getMin().getX() );
+        Assert.assertEquals( 22.0, envelope.getMin().getY() );
+        Assert.assertEquals( 44.0, envelope.getMax().getX() );
+        Assert.assertEquals( 88.0, envelope.getMax().getY() );
         Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getIdentifier() );
-    }     
-    
+    }
+
     private XMLStreamReaderWrapper getParser( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(

@@ -45,6 +45,7 @@ package org.deegree.model.geometry.standard.curvesegments;
 
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByCenterPoint;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 import org.deegree.model.gml.Angle;
 import org.deegree.model.gml.Length;
 
@@ -119,5 +120,10 @@ public class DefaultArcByCenterPoint implements ArcByCenterPoint {
     @Override
     public Point getEndPoint() {
         throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public CurveSegmentType getSegmentType() {
+        return CurveSegmentType.ARC_BY_CENTER_POINT;
     }
 }

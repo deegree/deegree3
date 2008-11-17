@@ -46,6 +46,7 @@ package org.deegree.model.geometry.standard.curvesegments;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.OffsetCurve;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 import org.deegree.model.gml.Length;
 
 /**
@@ -114,4 +115,9 @@ public class DefaultOffsetCurve implements OffsetCurve {
     public Point getEndPoint() {
         throw new UnsupportedOperationException();
     }
+    
+    @Override
+    public CurveSegmentType getSegmentType() {
+        return CurveSegmentType.OFFSET_CURVE;
+    }    
 }

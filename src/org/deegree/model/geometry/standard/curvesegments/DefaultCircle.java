@@ -45,6 +45,7 @@ package org.deegree.model.geometry.standard.curvesegments;
 
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.Circle;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link Circle} segments.
@@ -76,4 +77,14 @@ public class DefaultCircle extends DefaultArc implements Circle {
     public double getRadius() {
         throw new UnsupportedOperationException();
     }
+    
+    @Override
+    public Point getEndPoint() {
+        return controlPoints.get( 0 );
+    }
+    
+    @Override
+    public CurveSegmentType getSegmentType() {
+        return CurveSegmentType.CIRCLE;
+    }    
 }

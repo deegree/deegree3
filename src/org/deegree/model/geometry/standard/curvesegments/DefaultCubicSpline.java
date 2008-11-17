@@ -48,6 +48,7 @@ import java.util.List;
 
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.CubicSpline;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link CubicSpline} segments.
@@ -114,5 +115,10 @@ public class DefaultCubicSpline implements CubicSpline {
     @Override
     public Point getEndPoint() {
         throw new UnsupportedOperationException();
-    }    
+    }
+    
+    @Override
+    public CurveSegmentType getSegmentType() {
+        return CurveSegmentType.CUBIC_SPLINE;
+    }
 }

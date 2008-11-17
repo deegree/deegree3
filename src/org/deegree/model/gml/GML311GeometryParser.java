@@ -52,6 +52,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
@@ -264,6 +265,16 @@ public class GML311GeometryParser extends GML311BaseParser {
             throw new XMLParsingException( xmlStream, msg );
         }
         return geometry;
+    }
+
+    public boolean isGeometry( QName elName ) {
+        if ( !GMLNS.equals( elName.getNamespaceURI() ) ) {
+            return false;
+        }
+        String localName = elName.getLocalPart();
+        return primitiveElements.contains( localName ) || ringElements.contains( localName )
+               || aggregateElements.contains( localName ) || complexElements.contains( localName )
+               || implictGeometryElements.contains( localName );
     }
 
     /**
@@ -779,7 +790,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 // deprecated since GML 3.0, only included for backward compatibility
                 double[] coords = parseCoordType();
                 point = geomFac.createPoint( gid, coords, lookupCRS( srsName ) );
-                
+
             } else {
                 String msg = "Error in 'gml:Point' element. Expected either a 'gml:pos', 'gml:coordinates'"
                              + " or a 'gml:coord' element, but found '" + name + "'.";

@@ -48,6 +48,7 @@ import java.util.List;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.ArcStringByBulge;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link ArcStringByBulge} segments.
@@ -129,5 +130,10 @@ public class DefaultArcStringByBulge implements ArcStringByBulge {
     @Override
     public Point getEndPoint() {
         return controlPoints.get( controlPoints.size() - 1 );
+    }
+    
+    @Override
+    public CurveSegmentType getSegmentType() {
+        return CurveSegmentType.ARC_STRING_BY_BULGE;
     }    
 }

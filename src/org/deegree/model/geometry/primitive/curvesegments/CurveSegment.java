@@ -51,6 +51,27 @@ import org.deegree.model.geometry.primitive.Point;
 public interface CurveSegment {
 
     /**
+     * Convenience enum type for discriminating the different curve segment variants.
+     */    
+    public enum CurveSegmentType {
+        ARC,
+        ARC_BY_BULGE,
+        ARC_BY_CENTER_POINT,
+        ARC_STRING,
+        ARC_STRING_BY_BULGE,
+        BEZIER,
+        BSPLINE,
+        CIRCLE,
+        CIRCLE_BY_CENTER_POINT,
+        CLOTHOID,
+        CUBIC_SPLINE,
+        GEODESIC,
+        GEODESIC_STRING,
+        LINE_STRING_SEGMENT,
+        OFFSET_CURVE
+    }
+    
+    /**
      * All known curve segment interpolations.
      */
     public enum Interpolation {
@@ -111,6 +132,13 @@ public interface CurveSegment {
      * @return interpolation method used by this curve segment
      */
     public Interpolation getInterpolation();
+    
+    /**
+     * Returns the type of curve segment.
+     * 
+     * @return the type of curve segment
+     */    
+    public CurveSegmentType getSegmentType ();
 
     /**
      * Returns the start point of the segment.

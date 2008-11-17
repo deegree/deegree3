@@ -48,6 +48,7 @@ import java.util.List;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.BSpline;
 import org.deegree.model.geometry.primitive.curvesegments.Knot;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link BSpline} segments.
@@ -118,5 +119,10 @@ public class DefaultBSpline implements BSpline {
     @Override
     public Point getEndPoint() {
         throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public CurveSegmentType getSegmentType() {
+        return CurveSegmentType.BSPLINE;
     }    
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.Bezier;
 import org.deegree.model.geometry.primitive.curvesegments.Knot;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link Bezier} segments.
@@ -83,5 +84,10 @@ public class DefaultBezier implements Bezier {
     @Override
     public Point getEndPoint() {
         throw new UnsupportedOperationException();
-    }    
+    }
+
+    @Override
+    public CurveSegmentType getSegmentType() {
+        return CurveSegmentType.BEZIER;
+    }
 }

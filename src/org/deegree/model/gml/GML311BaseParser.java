@@ -79,7 +79,7 @@ class GML311BaseParser {
                             throws XMLParsingException, XMLStreamException {
 
         CoordinateSystem crs = lookupCRS( determineCurrentSrsName( defaultSrsName ) );
-        int coordDim = determineCoordDimensions( crs.getDimension());
+        int coordDim = determineCoordDimensions( crs.getDimension() );
 
         String s = xmlStream.getElementText();
         // don't use String.split(regex) here (speed)
@@ -105,7 +105,7 @@ class GML311BaseParser {
                 try {
                     pointCoords[j] = Double.parseDouble( tokens.get( tokenPos++ ) );
                 } catch ( NumberFormatException e ) {
-                    String msg = "Value '" + tokens.get( i ) + "' cannot be parsed as a double.";
+                    String msg = "Value '" + tokens.get( tokenPos - 1 ) + "' cannot be parsed as a double.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
             }
@@ -329,16 +329,16 @@ class GML311BaseParser {
      * 
      * @param defaultCoordDimensions
      *            default coordinate dimensionality, this is returned if the element has no <code>srsDimension</code>
-     *            attribute 
+     *            attribute
      * @return coordinate dimensionality
      */
     protected int determineCoordDimensions( int defaultCoordDimensions ) {
 
-        String srsDimension = xmlStream.getAttributeValueWDefault( "srsDimension", ""  + defaultCoordDimensions);
+        String srsDimension = xmlStream.getAttributeValueWDefault( "srsDimension", "" + defaultCoordDimensions );
         int coordDimensions = 0;
         try {
             coordDimensions = Integer.parseInt( srsDimension );
-        } catch (NumberFormatException e) {
+        } catch ( NumberFormatException e ) {
             String msg = "Value of srsDimension attribute (='" + srsDimension + "') is not a valid integer.";
             throw new XMLParsingException( xmlStream, msg );
         }

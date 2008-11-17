@@ -41,37 +41,8 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard.curvesegments;
+package org.deegree.model.geometry.linearization;
 
-import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.curvesegments.CircleByCenterPoint;
-import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
-import org.deegree.model.gml.Angle;
-import org.deegree.model.gml.Length;
-
-/**
- * Default implementation of {@link CircleByCenterPoint} segments.
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
- */
-public class DefaultCircleByCenterPoint extends DefaultArcByCenterPoint implements CircleByCenterPoint {
-
-    /**
-     * Creates a new <code>DefaultCircleByCenterPoint</code> instance from the given parameters.
-     * 
-     * @param midPoint
-     * @param radius
-     * @param startAngle
-     */
-    public DefaultCircleByCenterPoint( Point midPoint, Length radius, Angle startAngle ) {
-        super( midPoint, radius, startAngle, startAngle );
-    }
-    
-    @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.CIRCLE_BY_CENTER_POINT;
-    }    
+public interface LinearizationCriterion {
+    // at the moment this is just a marker interface
 }

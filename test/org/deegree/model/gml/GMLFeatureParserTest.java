@@ -206,20 +206,22 @@ public class GMLFeatureParserTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
 
-        String schemaURL = "file:///home/schneider/workspace/vrom_roonline2/resources/schema/imro2008/local-IMRO2008.xsd";
+        String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2008/IMRO2008-adapted.xsd";
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
         GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
 
         URL docURL = new URL(
-                              "file:///home/schneider/workspace/vrom_roonline2/resources/data/IMRO2008-testplans/NL.IMRO.0964.000matrixplan1-0003.gml" );
+                              "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.0964.000matrixplan1-part.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
         Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
                                                    idContext );
+        System.out.println ("A");
         idContext.resolveXLinks();
+        System.out.println ("B");
         xmlReader.close();
     }
 
@@ -228,13 +230,13 @@ public class GMLFeatureParserTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
 
-        String schemaURL = "file:///home/schneider/workspace/vrom_roonline2/resources/schema/imro2006/IMRO2006.xsd";
+        String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2008/IMRO2008-adapted.xsd";
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
         GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
 
         URL docURL = new URL(
-                              "file:///home/schneider/workspace/vrom-roonline/resources/data/testdata_herman_oktober2007/NL.IMRO.00280000-hoekschewaard.gml" );
+                              "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.0964.000matrixplan1-0003.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();

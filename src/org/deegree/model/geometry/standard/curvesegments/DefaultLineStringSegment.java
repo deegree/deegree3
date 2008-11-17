@@ -48,6 +48,7 @@ import java.util.List;
 
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link LineStringSegment} segments.
@@ -95,4 +96,9 @@ public class DefaultLineStringSegment implements LineStringSegment {
     public Point getEndPoint() {
         return points.get( points.size() - 1 );
     }
+    
+    @Override
+    public CurveSegmentType getSegmentType() {
+        return CurveSegmentType.LINE_STRING_SEGMENT;
+    }    
 }

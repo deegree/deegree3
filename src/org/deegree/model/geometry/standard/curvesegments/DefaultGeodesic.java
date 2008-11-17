@@ -48,6 +48,7 @@ import java.util.List;
 
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.Geodesic;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link Geodesic} segments.
@@ -106,5 +107,10 @@ public class DefaultGeodesic implements Geodesic {
     @Override
     public Point getEndPoint() {
         throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public CurveSegmentType getSegmentType() {
+        return CurveSegmentType.GEODESIC;
     }    
 }

@@ -59,7 +59,7 @@ import org.deegree.model.geometry.primitive.curvesegments.Arc;
  */
 public class DefaultArc implements Arc {
 
-    private List<Point> controlPoints = new ArrayList<Point>( 3 );
+    protected final List<Point> controlPoints = new ArrayList<Point>( 3 );
 
     /**
      * Creates a new <code>DefaultArc</code> instance from the given parameters.
@@ -120,5 +120,10 @@ public class DefaultArc implements Arc {
     @Override
     public Point getEndPoint() {
         return controlPoints.get( 2 );
+    }
+
+    @Override
+    public CurveSegmentType getSegmentType() {
+        return CurveSegmentType.ARC;
     }
 }

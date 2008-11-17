@@ -2,6 +2,7 @@ package org.deegree.model.geometry.standard.curvesegments;
 
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.Clothoid;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link Clothoid} segments.
@@ -80,5 +81,10 @@ public class DefaultClothoid implements Clothoid {
     @Override
     public Point getEndPoint() {
         throw new UnsupportedOperationException();
-    }    
+    }
+    
+    @Override
+    public CurveSegmentType getSegmentType() {
+        return CurveSegmentType.CLOTHOID;
+    }
 }

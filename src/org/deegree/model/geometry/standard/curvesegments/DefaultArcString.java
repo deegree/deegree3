@@ -47,6 +47,7 @@ import java.util.List;
 
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.ArcString;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link ArcString} segments.
@@ -104,5 +105,10 @@ public class DefaultArcString implements ArcString {
     @Override
     public Point getEndPoint() {
         return controlPoints.get( controlPoints.size() - 1 );
+    }
+    
+    @Override
+    public CurveSegmentType getSegmentType() {
+        return CurveSegmentType.ARC_STRING;
     }
 }
