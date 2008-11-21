@@ -114,7 +114,7 @@ public final class Version {
      * @return the version string
      */
     public static String getVersion() {
-        final String s = getVersionNumber() + " (" + getBuildDate() + " build-" + getBuildNumber() + "-" + getBuildBy()
+        final String s = getVersionNumber() + " (" + getBuildDate() + " build-" + getBuildNumber() + "(" + getSvnRevision() +") - "+ getBuildBy()
                          + ")";
         return s;
     }
