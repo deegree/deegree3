@@ -1071,9 +1071,11 @@ public class XMLAdapter {
      */
     public static void maybeWriteElement( XMLStreamWriter writer, String name, String text )
                             throws XMLStreamException {
-        writer.writeStartElement( name );
-        writer.writeCharacters( text );
-        writer.writeEndElement();
+        if ( text != null ) {
+            writer.writeStartElement( name );
+            writer.writeCharacters( text );
+            writer.writeEndElement();
+        }
     }
 
 }
