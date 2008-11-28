@@ -54,6 +54,11 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
+import org.deegree.model.geometry.primitive.Curve;
+import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Ring;
+import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.validation.GeometryValidator;
 import org.deegree.model.gml.GML311GeometryParser;
 import org.deegree.model.gml.GML311GeometryParserTest;
@@ -65,7 +70,7 @@ import org.junit.Test;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GeometryValidatorTest {
+public class GeometryValidatorTest implements ValidationEventHandler {
 
     private static GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory( "Standard" );
 
@@ -74,7 +79,7 @@ public class GeometryValidatorTest {
     @Test
     public void validateCurve()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        GeometryValidator validator = new GeometryValidator();
+        GeometryValidator validator = new GeometryValidator(this);
         Geometry geom = parseGeometry( "Curve.gml" );
         Assert.assertTrue( validator.validateGeometry( geom ) );
     }
@@ -82,19 +87,59 @@ public class GeometryValidatorTest {
     @Test
     public void validateInvalidCurve()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        GeometryValidator validator = new GeometryValidator();
+        GeometryValidator validator = new GeometryValidator(this);
         Geometry geom = parseGeometry( "invalid/Curve.gml" );
         Assert.assertFalse( "Discontinuity between curve segments not detected.", validator.validateGeometry( geom ) );
     }
 
     @Test
+    public void validateRing()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        GeometryValidator validator = new GeometryValidator(this);
+        Geometry geom = parseGeometry( "Ring.gml" );        
+        Assert.assertTrue( "Geometry is valid.", validator.validateGeometry( geom ) );
+    }    
+
+    @Test
+    public void validateInvalidRing()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        GeometryValidator validator = new GeometryValidator(this);
+        Geometry geom = parseGeometry( "invalid/Ring_not_closed.gml" );        
+        Assert.assertFalse( "Geometry must be recognized as invalid.", validator.validateGeometry( geom ) );
+    }    
+    
+    @Test
     public void validatePolygon()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        GeometryValidator validator = new GeometryValidator();
-        Geometry geom = parseGeometry( "Polygon_exterior_not_closed.gml" );
-        Assert.assertFalse( validator.validateGeometry( geom ) );
+        GeometryValidator validator = new GeometryValidator(this);
+        Geometry geom = parseGeometry( "Polygon.gml" );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
     }
 
+    @Test
+    public void validateInvalidPolygon()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        GeometryValidator validator = new GeometryValidator(this);
+        Geometry geom = parseGeometry( "invalid/Polygon_exterior_not_closed.gml" );
+        Assert.assertFalse( validator.validateGeometry( geom ) );
+    }    
+
+    @Test
+    public void validateInvalidPolygon2()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        GeometryValidator validator = new GeometryValidator(this);
+        Geometry geom = parseGeometry( "invalid/Polygon_interior_outside_exterior.gml" );
+        Assert.assertFalse( validator.validateGeometry( geom ) );
+    }
+    
+    @Test
+    public void validateInvalidPolygon3()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        GeometryValidator validator = new GeometryValidator(this);
+        Geometry geom = parseGeometry( "invalid/Polygon_interiors_touch.gml" );
+        Assert.assertFalse( validator.validateGeometry( geom ) );
+    }     
+    
     private Geometry parseGeometry( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
@@ -102,5 +147,85 @@ public class GeometryValidatorTest {
                                                                                                                    + fileName ) );
         xmlReader.nextTag();
         return new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+    }
+
+    
+    
+    @Override
+    public boolean curveDiscontinuity( Curve curve, int segmentIdx ) {
+        System.out.println ("Curve discontinuity between segment '" + segmentIdx + "' and " + (segmentIdx + 1) + ".");
+        return false;
+    }
+
+    @Override
+    public boolean curvePointDuplication( Curve curve, Point point ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean curveSelfIntersection( Curve curve, Point location ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean exteriorRingCW( Surface surface, PolygonPatch patch ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean interiorRingCCW( Surface surface, PolygonPatch patch ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean interiorRingIntersectsExterior( Surface surface, PolygonPatch patch, int ringIdx ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean interiorRingOutsideExterior( Surface surface, PolygonPatch patch, int ringIdx ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean interiorRingTouchesExterior( Surface surface, PolygonPatch patch, int ringIdx ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean interiorRingsIntersect( Surface surface, PolygonPatch patch, int ring1Idx, int ring2Idx ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean interiorRingsTouch( Surface surface, PolygonPatch patch, int ring1Idx, int ring2Idx ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean interiorRingsWithin( Surface surface, PolygonPatch patch, int ring1Idx, int ring2Idx ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean ringNotClosed( Ring ring ) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean ringSelfIntersection( Ring ring, Point location ) {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

@@ -109,7 +109,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
 
     @Override
     public boolean isClosed() {
-        throw new UnsupportedOperationException();
+        return getStartPoint().equals( getEndPoint() );
     }
 
     @Override

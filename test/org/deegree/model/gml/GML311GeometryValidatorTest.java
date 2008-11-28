@@ -58,6 +58,7 @@ import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.Polygon;
 import org.deegree.model.geometry.primitive.Ring.RingType;
 import org.deegree.model.geometry.primitive.Surface.SurfaceType;
+import org.deegree.model.gml.validation.GML311GeometryValidator;
 import org.junit.Assert;
 import org.junit.Test;
 

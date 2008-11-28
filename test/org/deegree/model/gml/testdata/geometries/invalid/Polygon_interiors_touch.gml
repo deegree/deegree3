@@ -2,12 +2,12 @@
 <Polygon xmlns="http://www.opengis.net/gml" xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/geometryPrimitives.xsd">
 	<exterior>
 		<LinearRing>
-			<posList>0 0 10 0 10 10 0 10 0 0.1</posList>
+			<posList>0 0 10 0 10 10 0 10 0 0.0</posList>
 		</LinearRing>
 	</exterior>
 	<interior>
 		<LinearRing>
-			<posList>1 9 1 9.5 2 9.5 2 9 1 9</posList>
+			<posList>1 9 1 9.5 2 9.5 2 9 9 1 1 9</posList>
 		</LinearRing>
 	</interior>	
 	<interior>

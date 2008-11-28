@@ -41,7 +41,7 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.gml;
+package org.deegree.model.gml.validation;
 
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -70,6 +70,7 @@ import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.model.gml.GML311GeometryParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +82,7 @@ import com.vividsolutions.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jts.operation.valid.TopologyValidationError;
 
 /**
- * Takes an XML stream as input (which should contain a GML geometry, GML feature or feature collection document) and
+ * Takes an XML stream as input (which should provide a GML geometry, GML feature or feature collection document) and
  * validates all contained <code>gml:_Geometry</code> elements (at all levels of the document).
  * <p>
  * Validation continues if errors are encountered.
@@ -125,13 +126,12 @@ public class GML311GeometryValidator extends XMLAdapter {
 
     private void validateGeometryElement() {
         Location location = xmlStream.getLocation();
-        System.out.println( "Validating GML geometry element ('" + xmlStream.getLocalName() + "') at line: "
-                            + location.getLineNumber() + ", column: " + location.getColumnNumber() + "." );
+        LOG.debug( "Validating GML geometry element ('" + xmlStream.getLocalName() + "') at line: "
+                   + location.getLineNumber() + ", column: " + location.getColumnNumber() + "." );
         try {
             validateGeometry( geomParser.parseGeometry( null ) );
         } catch ( Exception e ) {
-            e.printStackTrace();
-            System.out.println( "Parsing of GML geometry element ('" + xmlStream.getLocalName() + "') at line: "
+            LOG.debug( "Parsing of GML geometry element ('" + xmlStream.getLocalName() + "') at line: "
                                 + location.getLineNumber() + ", column: " + location.getColumnNumber() + " failed: "
                                 + e.getMessage() + "." );
         }

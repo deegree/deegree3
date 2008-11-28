@@ -123,7 +123,19 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
 
     @Override
     public boolean equals( Geometry geometry ) {
-        throw new UnsupportedOperationException();
+        if (!(geometry instanceof Point)) {
+            return false;
+        }
+        double [] coordinates = ((Point) geometry).getAsArray();
+        if (coordinates.length != this.coordinates.length) {
+            return false;
+        }
+        for ( int i = 0; i < coordinates.length; i++ ) {
+            if (!(coordinates [i] == this.coordinates[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

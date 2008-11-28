@@ -151,7 +151,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
 
     @Override
     public boolean isClosed() {
-        return true;
+        return getStartPoint().equals( getEndPoint() );
     }
 
     @Override
@@ -166,7 +166,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     
     @Override
     public Point getEndPoint() {
-        return getStartPoint();
+        return segments.get( segments.size() -1 ).getEndPoint();
     }
     
     @Override
