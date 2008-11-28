@@ -41,66 +41,65 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.gml;
+package org.deegree.model.geometry.validation;
 
 import java.io.IOException;
-import java.net.URL;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
+
+import junit.framework.Assert;
 
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
-import org.deegree.model.geometry.primitive.Polygon;
-import org.deegree.model.geometry.primitive.Ring.RingType;
-import org.deegree.model.geometry.primitive.Surface.SurfaceType;
-import org.junit.Assert;
+import org.deegree.model.geometry.validation.GeometryValidator;
+import org.deegree.model.gml.GML311GeometryParser;
+import org.deegree.model.gml.GML311GeometryParserTest;
 import org.junit.Test;
 
 /**
- * Tests that check the correct parsing of GML 3.1.1 geometry elements (elements substitutable for
- * <code>gml:_Geometry</code> and <code>gml:Envelope</code>).
- * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class GML311GeometryValidatorTest {
+public class GeometryValidatorTest {
 
     private static GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory( "Standard" );
 
     private static final String BASE_DIR = "testdata/geometries/";
 
     @Test
+    public void validateCurve()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        GeometryValidator validator = new GeometryValidator();
+        Geometry geom = parseGeometry( "Curve.gml" );
+        Assert.assertTrue( validator.validateGeometry( geom ) );
+    }
+
+    @Test
+    public void validateInvalidCurve()
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        GeometryValidator validator = new GeometryValidator();
+        Geometry geom = parseGeometry( "invalid/Curve.gml" );
+        Assert.assertFalse( "Discontinuity between curve segments not detected.", validator.validateGeometry( geom ) );
+    }
+
+    @Test
     public void validatePolygon()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
-        Geometry geom = parseGeometry( "Polygon.gml" );
-        
-    }    
-    
-    @Test
-    public void testParsingIMRO2008FeatureCollection()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException {
-
-        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       new URL(
-                                                                                "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.0964.000matrixplan1-0003.gml" ) );
-        xmlReader.nextTag();
-        GML311GeometryValidator validator = new GML311GeometryValidator( xmlReader );
-        validator.validateGeometries();
+        GeometryValidator validator = new GeometryValidator();
+        Geometry geom = parseGeometry( "Polygon_exterior_not_closed.gml" );
+        Assert.assertFalse( validator.validateGeometry( geom ) );
     }
 
     private Geometry parseGeometry( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311SurfacePatchParserTest.class.getResource( BASE_DIR
-                                                                                                                       + fileName ) );
+                                                                       GML311GeometryParserTest.class.getResource( BASE_DIR
+                                                                                                                   + fileName ) );
         xmlReader.nextTag();
         return new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
     }

@@ -286,7 +286,12 @@ public class GMLFeatureParserTest {
                                                                             new XMLStreamReaderWrapper(
                                                                                                         xmlReader,
                                                                                                         docURL.toString() ),
-                                                                            null, idContext );
+                                                                            null, idContext );       
         idContext.resolveXLinks();
+
+        for (Feature member: fc) {
+            System.out.println (member.getId());
+        }
+        
     }
 }
