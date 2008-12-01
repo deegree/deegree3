@@ -253,6 +253,7 @@ public class GeometryValidator {
 
         LOG.debug( "Curve geometry. Testing for self-intersection." );
         LineString jtsLineString = getJTSLineString( curve );
+       
         boolean selfIntersection = !jtsLineString.isSimple();
         if ( selfIntersection ) {
             LOG.debug( "Detected self-intersection." );
@@ -320,6 +321,7 @@ public class GeometryValidator {
                     isValid = false;
                 }
             }
+            Polygon exteriorJTSRingAsPolygons =  jtsFactory.createPolygon( exteriorJTSRing, null );
 
             // validate and transform interior ring to linearized JTS geometries
             List<Ring> interiorRings = patch.getInteriorRings();
@@ -359,12 +361,24 @@ public class GeometryValidator {
                         isValid = false;
                     }
                 }
+                if ( !interiorJTSRing.within( exteriorJTSRingAsPolygons ) ) {
+                    LOG.debug( "Interior not within interior." );
+                    if ( !eventHandler.interiorRingOutsideExterior( null, patch, ringIdx ) ) {
+                        isValid = false;
+                    }
+                }                
                 if ( exteriorJTSRing.within( interiorJTSRingAsPolygon ) ) {
                     LOG.debug( "Exterior within interior." );
                     if ( !eventHandler.interiorRingOutsideExterior( null, patch, ringIdx ) ) {
                         isValid = false;
                     }
                 }
+                if ( exteriorJTSRing.within( interiorJTSRingAsPolygon ) ) {
+                    LOG.debug( "Exterior within interior." );
+                    if ( !eventHandler.interiorRingOutsideExterior( null, patch, ringIdx ) ) {
+                        isValid = false;
+                    }
+                }               
             }
 
             LOG.debug( "Surface patch. Validating spatial relations between pairs of interior rings." );
