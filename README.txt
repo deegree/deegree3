@@ -2,8 +2,8 @@
 
 This is a list of the dependencies of the deegree 3 commons module.
 
-@author last edited by: $Author: $
-@version $Revision: $, $Date: $ 
+@author last edited by: $Author$
+@version $Revision$, $Date$
 
 == modules ===
 
@@ -46,8 +46,18 @@ URL: https://jai.dev.java.net/
 Version: 1.1.3
 Description: Java Advanced Imaging, high-level imaging API
 Comments: mlibwrapper_jar contains native implementation of parts of jai
-Used for: - org.deegree.model.crs.transformation (polynomial transformation) 
+Used for: - org.deegree.model.crs.transformation (polynomial transformation)
           - org.deegree.dataaccess.jai (image/raster reading and writing)
 Origin of Files: https://jai.dev.java.net/binary-builds.html
 License: Java Distribution License (JDL)
 Responsible: rbezema, otonnhofer
+
+=== commons ===
+Files: commons-httpclient-3.1.jar
+URL: http://hc.apache.org/httpclient-3.x/
+Version: 3.1
+Description: Jakarta Commons HTTP client
+Used for: everything that accesses the web
+Origin of Files: http://hc.apache.org/downloads.cgi
+License: The Apache Software License, Version 2.0
+Responsible: aschmitz
