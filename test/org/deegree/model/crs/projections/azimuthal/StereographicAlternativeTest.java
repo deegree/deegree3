@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -47,7 +47,7 @@ import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.exceptions.ProjectionException;
 import org.deegree.model.crs.projections.ProjectionTest;
-import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
+import org.deegree.model.crs.transformations.helmert.Helmert;
 import org.junit.Test;
 
 /**
@@ -66,10 +66,9 @@ public class StereographicAlternativeTest extends ProjectionTest {
     private static final Ellipsoid ellipsoid_7004 = new Ellipsoid( 6377397.155, Unit.METRE, 299.1528128,
                                                                    new String[] { "EPSG:7004" } );
 
-    private static final WGS84ConversionInfo wgs_56 = new WGS84ConversionInfo( 565.04, 49.91, 465.84,
-                                                                               -0.40941295127179994,
-                                                                               0.3608190255680464, -1.8684910003505757,
-                                                                               4.0772, new String[] { "TOWGS_56" } );
+    private static final Helmert wgs_56 = new Helmert( 565.04, 49.91, 465.84, -0.40941295127179994, 0.3608190255680464,
+                                                       -1.8684910003505757, 4.0772, GeographicCRS.WGS84,
+                                                       GeographicCRS.WGS84, new String[] { "TOWGS_56" } );
 
     private static final GeodeticDatum datum_171 = new GeodeticDatum( ellipsoid_7004, wgs_56,
                                                                       new String[] { "DATUM_171" } );

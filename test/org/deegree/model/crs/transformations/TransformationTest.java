@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -46,8 +46,8 @@ import javax.vecmath.Point3d;
 
 import junit.framework.TestCase;
 
-import org.deegree.model.crs.CoordinateTransformer;
 import org.deegree.model.crs.CRSIdentifiable;
+import org.deegree.model.crs.CoordinateTransformer;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -62,7 +62,7 @@ import org.deegree.model.crs.projections.Projection;
 import org.deegree.model.crs.projections.ProjectionTest;
 import org.deegree.model.crs.projections.azimuthal.StereographicAlternative;
 import org.deegree.model.crs.projections.cylindric.TransverseMercator;
-import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
+import org.deegree.model.crs.transformations.helmert.Helmert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,16 +116,16 @@ public class TransformationTest extends TestCase {
     /**
      * Used to wgs
      */
-    private final static WGS84ConversionInfo wgs_56 = new WGS84ConversionInfo( 565.04, 49.91, 465.84,
-                                                                               -0.40941295127179994,
-                                                                               0.3608190255680464, -1.8684910003505757,
-                                                                               4.0772, new String[] { "TOWGS_56" } );
+    private final static Helmert wgs_56 = new Helmert( 565.04, 49.91, 465.84, -0.40941295127179994, 0.3608190255680464,
+                                                       -1.8684910003505757, 4.0772, GeographicCRS.WGS84,
+                                                       GeographicCRS.WGS84, new String[] { "TOWGS_56" } );
 
-    private final static WGS84ConversionInfo wgs_1188 = new WGS84ConversionInfo( new String[] { "EPSG:1188" } );
+    private final static Helmert wgs_1188 = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84,
+                                                         new String[] { "EPSG:1188" } );
 
-    private final static WGS84ConversionInfo wgs_1777 = new WGS84ConversionInfo( 598.1, 73.7, 418.2, 0.202, 0.045,
-                                                                                 -2.455, 6.7,
-                                                                                 new String[] { "EPSG:1777" } );
+    private final static Helmert wgs_1777 = new Helmert( 598.1, 73.7, 418.2, 0.202, 0.045, -2.455, 6.7,
+                                                         GeographicCRS.WGS84, GeographicCRS.WGS84,
+                                                         new String[] { "EPSG:1777" } );
 
     /**
      * Used datums
@@ -149,13 +149,13 @@ public class TransformationTest extends TestCase {
                                                                             datum_6171,
                                                                             axis_geocentric,
                                                                             new CRSIdentifiable(
-                                                                                              new String[] { "EPSG:4964" } ) );
+                                                                                                 new String[] { "EPSG:4964" } ) );
 
     private final static GeocentricCRS geocentric_dummy = new GeocentricCRS(
                                                                              datum_6314,
                                                                              axis_geocentric,
                                                                              new CRSIdentifiable(
-                                                                                               new String[] { "NO_REAL_GEOCENTRIC" } ) );
+                                                                                                  new String[] { "NO_REAL_GEOCENTRIC" } ) );
 
     /**
      * Used geographic crs's
@@ -271,9 +271,9 @@ public class TransformationTest extends TestCase {
 
         CoordinateTransformer transformer = getGeotransformer( targetCRS );
 
-        List<Point3d> tmp = new ArrayList<Point3d>(1);
-        tmp.add( new Point3d( sourcePoint) );
-        Point3d result = transformer.transform( sourceCRS, tmp ).get(0);
+        List<Point3d> tmp = new ArrayList<Point3d>( 1 );
+        tmp.add( new Point3d( sourcePoint ) );
+        Point3d result = transformer.transform( sourceCRS, tmp ).get( 0 );
         assertNotNull( result );
         boolean xFail = Math.abs( result.getX() - targetPoint.x ) > epsilons.x;
         String xString = createEpsilonString( xFail, result.getX(), targetPoint.x, epsilons.x, targetCRS.getAxis()[0] );
@@ -365,12 +365,12 @@ public class TransformationTest extends TestCase {
         // Source crs espg:28992
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_28992, 20,
                                                  new CRSIdentifiable( new String[] { projected_28992.getIdentifier()
-                                                                                  + "_compound" } ) );
+                                                                                     + "_compound" } ) );
 
         // Target crs espg:25832
         CompoundCRS targetCRS = new CompoundCRS( heightAxis, projected_25832, 20,
                                                  new CRSIdentifiable( new String[] { projected_25832.getIdentifier()
-                                                                                  + "_compound" } ) );
+                                                                                     + "_compound" } ) );
 
         // reference created with coord tool from http://www.rdnap.nl/ (NL/Amsterdam/dam)
         Point3d sourcePoint = new Point3d( 121397.572, 487325.817, 6.029 );
@@ -390,7 +390,7 @@ public class TransformationTest extends TestCase {
         // Source crs espg:28992
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_28992, 20,
                                                  new CRSIdentifiable( new String[] { projected_28992.getIdentifier()
-                                                                                  + "_compound" } ) );
+                                                                                     + "_compound" } ) );
 
         // Target crs espg:4258
         GeographicCRS targetCRS = geographic_4258;
@@ -416,7 +416,7 @@ public class TransformationTest extends TestCase {
         // source crs epsg:31467
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_31467, 20,
                                                  new CRSIdentifiable( new String[] { projected_31467.getIdentifier()
-                                                                                  + "_compound" } ) );
+                                                                                     + "_compound" } ) );
 
         // Target crs EPSG:4964
         GeocentricCRS targetCRS = geocentric_4964;
@@ -439,9 +439,13 @@ public class TransformationTest extends TestCase {
                             throws TransformationException {
 
         // Source WGS:84_compound
-        CompoundCRS sourceCRS = new CompoundCRS( heightAxis, GeographicCRS.WGS84, 20,
-                                                 new CRSIdentifiable( new String[] { GeographicCRS.WGS84.getIdentifier()
-                                                                                  + "_compound" } ) );
+        CompoundCRS sourceCRS = new CompoundCRS(
+                                                 heightAxis,
+                                                 GeographicCRS.WGS84,
+                                                 20,
+                                                 new CRSIdentifiable(
+                                                                      new String[] { GeographicCRS.WGS84.getIdentifier()
+                                                                                     + "_compound" } ) );
 
         // Target EPSG:31467
         ProjectedCRS targetCRS = projected_31467;

@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -50,7 +50,7 @@ import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.projections.Projection;
 import org.deegree.model.crs.projections.azimuthal.StereographicAlternative;
 import org.deegree.model.crs.projections.cylindric.TransverseMercator;
-import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
+import org.deegree.model.crs.transformations.helmert.Helmert;
 import org.junit.Test;
 
 /**
@@ -75,13 +75,14 @@ public class CompoundCRSTest extends TestCase {
 
         // Source crs espg:28992
         Ellipsoid sourceEllipsoid = new Ellipsoid( 6377397.155, Unit.METRE, 299.1528128, new String[] { "EPSG:7004" } );
-        WGS84ConversionInfo sourceWGS = new WGS84ConversionInfo( 565.04, 49.91, 465.84, -0.40941295127179994,
-                                                                 0.3608190255680464, -1.8684910003505757, 4.0772,
-                                                                 new String[] { "TOWGS_56" } );
-        GeodeticDatum sourceDatum = new GeodeticDatum( sourceEllipsoid, sourceWGS, new String[] { "DATUM_171" } );
+        GeodeticDatum sourceDatum = new GeodeticDatum( sourceEllipsoid, null, new String[] { "DATUM_171" } );
         GeographicCRS geoSource = new GeographicCRS( sourceDatum, new Axis[] { new Axis( "longitude", Axis.AO_EAST ),
                                                                               new Axis( "latitude", Axis.AO_NORTH ) },
                                                      new String[] { "GEO_CRS_204" } );
+        Helmert sourceWGS = new Helmert( 565.04, 49.91, 465.84, -0.40941295127179994, 0.3608190255680464,
+                                         -1.8684910003505757, 4.0772, geoSource, GeographicCRS.WGS84,
+                                         new String[] { "TOWGS_56" } );
+        sourceDatum.setToWGS84( sourceWGS );
         Projection sourceProj = new StereographicAlternative( geoSource, 463000.0, 155000.0,
                                                               new Point2d( Math.toRadians( 5.38763888888889 ),
                                                                            Math.toRadians( 52.15616055555555 ) ),
@@ -123,7 +124,7 @@ public class CompoundCRSTest extends TestCase {
 
         // Target crs espg:25832
         Ellipsoid targetEllipsoid = new Ellipsoid( 6378137.0, Unit.METRE, 298.257222101, new String[] { "EPSG:1188" } );
-        WGS84ConversionInfo targetWGS = new WGS84ConversionInfo( new String[] { "EPSG:1188" } );
+        Helmert targetWGS = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, new String[] { "EPSG:1188" } );
         GeodeticDatum targetDatum = new GeodeticDatum( targetEllipsoid, targetWGS, new String[] { "EPSG:6258" } );
         GeographicCRS targetGEO = new GeographicCRS( targetDatum, new Axis[] { new Axis( "longitude", Axis.AO_EAST ),
                                                                               new Axis( "latitude", Axis.AO_NORTH ) },

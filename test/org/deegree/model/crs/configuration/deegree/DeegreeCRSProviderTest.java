@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.crs.configuration;
+package org.deegree.model.crs.configuration.deegree;
 
 import junit.framework.TestCase;
 
@@ -45,12 +45,14 @@ import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
 import org.deegree.model.crs.components.PrimeMeridian;
 import org.deegree.model.crs.components.Unit;
+import org.deegree.model.crs.configuration.CRSConfiguration;
+import org.deegree.model.crs.configuration.CRSProvider;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.model.crs.projections.Projection;
 import org.deegree.model.crs.projections.cylindric.TransverseMercator;
-import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
+import org.deegree.model.crs.transformations.helmert.Helmert;
 import org.junit.Test;
 
 /**
@@ -119,7 +121,7 @@ public class DeegreeCRSProviderTest extends TestCase {
         assertEquals( 299.1528128, ellips.getInverseFlattening() );
 
         // test towgs84 params
-        WGS84ConversionInfo toWGS = datum.getWGS84Conversion();
+        Helmert toWGS = datum.getWGS84Conversion();
         assertNotNull( toWGS );
         assertTrue( toWGS.hasValues() );
         assertEquals( "EPSG:1777", toWGS.getIdentifier() );

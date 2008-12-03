@@ -48,7 +48,7 @@ import org.deegree.model.crs.components.GeodeticDatum;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.exceptions.ProjectionException;
-import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
+import org.deegree.model.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +79,11 @@ public class ProjectionTest extends TestCase {
     /**
      * No wgs84 conversion needed.
      */
-    protected static final WGS84ConversionInfo wgs_1188 = new WGS84ConversionInfo( new String[] { "EPSG:1188" } );
+    /**
+     * No wgs84 conversion needed.
+     */
+    protected static final Helmert wgs_1188 = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84,
+                                                           new String[] { "EPSG:1188" } );
 
     /**
      * European Terrestrial Reference System 1989
@@ -258,6 +262,6 @@ public class ProjectionTest extends TestCase {
         // some other checks.
         assertEquals( Math.cos( naturalOrigin.y ), toBeTested.getCosphi0() );
         assertEquals( Math.sin( naturalOrigin.y ), toBeTested.getSinphi0() );
-        assertEquals( name, toBeTested.getName() );
+        assertEquals( name, toBeTested.getImplementationName() );
     }
 }
