@@ -65,6 +65,12 @@ public class XMLParsingException extends XMLProcessingException {
 
     private XMLErrorPosition errorPosition;
 
+    @Deprecated
+    public XMLParsingException( String msg ) {
+        this.msg = msg;
+        errorPosition = null;
+    }
+
     /**
      * Creates a new exception for a parsing error that occured in a StAX-based parsing method.
      * 
@@ -95,6 +101,7 @@ public class XMLParsingException extends XMLProcessingException {
 
     @Override
     public String getMessage() {
-        return errorPosition.getAsMessage() + ": " + msg;
+
+        return ( ( errorPosition != null ) ? errorPosition.getAsMessage() : "Unknon error position" ) + ": " + msg;
     }
 }

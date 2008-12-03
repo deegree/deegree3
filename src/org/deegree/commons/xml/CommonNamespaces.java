@@ -43,12 +43,10 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
-
 /**
  * Definitions for OGC related namespace bindings.
  * <p>
- * NOTE: Don't put project specific bindings here -- subclass it and override
- * {@link #getNamespaceContext()} instead.
+ * NOTE: Don't put project specific bindings here -- subclass it and override {@link #getNamespaceContext()} instead.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -85,8 +83,7 @@ public class CommonNamespaces {
     public static final String ISO19115NS = "http://schemas.opengis.net/iso19115full";
 
     /**
-     * The ISO19115BRIEFNS namespace is currently bound to:
-     * "http://schemas.opengis.net/iso19115brief"
+     * The ISO19115BRIEFNS namespace is currently bound to: "http://schemas.opengis.net/iso19115brief"
      */
     public static final String ISO19115BRIEFNS = "http://schemas.opengis.net/iso19115brief";
 
@@ -129,14 +126,23 @@ public class CommonNamespaces {
      * The APISO namespace is currently bound to: "http://www.opengis.net/cat/csw/apiso/1.0"
      */
     public static final String APISO = "http://www.opengis.net/cat/csw/apiso/1.0";
-    
+
     /**
-     * The CRSNS namespace --used for the crs package-- is currently bound to:
-     * "http://www.deegree.org/crs"
+     * The GML3_2_NS namespace is currently bound to: "http://www.opengis.net/gml/3.2"
+     */
+    public static final String GML3_2_NS = "http://www.opengis.net/gml/3.2";
+
+    /**
+     * The CRSNS namespace --used for the crs package-- is currently bound to: "http://www.deegree.org/crs"
      */
     public static final String CRSNS = "http://www.deegree.org/crs";
 
     // prefixes
+    /**
+     * The GML3_2 prefix is currently assigned to: "gml3_2"
+     */
+    public static final String GML3_2_PREFIX = "gml3_2";
+
     /**
      * The GML prefix is currently assigned to: "gml"
      */
@@ -206,7 +212,7 @@ public class CommonNamespaces {
      * The APISO_PREFIX is currently assigned to: "apiso"
      */
     public static final String APISO_PREFIX = "apiso";
-    
+
     /**
      * The CRS_PREFIX is currently assigned to: "crs"
      */
@@ -223,6 +229,7 @@ public class CommonNamespaces {
         if ( nsContext == null ) {
             nsContext = new NamespaceContext();
             nsContext.addNamespace( GML_PREFIX, GMLNS );
+            nsContext.addNamespace( GML3_2_PREFIX, GML3_2_NS );
             nsContext.addNamespace( OGC_PREFIX, OGCNS );
             nsContext.addNamespace( XLINK_PREFIX, XLNNS );
             nsContext.addNamespace( XS_PREFIX, XSNS );
@@ -235,7 +242,7 @@ public class CommonNamespaces {
             nsContext.addNamespace( ISOAP10GMD_PREFIX, ISOAP10GMDNS );
             nsContext.addNamespace( ISOAP10GCO_PREFIX, ISOAP10GCONS );
             nsContext.addNamespace( APISO_PREFIX, APISO );
-            nsContext.addNamespace( CRS_PREFIX, CRSNS);
+            nsContext.addNamespace( CRS_PREFIX, CRSNS );
 
         }
         return nsContext;
