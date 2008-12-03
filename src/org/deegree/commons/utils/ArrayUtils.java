@@ -42,6 +42,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
+import static java.lang.Double.parseDouble;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -275,4 +277,19 @@ public class ArrayUtils {
 
         return vec.toArray( new String[vec.size()] );
     }
+
+    /**
+     * @param str
+     * @param delim
+     * @return str.split(delim) values parsed as doubles
+     */
+    public static double[] splitAsDoubles( String str, String delim ) {
+        String[] ss = str.split( delim );
+        double[] ds = new double[ss.length];
+        for ( int i = 0; i < ss.length; ++i ) {
+            ds[i] = parseDouble( ss[i] );
+        }
+        return ds;
+    }
+
 }
