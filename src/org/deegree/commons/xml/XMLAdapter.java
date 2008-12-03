@@ -207,6 +207,33 @@ public class XMLAdapter {
     }
 
     /**
+     * Creates a new instance that loads its content from the given <code>InputStream</code> using the default url.
+     * 
+     * @param in
+     *            source of the xml content
+     * 
+     * @throws XMLProcessingException
+     */
+    public XMLAdapter( InputStream in ) throws XMLProcessingException {
+        load( in, DEFAULT_URL );
+    }
+
+    /**
+     * Creates a new instance that loads its content from the given <code>InputStream</code>.
+     * 
+     * @param in
+     *            source of the xml content
+     * @param systemId
+     *            this string should represent a URL that is related to the passed reader. If this URL is not available
+     *            or unknown, the string should contain the value of XMLAdapter.DEFAULT_URL
+     * 
+     * @throws XMLProcessingException
+     */
+    public XMLAdapter( InputStream in, String systemId ) throws XMLProcessingException {
+        load( in, systemId );
+    }
+
+    /**
      * Creates a new instance that wraps the submitted XML document.
      * 
      * @param doc
