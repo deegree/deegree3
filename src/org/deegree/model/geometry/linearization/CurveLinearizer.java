@@ -50,6 +50,7 @@ import java.util.List;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
@@ -70,6 +71,8 @@ import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 public class CurveLinearizer {
 
     private GeometryFactory geomFac;
+
+    private final static double TWO_PI = Math.PI * 2;
 
     /**
      * @param geomFac
@@ -130,14 +133,10 @@ public class CurveLinearizer {
     public LineStringSegment linearize( CurveSegment segment, LinearizationCriterion crit ) {
         LineStringSegment lineSegment = null;
         switch ( segment.getSegmentType() ) {
-        case ARC: {
+        case ARC:
+        case CIRCLE:
             lineSegment = linearizeArc( (Arc) segment, crit );
             break;
-        }
-        case CIRCLE: {
-            lineSegment = linearizeCircle( (Circle) segment, crit );
-            break;
-        }
         case LINE_STRING_SEGMENT: {
             lineSegment = (LineStringSegment) segment;
             break;
@@ -177,11 +176,46 @@ public class CurveLinearizer {
         }
 
         int numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
-        List<Point> interpolationPoints = new ArrayList<Point>( numPoints );
-        Point p0 = arc.getPoint1();
-        Point p1 = arc.getPoint2();
-        Point p2 = arc.getPoint3();
+        return geomFac.createLineStringSegment( interpolate( arc.getPoint1(), arc.getPoint2(), arc.getPoint3(),
+                                                             numPoints, arc instanceof Circle ) );
+    }
 
+    private double createAngleStep( double startAngle, double endAngle, int numPoints, boolean isClockwise ) {
+        boolean isCircle = ( Math.abs( startAngle - endAngle ) < 1E-10 );
+        double sweepAngle = isCircle ? TWO_PI : ( startAngle - endAngle );
+        double angleStep = 0;
+        if ( isClockwise ) {
+            if ( !isCircle ) {
+
+                if ( sweepAngle < 0 ) {
+                    /**
+                     * Because the sweepAngle is negative and we are going cw the sweepAngle must be inverted by adding
+                     * it to 2pi
+                     */
+                    sweepAngle = ( TWO_PI + sweepAngle );
+                }
+            }
+            angleStep = -( sweepAngle / ( numPoints - 1 ) );
+        } else {
+            if ( !isCircle ) {
+                if ( sweepAngle < 0 ) {
+                    /**
+                     * Because sweepangle is negative but we are going ccw the sweepangle must be mathematically
+                     * inverted
+                     */
+                    sweepAngle = Math.abs( sweepAngle );
+                } else {
+                    sweepAngle = TWO_PI - sweepAngle;
+                }
+
+            }
+            angleStep = sweepAngle / ( numPoints - 1 );
+        }
+        return angleStep;
+    }
+
+    private List<Point> interpolate( Point p0, Point p1, Point p2, int numPoints, boolean isCircle ) {
+        List<Point> interpolationPoints = new ArrayList<Point>( numPoints );
         Point center = calcCircleCenter( p0, p1, p2 );
 
         double centerX = center.getX();
@@ -190,93 +224,26 @@ public class CurveLinearizer {
         double dy = p0.getY() - centerY;
         double ex = p2.getX() - centerX;
         double ey = p2.getY() - centerY;
+
         double startAngle = Math.atan2( dy, dx );
-        double endAngle = Math.atan2( ey, ex );
+        double endAngle = isCircle ? startAngle : Math.atan2( ey, ex );
         double radius = Math.sqrt( dx * dx + dy * dy );
 
-        double sweepAngle = Math.abs( startAngle - endAngle );
-
-        double angleStep = 0.0;
-        if ( isClockwise( p0, p1, p2 ) ) {
-            angleStep = -sweepAngle / ( numPoints - 1 );
-        } else {
-            angleStep = sweepAngle / ( numPoints - 1 );
-        }
-
-        // use original circle start point (better for numerical stability)
-        interpolationPoints.add( geomFac.createPoint( null, new double[] { p0.getX(), p0.getY() },
-                                                      p0.getCoordinateSystem() ) );
-        // calculate intermediate (=interpolated) points on arc
-        for ( int i = 1; i < numPoints - 1; i++ ) {
-            double angle = startAngle + i * angleStep;
-            double x = centerX + Math.cos( angle ) * radius;
-            double y = centerY + Math.sin( angle ) * radius;
-            interpolationPoints.add( geomFac.createPoint( null, new double[] { x, y }, p0.getCoordinateSystem() ) );
-        }
-
-        // use original circle end point (better for numerical stability)
-        interpolationPoints.add( geomFac.createPoint( null, new double[] { p2.getX(), p2.getY() },
-                                                      p0.getCoordinateSystem() ) );
-        return geomFac.createLineStringSegment( interpolationPoints );
-    }
-
-    /**
-     * Returns a linearized version (i.e. a {@link LineStringSegment}) of the given {@link Circle}.
-     * <p>
-     * The circle is constructed from the input points: All three points belong to the arc of the circle. They must be
-     * distinct and non-collinear. To form a complete circle, the arc is extended past the third control point until the
-     * first control point is encountered.
-     * 
-     * @param circle
-     * @param crit
-     * @return linearized version of the input segment
-     * @throws IllegalArgumentException
-     *             if no order can be determined, because the points are identical or collinear
-     */
-    public LineStringSegment linearizeCircle( Circle circle, LinearizationCriterion crit ) {
-
-        if ( !( crit instanceof NumPointsCriterion ) ) {
-            String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented.";
-            throw new IllegalArgumentException( msg );
-        }
-
-        int numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
-        List<Point> interpolationPoints = new ArrayList<Point>( numPoints );
-        Point p0 = circle.getPoint1();
-        Point p1 = circle.getPoint2();
-        Point p2 = circle.getPoint3();
-
-        Point center = calcCircleCenter( p0, p1, p2 );
-
-        double centerX = center.getX();
-        double centerY = center.getY();
-        double dx = p0.getX() - centerX;
-        double dy = p0.getY() - centerY;
-        double radius = Math.sqrt( dx * dx + dy * dy );
-
-        double angleStep = 0.0;
-        if ( isClockwise( p0, p1, p2 ) ) {
-            angleStep = -Math.PI * 2 / ( numPoints - 1 );
-        } else {
-            angleStep = Math.PI * 2 / ( numPoints - 1 );
-        }
-        double startAngle = Math.atan2( dy, dx );
-
+        double angleStep = createAngleStep( startAngle, endAngle, numPoints, isClockwise( p0, p1, p2 ) );
+        CoordinateSystem crs = p0.getCoordinateSystem();
         // ensure numerical stability for start point (= use original circle start point)
-        interpolationPoints.add( geomFac.createPoint( null, new double[] { p0.getX(), p0.getY() },
-                                                      p0.getCoordinateSystem() ) );
+        interpolationPoints.add( p0 );
+
         // calculate intermediate (=interpolated) points on arc
         for ( int i = 1; i < numPoints - 1; i++ ) {
             double angle = startAngle + i * angleStep;
             double x = centerX + Math.cos( angle ) * radius;
             double y = centerY + Math.sin( angle ) * radius;
-            interpolationPoints.add( geomFac.createPoint( null, new double[] { x, y }, p0.getCoordinateSystem() ) );
+            interpolationPoints.add( geomFac.createPoint( null, new double[] { x, y }, crs ) );
         }
-
         // ensure numerical stability for end point (= use original circle start point)
-        interpolationPoints.add( geomFac.createPoint( null, new double[] { p0.getX(), p0.getY() },
-                                                      p0.getCoordinateSystem() ) );
-        return geomFac.createLineStringSegment( interpolationPoints );
+        interpolationPoints.add( isCircle ? p0 : p2 );
+        return interpolationPoints;
     }
 
     /**
