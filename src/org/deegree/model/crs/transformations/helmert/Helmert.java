@@ -39,14 +39,20 @@ package org.deegree.model.crs.transformations.helmert;
 
 import static org.deegree.model.crs.projections.ProjectionUtils.EPS11;
 
+import java.util.List;
+
 import javax.vecmath.Matrix4d;
+import javax.vecmath.Point3d;
 
 import org.deegree.model.crs.CRSIdentifiable;
+import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.crs.exceptions.TransformationException;
+import org.deegree.model.crs.transformations.Transformation;
 
 /**
- * Parameters for a geographic transformation into WGS84. The Bursa Wolf parameters should be applied to geocentric
- * coordinates, where the X axis points towards the Greenwich Prime Meridian, the Y axis points East, and the Z axis
- * points North.
+ * Parameters for a geographic transformation into another datum. The Bursa Wolf parameters should be applied to
+ * geocentric coordinates, where the X axis points towards the Greenwich Prime Meridian, the Y axis points East, and the
+ * Z axis points North.
  * 
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
@@ -56,9 +62,7 @@ import org.deegree.model.crs.CRSIdentifiable;
  * @version $Revision$, $Date$
  * 
  */
-public class WGS84ConversionInfo extends CRSIdentifiable {
-
-    private static final long serialVersionUID = 3609096054318456918L;
+public class Helmert extends Transformation {
 
     /** Bursa Wolf shift in meters. */
     public double dx;
@@ -81,38 +85,11 @@ public class WGS84ConversionInfo extends CRSIdentifiable {
     /** Bursa Wolf scaling in parts per million. */
     public double ppm;
 
-    /**
-     * Construct a conversion info with all parameters set to 0;
-     * 
-     * @param identifier
-     */
-    public WGS84ConversionInfo( String identifier ) {
-        this( new String[] { identifier } );
-    }
+    private Matrix4d transformMatrix = null;
 
-    /**
-     * Construct a conversion info with all parameters set to 0;
-     * 
-     * @param identifiers
-     */
-    public WGS84ConversionInfo( String[] identifiers ) {
-        super( identifiers );
-    }
+    private Matrix4d inverseMatrix = null;
 
-    /**
-     * Construct a conversion info with all parameters set to 0;
-     * 
-     * @param identifiers
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areasOfUse
-     */
-    public WGS84ConversionInfo( String[] identifiers, String[] names, String[] versions, String[] descriptions,
-                                String[] areasOfUse ) {
-        super( identifiers, names, versions, descriptions, areasOfUse );
-
-    }
+    private boolean rotationInRadians = false;
 
     /**
      * @param dx
@@ -122,23 +99,25 @@ public class WGS84ConversionInfo extends CRSIdentifiable {
      * @param dz
      *            Bursa Wolf shift in meters.
      * @param ex
-     *            Bursa Wolf rotation in arc seconds.
+     *            Bursa Wolf rotation in arc seconds or in radians (by setting the flag).
      * @param ey
-     *            Bursa Wolf rotation in arc seconds.
+     *            Bursa Wolf rotation in arc seconds or in radians (by setting the flag).
      * @param ez
-     *            Bursa Wolf rotation in arc seconds.
+     *            Bursa Wolf rotation in arc seconds or in radians (by setting the flag).
      * @param ppm
      *            Bursa Wolf scaling in parts per million.
-     * @param identifiers
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areaOfUses
+     * @param sourceCRS
+     *            of this helmert transformation
+     * @param targetCRS
+     *            of this helmert transformation
+     * @param identifiable
+     *            object containing all relevant id.
+     * @param inRadians
+     *            true if the rotation parameters are in radians
      */
-    public WGS84ConversionInfo( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                                String[] identifiers, String[] names, String[] versions, String[] descriptions,
-                                String[] areaOfUses ) {
-        super( identifiers, names, versions, descriptions, areaOfUses );
+    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
+                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable identifiable, boolean inRadians ) {
+        super( sourceCRS, targetCRS, identifiable );
         this.dx = dx;
         this.dy = dy;
         this.dz = dz;
@@ -146,6 +125,7 @@ public class WGS84ConversionInfo extends CRSIdentifiable {
         this.ey = ey;
         this.ez = ez;
         this.ppm = ppm;
+        rotationInRadians = inRadians;
     }
 
     /**
@@ -163,15 +143,125 @@ public class WGS84ConversionInfo extends CRSIdentifiable {
      *            Bursa Wolf rotation in arc seconds.
      * @param ppm
      *            Bursa Wolf scaling in parts per million.
+     * @param sourceCRS
+     *            of this helmert transformation
+     * @param targetCRS
+     *            of this helmert transformation
+     * @param identifiable
+     *            object containing all relevant id.
+     */
+    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
+                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable identifiable ) {
+        this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, identifiable, false );
+    }
+
+    /**
+     * Construct a conversion info with all parameters set to 0;
+     * 
+     * @param sourceCRS
+     *            of this helmert transformation
+     * @param targetCRS
+     *            of this helmert transformation
+     * 
+     * @param identifiers
+     * @param names
+     * @param versions
+     * @param descriptions
+     * @param areasOfUse
+     */
+    public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String[] identifiers, String[] names,
+                    String[] versions, String[] descriptions, String[] areasOfUse ) {
+        this( 0, 0, 0, 0, 0, 0, 0, sourceCRS, targetCRS, new CRSIdentifiable( identifiers, names, versions, descriptions,
+                                                                           areasOfUse ) );
+    }
+
+    /**
+     * Construct a conversion info with all parameters set to 0;
+     * 
+     * @param sourceCRS
+     *            of this helmert transformation
+     * @param targetCRS
+     *            of this helmert transformation
+     * @param identifier
+     */
+    public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String identifier ) {
+        this( sourceCRS, targetCRS, new String[] { identifier } );
+    }
+
+    /**
+     * Construct a conversion info with all parameters set to 0;
+     * 
+     * @param sourceCRS
+     *            of this helmert transformation
+     * @param targetCRS
+     *            of this helmert transformation
+     * @param identifiers
+     */
+    public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String[] identifiers ) {
+        this( sourceCRS, targetCRS, identifiers, null, null, null, null );
+    }
+
+    /**
+     * @param dx
+     *            Bursa Wolf shift in meters.
+     * @param dy
+     *            Bursa Wolf shift in meters.
+     * @param dz
+     *            Bursa Wolf shift in meters.
+     * @param ex
+     *            Bursa Wolf rotation in arc seconds.
+     * @param ey
+     *            Bursa Wolf rotation in arc seconds.
+     * @param ez
+     *            Bursa Wolf rotation in arc seconds.
+     * @param ppm
+     *            Bursa Wolf scaling in parts per million.
+     * @param sourceCRS
+     *            of this helmert transformation
+     * @param targetCRS
+     *            of this helmert transformation
+     * @param identifiers
+     * @param names
+     * @param versions
+     * @param descriptions
+     * @param areaOfUses
+     */
+    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
+                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String[] identifiers, String[] names,
+                    String[] versions, String[] descriptions, String[] areaOfUses ) {
+        this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new CRSIdentifiable( identifiers, names, versions,
+                                                                                   descriptions, areaOfUses ) );
+    }
+
+    /**
+     * @param dx
+     *            Bursa Wolf shift in meters.
+     * @param dy
+     *            Bursa Wolf shift in meters.
+     * @param dz
+     *            Bursa Wolf shift in meters.
+     * @param ex
+     *            Bursa Wolf rotation in arc seconds.
+     * @param ey
+     *            Bursa Wolf rotation in arc seconds.
+     * @param ez
+     *            Bursa Wolf rotation in arc seconds.
+     * @param ppm
+     *            Bursa Wolf scaling in parts per million.
+     * @param sourceCRS
+     *            of this helmert transformation
+     * @param targetCRS
+     *            of this helmert transformation
      * @param identifier
      * @param name
      * @param version
      * @param description
      * @param areaOfUse
      */
-    public WGS84ConversionInfo( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                                String identifier, String name, String version, String description, String areaOfUse ) {
-        this( dx, dy, dz, ex, ey, ez, ppm, new String[] { identifier }, new String[] { name },
+    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
+                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String identifier, String name,
+                    String version, String description, String areaOfUse ) {
+        this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new String[] { identifier }, new String[] { name },
               new String[] { version }, new String[] { description }, new String[] { areaOfUse } );
     }
 
@@ -190,11 +280,15 @@ public class WGS84ConversionInfo extends CRSIdentifiable {
      *            Bursa Wolf rotation in arc seconds.
      * @param ppm
      *            Bursa Wolf scaling in parts per million.
+     * @param sourceCRS
+     *            of this helmert transformation
+     * @param targetCRS
+     *            of this helmert transformation
      * @param identifiers
      */
-    public WGS84ConversionInfo( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                                String[] identifiers ) {
-        this( dx, dy, dz, ex, ey, ez, ppm, identifiers, null, null, null, null );
+    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
+                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String[] identifiers ) {
+        this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, identifiers, null, null, null, null );
     }
 
     /**
@@ -212,41 +306,15 @@ public class WGS84ConversionInfo extends CRSIdentifiable {
      *            Bursa Wolf rotation in arc seconds.
      * @param ppm
      *            Bursa Wolf scaling in parts per million.
+     * @param sourceCRS
+     *            of this helmert transformation
+     * @param targetCRS
+     *            of this helmert transformation
      * @param identifier
      */
-    public WGS84ConversionInfo( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                                String identifier ) {
-        this( dx, dy, dz, ex, ey, ez, ppm, new String[] { identifier } );
-    }
-
-    /**
-     * @param dx
-     *            Bursa Wolf shift in meters.
-     * @param dy
-     *            Bursa Wolf shift in meters.
-     * @param dz
-     *            Bursa Wolf shift in meters.
-     * @param ex
-     *            Bursa Wolf rotation in arc seconds.
-     * @param ey
-     *            Bursa Wolf rotation in arc seconds.
-     * @param ez
-     *            Bursa Wolf rotation in arc seconds.
-     * @param ppm
-     *            Bursa Wolf scaling in parts per million.
-     * @param identifiable
-     *            object containing all relevant id.
-     */
-    public WGS84ConversionInfo( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                                CRSIdentifiable identifiable ) {
-        super( identifiable );
-        this.dx = dx;
-        this.dy = dy;
-        this.dz = dz;
-        this.ex = ex;
-        this.ey = ey;
-        this.ez = ez;
-        this.ppm = ppm;
+    public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
+                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String identifier ) {
+        this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new String[] { identifier } );
     }
 
     /**
@@ -256,7 +324,7 @@ public class WGS84ConversionInfo extends CRSIdentifiable {
      * <blockquote>
      * 
      * <pre>
-     *       S = 1 + {@link #ppm}/1000000
+     *       S = 1 + {@link #ppm}*1E-6
      *      
      *       [ X ]     [ S          -{@link #ez}*S  +{@link #ey}*S   {@link #dx} ]  [ X ]
      *       [ Y ]  = [ +{@link #ez}*S  S          -{@link #ex}*S   {@link #dy} ]  [ Y ]
@@ -274,12 +342,21 @@ public class WGS84ConversionInfo extends CRSIdentifiable {
      * @return the affine "Helmert" transformation as a Matrix4d.
      */
     public Matrix4d getAsAffineTransform() {
+        if ( transformMatrix != null ) {
+            return new Matrix4d( transformMatrix );
+        }
         // Note: (ex, ey, ez) is a rotation in arc seconds. We need to convert it into radians (the
         // R factor in RS).
         final double S = 1 + ( ppm * 1E-6 );
-        final double RS = ( Math.PI / ( 180. * 3600. ) ) * S;
-        return new Matrix4d( S, -ez * RS, +ey * RS, dx, +ez * RS, S, -ex * RS, dy, -ey * RS, +ex * RS, S, dz, 0, 0, 0,
-                             1. );
+        double arcToRad = .00000484813681109535; // Math.PI / ( 180. * 3600. )
+        if ( rotationInRadians ) {
+            arcToRad = 1;
+        }
+        final double RS = arcToRad * S;
+
+        transformMatrix = new Matrix4d( S, -ez * RS, +ey * RS, dx, +ez * RS, S, -ex * RS, dy, -ey * RS, +ex * RS, S,
+                                        dz, 0, 0, 0, 1. );
+        return new Matrix4d( transformMatrix );
     }
 
     /**
@@ -291,8 +368,8 @@ public class WGS84ConversionInfo extends CRSIdentifiable {
 
     @Override
     public boolean equals( final Object other ) {
-        if ( other != null && other instanceof WGS84ConversionInfo ) {
-            final WGS84ConversionInfo that = (WGS84ConversionInfo) other;
+        if ( other != null && other instanceof Helmert ) {
+            final Helmert that = (Helmert) other;
             return ( Math.abs( this.dx - that.dx ) < EPS11 ) && ( Math.abs( this.dy - that.dy ) < EPS11 )
                    && ( Math.abs( this.dz - that.dz ) < EPS11 ) && ( Math.abs( this.ex - that.ex ) < EPS11 )
                    && ( Math.abs( this.ey - that.ey ) < EPS11 ) && ( Math.abs( this.ez - that.ez ) < EPS11 )
@@ -310,7 +387,8 @@ public class WGS84ConversionInfo extends CRSIdentifiable {
      */
     @Override
     public String toString() {
-        final StringBuffer buffer = new StringBuffer( "[\"" );
+        final StringBuffer buffer = new StringBuffer( super.getIdAndName() );
+        buffer.append( "\n[\"" );
         buffer.append( dx );
         buffer.append( ", " );
         buffer.append( dy );
@@ -333,7 +411,7 @@ public class WGS84ConversionInfo extends CRSIdentifiable {
      * distribution and is relatively fast. It is created from field <b>f</b> as follows:
      * <ul>
      * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f </li>
+     * <li>byte, char, short, int -- code = (int)f</li>
      * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
      * <li>float -- code = Float.floatToIntBits(f);</li>
      * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
@@ -373,5 +451,43 @@ public class WGS84ConversionInfo extends CRSIdentifiable {
         tmp = Double.doubleToLongBits( ppm );
         code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
         return (int) ( code >>> 32 ) ^ (int) code;
+    }
+
+    @Override
+    public synchronized List<Point3d> doTransform( List<Point3d> srcPts )
+                            throws TransformationException {
+
+        if ( srcPts == null || srcPts.size() == 0 ) {
+            return srcPts;
+        }
+
+        // lazy instantiation
+        if ( transformMatrix == null ) {
+            transformMatrix = getAsAffineTransform();
+        }
+        Matrix4d matrix = transformMatrix;
+
+        // create the inverse matrix
+        if ( isInverseTransform() ) {
+            if ( inverseMatrix == null ) {
+                transformMatrix.invert( inverseMatrix );
+            }
+            matrix = inverseMatrix;
+        }
+        for ( Point3d p : srcPts ) {
+            matrix.transform( p );
+        }
+
+        return srcPts;
+    }
+
+    @Override
+    public String getImplementationName() {
+        return "Helmert";
+    }
+
+    @Override
+    public boolean isIdentity() {
+        return hasValues();
     }
 }

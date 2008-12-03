@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2007 by:
  Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -36,59 +36,35 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.crs.components;
+package org.deegree.model.crs.configuration.resources;
 
-import org.deegree.model.crs.CRSIdentifiable;
+import java.io.IOException;
 
 /**
- * A <code>VerticalDatum</code> is a datum which only has one axis. It is used for vertical measurements.
+ * The <code>XLinkResolver</code> interface defines methods for the resolving of an xlink:href uri. Use-cases could be
+ * the resolving of an uri in a database, a localfile, a server or anything to which an URI could point.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * @param <T>
+ *            the type of the implementation
  * 
  */
-public class VerticalDatum extends Datum {
+public interface XLinkResolver<T> {
 
     /**
-     * @param id
-     *            of this datum.
+     * Opens a stream to a resource which is defined by the uri.
+     * 
+     * @param uri
+     *            to locate
+     * @return an opened InputStream to the given resource or <code>null</code> if no resource was found.
+     * @throws IOException
+     *             If an error occurred while locating or opening the resource.
      */
-    public VerticalDatum( CRSIdentifiable id ) {
-        super( id );
-    }
-
-    /**
-     * @param identifiers
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areasOfUse
-     */
-    public VerticalDatum( String[] identifiers, String[] names, String[] versions, String[] descriptions,
-                          String[] areasOfUse ) {
-        this( new CRSIdentifiable( identifiers, names, versions, descriptions, areasOfUse ) );
-    }
-
-    /**
-     * @param identifier
-     * @param name
-     * @param version
-     * @param description
-     * @param areaOfUse
-     */
-    public VerticalDatum( String identifier, String name, String version, String description, String areaOfUse ) {
-        this( new String[] { identifier }, new String[] { name }, new String[] { version },
-              new String[] { description }, new String[] { areaOfUse } );
-    }
-
-    /**
-     * @param identifier
-     */
-    public VerticalDatum( String identifier ) {
-        this( new String[] { identifier }, null, null, null, null );
-    }
+    public T getURIAsType( String uri )
+                            throws IOException;
 
 }

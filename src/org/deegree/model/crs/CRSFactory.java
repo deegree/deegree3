@@ -56,14 +56,15 @@ import org.deegree.model.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.model.crs.exceptions.CRSConfigurationException;
 import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.crs.projections.cylindric.TransverseMercator;
-import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
+import org.deegree.model.crs.transformations.Transformation;
+import org.deegree.model.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * 
- * The <code>CRSFactory</code> class wraps the access to the CRSProvider in the org.deegree.crs package by supplying a
- * static create method, thus encapsulating the access to the CoordinateSystems.
+ * The <code>CRSFactory</code> class wraps the access to the CRSProvider in the org.deegree.model.crs package by
+ * supplying a static create method, thus encapsulating the access to the CoordinateSystems.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -76,19 +77,27 @@ public class CRSFactory {
 
     private static Logger LOG = LoggerFactory.getLogger( CRSFactory.class );
 
+    private synchronized static CRSProvider getProvider( String providerName ) {
+        CRSConfiguration crsConfig = CRSConfiguration.getCRSConfiguration( providerName );
+        return crsConfig.getProvider();
+    }
+
     /**
-     * e.g. epgs:4326
+     * Creates a CRS from the given name using the given provider, if no CRS was found an UnkownCRSException will be
+     * thrown.
      * 
+     * @param providerName
+     *            to be used for the creation of the crs.
      * @param name
-     * @return a CoordinateSystem corresponding to the given name never <code>null</code>
+     *            of the crs, e.g. EPSG:31466
+     * @return a CoordinateSystem corresponding to the given name
      * @throws UnknownCRSException
      *             if the crs-name is not known
      */
-    public static CoordinateSystem create( String name )
+    public synchronized static CoordinateSystem create( String providerName, String name )
                             throws UnknownCRSException {
-        CRSConfiguration crsConfig = CRSConfiguration.getCRSConfiguration();
-        CRSProvider crsProvider = crsConfig.getProvider();
-        CoordinateSystem realCRS = null;
+        CRSProvider crsProvider = getProvider( providerName );
+        org.deegree.model.crs.coordinatesystems.CoordinateSystem realCRS = null;
         try {
             realCRS = crsProvider.getCRSByID( name );
         } catch ( CRSConfigurationException e ) {
@@ -98,6 +107,67 @@ public class CRSFactory {
             throw new UnknownCRSException( name );
         }
         LOG.debug( "Successfully created the crs with id: " + name );
+        return realCRS;
+    }
+
+    /**
+     * Get a {@link Transformation} with given id, or <code>null</code> if it does not exist.
+     * 
+     * @param providerName
+     *            to use.
+     * @param id
+     *            of the Transformation.
+     * @return the identified transformation or <code>null<code> if no such transformation is found.
+     */
+    public synchronized static Transformation getTransformation( String providerName, String id ) {
+        CRSProvider crsProvider = getProvider( providerName );
+        CRSIdentifiable t = crsProvider.getIdentifiable( id );
+        if ( t instanceof Transformation ) {
+            return (Transformation) t;
+        }
+        LOG.debug( "The given id: " + id + " is not of type transformation return null." );
+        return null;
+    }
+
+    /**
+     * Retrieve a {@link Transformation} (chain) which transforms coordinates from the given source into the given
+     * target crs. If no such {@link Transformation} could be found or the implementation does not support inverse
+     * lookup of transformations <code>null<code> will be returned.
+     * @param providerName
+     *            to use. 
+     * @param sourceCRS start of the transformation (chain)
+     * @param targetCRS end point of the transformation (chain).
+     * @return the given {@link Transformation} or <code>null<code> if no such transformation was found.
+     */
+    public synchronized static Transformation getTransformation( String providerName, CoordinateSystem sourceCRS,
+                                                                 CoordinateSystem targetCRS ) {
+        CRSProvider crsProvider = getProvider( providerName );
+        return crsProvider.getTransformation( sourceCRS, targetCRS );
+    }
+
+    /**
+     * Creates a CRS from the given name, if no CRS was found an UnkownCRSException will be thrown.
+     * 
+     * @param name
+     *            of the crs, e.g. EPSG:4326
+     * @return a CoordinateSystem corresponding to the given name, using the configured provider.
+     * @throws UnknownCRSException
+     *             if the crs-name is not known
+     */
+    public synchronized static CoordinateSystem create( String name )
+                            throws UnknownCRSException {
+        return create( null, name );
+    }
+
+    /**
+     * Wrapper for the private constructor of the org.deegree.model.model.crs.CoordinateSystem class.
+     * 
+     * @param realCRS
+     *            to wrap
+     * 
+     * @return a CoordinateSystem corresponding to the given crs.
+     */
+    public static CoordinateSystem create( org.deegree.model.crs.coordinatesystems.CoordinateSystem realCRS ) {
         return realCRS;
     }
 
@@ -121,7 +191,7 @@ public class CRSFactory {
                                                new Axis( Unit.DEGREE, "lat", Axis.AO_NORTH ) };
         final Axis[] axis_projection = new Axis[] { new Axis( "x", Axis.AO_EAST ), new Axis( "y", Axis.AO_NORTH ) };
 
-        final WGS84ConversionInfo wgs_info = new WGS84ConversionInfo( name + "_wgs" );
+        final Helmert wgs_info = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, name + "_wgs" );
         final GeodeticDatum datum = new GeodeticDatum( Ellipsoid.WGS84, wgs_info, new String[] { name + "_datum" } );
         final GeographicCRS geographicCRS = new GeographicCRS( datum, axis_degree, new String[] { name
                                                                                                   + "geographic_crs" } );

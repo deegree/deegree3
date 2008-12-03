@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -50,12 +50,12 @@ import static org.deegree.model.crs.projections.ProjectionUtils.tanHalfCoLatitud
 
 import javax.vecmath.Point2d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 
 /**
- * The <code>LambertConformalConic</code> projection has following properties
- * <q>(Snyder p. 104)</q>
+ * The <code>LambertConformalConic</code> projection has following properties <q>(Snyder p. 104)</q>
  * <ul>
  * <li>Conic</li>
  * <li>Conformal</li>
@@ -67,7 +67,7 @@ import org.deegree.model.crs.coordinatesystems.GeographicCRS;
  * <li>Presented by Lambert in 1772.</li>
  * </ul>
  * <p>
- * <q>from: http://lists.maptools.org/pipermail/proj/2003-January/000592.html </q>
+ * <q>from: http://lists.maptools.org/pipermail/proj/2003-January/000592.html</q>
  * For east-west regions, the Lambert Conformal Conic is slightly better than the Transverse Mercator because of the
  * ability to go farther in an east-west direction and still be able to have "round-trip" transformation accuracy.
  * Geodetically speaking, it is NOT as good as the transverse Mercator.
@@ -124,12 +124,14 @@ public class LambertConformalConic extends ConicProjection {
      * @param naturalOrigin
      * @param units
      * @param scale
+     * @param id
+     *            an identifiable instance containing information about this projection
      */
     public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude,
                                   GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                  Point2d naturalOrigin, Unit units, double scale ) {
+                                  Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
         super( firstParallelLatitude, secondParallelLatitude, geographicCRS, falseNorthing, falseEasting,
-               naturalOrigin, units, scale, true/* conformal */, false /* not equalArea */);
+               naturalOrigin, units, scale, true/* conformal */, false /* not equalArea */, id );
 
         double cosphi, sinphi;
         boolean secant;
@@ -186,6 +188,43 @@ public class LambertConformalConic extends ConicProjection {
     }
 
     /**
+     * 
+     * @param firstParallelLatitude
+     *            the latitude (in radians) of the first parallel. (Snyder phi_1).
+     * @param secondParallelLatitude
+     *            the latitude (in radians) of the second parallel. (Snyder phi_2).
+     * @param geographicCRS
+     * @param falseNorthing
+     * @param falseEasting
+     * @param naturalOrigin
+     * @param units
+     * @param scale
+     */
+    public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude,
+                                  GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
+                                  Point2d naturalOrigin, Unit units, double scale ) {
+        this( firstParallelLatitude, secondParallelLatitude, geographicCRS, falseNorthing, falseEasting, naturalOrigin,
+              units, scale, new CRSIdentifiable( "EPSG::9802" ) );
+    }
+
+    /**
+     * Creates a Lambert Conformal projection with a tangential cone at the naturalOrigin.y's latitude.
+     * 
+     * @param geographicCRS
+     * @param falseNorthing
+     * @param falseEasting
+     * @param naturalOrigin
+     * @param units
+     * @param scale
+     * @param id
+     *            an identifiable instance containing information about this projection
+     */
+    public LambertConformalConic( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
+                                  Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
+        this( Double.NaN, Double.NaN, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, id );
+    }
+
+    /**
      * Creates a Lambert Conformal projection with a tangential cone at the naturalOrigin.y's latitude.
      * 
      * @param geographicCRS
@@ -213,12 +252,52 @@ public class LambertConformalConic extends ConicProjection {
      * @param falseEasting
      * @param naturalOrigin
      * @param units
+     * @param id
+     *            an identifiable instance containing information about this projection
+     */
+    public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude,
+                                  GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
+                                  Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
+        this( firstParallelLatitude, secondParallelLatitude, geographicCRS, falseNorthing, falseEasting, naturalOrigin,
+              units, 1., id );
+    }
+
+    /**
+     * Creates a Lambert Conformal projection with a intersecting cone at the given parallel latitudes. and a scale of
+     * 1.
+     * 
+     * @param firstParallelLatitude
+     *            the latitude (in radians) of the first parallel. (Snyder phi_1).
+     * @param secondParallelLatitude
+     *            the latitude (in radians) of the second parallel. (Snyder phi_2).
+     * @param geographicCRS
+     * @param falseNorthing
+     * @param falseEasting
+     * @param naturalOrigin
+     * @param units
      */
     public LambertConformalConic( double firstParallelLatitude, double secondParallelLatitude,
                                   GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
                                   Point2d naturalOrigin, Unit units ) {
         this( firstParallelLatitude, secondParallelLatitude, geographicCRS, falseNorthing, falseEasting, naturalOrigin,
               units, 1. );
+    }
+
+    /**
+     * Creates a Lambert Conformal projection with a tangential cone at the naturalOrigin.y's latitude. And a scale of
+     * 1.
+     * 
+     * @param geographicCRS
+     * @param falseNorthing
+     * @param falseEasting
+     * @param naturalOrigin
+     * @param units
+     * @param id
+     *            an identifiable instance containing information about this projection
+     */
+    public LambertConformalConic( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
+                                  Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
+        this( Double.NaN, Double.NaN, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
     }
 
     /**
@@ -300,7 +379,7 @@ public class LambertConformalConic extends ConicProjection {
     }
 
     @Override
-    public String getName() {
+    public String getImplementationName() {
         return "lambertConformalConic";
     }
 

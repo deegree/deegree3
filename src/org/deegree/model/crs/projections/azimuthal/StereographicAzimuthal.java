@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -50,6 +50,7 @@ import static org.deegree.model.crs.projections.ProjectionUtils.tanHalfCoLatitud
 
 import javax.vecmath.Point2d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.exceptions.ProjectionException;
@@ -103,8 +104,8 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * </ul>
      * For the spherical projection:
      * <ul>
-     * <li>For oblique and equatorial: 2*scale, which is compliant with 2*k_0 from Snyder (p.157 21-4) </li>
-     * <li>For north and south: cos(truelat) / tan( pi/4 - phi/2) ???? </li>
+     * <li>For oblique and equatorial: 2*scale, which is compliant with 2*k_0 from Snyder (p.157 21-4)</li>
+     * <li>For north and south: cos(truelat) / tan( pi/4 - phi/2) ????</li>
      * </ul>
      */
     private double akm1;
@@ -131,10 +132,13 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param naturalOrigin
      * @param units
      * @param scale
+     * @param id
+     *            an identifiable instance containing information about this projection
      */
     public StereographicAzimuthal( double trueScaleLatitude, GeographicCRS geographicCRS, double falseNorthing,
-                                   double falseEasting, Point2d naturalOrigin, Unit units, double scale ) {
-        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, true, false/* not equal area */);
+                                   double falseEasting, Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
+        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, true,
+               false/* not equal area */, id );
 
         preCalcedPhiSeries = preCalcedThetaSeries( getSquaredEccentricity() );
 
@@ -199,7 +203,43 @@ public class StereographicAzimuthal extends AzimuthalProjection {
     }
 
     /**
+     * Sets the id to "Snyder-StereoGraphic"
+     * 
+     * @param trueScaleLatitude
+     *            the latitude (in radians) of a circle around the projection point, which contains the true scale.
+     * @param geographicCRS
+     * @param falseNorthing
+     * @param falseEasting
+     * @param naturalOrigin
+     * @param units
+     * @param scale
+     */
+    public StereographicAzimuthal( double trueScaleLatitude, GeographicCRS geographicCRS, double falseNorthing,
+                                   double falseEasting, Point2d naturalOrigin, Unit units, double scale ) {
+        this( trueScaleLatitude, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale,
+              new CRSIdentifiable( "Snyder-StereoGraphic" ) );
+    }
+
+    /**
      * Create a {@link StereographicAzimuthal} which has a true scale latitude at MapUtils.HALFPI.
+     * 
+     * @param geographicCRS
+     * @param falseNorthing
+     * @param falseEasting
+     * @param naturalOrigin
+     * @param units
+     * @param scale
+     * @param id
+     *            an identifiable instance containing information about this projection
+     */
+    public StereographicAzimuthal( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
+                                   Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
+        this( HALFPI, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, id );
+    }
+
+    /**
+     * Create a {@link StereographicAzimuthal} which has a true scale latitude at MapUtils.HALFPI. Sets the id to
+     * "Snyder-StereoGraphic"
      * 
      * @param geographicCRS
      * @param falseNorthing
@@ -223,6 +263,25 @@ public class StereographicAzimuthal extends AzimuthalProjection {
      * @param falseEasting
      * @param naturalOrigin
      * @param units
+     * @param id
+     *            an identifiable instance containing information about this projection
+     */
+    public StereographicAzimuthal( double trueScaleLatitude, GeographicCRS geographicCRS, double falseNorthing,
+                                   double falseEasting, Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
+        this( trueScaleLatitude, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
+    }
+
+    /**
+     * Create a {@link StereographicAzimuthal} which has a scale of 1 and a true scale latitude. Sets the id to
+     * "Snyder-StereoGraphic".
+     * 
+     * @param trueScaleLatitude
+     *            the latitude (in radians) of a circle around the projection point, which contains the true scale.
+     * @param geographicCRS
+     * @param falseNorthing
+     * @param falseEasting
+     * @param naturalOrigin
+     * @param units
      */
     public StereographicAzimuthal( double trueScaleLatitude, GeographicCRS geographicCRS, double falseNorthing,
                                    double falseEasting, Point2d naturalOrigin, Unit units ) {
@@ -231,6 +290,23 @@ public class StereographicAzimuthal extends AzimuthalProjection {
 
     /**
      * Create a {@link StereographicAzimuthal} which is conformal, has a scale of 1 and a truescale latitude at pi*0.5.
+     * 
+     * @param geographicCRS
+     * @param falseNorthing
+     * @param falseEasting
+     * @param naturalOrigin
+     * @param units
+     * @param id
+     *            an identifiable instance containing information about this projection
+     */
+    public StereographicAzimuthal( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
+                                   Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
+        this( HALFPI, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
+    }
+
+    /**
+     * Create a {@link StereographicAzimuthal} which is conformal, has a scale of 1 and a truescale latitude at pi*0.5.
+     * Sets the id to "Snyder-StereoGraphic".
      * 
      * @param geographicCRS
      * @param falseNorthing
@@ -383,7 +459,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
                 }
                 // akm1 was set to 2*scale.
                 xy.y = akm1 * Math.tan( QUARTERPI + .5 * phi );
-                xy.x = sinLamda * ( xy.y      );
+                xy.x = sinLamda * ( xy.y );
                 xy.y *= cosLamda;
                 break;
             }
@@ -433,7 +509,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
     }
 
     @Override
-    public String getName() {
+    public String getImplementationName() {
         return "stereographicAzimuthal";
     }
 

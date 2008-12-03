@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2007 by:
  Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -36,12 +36,12 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.crs.components;
+package org.deegree.model.crs.configuration.resources;
 
-import org.deegree.model.crs.CRSIdentifiable;
+import org.w3c.dom.Element;
 
 /**
- * A <code>VerticalDatum</code> is a datum which only has one axis. It is used for vertical measurements.
+ * The <code>XMLResource</code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -50,45 +50,6 @@ import org.deegree.model.crs.CRSIdentifiable;
  * @version $Revision$, $Date$
  * 
  */
-public class VerticalDatum extends Datum {
-
-    /**
-     * @param id
-     *            of this datum.
-     */
-    public VerticalDatum( CRSIdentifiable id ) {
-        super( id );
-    }
-
-    /**
-     * @param identifiers
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areasOfUse
-     */
-    public VerticalDatum( String[] identifiers, String[] names, String[] versions, String[] descriptions,
-                          String[] areasOfUse ) {
-        this( new CRSIdentifiable( identifiers, names, versions, descriptions, areasOfUse ) );
-    }
-
-    /**
-     * @param identifier
-     * @param name
-     * @param version
-     * @param description
-     * @param areaOfUse
-     */
-    public VerticalDatum( String identifier, String name, String version, String description, String areaOfUse ) {
-        this( new String[] { identifier }, new String[] { name }, new String[] { version },
-              new String[] { description }, new String[] { areaOfUse } );
-    }
-
-    /**
-     * @param identifier
-     */
-    public VerticalDatum( String identifier ) {
-        this( new String[] { identifier }, null, null, null, null );
-    }
-
+public interface XMLResource extends CRSResource<Element> {
+    // marker class
 }

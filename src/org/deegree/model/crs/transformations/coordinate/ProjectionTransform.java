@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -38,12 +38,13 @@
 
 package org.deegree.model.crs.transformations.coordinate;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 
+import org.deegree.model.crs.CRSIdentifiable;
+import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.model.crs.exceptions.ProjectionException;
 import org.deegree.model.crs.exceptions.TransformationException;
@@ -68,58 +69,142 @@ public class ProjectionTransform extends CRSTransformation {
 
     private Projection projection;
 
+    private boolean swapAxis = false;
+
+    /**
+     * @param projectedCRS
+     *            The crs containing a projection.
+     * @param id
+     *            an identifiable instance containing information about this transformation
+     */
+    public ProjectionTransform( ProjectedCRS projectedCRS, CRSIdentifiable id ) {
+        super( projectedCRS.getGeographicCRS(), projectedCRS, id );
+        this.projection = projectedCRS.getProjection();
+        swapAxis = checkAxisOrientation( projectedCRS.getAxis() );
+    }
+
+    /**
+     * @param axis
+     * @return
+     */
+    private boolean checkAxisOrientation( Axis[] axis ) {
+        boolean result = false;
+        if ( axis == null || axis.length != 2 ) {
+            result = false;
+        } else {
+            Axis first = axis[0];
+            Axis second = axis[1];
+            LOG.debug( "First projected crs Axis: " + first );
+            LOG.debug( "Second projected crs Axis: " + second );
+            if ( first != null && second != null ) {
+                if ( Axis.AO_WEST == Math.abs( second.getOrientation() ) ) {
+                    result = true;
+                    if ( Axis.AO_NORTH != Math.abs( first.getOrientation() ) ) {
+                        LOG.warn( "The given projection uses a second axis which is not mappable (  " + second
+                                  + ") please check your configuration, assuming y, x axis-order." );
+                    }
+                }
+            }
+        }
+        LOG.debug( "Incoming ordinates will" + ( ( result ) ? " " : " not " ) + "be swapped." );
+        return result;
+    }
+
     /**
      * @param projectedCRS
      *            The crs containing a projection.
      */
     public ProjectionTransform( ProjectedCRS projectedCRS ) {
-        super( projectedCRS.getGeographicCRS(), projectedCRS );
-        this.projection = projectedCRS.getProjection();
+        this( projectedCRS, new CRSIdentifiable( createFromTo( projectedCRS.getGeographicCRS().getIdentifier(),
+                                                            projectedCRS.getIdentifier() ) ) );
     }
 
     @Override
     public List<Point3d> doTransform( List<Point3d> srcPts )
                             throws TransformationException {
-        List<Point3d> result = new ArrayList<Point3d>(srcPts.size());
+        // List<Point3d> result = new ArrayList<Point3d>( srcPts.size() );
         if ( LOG.isDebugEnabled() ) {
             StringBuilder sb = new StringBuilder( isInverseTransform() ? "An inverse" : "A" );
             sb.append( " projection transform with incoming points: " );
             sb.append( srcPts );
             sb.append( " and following projection: " );
-            sb.append( projection.getName() );
+            sb.append( projection.getImplementationName() );
             LOG.debug( sb.toString() );
         }
         TransformationException trans = new TransformationException( srcPts.size() );
         if ( isInverseTransform() ) {
-            int i = 0;
+            doInverseTransform( srcPts, trans );
+        } else {
+            doForwardTransform( srcPts, trans );
+        }
+        if ( !trans.getTransformErrors().isEmpty() ) {
+            trans.setTransformedPoints( srcPts );
+            throw trans;
+        }
+        return srcPts;
+    }
+
+    /**
+     * @param srcPts
+     * @param trans
+     */
+    private void doForwardTransform( List<Point3d> srcPts, TransformationException trans ) {
+        int i = 0;
+        if ( swapAxis ) {
             for ( Point3d p : srcPts ) {
                 try {
-                    Point2d tmp = projection.doInverseProjection( p.x, p.y );
-                    result.add( new Point3d( tmp.x, tmp.y, p.z ) );
+                    Point2d tmp = projection.doProjection( p.y, p.x );
+                    p.x = tmp.y;
+                    p.y = tmp.x;
                 } catch ( ProjectionException e ) {
                     trans.setTransformError( i, e.getMessage() );
-                    result.add( p );
                 }
                 ++i;
             }
         } else {
-            int i = 0;
             for ( Point3d p : srcPts ) {
                 try {
                     Point2d tmp = projection.doProjection( p.x, p.y );
-                    result.add( new Point3d( tmp.x, tmp.y, p.z ) );
+                    p.x = tmp.x;
+                    p.y = tmp.y;
                 } catch ( ProjectionException e ) {
                     trans.setTransformError( i, e.getMessage() );
-                    result.add( p );
                 }
                 ++i;
             }
         }
-        if ( !trans.getTransformErrors().isEmpty() ) {
-            trans.setTransformedPoints( result );
-            throw trans;
+
+    }
+
+    /**
+     * @param srcPts
+     */
+    private void doInverseTransform( List<Point3d> srcPts, TransformationException trans ) {
+
+        int i = 0;
+        if ( swapAxis ) {
+            for ( Point3d p : srcPts ) {
+                try {
+                    Point2d tmp = projection.doInverseProjection( p.y, p.x );
+                    p.x = tmp.y;
+                    p.y = tmp.x;
+                } catch ( ProjectionException e ) {
+                    trans.setTransformError( i, e.getMessage() );
+                }
+                ++i;
+            }
+        } else {
+            for ( Point3d p : srcPts ) {
+                try {
+                    Point2d tmp = projection.doInverseProjection( p.x, p.y );
+                    p.x = tmp.x;
+                    p.y = tmp.y;
+                } catch ( ProjectionException e ) {
+                    trans.setTransformError( i, e.getMessage() );
+                }
+                ++i;
+            }
         }
-        return result;
     }
 
     @Override
@@ -130,11 +215,11 @@ public class ProjectionTransform extends CRSTransformation {
 
     @Override
     public String toString() {
-        return super.toString() + " - Projection: " + projection.getName();
+        return super.toString() + " - Projection: " + projection.getImplementationName();
     }
 
     @Override
-    public String getName() {
+    public String getImplementationName() {
         return "Projection-Transform";
     }
 

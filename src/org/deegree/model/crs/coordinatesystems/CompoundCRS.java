@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -54,8 +54,6 @@ import org.deegree.model.crs.components.Unit;
  * 
  */
 public class CompoundCRS extends CoordinateSystem {
-
-    private static final long serialVersionUID = -3318761585967176316L;
 
     private CoordinateSystem underlyingCRS;
 

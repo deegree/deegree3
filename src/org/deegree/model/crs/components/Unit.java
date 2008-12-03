@@ -38,6 +38,9 @@
 package org.deegree.model.crs.components;
 
 import static org.deegree.model.crs.projections.ProjectionUtils.DTR;
+import static org.deegree.model.crs.utilities.MappingUtils.matchEPSGString;
+
+import org.deegree.model.crs.CRSIdentifiable;
 
 /**
  * The <code>Unit</code> class defines a mechanism to convert between different measurements units, such as
@@ -51,7 +54,7 @@ import static org.deegree.model.crs.projections.ProjectionUtils.DTR;
  * 
  */
 
-public final class Unit {
+public final class Unit extends CRSIdentifiable {
 
     /**
      * Unit of angle.
@@ -114,9 +117,20 @@ public final class Unit {
     private final Unit baseType;
 
     /**
-     * the human readable name of the unit, e.g. metre
+     * Unit constructor.
+     * 
+     * @param symbol
+     * @param name
+     *            of the unit, e.g. metre
+     * @param id
+     *            of the unit
      */
-    private String name;
+    public Unit( final String symbol, final String name, final String id ) {
+        super( new CRSIdentifiable( new String[] { id }, new String[] { name }, null, null, null ) );
+        this.symbol = symbol;
+        this.scale = 1;
+        this.baseType = this;
+    }
 
     /**
      * Unit constructor.
@@ -126,44 +140,11 @@ public final class Unit {
      *            of the unit, e.g. metre
      */
     public Unit( final String symbol, final String name ) {
-        this.name = name;
-        this.symbol = symbol;
-        this.scale = 1;
-        this.baseType = this;
+        this( symbol, name, name );
     }
 
     /**
-     * Will create a unit from the given String. If no appropriate unit was found <code>null<code> will be returned.
-     * @param unit to convert to an actual unit.
-     * @return a unit or <code>null</code>
-     */
-    public static Unit createUnitFromString( final String unit ) {
-        if ( unit != null && !"".equals( unit.trim() ) ) {
-            String t = unit.trim().toUpperCase();
-            if ( "METRE".equals( t ) || "METER".equals( t ) || "M".equals( t ) ) {
-                return METRE;
-            } else if ( "BRITISHYARD".equals( t ) || "Y".equals( t ) ) {
-                return BRITISHYARD;
-            } else if ( "USFOOT".equals( t ) || "FT".equals( t ) ) {
-                return USFOOT;
-            } else if ( "DEGREE".equals( t ) || "°".equals( t ) ) {
-                return DEGREE;
-            } else if ( "RADIAN".equals( t ) || "rad".equals( t ) ) {
-                return RADIAN;
-            } else if ( "SECOND".equals( t ) || "S".equals( t ) ) {
-                return SECOND;
-            } else if ( "MILLISECOND".equals( t ) || "MS".equals( t ) ) {
-                return MILLISECOND;
-            } else if ( "DAY".equals( t ) || "D".equals( t ) ) {
-                return DAY;
-            }
-
-        }
-        return null;
-    }
-
-    /**
-     * Unit constructor.
+     * Unit constructor, which uses the name as the id.
      * 
      * @param symbol
      *            of the units, e.g. 'm'
@@ -175,10 +156,60 @@ public final class Unit {
      *            the baseType
      */
     public Unit( final String symbol, String name, final double scale, final Unit baseType ) {
+        this( symbol, name, name, scale, baseType );
+    }
+
+    /**
+     * Unit constructor.
+     * 
+     * @param symbol
+     *            of the units, e.g. 'm'
+     * @param name
+     *            human readable name, e.g. metre
+     * @param id
+     *            of the unit.
+     * @param scale
+     *            to convert to the base type.
+     * @param baseType
+     *            the baseType
+     */
+    public Unit( final String symbol, String name, String id, final double scale, final Unit baseType ) {
+        super( new CRSIdentifiable( new String[] { id }, new String[] { name }, null, null, null ) );
         this.symbol = symbol;
-        this.name = name;
         this.scale = scale;
         this.baseType = baseType;
+    }
+
+    /**
+     * Will create a unit from the given String. If no appropriate unit was found <code>null<code> will be returned.
+     * @param unit to convert to an actual unit.
+     * @return a unit or <code>null</code>
+     */
+    public static Unit createUnitFromString( final String unit ) {
+        if ( unit != null && !"".equals( unit.trim() ) ) {
+            String t = unit.trim().toUpperCase();
+            if ( "METRE".equals( t ) || "METER".equals( t ) || "M".equals( t ) || matchEPSGString( unit, "uom", "9001" ) ) {
+                return METRE;
+            } else if ( "BRITISHYARD".equals( t ) || "Y".equals( t ) || matchEPSGString( unit, "uom", "9060" ) ) {
+                return BRITISHYARD;
+            } else if ( "USFOOT".equals( t ) || "FT".equals( t ) || matchEPSGString( unit, "uom", "9003" ) ) {
+                return USFOOT;
+            } else if ( "DEGREE".equals( t ) || "°".equals( t ) || matchEPSGString( unit, "uom", "9102" ) ) {
+                return DEGREE;
+            } else if ( "RADIAN".equals( t ) || "rad".equals( t ) || matchEPSGString( unit, "uom", "9101" ) ) {
+                return RADIAN;
+            } else if ( "SECOND".equals( t ) || "S".equals( t ) ) {
+                return SECOND;
+            } else if ( "MILLISECOND".equals( t ) || "MS".equals( t ) ) {
+                return MILLISECOND;
+            } else if ( "DAY".equals( t ) || "D".equals( t ) ) {
+                return DAY;
+            } else if ( "Arcsecond".equalsIgnoreCase( t ) || matchEPSGString( unit, "uom", "9104" ) ) {
+                return ARC_SEC;
+            }
+
+        }
+        return null;
     }
 
     /**
@@ -213,10 +244,17 @@ public final class Unit {
     }
 
     /**
-     * @return the human readable name.
+     * Convert a value in this unit to the base unit, e.g. degree->radians
+     * 
+     * @param value
+     *            to be converted
+     * @return the converted value or the same value if this unit is a base unit.
      */
-    public final String getName() {
-        return ( name != null ) ? name.toLowerCase() : null;
+    public final double toBaseUnits( final double value ) {
+        if ( isBaseType() ) {
+            return value;
+        }
+        return value * scale;
     }
 
     /**
@@ -275,6 +313,13 @@ public final class Unit {
      */
     public final double getScale() {
         return scale;
+    }
+
+    /**
+     * @return true if this is a base type
+     */
+    public final boolean isBaseType() {
+        return this.equals( this.baseType );
     }
 
 }

@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -144,24 +144,24 @@ public class Axis {
         this.name = name;
         this.orientation = AO_OTHER;
         if ( orientation != null ) {
-            orientation = orientation.trim().toLowerCase();
-            if ( "north".equals( orientation ) ) {
+            String tmp = orientation.trim().toLowerCase();
+            if ( tmp.contains( "north" ) ) {
                 this.orientation = AO_NORTH;
-            } else if ( "south".equals( orientation ) ) {
+            } else if ( tmp.contains( "south" ) ) {
                 this.orientation = AO_SOUTH;
-            } else if ( "east".equals( orientation ) ) {
+            } else if ( tmp.contains( "east" ) ) {
                 this.orientation = AO_EAST;
-            } else if ( "west".equals( orientation ) ) {
+            } else if ( tmp.contains( "west" ) ) {
                 this.orientation = AO_WEST;
-            } else if ( "front".equals( orientation ) ) {
+            } else if ( tmp.contains( "front" ) ) {
                 this.orientation = AO_FRONT;
-            } else if ( "back".equals( orientation ) ) {
+            } else if ( tmp.contains( "back" ) ) {
                 this.orientation = AO_BACK;
-            } else if ( "up".equals( orientation ) ) {
+            } else if ( tmp.contains( "up" ) ) {
                 this.orientation = AO_UP;
-            } else if ( "down".equals( orientation ) ) {
+            } else if ( tmp.contains( "down" ) ) {
                 this.orientation = AO_DOWN;
-            } else if ( "perpendicular".equals( orientation ) ) {
+            } else if ( tmp.contains( "perpendicular" ) ) {
                 this.orientation = AO_PERPENDICULAR;
             }
         }

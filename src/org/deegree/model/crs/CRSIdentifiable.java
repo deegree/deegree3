@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -44,13 +44,14 @@ import org.deegree.model.i18n.Messages;
  * The <code>CRSIdentifiable</code> class can be used to identify a crs, ellipsoid, Datum and primemeridian
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+ * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * 
  */
-public class CRSIdentifiable implements org.deegree.commons.types.Identifiable {
 
-    private static final long serialVersionUID = 3924691540158117922L;
+public class CRSIdentifiable {
 
     private String[] identifiers;
 
@@ -98,13 +99,32 @@ public class CRSIdentifiable implements org.deegree.commons.types.Identifiable {
     }
 
     /**
-     * Creates arrays from the given identifier and name without setting the versions, descriptions and areasOfUse.
+     * Creates arrays fromt the given identifier and name without setting the versions, descriptions and areasOfUse.
      * 
      * @param identifiers
      *            of the object.
      */
     public CRSIdentifiable( String[] identifiers ) {
         this( identifiers, null, null, null, null );
+    }
+
+    // /**
+    // * Creates arrays fromt the given identifier and name without setting the versions,
+    // descriptions and areasOfUse.
+    // *
+    // * @param identifier of the object.
+    // * @param name the human readable name of the object.
+    // */
+    // protected CRSIdentifiable( String identifier, String name ) {
+    // this( new String[]{identifier}, new String[]{name}, null, null, null );
+    // }
+
+    /**
+     * @param id
+     *            of the Identifier
+     */
+    public CRSIdentifiable( String id ) {
+        this( new String[] { id } );
     }
 
     /**
@@ -285,7 +305,7 @@ public class CRSIdentifiable implements org.deegree.commons.types.Identifiable {
             if ( isThatEPSG && isThisEPSG ) {
                 return idsMatch( that.identifiers );
             }
-            return true;
+            return true;// idsMatch( that.identifiers );
         }
         return false;
     }
@@ -331,7 +351,7 @@ public class CRSIdentifiable implements org.deegree.commons.types.Identifiable {
     }
 
     /**
-     * @return the identifiers, each identifiable object has at least one id.
+     * @return the identifiers, each identifiable object has atleast one id.
      */
     public final String[] getIdentifiers() {
         return identifiers;
@@ -351,24 +371,20 @@ public class CRSIdentifiable implements org.deegree.commons.types.Identifiable {
         return versions;
     }
 
-    public String getAsFormattedString() {
-        return getIdAndName();
-    }
-
     /**
-     * Compares the first Identifier of this CRSIdentifiable with the first Identifier of the given CRSIdentifiable.
-     * 
-     * @return the lexicographically comparison of the {@link String#compareTo(String)} function.
-     * 
-     * @throws IllegalArgumentException
-     *             if the given Identifiable is <code>null</code> or not a CRSIdentifiable
+     * @param id
+     *            a string which could match this identifiable.
+     * @return true if this identifiable can be identified with the given string, false otherwise.
      */
-    public int compareTo( org.deegree.commons.types.Identifiable o )
-                            throws IllegalArgumentException {
-        if ( o == null || !( o instanceof CRSIdentifiable ) ) {
-            throw new IllegalArgumentException( "The given CRSIdentifiable object is not CRSIdentifiable object" );
+    public boolean hasID( String id ) {
+        if ( id == null || "".equals( id.trim() ) ) {
+            return false;
         }
-        return this.getIdentifier().compareTo( ( (CRSIdentifiable) o ).getIdentifier() );
+        for ( String s : getIdentifiers() ) {
+            if ( id.equalsIgnoreCase( s ) ) {
+                return true;
+            }
+        }
+        return false;
     }
-
 }

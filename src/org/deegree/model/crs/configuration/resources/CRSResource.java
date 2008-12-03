@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2007 by:
  Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -36,39 +36,50 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.crs.transformations.coordinate;
+package org.deegree.model.crs.configuration.resources;
 
-import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.transformations.Transformation;
+import org.deegree.model.crs.transformations.helmert.Helmert;
 
 /**
- * The change of coordinates from one CRS to another CRS based on different datum is 'currently' only possible via a
- * coordinate <code>Transformation</code>.
- * <p>
- * The transformation parameters could only be derived empirically by a set of points common to both coordinate
- * reference systems it means by identical points. Choice, allocation, number and the quality of coordinates of the
- * points affect extensive the results and the accuracy. Therefore different realizations for transformations from one
- * datum to another exist.
- * </p>
+ * The <code>GMLResource</code> class defines the access to a resource containing GML crs definitions, often a
+ * dictionary file or a database.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * @param <T>
+ *            of the resource
  * 
  */
-
-public abstract class CRSTransformation extends Transformation {
+public interface CRSResource<T> extends XLinkResolver<T> {
 
     /**
+     * Implementations should find the helmert transformation which transforms coordinates of the geodetic datum into
+     * coordinates of the WGS84 datum. If no such transformation could be found, the implementation should return
+     * <code>null</code>
+     * 
      * @param sourceCRS
-     * @param targetCRS
-     * @param id
-     *            an identifiable instance containing information about this transformation
+     *            to retrieve the transformation for.
+     * @return the {@link Helmert} transformation or <code>null</code> if no such transformation was defined.
      */
-    public CRSTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable id ) {
-        super( sourceCRS, targetCRS, id );
-    }
+    public abstract Helmert getWGS84Transformation( GeographicCRS sourceCRS );
+
+    /**
+     * Implementations should find a given transformation (chain) which transforms coordinates of the given coordinate
+     * system into coordinates of the target crs. If no such transformation could be found, the implementation should
+     * return <code>null</code>
+     * 
+     * @param sourceCRS
+     *            start point of the transformation.
+     * @param targetCRS
+     *            end point of the transformations
+     * @return the {@link Transformation} or <code>null</code> if no such transformation was defined.
+     */
+    public abstract Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS );
+
 }

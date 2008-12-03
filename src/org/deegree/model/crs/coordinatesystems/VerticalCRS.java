@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2007 by:
  Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -36,12 +36,15 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.crs.components;
+package org.deegree.model.crs.coordinatesystems;
 
 import org.deegree.model.crs.CRSIdentifiable;
+import org.deegree.model.crs.components.Axis;
+import org.deegree.model.crs.components.VerticalDatum;
 
 /**
- * A <code>VerticalDatum</code> is a datum which only has one axis. It is used for vertical measurements.
+ * The <code>VerticalCRS</code> represents a crs based on one axis only, typically this crs is used as an extension on
+ * an already present crs, and adds a 'heightaxis' to the original crs.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -50,45 +53,35 @@ import org.deegree.model.crs.CRSIdentifiable;
  * @version $Revision$, $Date$
  * 
  */
-public class VerticalDatum extends Datum {
+public class VerticalCRS extends CoordinateSystem {
 
     /**
-     * @param id
-     *            of this datum.
+     * @param datum
+     * @param axisOrder
+     * @param identity
      */
-    public VerticalDatum( CRSIdentifiable id ) {
-        super( id );
+    public VerticalCRS( VerticalDatum datum, Axis[] axisOrder, CRSIdentifiable identity ) {
+        super( datum, axisOrder, identity );
+        checkForNullObject( axisOrder, "VerticalCRS", "axisOrder" );
+        if ( axisOrder.length != 1 ) {
+            throw new IllegalArgumentException( "A vertical crs can only be 1 dimensional." );
+        }
+    }
+
+    @Override
+    public int getDimension() {
+        return 1;
+    }
+
+    @Override
+    public int getType() {
+        return CoordinateSystem.VERTICAL_CRS;
     }
 
     /**
-     * @param identifiers
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areasOfUse
+     * @return the axis of this vertical crs.
      */
-    public VerticalDatum( String[] identifiers, String[] names, String[] versions, String[] descriptions,
-                          String[] areasOfUse ) {
-        this( new CRSIdentifiable( identifiers, names, versions, descriptions, areasOfUse ) );
+    public Axis getVerticalAxis() {
+        return getAxis()[0];
     }
-
-    /**
-     * @param identifier
-     * @param name
-     * @param version
-     * @param description
-     * @param areaOfUse
-     */
-    public VerticalDatum( String identifier, String name, String version, String description, String areaOfUse ) {
-        this( new String[] { identifier }, new String[] { name }, new String[] { version },
-              new String[] { description }, new String[] { areaOfUse } );
-    }
-
-    /**
-     * @param identifier
-     */
-    public VerticalDatum( String identifier ) {
-        this( new String[] { identifier }, null, null, null, null );
-    }
-
 }

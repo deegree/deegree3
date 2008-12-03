@@ -42,9 +42,12 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.crs;
 
+import java.security.InvalidParameterException;
+
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
 import org.deegree.model.crs.exceptions.UnknownCRSException;
+import org.deegree.model.crs.transformations.Transformation;
 import org.deegree.model.crs.transformations.TransformationFactory;
 import org.deegree.model.crs.transformations.coordinate.CRSTransformation;
 import org.deegree.model.i18n.Messages;
@@ -54,14 +57,16 @@ import org.deegree.model.i18n.Messages;
  * objects for a given source CRS.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author: $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  * 
  */
 public abstract class Transformer {
 
     private final CoordinateSystem targetCRS;
+
+    private Transformation definedTransformation = null;
 
     /**
      * Creates a new Transformer object, with the given target CRS.
@@ -94,6 +99,19 @@ public abstract class Transformer {
     }
 
     /**
+     * @param definedTransformation
+     *            to use instead of the CRSFactory.
+     */
+    protected Transformer( Transformation definedTransformation ) {
+        if ( definedTransformation == null ) {
+            throw new InvalidParameterException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
+                                                                      "GeoTransformer(CRSTransformation)", "targetCRS" ) );
+        }
+        targetCRS = definedTransformation.getTargetCRS();
+        this.definedTransformation = definedTransformation;
+    }
+
+    /**
      * Creates a transformation chain, which can be used to transform incoming coordinates (in the given source CRS)
      * into this Transformer's targetCRS.
      * 
@@ -106,15 +124,14 @@ public abstract class Transformer {
      *             if the given CoordinateSystem is <code>null</code>
      * 
      */
-    protected CRSTransformation createCRSTransformation( CoordinateSystem sourceCRS )
+    protected Transformation createCRSTransformation( CoordinateSystem sourceCRS )
                             throws TransformationException, IllegalArgumentException {
         if ( sourceCRS == null ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
                                                                      "createCRSTransformation( CoordinateSystem )",
                                                                      "sourceCRS" ) );
         }
-        TransformationFactory factory = TransformationFactory.getInstance();
-        return factory.createFromCoordinateSystems( sourceCRS, targetCRS );
+        return checkOrCreateTransformation( sourceCRS );
     }
 
     /**
@@ -132,7 +149,7 @@ public abstract class Transformer {
      *             if the given crs name could not be mapped to a valid (configured) crs.
      * 
      */
-    protected CRSTransformation createCRSTransformation( String sourceCRS )
+    protected Transformation createCRSTransformation( String sourceCRS )
                             throws TransformationException, IllegalArgumentException, UnknownCRSException {
         if ( sourceCRS == null ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_PARAMETER_NOT_NULL",
@@ -148,5 +165,25 @@ public abstract class Transformer {
      */
     public final CoordinateSystem getTargetCRS() {
         return targetCRS;
+    }
+
+    /**
+     * Simple method to check for the CRS transformation to use. If the Transformer was initialized with a
+     * {@link Transformation} this will be used (if the sourceCRS fits). If it does not fit or no transformation was
+     * given, a new Transformation will be created using the {@link TransformationFactory}
+     * 
+     * @param sourceCRS
+     * @return the transformation needed to convert from given source to the constructed target crs.
+     * @throws TransformationException
+     */
+    private synchronized Transformation checkOrCreateTransformation( CoordinateSystem sourceCRS )
+                            throws TransformationException {
+        if ( definedTransformation == null
+             || !( definedTransformation.getSourceCRS().equals( sourceCRS ) && definedTransformation.getTargetCRS().equals(
+                                                                                                                            targetCRS ) ) ) {
+            definedTransformation = TransformationFactory.getInstance().createFromCoordinateSystems( sourceCRS,
+                                                                                                     targetCRS );
+        }
+        return definedTransformation;
     }
 }

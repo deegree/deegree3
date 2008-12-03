@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -42,6 +42,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
 import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation;
@@ -67,12 +68,30 @@ public class DirectTransform extends CRSTransformation {
     private final PolynomialTransformation transformation;
 
     /**
-     * @param transformation to apply
-     * @param sourceCRS in which the points will be defined.
+     * @param transformation
+     *            to apply
+     * @param sourceCRS
+     *            in which the points will be defined.
+     * @param id
+     *            an identifiable instance containing information about this transformation
+     */
+    public DirectTransform( PolynomialTransformation transformation, CoordinateSystem sourceCRS, CRSIdentifiable id ) {
+        super( sourceCRS, transformation.getTargetCRS(), id );
+        this.transformation = transformation;
+    }
+
+    /**
+     * @param transformation
+     *            to apply
+     * @param sourceCRS
+     *            in which the points will be defined.
      */
     public DirectTransform( PolynomialTransformation transformation, CoordinateSystem sourceCRS ) {
-        super( sourceCRS, transformation.getTargetCRS());
-        this.transformation = transformation;
+        this(
+              transformation,
+              sourceCRS,
+              new CRSIdentifiable( createFromTo( sourceCRS.getIdentifier(), transformation.getTargetCRS().getIdentifier() ) ) );
+
     }
 
     @Override
@@ -80,12 +99,12 @@ public class DirectTransform extends CRSTransformation {
                             throws TransformationException {
         if ( LOG.isDebugEnabled() ) {
             StringBuilder sb = new StringBuilder( "A " );
-            sb.append( getName() );
+            sb.append( getImplementationName() );
             sb.append( " with incoming points: " );
             sb.append( srcPts );
             LOG.debug( sb.toString() );
         }
-        if( isInverse ){
+        if ( isInverseTransform() ) {
             LOG.warn( "A Direct Transformation cannot be inverse yet" );
         }
         return transformation.applyPolynomial( srcPts );
@@ -99,12 +118,12 @@ public class DirectTransform extends CRSTransformation {
 
     @Override
     public String toString() {
-        return super.toString() + " - Direct-Transformation: " + transformation.getName();
+        return super.toString() + " - Direct-Transformation: " + transformation.getImplementationName();
     }
 
     @Override
-    public String getName() {
-        return transformation.getName();
+    public String getImplementationName() {
+        return transformation.getImplementationName();
     }
 
 }

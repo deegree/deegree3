@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -49,6 +49,7 @@ import static org.deegree.model.crs.projections.ProjectionUtils.length;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.exceptions.ProjectionException;
@@ -139,10 +140,12 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
      * @param naturalOrigin
      * @param units
      * @param scale
+     * @param id
+     *            an identifiable instance containing information about this projection
      */
     public LambertAzimuthalEqualArea( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                      Point2d naturalOrigin, Unit units, double scale ) {
-        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, false/* not conformal */, true/* equal-area */);
+                                      Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
+        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, false/* not conformal */, true/*equals-area*/, id );
         if ( !isSpherical() ) {
             // sin(rad(90)) = 1;
             qp = calcQForAuthalicLatitude( 1., getEccentricity() );
@@ -175,6 +178,33 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
                 break;
             }
         }
+    }
+
+    /**
+     * @param geographicCRS
+     * @param falseNorthing
+     * @param falseEasting
+     * @param naturalOrigin
+     * @param units
+     * @param scale
+     */
+    public LambertAzimuthalEqualArea( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
+                                      Point2d naturalOrigin, Unit units, double scale ) {
+        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, new CRSIdentifiable( "EPSG::9820" ) );
+    }
+
+    /**
+     * @param geographicCRS
+     * @param falseNorthing
+     * @param falseEasting
+     * @param naturalOrigin
+     * @param units
+     * @param id
+     *            an identifiable instance containing information about this projection
+     */
+    public LambertAzimuthalEqualArea( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
+                                      Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
+        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1, id );
     }
 
     /**
@@ -451,7 +481,7 @@ public class LambertAzimuthalEqualArea extends AzimuthalProjection {
     }
 
     @Override
-    public String getName() {
+    public String getImplementationName() {
         return "lambertAzimuthalEqualArea";
     }
 

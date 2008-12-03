@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -43,6 +43,7 @@ import static org.deegree.model.crs.projections.ProjectionUtils.WORLD_BOUNDS_RAD
 
 import javax.vecmath.Point2d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.projections.Projection;
@@ -97,11 +98,13 @@ public abstract class ConicProjection extends Projection {
      * @param scale
      * @param conformal
      * @param equalArea
+     * @param id
+     *            an identifiable instance containing information about this projection
      */
     public ConicProjection( double firstParallelLatitude, double secondParallelLatitude, GeographicCRS geographicCRS,
                             double falseNorthing, double falseEasting, Point2d naturalOrigin, Unit units, double scale,
-                            boolean conformal, boolean equalArea ) {
-        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea );
+                            boolean conformal, boolean equalArea, CRSIdentifiable id ) {
+        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id );
 
         if ( Double.isNaN( firstParallelLatitude ) || firstParallelLatitude == 0
              || Math.abs( firstParallelLatitude ) < EPS11 || firstParallelLatitude < WORLD_BOUNDS_RAD.getMinY()
@@ -154,7 +157,7 @@ public abstract class ConicProjection extends Projection {
      * distribution and is relatively fast. It is created from field <b>f</b> as follows:
      * <ul>
      * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f </li>
+     * <li>byte, char, short, int -- code = (int)f</li>
      * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
      * <li>float -- code = Float.floatToIntBits(f);</li>
      * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>

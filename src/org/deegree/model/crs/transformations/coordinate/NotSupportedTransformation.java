@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2007 by:
  Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -38,19 +38,19 @@
 
 package org.deegree.model.crs.transformations.coordinate;
 
+import java.util.List;
+
+import javax.vecmath.Point3d;
+
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.crs.transformations.Transformation;
+import org.deegree.model.crs.exceptions.TransformationException;
 
 /**
- * The change of coordinates from one CRS to another CRS based on different datum is 'currently' only possible via a
- * coordinate <code>Transformation</code>.
- * <p>
- * The transformation parameters could only be derived empirically by a set of points common to both coordinate
- * reference systems it means by identical points. Choice, allocation, number and the quality of coordinates of the
- * points affect extensive the results and the accuracy. Therefore different realizations for transformations from one
- * datum to another exist.
- * </p>
+ * The <code>NotSupportedTransformation</code> class simply wraps the source and target crs. This transformation
+ * doesn't do anything, it only provides an opportunity to create a transformation chain, without losing the source and
+ * target information as well as the causality of actually having to implement anything. Note that incoming points are
+ * returned immediately.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -59,16 +59,40 @@ import org.deegree.model.crs.transformations.Transformation;
  * @version $Revision$, $Date$
  * 
  */
-
-public abstract class CRSTransformation extends Transformation {
+public class NotSupportedTransformation extends CRSTransformation {
 
     /**
      * @param sourceCRS
      * @param targetCRS
      * @param id
-     *            an identifiable instance containing information about this transformation
      */
-    public CRSTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable id ) {
+    public NotSupportedTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable id ) {
         super( sourceCRS, targetCRS, id );
     }
+
+    /**
+     * @param sourceCRS
+     * @param targetCRS
+     */
+    public NotSupportedTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
+        this( sourceCRS, targetCRS, new CRSIdentifiable( createFromTo( sourceCRS.getIdentifier(),
+                                                                    targetCRS.getIdentifier() ) ) );
+    }
+
+    @Override
+    public String getImplementationName() {
+        return "NotSupportedTransformation";
+    }
+
+    @Override
+    public List<Point3d> doTransform( List<Point3d> srcPts )
+                            throws TransformationException {
+        return srcPts;
+    }
+
+    @Override
+    public boolean isIdentity() {
+        return true;
+    }
+
 }

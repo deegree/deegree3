@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -55,11 +55,6 @@ import org.deegree.model.crs.CRSIdentifiable;
 
 public class PrimeMeridian extends CRSIdentifiable {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -7667499241197819278L;
-
     private double longitude;
 
     private Unit units;
@@ -74,9 +69,23 @@ public class PrimeMeridian extends CRSIdentifiable {
                                                                                    "EPSG:8901",
                                                                                    "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#8901",
                                                                                    "URN:OPENGIS:DEF:CRS:EPSG::8901",
-                                                                                   "URN:OGC:DEF:CRS:EPSG::" },
+                                                                                   "URN:OGC:DEF:CRS:EPSG::8901" },
                                                                      new String[] { "Greenwich" },
                                                                      new String[] { "1995-06-02" }, null, null );
+
+    /**
+     * @param units
+     *            Angular units of longitude, normally radians.
+     * @param longitude
+     *            (in given units) normally radians.
+     * @param id
+     *            to be cloned
+     */
+    public PrimeMeridian( Unit units, double longitude, CRSIdentifiable id ) {
+        super( id );
+        this.units = units;
+        this.longitude = longitude;
+    }
 
     /**
      * @param units
@@ -91,9 +100,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      */
     public PrimeMeridian( Unit units, double longitude, String[] identifiers, String[] names, String[] versions,
                           String[] descriptions, String[] areasOfUse ) {
-        super( identifiers, names, versions, descriptions, areasOfUse );
-        this.units = units;
-        this.longitude = longitude;
+        this( units, longitude, new CRSIdentifiable( identifiers, names, versions, descriptions, areasOfUse ) );
     }
 
     /**
@@ -176,6 +183,13 @@ public class PrimeMeridian extends CRSIdentifiable {
     }
 
     /**
+     * @return the longitude value relative to the Greenwich Meridian, expressed in the radians.
+     */
+    public double getLongitudeAsRadian() {
+        return getAngularUnit().convert( getLongitude(), Unit.RADIAN );
+    }
+
+    /**
      * @return the angular unit.
      */
     public Unit getAngularUnit() {
@@ -206,7 +220,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      * distribution and is relatively fast. It is created from field <b>f</b> as follows:
      * <ul>
      * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f </li>
+     * <li>byte, char, short, int -- code = (int)f</li>
      * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
      * <li>float -- code = Float.floatToIntBits(f);</li>
      * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>

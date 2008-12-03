@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -48,8 +48,8 @@ import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation
 import org.deegree.model.i18n.Messages;
 
 /**
- * The <code>GeographicCoordinateSystem</code> (in epsg aka Geodetic CRS) is a two dimensional crs
- * with axis of lat-lon.
+ * The <code>GeographicCoordinateSystem</code> (in epsg aka Geodetic CRS) is a two dimensional crs with axis of
+ * lat-lon.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -61,20 +61,31 @@ import org.deegree.model.i18n.Messages;
 
 public class GeographicCRS extends CoordinateSystem {
 
-
-    private static final long serialVersionUID = -1686716022188132732L;
     /**
      * A geographic coordinate system using WGS84 datum. This coordinate system use <var>longitude</var>/<var>latitude</var>
-     * axis with latitude values increasing north and longitude values increasing east. Angular
-     * units are degrees and prime meridian is Greenwich.
+     * axis with latitude values increasing north and longitude values increasing east. Angular units are degrees and
+     * prime meridian is Greenwich.
      */
     public static final GeographicCRS WGS84 = new GeographicCRS(
                                                                  GeodeticDatum.WGS84,
                                                                  new Axis[] {
-                                                                             new Axis( Unit.DEGREE, "lon", Axis.AO_EAST ),
-                                                                             new Axis( Unit.DEGREE, "lat",
-                                                                                       Axis.AO_NORTH ) }, "EPSG:4326",
-                                                                 "WGS 84" );
+                                                                             new Axis( Unit.DEGREE, "lon",
+                                                                                       Axis.AO_EAST ),
+                                                                             new Axis( Unit.DEGREE, "lat", Axis.AO_NORTH ) },
+                                                                 "EPSG:4326", "WGS 84" );
+
+    /**
+     * A geographic coordinate system using WGS84 datum. This coordinate system use <var>longitude</var>/<var>latitude</var>
+     * axis with latitude values increasing north and longitude values increasing east. Angular units are degrees and
+     * prime meridian is Greenwich.
+     */
+    public static final GeographicCRS WGS84_YX = new GeographicCRS( GeodeticDatum.WGS84,
+                                                                    new Axis[] {
+                                                                                new Axis( Unit.DEGREE, "lat",
+                                                                                          Axis.AO_NORTH ),
+                                                                                new Axis( Unit.DEGREE, "lon",
+                                                                                          Axis.AO_EAST ) },
+                                                                    "EPSG:4326", "WGS 84" );
 
     /**
      * @param datum

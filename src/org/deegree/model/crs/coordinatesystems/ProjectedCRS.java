@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -59,8 +59,6 @@ import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation
  */
 
 public class ProjectedCRS extends CoordinateSystem {
-
-    private static final long serialVersionUID = -8710821837647304760L;
 
     private final GeographicCRS underlyingCRS;
 

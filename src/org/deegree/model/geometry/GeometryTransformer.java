@@ -50,7 +50,7 @@ import org.deegree.model.crs.Transformer;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
 import org.deegree.model.crs.exceptions.UnknownCRSException;
-import org.deegree.model.crs.transformations.coordinate.CRSTransformation;
+import org.deegree.model.crs.transformations.Transformation;
 import org.deegree.model.geometry.multi.MultiCurve;
 import org.deegree.model.geometry.multi.MultiPoint;
 import org.deegree.model.geometry.multi.MultiSurface;
@@ -173,7 +173,7 @@ public class GeometryTransformer extends Transformer {
      * @throws IllegalArgumentException
      *             if the coordinates system of the geometry is <code>null</code>
      */
-    private Geometry transform( Geometry geo, CRSTransformation trans )
+    private Geometry transform( Geometry geo, Transformation trans )
                             throws TransformationException, IllegalArgumentException {
         Geometry transformedGeometry = null;
         try {
@@ -203,7 +203,7 @@ public class GeometryTransformer extends Transformer {
         return transformedGeometry;
     }
 
-    private Geometry transform( Envelope envelope, CRSTransformation trans )
+    private Geometry transform( Envelope envelope, Transformation trans )
                             throws TransformationException {
         return transform( envelope, trans, 20 );
     }
@@ -219,7 +219,7 @@ public class GeometryTransformer extends Transformer {
      * @return the transformed envelope
      * @throws TransformationException
      */
-    private Envelope transform( Envelope envelope, CRSTransformation trans, int numPoints )
+    private Envelope transform( Envelope envelope, Transformation trans, int numPoints )
                             throws TransformationException {
         int pointsPerSide;
         if ( numPoints < 4 ) {
@@ -264,7 +264,7 @@ public class GeometryTransformer extends Transformer {
      * 
      * @throws TransformationException
      */
-    private Curve transform( Curve geo, CRSTransformation trans )
+    private Curve transform( Curve geo, Transformation trans )
                             throws TransformationException {
         CurveSegment[] curveSegments = new CurveSegment[geo.getCurveSegments().size()];
         int i = 0;
@@ -285,7 +285,7 @@ public class GeometryTransformer extends Transformer {
      * 
      * @throws TransformationException
      */
-    private MultiCurve transform( MultiCurve geo, CRSTransformation trans )
+    private MultiCurve transform( MultiCurve geo, Transformation trans )
                             throws TransformationException {
         List<Curve> curves = new ArrayList<Curve>( geo.size() );
         for ( int i = 0; i < geo.size(); i++ ) {
@@ -299,7 +299,7 @@ public class GeometryTransformer extends Transformer {
      * 
      * @throws TransformationException
      */
-    private MultiPoint transform( MultiPoint geo, CRSTransformation trans )
+    private MultiPoint transform( MultiPoint geo, Transformation trans )
                             throws TransformationException {
         List<Point> points = new ArrayList<Point>( geo.size() );
         for ( Point p : geo ) {
@@ -313,7 +313,7 @@ public class GeometryTransformer extends Transformer {
      * 
      * @throws TransformationException
      */
-    private MultiSurface transform( MultiSurface geo, CRSTransformation trans )
+    private MultiSurface transform( MultiSurface geo, Transformation trans )
                             throws TransformationException {
         List<Surface> surfaces = new ArrayList<Surface>( geo.size() );
         for ( int i = 0; i < geo.size(); i++ ) {
@@ -327,7 +327,7 @@ public class GeometryTransformer extends Transformer {
      * 
      * @throws TransformationException
      */
-    private List<Point> transform( List<Point> points, CRSTransformation trans )
+    private List<Point> transform( List<Point> points, Transformation trans )
                             throws TransformationException {
 
         List<Point> result = new ArrayList<Point>( points.size() );
@@ -352,7 +352,7 @@ public class GeometryTransformer extends Transformer {
      * 
      * @throws TransformationException
      */
-    private Point transform( Point geo, CRSTransformation trans )
+    private Point transform( Point geo, Transformation trans )
                             throws TransformationException {
 
         Point3d coord = new Point3d( geo.getX(), geo.getY(), geo.getZ() );
@@ -373,7 +373,7 @@ public class GeometryTransformer extends Transformer {
      * 
      * @throws TransformationException
      */
-    private Surface transform( Surface geo, CRSTransformation trans )
+    private Surface transform( Surface geo, Transformation trans )
                             throws TransformationException {
 
         List<SurfacePatch> patches = new ArrayList<SurfacePatch>( geo.getPatches().size() );

@@ -41,11 +41,13 @@ import static org.deegree.model.crs.projections.ProjectionUtils.EPS11;
 
 import java.util.List;
 
+import javax.media.jai.PerspectiveTransform;
 import javax.vecmath.GMatrix;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 
 /**
@@ -61,6 +63,7 @@ import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
  * 
  */
 public class MatrixTransform extends CRSTransformation {
+
     /**
      * Serial number for interoperability with different versions.
      */
@@ -98,8 +101,8 @@ public class MatrixTransform extends CRSTransformation {
      * @param numRow
      * @param numCol
      */
-    private MatrixTransform( CoordinateSystem source, CoordinateSystem target, int numRow, int numCol ) {
-        super( source, target );
+    private MatrixTransform( CoordinateSystem source, CoordinateSystem target, int numRow, int numCol, CRSIdentifiable id ) {
+        super( source, target, id );
         this.numCol = numCol;
         this.numRow = numRow;
     }
@@ -113,9 +116,11 @@ public class MatrixTransform extends CRSTransformation {
      *            the target coordinate system.
      * 
      * @param matrix
+     * @param id
+     *            an identifiable instance containing information about this transformation
      */
-    public MatrixTransform( CoordinateSystem source, CoordinateSystem target, final GMatrix matrix ) {
-        this( source, target, matrix.getNumRow(), matrix.getNumCol() );
+    public MatrixTransform( CoordinateSystem source, CoordinateSystem target, final GMatrix matrix, CRSIdentifiable id ) {
+        this( source, target, matrix.getNumRow(), matrix.getNumCol(), id );
         if ( numCol == numRow ) {
             if ( numCol == 3 ) {
                 this.matrix3D = new Matrix3d();
@@ -138,6 +143,39 @@ public class MatrixTransform extends CRSTransformation {
     }
 
     /**
+     * Construct a transform.
+     * 
+     * @param source
+     *            the source coordinate system
+     * @param target
+     *            the target coordinate system.
+     * 
+     * @param matrix
+     */
+    public MatrixTransform( CoordinateSystem source, CoordinateSystem target, final GMatrix matrix ) {
+        this( source, target, matrix, new CRSIdentifiable( createFromTo( source.getIdentifier(), target.getIdentifier() ) ) );
+    }
+
+    /**
+     * Construct a 3d transform.
+     * 
+     * @param source
+     *            the source coordinate system
+     * @param target
+     *            the target coordinate system.
+     * 
+     * @param matrix
+     * @param id
+     *            an identifiable instance containing information about this transformation
+     */
+    public MatrixTransform( CoordinateSystem source, CoordinateSystem target, final Matrix3d matrix, CRSIdentifiable id ) {
+        this( source, target, 3, 3, id );
+        this.matrix3D = new Matrix3d( matrix );
+        invertMatrix3D = new Matrix3d();
+        invertMatrix3D.invert( matrix3D );
+    }
+
+    /**
      * Construct a 3d transform.
      * 
      * @param source
@@ -148,10 +186,26 @@ public class MatrixTransform extends CRSTransformation {
      * @param matrix
      */
     public MatrixTransform( CoordinateSystem source, CoordinateSystem target, final Matrix3d matrix ) {
-        this( source, target, 3, 3 );
-        this.matrix3D = new Matrix3d( matrix );
-        invertMatrix3D = new Matrix3d();
-        invertMatrix3D.invert( matrix3D );
+        this( source, target, matrix, new CRSIdentifiable( createFromTo( source.getIdentifier(), target.getIdentifier() ) ) );
+    }
+
+    /**
+     * Construct a 4d transform.
+     * 
+     * @param source
+     *            the source coordinate system
+     * @param target
+     *            the target coordinate system.
+     * 
+     * @param matrix
+     * @param id
+     *            an identifiable instance containing information about this transformation
+     */
+    public MatrixTransform( CoordinateSystem source, CoordinateSystem target, Matrix4d matrix, CRSIdentifiable id ) {
+        this( source, target, 4, 4, id );
+        matrix4D = new Matrix4d( matrix );
+        invertMatrix4D = new Matrix4d();
+        invertMatrix4D.invert( matrix4D );
     }
 
     /**
@@ -165,10 +219,29 @@ public class MatrixTransform extends CRSTransformation {
      * @param matrix
      */
     public MatrixTransform( CoordinateSystem source, CoordinateSystem target, Matrix4d matrix ) {
-        this( source, target, 4, 4 );
-        matrix4D = new Matrix4d( matrix );
-        invertMatrix4D = new Matrix4d();
-        invertMatrix4D.invert( matrix4D );
+        this( source, target, matrix, new CRSIdentifiable( createFromTo( source.getIdentifier(), target.getIdentifier() ) ) );
+    }
+
+    /**
+     * Construct a 4d transform.
+     * 
+     * @param source
+     *            the source coordinate system
+     * @param target
+     *            the target coordinate system.
+     * 
+     * @param matrix
+     * @param transformationName
+     *            the 'optional' name of the transformation, which is useful to specify the 'helmert' transformation.
+     * @param id
+     *            an identifiable instance containing information about this transformation
+     */
+    public MatrixTransform( CoordinateSystem source, CoordinateSystem target, Matrix4d matrix,
+                            String transformationName, CRSIdentifiable id ) {
+        this( source, target, matrix, id );
+        if ( transformationName != null ) {
+            this.transformationName = transformationName;
+        }
     }
 
     /**
@@ -184,10 +257,7 @@ public class MatrixTransform extends CRSTransformation {
      *            the 'optional' name of the transformation, which is useful to specify the 'helmert' transformation.
      */
     public MatrixTransform( CoordinateSystem source, CoordinateSystem target, Matrix4d matrix, String transformationName ) {
-        this( source, target, matrix );
-        if ( transformationName != null ) {
-            this.transformationName = transformationName;
-        }
+        this( source, target, matrix, new CRSIdentifiable( createFromTo( source.getIdentifier(), target.getIdentifier() ) ) );
     }
 
     @Override
@@ -238,7 +308,7 @@ public class MatrixTransform extends CRSTransformation {
         if ( numRow != numCol ) {
             return false;
         }
-        for ( int row = 0; row < numRow; row++ )
+        for ( int row = 0; row < numRow; row++ ) {
             for ( int col = 0; col < numCol; col++ ) {
                 double value = ( matrix3D != null ) ? matrix3D.getElement( row, col )
                                                    : ( ( matrix4D != null ) ? matrix4D.getElement( row, col )
@@ -247,8 +317,8 @@ public class MatrixTransform extends CRSTransformation {
                     return false;
                 }
             }
+        }
         return true;
-        // return true;
     }
 
     @Override
@@ -271,14 +341,14 @@ public class MatrixTransform extends CRSTransformation {
      * result.</li>
      * <li>An output dimension > 3 (e.g. the number of rows > 4 ) results in an IllegalArgumentException.</li>
      * <li>An input dimension > 3 (e.g. the number of columns > 4 ) results in an IllegalArgumentException.</li>
-     * <li> Only inputDimension values of the incoming point will be taken into account.</li>
+     * <li>Only inputDimension values of the incoming point will be taken into account.</li>
      * <li>If the input dimension == 4 the fourth value is assumed to be 1.</li>
      * </ol>
      * 
      * <p>
      * For example, a square matrix of size 4&times;4. Is a three-dimensional transformation for incoming and outgoing
      * coordinates. The transformed points <code>(x',y',z')</code> are computed as below (note that this computation
-     * is similar to a PerspectiveTransform):
+     * is similar to {@link PerspectiveTransform}):
      * 
      * <blockquote> <code>
      * <pre>
@@ -366,9 +436,10 @@ public class MatrixTransform extends CRSTransformation {
      */
     private void transform( Matrix3d m3d, List<Point3d> srcPts ) {
         for ( Point3d p : srcPts ) {
+
             boolean zIsNaN = Double.isNaN( p.z );
             if ( zIsNaN ) {
-                p.z = 0;
+                p.z = 1;
             }
             m3d.transform( p );
             if ( zIsNaN ) {
@@ -382,18 +453,18 @@ public class MatrixTransform extends CRSTransformation {
      */
     public final GMatrix getMatrix() {
         if ( matrix != null ) {
-            return isInverse ? invertMatrix : matrix;
+            return isInverseTransform() ? invertMatrix : matrix;
         }
         GMatrix result = new GMatrix( numRow, numCol );
         if ( matrix3D != null ) {
-            if ( isInverse ) {
+            if ( isInverseTransform() ) {
                 result.set( invertMatrix3D );
             } else {
                 result.set( matrix3D );
             }
         }
         if ( matrix4D != null ) {
-            if ( isInverse ) {
+            if ( isInverseTransform() ) {
                 result.set( invertMatrix4D );
             } else {
                 result.set( matrix4D );
@@ -403,7 +474,7 @@ public class MatrixTransform extends CRSTransformation {
     }
 
     @Override
-    public String getName() {
+    public String getImplementationName() {
         return transformationName;
     }
 

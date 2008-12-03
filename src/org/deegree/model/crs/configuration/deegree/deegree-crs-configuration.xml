@@ -1877,13 +1877,13 @@
     <crs:usedWGS84ConversionInfo>TOWGS_8</crs:usedWGS84ConversionInfo>
   </crs:geodeticDatum>
   <crs:geodeticDatum>
-    <crs:id>DATUM_465</crs:id>
-    <crs:name>Proj4 defined datum</crs:name>
+    <crs:id>EPSG:6178</crs:id>
+    <crs:name>Pulkovo 1942/83 </crs:name>
     <crs:version>2008-1-16T9:49</crs:version>
-    <crs:description>Handmade proj4 datum definition (parsed from nad/epsg) used by crs with id: EPSG:2168</crs:description>
+    <crs:description>Fundamental point: Pulkovo observatory. Latitude: 59�46'18.550"N, longitude: 30�19'42.090"E (of Greenwich).</crs:description>
     <crs:usedEllipsoid>EPSG:7024</crs:usedEllipsoid>
     <crs:usedPrimeMeridian>EPSG:8901</crs:usedPrimeMeridian>
-    <crs:usedWGS84ConversionInfo>TOWGS_149</crs:usedWGS84ConversionInfo>
+    <crs:usedWGS84ConversionInfo>EPSG:1775</crs:usedWGS84ConversionInfo>
   </crs:geodeticDatum>
   <crs:geodeticDatum>
     <crs:id>DATUM_1262</crs:id>
@@ -2256,6 +2256,33 @@
         <crs:falseNorthing>0.0</crs:falseNorthing>
         <crs:northernHemisphere>true</crs:northernHemisphere>
       </crs:transverseMercator>
+    </crs:projection>
+  </crs:projectedCRS>
+  <crs:projectedCRS>
+    <crs:id>BBR:0001</crs:id>
+    <crs:name>Custom projected BBR crs</crs:name>
+    <crs:Axis>
+      <crs:name>x</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>east</crs:axisOrientation>
+    </crs:Axis>
+    <crs:Axis>
+      <crs:name>y</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>north</crs:axisOrientation>
+    </crs:Axis>
+    <crs:axisOrder>x, y</crs:axisOrder>
+    <crs:usedGeographicCRS>EPSG:4326</crs:usedGeographicCRS>
+    <crs:projection>
+      <crs:lambertConformalConic>
+        <crs:latitudeOfNaturalOrigin inDegrees="true">51</crs:latitudeOfNaturalOrigin>
+        <crs:longitudeOfNaturalOrigin inDegrees="true">10.5</crs:longitudeOfNaturalOrigin>
+        <crs:scaleFactor>1.0</crs:scaleFactor>
+        <crs:falseEasting>0.0</crs:falseEasting>
+        <crs:falseNorthing>0.0</crs:falseNorthing>
+        <crs:firstParallelLatitude inDegrees="true">48.66666666666666</crs:firstParallelLatitude>
+        <crs:secondParallelLatitude inDegrees="true">53.66666666666666</crs:secondParallelLatitude>
+      </crs:lambertConformalConic>
     </crs:projection>
   </crs:projectedCRS>
   <crs:projectedCRS>
@@ -25537,6 +25564,7 @@
   <crs:projectedCRS>
     <crs:id>EPSG:32629</crs:id>
     <crs:id>URN:OGC:DEF:CRS:EPSG::32629</crs:id>
+    <crs:id>URN:X-OGC:DEF:CRS:EPSG:6.11:32629</crs:id>
     <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#32629</crs:id>
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::32629</crs:id>
     <crs:name>WGS 84 / UTM zone 29N</crs:name>
@@ -25870,6 +25898,7 @@
   <crs:projectedCRS>
     <crs:id>EPSG:32631</crs:id>
     <crs:id>URN:OGC:DEF:CRS:EPSG::32631</crs:id>
+    <crs:id>URN:X-OGC:DEF:CRS:EPSG:6.11:32631</crs:id>
     <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#32631</crs:id>
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::32631</crs:id>
     <crs:name>WGS 84 / UTM zone 31N</crs:name>
@@ -33671,6 +33700,36 @@
     </crs:projection>
   </crs:projectedCRS>
   <crs:projectedCRS>
+    <crs:id>EPSG:3068</crs:id>
+    <crs:id>URN:OGC:DEF:CRS:EPSG::3068</crs:id>
+    <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#3068</crs:id>
+    <crs:id>URN:OPENGIS:DEF:CRS:EPSG::3068</crs:id>
+    <crs:name>DHDN / Soldner Berlin </crs:name>
+    <crs:version>2004-04-22</crs:version>
+    <crs:Axis>
+      <crs:name>x</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>east</crs:axisOrientation>
+    </crs:Axis>
+    <crs:Axis>
+      <crs:name>y</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>north</crs:axisOrientation>
+    </crs:Axis>
+    <crs:axisOrder>x, y</crs:axisOrder>
+    <crs:usedGeographicCRS>EPSG:4314</crs:usedGeographicCRS>
+    <crs:projection>
+      <crs:transverseMercator>
+        <crs:latitudeOfNaturalOrigin inDegrees="true">52.4186483</crs:latitudeOfNaturalOrigin>
+        <crs:longitudeOfNaturalOrigin inDegrees="true">13.6272037</crs:longitudeOfNaturalOrigin>
+        <crs:scaleFactor>1.0</crs:scaleFactor>
+        <crs:falseEasting>40000</crs:falseEasting>
+        <crs:falseNorthing>10000</crs:falseNorthing>
+        <crs:northernHemisphere>true</crs:northernHemisphere>
+      </crs:transverseMercator>
+    </crs:projection>
+  </crs:projectedCRS>
+  <crs:projectedCRS>
     <crs:id>EPSG:2789</crs:id>
     <crs:id>URN:OGC:DEF:CRS:EPSG::2789</crs:id>
     <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#2789</crs:id>
@@ -39600,7 +39659,7 @@
     <crs:usedGeographicCRS>EPSG:4258</crs:usedGeographicCRS>
     <crs:projection>
       <crs:stereographicAlternative>
-        <crs:latitudeOfNaturalOrigin inDegrees="true">46.50000000000001</crs:latitudeOfNaturalOrigin>
+        <crs:latitudeOfNaturalOrigin inDegrees="true">46.5</crs:latitudeOfNaturalOrigin>
         <crs:longitudeOfNaturalOrigin inDegrees="true">-66.5</crs:longitudeOfNaturalOrigin>
         <crs:scaleFactor>0.999912</crs:scaleFactor>
         <crs:falseEasting>2500000.0</crs:falseEasting>
@@ -47625,6 +47684,7 @@
     <crs:id>URN:OGC:DEF:CRS:EPSG::25832</crs:id>
     <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#25832</crs:id>
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::25832</crs:id>
+    <crs:id>URN:X-OGC:DEF:CRS:EPSG:25832</crs:id>
     <crs:name>ETRS89 / UTM zone 32N</crs:name>
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:Axis>
@@ -47641,12 +47701,12 @@
     <!--crs:polynomialTransformation>
       <crs:leastsquare>
         <crs:polynomialOrder>2</crs:polynomialOrder>
-	<crs:xParameters>108.029884 0.9988207 -0.006757177 5.1565574E-5 -3.5190485E-6 -4.002526E-5</crs:xParameters>
-	<crs:yParameters>1.2068206 0.012087965 0.99012643 -3.0174679E-5 1.2242106E-4 1.1114964E-5</crs:yParameters>
+        <crs:xParameters>108.029884 0.9988207 -0.006757177 5.1565574E-5 -3.5190485E-6 -4.002526E-5</crs:xParameters>
+        <crs:yParameters>1.2068206 0.012087965 0.99012643 -3.0174679E-5 1.2242106E-4 1.1114964E-5</crs:yParameters>
         <crs:targetCRS>EPSG:31466</crs:targetCRS>
-	<crs:scaleX>4.597728E-5</crs:scaleX>
-	<crs:scaleY>5.7211128E-5</crs:scaleY>
-      </crs:leastsquare> 
+        <crs:scaleX>4.597728E-5</crs:scaleX>
+        <crs:scaleY>5.7211128E-5</crs:scaleY>
+      </crs:leastsquare>
     </crs:polynomialTransformation-->
     <crs:usedGeographicCRS>EPSG:4258</crs:usedGeographicCRS>
     <!--crs:projection class="org.deegree.model.crs.projections.cylindric.TestMercator">
@@ -65469,7 +65529,7 @@
     <crs:usedGeographicCRS>EPSG:4122</crs:usedGeographicCRS>
     <crs:projection>
       <crs:stereographicAlternative>
-        <crs:latitudeOfNaturalOrigin inDegrees="true">46.50000000000001</crs:latitudeOfNaturalOrigin>
+        <crs:latitudeOfNaturalOrigin inDegrees="true">46.5</crs:latitudeOfNaturalOrigin>
         <crs:longitudeOfNaturalOrigin inDegrees="true">-66.5</crs:longitudeOfNaturalOrigin>
         <crs:scaleFactor>0.999912</crs:scaleFactor>
         <crs:falseEasting>300000.0</crs:falseEasting>
@@ -75803,7 +75863,7 @@
     <crs:usedGeographicCRS>EPSG:4258</crs:usedGeographicCRS>
     <crs:projection>
       <crs:stereographicAlternative>
-        <crs:latitudeOfNaturalOrigin inDegrees="true">46.50000000000001</crs:latitudeOfNaturalOrigin>
+        <crs:latitudeOfNaturalOrigin inDegrees="true">46.5</crs:latitudeOfNaturalOrigin>
         <crs:longitudeOfNaturalOrigin inDegrees="true">-66.5</crs:longitudeOfNaturalOrigin>
         <crs:scaleFactor>0.999912</crs:scaleFactor>
         <crs:falseEasting>2500000.0</crs:falseEasting>
@@ -87663,12 +87723,55 @@
   </crs:geographicCRS>
   <crs:geographicCRS>
     <crs:id>EPSG:4326</crs:id>
+    <crs:id>URN:X-OGC:DEF:CRS:EPSG:6.11:4326</crs:id>
+    <crs:id>URN:X-OGC:DEF:CRS:EPSG:6.11.2:4326</crs:id>
     <crs:id>URN:OGC:DEF:CRS:EPSG::4326</crs:id>
+    <crs:id>URN:OGC:DEF:CRS:EPSG:4326</crs:id>
     <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4326</crs:id>
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::4326</crs:id>
+    <crs:id>URN:X-OGC:DEF:CRS:EPSG:4326</crs:id>
     <crs:name>WGS 84</crs:name>
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 geographic crs definition (parsed from nad/epsg).</crs:description>
+    <crs:Axis>
+      <crs:name>longitude</crs:name>
+      <crs:units>degree</crs:units>
+      <crs:axisOrientation>east</crs:axisOrientation>
+    </crs:Axis>
+    <crs:Axis>
+      <crs:name>latitude</crs:name>
+      <crs:units>degree</crs:units>
+      <crs:axisOrientation>north</crs:axisOrientation>
+    </crs:Axis>
+    <crs:axisOrder>longitude, latitude</crs:axisOrder>
+    <crs:usedDatum>EPSG:6326</crs:usedDatum>
+  </crs:geographicCRS>
+  <crs:compoundCRS>
+    <crs:id>EPSG:4979</crs:id>
+    <crs:id>URN:X-OGC:DEF:CRS:EPSG:6.11.2:4979</crs:id>
+    <crs:id>URN:OGC:DEF:CRS:EPSG::4979</crs:id>
+    <crs:id>URN:OGC:DEF:CRS:EPSG:4979</crs:id>
+    <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4979</crs:id>
+    <crs:id>URN:OPENGIS:DEF:CRS:EPSG::4979</crs:id>
+    <crs:id>URN:X-OGC:DEF:CRS:EPSG:4979</crs:id>
+    <crs:name>World Geodetic System 1984</crs:name>
+    <crs:version>2007-08-27</crs:version>
+    <crs:description>Inserted by hand.</crs:description>
+    <crs:usedCRS>EPSG:4326</crs:usedCRS>
+    <crs:heightAxis>
+      <crs:name>height</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>up</crs:axisOrientation>
+    </crs:heightAxis>
+  </crs:compoundCRS>
+  <crs:geographicCRS>
+    <crs:id>CRS:84</crs:id>
+    <crs:id>urn:ogc:def:crs:OGC:1.3:CRS84</crs:id>
+    <crs:id>WGS84(DD)</crs:id>
+    <crs:name>WGS 84</crs:name>
+    <crs:version>2008-6-10T8:28</crs:version>
+    <crs:description>Handmade projection for WMS compliance testing.</crs:description>
+    <crs:areaOfUse>world</crs:areaOfUse>
     <crs:Axis>
       <crs:name>longitude</crs:name>
       <crs:units>degree</crs:units>
@@ -88654,8 +88757,8 @@
     <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4178</crs:id>
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::4178</crs:id>
     <crs:name>Pulkovo 1942(83)</crs:name>
-    <crs:version>2008-1-16T9:49</crs:version>
-    <crs:description>Handmade proj4 geographic crs definition (parsed from nad/epsg).</crs:description>
+    <crs:version>2004-01-06</crs:version>
+    <crs:description>In Brandenburg replaced by ETRS89. In Sachsen and Thuringen replaced by RD83 and PD/83 which for practical purposes may be considered to be the same as DHDN.</crs:description>
     <crs:Axis>
       <crs:name>longitude</crs:name>
       <crs:units>degree</crs:units>
@@ -88667,7 +88770,7 @@
       <crs:axisOrientation>north</crs:axisOrientation>
     </crs:Axis>
     <crs:axisOrder>longitude, latitude</crs:axisOrder>
-    <crs:usedDatum>DATUM_465</crs:usedDatum>
+    <crs:usedDatum>EPSG:6178</crs:usedDatum>
   </crs:geographicCRS>
   <crs:geographicCRS>
     <crs:id>EPSG:4736</crs:id>
@@ -90577,7 +90680,7 @@
     <crs:id>EPSG:8901</crs:id>
     <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#8901</crs:id>
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::8901</crs:id>
-    <crs:id>URN:OGC:DEF:CRS:EPSG::</crs:id>
+    <crs:id>URN:OGC:DEF:CRS:EPSG::8901</crs:id>
     <crs:name>Greenwich</crs:name>
     <crs:version>1995-06-02</crs:version>
     <crs:units>degree</crs:units>
@@ -92160,17 +92263,17 @@
     <crs:scaleDifference>0.0</crs:scaleDifference>
   </crs:wgs84Transformation>
   <crs:wgs84Transformation>
-    <crs:id>TOWGS_149</crs:id>
-    <crs:name>Proj4 defined toWGS84 params</crs:name>
-    <crs:version>2008-1-16T9:49</crs:version>
-    <crs:description>Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: null</crs:description>
-    <crs:xAxisTranslation>24.0</crs:xAxisTranslation>
-    <crs:yAxisTranslation>-123.0</crs:yAxisTranslation>
-    <crs:zAxisTranslation>-94.0</crs:zAxisTranslation>
-    <crs:xAxisRotation>0.02</crs:xAxisRotation>
-    <crs:yAxisRotation>-0.25</crs:yAxisRotation>
-    <crs:zAxisRotation>-0.13</crs:zAxisRotation>
-    <crs:scaleDifference>1.1</crs:scaleDifference>
+    <crs:id>EPSG:1775</crs:id>
+    <crs:name>Pulkovo 1942(83) to ETRS89 (2)</crs:name>
+    <crs:version>2007-03-22</crs:version>
+    <crs:description>Derived at 35 points of the German GPS Network DREF. From 2001 replaces Pulkovo 1942(83) to ETRS89 (1) (code 1674) within Mecklenburg-Vorpommern and Sachsen-Anhalt</crs:description>
+    <crs:xAxisTranslation>24.9</crs:xAxisTranslation>
+    <crs:yAxisTranslation>-126.4</crs:yAxisTranslation>
+    <crs:zAxisTranslation>-93.2</crs:zAxisTranslation>
+    <crs:xAxisRotation>-0.063</crs:xAxisRotation>
+    <crs:yAxisRotation>-0.247</crs:yAxisRotation>
+    <crs:zAxisRotation>-0.041</crs:zAxisRotation>
+    <crs:scaleDifference>1.01</crs:scaleDifference>
   </crs:wgs84Transformation>
   <crs:wgs84Transformation>
     <crs:id>TOWGS_390</crs:id>

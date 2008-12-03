@@ -73,8 +73,8 @@ public class Matrix extends GMatrix {
     }
 
     /**
-     * Construct a matrix of size <code>numRow</code>&nbsp;&times;&nbsp;<code>numCol</code>.
-     * Elements on the diagonal <var>j==i</var> are set to 1.
+     * Construct a matrix of size <code>numRow</code>&nbsp;&times;&nbsp;<code>numCol</code>. Elements on the
+     * diagonal <var>j==i</var> are set to 1.
      * 
      * @param numRow
      * @param numCol
@@ -84,12 +84,11 @@ public class Matrix extends GMatrix {
     }
 
     /**
-     * Constructs a <code>numRow</code>&nbsp;&times;&nbsp;<code>numCol</code> matrix
-     * initialized to the values in the <code>matrix</code> array. The array values are copied in
-     * one row at a time in row major fashion. The array should be exactly
-     * <code>numRow*numCol</code> in length. Note that because row and column numbering begins
-     * with zero, <code>row</code> and <code>numCol</code> will be one larger than the maximum
-     * possible matrix index values.
+     * Constructs a <code>numRow</code>&nbsp;&times;&nbsp;<code>numCol</code> matrix initialized to the values in
+     * the <code>matrix</code> array. The array values are copied in one row at a time in row major fashion. The array
+     * should be exactly <code>numRow*numCol</code> in length. Note that because row and column numbering begins with
+     * zero, <code>row</code> and <code>numCol</code> will be one larger than the maximum possible matrix index
+     * values.
      * 
      * @param numRow
      * @param numCol
@@ -108,8 +107,7 @@ public class Matrix extends GMatrix {
      * @param matrix
      *            Array of rows. Each row must have the same length.
      * @throws IllegalArgumentException
-     *             if the specified matrix is not regular (i.e. if all rows doesn't have the same
-     *             length).
+     *             if the specified matrix is not regular (i.e. if all rows doesn't have the same length).
      */
     public Matrix( final double[][] matrix ) throws IllegalArgumentException {
         super( matrix.length, ( matrix.length != 0 ) ? matrix[0].length : 0 );
@@ -143,16 +141,14 @@ public class Matrix extends GMatrix {
     }
 
     /**
-     * Construct an affine transform changing axis order. The resulting affine transform will
-     * convert incoming coordinates into the given destination Axis. For example if source axis are
-     * given with (NORTH,WEST) and destination axis as (EAST,NORTH) assuming the axis use the same
-     * units, the resulted matrix will look like:<br/><code>
+     * Construct an affine transform changing axis order. The resulting affine transform will convert incoming
+     * coordinates into the given destination Axis. For example if source axis are given with (NORTH,WEST) and
+     * destination axis as (EAST,NORTH) assuming the axis use the same units, the resulted matrix will look like:<br/><code>
      *  &nbsp;0,&nbsp;1,&nbsp;0<br/>
      * -1,&nbsp;0,&nbsp;0<br/>
      *  &nbsp;0,&nbsp;0,&nbsp;1<br/>
      *  </code>
-     * Axis orientation can be inverted only. Rotating axis (e.g. from NORTH,WEST, to NORTH,DOWN, )
-     * is not supported.
+     * Axis orientation can be inverted only. Rotating axis (e.g. from NORTH,WEST, to NORTH,DOWN, ) is not supported.
      * 
      * @param srcAxis
      *            The set of axis orientation for source coordinate system.
@@ -168,11 +164,10 @@ public class Matrix extends GMatrix {
             throw new IllegalArgumentException( "Given dimensions are of differnt length." );
         }
         /*
-         * Map source axis to destination axis. If no axis is moved (for example if the user want to
-         * transform (NORTH,EAST) to (SOUTH,EAST)), then source and destination index will be equal.
-         * If some axis are moved (for example if the user want to transform (NORTH,EAST) to
-         * (EAST,NORTH)), then ordinates at index <code>srcIndex</code> will have to be moved at
-         * index <code>dstIndex</code>.
+         * Map source axis to destination axis. If no axis is moved (for example if the user want to transform
+         * (NORTH,EAST) to (SOUTH,EAST)), then source and destination index will be equal. If some axis are moved (for
+         * example if the user want to transform (NORTH,EAST) to (EAST,NORTH)), then ordinates at index <code>srcIndex</code>
+         * will have to be moved at index <code>dstIndex</code>.
          */
         setZero();
         for ( int srcIndex = 0; srcIndex < dimension; srcIndex++ ) {
@@ -202,9 +197,8 @@ public class Matrix extends GMatrix {
     }
 
     /**
-     * Returns <code>true</code> if this matrix is an affine transform. A transform is affine if
-     * the matrix is square and last row contains only zeros, except in the last column which
-     * contains 1.
+     * Returns <code>true</code> if this matrix is an affine transform. A transform is affine if the matrix is square
+     * and last row contains only zeros, except in the last column which contains 1.
      * 
      * @return <code>true</code> if this matrix is an affine transform.
      */
@@ -224,11 +218,10 @@ public class Matrix extends GMatrix {
     }
 
     /**
-     * Copies the first 2x3 values into an affine transform object. If not enough values are
-     * available, an identity transform is returned.
+     * Copies the first 2x3 values into an affine transform object. If not enough values are available, an identity
+     * transform is returned.
      * 
-     * @return an affine transform for this matrix. or an identity if this matrix has not sufficient
-     *         values.
+     * @return an affine transform for this matrix. or an identity if this matrix has not sufficient values.
      * 
      */
     public final Matrix3d toAffineTransform() {

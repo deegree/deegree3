@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -44,6 +44,7 @@ import static org.deegree.model.crs.projections.ProjectionUtils.QUARTERPI;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.exceptions.ProjectionException;
@@ -77,7 +78,8 @@ import org.deegree.model.crs.exceptions.ProjectionException;
  * same formulas are used but with auxiliary latitudes, known as conformal latitudes, substituted for the geodetic
  * latitudes of the spherical formulas for the origin and the point .
  * </p>
- * <quote>from <a href="http://www.posc.org/Epicentre.2_2/DataModel/ExamplesofUsage/eu_cs34j.html">http://www.posc.org/</a></quote>
+ * <quote>from <a
+ * href="http://www.posc.org/Epicentre.2_2/DataModel/ExamplesofUsage/eu_cs34j.html">http://www.posc.org/</a></quote>
  * 
  * <p>
  * Determinations of oblique projections on an ellipsoid can be difficult to solve and result in long, complex
@@ -141,10 +143,12 @@ public class StereographicAlternative extends AzimuthalProjection {
      * @param naturalOrigin
      * @param units
      * @param scale
+     * @param id
+     *            an identifiable instance containing information about this projection
      */
     public StereographicAlternative( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                     Point2d naturalOrigin, Unit units, double scale ) {
-        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, true/* conformal */, false );
+                                     Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
+        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, true/* conformal */, false, id );
 
         // if (!(P->en = pj_gauss_ini(P->e, P->phi0, &(P->phic0), &R))) E_ERROR_0;
         double es = getSquaredEccentricity();
@@ -165,6 +169,21 @@ public class StereographicAlternative extends AzimuthalProjection {
         sinc0 = Math.sin( latitudeOnCS );
         cosc0 = Math.cos( latitudeOnCS );
         R2 = 2 * radiusOfCS;
+    }
+
+    /**
+     * Sets the id of this projection to epsg::9809 (Oblique Stereographic)
+     * 
+     * @param geographicCRS
+     * @param falseNorthing
+     * @param falseEasting
+     * @param naturalOrigin
+     * @param units
+     * @param scale
+     */
+    public StereographicAlternative( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
+                                     Point2d naturalOrigin, Unit units, double scale ) {
+        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, new CRSIdentifiable( "EPSG::9809" ) );
     }
 
     /*
@@ -213,7 +232,7 @@ public class StereographicAlternative extends AzimuthalProjection {
         double cosc = Math.cos( lp.y );
         double cosl = Math.cos( lp.x );
 
-        double k = getScaleFactor() * (R2 / ( 1. + sinc0 * sinc + cosc0 * cosc * cosl ) );
+        double k = getScaleFactor() * ( R2 / ( 1. + sinc0 * sinc + cosc0 * cosc * cosl ) );
         result.x = k * cosc * Math.sin( lp.x );
         result.y = k * ( cosc0 * sinc - sinc0 * cosc * cosl );
 
@@ -228,7 +247,7 @@ public class StereographicAlternative extends AzimuthalProjection {
      * @see org.deegree.model.crs.projections.Projection#getDeegreeSpecificName()
      */
     @Override
-    public String getName() {
+    public String getImplementationName() {
         return "stereographicAlternative";
     }
 

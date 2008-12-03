@@ -58,7 +58,7 @@ import org.deegree.model.crs.Transformer;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
 import org.deegree.model.crs.exceptions.UnknownCRSException;
-import org.deegree.model.crs.transformations.coordinate.CRSTransformation;
+import org.deegree.model.crs.transformations.Transformation;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryTransformer;
@@ -181,7 +181,7 @@ public class RasterTransformer extends Transformer {
     private AbstractRaster createSourceRaster( AbstractRaster sourceRaster, Envelope dstEnvelope )
                             throws TransformationException {
         GeometryTransformer srcTransf = new GeometryTransformer( srcCRS );
-        
+
         // the envelope from which we need data
         Envelope workEnv = (Envelope) srcTransf.transform( dstEnvelope, getTargetCRS() );
 
@@ -227,7 +227,7 @@ public class RasterTransformer extends Transformer {
             }
         }
         List<Point3d> resultList = transformDstToSrc( points );
-        
+
         k = 0;
         for ( Point3d point : resultList ) {
             double[] srcRCoords = srcREnv.convertToRasterCRSDouble( point.x, point.y );
@@ -245,7 +245,7 @@ public class RasterTransformer extends Transformer {
     private List<Point3d> transformDstToSrc( List<Point3d> points )
                             throws TransformationException {
         // transform all grid points
-        CRSTransformation transform = createCRSTransformation( srcCRS );
+        Transformation transform = createCRSTransformation( srcCRS );
         transform.inverse();
         return transform.doTransform( points );
     }

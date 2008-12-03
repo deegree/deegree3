@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -46,6 +46,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.CompoundCRS;
@@ -123,9 +124,11 @@ public class GeocentricTransform extends CRSTransformation {
      *            the geographic crs.
      * @param target
      *            the geocentric crs.
+     * @param id
+     *            an identifiable instance containing information about this transformation
      */
-    public GeocentricTransform( CoordinateSystem source, GeocentricCRS target ) {
-        super( source, target );
+    public GeocentricTransform( CoordinateSystem source, GeocentricCRS target, CRSIdentifiable id ) {
+        super( source, target, id );
         this.hasHeight = ( source.getType() == CoordinateSystem.COMPOUND_CRS );
         defaultHeightValue = ( hasHeight ) ? ( (CompoundCRS) source ).getDefaultHeight() : 0;
         Ellipsoid ellipsoid = source.getGeodeticDatum().getEllipsoid();
@@ -137,13 +140,23 @@ public class GeocentricTransform extends CRSTransformation {
         // e2 = ( a2 - b2 ) / a2;
         ep2 = ( squaredSemiMajorAxis - squaredSemiMinorAxis ) / squaredSemiMinorAxis;
     }
-    
+
+    /**
+     * @param source
+     *            the geographic crs.
+     * @param target
+     *            the geocentric crs.
+     */
+    public GeocentricTransform( CoordinateSystem source, GeocentricCRS target ) {
+        this( source, target, new CRSIdentifiable( createFromTo( source.getIdentifier(), target.getIdentifier() ) ) );
+    }
+
     @Override
     public List<Point3d> doTransform( List<Point3d> srcPts ) {
         List<Point3d> result = new ArrayList<Point3d>( srcPts );
         if ( LOG.isDebugEnabled() ) {
-            StringBuilder sb = new StringBuilder( isInverseTransform() ? "An inverse" : "A" );
-            sb.append( getName() );
+            StringBuilder sb = new StringBuilder( isInverseTransform() ? "An inverse " : "A " );
+            sb.append( getImplementationName() );
             sb.append( " with incoming points: " );
             sb.append( srcPts );
             LOG.debug( sb.toString() );
@@ -155,8 +168,6 @@ public class GeocentricTransform extends CRSTransformation {
         }
         return result;
     }
-    
-    
 
     /**
      * Converts geocentric coordinates (x, y, z) to geodetic coordinates (longitude, latitude, height), according to the
@@ -169,15 +180,10 @@ public class GeocentricTransform extends CRSTransformation {
     protected void toGeographic( List<Point3d> srcPts ) {
         for ( Point3d p : srcPts ) {
             // Note: Variable names follow the notation used in Toms, Feb 1996
-            // final double W2 = x * x + y * y; // square of distance from Z axis
 
             final double T0 = p.z * AD_C; // initial estimate of vertical component
-            final double W = length( p.x, p.y );// Math.sqrt( W2 ); // distance from
-            // Z axis
-            final double S0 = length( T0, W );// Math.sqrt( T0 * T0 + W*W ); //
-            // initial estimate of
-            // horizontal
-            // component
+            final double W = length( p.x, p.y );// distance from Z axis
+            final double S0 = length( T0, W );// initial estimate of horizontal component
 
             final double sin_B0 = T0 / S0; // sin(B0), B0 is estimate of Bowring variable
             final double cos_B0 = W / S0; // cos(B0)
@@ -210,13 +216,17 @@ public class GeocentricTransform extends CRSTransformation {
                     height = p.z / sinPhi + rn * ( squaredEccentricity - 1.0 );
                 }
                 p.z = height;
+            } else {
+                p.z = Double.NaN;
             }
         }
     }
 
     /**
-     * Calculate the euclidian coordinates from given geographic coordinates
+     * Converts geographic (longitude, latitude, height) to cartesian (x,y,z) coordinates.
+     * 
      * @param srcPts
+     *            to convert.
      */
     protected void toGeoCentric( List<Point3d> srcPts ) {
         for ( Point3d p : srcPts ) {
@@ -224,7 +234,7 @@ public class GeocentricTransform extends CRSTransformation {
             final double phi = p.y; // Latitude
             // first check the p.z value if it is defined, if not, use the defaultheight value, which will be
             // initialized with 0 or the configured compound crs value.
-            if( Double.isNaN( p.z  ) || Math.abs( p.z ) < EPS11 ){
+            if ( Double.isNaN( p.z ) || Math.abs( p.z ) < EPS11 ) {
                 p.z = defaultHeightValue;
             }
             final double h = hasHeight ? p.z : 0; // Height above the ellipsoid (metres).
@@ -259,7 +269,7 @@ public class GeocentricTransform extends CRSTransformation {
     }
 
     @Override
-    public String getName() {
+    public String getImplementationName() {
         return "Geocentric-Transform";
     }
 

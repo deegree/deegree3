@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -40,6 +40,7 @@ package org.deegree.model.crs.projections.cylindric;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.projections.Projection;
@@ -65,25 +66,21 @@ import org.deegree.model.crs.projections.Projection;
 public abstract class CylindricalProjection extends Projection {
 
     /**
-     * @param geographicCRS 
+     * @param geographicCRS
      * @param falseNorthing
      * @param falseEasting
      * @param naturalOrigin
      * @param units
      * @param scale
      * @param conformal
-     * @param equalArea 
+     * @param equalArea
+     * @param id
+     *            an identifiable instance containing information about this projection
      */
     public CylindricalProjection( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                  Point2d naturalOrigin, Unit units, double scale, boolean conformal, boolean equalArea ) {
-        super(  geographicCRS,
-               falseNorthing,
-               falseEasting,
-               naturalOrigin,
-               units,
-               scale,
-               conformal,
-               equalArea );
+                                  Point2d naturalOrigin, Unit units, double scale, boolean conformal,
+                                  boolean equalArea, CRSIdentifiable id ) {
+        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id );
     }
-  
+
 }

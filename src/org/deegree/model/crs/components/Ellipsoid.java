@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -57,11 +57,6 @@ import org.deegree.model.crs.CRSIdentifiable;
 public class Ellipsoid extends CRSIdentifiable {
 
     /**
-     * 
-     */
-    private static final long serialVersionUID = 4805089142395287574L;
-
-    /**
      * WGS 1984 ellipsoid. This ellipsoid is used in the GPS system and is the "default" Ellipsoid.
      */
     public static final Ellipsoid WGS84 = new Ellipsoid( 6378137.0, Unit.METRE, 298.257223563, "EPSG:7030",
@@ -107,15 +102,11 @@ public class Ellipsoid extends CRSIdentifiable {
      * @param units
      * @param semiMajorAxis
      * @param semiMinorAxis
-     * @param identifiers
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areasOfUse
+     * @param id
+     *            containing the relevant information
      */
-    public Ellipsoid( Unit units, double semiMajorAxis, double semiMinorAxis, String[] identifiers, String[] names,
-                      String[] versions, String[] descriptions, String[] areasOfUse ) {
-        super( identifiers, names, versions, descriptions, areasOfUse );
+    public Ellipsoid( Unit units, double semiMajorAxis, double semiMinorAxis, CRSIdentifiable id ) {
+        super( id );
         this.units = units;
         this.semiMajorAxis = semiMajorAxis;
         this.semiMinorAxis = semiMinorAxis;
@@ -127,6 +118,22 @@ public class Ellipsoid extends CRSIdentifiable {
         }
         this.squaredEccentricity = calcSquaredEccentricity( flattening );
         this.eccentricity = Math.sqrt( squaredEccentricity );
+    }
+
+    /**
+     * @param units
+     * @param semiMajorAxis
+     * @param semiMinorAxis
+     * @param identifiers
+     * @param names
+     * @param versions
+     * @param descriptions
+     * @param areasOfUse
+     */
+    public Ellipsoid( Unit units, double semiMajorAxis, double semiMinorAxis, String[] identifiers, String[] names,
+                      String[] versions, String[] descriptions, String[] areasOfUse ) {
+        this( units, semiMajorAxis, semiMinorAxis, new CRSIdentifiable( identifiers, names, versions, descriptions,
+                                                                     areasOfUse ) );
     }
 
     /**
@@ -170,15 +177,11 @@ public class Ellipsoid extends CRSIdentifiable {
      * @param semiMajorAxis
      * @param units
      * @param inverseFlattening
-     * @param identifiers
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areasOfUse
+     * @param id
+     *            containing all id relevant data.
      */
-    public Ellipsoid( double semiMajorAxis, Unit units, double inverseFlattening, String[] identifiers, String[] names,
-                      String[] versions, String[] descriptions, String[] areasOfUse ) {
-        super( identifiers, names, versions, descriptions, areasOfUse );
+    public Ellipsoid( double semiMajorAxis, Unit units, double inverseFlattening, CRSIdentifiable id ) {
+        super( id );
         this.units = units;
         this.semiMajorAxis = semiMajorAxis;
         this.inverseFlattening = inverseFlattening;
@@ -190,6 +193,22 @@ public class Ellipsoid extends CRSIdentifiable {
         this.squaredEccentricity = calcSquaredEccentricity( this.flattening );
         eccentricity = Math.sqrt( squaredEccentricity );
         this.semiMinorAxis = this.semiMajorAxis - ( flattening * this.semiMajorAxis );
+    }
+
+    /**
+     * @param semiMajorAxis
+     * @param units
+     * @param inverseFlattening
+     * @param identifiers
+     * @param names
+     * @param versions
+     * @param descriptions
+     * @param areasOfUse
+     */
+    public Ellipsoid( double semiMajorAxis, Unit units, double inverseFlattening, String[] identifiers, String[] names,
+                      String[] versions, String[] descriptions, String[] areasOfUse ) {
+        this( semiMajorAxis, units, inverseFlattening, new CRSIdentifiable( identifiers, names, versions, descriptions,
+                                                                         areasOfUse ) );
     }
 
     /**
@@ -234,15 +253,11 @@ public class Ellipsoid extends CRSIdentifiable {
      * @param semiMajorAxis
      * @param eccentricity
      * @param units
-     * @param identifiers
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areasOfUse
+     * @param id
+     *            containing all id relevant data.
      */
-    public Ellipsoid( double semiMajorAxis, double eccentricity, Unit units, String[] identifiers, String[] names,
-                      String[] versions, String[] descriptions, String[] areasOfUse ) {
-        super( identifiers, names, versions, descriptions, areasOfUse );
+    public Ellipsoid( double semiMajorAxis, double eccentricity, Unit units, CRSIdentifiable id ) {
+        super( id );
         this.units = units;
         this.semiMajorAxis = semiMajorAxis;
         this.eccentricity = eccentricity;
@@ -254,6 +269,22 @@ public class Ellipsoid extends CRSIdentifiable {
             this.inverseFlattening = 0;
         }
         this.semiMinorAxis = this.semiMajorAxis - ( flattening * this.semiMajorAxis );
+    }
+
+    /**
+     * @param semiMajorAxis
+     * @param eccentricity
+     * @param units
+     * @param identifiers
+     * @param names
+     * @param versions
+     * @param descriptions
+     * @param areasOfUse
+     */
+    public Ellipsoid( double semiMajorAxis, double eccentricity, Unit units, String[] identifiers, String[] names,
+                      String[] versions, String[] descriptions, String[] areasOfUse ) {
+        this( semiMajorAxis, eccentricity, units, new CRSIdentifiable( identifiers, names, versions, descriptions,
+                                                                    areasOfUse ) );
     }
 
     /**
@@ -420,7 +451,7 @@ public class Ellipsoid extends CRSIdentifiable {
         if ( units != null ) {
             code = code * 37 + units.hashCode();
         }
-        long tmp = Double.doubleToLongBits( semiMinorAxis );
+        long tmp = Double.doubleToLongBits( semiMajorAxis );
         code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
 
         tmp = Double.doubleToLongBits( eccentricity );

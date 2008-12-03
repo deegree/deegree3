@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -40,8 +40,10 @@ package org.deegree.model.crs.configuration;
 
 import java.util.List;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.CRSConfigurationException;
+import org.deegree.model.crs.transformations.Transformation;
 
 /**
  * The <code>CRSProvider</code> will allow the support for different crs-definitions formats within the crs package.
@@ -57,6 +59,39 @@ import org.deegree.model.crs.exceptions.CRSConfigurationException;
  */
 
 public interface CRSProvider {
+
+    /**
+     * This method is should retrieve a transformation (chain) which transforms coordinates from the given source into
+     * the given target crs. If no such transformation could be found or the implementation does not support inverse
+     * lookup of transformations <code>null<code> should be returned. 
+
+     * @param sourceCRS start of the transformation (chain)
+     * @param targetCRS end point of the transformation (chain).
+     * 
+     * @return the {@link Transformation} Object or <code>null</code> if no such Object was found.
+     * @throws CRSConfigurationException
+     *             if the implementation was confronted by an exception and could not deliver the requested Object. This
+     *             exception should not be thrown no Transformation was found, in this case <code>null</code> should
+     *             be returned.
+     */
+    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
+                            throws CRSConfigurationException;
+
+    /**
+     * This method is more general than the {@link #getCRSByID(String)}, because it represents a possibility to return
+     * an arbitrary {@link CRSIdentifiable} Object from the providers backend.
+     * 
+     * 
+     * @param id
+     *            string representation of the resource to retrieve
+     * @return the {@link CRSIdentifiable} Object or <code>null</code> if no such Object was found.
+     * @throws CRSConfigurationException
+     *             if the implementation was confronted by an exception and could not deliver the requested Object. This
+     *             exception should not be thrown if the given id wasn't found, in this case <code>null</code> should
+     *             be returned.
+     */
+    public CRSIdentifiable getIdentifiable( String id )
+                            throws CRSConfigurationException;
 
     /**
      * @param id

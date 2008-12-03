@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -50,6 +50,7 @@ import javax.media.jai.WarpPolynomial;
 import javax.media.jai.WarpQuadratic;
 import javax.vecmath.Point3d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
 import org.deegree.model.i18n.Messages;
@@ -83,16 +84,21 @@ public class LeastSquareApproximation extends PolynomialTransformation {
      *            of the polynomial
      * @param secondParameters
      *            of the polynomial
+     * @param sourceCRS
+     *            of this transformation
      * @param targetCRS
      *            of this transformation
      * @param scaleX
      *            to apply to incoming data's x value, if 1 (or 0) no scale will be applied.
      * @param scaleY
      *            to apply to incoming data's y value, if 1 (or 0) no scale will be applied.
+     * @param id
+     *            an identifiable instance containing information about this transformation
      */
     public LeastSquareApproximation( List<Double> firstParameters, List<Double> secondParameters,
-                                     CoordinateSystem targetCRS, float scaleX, float scaleY ) {
-        super( firstParameters, secondParameters, targetCRS );
+                                     CoordinateSystem sourceCRS, CoordinateSystem targetCRS, float scaleX,
+                                     float scaleY, CRSIdentifiable id ) {
+        super( firstParameters, secondParameters, sourceCRS, targetCRS, id );
         if ( getSecondParams().size() != getFirstParams().size() ) {
             throw new IllegalArgumentException( "The given parameter lists do not have equal length" );
         }
@@ -132,6 +138,27 @@ public class LeastSquareApproximation extends PolynomialTransformation {
         }
     }
 
+    /**
+     * Sets the id to EPSG::9645 ( General polynomial of degree 2 ).
+     * 
+     * @param firstParameters
+     *            of the polynomial
+     * @param secondParameters
+     *            of the polynomial
+     * @param sourceCRS
+     *            of this transformation
+     * @param targetCRS
+     *            of this transformation
+     * @param scaleX
+     *            to apply to incoming data's x value, if 1 (or 0) no scale will be applied.
+     * @param scaleY
+     *            to apply to incoming data's y value, if 1 (or 0) no scale will be applied.
+     */
+    public LeastSquareApproximation( List<Double> firstParameters, List<Double> secondParameters,
+                                     CoordinateSystem sourceCRS, CoordinateSystem targetCRS, float scaleX, float scaleY ) {
+        this( firstParameters, secondParameters, sourceCRS, targetCRS, scaleX, scaleY, new CRSIdentifiable( "EPSG::9645" ) );
+    }
+
     @Override
     public List<Point3d> applyPolynomial( List<Point3d> srcPts )
                             throws TransformationException {
@@ -151,7 +178,7 @@ public class LeastSquareApproximation extends PolynomialTransformation {
     }
 
     @Override
-    public String getName() {
+    public String getImplementationName() {
         return "leastsquare";
     }
 
@@ -182,8 +209,8 @@ public class LeastSquareApproximation extends PolynomialTransformation {
             sourceCoords[count++] = (float) coord.y;
         }
 
-        float scaleX = Math.abs( ( maxX - minX ) ) > EPS11 ? (float) ( 1. / ( maxX - minX ) ) : 1;
-        float scaleY = Math.abs( ( maxY - minY ) ) > EPS11 ? (float) ( 1. / ( maxY - minY ) ) : 1;
+        float sX = Math.abs( ( maxX - minX ) ) > EPS11 ? (float) ( 1. / ( maxX - minX ) ) : 1;
+        float sY = Math.abs( ( maxY - minY ) ) > EPS11 ? (float) ( 1. / ( maxY - minY ) ) : 1;
         float[] targetCoords = new float[projectedPoints.size() * 2];
 
         count = 0;
@@ -192,11 +219,9 @@ public class LeastSquareApproximation extends PolynomialTransformation {
             targetCoords[count++] = (float) coord.y;
         }
 
-
-
         StringBuilder sb = new StringBuilder( "\nCalculated scales are:\n" );
-        sb.append( "<crs:scaleX>" ).append( scaleX ).append( "</crs:scaleX>\n" );
-        sb.append( "<crs:scaleY>" ).append( scaleY ).append( "</crs:scaleY>\n" );
+        sb.append( "<crs:scaleX>" ).append( sX ).append( "</crs:scaleX>\n" );
+        sb.append( "<crs:scaleY>" ).append( sY ).append( "</crs:scaleY>\n" );
         LOG.info( sb.toString() );
 
         /**
@@ -204,8 +229,8 @@ public class LeastSquareApproximation extends PolynomialTransformation {
          * mapDestPoint function, we must calculate the polynomial variables by using the target coordinates as the
          * source.
          */
-        WarpPolynomial warp = WarpPolynomial.createWarp( targetCoords, 0, sourceCoords, 0, sourceCoords.length, scaleX,
-                                                         scaleY, 1f / scaleX, 1f / scaleY, polynomalOrder );
+        WarpPolynomial warp = WarpPolynomial.createWarp( targetCoords, 0, sourceCoords, 0, sourceCoords.length, sX, sY,
+                                                         1f / sX, 1f / sY, polynomalOrder );
         return warp.getCoeffs();
     }
 

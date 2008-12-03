@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -43,6 +43,7 @@ import static org.deegree.model.crs.projections.ProjectionUtils.HALFPI;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.projections.Projection;
@@ -103,10 +104,13 @@ public abstract class AzimuthalProjection extends Projection {
      * @param scale
      * @param conformal
      * @param equalArea
+     * @param id
+     *            an identifiable instance containing information about this projection
      */
     public AzimuthalProjection( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                                Point2d naturalOrigin, Unit units, double scale, boolean conformal, boolean equalArea ) {
-        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea );
+                                Point2d naturalOrigin, Unit units, double scale, boolean conformal, boolean equalArea,
+                                CRSIdentifiable id ) {
+        super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, conformal, equalArea, id );
         if ( Math.abs( Math.abs( getProjectionLatitude() ) - HALFPI ) < EPS10 ) {
             mode = getProjectionLatitude() < 0. ? SOUTH_POLE : NORTH_POLE;
         } else if ( Math.abs( getProjectionLatitude() ) > EPS10 ) {
@@ -128,7 +132,7 @@ public abstract class AzimuthalProjection extends Projection {
      * distribution and is relatively fast. It is created from field <b>f</b> as follows:
      * <ul>
      * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f </li>
+     * <li>byte, char, short, int -- code = (int)f</li>
      * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
      * <li>float -- code = Float.floatToIntBits(f);</li>
      * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>

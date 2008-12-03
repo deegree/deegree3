@@ -1,4 +1,4 @@
-//$HeadURL:  $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -45,6 +45,7 @@ import javax.vecmath.Point3d;
 
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
+import org.deegree.model.crs.components.Datum;
 import org.deegree.model.crs.components.GeodeticDatum;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation;
@@ -86,7 +87,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
 
     private Axis[] axisOrder;
 
-    private GeodeticDatum usedDatum;
+    private Datum usedDatum;
 
     private final List<PolynomialTransformation> transformations;
 
@@ -111,13 +112,18 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
     public static final int COMPOUND_CRS = 3;
 
     /**
+     * Defines this CRS as a Vertical one.
+     */
+    public static final int VERTICAL_CRS = 4;
+
+    /**
      * @param datum
      *            of this coordinate system.
      * @param axisOrder
      *            the axisorder of this coordinate system.
      * @param identity
      */
-    public CoordinateSystem( GeodeticDatum datum, Axis[] axisOrder, CRSIdentifiable identity ) {
+    public CoordinateSystem( Datum datum, Axis[] axisOrder, CRSIdentifiable identity ) {
         this( null, datum, axisOrder, identity );
     }
 
@@ -133,8 +139,8 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      * @param descriptions
      * @param areasOfUse
      */
-    public CoordinateSystem( GeodeticDatum datum, Axis[] axisOrder, String[] identifiers, String[] names,
-                             String[] versions, String[] descriptions, String[] areasOfUse ) {
+    public CoordinateSystem( Datum datum, Axis[] axisOrder, String[] identifiers, String[] names, String[] versions,
+                             String[] descriptions, String[] areasOfUse ) {
         super( identifiers, names, versions, descriptions, areasOfUse );
         this.axisOrder = axisOrder;
         this.usedDatum = datum;
@@ -149,8 +155,8 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      * @param axisOrder
      * @param identity
      */
-    public CoordinateSystem( List<PolynomialTransformation> transformations, GeodeticDatum geodeticDatum,
-                             Axis[] axisOrder, CRSIdentifiable identity ) {
+    public CoordinateSystem( List<PolynomialTransformation> transformations, Datum geodeticDatum, Axis[] axisOrder,
+                             CRSIdentifiable identity ) {
         super( identity );
         this.axisOrder = axisOrder;
         this.usedDatum = geodeticDatum;
@@ -168,9 +174,16 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
     }
 
     /**
-     * @return the usedDatum.
+     * @return the usedDatum or <code>null</code> if the datum was not a Geodetic one.
      */
     public final GeodeticDatum getGeodeticDatum() {
+        return ( usedDatum instanceof GeodeticDatum ) ? (GeodeticDatum) usedDatum : null;
+    }
+
+    /**
+     * @return the datum of this coordinate system.
+     */
+    public final Datum getDatum() {
         return usedDatum;
     }
 

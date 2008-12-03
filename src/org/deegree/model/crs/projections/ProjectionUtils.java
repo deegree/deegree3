@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -41,7 +41,7 @@ package org.deegree.model.crs.projections;
 import java.awt.geom.Rectangle2D;
 
 /**
- * The <code>Utils</code> class combines some helpfull constants and forms.
+ * The <code>Utils</code> class combines some helpful constants and forms.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -102,13 +102,11 @@ public class ProjectionUtils {
     public final static Rectangle2D WORLD_BOUNDS = new Rectangle2D.Double( -180, -90, 360, 180 );
 
     /**
-     * From the proj4 library, to determine small q which is needed to calculate the authalic
-     * (equal-areaed) latitude beta, on a sphere having the same surface area as the ellipsoid,
-     * relative to the ellipsoid. Snyder (3 -12).
+     * From the proj4 library, to determine small q which is needed to calculate the authalic (equal-areaed) latitude
+     * beta, on a sphere having the same surface area as the ellipsoid, relative to the ellipsoid. Snyder (3 -12).
      * 
      * @param sinphi
-     *            the sine of the angle between the positive z-axis and the line formed between the
-     *            origin and P.
+     *            the sine of the angle between the positive z-axis and the line formed between the origin and P.
      * @param e
      *            the eccentricity
      * @return the q value from Snyder (3-12)
@@ -120,13 +118,11 @@ public class ProjectionUtils {
     }
 
     /**
-     * From the proj4 library, to determine small q which is needed to calculate the authalic
-     * (equal-areaed) latitude beta, on a sphere having the same surface area as the ellipsoid,
-     * relative to the ellipsoid. Snyder (3 -12).
+     * From the proj4 library, to determine small q which is needed to calculate the authalic (equal-areaed) latitude
+     * beta, on a sphere having the same surface area as the ellipsoid, relative to the ellipsoid. Snyder (3 -12).
      * 
      * @param sinphi
-     *            the sine of the angle between the positive z-axis and the line formed between the
-     *            origin and P.
+     *            the sine of the angle between the positive z-axis and the line formed between the origin and P.
      * @param eccentricity
      *            the eccentricity of the ellipsoid to map the sphere to.
      * @return the q value from Snyder (3-12)
@@ -167,8 +163,8 @@ public class ProjectionUtils {
     private final static double T30 = .02653149801587301587;/* 4279/161280 */
 
     /**
-     * Pre-Calculates the values (used for the adams? series) which will be used to calculate the
-     * phi value of an inverse projection. Snyder (3-5).
+     * Pre-Calculates the values (used for the adams? series) which will be used to calculate the phi value of an
+     * inverse projection. Snyder (3-5).
      * 
      * @param eccentricitySquared
      *            the squared eccentricity from the ellipsoid to calculate the theta for.
@@ -201,8 +197,7 @@ public class ProjectionUtils {
 
     /**
      * Gets Phi from the given conformal latitude chi and the precalculated values (gotten from
-     * {@link ProjectionUtils#preCalcedThetaSeries(double)} ) of the adams? serie. From Snyder
-     * (3-5).
+     * {@link ProjectionUtils#preCalcedThetaSeries(double)} ) of the adams? serie. From Snyder (3-5).
      * 
      * @param chi
      *            the conformal latitude
@@ -239,12 +234,11 @@ public class ProjectionUtils {
     private final static double P20 = .01641501294219154443; /* 761/45360 */
 
     /**
-     * Pre-Calculates the values (used for the adams? series) which will be used to calculate the
-     * authalic latitude. Snyder (3-18).
+     * Pre-Calculates the values (used for the adams? series) which will be used to calculate the authalic latitude.
+     * Snyder (3-18).
      * 
      * @param eccentricitySquared
-     *            the squared eccentricity from the ellipsoid to calculate the authalic latitude
-     *            for.
+     *            the squared eccentricity from the ellipsoid to calculate the authalic latitude for.
      * @return the precalculated values.
      * @deprecated use {@link ProjectionUtils#getAuthalicLatitudeSeriesValues(double)} instead.;
      */
@@ -254,14 +248,13 @@ public class ProjectionUtils {
     }
 
     /**
-     * Pre-Calculates the values (used for the adams? series) which will be used to calculate the
-     * authalic latitude. Snyder (3-18).
+     * Pre-Calculates the values (used for the adams? series) which will be used to calculate the authalic latitude.
+     * Snyder (3-18).
      * 
      * @param eccentricitySquared
-     *            the squared eccentricity from the ellipsoid to calculate the authalic latitude
-     *            for.
-     * @return the precalculated values [0] = e^2/3 + e^4*(31/180) + e^6*(517/5040), [1]=
-     *         e^4*(23/360) + e^6*(251/3780) and [2] = e^6*(761/45360).
+     *            the squared eccentricity from the ellipsoid to calculate the authalic latitude for.
+     * @return the precalculated values [0] = e^2/3 + e^4*(31/180) + e^6*(517/5040), [1]= e^4*(23/360) + e^6*(251/3780)
+     *         and [2] = e^6*(761/45360).
      */
     public static double[] getAuthalicLatitudeSeriesValues( double eccentricitySquared ) {
         double[] precalculatedSerie = new double[3];
@@ -277,8 +270,7 @@ public class ProjectionUtils {
     }
 
     /**
-     * Gets phi from the authalic latitude beta and the precalculated values of the adams? serie.
-     * From Snyder (3-18).
+     * Gets phi from the authalic latitude beta and the precalculated values of the adams? serie. From Snyder (3-18).
      * 
      * @param beta
      *            authalic latitude.
@@ -286,8 +278,7 @@ public class ProjectionUtils {
      *            the precalculated values from the series gotten from
      *            {@link ProjectionUtils#getAuthalicLatitudeSeriesValues(double)}.
      * @return the phi on the ellipsoid.
-     * @deprecated use {@link ProjectionUtils#calcPhiFromAuthalicLatitude(double, double[])}
-     *             instead.;
+     * @deprecated use {@link ProjectionUtils#calcPhiFromAuthalicLatitude(double, double[])} instead.;
      */
     @Deprecated
     public static double authlat( double beta, double[] APA ) {
@@ -295,8 +286,7 @@ public class ProjectionUtils {
     }
 
     /**
-     * Gets phi from the authalic latitude beta and the precalculated values of the adams? serie.
-     * From Snyder (3-18).
+     * Gets phi from the authalic latitude beta and the precalculated values of the adams? serie. From Snyder (3-18).
      * 
      * @param beta
      *            authalic latitude.
@@ -320,13 +310,13 @@ public class ProjectionUtils {
      * @return the length
      */
     public static double length( double dx, double dy ) {
-        return Math.sqrt( dx * dx + dy * dy );
+        return Math.hypot( dx, dy );
     }
 
     /**
-     * This method calculates the innerpart of the conformal latitude's definition (Snyder p.15
-     * 3-1). This formula is almost equal to the calculation of the half colatitude from the
-     * conformal latitude (Snyder p.108 15-9). They only differ a sign in the first term.
+     * This method calculates the innerpart of the conformal latitude's definition (Snyder p.15 3-1). This formula is
+     * almost equal to the calculation of the half colatitude from the conformal latitude (Snyder p.108 15-9). They only
+     * differ a sign in the first term.
      * 
      * @param phi
      *            to calculate the conformal latitude from
@@ -334,8 +324,7 @@ public class ProjectionUtils {
      *            the sinus of the phi.
      * @param eccentricity
      *            of the ellipsoid to which the phi should be made conformal to.
-     * @return the value of the innerpart of the conformal latitude formula. i.e. tan( pi/4 <b>+</b>
-     *         phi/2)<b>*</b>[(1-e*sin(phi))/1+e*sin(phi))]^e/2.
+     * @return the value of the innerpart of the conformal latitude formula. i.e. tan( pi/4 <b>+</b> phi/2)<b>*</b>[(1-e*sin(phi))/1+e*sin(phi))]^e/2.
      */
     public static double conformalLatitudeInnerPart( double phi, double sinphi, double eccentricity ) {
         sinphi *= eccentricity;
@@ -343,9 +332,9 @@ public class ProjectionUtils {
     }
 
     /**
-     * This method calculates the innerpart of the conformal latitude's definition (Snyder p.15
-     * 3-1). This formula is almost equal to the calculation of the half colatitude from the
-     * conformal latitude (Snyder p.108 15-9). They only differ a sign in the first term.
+     * This method calculates the innerpart of the conformal latitude's definition (Snyder p.15 3-1). This formula is
+     * almost equal to the calculation of the half colatitude from the conformal latitude (Snyder p.108 15-9). They only
+     * differ a sign in the first term.
      * 
      * @param phi
      *            to calculate the conformal latitude from
@@ -363,8 +352,7 @@ public class ProjectionUtils {
     }
 
     /**
-     * This method calculates the tangens of the half colatitude from the conformal latitude (Snyder
-     * p.108 15-9).
+     * This method calculates the tangens of the half colatitude from the conformal latitude (Snyder p.108 15-9).
      * 
      * @param phi
      *            to calculate the half of the co latitude of the conformal latitude from
@@ -372,8 +360,7 @@ public class ProjectionUtils {
      *            the sinus of the phi.
      * @param eccentricity
      *            of the ellipsoid to which the phi should be made conformal to.
-     * @return the value of the tangens of half of the conformal latitude formula. i.e. tan( pi/4
-     *         <b>-</b> phi/2)<b>/</b>[(1-e*sin(phi))/1+e*sin(phi))]^e/2.
+     * @return the value of the tangens of half of the conformal latitude formula. i.e. tan( pi/4 <b>-</b> phi/2)<b>/</b>[(1-e*sin(phi))/1+e*sin(phi))]^e/2.
      */
     public static double tanHalfCoLatitude( double phi, double sinphi, double eccentricity ) {
         sinphi *= eccentricity;
@@ -381,9 +368,9 @@ public class ProjectionUtils {
     }
 
     /**
-     * This method calculates the tangens of the half colatitude from the conformal latitude (Snyder
-     * p.108 15-9). This formula is almost equal to the calculation of the innerpart of the
-     * conformal latitude's definition (Snyder p.15 3-1). They only differ a sign in the first term.
+     * This method calculates the tangens of the half colatitude from the conformal latitude (Snyder p.108 15-9). This
+     * formula is almost equal to the calculation of the innerpart of the conformal latitude's definition (Snyder p.15
+     * 3-1). They only differ a sign in the first term.
      * 
      * @param phi
      *            to calculate the half of the co latitude of the conformal latitude from
@@ -391,8 +378,8 @@ public class ProjectionUtils {
      *            the sinus of the phi.
      * @param eccentricity
      *            of the ellipsoid to which the phi should be made conformal to.
-     * @return the value of the innerpart of the conformal latitude formula (given sign + or -).
-     *         i.e. tan( pi/4 (+-) phi/2)*[(1-e*sin(phi))/1+e*sin(phi))]^e/2.
+     * @return the value of the innerpart of the conformal latitude formula (given sign + or -). i.e. tan( pi/4 (+-)
+     *         phi/2)*[(1-e*sin(phi))/1+e*sin(phi))]^e/2.
      * @deprecated Use {@link #tanHalfCoLatitude(double,double,double)} instead
      */
     @Deprecated
@@ -401,8 +388,7 @@ public class ProjectionUtils {
     }
 
     /**
-     * This method can be used to calculate the value of a variable called 'm' by Snyder (Snyder
-     * p.101 14-15).
+     * This method can be used to calculate the value of a variable called 'm' by Snyder (Snyder p.101 14-15).
      * 
      * @param sinphi
      *            the sinus of the phi
@@ -419,8 +405,7 @@ public class ProjectionUtils {
     }
 
     /**
-     * This method can be used to calculate the value of a variable called 'm' by Snyder (Snyder
-     * p.101 14-15).
+     * This method can be used to calculate the value of a variable called 'm' by Snyder (Snyder p.101 14-15).
      * 
      * @param sinphi
      *            the sinus of the phi
@@ -435,8 +420,8 @@ public class ProjectionUtils {
     }
 
     /**
-     * Copied these value from proj4, I think they are reformed to fit some rule... but I don't know
-     * which rule that is :-(
+     * Copied these value from proj4, I think they are reformed to fit some rule... but I don't know which rule that is
+     * :-(
      */
     private final static double C00 = 1; /* 1 :-) */
 
@@ -463,8 +448,8 @@ public class ProjectionUtils {
     private final static double C88 = .3076171875;
 
     /**
-     * Pre Calculates the values for the series to calculate for a given ellipsoid with given
-     * eccentricity the distance along the meridian from the equator to a given latitude
+     * Pre Calculates the values for the series to calculate for a given ellipsoid with given eccentricity the distance
+     * along the meridian from the equator to a given latitude
      * {@link #getDistanceAlongMeridian(double, double, double, double[])}.
      * 
      * @param es
@@ -478,8 +463,8 @@ public class ProjectionUtils {
     }
 
     /**
-     * Pre Calculates the values for the series to calculate for a given ellipsoid with given
-     * eccentricity the distance along the meridian from the equator to a given latitude
+     * Pre Calculates the values for the series to calculate for a given ellipsoid with given eccentricity the distance
+     * along the meridian from the equator to a given latitude
      * {@link #getDistanceAlongMeridian(double, double, double, double[])}.
      * 
      * @param es
@@ -503,8 +488,8 @@ public class ProjectionUtils {
     }
 
     /**
-     * This method calcs for a a given ellispoid the distance along the meridian from the equator to
-     * latitude phi Snyder (p.17 3-21). It is used to calculate the rectifying latitude <i>mu</i>.
+     * This method calcs for a a given ellispoid the distance along the meridian from the equator to latitude phi Snyder
+     * (p.17 3-21). It is used to calculate the rectifying latitude <i>mu</i>.
      * 
      * @param phi
      *            the lattitude of the point in radians
@@ -513,8 +498,8 @@ public class ProjectionUtils {
      * @param cphi
      *            the cosinus of the latitude
      * @param en
-     *            an array (of length 5) containing the precalculate values for this ellipsoid
-     *            gotten from {@link #getRectifiyingLatitudeValues(double)}.
+     *            an array (of length 5) containing the precalculate values for this ellipsoid gotten from
+     *            {@link #getRectifiyingLatitudeValues(double)}.
      * @return the distance along the meridian from the equator to latitude phi.
      * @deprecated Use {@link #getDistanceAlongMeridian(double,double,double,double[])} instead
      */
@@ -524,8 +509,8 @@ public class ProjectionUtils {
     }
 
     /**
-     * This method calcs the distance along the meridian from the equator to latitude phi for a a
-     * given ellispoid Snyder (p.17 3-21). It is used to calculate the rectifying latitude <i>mu</i>.
+     * This method calcs the distance along the meridian from the equator to latitude phi for a a given ellispoid Snyder
+     * (p.17 3-21). It is used to calculate the rectifying latitude <i>mu</i>.
      * 
      * @param phi
      *            the lattitude of the point in radians
@@ -534,8 +519,8 @@ public class ProjectionUtils {
      * @param cphi
      *            the cosinus of the latitude
      * @param en
-     *            an array (of length 5) containing the precalculate values for this ellipsoid
-     *            gotten from {@link #getRectifiyingLatitudeValues(double)}.
+     *            an array (of length 5) containing the precalculate values for this ellipsoid gotten from
+     *            {@link #getRectifiyingLatitudeValues(double)}.
      * @return the distance along the meridian from the equator to latitude phi.
      */
     public static double getDistanceAlongMeridian( double phi, double sphi, double cphi, double[] en ) {
@@ -545,19 +530,18 @@ public class ProjectionUtils {
     }
 
     /**
-     * This method calcs lattitude phi from a given distance along the meridian to the equator for a
-     * a given ellispoid and is therefore the inverse of the
-     * {@link #getDistanceAlongMeridian(double, double, double, double[])}. Phi is determined to
-     * EPS (1e-11) radians, which is about 1e-6 seconds.
+     * This method calcs lattitude phi from a given distance along the meridian to the equator for a a given ellispoid
+     * and is therefore the inverse of the {@link #getDistanceAlongMeridian(double, double, double, double[])}. Phi is
+     * determined to EPS (1e-11) radians, which is about 1e-6 seconds.
      * 
      * @param initialValue
-     *            to calculate phi from, a good starting value is using the (distance along the
-     *            meridian / y*scale) e.g. the scaled y value on the meridian.
+     *            to calculate phi from, a good starting value is using the (distance along the meridian / y*scale) e.g.
+     *            the scaled y value on the meridian.
      * @param squaredEccentricity
      *            the squared eccentricity of the ellipsoid.
      * @param en
-     *            an array (of length 5) containing the precalculate values for this ellipsoid
-     *            gotten from {@link #getRectifiyingLatitudeValues(double)}.
+     *            an array (of length 5) containing the precalculate values for this ellipsoid gotten from
+     *            {@link #getRectifiyingLatitudeValues(double)}.
      * @return the lattitude phi.
      * @deprecated Use {@link #calcPhiFromMeridianDistance(double,double,double[])} instead
      */
@@ -567,21 +551,19 @@ public class ProjectionUtils {
     }
 
     /**
-     * This method calcs lattitude phi from a given distance along the meridian to the equator for a
-     * a given ellispoid and is therefore the inverse of the
-     * {@link #getDistanceAlongMeridian(double, double, double, double[])}. Phi is determined to
-     * EPS (1e-11) radians, which is about 1e-6 seconds.
+     * This method calcs lattitude phi from a given distance along the meridian to the equator for a a given ellispoid
+     * and is therefore the inverse of the {@link #getDistanceAlongMeridian(double, double, double, double[])}. Phi is
+     * determined to EPS (1e-11) radians, which is about 1e-6 seconds.
      * 
      * @param initialValue
-     *            to calculate phi from, a good starting value is using the (distance along the
-     *            meridian / y*scale) e.g. the scaled y value on the meridian.
+     *            to calculate phi from, a good starting value is using the (distance along the meridian / y*scale) e.g.
+     *            the scaled y value on the meridian.
      * @param squaredEccentricity
      *            the squared eccentricity of the ellipsoid.
      * @param en
-     *            an array (of length 5) containing the precalculate values for this ellipsoid
-     *            gotten from {@link #getRectifiyingLatitudeValues(double)}.
-     * @return the lattitude phi or the best approximated value if no suitable convergence was
-     *         found.
+     *            an array (of length 5) containing the precalculate values for this ellipsoid gotten from
+     *            {@link #getRectifiyingLatitudeValues(double)}.
+     * @return the lattitude phi or the best approximated value if no suitable convergence was found.
      */
     public static double calcPhiFromMeridianDistance( double initialValue, double squaredEccentricity, double[] en ) {
         double k = 1. / ( 1. - squaredEccentricity );
@@ -611,8 +593,7 @@ public class ProjectionUtils {
     }
 
     /**
-     * A helper method, which returns the asin from value or if value < -1 (-pi/2) or value>1
-     * (pi/2).
+     * A helper method, which returns the asin from value or if value < -1 (-pi/2) or value>1 (pi/2).
      * 
      * @param value
      *            (in radians) from which the asin must be calculated
@@ -623,8 +604,7 @@ public class ProjectionUtils {
     }
 
     /**
-     * A helper method modulos (pi)the given angle (in radians) until the result fits betwee -HALFPI
-     * and HALF_PI.
+     * A helper method modulos (pi)the given angle (in radians) until the result fits betwee -HALFPI and HALF_PI.
      * 
      * @param angle
      *            in radians
@@ -644,8 +624,7 @@ public class ProjectionUtils {
     }
 
     /**
-     * A helper method modulos (2*pi)the given angle (in radians) until the result fits betwee -PI
-     * and PI.
+     * A helper method modulos (2*pi)the given angle (in radians) until the result fits betwee -PI and PI.
      * 
      * @param angle
      *            to be normalized
@@ -662,5 +641,51 @@ public class ProjectionUtils {
             angle += TWOPI;
         }
         return angle;
+    }
+
+    /**
+     * Converts a Deegree.MinSec value into it's radian equivalent. <code>
+     * for example 13.120637 dms -> 13.201769444444446° -> 0.23041434389473822 rd
+     * </code>
+     * 
+     * @param inCoord
+     *            to be converted to radians.
+     * @return the radian equivalent of the inCoord.
+     */
+    public static double DecMinSecToRadians( double inCoord ) {
+        // get decimal minutes
+        double remainder = getRemainder( inCoord ) * 100;
+        // add the decimal minutes to the decimal seconds
+        remainder = ( Math.floor( remainder ) * 60 ) + ( getRemainder( remainder ) * 100 );
+        return ( Math.floor( inCoord ) + ( remainder / 3600 ) ) * DTR;
+    }
+
+    /**
+     * Converts a radian to its Deegree.MinSec equivalent.<code>
+     * For example 0.23041434389473822 rd -> 13.201769444444446° -> 13.120637 dms 
+     * </code>
+     * 
+     * @param inCoord
+     *            to be converted to degrees.minsec
+     * @return the radian equivalent of the inCoord.
+     */
+    public static double RadiansToDecMinSec( double inCoord ) {
+
+        double degrees = RTD * inCoord;
+        double remainder = getRemainder( degrees );
+        return Math.floor( degrees ) + ( Math.floor( remainder * 60 ) / 100 )
+               + ( ( remainder * .36 ) - ( Math.floor( remainder * 60 ) * .006 ) );
+    }
+
+    /**
+     * Retrieve the remainder of a given double value, e.g. value - Math.floor( value ).
+     * 
+     * @param value
+     *            to get the remainder from.
+     * 
+     * @return the remainder of the given value.
+     */
+    private static double getRemainder( double value ) {
+        return value - Math.floor( value );
     }
 }

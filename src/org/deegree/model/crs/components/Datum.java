@@ -1,4 +1,4 @@
-//$HeadURL:  $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -54,9 +54,13 @@ import org.deegree.model.crs.CRSIdentifiable;
 public class Datum extends CRSIdentifiable {
 
     /**
-     * 
+     * @param id
+     *            containing all relevant id data.
      */
-    private static final long serialVersionUID = -3156411797986485936L;
+    public Datum( CRSIdentifiable id ) {
+        super( id );
+
+    }
 
     /**
      * @param identifiers
@@ -66,7 +70,6 @@ public class Datum extends CRSIdentifiable {
      * @param areasOfUse
      */
     public Datum( String[] identifiers, String[] names, String[] versions, String[] descriptions, String[] areasOfUse ) {
-        super( identifiers, names, versions, descriptions, areasOfUse );
-
+        this( new CRSIdentifiable( identifiers, names, versions, descriptions, areasOfUse ) );
     }
 }

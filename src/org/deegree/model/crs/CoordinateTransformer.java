@@ -50,7 +50,7 @@ import javax.vecmath.Point3d;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
 import org.deegree.model.crs.exceptions.UnknownCRSException;
-import org.deegree.model.crs.transformations.coordinate.CRSTransformation;
+import org.deegree.model.crs.transformations.Transformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,12 +63,12 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class CoordinateTransformer extends Transformer{
+public class CoordinateTransformer extends Transformer {
 
-    private static Logger LOG_TRANSFORM = LoggerFactory.getLogger( CoordinateTransformer.class.getCanonicalName() + ".TransformLogger" );
+    private static Logger LOG_TRANSFORM = LoggerFactory.getLogger( CoordinateTransformer.class.getCanonicalName()
+                                                                   + ".TransformLogger" );
 
     private static Logger LOG = LoggerFactory.getLogger( CoordinateTransformer.class );
-
 
     /**
      * Creates a new CoordinateTransformer object.
@@ -91,12 +91,22 @@ public class CoordinateTransformer extends Transformer{
      * @throws IllegalArgumentException
      *             if the given parameter is null.
      */
-    public CoordinateTransformer( String targetCRS ) throws UnknownCRSException, IllegalArgumentException{
-        super(targetCRS);
+    public CoordinateTransformer( String targetCRS ) throws UnknownCRSException, IllegalArgumentException {
+        super( targetCRS );
     }
 
- 
- 
+    /**
+     * Creates a new CoordinateTransformer object, with the given id as the target CRS.
+     * 
+     * @param transformation
+     *            to be used.
+     * @throws IllegalArgumentException
+     *             if the given parameter is null.
+     */
+    public CoordinateTransformer( Transformation transformation ) throws IllegalArgumentException {
+        super( transformation );
+    }
+
     /**
      * Transforms all points to the CoordinateTransformer`s coordinate system.
      * 
@@ -115,8 +125,8 @@ public class CoordinateTransformer extends Transformer{
         if ( points == null || points.size() == 0 ) {
             return new ArrayList<Point3d>();
         }
-        CRSTransformation trans = createCRSTransformation( sourceCRS );
-        
+        Transformation trans = createCRSTransformation( sourceCRS );
+
         List<Point3d> result = new ArrayList<Point3d>( points.size() );
         TransformationException exception = null;
         try {

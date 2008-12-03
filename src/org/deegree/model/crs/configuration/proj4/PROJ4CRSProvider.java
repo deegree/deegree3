@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -36,30 +36,26 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.crs.configuration;
+package org.deegree.model.crs.configuration.proj4;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
 import org.deegree.model.crs.components.PrimeMeridian;
 import org.deegree.model.crs.components.Unit;
+import org.deegree.model.crs.configuration.AbstractCRSProvider;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.coordinatesystems.ProjectedCRS;
@@ -70,10 +66,11 @@ import org.deegree.model.crs.projections.azimuthal.StereographicAlternative;
 import org.deegree.model.crs.projections.azimuthal.StereographicAzimuthal;
 import org.deegree.model.crs.projections.conic.LambertConformalConic;
 import org.deegree.model.crs.projections.cylindric.TransverseMercator;
-import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
-import org.deegree.model.i18n.Messages;
+import org.deegree.model.crs.transformations.Transformation;
+import org.deegree.model.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.deegree.model.i18n.Messages;
 
 /**
  * The <code>PROJ4CRSProvider</code> class is capable of parsing the nad/epsg file and use it as a backend for crs's.
@@ -92,13 +89,11 @@ import org.slf4j.LoggerFactory;
  * 
  */
 
-public class PROJ4CRSProvider implements CRSProvider {
+public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
 
     private static Logger LOG = LoggerFactory.getLogger( PROJ4CRSProvider.class );
 
     private static int ellipsCount = 0;
-
-    private static int toWGSCount = 0;
 
     private static int datumCount = 0;
 
@@ -114,9 +109,7 @@ public class PROJ4CRSProvider implements CRSProvider {
 
     private static final String OGC_URN = "URN:OGC:DEF:CRS:EPSG::";
 
-    Map<String, Map<String, String>> idToParams = new HashMap<String, Map<String, String>>( 4000 );
-
-    Map<String, CoordinateSystem> coordinateSystems = new HashMap<String, CoordinateSystem>( 10000 );
+    private Map<String, CoordinateSystem> coordinateSystems = new HashMap<String, CoordinateSystem>( 10000 );
 
     private String version = null;
 
@@ -130,8 +123,9 @@ public class PROJ4CRSProvider implements CRSProvider {
      * Export constructor, sets the version to current date..
      */
     public PROJ4CRSProvider() {
+        super( new Properties(), null, null );
         // dummy constructor for exporting only.
-        GregorianCalendar cal = (GregorianCalendar) GregorianCalendar.getInstance();
+        GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance();
         version = cal.get( Calendar.YEAR ) + "-" + ( cal.get( Calendar.MONTH ) + 1 ) + "-"
                   + cal.get( Calendar.DAY_OF_MONTH ) + "T" + cal.get( Calendar.HOUR_OF_DAY ) + ":"
                   + cal.get( Calendar.MINUTE );
@@ -141,51 +135,27 @@ public class PROJ4CRSProvider implements CRSProvider {
     /**
      * Opens a reader on the file and parses all parameters with id, without instantiating any CoordinateSystems.
      * 
-     * @param f
-     *            the file to open.
+     * @param properties
+     *            containing a crs.configuration property referencing a file location.
      */
-    public PROJ4CRSProvider( File f ) {
-        this();
-        try {
-            BufferedReader reader = new BufferedReader( new FileReader( f ) );
-            String line = reader.readLine();
-            Map<String, String> kvp = new HashMap<String, String>( 15 );
-            int lineNumber = 1;
-            while ( line != null ) {
-                if ( line.startsWith( "#" ) ) {
-                    // remove the '#' from the String.
-                    if ( kvp.get( "comment" ) != null ) {
-                        LOG.debug( "(Line: " + lineNumber + ") Multiple comments found, removing previous: "
-                                      + kvp.get( "comment" ) );
-                    }
-                    kvp.put( "comment", line.substring( 1 ).trim() );
-                } else {
-                    String identifier = parseConfigString( line, Integer.toString( lineNumber ), kvp );
-                    if ( identifier != null && !"".equals( identifier.trim() ) ) {
-                        LOG.debug( "Found identifier: " + identifier + " with following params: " + kvp );
-                        idToParams.put( identifier, kvp );
-                    }
-                    kvp = new HashMap<String, String>( 15 );
-                }
-                line = reader.readLine();
-                lineNumber++;
-            }
-            reader.close();
-
-        } catch ( FileNotFoundException e ) {
-            e.printStackTrace();
-        } catch ( CRSConfigurationException e ) {
-            e.printStackTrace();
-        } catch ( IOException e ) {
-            LOG.error( "Could not open file: " + f.getAbsoluteFile(), e );
-            // e.printStackTrace();
+    public PROJ4CRSProvider( Properties properties ) {
+        super( properties, ProjFileResource.class, null );
+        if ( getResolver() == null ) {
+            setResolver( new ProjFileResource( this, properties ) );
         }
+    }
+
+    @Override
+    protected ProjFileResource getResolver() {
+        return (ProjFileResource) super.getResolver();
     }
 
     public List<CoordinateSystem> getAvailableCRSs()
                             throws CRSConfigurationException {
-        Set<String> keys = idToParams.keySet();
-        LOG.debug( "Found following keys: " + keys );
+        Set<String> keys = getResolver().getAvailableIDs();
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( "Found following keys: " + keys );
+        }
         List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
         for ( String key : keys ) {
             try {
@@ -214,77 +184,6 @@ public class PROJ4CRSProvider implements CRSProvider {
 
     public void export( StringBuilder sb, List<CoordinateSystem> crsToExport ) {
         throw new UnsupportedOperationException( "Exporting to PROJ4 configuration is not suppored yet." );
-
-    }
-
-    public CoordinateSystem getCRSByID( String id )
-                            throws CRSConfigurationException {
-        if ( id != null && !"".equals( id.trim() ) ) {
-            String tmpID = getIDCode( id );
-            LOG.debug( "Given id: " + id + " converted into: " + tmpID );
-            if ( coordinateSystems.containsKey( tmpID ) && coordinateSystems.get( tmpID ) != null ) {
-                return coordinateSystems.get( tmpID );
-            } else if ( idToParams.containsKey( tmpID ) && idToParams.get( tmpID ) != null ) {
-                tmpID = tmpID.trim().toUpperCase();
-                LOG.debug( "Trying  to create crs for given id: " + tmpID );
-                Map<String, String> params = idToParams.get( tmpID );
-                CoordinateSystem result = createCRS( params );
-                if ( result != null ) {
-                    coordinateSystems.put( tmpID, result );
-                }
-                params.remove( "identifier" );
-                if ( params.size() != 0 ) {
-                    LOG.info( "After creation of the crs with id: " + tmpID
-                                 + ", following parameters remain unused: " + params );
-                }
-                idToParams.put( tmpID, null );
-                return result;
-            }
-            LOG.debug( "No crs found with given id: " + id );
-        }
-        return null;
-    }
-
-    /**
-     * removes any strings in front of the last number.
-     * 
-     * @param id
-     *            to be normalized.
-     * @return the number of the id, or id if ':' or '#' is not found.
-     */
-    private String getIDCode( String id ) {
-        if ( id == null || "".equals( id.trim() ) ) {
-            return id;
-        }
-        int count = id.lastIndexOf( ":" );
-        if ( count == -1 ) {
-            count = id.lastIndexOf( "#" );
-            if ( count == -1 ) {
-                return id;
-            }
-        }
-        return id.substring( count + 1 );
-    }
-
-    /**
-     * Return a CoordinateSystem initialized with a PROJ.4 argument list.
-     * 
-     * @throws CRSConfigurationException
-     */
-    private CoordinateSystem createCRS( Map<String, String> params )
-                            throws CRSConfigurationException {
-        String crsType = params.remove( "proj" );
-        if ( crsType == null || "".equals( crsType.trim() ) ) {
-            LOG.debug( "The given params contain: " + params );
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_NO_PROJ_PARAM",
-                                                                      params.get( EPSG_PRE + "identifier" ) ) );
-        }
-        crsType = crsType.trim();
-        if ( "longlat".equals( crsType ) ) {
-            // the geo-crs should find it's own id and has no parent projected crs (null, null).
-            return createGeographicCRS( null, null, params );
-        }
-        return createProjectedCRS( crsType, params );
 
     }
 
@@ -345,19 +244,20 @@ public class PROJ4CRSProvider implements CRSProvider {
         String[] names = new String[] { name };
         String description = "Handmade proj4 geographic crs definition (parsed from nad/epsg).";
         String ids[] = new String[] { identifier };
-        if ( identifier == null || "".equals( identifier.trim() ) ) {
-            identifier = params.get( "identifier" );
-            ids = getPredefinedIDs( identifier );
+        String tmpIdentifier = identifier;
+        String tmpProjectedID = projectedID;
+        if ( tmpIdentifier == null || "".equals( tmpIdentifier.trim() ) ) {
+            tmpIdentifier = params.get( "identifier" );
+            ids = getPredefinedIDs( tmpIdentifier );
             // if the id was not set, we create a geocrs, which means that no projectedID has been
-            // set, we want to build
-            // the datum with the id though!
-            projectedID = identifier;
+            // set, we want to build the datum with the id though!
+            tmpProjectedID = tmpIdentifier;
         } else {
             description += " Used by projected crs with id: " + projectedID;
         }
         String[] descriptions = new String[] { description };
         // projectedID will also hold the id of the geo-crs if it is a top level one.
-        GeodeticDatum datum = createDatum( params, projectedID );
+        GeodeticDatum datum = createDatum( params, tmpProjectedID );
         GeographicCRS result = new GeographicCRS( datum,
                                                   new Axis[] { new Axis( Unit.RADIAN, "longitude", Axis.AO_EAST ),
                                                               new Axis( Unit.RADIAN, "latitude", Axis.AO_NORTH ) },
@@ -393,58 +293,13 @@ public class PROJ4CRSProvider implements CRSProvider {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_DATUM_WITHOUT_ELLIPSOID",
                                                                           params.get( EPSG_PRE + "identifier" ) ) );
             }
-            WGS84ConversionInfo convInfo = createWGS84ConversionInfo( params );
             String id = "DATUM_" + datumCount++;
             String name = "Proj4 defined datum";
 
             String description = "Handmade proj4 datum definition (parsed from nad/epsg) used by crs with id: "
                                  + ( EPSG_PRE + identifier );
             PrimeMeridian pm = createPrimeMeridian( params );
-            result = new GeodeticDatum( ellipsoid, pm, convInfo, id, name, version, description, areaOfUse );
-        }
-        return result;
-    }
-
-    /**
-     * Creating the wgs84 aka BursaWolf conversion parameters. Either 3 or 7 parameters are supported.
-     * 
-     * @param params
-     *            to get the towgs84 param from
-     * @return the conversion info from the params or the 0 conversion info
-     * @throws CRSConfigurationException
-     *             if the number of params are not 3 or 7.
-     */
-    private WGS84ConversionInfo createWGS84ConversionInfo( Map<String, String> params )
-                            throws CRSConfigurationException {
-        WGS84ConversionInfo result = new WGS84ConversionInfo( "PROJ4_NO_CONVERSION_INFO" );
-        String tmpValue = params.remove( "towgs84" );
-        if ( tmpValue != null && !"".equals( tmpValue.trim() ) ) {
-            double[] values = null;
-            String[] splitter = tmpValue.trim().split( "," );
-            if ( splitter != null && splitter.length > 0 ) {
-                values = new double[splitter.length];
-                for ( int i = 0; i < splitter.length; ++i ) {
-                    values[i] = Double.parseDouble( splitter[i] );
-                }
-            }
-            if ( values != null ) {
-                String id = "towgs_" + toWGSCount++;
-                String description = "Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: "
-                                     + params.get( EPSG_PRE + "identifier" );
-                String name = "Proj4 defined toWGS84 params";
-
-                if ( values.length == 3 ) {
-                    result = new WGS84ConversionInfo( values[0], values[1], values[2], 0, 0, 0, 0, id, name, version,
-                                                      description, areaOfUse );
-                } else if ( values.length == 7 ) {
-                    result = new WGS84ConversionInfo( values[0], values[1], values[2], values[3], values[4], values[5],
-                                                      values[6], id, name, version, description, areaOfUse );
-                } else {
-                    throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_WGS84_PARAMS",
-                                                                              params.get( EPSG_PRE + "identifier" ),
-                                                                              Integer.toString( values.length ) ) );
-                }
-            }
+            result = new GeodeticDatum( ellipsoid, pm, null, id, name, version, description, areaOfUse );
         }
         return result;
     }
@@ -464,7 +319,7 @@ public class PROJ4CRSProvider implements CRSProvider {
         PrimeMeridian result = PrimeMeridian.GREENWICH;
         String id = "pm_" + primeMeridianCount++;
         String[] names = null;
-        String[] versions = null;
+        String[] meridianVersions = null;
         String[] descs = null;
         String[] aous = null;
         double longitude = Double.NaN;
@@ -473,70 +328,70 @@ public class PROJ4CRSProvider implements CRSProvider {
                 longitude = parseAngleFormat( "23d42'58.815\"E", false );
                 id = "8912";
                 names = new String[] { "Athens" };
-                versions = new String[] { "1995-06-02" };
+                meridianVersions = new String[] { "1995-06-02" };
                 descs = new String[] { "Used in Greece for older mapping based on Hatt projection." };
             } else if ( "bern".equals( tmpValue ) ) {
                 longitude = parseAngleFormat( "7d26'22.5\"E", false );
                 id = "8907";
                 names = new String[] { "Bern" };
-                versions = new String[] { "1995-06-02" };
+                meridianVersions = new String[] { "1995-06-02" };
                 descs = new String[] { "1895 value. Newer value of 7 deg 26 min 22.335 sec E determined in 1938." };
             } else if ( "bogota".equals( tmpValue ) ) {
                 longitude = parseAngleFormat( "74d04'51.3\"W", false );
                 id = "8904";
                 names = new String[] { "Bogota" };
-                versions = new String[] { "1995-06-02" };
+                meridianVersions = new String[] { "1995-06-02" };
                 descs = new String[] { "Instituto Geografico 'Augustin Cadazzi' (IGAC); Bogota" };
             } else if ( "brussels".equals( tmpValue ) ) {
                 longitude = parseAngleFormat( "4d22'4.71\"E", false );
                 id = "8910";
                 names = new String[] { "Brussel" };
-                versions = new String[] { "1995-06-02" };
+                meridianVersions = new String[] { "1995-06-02" };
             } else if ( "ferro".equals( tmpValue ) ) {
                 longitude = parseAngleFormat( "17d40'W", false );
                 id = "8909";
                 names = new String[] { "Ferro" };
-                versions = new String[] { "1995-06-02" };
+                meridianVersions = new String[] { "1995-06-02" };
                 descs = new String[] { "Used in Austria and former Czechoslovakia. " };
             } else if ( "jakarta".equals( tmpValue ) ) {
                 longitude = parseAngleFormat( "106d48'27.79\"E", false );
                 id = "8908";
                 names = new String[] { "Jakarta" };
-                versions = new String[] { "1995-06-02" };
+                meridianVersions = new String[] { "1995-06-02" };
             } else if ( "lisbon".equals( tmpValue ) ) {
                 longitude = parseAngleFormat( "9d07'54.862\"W", false );
                 id = "8902";
                 names = new String[] { "lisbon" };
-                versions = new String[] { "1995-06-02" };
+                meridianVersions = new String[] { "1995-06-02" };
                 descs = new String[] { "Information Source: Instituto Geografico e Cadastral; Lisbon " };
             } else if ( "madrid".equals( tmpValue ) ) {
                 longitude = parseAngleFormat( "3d41'16.58\"W", false );
                 id = "8905";
                 names = new String[] { "Madrid" };
-                versions = new String[] { "1995-06-02" };
+                meridianVersions = new String[] { "1995-06-02" };
                 descs = new String[] { "Value adopted by IGN (Paris) in 1936. Equivalent to 2 deg 20min 14.025sec. Preferred by EPSG to earlier value of 2deg 20min 13.95sec (2.596898 grads) used by RGS London." };
             } else if ( "oslo".equals( tmpValue ) ) {
                 longitude = parseAngleFormat( "10d43'22.5\"E", false );
                 id = "8913";
                 names = new String[] { "Oslo" };
-                versions = new String[] { "1995-06-02" };
+                meridianVersions = new String[] { "1995-06-02" };
                 descs = new String[] { "ormerly known as Kristiania or Christiania." };
             } else if ( "paris".equals( tmpValue ) ) {
                 longitude = parseAngleFormat( "2d20'14.025\"E", false );
                 id = "8903";
                 names = new String[] { "Paris" };
-                versions = new String[] { "1995-06-02" };
+                meridianVersions = new String[] { "1995-06-02" };
                 descs = new String[] { "Value adopted by IGN (Paris) in 1936. Equivalent to 2 deg 20min 14.025sec. Preferred by EPSG to earlier value of 2deg 20min 13.95sec (2.596898 grads) used by RGS London." };
             } else if ( "rome".equals( tmpValue ) ) {
                 longitude = parseAngleFormat( "12d27'8.4\"E", false );
                 id = "8906";
                 names = new String[] { "Rome" };
-                versions = new String[] { "1995-06-02" };
+                meridianVersions = new String[] { "1995-06-02" };
             } else if ( "stockholm".equals( tmpValue ) ) {
                 longitude = parseAngleFormat( "18d3'29.8\"E", false );
                 id = "8911";
                 names = new String[] { "Stockholm" };
-                versions = new String[] { "1995-06-02" };
+                meridianVersions = new String[] { "1995-06-02" };
             } else {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_UNKNOWN_PM",
                                                                           params.get( EPSG_PRE + "identifier" ),
@@ -548,7 +403,7 @@ public class PROJ4CRSProvider implements CRSProvider {
             if ( !id.startsWith( "pm_" ) ) {
                 ids = getPredefinedIDs( id );
             }
-            result = new PrimeMeridian( Unit.RADIAN, longitude, ids, names, versions, descs, aous );
+            result = new PrimeMeridian( Unit.RADIAN, longitude, ids, names, meridianVersions, descs, aous );
         }
         return result;
     }
@@ -729,11 +584,11 @@ public class PROJ4CRSProvider implements CRSProvider {
             String[] datumDescriptions = null;
             String[] datumVersions = null;
             String[] datumAOU = null;
-            WGS84ConversionInfo confInfo = new WGS84ConversionInfo( "Created by proj4 CRSProvider" );
+            Helmert confInfo = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, "Created by proj4 CRSProvider" );
             Ellipsoid ellipsoid = null;
             if ( "GGRS87".equalsIgnoreCase( datumName ) ) {
-                confInfo = new WGS84ConversionInfo( -199.87, 74.79, 246.62, 0, 0, 0, 0, getPredefinedIDs( "1272" ),
-                                                    new String[] {}, null, null, null );
+                confInfo = new Helmert( -199.87, 74.79, 246.62, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
+                                        getPredefinedIDs( "1272" ), new String[] {}, null, null, null );
 
                 datumIDs = getPredefinedIDs( "6121" );
                 datumNames = new String[] { "Greek_Geodetic_Reference_System_1987" };
@@ -744,8 +599,9 @@ public class PROJ4CRSProvider implements CRSProvider {
                     ellipsoid = getPredefinedEllipsoid( definedEllipsoid );
                 }
             } else if ( "NAD27".equalsIgnoreCase( datumName ) ) {
-                confInfo = new WGS84ConversionInfo( -8, 160, 176, 0, 0, 0, 0, getPredefinedIDs( "1173" ),
-                                                    new String[] { "North_American_Datum_1983" }, null, null, null );
+                confInfo = new Helmert( -8, 160, 176, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
+                                        getPredefinedIDs( "1173" ), new String[] { "North_American_Datum_1983" }, null,
+                                        null, null );
 
                 datumIDs = getPredefinedIDs( "6267" );
                 datumNames = new String[] { "North_American_Datum_1927" };
@@ -758,9 +614,9 @@ public class PROJ4CRSProvider implements CRSProvider {
                     ellipsoid = getPredefinedEllipsoid( definedEllipsoid );
                 }
             } else if ( "NAD83".equalsIgnoreCase( datumName ) ) {
-                confInfo = new WGS84ConversionInfo( getPredefinedIDs( "1188" ), null, null,
-                                                    new String[] { "Derived at 312 stations." },
-                                                    new String[] { "North America - all Canada and USA subunits" } );
+                confInfo = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, getPredefinedIDs( "1188" ), null,
+                                        null, new String[] { "Derived at 312 stations." },
+                                        new String[] { "North America - all Canada and USA subunits" } );
                 datumIDs = getPredefinedIDs( "6269" );
                 datumNames = new String[] { "North_American_Datum_1983" };
                 if ( definedEllipsoid == null || "".equals( definedEllipsoid )
@@ -770,19 +626,21 @@ public class PROJ4CRSProvider implements CRSProvider {
                     ellipsoid = getPredefinedEllipsoid( definedEllipsoid );
                 }
             } else if ( "OSGB36".equalsIgnoreCase( datumName ) ) {
-                confInfo = new WGS84ConversionInfo(
-                                                    446.448,
-                                                    -125.157,
-                                                    542.060,
-                                                    0.1502,
-                                                    0.2470,
-                                                    0.8421,
-                                                    -20.4894,
-                                                    getPredefinedIDs( "1314" ),
-                                                    null,
-                                                    null,
-                                                    new String[] { "For a more accurate transformation see OSGB 1936 / British National Grid to ETRS89 (2) (code 1039): contact the Ordnance Survey of Great Britain (http://www.gps.gov.uk/gpssurveying.asp) for details." },
-                                                    new String[] { "United Kingdom (UK) - Great Britain and UKCS" } );
+                confInfo = new Helmert(
+                                        446.448,
+                                        -125.157,
+                                        542.060,
+                                        0.1502,
+                                        0.2470,
+                                        0.8421,
+                                        -20.4894,
+                                        GeographicCRS.WGS84,
+                                        GeographicCRS.WGS84,
+                                        getPredefinedIDs( "1314" ),
+                                        null,
+                                        null,
+                                        new String[] { "For a more accurate transformation see OSGB 1936 / British National Grid to ETRS89 (2) (code 1039): contact the Ordnance Survey of Great Britain (http://www.gps.gov.uk/gpssurveying.asp) for details." },
+                                        new String[] { "United Kingdom (UK) - Great Britain and UKCS" } );
                 datumIDs = getPredefinedIDs( "6001" );
                 datumNames = new String[] { "Airy 1830" };
                 if ( definedEllipsoid == null || "".equals( definedEllipsoid )
@@ -794,9 +652,9 @@ public class PROJ4CRSProvider implements CRSProvider {
             } else if ( "WGS84".equalsIgnoreCase( datumName ) ) {
                 return GeodeticDatum.WGS84;
             } else if ( "carthage".equalsIgnoreCase( datumName ) ) {
-                confInfo = new WGS84ConversionInfo( -263.0, 6.0, 431.0, 0, 0, 0, 0, getPredefinedIDs( "1130" ), null,
-                                                    null, new String[] { "Derived at 5 stations." },
-                                                    new String[] { "Tunisia" } );
+                confInfo = new Helmert( -263.0, 6.0, 431.0, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
+                                        getPredefinedIDs( "1130" ), null, null,
+                                        new String[] { "Derived at 5 stations." }, new String[] { "Tunisia" } );
                 datumIDs = getPredefinedIDs( "6816" );
                 datumNames = new String[] { "Carthage 1934 Tunisia" };
                 if ( definedEllipsoid == null || "".equals( definedEllipsoid )
@@ -806,9 +664,9 @@ public class PROJ4CRSProvider implements CRSProvider {
                     ellipsoid = getPredefinedEllipsoid( definedEllipsoid );
                 }
             } else if ( "hermannskogel".equalsIgnoreCase( datumName ) ) {
-                confInfo = new WGS84ConversionInfo( 653.0, -212.0, 449.0, 0, 0, 0, 0,
-                                                    new String[] { "kogel", EPSG_PRE + "1306" }, null, null,
-                                                    new String[] { "No epsg code was found." }, null );
+                confInfo = new Helmert( 653.0, -212.0, 449.0, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
+                                        new String[] { "kogel", EPSG_PRE + "1306" }, null, null,
+                                        new String[] { "No epsg code was found." }, null );
                 datumIDs = new String[] { "Hermannskogel" };
                 datumNames = new String[] { "some undefined proj4 datum" };
                 if ( definedEllipsoid == null || "".equals( definedEllipsoid )
@@ -818,9 +676,9 @@ public class PROJ4CRSProvider implements CRSProvider {
                     ellipsoid = getPredefinedEllipsoid( definedEllipsoid );
                 }
             } else if ( "ire65".equalsIgnoreCase( datumName ) ) {
-                confInfo = new WGS84ConversionInfo( 482.530, -130.596, 564.557, -1.042, -0.214, -0.631, 8.15,
-                                                    new String[] { "ire65_conversion" }, null, null,
-                                                    new String[] { "no epsg code was found" }, null );
+                confInfo = new Helmert( 482.530, -130.596, 564.557, -1.042, -0.214, -0.631, 8.15, GeographicCRS.WGS84,
+                                        GeographicCRS.WGS84, new String[] { "ire65_conversion" }, null, null,
+                                        new String[] { "no epsg code was found" }, null );
                 datumIDs = new String[] { "Ireland 1965" };
                 datumNames = new String[] { "no epsg code was found." };
                 if ( definedEllipsoid == null || "".equals( definedEllipsoid )
@@ -830,19 +688,21 @@ public class PROJ4CRSProvider implements CRSProvider {
                     ellipsoid = getPredefinedEllipsoid( definedEllipsoid );
                 }
             } else if ( "nzgd49".equalsIgnoreCase( datumName ) ) {
-                confInfo = new WGS84ConversionInfo(
-                                                    59.47,
-                                                    -5.04,
-                                                    187.44,
-                                                    0.47,
-                                                    -0.1,
-                                                    1.024,
-                                                    -4.5993,
-                                                    getPredefinedIDs( "1564" ),
-                                                    new String[] { "NZGD49 to WGS 84 (2)" },
-                                                    new String[] { "OSG-Nzl 4m" },
-                                                    new String[] { "hese parameter values are taken from NZGD49 to NZGD2000 (4) (code 1701) and assume that NZGD2000 and WGS 84 are coincident to within the accuracy of the transformation. For improved accuracy use NZGD49 to WGS 84 (4) (code 1670)." },
-                                                    new String[] { "New Zealand" } );
+                confInfo = new Helmert(
+                                        59.47,
+                                        -5.04,
+                                        187.44,
+                                        0.47,
+                                        -0.1,
+                                        1.024,
+                                        -4.5993,
+                                        GeographicCRS.WGS84,
+                                        GeographicCRS.WGS84,
+                                        getPredefinedIDs( "1564" ),
+                                        new String[] { "NZGD49 to WGS 84 (2)" },
+                                        new String[] { "OSG-Nzl 4m" },
+                                        new String[] { "hese parameter values are taken from NZGD49 to NZGD2000 (4) (code 1701) and assume that NZGD2000 and WGS 84 are coincident to within the accuracy of the transformation. For improved accuracy use NZGD49 to WGS 84 (4) (code 1670)." },
+                                        new String[] { "New Zealand" } );
                 datumIDs = getPredefinedIDs( "6272" );
                 datumNames = new String[] { "New Zealand Geodetic Datum 1949" };
                 if ( definedEllipsoid == null || "".equals( definedEllipsoid )
@@ -855,38 +715,42 @@ public class PROJ4CRSProvider implements CRSProvider {
                 if ( ( crsID != null && !"".equals( crsID ) ) && "3068".equals( crsID ) || "4314".equals( crsID )
                      || "31466".equals( crsID ) || "31467".equals( crsID ) || "31468".equals( crsID )
                      || "31469".equals( crsID ) ) {
-                    confInfo = new WGS84ConversionInfo(
-                                                        598.1,
-                                                        73.7,
-                                                        418.2,
-                                                        0.202,
-                                                        0.045,
-                                                        -2.455,
-                                                        6.7,
-                                                        getPredefinedIDs( "1777" ),
-                                                        new String[] { "DHDN to WGS 84" },
-                                                        new String[] { "EPSG-Deu W 3m" },
-                                                        new String[] { "Parameter values from DHDN to ETRS89 (2) (code 1776) assuming that ETRS89 is equivalent to WGS 84 within the accuracy of the transformation. Replaces DHDN to WGS 84 (1) (tfm code 1673)." },
-                                                        new String[] { "Germany - states of former West Germany - Baden-Wurtemberg, Bayern, Hessen, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Schleswig-Holstein." } );
+                    confInfo = new Helmert(
+                                            598.1,
+                                            73.7,
+                                            418.2,
+                                            0.202,
+                                            0.045,
+                                            -2.455,
+                                            6.7,
+                                            GeographicCRS.WGS84,
+                                            GeographicCRS.WGS84,
+                                            getPredefinedIDs( "1777" ),
+                                            new String[] { "DHDN to WGS 84" },
+                                            new String[] { "EPSG-Deu W 3m" },
+                                            new String[] { "Parameter values from DHDN to ETRS89 (2) (code 1776) assuming that ETRS89 is equivalent to WGS 84 within the accuracy of the transformation. Replaces DHDN to WGS 84 (1) (tfm code 1673)." },
+                                            new String[] { "Germany - states of former West Germany - Baden-Wurtemberg, Bayern, Hessen, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Schleswig-Holstein." } );
                     datumIDs = getPredefinedIDs( "6314" );
                     datumNames = new String[] { "Deutsches Hauptdreiecksnetz" };
                     datumVersions = new String[] { "2006-06-12" };
                     datumDescriptions = new String[] { "Fundamental point: Rauenberg. Latitude: 52 deg 27 min 12.021 sec N; Longitude: 13 deg 22 min 04.928 sec E (of Greenwich). This station was destroyed in 1910 and the station at Potsdam substituted as the fundamental point." };
                     datumAOU = new String[] { "Germany - states of former West Germany - Baden-Wurtemberg, Bayern, Hessen, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Schleswig-Holstein." };
                 } else {
-                    confInfo = new WGS84ConversionInfo(
-                                                        606.0,
-                                                        23.0,
-                                                        413.0,
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        getPredefinedIDs( "15955" ),
-                                                        new String[] { "RD/83 to WGS 84 (1)" },
-                                                        new String[] { "OGP-Deu BeTA2007" },
-                                                        new String[] { "These parameter values are taken from DHDN to ETRS89 (8) (code 15948) as RD/83 and ETRS89 may be considered equivalent to DHDN and WGS 84 respectively within the accuracy of the transformation." },
-                                                        new String[] { "Germany-Sachsen" } );
+                    confInfo = new Helmert(
+                                            606.0,
+                                            23.0,
+                                            413.0,
+                                            0,
+                                            0,
+                                            0,
+                                            0,
+                                            GeographicCRS.WGS84,
+                                            GeographicCRS.WGS84,
+                                            getPredefinedIDs( "15955" ),
+                                            new String[] { "RD/83 to WGS 84 (1)" },
+                                            new String[] { "OGP-Deu BeTA2007" },
+                                            new String[] { "These parameter values are taken from DHDN to ETRS89 (8) (code 15948) as RD/83 and ETRS89 may be considered equivalent to DHDN and WGS 84 respectively within the accuracy of the transformation." },
+                                            new String[] { "Germany-Sachsen" } );
                     datumIDs = getPredefinedIDs( "6746" );
                     datumNames = new String[] { "Potsdam Rauenberg 1950 DHDN" };
                 }
@@ -1502,7 +1366,7 @@ public class PROJ4CRSProvider implements CRSProvider {
      * @param d
      *            days
      * @param m
-     *            months
+     *            minutes
      * @param s
      *            seconds.
      * @return the converted value in degrees.
@@ -1514,140 +1378,51 @@ public class PROJ4CRSProvider implements CRSProvider {
         return ( d - m / 60 - s / 3600 );
     }
 
-    /**
-     * Parses the configured proj4 parameters from the given String using a StreamTokenizer and saves them in the Map.
-     * 
-     * @param params
-     *            to be parsed
-     * @param lineNumber
-     *            in the config file.
-     * @param kvp
-     *            in which the key-value pairs will be saved.
-     * @return the parsed Identifier or <code>null</code> if no identifier was found.
-     * @throws IOException
-     *             if the StreamTokenizer finds an error.
-     * @throws CRSConfigurationException
-     *             If the config was malformed.
-     */
-    private String parseConfigString( String params, String lineNumber, Map<String, String> kvp )
-                            throws IOException, CRSConfigurationException {
-        BufferedReader br = new BufferedReader( new StringReader( params ) );
-        StreamTokenizer t = new StreamTokenizer( br );
-        t.commentChar( '#' );
-        t.ordinaryChars( '0', '9' );
-        // t.ordinaryChars( '.', '.' );
-        t.ordinaryChar( '.' );
-        // t.ordinaryChars( '-', '-' );
-        t.ordinaryChar( '-' );
-        // t.ordinaryChars( '+', '+' );
-        t.ordinaryChar( '+' );
-        t.wordChars( '0', '9' );
-        t.wordChars( '\'', '\'' );
-        t.wordChars( '"', '"' );
-        t.wordChars( '_', '_' );
-        t.wordChars( '.', '.' );
-        t.wordChars( '-', '-' );
-        t.wordChars( '+', '+' );
-        t.wordChars( ',', ',' );
-        t.nextToken();
-        String identifier = null;
-        /**
-         * PROJ4 type defintions have following format, <number> +proj .... So the first type must start with an '<'
-         */
-        if ( t.ttype == '<' ) {
-            t.nextToken();
-            // if the next value is not a word, e.g. a number (see t.wordChars('0','9')) it is the
-            // wrong format.
-            if ( t.ttype != StreamTokenizer.TT_WORD ) {
-                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_INVALID_ID", lineNumber,
-                                                                          "An identifier (e.g. number)", "<",
-                                                                          getTokenizerSymbolToString( t.ttype ) ) );
-            }
-            // it's a word so get the identifier.
-            identifier = t.sval;
-            //
-            kvp.put( "identifier", identifier );
-            t.nextToken();
-
-            // check for closing bracket.
-            if ( t.ttype != '>' ) {
-                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_MISSING_EXPECTED_CHAR",
-                                                                          lineNumber, ">" ) );
-            }
-            t.nextToken();
-
-            // get the parameters.
-            while ( t.ttype != '<' ) {
-                if ( t.ttype == '+' ) {
-                    t.nextToken();
-                }
-                if ( t.ttype != StreamTokenizer.TT_WORD ) {
-                    throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_INVALID_ID",
-                                                                              lineNumber, "A parameter", "+",
-                                                                              getTokenizerSymbolToString( t.ttype ) ) );
-                }
-                String key = t.sval;
-                if ( key != null && !"".equals( key ) ) {
-                    if ( key.startsWith( "+" ) ) {
-                        key = key.substring( 1 );
-                    }
-                    t.nextToken();
-                    if ( t.ttype == '=' ) {
-                        t.nextToken();
-                        if ( t.ttype != StreamTokenizer.TT_WORD ) {
-                            throw new CRSConfigurationException(
-                                                                 Messages.getMessage(
-                                                                                      "CRS_CONFIG_PROJ4_INVALID_ID",
-                                                                                      lineNumber,
-                                                                                      "A Value",
-                                                                                      "=",
-                                                                                      getTokenizerSymbolToString( t.ttype ) ) );
-                        }
-                        String value = t.sval;
-                        LOG.debug( "Putting key: " + key + " with value: " + value );
-                        kvp.put( key, value );
-                        // take the next token.
-                        t.nextToken();
-                    }
-                }
-            }
-            t.nextToken();
-            if ( t.ttype != '>' ) {
-                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_MISSING_EXPECTED_CHAR",
-                                                                          lineNumber, "<> (End of defintion)" ) );
-            }
-        } else {
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_MISSING_EXPECTED_CHAR",
-                                                                      lineNumber, "< (Start of defintion)" ) );
-        }
-        br.close();
-        return identifier;
-    }
-
-    /**
-     * Creates a helpfull string of the given StreamTokenizer value.
-     * 
-     * @param val
-     *            an int gotten from streamTokenizer.ttype.
-     * @return a human readable String.
-     */
-    private String getTokenizerSymbolToString( int val ) {
-        String result = new String( "" + val );
-        if ( val == StreamTokenizer.TT_EOF ) {
-            result = "End of file";
-        } else if ( val == StreamTokenizer.TT_EOL ) {
-            result = "End of line";
-        } else if ( val == StreamTokenizer.TT_NUMBER ) {
-            result = "A number with value: " + val;
-        }
-        return result;
-    }
-
     public List<String> getAvailableCRSIds()
                             throws CRSConfigurationException {
-        Set<String> keys = idToParams.keySet();
+        Set<String> keys = getResolver().getAvailableIDs();
         List<String> result = new LinkedList<String>();
         result.addAll( keys );
         return result;
+    }
+
+    public CRSIdentifiable getIdentifiable( String id )
+                            throws CRSConfigurationException {
+        CRSIdentifiable result = getCachedIdentifiable( id );
+        if ( result == null ) {
+            throw new UnsupportedOperationException(
+                                                     "The retrieval of an arbitrary CRSIdentifiable Object is currently not supported by the proj 4 provider." );
+        }
+        return result;
+    }
+
+    @Override
+    protected CoordinateSystem parseCoordinateSystem( Map<String, String> crsDefinition )
+                            throws CRSConfigurationException {
+
+        String crsType = crsDefinition.remove( "proj" );
+        if ( crsType == null || "".equals( crsType.trim() ) ) {
+            LOG.debug( "The given params contain: " + crsDefinition );
+            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_NO_PROJ_PARAM",
+                                                                      crsDefinition.get( EPSG_PRE + "identifier" ) ) );
+        }
+        crsType = crsType.trim();
+        if ( "longlat".equals( crsType ) ) {
+            // the geo-crs should find it's own id and has no parent projected crs (null, null).
+            return createGeographicCRS( null, null, crsDefinition );
+        }
+        return createProjectedCRS( crsType, crsDefinition );
+    }
+
+    @Override
+    public Transformation parseTransformation( Map<String, String> transformationDefinition )
+                            throws CRSConfigurationException {
+        throw new UnsupportedOperationException(
+                                                 "Parsing of transformation parameters is not applicable for proj4 configuration files yet." );
+    }
+
+    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
+                            throws CRSConfigurationException {
+        return getResolver().getTransformation( sourceCRS, targetCRS );
     }
 }

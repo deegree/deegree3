@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -38,7 +38,8 @@
 
 package org.deegree.model.crs.components;
 
-import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
+import org.deegree.model.crs.CRSIdentifiable;
+import org.deegree.model.crs.transformations.helmert.Helmert;
 
 /**
  * A <code>GeodeticDatum</code> (aka. HorizontalDatum) holds an ellipse and a prime-meridian.
@@ -54,21 +55,44 @@ import org.deegree.model.crs.transformations.helmert.WGS84ConversionInfo;
 public class GeodeticDatum extends Datum {
 
     /**
-     * 
-     */
-    private static final long serialVersionUID = 7585690468720546419L;
-
-    /**
      * The default WGS 1984 datum, with primeMeridian set to Greenwich and default (no) wgs84 conversion info.
      */
-    public static final GeodeticDatum WGS84 = new GeodeticDatum( Ellipsoid.WGS84, new WGS84ConversionInfo( "-1" ),
-                                                                 "EPSG:6326", "WGS_1984" );
+    public static final GeodeticDatum WGS84 = new GeodeticDatum( Ellipsoid.WGS84, "EPSG:6326", "WGS_1984" );
 
     private PrimeMeridian primeMeridian;
 
     private Ellipsoid ellipsoid;
 
-    private WGS84ConversionInfo toWGS84;
+    private Helmert toWGS84;
+
+    /**
+     * @param ellipsoid
+     *            of this datum
+     * @param primeMeridian
+     *            to which this datum is defined.
+     * @param toWGS84
+     *            bursa-wolf parameters describing the transform from this datum into the wgs84 datum.
+     * @param id
+     *            containing all relevant id data.
+     */
+    public GeodeticDatum( Ellipsoid ellipsoid, PrimeMeridian primeMeridian, Helmert toWGS84, CRSIdentifiable id ) {
+        super( id );
+        this.ellipsoid = ellipsoid;
+        this.primeMeridian = primeMeridian;
+        this.toWGS84 = toWGS84;
+    }
+
+    /**
+     * @param ellipsoid
+     *            of this datum
+     * @param primeMeridian
+     *            to which this datum is defined.
+     * @param id
+     *            containing all relevant id data.
+     */
+    public GeodeticDatum( Ellipsoid ellipsoid, PrimeMeridian primeMeridian, CRSIdentifiable id ) {
+        this( ellipsoid, primeMeridian, null, id );
+    }
 
     /**
      * @param ellipsoid
@@ -83,13 +107,10 @@ public class GeodeticDatum extends Datum {
      * @param descriptions
      * @param areasOfUse
      */
-    public GeodeticDatum( Ellipsoid ellipsoid, PrimeMeridian primeMeridian, WGS84ConversionInfo toWGS84,
-                          String[] identifiers, String[] names, String[] versions, String[] descriptions,
-                          String[] areasOfUse ) {
-        super( identifiers, names, versions, descriptions, areasOfUse );
-        this.ellipsoid = ellipsoid;
-        this.primeMeridian = primeMeridian;
-        this.toWGS84 = toWGS84;
+    public GeodeticDatum( Ellipsoid ellipsoid, PrimeMeridian primeMeridian, Helmert toWGS84, String[] identifiers,
+                          String[] names, String[] versions, String[] descriptions, String[] areasOfUse ) {
+        this( ellipsoid, primeMeridian, toWGS84, new CRSIdentifiable( identifiers, names, versions, descriptions,
+                                                                   areasOfUse ) );
     }
 
     /**
@@ -101,8 +122,8 @@ public class GeodeticDatum extends Datum {
      *            bursa-wolf parameters describing the transform from this datum into the wgs84 datum.
      * @param identifiers
      */
-    public GeodeticDatum( Ellipsoid ellipsoid, WGS84ConversionInfo toWGS84, String[] identifiers ) {
-        this( ellipsoid, PrimeMeridian.GREENWICH, toWGS84, identifiers, null, null, null, null );
+    public GeodeticDatum( Ellipsoid ellipsoid, Helmert toWGS84, String[] identifiers ) {
+        this( ellipsoid, PrimeMeridian.GREENWICH, toWGS84, new CRSIdentifiable( identifiers, null, null, null, null ) );
     }
 
     /**
@@ -116,9 +137,8 @@ public class GeodeticDatum extends Datum {
      *            bursa-wolf parameters describing the transform from this datum into the wgs84 datum.
      * @param identifiers
      */
-    public GeodeticDatum( Ellipsoid ellipsoid, PrimeMeridian primeMeridian, WGS84ConversionInfo toWGS84,
-                          String[] identifiers ) {
-        this( ellipsoid, primeMeridian, toWGS84, identifiers, null, null, null, null );
+    public GeodeticDatum( Ellipsoid ellipsoid, PrimeMeridian primeMeridian, Helmert toWGS84, String[] identifiers ) {
+        this( ellipsoid, primeMeridian, toWGS84, new CRSIdentifiable( identifiers, null, null, null, null ) );
     }
 
     /**
@@ -134,10 +154,12 @@ public class GeodeticDatum extends Datum {
      * @param description
      * @param areaOfUse
      */
-    public GeodeticDatum( Ellipsoid ellipsoid, PrimeMeridian primeMeridian, WGS84ConversionInfo toWGS84,
-                          String identifier, String name, String version, String description, String areaOfUse ) {
-        this( ellipsoid, primeMeridian, toWGS84, new String[] { identifier }, new String[] { name },
-              new String[] { version }, new String[] { description }, new String[] { areaOfUse } );
+    public GeodeticDatum( Ellipsoid ellipsoid, PrimeMeridian primeMeridian, Helmert toWGS84, String identifier,
+                          String name, String version, String description, String areaOfUse ) {
+        this( ellipsoid, primeMeridian, toWGS84, new CRSIdentifiable( new String[] { identifier }, new String[] { name },
+                                                                   new String[] { version },
+                                                                   new String[] { description },
+                                                                   new String[] { areaOfUse } ) );
     }
 
     /**
@@ -150,9 +172,22 @@ public class GeodeticDatum extends Datum {
      * @param identifier
      * @param name
      */
-    public GeodeticDatum( Ellipsoid ellipsoid, WGS84ConversionInfo toWGS84, String identifier, String name ) {
-        this( ellipsoid, PrimeMeridian.GREENWICH, toWGS84, new String[] { identifier }, new String[] { name }, null,
-              null, null );
+    public GeodeticDatum( Ellipsoid ellipsoid, Helmert toWGS84, String identifier, String name ) {
+        this( ellipsoid, PrimeMeridian.GREENWICH, toWGS84, new CRSIdentifiable( new String[] { identifier },
+                                                                             new String[] { name }, null, null, null ) );
+    }
+
+    /**
+     * A datum with given ellipsoid and a GreenWich prime-meridian, with no helmert.
+     * 
+     * @param ellipsoid
+     *            of this datum
+     * @param identifier
+     * @param name
+     */
+    public GeodeticDatum( Ellipsoid ellipsoid, String identifier, String name ) {
+        this( ellipsoid, PrimeMeridian.GREENWICH, null, new CRSIdentifiable( new String[] { identifier },
+                                                                          new String[] { name }, null, null, null ) );
     }
 
     /**
@@ -172,8 +207,17 @@ public class GeodeticDatum extends Datum {
     /**
      * @return the toWGS84Conversion information needed to convert this geodetic Datum into the geocentric WGS84 Datum.
      */
-    public final WGS84ConversionInfo getWGS84Conversion() {
+    public final Helmert getWGS84Conversion() {
         return toWGS84;
+    }
+
+    /**
+     * 
+     * @param toWGS84Conversion
+     *            the transformation to be used to convert this geodetic datum into the wgs84 datum.
+     */
+    public final void setToWGS84( Helmert toWGS84Conversion ) {
+        this.toWGS84 = toWGS84Conversion;
     }
 
     @Override
@@ -182,7 +226,10 @@ public class GeodeticDatum extends Datum {
             GeodeticDatum that = (GeodeticDatum) other;
             return this.getPrimeMeridian().equals( that.getPrimeMeridian() )
                    && this.getEllipsoid().equals( that.getEllipsoid() )
-                   && this.getWGS84Conversion().equals( that.getWGS84Conversion() ) && super.equals( that );
+                   && ( ( this.getWGS84Conversion() == null ) ? that.getWGS84Conversion() == null
+                                                             : this.getWGS84Conversion().equals(
+                                                                                                 that.getWGS84Conversion() ) )
+                   && super.equals( that );
         }
         return false;
     }
@@ -197,7 +244,9 @@ public class GeodeticDatum extends Datum {
         StringBuilder sb = new StringBuilder( super.toString() );
         sb.append( "\n - Ellipsoid: " ).append( ellipsoid );
         sb.append( "\n - Primemeridian: " ).append( primeMeridian );
-        sb.append( "\n - wgs84-conversion-info: " ).append( toWGS84 );
+        if ( this.toWGS84 != null ) {
+            sb.append( "\n - wgs84-conversion-info: " ).append( toWGS84 );
+        }
         return sb.toString();
     }
 

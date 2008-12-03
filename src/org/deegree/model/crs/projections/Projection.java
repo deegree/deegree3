@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -38,13 +38,13 @@
 
 package org.deegree.model.crs.projections;
 
-import static org.deegree.model.crs.CRSIdentifiable.checkForNullObject;
 import static org.deegree.model.crs.projections.ProjectionUtils.EPS11;
 import static org.deegree.model.crs.projections.ProjectionUtils.normalizeLatitude;
 import static org.deegree.model.crs.projections.ProjectionUtils.normalizeLongitude;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Datum;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.PrimeMeridian;
@@ -76,7 +76,7 @@ import org.deegree.model.crs.exceptions.ProjectionException;
  * 
  */
 
-public abstract class Projection {
+public abstract class Projection extends CRSIdentifiable {
 
     private final boolean conformal;
 
@@ -131,9 +131,12 @@ public abstract class Projection {
      *            if the projection is conformal
      * @param equalArea
      *            if the projection result in an equal area map
+     * @param id
+     *            an identifiable instance containing information about this projection.
      */
     public Projection( GeographicCRS geographicCRS, double falseNorthing, double falseEasting, Point2d naturalOrigin,
-                       Unit units, double scale, boolean conformal, boolean equalArea ) {
+                       Unit units, double scale, boolean conformal, boolean equalArea, CRSIdentifiable id ) {
+        super( id );
         this.scale = scale;
         this.conformal = conformal;
         this.equalArea = equalArea;
@@ -196,7 +199,7 @@ public abstract class Projection {
     /**
      * @return A deegree specific name which will be used for the export of a projection.
      */
-    public abstract String getName();
+    public abstract String getImplementationName();
 
     /**
      * @return true if the projection projects conformal.
@@ -405,7 +408,7 @@ public abstract class Projection {
      * distribution and is relatively fast. It is created from field <b>f</b> as follows:
      * <ul>
      * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f </li>
+     * <li>byte, char, short, int -- code = (int)f</li>
      * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
      * <li>float -- code = Float.floatToIntBits(f);</li>
      * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>

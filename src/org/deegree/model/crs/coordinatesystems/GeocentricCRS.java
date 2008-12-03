@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -59,10 +59,6 @@ import org.deegree.model.crs.transformations.polynomial.PolynomialTransformation
 
 public class GeocentricCRS extends CoordinateSystem {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 6275348240699500695L;
     /**
      * The default geocentric coordinate system. Geocentric datum is WGS84 and linear units are metre. The <var>X</var>
      * axis points towards the prime meridian (e.g. front). The <var>Y</var> axis points East. The <var>Z</var> axis

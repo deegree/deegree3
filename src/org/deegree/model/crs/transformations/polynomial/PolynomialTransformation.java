@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -45,6 +45,9 @@ import javax.vecmath.Point3d;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
+import org.deegree.model.crs.transformations.Transformation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <code>PolynomialTransformation</code> is the base class for all polynomial transformations.
@@ -56,22 +59,26 @@ import org.deegree.model.crs.exceptions.TransformationException;
  * @version $Revision$, $Date$
  * 
  */
-public abstract class PolynomialTransformation {
+public abstract class PolynomialTransformation extends Transformation {
+
+    private static Logger LOG = LoggerFactory.getLogger( PolynomialTransformation.class );
 
     private List<Double> firstParams;
 
     private List<Double> secondParams;
 
-    private final CoordinateSystem targetCRS;
-
     /**
      * @param firstParameters
      *            the parameters for the
      * @param secondParameters
+     * @param sourceCRS
      * @param targetCRS
+     * @param id
+     *            an identifiable instance containing information about this transformation
      */
     public PolynomialTransformation( List<Double> firstParameters, List<Double> secondParameters,
-                                     CoordinateSystem targetCRS ) {
+                                     CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable id ) {
+        super( sourceCRS, targetCRS, id );
         if ( firstParameters == null ) {
             throw new IllegalArgumentException( "The first parameter list my not be null" );
         }
@@ -81,8 +88,7 @@ public abstract class PolynomialTransformation {
             throw new IllegalArgumentException( "The second parameter list my not be null" );
         }
         this.secondParams = secondParameters;
-        CRSIdentifiable.checkForNullObject( targetCRS, "PolynomialTransformation", "targetCRS" );
-        this.targetCRS = targetCRS;
+
     }
 
     /**
@@ -108,14 +114,11 @@ public abstract class PolynomialTransformation {
      * @param srcPoints
      *            to transform
      * @return the transformed points.
-     * @throws TransformationException if for some reason one of the incoming points could not be transformed.
+     * @throws TransformationException
+     *             if for some reason one of the incoming points could not be transformed.
      */
-    public abstract List<Point3d> applyPolynomial( List<Point3d> srcPoints ) throws TransformationException;
-
-    /**
-     * @return the canonical name of the implementation.
-     */
-    public abstract String getName();
+    public abstract List<Point3d> applyPolynomial( List<Point3d> srcPoints )
+                            throws TransformationException;
 
     /**
      * @return the Parameters for the calculation of the first coordinate.
@@ -131,11 +134,25 @@ public abstract class PolynomialTransformation {
         return secondParams;
     }
 
-    /**
-     * @return the targetCRS, to which the incoming points can be transformed.
-     */
-    public final CoordinateSystem getTargetCRS() {
-        return targetCRS;
+    @Override
+    public final List<Point3d> doTransform( List<Point3d> srcPts )
+                            throws TransformationException {
+        return applyPolynomial( srcPts );
+    }
+
+    @Override
+    public void inverse() {
+        LOG.warn( "A Polynomial Transformation cannot be inverse yet" );
+    }
+
+    @Override
+    public boolean isIdentity() {
+        return false;
+    }
+
+    @Override
+    public boolean isInverseTransform() {
+        return false;
     }
 
 }

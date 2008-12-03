@@ -1,4 +1,4 @@
-//$HeadURL: $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2008 by:
@@ -42,14 +42,15 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.exceptions.TransformationException;
+import org.deegree.model.crs.transformations.Transformation;
 
 /**
  * The <code>ConcatenatedTransform</code> class allows the connection of two transformations.
  * <p>
- * Calling inverse on this transformation will invert the whole underlying transformation chain. For
- * example, if A * (B *C)=D and D is this transformation calling D.inverse() will result in
- * (C.inverse * B.inverse) * A.inverse.
+ * Calling inverse on this transformation will invert the whole underlying transformation chain. For example, if A * (B
+ * *C)=D and D is this transformation calling D.inverse() will result in (C.inverse * B.inverse) * A.inverse.
  * </p>
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
@@ -62,32 +63,48 @@ import org.deegree.model.crs.exceptions.TransformationException;
 
 public class ConcatenatedTransform extends CRSTransformation {
 
+    private boolean isIdentitiy = false;
+
+    private Transformation firstTransform;
+
+    private Transformation secondTransform;
+
     /**
-     * Signaling if this transformation is the identity
+     * Creates a transform by concatenating two existing transforms. A concatenated transform applies two transforms,
+     * one after the other. The dimension of the output space of the first transform must match the dimension of the
+     * input space in the second transform.
+     * 
+     * @param first
+     *            The first transformation to apply to given points.
+     * @param second
+     *            The second transformation to apply to given points.
+     * @param id
+     *            an identifiable instance containing information about this transformation
      */
-    boolean isIdentitiy = false;
-
-    private CRSTransformation firstTransform;
-
-    private CRSTransformation secondTransform;
+    public ConcatenatedTransform( Transformation first, Transformation second, CRSIdentifiable id ) {
+        super( first.getSourceCRS(), second.getTargetCRS(), id );
+        if ( first.isIdentity() && second.isIdentity() ) {
+            isIdentitiy = true;
+        }
+        firstTransform = first;
+        secondTransform = second;
+    }
 
     /**
-     * Creates a transform by concatenating two existing transforms. A concatenated transform
-     * applies two transforms, one after the other. The dimension of the output space of the first
-     * transform must match the dimension of the input space in the second transform.
+     * Creates a transform by concatenating two existing transforms. A concatenated transform applies two transforms,
+     * one after the other. The dimension of the output space of the first transform must match the dimension of the
+     * input space in the second transform.
+     * 
+     * Creates an CRSIdentifiable using the {@link CRSTransformation#createFromTo(String, String)} method.
      * 
      * @param first
      *            The first transformation to apply to given points.
      * @param second
      *            The second transformation to apply to given points.
      */
-    public ConcatenatedTransform( CRSTransformation first, CRSTransformation second ) {
-        super( first.getSourceCRS(), second.getTargetCRS() );
-        if ( first.isIdentity() && second.isIdentity() ) {
-            isIdentitiy = true;
-        }
-        firstTransform = first;
-        secondTransform = second;
+    public ConcatenatedTransform( Transformation first, Transformation second ) {
+        this( first, second, new CRSIdentifiable( Transformation.createFromTo( first.getIdentifier(),
+                                                                            second.getIdentifier() ) ) );
     }
 
     @Override
@@ -103,18 +120,13 @@ public class ConcatenatedTransform extends CRSTransformation {
     @Override
     public void inverse() {
         super.inverse();
-        CRSTransformation tmp = firstTransform;
+        Transformation tmp = firstTransform;
         firstTransform = secondTransform;
         secondTransform = tmp;
         firstTransform.inverse();
         secondTransform.inverse();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.model.crs.transformations.CRSTransformation#isIdentity()
-     */
     @Override
     public boolean isIdentity() {
         return isIdentitiy;
@@ -123,19 +135,19 @@ public class ConcatenatedTransform extends CRSTransformation {
     /**
      * @return the firstTransform, which is the second transformation if this transform is inverse.
      */
-    public final CRSTransformation getFirstTransform() {
+    public final Transformation getFirstTransform() {
         return firstTransform;
     }
 
     /**
      * @return the secondTransform, which is the first transformation if this transform is inverse.
      */
-    public final CRSTransformation getSecondTransform() {
+    public final Transformation getSecondTransform() {
         return secondTransform;
     }
 
     @Override
-    public String getName() {
+    public String getImplementationName() {
         return "Concatenated-Transform";
     }
 
