@@ -1,3 +1,41 @@
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/test/org/deegree/CommonsTestSuite.java $
+/*----------------    FILE HEADER  ------------------------------------------
+ This file is part of deegree.
+ Copyright (C) 2001-2008 by:
+ Department of Geography, University of Bonn
+ http://www.giub.uni-bonn.de/deegree/
+ lat/lon GmbH
+ http://www.lat-lon.de
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ Contact:
+
+ Andreas Poth
+ lat/lon GmbH
+ Aennchenstr. 19
+ 53177 Bonn
+ Germany
+ E-Mail: poth@lat-lon.de
+
+ Prof. Dr. Klaus Greve
+ Department of Geography
+ University of Bonn
+ Meckenheimer Allee 166
+ 53115 Bonn
+ Germany
+ E-Mail: greve@giub.uni-bonn.de
+ ---------------------------------------------------------------------------*/
+
 package org.deegree.model.geometry.linearization;
 
 import java.util.ArrayList;
@@ -19,13 +57,21 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.geomgraph.Position;
 
+/**
+ * Tests for {@link CurveLinearizer}.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class CurveLinearizerTest {
 
     private org.deegree.model.geometry.GeometryFactory geomFac;
 
     private CurveLinearizer linearizer;
 
-    private boolean outputWKT = true;
+    private boolean outputWKT = false;
 
     @Before
     public void setUp() {
@@ -146,6 +192,48 @@ public class CurveLinearizerTest {
     }
 
     /**
+     * Tests the linearization of an arc with collinear control points (on a line).
+     */
+    @Test
+    public void testLinearizeCollinearArc() {
+
+        double[] p0 = new double[] { 0, 0 };
+        double[] p1 = new double[] { 0, 1 };
+        double[] p2 = new double[] { 0, 2 };
+
+        List<Point> positions = createLinearArc( p0, p1, p2, false );
+
+        Assert.assertEquals( 3, positions.size() );
+        Assert.assertEquals( p0[0], positions.get( 0 ).getX() );
+        Assert.assertEquals( p0[1], positions.get( 0 ).getY() );
+        Assert.assertEquals( p1[0], positions.get( 1 ).getX() );
+        Assert.assertEquals( p1[1], positions.get( 1 ).getY() );
+        Assert.assertEquals( p2[0], positions.get( 2 ).getX() );
+        Assert.assertEquals( p2[1], positions.get( 2 ).getY() );
+    }
+
+    /**
+     * Tests the linearization of a circle with collinear control points (on a line).
+     */
+    @Test
+    public void testLinearizeCollinearCircle() {
+
+        double[] p0 = new double[] { 0, 0 };
+        double[] p1 = new double[] { 0, 1 };
+        double[] p2 = new double[] { 0, 2 };
+
+        List<Point> positions = createLinearArc( p0, p1, p2, true );
+
+        Assert.assertEquals( 3, positions.size() );
+        Assert.assertEquals( p0[0], positions.get( 0 ).getX() );
+        Assert.assertEquals( p0[1], positions.get( 0 ).getY() );
+        Assert.assertEquals( p1[0], positions.get( 1 ).getX() );
+        Assert.assertEquals( p1[1], positions.get( 1 ).getY() );
+        Assert.assertEquals( p0[0], positions.get( 2 ).getX() );
+        Assert.assertEquals( p0[1], positions.get( 2 ).getY() );
+    }
+
+    /**
      * creates a circle or a an arc and outputs them to wkt.
      * 
      * @param first
@@ -180,7 +268,7 @@ public class CurveLinearizerTest {
      * Test an arc over quadrants 3 and 4 <code>
      *       |
      *   4   |   1
-     *_______|_______
+     * _______|_______
      *       |
      *   3   |   2
      *       |
@@ -207,7 +295,7 @@ public class CurveLinearizerTest {
      * Test an arc over quadrants 1 and 2 <code>
      *       |
      *   4   |   1
-     *_______|_______
+     * _______|_______
      *       |
      *   3   |   2
      *       |
@@ -234,7 +322,7 @@ public class CurveLinearizerTest {
      * Test an arc over quadrants 1 and 4 <code>
      *       |
      *   4   |   1
-     *_______|_______
+     * _______|_______
      *       |
      *   3   |   2
      *       |
@@ -261,7 +349,7 @@ public class CurveLinearizerTest {
      * Test an arc over quadrants 2 and 4 <code>
      *       |
      *   4   |   1
-     *_______|_______
+     * _______|_______
      *       |
      *   3   |   2
      *       |
@@ -288,7 +376,7 @@ public class CurveLinearizerTest {
      * Test an arc over quadrants 1 and 4 over 3 and 2 <code>
      *       |
      *   4   |   1
-     *_______|_______
+     * _______|_______
      *       |
      *   3   |   2
      *       |

@@ -45,6 +45,7 @@
 package org.deegree.model.geometry.linearization;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.vecmath.Point3d;
@@ -62,6 +63,13 @@ import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
  * Provides methods for the linearization of {@link Curve}s and {@link CurveSegment}s.
+ * <p>
+ * Currently, the following {@link CurveSegment} variants are handled correctly:
+ * <ul>
+ * <li>{@link LineStringSegment} (trivial)</li>
+ * <li>{@link Arc}</li>
+ * <li>{@link Circle}</li>
+ * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: elmasri$
@@ -126,6 +134,7 @@ public class CurveLinearizer {
      * Returns a linearized version (i.e. a {@link LineStringSegment}) of the given {@link CurveSegment}.
      * 
      * @param segment
+     *            the segment to be linearized
      * @param crit
      *            determines the interpolation quality / number of interpolation points
      * @return linearized version of the input segment
@@ -163,21 +172,44 @@ public class CurveLinearizer {
 
     /**
      * Returns a linearized version (i.e. a {@link LineStringSegment}) of the given {@link Arc}.
+     * <p>
+     * If the three control points <code>p0</code>, <code>p1</code> and <code>p2</code> of the arc are collinear, i.e.
+     * on a straight line, the behaviour depends on the type of {@link Arc}:
+     * <ul>
+     * <li>Generic {@link Arc}: returns the linear segment <code>(p0, p1, p2)</code></li>
+     * <li>{@link Circle}: returns the linear segment <code>(p0, p1, p0)</code></li>
+     * </ul>
      * 
      * @param arc
+     *            curve segment to be linearized
      * @param crit
+     *            determines the interpolation quality / number of interpolation points
      * @return linearized version of the input segment
      */
     public LineStringSegment linearizeArc( Arc arc, LinearizationCriterion crit ) {
 
         if ( !( crit instanceof NumPointsCriterion ) ) {
-            String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented.";
+            String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
             throw new IllegalArgumentException( msg );
         }
 
-        int numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
-        return geomFac.createLineStringSegment( interpolate( arc.getPoint1(), arc.getPoint2(), arc.getPoint3(),
-                                                             numPoints, arc instanceof Circle ) );
+        LineStringSegment lineSegment = null;
+
+        if ( arePointsCollinear( arc.getPoint1(), arc.getPoint2(), arc.getPoint3() ) ) {
+            List<Point> points = null;
+            if ( arc instanceof Circle ) {
+                points = Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint2(), arc.getPoint1() } );
+            } else {
+                points = Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint2(), arc.getPoint3() } );
+            }
+            lineSegment = geomFac.createLineStringSegment( points );
+        } else {
+            int numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
+            lineSegment = geomFac.createLineStringSegment( interpolate( arc.getPoint1(), arc.getPoint2(),
+                                                                        arc.getPoint3(), numPoints,
+                                                                        arc instanceof Circle ) );
+        }
+        return lineSegment;
     }
 
     private double createAngleStep( double startAngle, double endAngle, int numPoints, boolean isClockwise ) {
@@ -259,9 +291,9 @@ public class CurveLinearizer {
      *            third point
      * @return center of the circle
      * @throws IllegalArgumentException
-     *             if the points are collinear, e.g. on a single line
+     *             if the points are collinear, i.e. on a single line
      */
-    public Point calcCircleCenter( Point p0, Point p1, Point p2 )
+    Point calcCircleCenter( Point p0, Point p1, Point p2 )
                             throws IllegalArgumentException {
 
         Vector3d a = new Vector3d( p0.getX(), p0.getY(), p0.getZ() );
@@ -334,5 +366,22 @@ public class CurveLinearizer {
             throw new IllegalArgumentException( "Cannot evaluate isClockwise(). The three points are collinear." );
         }
         return res < 0.0 ? true : false;
+    }
+
+    /**
+     * Tests if the given three points are collinear.
+     * 
+     * @param p0
+     *            first point
+     * @param p1
+     *            second point
+     * @param p2
+     *            third point
+     * @return true, if points are collinear, false otherwise
+     */
+    boolean arePointsCollinear( Point p0, Point p1, Point p2 ) {
+        double res = ( p2.getX() - p0.getX() ) * ( ( p2.getY() + p0.getY() ) / 2 ) + ( p1.getX() - p2.getX() )
+                     * ( ( p1.getY() + p2.getY() ) / 2 ) + ( p0.getX() - p1.getX() ) * ( ( p0.getY() + p1.getY() ) / 2 );
+        return Math.abs( res ) < 1E-12;
     }
 }
