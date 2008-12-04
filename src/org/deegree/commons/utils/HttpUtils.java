@@ -38,8 +38,10 @@
 
 package org.deegree.commons.utils;
 
+import static javax.imageio.ImageIO.read;
 import static org.deegree.commons.utils.ArrayUtils.join;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -113,6 +115,16 @@ public class HttpUtils {
      * Returns a decoded String.
      */
     public static final Worker<String> UTF8STRING = getStringWorker( "UTF-8" );
+
+    /**
+     * Returns a BufferedImage.
+     */
+    public static final Worker<BufferedImage> IMAGE = new Worker<BufferedImage>() {
+        public BufferedImage work( InputStream in )
+                                throws IOException {
+            return read( in );
+        }
+    };
 
     /**
      * @param encoding

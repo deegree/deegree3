@@ -59,7 +59,7 @@ public class XPath {
 
     public XPath( String xpath, NamespaceContext nsContext ) {
         this.xpath = xpath;
-        this.nsContext = nsContext;
+        this.nsContext = nsContext == null ? new NamespaceContext() : nsContext;
     }
 
     public String getXPath() {
@@ -69,7 +69,7 @@ public class XPath {
     public NamespaceContext getNamespaceContext() {
         return nsContext;
     }
-    
+
     @Override
     public String toString() {
         return xpath;

@@ -90,23 +90,24 @@ import org.slf4j.LoggerFactory;
  * and exporters in deegree. Classes that extend <code>XMLAdapter</code> provide the binding between a certain type of
  * XML documents and their corresponding Java bean representation.
  * <p>
- * <code>XMLAdapter</code> tries to make the process of writing custom XML parsers as painless as possible. It
- * provides the following functionality:
+ * <code>XMLAdapter</code> tries to make the process of writing custom XML parsers as painless as possible. It provides
+ * the following functionality:
  * <ul>
  * <li>Lookup of nodes using XPath expressions.</li>
  * <li>Lookup of <i>required</i> nodes. These methods throw an {@link XMLParsingException} if the expression does not
  * have a result.</li>
- * <li>Convenient retrieving of node values as Java primitives (<code>int</code>, <code>boolean</code>, ...) or
- * common Objects (<code>QName</code>, <code>SimpleLink</code>, ...). If the value can not be converted to the
- * expected type, an {@link XMLParsingException} is thrown.
- * <li>Loading the XML content from different sources (<code>URL</code>, <code>Reader</code>,
- * <code>InputStream</code>). </li>
+ * <li>Convenient retrieving of node values as Java primitives (<code>int</code>, <code>boolean</code>, ...) or common
+ * Objects (<code>QName</code>, <code>SimpleLink</code>, ...). If the value can not be converted to the expected type,
+ * an {@link XMLParsingException} is thrown.
+ * <li>Loading the XML content from different sources (<code>URL</code>, <code>Reader</code>, <code>InputStream</code>).
+ * </li>
  * <li>Resolving of relative URLs that occur in the document content, i.e. that refer to resources that are located
  * relative to the document.</li>
  * </ul>
  * </p>
  * <p>
- * Technically, the XML handling is based on <a href="http://ws.apache.org/commons/axiom/">AXIOM (AXis Object Model)</a>.
+ * Technically, the XML handling is based on <a href="http://ws.apache.org/commons/axiom/">AXIOM (AXis Object
+ * Model)</a>.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -307,8 +308,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Determines the namespace <code>URI</code>s and the bound schema <code>URL</code>s from the
-     * 'xsi:schemaLocation' attribute of the wrapped XML element.
+     * Determines the namespace <code>URI</code>s and the bound schema <code>URL</code>s from the 'xsi:schemaLocation'
+     * attribute of the wrapped XML element.
      * 
      * @return keys are URIs (namespaces), values are URLs (schema locations)
      * @throws XMLProcessingException
@@ -357,8 +358,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes this <code>XMLAdapter</code> with the content from the given <code>URL</code>. Sets the
-     * SystemId, too.
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>URL</code>. Sets the SystemId,
+     * too.
      * 
      * @param url
      *            source of the xml content
@@ -404,8 +405,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes this <code>XMLAdapter</code> with the content from the given <code>InputStream</code> and sets
-     * the system id to the {@link #DEFAULT_URL}
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>InputStream</code> and sets the
+     * system id to the {@link #DEFAULT_URL}
      * 
      * @param resourceStream
      *            to load the xml from.
@@ -452,8 +453,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code>. Sets the
-     * SystemId, too.
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code>. Sets the SystemId,
+     * too.
      * 
      * @param reader
      *            source of the XML content
@@ -493,8 +494,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes this <code>XMLAdapter</code> with the content from the given <code>InputStream</code> and sets
-     * the system id to the {@link #DEFAULT_URL}
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>InputStream</code> and sets the
+     * system id to the {@link #DEFAULT_URL}
      * 
      * @param reader
      *            to load the xml from.
@@ -1134,6 +1135,11 @@ public class XMLAdapter {
             writer.writeCharacters( text );
             writer.writeEndElement();
         }
+    }
+
+    @Override
+    public String toString() {
+        return getRootElement().toString();
     }
 
 }
