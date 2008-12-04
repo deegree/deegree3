@@ -176,7 +176,7 @@ public class CurveLinearizer {
      * If the three control points <code>p0</code>, <code>p1</code> and <code>p2</code> of the arc are collinear, i.e.
      * on a straight line, the behaviour depends on the type of {@link Arc}:
      * <ul>
-     * <li>Generic {@link Arc}: returns the linear segment <code>(p0, p1, p2)</code></li>
+     * <li>Generic {@link Arc}: returns the linear segment <code>(p0, p2)</code></li>
      * <li>{@link Circle}: returns the linear segment <code>(p0, p1, p0)</code></li>
      * </ul>
      * 
@@ -200,7 +200,7 @@ public class CurveLinearizer {
             if ( arc instanceof Circle ) {
                 points = Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint2(), arc.getPoint1() } );
             } else {
-                points = Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint2(), arc.getPoint3() } );
+                points = Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint3() } );
             }
             lineSegment = geomFac.createLineStringSegment( points );
         } else {

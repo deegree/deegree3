@@ -203,13 +203,11 @@ public class CurveLinearizerTest {
 
         List<Point> positions = createLinearArc( p0, p1, p2, false );
 
-        Assert.assertEquals( 3, positions.size() );
+        Assert.assertEquals( 2, positions.size() );
         Assert.assertEquals( p0[0], positions.get( 0 ).getX() );
         Assert.assertEquals( p0[1], positions.get( 0 ).getY() );
-        Assert.assertEquals( p1[0], positions.get( 1 ).getX() );
-        Assert.assertEquals( p1[1], positions.get( 1 ).getY() );
-        Assert.assertEquals( p2[0], positions.get( 2 ).getX() );
-        Assert.assertEquals( p2[1], positions.get( 2 ).getY() );
+        Assert.assertEquals( p2[0], positions.get( 1 ).getX() );
+        Assert.assertEquals( p2[1], positions.get( 1 ).getY() );
     }
 
     /**
