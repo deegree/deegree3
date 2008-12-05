@@ -80,7 +80,6 @@ import org.deegree.model.geometry.primitive.Ring.RingType;
 import org.deegree.model.geometry.primitive.Solid.SolidType;
 import org.deegree.model.geometry.primitive.Surface.SurfaceType;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
-import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.Interpolation;
 import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;

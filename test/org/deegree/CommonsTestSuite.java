@@ -91,7 +91,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.model.geometry.validation.GeometryValidatorTest.class,
                 org.deegree.model.gml.GML311CurveSegmentParserTest.class,
                 org.deegree.model.gml.GML311GeometryParserTest.class,
-                org.deegree.model.gml.GML311GeometryValidatorTest.class,
+                org.deegree.model.gml.validation.GML311GeometryValidatorTest.class,
                 org.deegree.model.gml.GML311SurfacePatchParserTest.class,
                 org.deegree.model.gml.GMLFeatureParserTest.class,
                 org.deegree.model.gml.schema.GMLApplicationSchemaXSDAdapterTest.class,

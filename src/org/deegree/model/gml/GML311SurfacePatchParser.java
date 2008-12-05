@@ -199,8 +199,8 @@ class GML311SurfacePatchParser extends GML311BaseParser {
                 exteriorRing = geometryParser.parseAbstractRing( defaultSrsName );
                 xmlStream.nextTag();
                 xmlStream.require( END_ELEMENT, GMLNS, "exterior" );
+                xmlStream.nextTag();
             }
-            xmlStream.nextTag();
         }
 
         // arbitrary number of interior elements

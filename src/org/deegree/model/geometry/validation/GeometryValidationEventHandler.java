@@ -38,10 +38,11 @@
 
 package org.deegree.model.geometry.validation;
 
+import java.util.List;
+
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Ring;
-import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 
 /**
@@ -52,18 +53,20 @@ import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ValidationEventHandler {
+public interface GeometryValidationEventHandler {
 
     /**
-     * Called when a sequence of two indentical control points in a {@link Curve} is detected.
+     * Called when a sequence of two identical control points in a {@link Curve} is detected.
      * 
      * @param curve
      *            invalid {@link Curve} geometry
      * @param point
      *            the duplicated point
+     * @param affectedGeometryParticles
+     *            list of affected geometry components (that the curve is a part of)
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
-    public boolean curvePointDuplication( Curve curve, Point point );
+    public boolean curvePointDuplication( Curve curve, Point point, List<Object> affectedGeometryParticles );
 
     /**
      * Called when a discontinuity in a {@link Curve} is detected, i.e. the end point of segment does not coincide with
@@ -73,9 +76,11 @@ public interface ValidationEventHandler {
      *            invalid {@link Curve} geometry
      * @param segmentIdx
      *            the index of the segment with the discontinuity
+     * @param affectedGeometryParticles
+     *            list of affected geometry components (that the curve is a part of)
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
-    public boolean curveDiscontinuity( Curve curve, int segmentIdx );
+    public boolean curveDiscontinuity( Curve curve, int segmentIdx, List<Object> affectedGeometryParticles  );
 
     /**
      * Called when a self-intersection of a {@link Curve} is detected.
@@ -84,18 +89,22 @@ public interface ValidationEventHandler {
      *            invalid {@link Curve} geometry
      * @param location
      *            the (approximative) location of the self-intersection
+     * @param affectedGeometryParticles
+     *            list of affected geometry components (that the curve is a part of)
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
-    public boolean curveSelfIntersection( Curve curve, Point location );    
+    public boolean curveSelfIntersection( Curve curve, Point location, List<Object> affectedGeometryParticles  );
 
     /**
      * Called when a {@link Ring} is detected that is not closed.
      * 
      * @param ring
      *            invalid {@link Ring} geometry
+     * @param affectedGeometryParticles
+     *            list of affected geometry components (that the curve is a part of)
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
-    public boolean ringNotClosed( Ring ring );
+    public boolean ringNotClosed( Ring ring, List<Object> affectedGeometryParticles  );
 
     /**
      * Called when a self-intersection of a {@link Ring} is detected.
@@ -104,112 +113,116 @@ public interface ValidationEventHandler {
      *            invalid {@link Ring} geometry
      * @param location
      *            the (approximative) location of the self-intersection
+     * @param affectedGeometryParticles
+     *            list of affected geometry components (that the curve is a part of)
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
-    public boolean ringSelfIntersection( Ring ring, Point location );
+    public boolean ringSelfIntersection( Ring ring, Point location, List<Object> affectedGeometryParticles  );
 
     /**
      * Called when a planar surface patch (={@link PolygonPatch}) has an exterior ring with a wrong orientation, i.e.
      * 
-     * @param surface
      * @param patch
+     * @param affectedGeometryParticles
+     *            list of affected geometry components (that the curve is a part of)
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
-    public boolean exteriorRingCW( Surface surface, PolygonPatch patch );
+    public boolean exteriorRingCW( PolygonPatch patch, List<Object> affectedGeometryParticles  );
 
     /**
-     * Called when a planar surface patch (={@link PolygonPatch}) has a interior ring with a wrong orientation, i.e.
+     * Called when a planar surface patch (={@link PolygonPatch}) has an interior ring with a wrong orientation, i.e.
      * 
-     * @param surface
      * @param patch
+     * @param affectedGeometryParticles
+     *            list of affected geometry components (that the curve is a part of)
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
-    public boolean interiorRingCCW( Surface surface, PolygonPatch patch );
+    public boolean interiorRingCCW( PolygonPatch patch, List<Object> affectedGeometryParticles );
 
     /**
      * Called when a planar surface patch (={@link PolygonPatch}) has two holes (interior rings) that touch.
      * 
-     * @param surface
-     *            invalid {@link Surface} geometry
      * @param patch
      *            offending patch
      * @param ring1Idx
      *            index of the first ring involved
      * @param ring2Idx
      *            index of the second ring involved
+     * @param affectedGeometryParticles
+     *            list of affected geometry components (that the curve is a part of)
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
-    public boolean interiorRingsTouch( Surface surface, PolygonPatch patch, int ring1Idx, int ring2Idx );
+    public boolean interiorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx, List<Object> affectedGeometryParticles );
 
     /**
      * Called when a planar surface patch (={@link PolygonPatch}) has two holes (interior rings) that intersect.
      * 
-     * @param surface
-     *            invalid {@link Surface} geometry
      * @param patch
      *            offending patch
      * @param ring1Idx
      *            index of the first ring involved
      * @param ring2Idx
      *            index of the second ring involved
+     * @param affectedGeometryParticles
+     *            list of affected geometry components (that the curve is a part of)
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
-    public boolean interiorRingsIntersect( Surface surface, PolygonPatch patch, int ring1Idx, int ring2Idx );
+    public boolean interiorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx, List<Object> affectedGeometryParticles );
 
     /**
      * Called when a planar surface patch (={@link PolygonPatch}) has two holes (interior rings) that are nested, i.e.
      * one ring is completely inside the other.
      * 
-     * @param surface
-     *            invalid {@link Surface} geometry
      * @param patch
      *            offending patch
      * @param ring1Idx
      *            index of the first ring involved (the 'outer' one)
      * @param ring2Idx
      *            index of the second ring involved (the 'inner' one)
+     * @param affectedGeometryParticles
+     *            list of affected geometry components (that the curve is a part of)
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
-    public boolean interiorRingsWithin( Surface surface, PolygonPatch patch, int ring1Idx, int ring2Idx );
+    public boolean interiorRingsWithin( PolygonPatch patch, int ring1Idx, int ring2Idx, List<Object> affectedGeometryParticles );
 
     /**
      * Called when a planar surface patch (={@link PolygonPatch}) has a hole (interior ring) that touches it's shell
      * (exterior ring).
      * 
-     * @param surface
-     *            invalid {@link Surface} geometry
      * @param patch
      *            offending patch
      * @param ringIdx
      *            index of the offending inner ring
+     * @param affectedGeometryParticles
+     *            list of affected geometry components (that the curve is a part of)
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
-    public boolean interiorRingTouchesExterior( Surface surface, PolygonPatch patch, int ringIdx );
+    public boolean interiorRingTouchesExterior( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles );
 
     /**
      * Called when a planar surface patch (={@link PolygonPatch}) has a hole (interior ring) that intersects it's shell
      * (exterior ring).
      * 
-     * @param surface
-     *            invalid {@link Surface} geometry
      * @param patch
      *            offending patch
      * @param ringIdx
      *            index of the offending inner ring
+     * @param affectedGeometryParticles
+     *            list of affected geometry components (that the curve is a part of)
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
-    public boolean interiorRingIntersectsExterior( Surface surface, PolygonPatch patch, int ringIdx );
+    public boolean interiorRingIntersectsExterior( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles );
 
     /**
      * Called when a planar surface patch (={@link PolygonPatch}) has a hole (interior ring) that is completely located
      * outside it's shell (exterior ring).
      * 
-     * @param surface
-     *            invalid {@link Surface} geometry
      * @param patch
      *            offending patch
      * @param ringIdx
+     * @param affectedGeometryParticles
+     *            list of affected geometry components (that the curve is a part of)
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
-    public boolean interiorRingOutsideExterior( Surface surface, PolygonPatch patch, int ringIdx );
+    public boolean interiorRingOutsideExterior( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles );
 }

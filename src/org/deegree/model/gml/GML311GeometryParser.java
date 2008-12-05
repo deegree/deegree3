@@ -1039,6 +1039,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 exteriorRing = parseAbstractRing( srsName );
                 xmlStream.nextTag();
                 xmlStream.require( END_ELEMENT, GMLNS, "exterior" );
+                xmlStream.nextTag();
             } else if ( xmlStream.getLocalName().equals( "outerBoundaryIs" ) ) {
                 if ( xmlStream.nextTag() != START_ELEMENT ) {
                     String msg = "Error in 'gml:Polygon' element. Expected a 'gml:LinearRing' element.";
@@ -1047,8 +1048,8 @@ public class GML311GeometryParser extends GML311BaseParser {
                 exteriorRing = parseLinearRing( srsName );
                 xmlStream.nextTag();
                 xmlStream.require( END_ELEMENT, GMLNS, "outerBoundaryIs" );
+                xmlStream.nextTag();
             }
-            xmlStream.nextTag();
         }
 
         // arbitrary number of interior/innerBoundaryIs elements
@@ -1070,7 +1071,8 @@ public class GML311GeometryParser extends GML311BaseParser {
                 xmlStream.nextTag();
                 xmlStream.require( END_ELEMENT, GMLNS, "innerBoundaryIs" );
             } else {
-                String msg = "Error in 'gml:Polygon' element. Expected a 'gml:interior' or a 'gml:innerBoundaryIs' element.";
+                String msg = "Error in 'gml:Polygon' element. Expected a 'gml:interior' or a 'gml:innerBoundaryIs' element, but found: '"
+                             + xmlStream.getName() + "'.";
                 throw new XMLParsingException( xmlStream, msg );
             }
             xmlStream.nextTag();

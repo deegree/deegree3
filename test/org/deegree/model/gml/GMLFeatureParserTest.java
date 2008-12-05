@@ -71,6 +71,7 @@ import org.deegree.model.feature.types.GenericFeatureType;
 import org.deegree.model.feature.types.GeometryPropertyType;
 import org.deegree.model.feature.types.PropertyType;
 import org.deegree.model.feature.types.SimplePropertyType;
+import org.deegree.model.gml.schema.GMLApplicationSchema;
 import org.deegree.model.gml.schema.GMLApplicationSchemaXSDAdapter;
 import org.deegree.model.gml.schema.GMLVersion;
 import org.junit.Test;
@@ -206,13 +207,14 @@ public class GMLFeatureParserTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
 
-        String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2008/IMRO2008-adapted.xsd";
+        String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2008/IMRO2008-with-xlinks.xsd";
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
+        ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
+        GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema );
 
         URL docURL = new URL(
-                              "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.0964.000matrixplan1-part.gml" );
+                              "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.0964.000matrixplan2-0003.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
@@ -220,7 +222,7 @@ public class GMLFeatureParserTest {
         Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
                                                    idContext );
         System.out.println ("A");
-        idContext.resolveXLinks();
+        idContext.resolveXLinks(schema);
         System.out.println ("B");
         xmlReader.close();
     }
@@ -230,20 +232,23 @@ public class GMLFeatureParserTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
 
-        String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2008/IMRO2008-adapted.xsd";
+        String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2006/IMRO2006-adapted.xsd";
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
         GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
 
         URL docURL = new URL(
-                              "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.0964.000matrixplan1-0003.gml" );
+                              "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.02020000705-.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
         Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
                                                    idContext );
-        idContext.resolveXLinks();
+        System.out.println (idContext);
+
+//        idContext.resolveXLinks();
+
         xmlReader.close();
     }
 
@@ -264,7 +269,7 @@ public class GMLFeatureParserTest {
         GMLIdContext idContext = new GMLIdContext();
         Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
                                                    idContext );
-        idContext.resolveXLinks();
+//        idContext.resolveXLinks();
         xmlReader.close();
     }
 
@@ -287,7 +292,7 @@ public class GMLFeatureParserTest {
                                                                                                         xmlReader,
                                                                                                         docURL.toString() ),
                                                                             null, idContext );       
-        idContext.resolveXLinks();
+//        idContext.resolveXLinks();
 
         for (Feature member: fc) {
             System.out.println (member.getId());

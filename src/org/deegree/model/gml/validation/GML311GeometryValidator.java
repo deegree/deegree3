@@ -46,7 +46,7 @@ package org.deegree.model.gml.validation;
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -54,38 +54,26 @@ import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryFactoryCreator;
-import org.deegree.model.geometry.composite.CompositeGeometry;
-import org.deegree.model.geometry.linearization.NumPointsCriterion;
-import org.deegree.model.geometry.linearization.SurfaceLinearizer;
-import org.deegree.model.geometry.multi.MultiGeometry;
 import org.deegree.model.geometry.primitive.Curve;
-import org.deegree.model.geometry.primitive.GeometricPrimitive;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Ring;
-import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
-import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.model.geometry.validation.GeometryValidationEventHandler;
+import org.deegree.model.geometry.validation.GeometryValidator;
 import org.deegree.model.gml.GML311GeometryParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.operation.valid.IsValidOp;
-import com.vividsolutions.jts.operation.valid.TopologyValidationError;
 
 /**
  * Takes an XML stream as input (which should provide a GML geometry, GML feature or feature collection document) and
  * validates all contained <code>gml:_Geometry</code> elements (at all levels of the document).
  * <p>
- * Validation continues if errors are encountered.
+ * The validator's reaction on topological issues can be customized by providing a {@link GMLValidationEventHandler}
+ * which is also suitable for generating validation reports.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -100,17 +88,21 @@ public class GML311GeometryValidator extends XMLAdapter {
 
     private XMLStreamReaderWrapper xmlStream;
 
-    private SurfaceLinearizer linearizer;
+    private GMLValidationEventHandler gmlErrorHandler;
 
-    private GeometryFactory jtsFactory;
-
-    public GML311GeometryValidator( XMLStreamReaderWrapper xmlStream ) {
+    /**
+     * @param xmlStream
+     * @param gmlErrorHandler
+     */
+    public GML311GeometryValidator( XMLStreamReaderWrapper xmlStream, GMLValidationEventHandler gmlErrorHandler ) {
         this.xmlStream = xmlStream;
         geomParser = new GML311GeometryParser( GeometryFactoryCreator.getInstance().getGeometryFactory(), xmlStream );
-        linearizer = new SurfaceLinearizer( GeometryFactoryCreator.getInstance().getGeometryFactory() );
-        jtsFactory = new GeometryFactory();
+        this.gmlErrorHandler = gmlErrorHandler;
     }
 
+    /**
+     * @throws XMLStreamException
+     */
     public void validateGeometries()
                             throws XMLStreamException {
 
@@ -128,141 +120,123 @@ public class GML311GeometryValidator extends XMLAdapter {
         Location location = xmlStream.getLocation();
         LOG.debug( "Validating GML geometry element ('" + xmlStream.getLocalName() + "') at line: "
                    + location.getLineNumber() + ", column: " + location.getColumnNumber() + "." );
+
+        GMLElementIdentifier identifier = new GMLElementIdentifier( xmlStream );
+        ValidationEventRedirector eventRedirector = new ValidationEventRedirector( gmlErrorHandler, identifier );
+        GeometryValidator geometryValidator = new GeometryValidator( eventRedirector );
         try {
-            validateGeometry( geomParser.parseGeometry( null ) );
-        } catch ( Exception e ) {
-            LOG.debug( "Parsing of GML geometry element ('" + xmlStream.getLocalName() + "') at line: "
-                                + location.getLineNumber() + ", column: " + location.getColumnNumber() + " failed: "
-                                + e.getMessage() + "." );
+            geometryValidator.validateGeometry( geomParser.parseGeometry( "EPSG:28992" ) );
+        } catch ( XMLParsingException e ) {
+            gmlErrorHandler.geometryParsingError( identifier, e );
+        } catch ( XMLStreamException e ) {
+            gmlErrorHandler.geometryParsingError( identifier, e );
         }
     }
 
-    public boolean validateGeometry( Geometry geom ) {
-        boolean isValid = false;
-        switch ( geom.getGeometryType() ) {
-        case COMPOSITE_GEOMETRY: {
-            isValid = validate( (CompositeGeometry<?>) geom );
-            break;
-        }
-        case COMPOSITE_PRIMITIVE: {
-            isValid = validate( (CompositeGeometry<?>) geom );
-            break;
-        }
-        case ENVELOPE: {
-            String msg = "Internal error: envelope 'geometries' should not occur here.";
-            throw new IllegalArgumentException( msg );
-        }
-        case MULTI_GEOMETRY: {
-            isValid = validate( (MultiGeometry<?>) geom );
-            break;
-        }
-        case PRIMITIVE_GEOMETRY: {
-            isValid = validate( (GeometricPrimitive) geom );
-            break;
-        }
-        }
-        return isValid;
-    }
+    private class ValidationEventRedirector implements GeometryValidationEventHandler {
 
-    private boolean validate( GeometricPrimitive geom ) {
-        boolean isValid = true;
-        switch ( geom.getPrimitiveType() ) {
-        case Point: {
-            System.out.println( "Point geometry. No validation necessary." );
-            break;
-        }
-        case Curve: {
-            System.out.println( "Curve geometry. Validating segment continuity." );
-            Curve curve = (Curve) geom;
-            Point lastSegmentEndPoint = null;
-            for ( CurveSegment segment : curve.getCurveSegments() ) {
-                if ( lastSegmentEndPoint != null ) {
-                    Point startPoint = segment.getStartPoint();
-                    isValid = false;
-                }
-            }
-            break;
-        }
-        case Surface: {
-            System.out.println( "Surface geometry. Validating patches using JTS." );
-            Surface surface = (Surface) geom;
-            System.out.println( surface.getId() );
-            for ( SurfacePatch patch : surface.getPatches() ) {
-                if ( !( patch instanceof PolygonPatch ) ) {
-                    System.out.println( "Skipping validation of patch -- not a PolygonPatch." );
-                } else {
-                    if ( !validate( (PolygonPatch) patch ) ) {
-                        isValid = false;
-                    }
-                }
-            }
-            break;
-        }
-        case Solid: {
-            String msg = "Validation of solids is not available";
-            throw new IllegalArgumentException( msg );
-        }
-        }
-        return isValid;
-    }
+        private GMLValidationEventHandler gmlErrorHandler;
 
-    private boolean validate( PolygonPatch inputPatch ) {
+        private GMLElementIdentifier topLevelGeometryElement;
 
-        boolean isValid = true;
-        PolygonPatch linearizedPatch = linearizer.linearize( inputPatch, new NumPointsCriterion( 3 ) );
-        if ( linearizedPatch.getExteriorRing() == null ) {
-            String msg = "Cannot validate patches without exterior boundary.";
-            throw new IllegalArgumentException( msg );
+        public ValidationEventRedirector( GMLValidationEventHandler gmlErrorHandler,
+                                          GMLElementIdentifier topLevelGeometryElement ) {
+            this.gmlErrorHandler = gmlErrorHandler;
+            this.topLevelGeometryElement = topLevelGeometryElement;
         }
 
-        LinearRing shell = getJTSRing( linearizedPatch.getExteriorRing() );
-
-        List<Ring> interiorRings = linearizedPatch.getInteriorRings();
-        LinearRing[] holes = new LinearRing[interiorRings.size()];
-        for ( int i = 0; i < holes.length; i++ ) {
-            holes[i] = getJTSRing( interiorRings.get( i ) );
+        @Override
+        public boolean curveDiscontinuity( Curve curve, int segmentIdx, List<Object> affectedGeometryParticles ) {
+            gmlErrorHandler.curveDiscontinuity( curve, segmentIdx, affectedGeometryParticles, getAffectedElements() );
+            return false;
         }
 
-        Polygon polygon = jtsFactory.createPolygon( shell, holes );
-        IsValidOp op = new IsValidOp( polygon );
-        if ( !op.isValid() ) {
-            TopologyValidationError error = op.getValidationError();
-            System.err.println( "Patch has a topology error (" + error.getMessage() + ") at position "
-                                + error.getCoordinate() );
-            isValid = false;
+        @Override
+        public boolean curvePointDuplication( Curve curve, Point point, List<Object> affectedGeometryParticles ) {
+            gmlErrorHandler.curvePointDuplication( curve, point, affectedGeometryParticles, getAffectedElements() );
+            return false;
         }
-        return isValid;
-    }
 
-    private LinearRing getJTSRing( Ring ring ) {
-        List<Coordinate> coordinates = new LinkedList<Coordinate>();
-        for ( Curve member : ring.getMembers() ) {
-            for ( CurveSegment segment : member.getCurveSegments() ) {
-                for ( Point point : ( (LineStringSegment) segment ).getControlPoints() ) {
-                    coordinates.add( new Coordinate( point.getX(), point.getY() ) );
-                }
-            }
+        @Override
+        public boolean curveSelfIntersection( Curve curve, Point location, List<Object> affectedGeometryParticles ) {
+            gmlErrorHandler.curveSelfIntersection( curve, location, affectedGeometryParticles, getAffectedElements() );
+            return false;
         }
-        return jtsFactory.createLinearRing( coordinates.toArray( new Coordinate[coordinates.size()] ) );
-    }
 
-    private boolean validate( CompositeGeometry<?> geom ) {
-        boolean isValid = true;
-        for ( GeometricPrimitive geometricPrimitive : geom ) {
-            if ( !validate( geometricPrimitive ) ) {
-                isValid = false;
-            }
+        @Override
+        public boolean exteriorRingCW( PolygonPatch patch, List<Object> affectedGeometryParticles ) {
+            gmlErrorHandler.exteriorRingCW( patch, affectedGeometryParticles, getAffectedElements() );
+            return false;
         }
-        return isValid;
-    }
 
-    private boolean validate( MultiGeometry<?> geom ) {
-        boolean isValid = true;
-        for ( Geometry member : geom ) {
-            if ( !validateGeometry( member ) ) {
-                isValid = false;
-            }
+        @Override
+        public boolean interiorRingCCW( PolygonPatch patch, List<Object> affectedGeometryParticles ) {
+            gmlErrorHandler.interiorRingCCW( patch, affectedGeometryParticles, getAffectedElements() );
+            return false;
         }
-        return isValid;
+
+        @Override
+        public boolean interiorRingIntersectsExterior( PolygonPatch patch, int ringIdx,
+                                                       List<Object> affectedGeometryParticles ) {
+            gmlErrorHandler.interiorRingIntersectsExterior( patch, ringIdx, affectedGeometryParticles,
+                                                            getAffectedElements() );
+            return false;
+        }
+
+        @Override
+        public boolean interiorRingOutsideExterior( PolygonPatch patch, int ringIdx,
+                                                    List<Object> affectedGeometryParticles ) {
+            gmlErrorHandler.interiorRingOutsideExterior( patch, ringIdx, affectedGeometryParticles,
+                                                         getAffectedElements() );
+            return false;
+        }
+
+        @Override
+        public boolean interiorRingTouchesExterior( PolygonPatch patch, int ringIdx,
+                                                    List<Object> affectedGeometryParticles ) {
+            gmlErrorHandler.interiorRingTouchesExterior( patch, ringIdx, affectedGeometryParticles,
+                                                         getAffectedElements() );
+            return false;
+        }
+
+        @Override
+        public boolean interiorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx,
+                                               List<Object> affectedGeometryParticles ) {
+            gmlErrorHandler.interiorRingsIntersect( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
+                                                    getAffectedElements() );
+            return false;
+        }
+
+        @Override
+        public boolean interiorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx,
+                                           List<Object> affectedGeometryParticles ) {
+            gmlErrorHandler.interiorRingsTouch( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
+                                                getAffectedElements() );
+            return false;
+        }
+
+        @Override
+        public boolean interiorRingsWithin( PolygonPatch patch, int ring1Idx, int ring2Idx,
+                                            List<Object> affectedGeometryParticles ) {
+            gmlErrorHandler.interiorRingsWithin( patch, ring1Idx, ring2Idx, affectedGeometryParticles,
+                                                 getAffectedElements() );
+            return false;
+        }
+
+        @Override
+        public boolean ringNotClosed( Ring ring, List<Object> affectedGeometryParticles ) {
+            gmlErrorHandler.ringNotClosed( ring, affectedGeometryParticles, getAffectedElements() );
+            return false;
+        }
+
+        @Override
+        public boolean ringSelfIntersection( Ring ring, Point location, List<Object> affectedGeometryParticles ) {
+            gmlErrorHandler.ringSelfIntersection( ring, location, affectedGeometryParticles, getAffectedElements() );
+            return false;
+        }
+
+        private List<GMLElementIdentifier> getAffectedElements() {
+            return Collections.singletonList( topLevelGeometryElement );
+        }
     }
 }

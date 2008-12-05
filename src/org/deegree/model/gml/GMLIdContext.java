@@ -43,7 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.gml;
 
-import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +53,9 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.Property;
+import org.deegree.model.feature.types.ApplicationSchema;
+import org.deegree.model.feature.types.FeaturePropertyType;
+import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.feature.types.PropertyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,19 +84,27 @@ public class GMLIdContext {
     }
 
     public Feature getFeature( String fid ) {
-        return idToFeature.get (fid);
-    }    
-    
+        return idToFeature.get( fid );
+    }
+
     public Property addXLinkProperty( String featureId, PropertyType pt, int occurence, String targetId ) {
-        XLinkProperty prop = new XLinkProperty( featureId, pt, occurence, targetId) ;
+        XLinkProperty prop = new XLinkProperty( featureId, pt, occurence, targetId );
         xlinkProperties.add( prop );
         return prop;
     }
 
+    public String toString() {
+        String s = "";
+        for ( XLinkProperty remoteProperty : xlinkProperties ) {
+            s += ( remoteProperty.targetId ) + "\n";
+        }
+        return s;
+    }
+
     /**
-     * @throws XMLProcessingException 
+     * @throws XMLProcessingException
      */
-    public void resolveXLinks()
+    public void resolveXLinks(ApplicationSchema schema)
                             throws XMLProcessingException {
         for ( XLinkProperty prop : xlinkProperties ) {
             LOG.debug( "Resolving xlink-property with reference to '" + prop.targetId + "'" );
@@ -102,8 +112,25 @@ public class GMLIdContext {
             if ( targetObject == null ) {
                 String msg = "Cannot resolve reference to object with id '" + prop.targetId
                              + "'. There is no such object in the document.";
-                throw new XMLProcessingException ( msg);
+                throw new XMLProcessingException( msg );
             }
+
+            if ( prop.getType() instanceof FeaturePropertyType ) {
+                FeatureType requiredFt = ( (FeaturePropertyType) prop.getType() ).getValueFt();
+                if ( !( targetObject instanceof Feature ) ) {
+                    String msg = "Cannot resolve reference to object with id '" + prop.targetId
+                                 + "'. Property requires a feature property.";
+                    throw new XMLProcessingException( msg );
+                }
+                FeatureType presentFt = ( (Feature) targetObject ).getType();
+                if ( !schema.isValidSubstitution( requiredFt, presentFt ) ) {
+                    String msg = "Cannot resolve reference to object with id '" + prop.targetId
+                                 + "'. Property requires a feature of type '" + requiredFt.getName()
+                                 + "', but referenced object is of type '" + presentFt.getName() + "'.";
+                    throw new XMLProcessingException( msg );
+                }
+            }
+
             prop.feature.setPropertyValue( prop.getName(), prop.occurence, targetObject );
         }
     }
@@ -116,10 +143,10 @@ public class GMLIdContext {
      * 
      * @version $Revision:$, $Date:$
      */
-    class XLinkProperty implements Property<Object>{
+    class XLinkProperty implements Property<Object> {
 
         String featureId;
-        
+
         Feature feature;
 
         PropertyType pt;
@@ -135,10 +162,10 @@ public class GMLIdContext {
             this.targetId = targetId;
         }
 
-        void setFeature(Feature feature) {
+        void setFeature( Feature feature ) {
             this.feature = feature;
         }
-        
+
         @Override
         public QName getName() {
             return pt.getName();

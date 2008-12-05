@@ -134,16 +134,16 @@ public class GeometryValidator {
 
     private GeometryFactory jtsFactory;
 
-    private ValidationEventHandler eventHandler;
+    private GeometryValidationEventHandler eventHandler;
 
     /**
-     * Creates a new {@link GeometryValidator} which performs callbacks on the given {@link ValidationEventHandler} in
-     * case of errors.
+     * Creates a new {@link GeometryValidator} which performs callbacks on the given
+     * {@link GeometryValidationEventHandler} in case of errors.
      * 
      * @param eventHandler
      *            callback handler for errors
      */
-    public GeometryValidator( ValidationEventHandler eventHandler ) {
+    public GeometryValidator( GeometryValidationEventHandler eventHandler ) {
         linearizer = new CurveLinearizer( GeometryFactoryCreator.getInstance().getGeometryFactory() );
         crit = new NumPointsCriterion( 150 );
         jtsFactory = new GeometryFactory();
@@ -151,23 +151,31 @@ public class GeometryValidator {
     }
 
     /**
-     * Performs a topological validation of the given {@link Geometry} and performs callbacks to the associated
-     * {@link ValidationEventHandler}.
+     * Performs a topological validation of the given {@link Geometry}.
+     * <p>
+     * Contained geometry objects and geometry particles are recursively checked (e.g. the members of a
+     * {@link MultiGeometry}) and callbacks to the associated {@link GeometryValidationEventHandler} are performed for
+     * each detected issue.
      * 
      * @param geom
      *            geometry to be validated
-     * @return true, if the geometry is valid, false otherwise (depends on the {@link ValidationEventHandler}
+     * @return true, if the geometry is valid, false otherwise (depends on the {@link GeometryValidationEventHandler}
      *         implementation)
      */
     public boolean validateGeometry( Geometry geom ) {
+        return validateGeometry( geom, new ArrayList<Object>() );
+    }
+
+    private boolean validateGeometry( Geometry geom, List<Object> affectedGeometryParticles ) {
+
         boolean isValid = false;
         switch ( geom.getGeometryType() ) {
         case COMPOSITE_GEOMETRY: {
-            isValid = validate( (CompositeGeometry<?>) geom );
+            isValid = validate( (CompositeGeometry<?>) geom, affectedGeometryParticles );
             break;
         }
         case COMPOSITE_PRIMITIVE: {
-            isValid = validate( (CompositeGeometry<?>) geom );
+            isValid = validate( (CompositeGeometry<?>) geom, affectedGeometryParticles );
             break;
         }
         case ENVELOPE: {
@@ -175,30 +183,30 @@ public class GeometryValidator {
             throw new IllegalArgumentException( msg );
         }
         case MULTI_GEOMETRY: {
-            isValid = validate( (MultiGeometry<?>) geom );
+            isValid = validate( (MultiGeometry<?>) geom, affectedGeometryParticles );
             break;
         }
         case PRIMITIVE_GEOMETRY: {
-            isValid = validate( (GeometricPrimitive) geom );
+            isValid = validate( (GeometricPrimitive) geom, affectedGeometryParticles );
             break;
         }
         }
         return isValid;
-    }
-
-    private boolean validate( GeometricPrimitive geom ) {
-        boolean isValid = true;
+    }    
+    
+    private boolean validate( GeometricPrimitive geom, List<Object> affectedGeometryParticles ) {
+        boolean isValid = true;       
         switch ( geom.getPrimitiveType() ) {
         case Point: {
             LOG.debug( "Point geometry. No validation necessary." );
             break;
         }
         case Curve: {
-            isValid = validateCurve( (Curve) geom );
+            isValid = validateCurve( (Curve) geom, affectedGeometryParticles );
             break;
         }
         case Surface: {
-            isValid = validateSurface( (Surface) geom );
+            isValid = validateSurface( (Surface) geom, affectedGeometryParticles );
             break;
         }
         case Solid: {
@@ -209,10 +217,11 @@ public class GeometryValidator {
         return isValid;
     }
 
-    private boolean validateCurve( Curve curve ) {
+    private boolean validateCurve( Curve curve, List<Object> affectedGeometryParticles ) {
         boolean isValid = true;
-
-        LOG.debug( "Curve geometry. Testing for duplicate successive control points." );
+        List<Object> affectedGeometryParticles2 = new ArrayList<Object>(affectedGeometryParticles);
+        affectedGeometryParticles2.add (curve);
+        LOG.debug( "Curve geometry. Testing for duplication of successive control points." );
         int segmentIdx = 0;
         for ( CurveSegment segment : curve.getCurveSegments() ) {
             if ( segment.getSegmentType() == CurveSegmentType.LINE_STRING_SEGMENT ) {
@@ -222,7 +231,7 @@ public class GeometryValidator {
                     if ( lastPoint != null ) {
                         if ( point.equals( lastPoint ) ) {
                             LOG.debug( "Found duplicate control points." );
-                            if ( !eventHandler.curvePointDuplication( curve, point ) ) {
+                            if ( !eventHandler.curvePointDuplication( curve, point, affectedGeometryParticles2 ) ) {
                                 isValid = false;
                             }
                         }
@@ -232,6 +241,7 @@ public class GeometryValidator {
             } else {
                 LOG.warn( "Non-linear curve segment. Skipping check for duplicate control points." );
             }
+            segmentIdx++;
         }
 
         LOG.debug( "Curve geometry. Testing segment continuity." );
@@ -242,7 +252,7 @@ public class GeometryValidator {
             if ( lastSegmentEndPoint != null ) {
                 if ( startPoint.getX() != lastSegmentEndPoint.getX() || startPoint.getY() != lastSegmentEndPoint.getY() ) {
                     LOG.debug( "Found discontinuous segments." );
-                    if ( !eventHandler.curveDiscontinuity( curve, segmentIdx ) ) {
+                    if ( !eventHandler.curveDiscontinuity( curve, segmentIdx, affectedGeometryParticles2 ) ) {
                         isValid = false;
                     }
                 }
@@ -253,27 +263,28 @@ public class GeometryValidator {
 
         LOG.debug( "Curve geometry. Testing for self-intersection." );
         LineString jtsLineString = getJTSLineString( curve );
-       
+
         boolean selfIntersection = !jtsLineString.isSimple();
         if ( selfIntersection ) {
             LOG.debug( "Detected self-intersection." );
-            if ( !eventHandler.curveSelfIntersection( curve, null ) ) {
+            if ( !eventHandler.curveSelfIntersection( curve, null, affectedGeometryParticles2 ) ) {
                 isValid = false;
             }
         }
-
+        
         if ( curve instanceof Ring ) {
             LOG.debug( "Ring geometry. Testing for self-intersection." );
             if ( selfIntersection ) {
                 LOG.debug( "Detected self-intersection." );
-                if ( !eventHandler.ringSelfIntersection( (Ring) curve, null ) ) {
+                if ( !eventHandler.ringSelfIntersection( (Ring) curve, null, affectedGeometryParticles2 ) ) {
                     isValid = false;
                 }
             }
+            
             LOG.debug( "Ring geometry. Testing if it's closed. " );
             if ( !curve.isClosed() ) {
                 LOG.debug( "Not closed." );
-                if ( !eventHandler.ringNotClosed( (Ring) curve ) ) {
+                if ( !eventHandler.ringNotClosed( (Ring) curve, affectedGeometryParticles2 ) ) {
                     isValid = false;
                 }
             }
@@ -281,9 +292,11 @@ public class GeometryValidator {
         return isValid;
     }
 
-    private boolean validateSurface( Surface surface ) {
+    private boolean validateSurface( Surface surface, List<Object> affectedGeometryParticles ) {
         LOG.debug( "Surface geometry. Validating individual patches." );
         boolean isValid = true;
+        List<Object> affectedGeometryParticles2 = new ArrayList<Object>(affectedGeometryParticles);
+        affectedGeometryParticles2.add (surface);
 
         List<SurfacePatch> patches = surface.getPatches();
         if ( patches.size() > 1 ) {
@@ -293,7 +306,7 @@ public class GeometryValidator {
             if ( !( patch instanceof PolygonPatch ) ) {
                 LOG.warn( "Skipping validation of surface patch -- not a PolygonPatch." );
             } else {
-                if ( !validatePatch( (PolygonPatch) patch ) ) {
+                if ( !validatePatch( (PolygonPatch) patch, affectedGeometryParticles2 ) ) {
                     isValid = false;
                 }
             }
@@ -301,34 +314,36 @@ public class GeometryValidator {
         return isValid;
     }
 
-    private boolean validatePatch( PolygonPatch patch ) {
+    private boolean validatePatch( PolygonPatch patch, List<Object> affectedGeometryParticles  ) {
 
         boolean isValid = true;
+        List<Object> affectedGeometryParticles2 = new ArrayList<Object>(affectedGeometryParticles);
+        affectedGeometryParticles2.add (patch);
         LOG.debug( "Surface patch. Validating rings and spatial ring relations." );
 
         try {
 
             // validate and transform exterior ring to linearized JTS geometry
             Ring exteriorRing = patch.getExteriorRing();
-            if ( !validateCurve( exteriorRing ) ) {
+            if ( !validateCurve( exteriorRing, affectedGeometryParticles2 ) ) {
                 isValid = false;
             }
             LinearRing exteriorJTSRing = getJTSRing( exteriorRing );
             LOG.debug( "Surface patch. Validating exterior ring orientation." );
             if ( !CGAlgorithms.isCCW( exteriorJTSRing.getCoordinates() ) ) {
                 LOG.debug( "Wrong orientation." );
-                if ( !eventHandler.exteriorRingCW( null, patch ) ) {
+                if ( !eventHandler.exteriorRingCW( patch, affectedGeometryParticles2 ) ) {
                     isValid = false;
                 }
             }
-            Polygon exteriorJTSRingAsPolygons =  jtsFactory.createPolygon( exteriorJTSRing, null );
+            Polygon exteriorJTSRingAsPolygons = jtsFactory.createPolygon( exteriorJTSRing, null );
 
             // validate and transform interior ring to linearized JTS geometries
             List<Ring> interiorRings = patch.getInteriorRings();
             List<LinearRing> interiorJTSRings = new ArrayList<LinearRing>( interiorRings.size() );
             List<Polygon> interiorJTSRingsAsPolygons = new ArrayList<Polygon>( interiorRings.size() );
             for ( Ring interiorRing : interiorRings ) {
-                if ( !validateCurve( interiorRing ) ) {
+                if ( !validateCurve( interiorRing, affectedGeometryParticles2 ) ) {
                     isValid = false;
                 }
                 LinearRing interiorJTSRing = getJTSRing( interiorRing );
@@ -336,7 +351,7 @@ public class GeometryValidator {
                 interiorJTSRings.add( interiorJTSRing );
                 if ( CGAlgorithms.isCCW( interiorJTSRing.getCoordinates() ) ) {
                     LOG.debug( "Wrong orientation." );
-                    if ( !eventHandler.interiorRingCCW( null, patch ) ) {
+                    if ( !eventHandler.interiorRingCCW( patch, affectedGeometryParticles2 ) ) {
                         isValid = false;
                     }
                 }
@@ -351,34 +366,34 @@ public class GeometryValidator {
                 Polygon interiorJTSRingAsPolygon = interiorJTSRingsAsPolygons.get( ringIdx );
                 if ( exteriorJTSRing.touches( interiorJTSRing ) ) {
                     LOG.debug( "Exterior touches interior." );
-                    if ( !eventHandler.interiorRingTouchesExterior( null, patch, ringIdx ) ) {
+                    if ( !eventHandler.interiorRingTouchesExterior( patch, ringIdx, affectedGeometryParticles2 ) ) {
                         isValid = false;
                     }
                 }
                 if ( exteriorJTSRing.intersects( interiorJTSRing ) ) {
                     LOG.debug( "Exterior intersects interior." );
-                    if ( !eventHandler.interiorRingIntersectsExterior( null, patch, ringIdx ) ) {
+                    if ( !eventHandler.interiorRingIntersectsExterior( patch, ringIdx, affectedGeometryParticles2 ) ) {
                         isValid = false;
                     }
                 }
                 if ( !interiorJTSRing.within( exteriorJTSRingAsPolygons ) ) {
                     LOG.debug( "Interior not within interior." );
-                    if ( !eventHandler.interiorRingOutsideExterior( null, patch, ringIdx ) ) {
-                        isValid = false;
-                    }
-                }                
-                if ( exteriorJTSRing.within( interiorJTSRingAsPolygon ) ) {
-                    LOG.debug( "Exterior within interior." );
-                    if ( !eventHandler.interiorRingOutsideExterior( null, patch, ringIdx ) ) {
+                    if ( !eventHandler.interiorRingOutsideExterior( patch, ringIdx, affectedGeometryParticles2 ) ) {
                         isValid = false;
                     }
                 }
                 if ( exteriorJTSRing.within( interiorJTSRingAsPolygon ) ) {
                     LOG.debug( "Exterior within interior." );
-                    if ( !eventHandler.interiorRingOutsideExterior( null, patch, ringIdx ) ) {
+                    if ( !eventHandler.interiorRingOutsideExterior( patch, ringIdx, affectedGeometryParticles2 ) ) {
                         isValid = false;
                     }
-                }               
+                }
+                if ( exteriorJTSRing.within( interiorJTSRingAsPolygon ) ) {
+                    LOG.debug( "Exterior within interior." );
+                    if ( !eventHandler.interiorRingOutsideExterior( patch, ringIdx, affectedGeometryParticles2 ) ) {
+                        isValid = false;
+                    }
+                }
             }
 
             LOG.debug( "Surface patch. Validating spatial relations between pairs of interior rings." );
@@ -393,25 +408,25 @@ public class GeometryValidator {
                     Polygon interior2JTSRingAsPolygon = interiorJTSRingsAsPolygons.get( ring2Idx );
                     if ( interior1JTSRing.touches( interior2JTSRing ) ) {
                         LOG.debug( "Interior touches interior." );
-                        if ( !eventHandler.interiorRingsTouch( null, patch, ring1Idx, ring2Idx ) ) {
+                        if ( !eventHandler.interiorRingsTouch( patch, ring1Idx, ring2Idx, affectedGeometryParticles2 ) ) {
                             isValid = false;
                         }
                     }
                     if ( interior1JTSRing.intersects( interior2JTSRing ) ) {
                         LOG.debug( "Interior intersects interior." );
-                        if ( !eventHandler.interiorRingsIntersect( null, patch, ring1Idx, ring2Idx ) ) {
+                        if ( !eventHandler.interiorRingsIntersect( patch, ring1Idx, ring2Idx, affectedGeometryParticles2 ) ) {
                             isValid = false;
                         }
                     }
                     if ( interior1JTSRing.within( interior2JTSRingAsPolygon ) ) {
                         LOG.debug( "Interior within interior." );
-                        if ( !eventHandler.interiorRingsWithin( null, patch, ring2Idx, ring1Idx ) ) {
+                        if ( !eventHandler.interiorRingsWithin( patch, ring2Idx, ring1Idx, affectedGeometryParticles2 ) ) {
                             isValid = false;
                         }
                     }
                     if ( interior2JTSRing.within( interior1JTSRingAsPolygon ) ) {
                         LOG.debug( "Interior within interior." );
-                        if ( !eventHandler.interiorRingsWithin( null, patch, ring1Idx, ring2Idx ) ) {
+                        if ( !eventHandler.interiorRingsWithin( patch, ring1Idx, ring2Idx, affectedGeometryParticles2 ) ) {
                             isValid = false;
                         }
                     }
@@ -424,23 +439,27 @@ public class GeometryValidator {
         return isValid;
     }
 
-    private boolean validate( CompositeGeometry<?> geom ) {
+    private boolean validate( CompositeGeometry<?> geom, List<Object> affectedGeometryParticles  ) {
         LOG.debug( "Composite geometry. Validating individual member geometries." );
         LOG.warn( "Composite geometry found, but validation of inter-primitive topology is not available yet." );
         boolean isValid = true;
+        List<Object> affectedGeometryParticles2 = new ArrayList<Object>(affectedGeometryParticles);
+        affectedGeometryParticles2.add (geom);        
         for ( GeometricPrimitive geometricPrimitive : geom ) {
-            if ( !validate( geometricPrimitive ) ) {
+            if ( !validate( geometricPrimitive, affectedGeometryParticles2 ) ) {
                 isValid = false;
             }
         }
         return isValid;
     }
 
-    private boolean validate( MultiGeometry<?> geom ) {
+    private boolean validate( MultiGeometry<?> geom, List<Object> affectedGeometryParticles  ) {
         LOG.debug( "MultiGeometry. Validating individual member geometries." );
         boolean isValid = true;
+        List<Object> affectedGeometryParticles2 = new ArrayList<Object>(affectedGeometryParticles);
+        affectedGeometryParticles2.add (geom);        
         for ( Geometry member : geom ) {
-            if ( !validateGeometry( member ) ) {
+            if ( !validateGeometry( member, affectedGeometryParticles2  ) ) {
                 isValid = false;
             }
         }

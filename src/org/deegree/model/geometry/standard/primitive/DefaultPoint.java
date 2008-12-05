@@ -197,4 +197,14 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
     public GeometryType getGeometryType() {
         return GeometryType.PRIMITIVE_GEOMETRY;
     }
+    
+    @Override
+    public String toString () {
+        String s = "(" + coordinates [0]; 
+        for ( int i = 1; i < coordinates.length; i++ ) {
+            s += "," + coordinates [i];
+        }
+        s += ")";
+        return s;           
+    }
 }
