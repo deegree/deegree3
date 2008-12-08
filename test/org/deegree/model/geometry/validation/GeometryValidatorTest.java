@@ -53,7 +53,6 @@ import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Ring;
-import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.gml.GML311GeometryParser;
 import org.deegree.model.gml.GML311GeometryParserTest;
@@ -261,89 +260,110 @@ public class GeometryValidatorTest {
     }
 }
 
-class TestValidationEventHandler implements ValidationEventHandler {
+class TestValidationEventHandler implements GeometryValidationEventHandler {
 
     private List<ValidationEventType> events = new ArrayList<ValidationEventType>();
 
     @Override
-    public boolean curveDiscontinuity( Curve curve, int segmentIdx ) {
+    public boolean curveDiscontinuity( Curve curve, int segmentIdx, List<Object> affectedGeometryParticles) {
         events.add( ValidationEventType.CURVE_DISCONTINUITY );
+        printAffectedGeometryParticles(affectedGeometryParticles);
         return false;
     }
 
     @Override
-    public boolean curvePointDuplication( Curve curve, Point point ) {
+    public boolean curvePointDuplication( Curve curve, Point point, List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.CURVE_DUPLICATE_POINT );
+        printAffectedGeometryParticles(affectedGeometryParticles);
         return false;
     }
 
     @Override
-    public boolean curveSelfIntersection( Curve curve, Point location ) {
+    public boolean curveSelfIntersection( Curve curve, Point location, List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.CURVE_SELF_INTERSECTION );
+        printAffectedGeometryParticles(affectedGeometryParticles);
         return false;
     }
 
     @Override
-    public boolean exteriorRingCW( Surface surface, PolygonPatch patch ) {
+    public boolean exteriorRingCW( PolygonPatch patch, List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.SURFACE_EXTERIOR_RING_CW );
+        printAffectedGeometryParticles(affectedGeometryParticles);
         return false;
     }
 
     @Override
-    public boolean interiorRingCCW( Surface surface, PolygonPatch patch ) {
+    public boolean interiorRingCCW( PolygonPatch patch, List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.SURFACE_INTERIOR_RING_CCW );
+        printAffectedGeometryParticles(affectedGeometryParticles);
         return false;
     }
 
     @Override
-    public boolean interiorRingIntersectsExterior( Surface surface, PolygonPatch patch, int ringIdx ) {
+    public boolean interiorRingIntersectsExterior( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.SURFACE_INTERIOR_RING_INTERSECTS_EXTERIOR );
+        printAffectedGeometryParticles(affectedGeometryParticles);
         return false;
     }
 
     @Override
-    public boolean interiorRingOutsideExterior( Surface surface, PolygonPatch patch, int ringIdx ) {
+    public boolean interiorRingOutsideExterior( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.SURFACE_INTERIOR_RING_OUTSIDE_EXTERIOR );
+        printAffectedGeometryParticles(affectedGeometryParticles);
         return false;
     }
 
     @Override
-    public boolean interiorRingTouchesExterior( Surface surface, PolygonPatch patch, int ringIdx ) {
+    public boolean interiorRingTouchesExterior( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.SURFACE_INTERIOR_RING_TOUCHES_EXTERIOR );
+        printAffectedGeometryParticles(affectedGeometryParticles);
         return false;
     }
 
     @Override
-    public boolean interiorRingsIntersect( Surface surface, PolygonPatch patch, int ring1Idx, int ring2Idx ) {
+    public boolean interiorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx, List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.SURFACE_INTERIOR_RINGS_INTERSECT );
+        printAffectedGeometryParticles(affectedGeometryParticles);
         return false;
     }
 
     @Override
-    public boolean interiorRingsTouch( Surface surface, PolygonPatch patch, int ring1Idx, int ring2Idx ) {
+    public boolean interiorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx, List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.SURFACE_INTERIOR_RINGS_TOUCH );
+        printAffectedGeometryParticles(affectedGeometryParticles);
         return false;
     }
 
     @Override
-    public boolean interiorRingsWithin( Surface surface, PolygonPatch patch, int ring1Idx, int ring2Idx ) {
+    public boolean interiorRingsWithin( PolygonPatch patch, int ring1Idx, int ring2Idx, List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.SURFACE_INTERIOR_RINGS_NESTED );
+        printAffectedGeometryParticles(affectedGeometryParticles);
         return false;
     }
 
     @Override
-    public boolean ringNotClosed( Ring ring ) {
+    public boolean ringNotClosed( Ring ring, List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.RING_NOT_CLOSED );
+        printAffectedGeometryParticles(affectedGeometryParticles);
         return false;
     }
 
     @Override
-    public boolean ringSelfIntersection( Ring ring, Point location ) {
+    public boolean ringSelfIntersection( Ring ring, Point location, List<Object> affectedGeometryParticles ) {
         events.add( ValidationEventType.RING_SELF_INTERSECTION );
+        printAffectedGeometryParticles(affectedGeometryParticles);
         return false;
     }
 
     List<ValidationEventType> getEvents() {
         return events;
-    }    
+    }
+    
+    private void printAffectedGeometryParticles(List<Object> affectedGeometryParticles) {
+        String indent = "";
+        for ( Object object : affectedGeometryParticles ) {
+            System.out.println (indent + "-" + object);
+            indent += "  ";
+        }
+    }
 }
