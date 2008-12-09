@@ -85,7 +85,7 @@ public class CRSConfiguration {
 
     private CRSProvider provider;
 
-    private static final Map<String, CRSConfiguration> DEFINED_CONFIGURATIONS = new HashMap<String, CRSConfiguration>();
+    public static final Map<String, CRSConfiguration> DEFINED_CONFIGURATIONS = new HashMap<String, CRSConfiguration>();
 
     private static final String DEFAULT_PROVIDER_CLASS = "org.deegree.model.crs.configuration.DeegreeCRSProvider";
 
