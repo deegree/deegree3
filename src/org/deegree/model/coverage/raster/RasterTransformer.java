@@ -185,7 +185,7 @@ public class RasterTransformer extends Transformer {
         // the envelope from which we need data
         Envelope workEnv = (Envelope) srcTransf.transform( dstEnvelope, getTargetCRS() );
 
-        // the envelope from which we hava data
+        // the envelope from which we have data
         Geometry dataEnvGeom = workEnv.intersection( sourceRaster.getEnvelope() );
         if ( dataEnvGeom == null ) {
             LOG.debug( "no intersection for " + sourceRaster + " and " + dstEnvelope );
@@ -255,7 +255,7 @@ public class RasterTransformer extends Transformer {
      * 
      * <p>
      * This method transforms the whole raster into the target CRS of this RasterTransformer. The size of the output
-     * raster will be calculated, so that the pixels keep the aspect ration (i.e. keep square pixels).
+     * raster will be calculated, so that the pixels keep the aspect ratio (i.e. keep square pixels).
      * 
      * @param sourceRaster
      *            the raster to be transformed
