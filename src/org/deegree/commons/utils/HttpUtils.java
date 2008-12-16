@@ -51,11 +51,16 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.Map;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 
 /**
  * <code>HttpUtils</code>
@@ -74,6 +79,8 @@ import org.deegree.commons.xml.XMLAdapter;
  */
 public class HttpUtils {
 
+    static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+    
     /**
      * <code>Worker</code> is used to specify how to return the stream from the remote location.
      * 
@@ -110,6 +117,19 @@ public class HttpUtils {
             return new XMLAdapter( in );
         }
     };
+    
+    /**
+     * Returns streaming XMLAdapter.
+     */
+    public static final Worker<XMLStreamReaderWrapper> XML_STREAM = new Worker<XMLStreamReaderWrapper>() {
+        public XMLStreamReaderWrapper work( InputStream in ) throws IOException {
+            try {
+                return new XMLStreamReaderWrapper(xmlInputFactory.createXMLStreamReader(in ), "Post response" );
+            } catch ( XMLStreamException e ) {
+                throw new IOException ("Error creating XMLStreamReader for POST response: " + e.getMessage());
+            }            
+        }
+    };    
 
     /**
      * Returns a decoded String.
@@ -194,24 +214,51 @@ public class HttpUtils {
     }
 
     /**
+     * Performs an HTTP-Get request and provides typed access to the response.
+     * 
      * @param <T>
      * @param worker
      * @param url
-     * @param postdata
-     * @param contentType
+     * @param postBody
+     * @param headers
      * @return some object from the url
      * @throws HttpException
      * @throws IOException
      */
-    public static <T> T post( Worker<T> worker, String url, byte[] postdata, String contentType )
+    public static <T> T post( Worker<T> worker, String url, InputStream postBody, Map<String,String> headers)
                             throws HttpException, IOException {
-        // TODO no proxies used, not tested, no content type used - just here for example in case anyone actually needs
-        // this
+        // TODO no proxies used
         HttpClient client = new HttpClient();
         PostMethod post = new PostMethod( url );
-        post.setRequestEntity( new ByteArrayRequestEntity( postdata ) );
-        post.setRequestHeader( "Content-Type", contentType ); // written like this?
+        post.setRequestEntity( new InputStreamRequestEntity(postBody) );
+        for ( String key : headers.keySet() ) {
+            post.setRequestHeader( key, headers.get( key ));    
+        }        
         client.executeMethod( post );
         return worker.work( post.getResponseBodyAsStream() );
     }
+
+    /**
+     * Performs an HTTP-Get request and provides typed access to the response.
+     * 
+     * @param <T>
+     * @param worker
+     * @param url
+     * @param headers
+     * @return some object from the url
+     * @throws HttpException
+     * @throws IOException
+     */
+    public static <T> T get( Worker<T> worker, String url, Map<String,String> headers)
+                            throws HttpException, IOException {
+
+        // TODO no proxies used
+        HttpClient client = new HttpClient();
+        GetMethod get = new GetMethod( url );
+        for ( String key : headers.keySet() ) {
+            get.setRequestHeader( key, headers.get( key ));    
+        }        
+        client.executeMethod( get );
+        return worker.work( get.getResponseBodyAsStream() );
+    }    
 }

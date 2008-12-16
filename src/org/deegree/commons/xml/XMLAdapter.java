@@ -985,7 +985,7 @@ public class XMLAdapter {
     /**
      * Write an element with simple text content into the XMLStream.
      * <p>
-     * Convinience method to write simple elements like:
+     * Convenience method to write simple elements like:
      * 
      * <pre>
      * &lt;ogc:GeometryOperand&gt;gml:Envelope&lt;/ogc:GeometryOperand&gt;
@@ -1012,7 +1012,7 @@ public class XMLAdapter {
      * Write an element with a single attribute into the XMLStream.
      * 
      * <p>
-     * Convinience method to write simple elements like:
+     * Convenience method to write simple elements like:
      * 
      * <pre>
      * &lt;ows:Post xlink:href=&quot;http://localhost/&quot; /&gt;
@@ -1049,7 +1049,7 @@ public class XMLAdapter {
      * the element is omitted.
      * 
      * <p>
-     * Convinience method to write simple elements like:
+     * Convenience method to write simple elements like:
      * 
      * <pre>
      * &lt;ogc:GeometryOperand&gt;gml:Envelope&lt;/ogc:GeometryOperand&gt;
@@ -1181,5 +1181,4 @@ public class XMLAdapter {
     public String toString() {
         return getRootElement().toString();
     }
-
 }
