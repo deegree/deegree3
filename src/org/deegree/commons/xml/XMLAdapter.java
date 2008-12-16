@@ -693,6 +693,28 @@ public class XMLAdapter {
     }
 
     /**
+     * Parses the given <code>String</code> as an {@link URL}.
+     * 
+     * @param s
+     *            the <code>String</code> to be parsed
+     * @return corresponding URL value
+     * @throws XMLParsingException
+     *             if the given <code>String</code> is not a valid {@link URL}
+     */
+    public URL parseURL( String s )
+                            throws XMLParsingException {
+
+        URL value = null;
+        try {
+            value = new URL( s );
+        } catch ( MalformedURLException e ) {
+            String msg = Messages.getMessage( "XML_SYNTAX_ERROR_URL", s );
+            throw new XMLParsingException( this, (OMElement) null, msg );
+        }
+        return value;
+    }
+
+    /**
      * Parses the given <code>String</code> as an <code>xsd:QName</code> value.
      * 
      * @param s
@@ -780,6 +802,16 @@ public class XMLAdapter {
         String s = getNodeAsString( context, xpath, null );
         if ( s != null ) {
             value = parseInt( s );
+        }
+        return value;
+    }
+
+    public URL getNodeAsURL( OMElement context, XPath xpath, URL defaultValue )
+                            throws XMLParsingException {
+        URL value = defaultValue;
+        String s = getNodeAsString( context, xpath, null );
+        if ( s != null ) {
+            value = parseURL( s );
         }
         return value;
     }
@@ -898,6 +930,14 @@ public class XMLAdapter {
 
         String s = getRequiredNodeAsString( context, xpath );
         int value = parseInt( s );
+        return value;
+    }
+
+    public URL getRequiredNodeAsURL( OMElement context, XPath xpath )
+                            throws XMLParsingException {
+
+        String s = getRequiredNodeAsString( context, xpath );
+        URL value = parseURL( s );
         return value;
     }
 
