@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+</head>
+<body bgcolor="white">
+<p>
+This document is the API specification of the deegree framework - 
+a Java framework for geospatial solutions.
+</p>
+<p>
+<a name="Overview"></a>
+<div align="center">
+<a href="#Specification">[Specification]</a>
+<a href="#Documentation">[Documentation]</a>
+<a href="#Platform">[Platform]</a>
+<a href="#Architecture">[Architecture]</a>
+<a href="#Aspects">[Design Aspects]</a>
+<a href="#JavaDoc">[Extended JavaDoc tags]</a>
+<a href="#Reports">[Project Reports]</a>
+</div>
+</p>
+
+<hr noshade width="50%" size="2" align="center"/>
+
+<!-- new chapter -->
+<a name="Specification"></a>
+<h2>Specification</h2>
+<p>
+The basic idea about deegree is to provide a framework, allowing flexible 
+implementations of geospatial solutions ranging from standalone applications to 
+highly distributed and service-based infrastructures. Deegree
+is reusable, platform independend, component-based, and 
+interoperable. To meet the interoperability requirement deegree is based on 
+OGC's WMS, WFS and GridCoverage Specifications and on the ISO 19107 datamodel.<BR>
+ISO 19107:2003 specifies conceptual schemas for describing the spatial 
+characteristics of geographic features, and a set of spatial operations 
+consistent with these schemas.
+</p>
+<ul>
+  <li><a href="http://www.iso.ch/">ISO</a>/<a href="http://www.isotc211.org/">TC 211</a></li>
+</ul>
+
+<p align="right"><a href="#Overview">[&nbsp;^&nbsp;]</a></p>
+<hr noshade width="50%" size="2" align="center"/>
+
+<!-- new chapter -->
+<a name="Documentation"></a>
+<h2>Related Documentation</h2>
+
+For overviews, tutorials, examples, guides, and tool documentation, please see:
+<ul>
+  <li><a href="http://cite.occamlab.com/test_engine"> OGC Compliance Testing Initiative (CITE)</a>
+  <li><a href="http://gml4j.sourceforge.net/">GML4J - Java API for Geography Markup Language (GML)</a></li>
+</ul>
+
+<p align="right"><a href="#Overview">[&nbsp;^&nbsp;]</a></p>
+<hr noshade width="50%" size="2" align="center"/>
+
+<!-- new chapter -->
+<a name="Platform"></a>
+<h2>Used Platform, Tools and Frameworks</h2>
+<p>
+The deegree 2.3 framework is using the following third-party libraries (the list is by far not complete):
+<UL>
+<LI><a href="http://java.sun.com/products/java-media/jai/">Java Advanced Imaging (JAI) API</a></LI>
+<LI><a href="http://java.sun.com/products/java-media/3D/">Java 3D API</a></LI>
+<LI><a href="http://xml.apache.org/batik/index.html">Apache Batik</a></LI>
+<LI><a href="http://jakarta.apache.org/commons/">Jakarta Commons</a></LI>
+<LI><a href="http://jakarta.apache.org/log4j">Log4J</a> - <a href="http://jakarta.apache.org/log4j/docs/api/index.html">API</a></LI>
+<LI><a href="http://www.vividsolutions.com/jts/jtshome.htm">Java Topology Suite JTS</a> - <a href="http://www.vividsolutions.com/jts/javadoc/index.html">API</a></LI>
+<LI><a href="http://www.acme.com/java/">ACME Java</a> - <a href="http://www.acme.com/java/software/packages.html">API</a></LI>
+<LI><a href="http://www.ermapper.com">ECW Java SDK</a></LI>
+<LI><a href="http://ehcache.sourceforge.net/">Ehcache</a></LI>
+<!--
+<LI><a href="http://cglib.sourceforge.net/">cglib - Code Generation Library for Java</a> <a href="http://cglib.sourceforge.net/apidocs/index.html">API</a></LI>
+<LI><a href="http://www.hibernate.org">Hibernate</a></LI>
+<LI><a href="http://sourceforge.net/projects/xdoclet/">XDoclet</a></LI>
+-->
+</UL>
+</p>
+<U><I>Optional:</I></U>
+<UL>
+<LI><a href="http://otn.oracle.com/documentation/spatial.html">Oracle Spatial Data Objects (SDO)</a> support - <a href="http://otn.oracle.com/software/products/spatial/index.html">API</a>(download)</LI>
+<LI><a href="http://www.esri.com/software/arcgis/arcsde/">ArcSDE</a> support - <a href="http://arcsdeonline.esri.com/java_api/docs/overview-summary.html">API</a></LI>
+<LI><a href="http://dev.mysql.com/">MySQL Spatial</a> support - <a href="http://dev.mysql.com/doc/connector/j/en/index.html">API</a> </LI>
+
+</UL>
+<P>
+deegree 2.3 requires the following platform:
+<a href="http://java.sun.com/j2ee">Java 2 SDK, Enterprise Edition (J2EE) 1.5</a>
+with <a href="http://java.sun.com/j2se/1.5.0/">Java 2 Platform, Standard Edition (J2SE) 1.5</a>
+</p>
+
+<p align="right"><a href="#Overview">[&nbsp;^&nbsp;]</a></p>
+<hr noshade width="50%" size="2" align="center"/>
+
+<!-- new chapter -->
+<a name="Architecture"></a>
+<h2>Architecture</h2>
+<dl>
+<dt><b>Service-oriented Architecture (SOA)</b></dt>
+<dd>A service is a distinct part of the functionality that is provided by an entity through interfaces [ISO/IEC TR 14252]<BR><BR>
+{@link org.deegree.ogcwebservices.wms WMS} - Web Map Service: Provides four protocols (GetCapabilities, GetMap, GetFeatureInfo and DescribeLayer) in support of the creation and display of registered and superimposed map-like views of information that come simultaneously from multiple sources that are both remote and heterogeneous.  <BR>
+{@link org.deegree.ogcwebservices.wfs WFS} - Web Feature Service: The purpose of the Web Feature Server Interface Specification (WFS) is to describe data manipulation operations on OpenGIS� Simple Features (feature instances) such that servers and clients can communicate at the feature level. <BR>
+{@link org.deegree.ogcwebservices.csw CSW} - Catalog Service for Web: Defines a common interface that enables diverse but conformant applications to perform discovery, browse and query operations against distributed and potentially heterogeneous catalog servers.<BR>
+{@link org.deegree.ogcwebservices.wcs WCS} - Web Coverage Service: Extends the Web Map Server (WMS) interface to allow access to geospatial "coverages" that represent values or properties of geographic locations, rather than WMS generated maps (pictures). <BR>
+{@link org.deegree.ogcwebservices.sos SOS} - The basic function of the Sensor Observation Service (SOS) is to provide a web-enabled interface to a sensor, collection of sensors or sensor proxy. Sensors are defined as devices that measure physical quantities.<BR>  
+</dd>
+<p/>
+<dt><b>Patterns</b></dt>
+<dd>...<BR>
+<a href="http://hillside.net/patterns/">Patterns library</a><BR>
+<a href="http://www.mindspring.com/~mgrand/pattern_synopses.htm">Fundamental Design Patterns</a><BR>
+<a href="http://www.mindspring.com/~mgrand/pattern_synopses2.htm#">Java Software Patterns</a><BR>
+<a href="http://www.mindspring.com/~mgrand/pattern_synopses3.htm">Java Enterprise Design Patterns</a><BR>
+<a href="http://java.sun.com/blueprints/patterns/index.html">J2EE patterns</a><BR>
+</dd>
+</dl>
+
+<p align="right"><a href="#Overview">[&nbsp;^&nbsp;]</a></p>
+<hr noshade width="50%" size="2" align="center"/>
+
+<!-- new chapter -->
+<a name="Aspects"></a>
+<h2>Design Aspects</h2>
+<dl>
+<dt>Exception handling</dt>
+<dd>{@link org.deegree.enterprise.ServiceException Exception}, TODO: Central Error handling, support for multi language/internationalization missings</dd>
+<dt>Logging</dt>
+<dd>{@link org.deegree.framework.log Logging}</dd>
+<dt>Profiling</dt>
+<dd>Profiling of resource usage (memory, CPU, threads)<BR>
+    {@link org.deegree.framework.util.ProfilerInterceptor Profiling}
+</dd>
+<dt>Security</dt>
+<dd>TODO</dd>
+</dl>
+
+<p align="right"><a href="#Overview">[&nbsp;^&nbsp;]</a></p>
+<hr noshade width="50%" size="2" align="center"/>
+
+<!-- new chapter -->
+<a name="JavaDoc"></a>
+<h2>Extended JavaDoc tags</h2>
+Some of these tags were presented in the article 
+<a href="http://www.ambysoft.com/javaCodingStandards.pdf">&quot;AmbySoft Inc. Java Coding Standards&quot;, by Scott W. Ambler</a>. 
+
+<dl>
+<dt>&#64;bug - describes a known bug</dt>
+<dd>Describes a known bug related to the class, method or routine.</dd>
+<dt>&#64;todo - marks that the item isn't finished yet</dt>
+<dd>This is info for the coders (only) of the class, method or routine. 
+A &#64;todo is something which is meant to be fixed before the next release. It 
+is not the same as @bug, because a bug may be too expensive to fix, or 
+otherwise does not warrant it being fixed. A &#64;todo is often &quot;stronger&quot; 
+than &#64;bug, but not necessarily so. Use one tag per &quot;todo&quot;. 
+Can be used everywhere.</dd>
+<dt>&#64;precondition - documents a precondition</dt>
+<dd>Documents a precondition. Applies to methods and routines, and sometimes to 
+properties. A precondition is a statement which is assumed true when the method 
+gets called. It is part of the contract between the caller and callee, with the 
+&quot;burden&quot; on the caller. A good practice is to assert the preconditions 
+of a method.</dd>
+<dt>&#64;postcondition - documents a postcondition</dt>
+<dd>Documents a postcondition. Applies to methods and routines, and sometimes to 
+properties. A postcondition is a statement which you as a caller can assume to be 
+true when the method (etc) returns. It is part of the contract between the caller 
+and callee, with the &quot;burden&quot; on the callee.</dd>
+</dl>
+
+
+<p align="right"><a href="#Overview">[&nbsp;^&nbsp;]</a></p>
+<hr noshade width="50%" size="2" align="center"/>
+
+<!-- new chapter -->
+<a name="Reports"></a>
+<h2>Project Reports</h2>
+<ul>
+<li><a href="{@docRoot}/jdepend/index.html">Metrics</a></li>
+<li><a href="{@docRoot}/checkstyle/index.html">Checkstyle</a></li>
+<li><a href="{@docRoot}/findbugs/index.html">Findbugs</a></li>
+<li><a href="{@docRoot}/pmd/index.html">PMD Report</a></li>
+</ul> 
+
+<p align="right"><a href="#Overview">[&nbsp;^&nbsp;]</a></p>
+
+<!-- footer -->
+<hr/>
+@author Torsten Friebe, $Author: rbezema $
+@version $Revision: 11360 $, $Date: 2008-04-22 15:28:45 +0200 (Di, 22 Apr 2008) $
+@see <a href="{@docbase}/../../testapi/index.html" target="_top">deegree test suite JavaDoc</a>
+
+</body>
+</html>
