@@ -1,468 +1,62 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Ant build file for d3_commons. Tested with Ant version 1.7.0.
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
 
-    This file is part of deegree.
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2.1 of the License, or (at your option) any later version.
+     http://www.apache.org/licenses/LICENSE-2.0
 
-    Copyright (C) 2001-2008 by:
-          EXSE, Department of Geography, University of Bonn
-          http://www.giub.uni-bonn.de/exse/
-          lat/lon GmbH, Bonn, Germany
-          http://www.lat-lon.de
-
-    $HeadURL$
-    $Revision$, $Date$
-    $Author$
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
 -->
-<project name="d3_commons" default="compile" basedir=".">
+<project name="commons" default="publish" xmlns:ivy="antlib:org.apache.ivy.ant">
+    <property file="build.properties" />
 
-        <description>d3_commons - common functionality needed by all deegree modules</description>
+    <import file="${ivybuild.dir}/ivy-build.xml" optional="false" />
 
-        <!-- all properties are read from the build.properties file -->
-        <property file="build.properties" />
-
-        <property name="target.version" value="1.6" />
-        <property name="source.version" value="1.6" />
-        <property name="app.name" value="${ant.project.name}" />
-        <property name="src" value="${basedir}/src" />
-        <property name="build" value="${basedir}/classes" />
-        <property name="dist" value="${basedir}/dist" />
-        <property name="lib.jar" value="${app.name}.jar" />
-        <property name="lib" value="${basedir}/lib" />
-        <property name="doc" value="${basedir}/docs" />
-        <property name="resources" value="${basedir}/resources" />
-        <property name="test.src" value="${basedir}/test" />
-        <property name="version.props" value="${src}/org/deegree/commons/version/version.properties" />
-        <property name="buildId.props" value="${src}/org/deegree/commons/version/buildId.properties" />
-        <property name="version.class" value="${src}/org/deegree/commons/version/Version" />
-
-        <!-- version + buildId properties -->
-        <property file="${version.props}" />
-        <property file="${buildId.props}" />
-
-        <!-- Find the ant contrib resources, or give an error message if it could not be found -->
-        <fail message="Could not find the ant-contrib resources, please make sure ant-contrib is located on the your build.path.
-                ${nl}${nl}${ant.project.name} can only be build with ANT if the ant-contrib.jar is available.
-                ${nl}Please refer to the installation instruction on http://ant-contrib.sourceforge.net/">
-                <condition>
-                        <not>
-                                <available resource="net/sf/antcontrib/antlib.xml" />
-                        </not>
-                </condition>
-        </fail>
-
-        <!--ant contrib optional task def -->
-        <taskdef resource="net/sf/antcontrib/antlib.xml">
-                <classpath>
-                        <pathelement location="${ant-contrib.jar}" />
-                </classpath>
-        </taskdef>
-
-        <if>
+    <!-- ================================================
+         Target for running the xjc (jaxb) program 
+         ================================================-->
+    <target name="run-xjc">
+        <fail message="The schema.file parameter should be specified e.g. -Dschema.file='resources/schema/test.xsd'">
+            <condition>
                 <not>
-                        <isset property="optional.libs" />
+                    <isset property="schema.file" />
                 </not>
-                <then>
-                        <property name="optional.libs" value="${lib}" />
-                </then>
+            </condition>
+        </fail>
+        <if>
+            <not>
+                <isset property="output.dir" />
+            </not>
+            <then>
+                <echo message="The output.dir parameter was not specified e.g. -Doutput.dir='dist', defaulting to src" />
+                <propertycopy name="output.dir" from="src" override="yes" />
+            </then>
         </if>
+        <if>
+            <not>
+                <isset property="other.parameters" />
+            </not>
+            <then>
+                <echo message="The other.parameters parameter was not specified e.g. -Dother.parameters='-jaxb_param test' so not using it" />
+                <property name="other.parameters" value="" />
+            </then>
+        </if>
+        <pathconvert property="class.path" refid="build.path" />
+        <exec dir="${basedir}" executable="xjc">
+            <arg line="-d ${output.dir}" />
+            <arg line="-classpath ${class.path}" />
+            <arg line="${other.parameters}" />
+            <arg line="${schema.file}" />
+        </exec>
+    </target>
 
-
-        <!-- set build classpath -->
-        <path id="build.path">
-                <pathelement location="${build}" />
-                <fileset dir="${lib}">
-                        <include name="**/*.jar" />
-                </fileset>
-                <fileset dir="${optional.libs}">
-                        <include name="**/*.jar" />
-                </fileset>
-                <!-- find the extra libs in the lib dir of the java-home -->
-        </path>
-
-        <!-- set dependency classpath -->
-        <path id="dependency.path">
-                <fileset dir="${lib}">
-                        <include name="**/*.jar" />
-                        <exclude name="${exclude.dependency.jars}" />
-                </fileset>
-        </path>
-
-        <target name="retrieve-project-path">
-                <echo level="info" message="${ant.project.name} - copying local build path." />
-                <pathconvert property="tmp.path" refid="build.path" />
-                <property name="module.path" value="${tmp.path}:${lib.jar}" />
-        </target>
-
-
-        <!--ant contrib optional task def -->
-        <taskdef resource="net/sf/antcontrib/antlib.xml">
-                <classpath>
-                        <pathelement location="${ant.home}/lib/ant-contrib.jar" />
-                </classpath>
-        </taskdef>
-
-
-        <!-- =================================================================== -->
-        <!-- create directories and load properties                              -->
-        <!-- =================================================================== -->
-
-        <target name="build_info">
-                <echo message="deegree version: ${version.number}" />
-                <echo message="old build.number: ${build.number}" />
-                <echo message="build.by: ${build.by}" />
-                <echo message="ant.java.version: ${ant.java.version}" />
-                <echo message="source.version: ${source.version}" />
-                <echo message="target.version: ${target.version}" />
-                <!-- Try to read the current svn number from the .svn directory -->
-                <loadfile srcFile=".svn/format" property="svn.format" failonerror="false">
-                        <filterchain>
-                                <striplinebreaks />
-                        </filterchain>
-                </loadfile>
-                <if>
-                        <equals arg1="${svn.format}" arg2="8" />
-                        <then>
-                                <loadfile srcFile=".svn/entries" property="svn.revision.new" failonerror="false">
-                                        <filterchain>
-                                                <headfilter lines="1" skip="3" />
-                                        </filterchain>
-                                </loadfile>
-                                <loadfile srcFile=".svn/entries" property="svn.path.new" failonerror="false">
-                                        <filterchain>
-                                                <headfilter lines="1" skip="4" />
-                                        </filterchain>
-                                </loadfile>
-                        </then>
-                        <else>
-                                <if>
-                                        <equals arg1="${svn.format}" arg2="9" />
-                                        <then>
-                                                <loadfile srcFile=".svn/entries" property="svn.revision.new" failonerror="false">
-                                                        <filterchain>
-                                                                <headfilter lines="1" skip="3" />
-                                                        </filterchain>
-                                                </loadfile>
-                                                <loadfile srcFile=".svn/entries" property="svn.path.new" failonerror="false">
-                                                        <filterchain>
-                                                                <headfilter lines="1" skip="4" />
-                                                        </filterchain>
-                                                </loadfile>
-                                        </then>
-                                        <else>
-                                                <loadfile srcFile=".svn/entries" property="svn.revision.new" failonerror="false">
-                                                        <filterchain>
-                                                                <headfilter lines="1" skip="4" />
-                                                                <tokenfilter>
-                                                                        <replacestring from="committed-rev=" to="" />
-                                                                </tokenfilter>
-                                                                <tokenfilter>
-                                                                        <replacestring from="&quot;" to="" />
-                                                                </tokenfilter>
-                                                                <tokenfilter>
-                                                                        <trim />
-                                                                </tokenfilter>
-                                                        </filterchain>
-                                                </loadfile>
-                                                <loadfile srcFile=".svn/entries" property="svn.path.new" failonerror="false">
-                                                        <filterchain>
-                                                                <headfilter lines="1" skip="7" />
-                                                                <tokenfilter>
-                                                                        <replacestring from="url=" to="" />
-                                                                </tokenfilter>
-                                                                <tokenfilter>
-                                                                        <replacestring from="&quot;" to="" />
-                                                                </tokenfilter>
-                                                                <tokenfilter>
-                                                                        <trim />
-                                                                </tokenfilter>
-                                                        </filterchain>
-                                                </loadfile>
-                                        </else>
-                                </if>
-                        </else>
-                </if>
-                <echo message="Using svn revision: ${svn.revision.new} from svn path: ${svn.path.new}" />
-        </target>
-
-        <target name="init" depends="build_info">
-                <tstamp>
-                        <format property="init.date" pattern="yyyy/MM/dd HH:mm" />
-                </tstamp>
-                <mkdir dir="${build}" />
-                <mkdir dir="${dist}" />
-                <mkdir dir="${doc}" />
-        </target>
-
-        <target name="clean" description="clean build,dist and doc directories">
-                <delete dir="${build}" />
-                <delete dir="${dist}" />
-                <delete dir="${doc}" />
-        </target>
-
-        <!-- =================================================================== -->
-        <!-- prints the environment                                              -->
-        <!-- =================================================================== -->
-
-        <target name="env" depends="init" description="prints the environment">
-                <echo>Environment:</echo>
-                <echo>------------</echo>
-                <echo message="java.home = ${java.home}" />
-                <echo message="java.version = ${java.version}" />
-                <echo message="java.class.path = ${java.class.path}" />
-                <echo message="ant.home = ${ant.home}" />
-                <echo message="ant.version = ${ant.version}" />
-                <echo message="user.home = ${user.home}" />
-                <echo message="user.dir = ${user.dir}" />
-
-                <echo>Application:</echo>
-                <echo>------------</echo>
-                <echo message="project.name = ${ant.project.name}" />
-                <echo message="application.name = ${app.name}" />
-                <echo message="application.home = ${basedir}" />
-                <echo message="test.src.home = ${test.src}" />
-                <echo message="src = ${src}" />
-                <echo message="lib = ${lib}" />
-                <echo message="build = ${build}" />
-                <echo message="dist = ${dist}" />
-                <echo message="version.class = ${version.class}" />
-                <echo message="version.number = ${version.number}" />
-                <echo message="build.by = ${build.by}" />
-                <echo message="build.date = ${build.date}" />
-                <echo message="build.number = ${build.number}" />
-        </target>
-
-        <!-- =================================================================== -->
-        <!-- create new build number (for next run)                              -->
-        <!-- =================================================================== -->
-
-        <target name="new-build-number">
-                <echo message="creating new build number, previous was ${build.number}" />
-                <buildnumber file="${buildId.props}" />
-                <propertyfile file="${buildId.props}">
-                        <entry key="svn.revision" value="${svn.revision.new}" />
-                        <entry key="svn.path" value="${svn.path.new}" />
-                        <entry key="build.date" value="${init.date}" />
-                </propertyfile>
-        </target>
-
-        <!-- =================================================================== -->
-        <!-- compiles all sources and copies all required resouces               -->
-        <!-- =================================================================== -->
-
-        <target name="compile" depends="init" description="compiles all sources and copies all required resouces to the output directory">
-                <echo level="info" message="Compiling ${ant.project.name} " />
-                <javac srcdir="${src}" destdir="${build}" excludes="${exclude.classes}" includes="**/*.java" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.true}" source="${source.version}" target="${target.version}">
-                        <classpath>
-                                <path refid="build.path" />
-                        </classpath>
-                </javac>
-                <!-- check if any of the files in sources have been changed, so we do not need to update the build.number-->
-                <outofdate property="needs.compile" value="whatever" outputsources="bla">
-                        <sourcefiles>
-                                <fileset dir="${src}" includes="**/**">
-                                        <exclude name="**/*.java" />
-                                        <exclude name="**/package.html" />
-                                        <exclude name="**/buildId.properties" />
-                                </fileset>
-                        </sourcefiles>
-                        <targetfiles>
-                                <fileset dir="${build}" includes="**/**">
-                                        <exclude name="**/*.class" />
-                                        <exclude name="**/package.html" />
-                                        <exclude name="**/buildId.properties" />
-                                </fileset>
-                        </targetfiles>
-                        <sequential>
-                                <antcall target="new-build-number" />
-                        </sequential>
-                </outofdate>
-                <copy todir="${build}">
-                        <fileset dir="${src}" includes="**/*.*">
-                                <exclude name="**/package.html" />
-                                <exclude name="**/*.java" />
-                        </fileset>
-                </copy>
-
-        </target>
-
-        <!-- =================================================================== -->
-        <!-- creates JavaDoc API                                                 -->
-        <!-- =================================================================== -->
-
-        <target name="javadoc" depends="compile" description="creates JavaDoc API">
-                <javadoc source="${source.version}" packagenames="org.deegree.*" sourcepath="${src}" destdir="${doc}" author="true" version="true" verbose="${debug}" use="true" package="true" linksource="true" overview="${src}/overview.html" doctitle="deegree - Java framework for geospatial solutions" windowtitle="deegree framework ${version.number}" header="deegree - ${app.name} - ${version.number} (${build.date} build-${build.number}-${build.by})" footer="deegree - ${app.name} - ${version.number} (${build.date} build-${build.number}-${build.by})" maxmemory="512m" encoding="utf-8">
-
-                        <bottom>
-                                <![CDATA[<p align="center">an open source project founded by <a href="http://www.latlon.de">lat/lon</a>, Bonn, Germany.<BR>
-                                        <i>For more information visit: <a href="http://www.deegree.org">http://www.deegree.org</a>
-                                        </i>
-                                </p>]]>
-            </bottom>
-
-                        <!-- custom tags -->
-                        <tag name="todo" scope="all" description="To do:" />
-                        <tag name="TODO" scope="all" description="To do:" />
-                        <tag name="FIXME" scope="all" description="Fix: " />
-                        <tag name="fixme" scope="all" description="Fix: " />
-                        <tag name="bug" scope="all" description="Known bug: " />
-                        <tag name="BUG" scope="all" description="Known bug: " />
-
-                        <group title="deegree Coordinate Reference System (crs)" packages="org.deegree.crs*" />
-                        <group title="deegree Framework" packages="org.deegree.framework*" />
-                        <group title="deegree Enterprise Services" packages="org.deegree.enterprise*" />
-                        <group title="deegree OGC Web Services (OWS)" packages="org.deegree.ogcwebservices*,org.deegree.ogcbase*" />
-                        <group title="deegree Model" packages="org.deegree.model*" />
-                        <group title="deegree Datatypes" packages="org.deegree.datatypes*" />
-                        <group title="deegree Spatial Data Input/Output" packages="org.deegree.io*" />
-                        <group title="deegree Graphics" packages="org.deegree.graphics*" />
-                        <group title="deegree Portal" packages="org.deegree.portal*" />
-                        <group title="deegree Security Framework" packages="org.deegree.security*" />
-                        <group title="deegree Standalone Tools" packages="org.deegree.tools.*" />
-
-                        <link href="http://java.sun.com/javase/6/docs/api/index.html" />
-
-                        <classpath>
-                                <path refid="build.path" />
-                        </classpath>
-                </javadoc>
-        </target>
-
-        <target name="cruisecontrol" depends="clean-all, build-lib, javadoc, test" description="target for cruisecontrol">
-                <echo message="compress jar and javadoc for publishing..." />
-                <tar destfile="${dist}/deegree_jar_apidoc.tgz" compression="gzip" longfile="gnu">
-                        <tarfileset dir="${dist}">
-                                <include name="${lib.jar}" />
-                        </tarfileset>
-
-                        <tarfileset dir="${doc}">
-                                <include name="**/*.*" />
-                        </tarfileset>
-                </tar>
-        </target>
-
-        <!-- ########################################################## -->
-
-        <target name="build-lib" depends="compile" description="creates the deegree2.jar">
-                <echo message="Creating deegree ${app.name} library ..." />
-
-                <!--needed for callers outside of this ant script who want to use this projects jar-->
-                <property name="module.dist" value="${dist}" />
-                <property name="module.jar" value="${lib.jar}" />
-
-                <!-- Set the correct class path in the manifest file of the jar -->
-                <pathconvert pathsep=" " property="used.libs" refid="dependency.path">
-                        <flattenmapper />
-                        <map from="${lib}/" to="" />
-                        <map from="classes" to="" />
-                </pathconvert>
-
-                <jar jarfile="${dist}/${lib.jar}" update="false">
-                        <fileset dir="${build}" casesensitive="yes">
-                                <include name="**/**" />
-                                <exclude name="**/*Test*" />
-                                <exclude name="**/test/**" />
-                                <exclude name="**/junit*" />
-                                <exclude name="alltests/**" />
-                                <exclude name="alltests/**" />
-                        </fileset>
-
-                        <manifest>
-                                <attribute name="Built-By" value="${build.by}" />
-                                <attribute name="Specification-Title" value="${app.name}" />
-                                <attribute name="Specification-Vendor" value="OpenGIS Consortium" />
-                                <attribute name="Implementation-Vendor" value="lat/lon GmbH, Germany" />
-                                <attribute name="Implementation-URL" value="http://www.lat-lon.de" />
-                                <attribute name="Specification-Version" value="" />
-                                <attribute name="Implementation-Version" value="${version.number} (${build.date} build-${build.number}-${build.by})" />
-                                <attribute name="Class-Path" value="${used.libs}" />
-                                <attribute name="Main-Class" value="org.deegree.framework.version.Version" />
-                        </manifest>
-                </jar>
-        </target>
-
-
-
-        <target name="build-lib-nocompile" depends="init" description="creates the deegree2.jar without compiling">
-                <echo message="creating deegree libraries ..." />
-                <pathconvert pathsep=" " property="used.libs" refid="dependency.path">
-                        <flattenmapper />
-                        <map from="${basedir}${file.separator}${lib}${file.separator}" to="" />
-                        <map from="${basedir}" to="." />
-                </pathconvert>
-
-                <jar jarfile="${dist}/${lib.jar}" update="false">
-                        <fileset dir="${build}" casesensitive="yes">
-                                <include name="**/**" />
-                                <exclude name="**/*Test*" />
-                                <exclude name="**/test/**" />
-                                <exclude name="**/junit*" />
-                                <exclude name="alltests/**" />
-                                <exclude name="alltests/**" />
-                        </fileset>
-
-                        <manifest>
-                                <attribute name="Built-By" value="${build.by}" />
-                                <attribute name="Specification-Title" value="${app.name}" />
-                                <attribute name="Specification-Vendor" value="OpenGIS Consortium" />
-                                <attribute name="Implementation-Vendor" value="lat/lon GmbH, Germany" />
-                                <attribute name="Implementation-URL" value="http://www.lat-lon.de" />
-                                <attribute name="Specification-Version" value="" />
-                                <attribute name="Implementation-Version" value="${version.number} (${build.date} build-${build.number}-${build.by})" />
-                                <attribute name="Class-Path" value="${used.libs}" />
-                                <attribute name="Main-Class" value="org.deegree.framework.version.Version" />
-                        </manifest>
-                </jar>
-        </target>
-
-        <target name="test" depends="compile" description="runs unit tests">
-                <ant antfile="build-test.xml" dir="." target="cctest" />
-        </target>
-
-        <!-- ########################################################## -->
-
-        <target name="clean-all" depends="clean" description="clean all output directories">
-                <ant antfile="build-test.xml" dir="." target="clean" />
-        </target>
-
-        <!-- ########################################################## -->
-
-        <target name="run-xjc">
-                <fail message="The schema.file parameter should be specified e.g. -Dschema.file='resources/schema/test.xsd'">
-                        <condition>
-                                <not>
-                                        <isset property="schema.file" />
-                                </not>
-                        </condition>
-                </fail>
-                <if>
-                        <not>
-                                <isset property="output.dir" />
-                        </not>
-                        <then>
-                                <echo message="The output.dir parameter was not specified e.g. -Doutput.dir='dist', defaulting to src" />
-                                <propertycopy name="output.dir" from="src" override="yes" />
-                        </then>
-                </if>
-                <if>
-                        <not>
-                                <isset property="other.parameters" />
-                        </not>
-                        <then>
-                                <echo message="The other.parameters parameter was not specified e.g. -Dother.parameters='-jaxb_param test' so not using it" />
-                                <property name="other.parameters" value="" />
-                        </then>
-                </if>
-                <pathconvert property="class.path" refid="build.path" />
-                <exec dir="${basedir}" executable="xjc">
-                  <arg line="-d ${output.dir}" />
-                  <arg line="-classpath ${class.path}" />
-                  <arg line="${other.parameters}" />
-                  <arg line="${schema.file}" />
-                </exec>
-        </target>
 </project>

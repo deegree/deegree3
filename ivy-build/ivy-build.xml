@@ -1,0 +1,253 @@
+<project xmlns:ivy="antlib:org.apache.ivy.ant">
+    <!-- because this file is imported from the basedir ../ we need to specify the properties with the directory -->
+    <property file="${ivybuild.dir}/ivy.properties" />
+
+    <!--=======================================================
+    STANDARD Targets common in all build-ivy.xml files 
+    =============================================================/-->
+
+    <!-- create the paths of the libs -->
+    <path id="build.path">
+        <fileset dir="${lib.dir}" />
+    </path>
+
+    <!--Check if the ivy jar is present, if so please don't try to download it all the time"-->
+    <available file="${ivy.jar.file}" property="download.ivy" />
+
+    <target name="init">
+        <echo message="init: ${module.name}" />
+        <mkdir dir="${ivy.jar.dir}" />
+        <mkdir dir="${classes.dir}" />
+        <mkdir dir="${lib.dir}" />
+        <mkdir dir="${repository.dir}" />
+    </target>
+
+    <target name="download-ivy" depends="init" unless="download.ivy">
+        <!-- try to load ivy here from home ivy dir, in case the user has not already dropped
+                  it into ant's lib dir (note that the latter copy will always take precedence).
+                  We will not fail as long as ivy home lib dir exists (it may be empty) and
+                  ivy is in at least one of ant's lib dir or the ivy home lib dir.
+                  download Ivy from web site so that it can be used even without any special installation 
+                  -->
+        <get src="${ivy.repository.location}" dest="${ivy.jar.file}" usetimestamp="true" />
+    </target>
+
+    <target name="load-ivy" depends="download-ivy" unless="ivy.new.revision">
+        <path id="ivy.lib.path">
+            <fileset dir="${ivy.jar.dir}" includes="*.jar" />
+        </path>
+
+        <!-- define the ivy tasks read from the ${user.home}/.ivy/jars/ivy.jar -->
+        <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path" />
+        <ivy:settings file="${settings.file}" />
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- prints the environment                                              -->
+    <!-- =================================================================== -->
+
+    <target name="env" depends="load-ivy" description="prints the environment">
+        <echo>Environment:</echo>
+        <echo>------------</echo>
+        <echo message="java.home = ${java.home}" />
+        <echo message="java.version = ${java.version}" />
+        <echo message="ant.home = ${ant.home}" />
+        <echo message="ant.version = ${ant.version}" />
+        <echo message="required ivy version = ${ivy.install.version}" />
+        <echo message="build.by = ${build.by}" />
+        <echo message="user.home = ${user.home}" />
+        <echo message="user.dir = ${user.dir}" />
+        <echo message="java.class.path = ${java.class.path}" />
+        <echo />
+        <echo>Application:</echo>
+        <echo>------------</echo>
+        <echo message="module name = ${module.name}" />
+        <echo message="lib name = deegree-${module.name}" />
+        <echo message="application.home = ${basedir}" />
+        <echo message="src = ${src.dir}" />
+        <echo message="test.src = ${test.src.dir}" />
+        <echo message="build = ${build.dir}" />
+        <echo message="lib = ${lib.dir}" />
+        <echo message="classes = ${classes.dir}" />
+    </target>
+
+    <!-- ================================= 
+          target: resolve              
+         ================================= -->
+    <target name="resolve" depends="load-ivy" description="-> resolve and retrieve dependencies with ivy">
+        <ivy:retrieve pattern="${lib.dir}/[artifact](-[revision]).[ext]" file="${dependencies.file}" log="${ivy.resolve.verbose}" sync="true" />
+        <!--ivy:deliver deliverpattern="${build.dir}/ivy.xml"/-->
+        <!-- ivy:resolve file="${dependencies.file}"/-->
+    </target>
+
+    <target name="version" depends="resolve" unless="ivy.new.revision">
+        <!--asks to ivy an available version number-->
+        <ivy:info file="${dependencies.file}" />
+        <ivy:buildnumber organisation="${ivy.organisation}" module="${ivy.module}" revision="${module.version.prefix}" defaultBuildNumber="1" revSep="" />
+
+        <!-- create version file in classpath for later inclusion in jar -->
+        <echo message="version=${ivy.new.revision}" file="${classes.dir}/${module.name}.properties" append="false" />
+
+        <!-- load generated version properties file -->
+        <property file="${classes.dir}/${module.name}.properties" />
+        <echo message="New (local) version: ${version}" />
+    </target>
+
+    <!-- ================================= 
+          target: compile              
+         ================================= -->
+    <target name="compile" depends="version" description="-> compile ${module.name}">
+        <!-- if any of the dependend jars was updated, delete the previously compiled classes. This way the api-dependency is garanteed. 
+             
+             For clarification, consider you removed a public method in a dependend d3 module. By calling publish-all you will get these changes in the
+             dependee module, but, the java compiler does not recognize that the api has changed (the method is not available anymore) and
+             so no java files will be compiled a new.
+              
+             While executing this 'broken' configuration, you will get a 'NoSuchMethodException' because your newly created depend jar 
+             does not contain the method the dependee classes were compiled against.
+             -->
+        <dependset>
+            <srcfileset dir="${lib.dir}" includes="*jar" />
+            <targetfileset dir="${classes.dir}" includes="**/*.class" />
+        </dependset>
+        <!--updateProperty needs ant 1.7.1 -->
+        <javac srcdir="${src.dir}" updatedProperty="compile.change" destdir="${classes.dir}" classpathref="build.path" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.enabled}" source="${source.version}" target="${target.version}" />
+
+        <!-- Needed for the copying of the resources in the sources dir,
+            if any of the resources is changed, all old resources will be deleted and the compile.change property will be set.
+            todo maybe only copy the updated file, the uptodate task just didn't do the trick (or maybe I'm just too stupid :-) ) -->
+        <fileset dir="${classes.dir}" id="classes.resources">
+            <exclude name="${module.name}.properties" />
+            <exclude name="**/package.html" />
+            <exclude name="**/*.class" />
+        </fileset>
+        <fileset dir="${src.dir}" id="sources.resources">
+            <exclude name="**/package.html" />
+            <exclude name="**/*.java" />
+        </fileset>
+        <dependset>
+            <srcfileset refid="sources.resources" />
+            <targetfileset refid="classes.resources" />
+        </dependset>
+
+        <condition property="compile.change">
+            <resourcecount refid="classes.resources" count="0" when="eq" />
+        </condition>
+
+        <copy todir="${classes.dir}">
+            <fileset refid="sources.resources" />
+        </copy>
+    </target>
+
+    <!-- ================================= 
+          target: impl-jar              
+         ================================= -->
+    <target name="build-jar" depends="compile" if="compile.change" description="-> create a jar file in ${classed.dir}/${jar.file}.jar">
+        <jar destfile="${jar.file}-impl.jar">
+            <fileset dir="${classes.dir}" />
+            <manifest>
+                <attribute name="Built-By" value="${user.name}" />
+                <attribute name="Build-Version" value="${version}" />
+            </manifest>
+        </jar>
+    </target>
+
+    <!-- ================================= 
+          target: api-jar because no real api-jar is build, the api jar currently depends on the building of the impl jar :-)
+         ================================= -->
+    <target name="build-api-jar" depends="build-jar" if="compile.change" description="-> create a jar file in ${classed.dir}/${jar.file}.jar">
+        <echo message="No real api jar to build yet, just include the version.properties" />
+        <jar destfile="${jar.file}-api.jar">
+            <fileset file="${classes.dir}/${module.name}.properties" />
+            <manifest>
+                <attribute name="Built-By" value="${user.name}" />
+                <attribute name="Build-Version" value="${version}" />
+            </manifest>
+        </jar>
+    </target>
+
+    <!-- ================================= 
+          target: zip-sources packs all java sources in a zip file.              
+         ================================= -->
+    <target name="zip-sources" depends="load-ivy" description="-> zip all *java files in the ${src.dir}">
+        <zip destfile="${build.dir}/${module.name}-src.zip">
+            <fileset dir="${src.dir}">
+                <include name="**java" />
+            </fileset>
+        </zip>
+    </target>
+
+    <!-- ====================================
+         Generate a nice report of dependencies
+         ==================================== -->
+    <target name="report" depends="resolve" description="-> generates a report of dependencies">
+        <ivy:report todir="${report.dir}" conf="${module.name}-impl" dot="true" />
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- creates API JavaDoc                                                  -->
+    <!-- =================================================================== -->
+
+    <target name="javadoc" depends="compile" description="-> creates API JavaDoc">
+        <javadoc source="${source.version}" sourcepath="${src.dir}" packagenames="org.deegree.*" overview="${src.dir}/overview.html" destdir="${javadoc.dir}" author="true" version="true" verbose="${debug}" use="true" package="true" linksource="true" windowtitle="${doc.window}" maxmemory="512m" encoding="utf-8">
+            <doctitle>${doc.title}</doctitle>
+            <header>${doc.header}</header>
+            <footer>${doc.footer}</footer>
+            <bottom>${doc.bottom}</bottom>
+            <group title="deegree Coordinate Reference System (crs)" packages="org.deegree.model.crs*" />
+            <group title="deegree Commons" packages="org.deegree.commons*" />
+            <group title="deegree Model" packages="org.deegree.model*" />
+            <group title="deegree Datatypes" packages="org.deegree.model.datatypes*" />
+            <group title="deegree Rendering" packages="org.deegree.rendering*" />
+
+            <link href="${doc.sun.link}" />
+
+            <classpath>
+                <path refid="build.path" />
+            </classpath>
+        </javadoc>
+    </target>
+
+
+    <!-- ================================= 
+          publish targets, publishing means: make the current 'revision' available for all other modules by putting them in a (local) repository.              
+         ================================= -->
+
+    <target name="publish-local-src" depends="zip-sources" description="-> publish ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
+        <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${version}" conf="${module-name}-src" status="integration" forcedeliver="true" overwrite="true" />
+        <echo message="project ${module.name} released with version ${version}" />
+    </target>
+
+    <target name="publish-local-api" depends="build-api-jar" if="compile.change" description="-> publish ${module.name}-api in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
+        <ivy:publish conf="${module.name}-api" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${version}" status="integration" forcedeliver="true" overwrite="true" />
+        <echo message="project ${module.name}-api released with version ${version}" />
+    </target>
+
+    <target name="publish-local-impl" depends="build-api-jar" if="compile.change" description="-> publish ${module.name}-impl in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
+        <ivy:publish conf="${module.name}-impl,${module.name}-api" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${version}" status="integration" forcedeliver="true" overwrite="true" />
+        <echo message="project ${module.name}-impl released with version ${version}" />
+    </target>
+
+    <target name="publish-local-release" depends="publish-local-src, publish-local-impl" if="compile.change" description="-> publish ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
+        <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${version}" conf="${module-name}-release" status="integration" forcedeliver="true" overwrite="true" />
+        <echo message="project ${module.name} released with version ${version}" />
+    </target>
+
+    <target name="publish" depends="publish-local-impl" if="compile.change" description="-> publish ${module.name} in the global ivy repository.">
+        <!-- this method should be reconfigured to put the jars in the official repository, for now it is the same as publish-local-->
+    </target>
+
+    <!-- ==================================
+          target: clean 
+     ================================= -->
+    <target name="clean" description="-> cleans this projects created directory">
+        <echo message="clean: ${module.name}" />
+        <delete dir="${build.dir}" failonerror="false" />
+    </target>
+
+    <target name="clean-cache" depends="clean" description="-> cleans this projects created build directory, the ivy cache and the .ivy/local/org.deegree/[module]">
+        <delete dir="${repository.dir}/${module.organisation}/${module.name}" failonerror="false" />
+        <delete dir="${ivy.home.dir}/cache" failonerror="false" />
+    </target>
+
+</project>
