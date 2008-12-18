@@ -238,7 +238,7 @@
         <echo message="project ${module.name} released with version ${version}" />
     </target>
 
-    <target name="publish" depends="publish-local-impl" if="compile.change" description="-> publish ${module.name} in the global ivy repository.">
+    <target name="publish" depends="publish-local-all" if="compile.change" description="-> publish ${module.name} in the global ivy repository.">
         <!-- this method should be reconfigured to put the jars in the official repository, for now it is the same as publish-local-->
     </target>
 
