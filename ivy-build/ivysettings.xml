@@ -4,9 +4,6 @@
   <settings defaultResolver="deegree-resolver" />
   <resolvers>
     <chain name="deegree-resolver" returnFirst="true">
-      <filesystem name="cached-libs" local="true">
-        <artifact pattern="${ivy.cache.dir}/[organisation]/[module]/[artifact](-[revision]).[ext]" />
-      </filesystem>
       <filesystem name="scm-libs" local="true">
         <artifact pattern="${basedir}/lib/[organisation]/[artifact](-[revision]).[ext]" />
       </filesystem>
