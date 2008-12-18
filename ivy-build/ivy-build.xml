@@ -227,7 +227,12 @@
         <ivy:publish conf="${module.name}-impl,${module.name}-api" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${version}" status="integration" forcedeliver="true" overwrite="true" />
         <echo message="project ${module.name}-impl released with version ${version}" />
     </target>
-
+    
+    <target name="publish-local-all" depends="build-api-jar" if="compile.change" description="-> publish all configurations of ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
+        <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${version}" status="integration" forcedeliver="true" overwrite="true" />
+        <echo message="project ${module.name}-impl released with version ${version}" />
+    </target>
+    
     <target name="publish-local-release" depends="publish-local-src, publish-local-impl" if="compile.change" description="-> publish ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
         <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${version}" conf="${module-name}-release" status="integration" forcedeliver="true" overwrite="true" />
         <echo message="project ${module.name} released with version ${version}" />
