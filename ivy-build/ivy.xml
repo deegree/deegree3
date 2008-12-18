@@ -30,7 +30,9 @@
     <!-- Needed for the api -->
     <!--<dependency org="org.slf4j" name="slf4j-api" rev="1.5.2" transitive="false" conf="commons-impl->default"/>-->
     <dependency org="logging" name="slf4j-api" rev="1.5.2" conf="${module.name}-api" />
+    <dependency org="logging" name="slf4j-log4j12" rev="1.5.2" conf="${module.name}-impl" />
     <dependency org="logging" name="jcl-over-slf4j" rev="1.5.2" conf="${module.name}-impl" />
+    <dependency org="logging" name="log4j" rev="1.2.15" transitive="false" conf="${module.name}-impl" />    
 
     <!-- mail -->
     <!-- dependency org="javax.mail" name="mail" rev="1.4" transitive="false" conf="commons-impl->default"/-->
