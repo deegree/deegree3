@@ -21,6 +21,13 @@
 
     <import file="${ivybuild.dir}/ivy-build.xml" optional="false" />
 
+    <!-- Support the ant-contrib tasks. -->
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement location="${basedir}/libs/ant-contrib/ant-contrib-1.0b3.jar" />
+        </classpath>
+    </taskdef>	
+	
     <!-- ================================================
          Target for running the xjc (jaxb) program 
          ================================================-->
@@ -37,8 +44,8 @@
                 <isset property="output.dir" />
             </not>
             <then>
-                <echo message="The output.dir parameter was not specified e.g. -Doutput.dir='dist', defaulting to src" />
-                <propertycopy name="output.dir" from="src" override="yes" />
+                <echo message="The output.dir parameter was not specified e.g. -Doutput.dir='dist', defaulting to src.dir" />
+                <propertycopy name="output.dir" from="src.dir" override="yes" />
             </then>
         </if>
         <if>
