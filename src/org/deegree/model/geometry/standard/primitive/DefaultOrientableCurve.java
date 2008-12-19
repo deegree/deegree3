@@ -44,6 +44,7 @@
 
 package org.deegree.model.geometry.standard.primitive;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
@@ -54,6 +55,8 @@ import org.deegree.model.geometry.primitive.LineString;
 import org.deegree.model.geometry.primitive.OrientableCurve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
+import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link OrientableCurve}.
@@ -129,7 +132,7 @@ public class DefaultOrientableCurve implements OrientableCurve {
 
     @Override
     public Point getEndPoint() {
-        if (isReversed) {
+        if ( isReversed ) {
             return baseCurve.getStartPoint();
         }
         return baseCurve.getEndPoint();
@@ -137,12 +140,12 @@ public class DefaultOrientableCurve implements OrientableCurve {
 
     @Override
     public Point getStartPoint() {
-        if (isReversed) {
+        if ( isReversed ) {
             return baseCurve.getEndPoint();
         }
         return baseCurve.getStartPoint();
-    }    
-    
+    }
+
     // -----------------------------------------------------------------------
     // Curve methods that are just delegated to the wrapped base curve
     // -----------------------------------------------------------------------
@@ -236,7 +239,7 @@ public class DefaultOrientableCurve implements OrientableCurve {
     public Geometry union( Geometry geometry ) {
         return baseCurve.union( geometry );
     }
-    
+
     @Override
     public PrimitiveType getPrimitiveType() {
         return PrimitiveType.Curve;
@@ -245,5 +248,10 @@ public class DefaultOrientableCurve implements OrientableCurve {
     @Override
     public GeometryType getGeometryType() {
         return GeometryType.PRIMITIVE_GEOMETRY;
-    }    
+    }
+
+    @Override
+    public List<Point> getControlPoints() {
+        throw new RuntimeException( "not implemented yet" );
+    }
 }

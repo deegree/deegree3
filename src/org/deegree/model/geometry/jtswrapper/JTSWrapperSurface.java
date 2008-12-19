@@ -176,4 +176,16 @@ class JTSWrapperSurface extends JTSWrapperGeometry implements Surface {
     public GeometryType getGeometryType() {
         return GeometryType.PRIMITIVE_GEOMETRY;
     }
+
+    @Override
+    public List<Point> getExteriorRingCoordinates() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<List<Point>> getInteriorRingsCoordinates() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

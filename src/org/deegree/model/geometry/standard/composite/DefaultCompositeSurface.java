@@ -57,6 +57,10 @@ import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
+import com.sun.org.apache.xml.internal.utils.UnImplNode;
+
 /**
  * Default implementation of {@link CompositeSurface}.
  * 
@@ -228,5 +232,14 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
     @Override
     public GeometryType getGeometryType() {
         return GeometryType.COMPOSITE_PRIMITIVE;
-    }     
+    }
+
+    @Override
+    public List<Point> getExteriorRingCoordinates() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<List<Point>> getInteriorRingsCoordinates() {
+        throw new UnsupportedOperationException();    }     
 }

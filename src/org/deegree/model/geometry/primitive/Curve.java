@@ -39,9 +39,12 @@ package org.deegree.model.geometry.primitive;
 
 import java.util.List;
 
+import javax.sound.sampled.Line;
+
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.composite.CompositeCurve;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
+import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
  * <code>Curve</code> instances are 1D-geometries that consist of an arbitrary number of curve segments.
@@ -84,8 +87,8 @@ public interface Curve extends GeometricPrimitive {
      * @return {@link GeometricPrimitive.PrimitiveType#Curve}
      */
     @Override
-    public PrimitiveType getPrimitiveType();    
-    
+    public PrimitiveType getPrimitiveType();
+
     /**
      * Returns whether the curve forms a closed loop.
      * 
@@ -128,6 +131,19 @@ public interface Curve extends GeometricPrimitive {
      * @return the segments that constitute this curve
      */
     public List<CurveSegment> getCurveSegments();
+
+    /**
+     * Convenience method for accessing the control points of linear interpolated curves.
+     * <p>
+     * NOTE: This method is only safe to use when the curve is a {@link LineString} or {@link LinearRing} or it only
+     * consists of {@link LineStringSegment}s. In any other case it will fail.
+     * </p>
+     * 
+     * @return the control points
+     * @throws IllegalArgumentException
+     *             if the curve is not linear interpolated
+     */
+    public List<Point> getControlPoints();
 
     /**
      * Returns a linear interpolated representation of the curve.

@@ -43,20 +43,23 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.standard.primitive;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Surface;
+import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link Surface}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
@@ -73,11 +76,11 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
      * @param patches
      *            patches that constitute the surface
      */
-    public DefaultSurface (String id, CoordinateSystem crs, List<SurfacePatch> patches) {
-        super (id, crs);
+    public DefaultSurface( String id, CoordinateSystem crs, List<SurfacePatch> patches ) {
+        super( id, crs );
         this.patches = patches;
     }
-    
+
     @Override
     public double getArea() {
         throw new UnsupportedOperationException();
@@ -89,7 +92,7 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     }
 
     @Override
-    public List<SurfacePatch> getPatches() {        
+    public List<SurfacePatch> getPatches() {
         return patches;
     }
 
@@ -111,5 +114,44 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     @Override
     public GeometryType getGeometryType() {
         return GeometryType.PRIMITIVE_GEOMETRY;
+    }
+
+    @Override
+    public List<Point> getExteriorRingCoordinates() {
+        List<Point> controlPoints = new ArrayList<Point>();
+        if ( patches.size() == 1 ) {
+            if ( patches.get( 0 ) instanceof PolygonPatch ) {
+                PolygonPatch patch = (PolygonPatch) patches.get( 0 );
+                controlPoints.addAll( patch.getExteriorRing().getControlPoints() );
+            } else {
+                String msg = "Cannot determine control points for surface exterior ring, surface is non-planar.";
+                throw new IllegalArgumentException( msg );
+            }
+        } else {
+            String msg = "Cannot determine control points for surface exterior ring, surface has more than one patch.";
+            throw new IllegalArgumentException( msg );
+        }
+        return controlPoints;
+    }
+
+    @Override
+    public List<List<Point>> getInteriorRingsCoordinates() {
+       List<List<Point>> controlPoints = new ArrayList<List<Point>>();
+        if ( patches.size() == 1 ) {
+            if ( patches.get( 0 ) instanceof PolygonPatch ) {
+                PolygonPatch patch = (PolygonPatch) patches.get( 0 );
+                List<Ring> interiorRings = patch.getInteriorRings();
+                for ( Ring ring : interiorRings ) {
+                    controlPoints.add( ring.getControlPoints() );
+                }
+            } else {
+                String msg = "Cannot determine control points for surface exterior ring, surface is non-planar.";
+                throw new IllegalArgumentException( msg );
+            }
+        } else {
+            String msg = "Cannot determine control points for surface exterior ring, surface has more than one patch.";
+            throw new IllegalArgumentException( msg );
+        }
+        return controlPoints;
     }
 }

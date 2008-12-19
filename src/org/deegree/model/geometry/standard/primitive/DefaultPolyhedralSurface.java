@@ -114,4 +114,14 @@ public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements
     public GeometryType getGeometryType() {
         return GeometryType.PRIMITIVE_GEOMETRY;
     }
+
+    @Override
+    public List<Point> getExteriorRingCoordinates() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<List<Point>> getInteriorRingsCoordinates() {
+        throw new UnsupportedOperationException();
+    }
 }

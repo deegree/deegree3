@@ -112,4 +112,32 @@ public interface Surface extends GeometricPrimitive {
      * @return the patches that constitute this surface
      */
     public List<SurfacePatch> getPatches();
+
+    /**
+     * Convenience method for accessing the control points of the exterior ring of a simple polygon surface.
+     * <p>
+     * NOTE: This method is only safe to use when the surface consists of a single planar patch that has a linear
+     * interpolated exterior ring.
+     * </p>
+     * 
+     * @return the control points
+     * @throws IllegalArgumentException
+     *             if the surface has more than one patch, the patch is not planar or the exterior boundary is not
+     *             completely described by linear interpolated segments
+     */
+    public List<Point> getExteriorRingCoordinates();
+
+    /**
+     * Convenience method for accessing the control points of the interior rings of a simple polygon surface.
+     * <p>
+     * NOTE: This method is only safe to use when the surface consists of a single planar patch that has linear
+     * interpolated interior rings.
+     * </p>
+     * 
+     * @return the control points
+     * @throws IllegalArgumentException
+     *             if the surface has more than one patch, the patch is not planar or the interior boundaries are not
+     *             completely described by linear interpolated segments
+     */
+    public List<List<Point>> getInteriorRingsCoordinates();    
 }

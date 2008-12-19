@@ -203,4 +203,14 @@ public class DefaultOrientableSurface implements OrientableSurface {
     public Geometry union( Geometry geometry ) {
         return baseSurface.union( geometry );
     }
+
+    @Override
+    public List<Point> getExteriorRingCoordinates() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<List<Point>> getInteriorRingsCoordinates() {
+        throw new UnsupportedOperationException();
+    }
 }

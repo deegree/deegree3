@@ -146,4 +146,14 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
     public List<Point> getControlPoints() {
         return controlPoints;
     }
+
+    @Override
+    public List<Point> getExteriorRingCoordinates() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<List<Point>> getInteriorRingsCoordinates() {
+        throw new UnsupportedOperationException();
+    }
 }

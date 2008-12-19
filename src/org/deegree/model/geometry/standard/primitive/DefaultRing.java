@@ -54,6 +54,7 @@ import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
 
 /**
@@ -177,5 +178,19 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     @Override
     public GeometryType getGeometryType() {
         return GeometryType.PRIMITIVE_GEOMETRY;
+    }
+
+    @Override
+    public List<Point> getControlPoints() {
+        List<Point> controlPoints = new ArrayList<Point>();
+        for ( CurveSegment segment : segments ) {
+            if ( segment.getSegmentType() == CurveSegmentType.LINE_STRING_SEGMENT ) {
+                controlPoints.addAll( ( (LineStringSegment) segment ).getControlPoints() );
+            } else {
+                String msg = "Cannot determine control points for curve, contains non-linear segments.";
+                throw new IllegalArgumentException( msg );
+            }
+        }
+        return controlPoints;
     }    
 }
