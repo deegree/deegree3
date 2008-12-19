@@ -204,6 +204,40 @@ public interface GeometryFactory {
     public void setSupportedSurfaceInterpolations( List<SurfacePatch.Interpolation> interpolations );
 
     /**
+     * Creates a georeferenced point with a default precision.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param x
+     *            value for first coordinate
+     * @param y
+     *            value for second coordinate
+     * @param crs
+     *            points coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @return created {@link Point}
+     */
+    public Point createPoint( String id, double x, double y, CoordinateSystem crs );    
+
+    /**
+     * Creates a georeferenced point with a default precision.
+     * 
+     * @param id
+     *            identifier of the new geometry instance
+     * @param x
+     *            value for first coordinate
+     * @param y
+     *            value for second coordinate
+     * @param z
+     *            value for third coordinate
+     * @param crs
+     *            points coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @return created {@link Point}
+     */
+    public Point createPoint( String id, double x, double y, double z, CoordinateSystem crs );    
+    
+    /**
      * creates a georeferenced point
      * 
      * @param id
@@ -233,7 +267,7 @@ public interface GeometryFactory {
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
-    public Point createPoint( String id, double[] coordinates, CoordinateSystem crs );
+    public Point createPoint( String id, double[] coordinates, CoordinateSystem crs );  
 
     /**
      * Creates a {@link LineString} geometry.

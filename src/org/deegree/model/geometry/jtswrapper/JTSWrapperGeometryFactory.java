@@ -186,6 +186,16 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
+    public Point createPoint( String id, double x, double y, CoordinateSystem crs ) {
+        return new JTSWrapperPoint( id, 0.00001, crs, new double[] { x, y } );
+    }
+
+    @Override
+    public Point createPoint( String id, double x, double y, double z, CoordinateSystem crs ) {
+        return new JTSWrapperPoint( id, 0.00001, crs, new double[] { x, y, z } );
+    }
+
+    @Override
     public Point createPoint( String id, double[] coordinates, double precision, CoordinateSystem crs ) {
         return new JTSWrapperPoint( id, precision, crs, coordinates );
     }
