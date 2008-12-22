@@ -75,7 +75,7 @@
           target: resolve              
          ================================= -->
     <target name="resolve" depends="load-ivy" description="-> resolve and retrieve dependencies with ivy">
-        <ivy:retrieve pattern="${lib.dir}/[artifact](-[revision]).[ext]" file="${dependencies.file}" log="${ivy.resolve.verbose}" sync="true" />
+        <ivy:retrieve conf="${module.name}-impl,${module.name}-api" pattern="${lib.dir}/[artifact](-[revision]).[ext]" file="${dependencies.file}" log="${ivy.resolve.verbose}" sync="true" />
         <!--ivy:deliver deliverpattern="${build.dir}/ivy.xml"/-->
         <!-- ivy:resolve file="${dependencies.file}"/-->
     </target>
