@@ -124,8 +124,8 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
     public Envelope getEnvelope() {
         if ( envelope == null ) {
             List<Point> points = exteriorRing.getControlPoints();
-            double[] min = new double[points.size()];
-            double[] max = new double[points.size()];
+            double[] min = new double[points.get(0).getAsArray().length];
+            double[] max = new double[points.get(0).getAsArray().length];
             double[] d = points.get( 0 ).getAsArray();
             for ( int i = 0; i < d.length; i++ ) {
                 min[i] = d[i];
@@ -142,7 +142,7 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
                     }
                 }
             }
-            GeometryFactory gf = GeometryFactoryCreator.getInstance().getGeometryFactory();
+            GeometryFactory gf = GeometryFactoryCreator.getInstance().getGeometryFactory();   
             envelope = gf.createEnvelope( min, max, getCoordinateSystem() );
         }
         return envelope;
