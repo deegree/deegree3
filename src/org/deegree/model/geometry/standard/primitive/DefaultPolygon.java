@@ -48,6 +48,10 @@ import java.util.List;
 
 import org.deegree.model.crs.CRSFactory;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.geometry.Envelope;
+import org.deegree.model.geometry.GeometryFactory;
+import org.deegree.model.geometry.GeometryFactoryCreator;
+import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Polygon;
 import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
@@ -55,10 +59,10 @@ import org.deegree.model.geometry.standard.surfacepatches.DefaultPolygonPatch;
 
 /**
  * Default implementation of {@link Polygon}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultPolygon extends DefaultSurface implements Polygon {
@@ -67,6 +71,8 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
 
     private List<Ring> interiorRings;
 
+    private Envelope envelope;
+
     /**
      * Creates a new {@link DefaultPolygon} instance from the given parameters.
      * 
@@ -74,21 +80,23 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
      *            identifier of the new geometry instance
      * @param crs
      *            coordinate reference system. If the polygon does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of
+     *            <code>null</code>
      * @param exteriorRing
-     *            ring that defines the outer boundary, may be null (see section 9.2.2.5 of GML spec)
+     *            ring that defines the outer boundary, may be null (see section 9.2.2.5 of GML
+     *            spec)
      * @param interiorRings
      *            list of rings that define the inner boundaries, may be empty or null
      */
-    public DefaultPolygon (String id, CoordinateSystem crs, Ring exteriorRing, List<Ring> interiorRings) {
-        super (id, crs, createPatchList( exteriorRing, interiorRings ));
+    public DefaultPolygon( String id, CoordinateSystem crs, Ring exteriorRing, List<Ring> interiorRings ) {
+        super( id, crs, createPatchList( exteriorRing, interiorRings ) );
         this.exteriorRing = exteriorRing;
         this.interiorRings = interiorRings;
     }
-    
-    private static List<SurfacePatch> createPatchList(Ring exteriorRing, List<Ring> interiorRings) {
-        List<SurfacePatch> patches = new ArrayList<SurfacePatch>(1);
-        patches.add (new DefaultPolygonPatch(exteriorRing, interiorRings));
+
+    private static List<SurfacePatch> createPatchList( Ring exteriorRing, List<Ring> interiorRings ) {
+        List<SurfacePatch> patches = new ArrayList<SurfacePatch>( 1 );
+        patches.add( new DefaultPolygonPatch( exteriorRing, interiorRings ) );
         return patches;
     }
 
@@ -105,5 +113,40 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
     @Override
     public SurfaceType getSurfaceType() {
         return SurfaceType.Polygon;
-    }    
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.model.geometry.standard.AbstractDefaultGeometry#getEnvelope()
+     */
+    @Override
+    public Envelope getEnvelope() {
+        if ( envelope == null ) {
+            List<Point> points = exteriorRing.getControlPoints();
+            double[] min = new double[points.size()];
+            double[] max = new double[points.size()];
+            double[] d = points.get( 0 ).getAsArray();
+            for ( int i = 0; i < d.length; i++ ) {
+                min[i] = d[i];
+                max[i] = d[i];
+            }
+            for ( Point point : points ) {
+                d = point.getAsArray();
+                for ( int i = 0; i < d.length; i++ ) {
+                    if ( d[i] < min[i] ) {
+                        min[i] = d[i];
+                    }
+                    if ( d[i] > max[i] ) {
+                        max[i] = d[i];
+                    }
+                }
+            }
+            GeometryFactory gf = GeometryFactoryCreator.getInstance().getGeometryFactory();
+            envelope = gf.createEnvelope( min, max, getCoordinateSystem() );
+        }
+        return envelope;
+
+    }
+
 }
