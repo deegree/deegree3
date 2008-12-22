@@ -37,6 +37,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.standard.primitive;
 
+import java.util.UUID;
+
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
@@ -63,6 +65,8 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
     private Point max;
 
     private Point min;
+
+    private Point centroid;
 
     /**
      * Creates a new <code>DefaultEnvelope</code> instance from the given parameters.
@@ -211,7 +215,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
                 double minY1 = this.getMin().getY();
                 double maxX1 = this.getMax().getX();
                 double maxY1 = this.getMax().getY();
-                return px >= minX1 && px <= maxX1 && py >= minY1 && py <= maxY1; 
+                return px >= minX1 && px <= maxX1 && py >= minY1 && py <= maxY1;
             }
             default: {
                 throw new UnsupportedOperationException( "Intersects not implemented for Envelope/"
@@ -307,4 +311,22 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
     public Envelope getEnvelope() {
         return this;
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.model.geometry.Envelope#getCentroid()
+     */
+    public Point getCentroid() {
+        if ( centroid == null ) {
+            GeometryFactory gf = GeometryFactoryCreator.getInstance().getGeometryFactory();
+            double[] coordinates = new double[max.getAsArray().length];
+            for ( int i = 0; i < coordinates.length; i++ ) {
+                coordinates[i] = min.getAsArray()[i] + ( max.getAsArray()[i] - min.getAsArray()[i] ) / 2d;
+            }
+            centroid = gf.createPoint( UUID.randomUUID().toString(), coordinates, getCoordinateSystem() );
+        }
+        return centroid;
+    }
+
 }

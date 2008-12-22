@@ -38,8 +38,12 @@
 
 package org.deegree.model.geometry.jtswrapper;
 
+import java.util.UUID;
+
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.Envelope;
+import org.deegree.model.geometry.GeometryFactory;
+import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.Point;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -62,9 +66,11 @@ class JTSWrapperEnvelope extends JTSWrapperGeometry implements Envelope {
 
     private Point max;
 
+    private Point centroid;
+
     /**
      * 
-     * @param id 
+     * @param id
      * @param precision
      * @param crs
      * @param coordinateDimension
@@ -133,22 +139,44 @@ class JTSWrapperEnvelope extends JTSWrapperGeometry implements Envelope {
         return new JTSWrapperEnvelope( getPrecision(), getCoordinateSystem(), coordinateDimension, newMin, newMax );
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.Envelope#getHeight()
      */
     public double getHeight() {
         return max.getY() - min.getY();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.deegree.model.geometry.primitive.Envelope#getWidth()
      */
     public double getWidth() {
         return max.getX() - min.getX();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.deegree.model.geometry.Envelope#getCentroid()
+     */
+    public Point getCentroid() {
+        if ( centroid == null ) {
+            GeometryFactory gf = GeometryFactoryCreator.getInstance().getGeometryFactory();
+            double[] coordinates = new double[max.getAsArray().length];
+            for ( int i = 0; i < coordinates.length; i++ ) {
+                coordinates[i] = min.getAsArray()[i] + ( max.getAsArray()[i] - min.getAsArray()[i] ) / 2d;
+            }
+            centroid = gf.createPoint( UUID.randomUUID().toString(), coordinates, getCoordinateSystem() );
+        }
+        return centroid;
+    }
+
     @Override
     public GeometryType getGeometryType() {
         return GeometryType.ENVELOPE;
     }
+
 }

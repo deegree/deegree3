@@ -91,4 +91,10 @@ public interface Envelope extends Geometry {
      */
     public double getHeight();
     
+    /**
+     * returns centroid of an envelope
+     * @return centroid of an envelope
+     */
+    public Point getCentroid();
+    
 }
