@@ -251,4 +251,28 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         int featureNum = occurrence - nonMemberProps.size();
         memberFeatures.set( featureNum, (Feature) value );
     }
+
+    @Override
+    public Property<?>[] getProperties( QName propName ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Property<?> getProperty( QName propName ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Object getPropertyValue( QName propName ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Object[] getPropertyValues( QName propName ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

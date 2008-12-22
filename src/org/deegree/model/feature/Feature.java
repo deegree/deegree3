@@ -112,11 +112,51 @@ public interface Feature extends Identifiable<String>, MatchableObject {
     public FeatureType getType();
 
     /**
-     * Returns all properties of this feature in order.
+     * Returns all properties in order.
      * 
-     * @return all properties of this feature
+     * @return all properties
      */
     public Property<?>[] getProperties();
+
+    /**
+     * Returns the values of the properties with the given name, in order.
+     * 
+     * @param propName
+     *            name of the requested property
+     * @return the values of the properties with the given name, in order
+     */
+    public Object[] getPropertyValues( QName propName );
+
+    /**
+     * Returns the values of the property with the given name.
+     * 
+     * @param propName
+     *            name of the requested property
+     * @return the values of the properties with the given name
+     * @throws IllegalArgumentException
+     *             if the feature has more than one property with this name
+     */
+    public Object getPropertyValue( QName propName );
+
+    /**
+     * Returns the properties with the given name, in order.
+     *
+     * @param propName
+     *            name of the requested properties
+     * @return the properties with the given name, in order
+     */
+    public Property<?>[] getProperties( QName propName );
+
+    /**
+     * Returns the property with the given name.
+     *
+     * @param propName
+     *            name of the requested property
+     * @return the property with the given name
+     * @throws IllegalArgumentException
+     *             if the feature has more than one property with this name
+     */
+    public Property<?> getProperty( QName propName );
 
     /**
      * Sets the value of a specific occurence of a property with a given name.

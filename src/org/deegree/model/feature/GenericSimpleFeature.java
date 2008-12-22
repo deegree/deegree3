@@ -126,4 +126,19 @@ public class GenericSimpleFeature extends AbstractFeature implements SimpleFeatu
                             throws IllegalArgumentException {
         // TODO Auto-generated method stub
     }
+
+    @Override
+    public Property<?>[] getProperties( QName propName ) {
+        return null;
+    }
+
+    @Override
+    public Property<?> getProperty( QName propName ) {
+        return null;
+    }
+
+    @Override
+    public Object[] getPropertyValues( QName propName ) {
+        return null;
+    }
 }
