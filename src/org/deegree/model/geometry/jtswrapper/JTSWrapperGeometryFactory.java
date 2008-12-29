@@ -212,10 +212,12 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
         if ( patches == null || patches.size() == 0 ) {
             return null;
         }
-        // Point point = patches.get( 0 ).getBoundaries().get( 0 ).getAsLineString().getControlPoints().get( 0 );
+        // Point point = patches.get( 0 ).getBoundaries().get( 0
+        // ).getAsLineString().getControlPoints().get( 0 );
         // // JTS does not support Surfaces (Polyons) build from different SurfacePatches, so
         // // the first patch will build the complete surface
-        // return new JTSWrapperSurface( id, point.getPrecision(), crs, point.getCoordinateDimension(), patches.get( 0 )
+        // return new JTSWrapperSurface( id, point.getPrecision(), crs,
+        // point.getCoordinateDimension(), patches.get( 0 )
         // );
         throw new UnsupportedOperationException();
     }
@@ -233,6 +235,18 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
         // TODO
         // useful value for precision
         return createEnvelope( min, max, 0.00001, crs );
+    }
+
+    @Override
+    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CoordinateSystem crs ) {        
+        return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, crs );
+    }
+
+    @Override
+    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, double precision,
+                                    CoordinateSystem crs ) {
+
+        return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, precision, crs );
     }
 
     @Override

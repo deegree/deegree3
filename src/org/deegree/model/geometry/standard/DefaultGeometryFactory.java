@@ -204,6 +204,16 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     public Envelope createEnvelope( double[] min, double[] max, CoordinateSystem crs ) {
         return new DefaultEnvelope( null, crs, new DefaultPoint( null, crs, min ), new DefaultPoint( null, crs, max ) );
     }
+    
+    @Override
+    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CoordinateSystem crs ) {
+        return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, crs );
+    }
+
+    @Override
+    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, double precision, CoordinateSystem crs ) {
+        return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, precision, crs );
+    }
 
     @Override
     public Envelope createEnvelope( String id, SurfacePatch patch ) {

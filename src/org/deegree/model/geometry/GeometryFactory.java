@@ -551,7 +551,7 @@ public interface GeometryFactory {
      * @param min
      *            minimum corner coordinates
      * @param max
-     *            miximum corner coordinates
+     *            maximum corner coordinates
      * @param precision
      *            precision of the corner coordinates in units of the used CRS. This value will be used for comparing
      *            two points to be equal or not.
@@ -568,13 +568,54 @@ public interface GeometryFactory {
      * @param min
      *            minimum corner coordinates
      * @param max
-     *            miximum corner coordinates
+     *            maximum corner coordinates
      * @param crs
      *            evenlopes coordinate reference system. If a point does not have a CRS or it is not known
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Envelope}
      */
     public Envelope createEnvelope( double[] min, double[] max, CoordinateSystem crs );
+    
+    /**
+     * creates an {@link Envelope} with default precision
+     * 
+     * @param minx
+     *            minimum x corner coordinates
+     * @param miny
+     *            minimum y corner coordinates
+     * @param maxx
+     *            miximum x corner coordinates
+     * @param maxy
+     *            miximum y corner coordinates
+     * @param precision
+     *            precision of the corner coordinates in units of the used CRS. This value will be used for comparing
+     *            two points to be equal or not.   
+     *         
+     * @param crs
+     *            evenlopes coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @return created {@link Envelope}
+     */
+    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, double precision,  CoordinateSystem crs );
+    
+    /**
+     * creates an {@link Envelope} with default precision
+     * 
+     * @param minx
+     *            minimum x corner coordinates
+     * @param miny
+     *            minimum y corner coordinates
+     * @param maxx
+     *            miximum x corner coordinates
+     * @param maxy
+     *            miximum y corner coordinates
+     *         
+     * @param crs
+     *            evenlopes coordinate reference system. If a point does not have a CRS or it is not known
+     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     * @return created {@link Envelope}
+     */
+    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CoordinateSystem crs );
 
     /**
      * creates an envelope from a SurfacePatch representing a envelope by being constructed by five points: minx,miny
