@@ -51,15 +51,10 @@ import java.util.ListIterator;
 
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.composite.CompositeSurface;
-import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import com.sun.org.apache.xml.internal.utils.UnImplNode;
 
 /**
  * Default implementation of {@link CompositeSurface}.
