@@ -50,6 +50,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.types.FeatureType;
+import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
 
 /**
@@ -139,6 +140,12 @@ public class GenericSimpleFeature extends AbstractFeature implements SimpleFeatu
 
     @Override
     public Object[] getPropertyValues( QName propName ) {
+        return null;
+    }
+
+    @Override
+    public Envelope getEnvelope() {
+        // TODO Auto-generated method stub
         return null;
     }
 }

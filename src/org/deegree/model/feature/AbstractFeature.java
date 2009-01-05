@@ -43,13 +43,17 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.feature;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.deegree.model.feature.xpath.FeatureNode;
 import org.deegree.model.feature.xpath.FeatureXPath;
 import org.deegree.model.feature.xpath.Node;
 import org.deegree.model.feature.xpath.PropertyNode;
 import org.deegree.model.filter.expression.PropertyName;
+import org.deegree.model.geometry.Envelope;
+import org.deegree.model.geometry.Geometry;
 import org.jaxen.JaxenException;
 import org.jaxen.XPath;
 
@@ -82,13 +86,55 @@ public abstract class AbstractFeature implements Feature {
         if ( selectedNodes.size() > 1 ) {
             String msg = "PropertyName '" + propName + "' matches multiple nodes in feature " + getId()
                          + ". This is currently not supported.";
-            throw new JaxenException (msg);
+            throw new JaxenException( msg );
         }
         Node node = selectedNodes.get( 0 );
-        if (!(node instanceof PropertyNode)) {
+        if ( !( node instanceof PropertyNode ) ) {
             String msg = "PropertyName '" + propName + "' does not refer to a property.";
-            throw new JaxenException (msg);
+            throw new JaxenException( msg );
         }
-        return ((PropertyNode) node).getProperty().getValue();
+        return ( (PropertyNode) node ).getProperty().getValue();
+    }
+
+    public Envelope getEnvelope() {
+        return getEnvelope( this, new HashSet<Feature>() );
+    }
+
+    /**
+     * Helper method for calculating the envelope of a feature, respects multiple geometry properties, subfeatures and
+     * cycles in the feature structure.
+     * 
+     * TODO use caching to prevent permanent recalculation of bbox
+     * 
+     * @param feature
+     *            feature for which the envelope is requested
+     * @param visited
+     *            features that have already been visited in the top-down traversal
+     * @return envelope of the feature
+     */
+    private static Envelope getEnvelope( Feature feature, Set<Feature> visited ) {
+        Envelope featureBBox = null;
+        if ( !visited.contains( feature ) ) {
+            visited.add( feature );
+            for ( Property<?> prop : feature.getProperties() ) {
+                Object propValue = prop.getValue();
+                Envelope propBBox = null;
+                if ( propValue instanceof Geometry ) {
+                    Geometry geom = (Geometry) propValue;
+                    propBBox = geom.getEnvelope();
+                } else if ( propValue instanceof Feature ) {
+                    Feature subFeature = (Feature) propValue;
+                    propBBox = subFeature.getEnvelope();
+                }
+                if ( propBBox != null ) {
+                    if ( featureBBox != null ) {
+                        featureBBox = featureBBox.merge( propBBox );
+                    } else {
+                        featureBBox = propBBox;
+                    }
+                }
+            }
+        }
+        return featureBBox;
     }
 }

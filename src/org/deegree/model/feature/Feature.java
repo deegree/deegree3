@@ -49,10 +49,12 @@ import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.filter.MatchableObject;
+import org.deegree.model.geometry.Envelope;
 import org.deegree.model.identifier.Identifiable;
 
 /**
- * A feature is a structured object with named properties. Properties may have geometric and non-geometric values.
+ * A feature is a structured object with named properties. Properties may have geometric and non-geometric values and
+ * may be (nested) features.
  * <p>
  * The feature interface is designed to be compatible with the concepts from the following standards:
  * <p>
@@ -134,13 +136,13 @@ public interface Feature extends Identifiable<String>, MatchableObject {
      *            name of the requested property
      * @return the values of the properties with the given name
      * @throws IllegalArgumentException
-     *             if the feature has more than one property with this name
+     *             if the feature has more than one property with the given name
      */
     public Object getPropertyValue( QName propName );
 
     /**
      * Returns the properties with the given name, in order.
-     *
+     * 
      * @param propName
      *            name of the requested properties
      * @return the properties with the given name, in order
@@ -149,14 +151,21 @@ public interface Feature extends Identifiable<String>, MatchableObject {
 
     /**
      * Returns the property with the given name.
-     *
+     * 
      * @param propName
      *            name of the requested property
      * @return the property with the given name
      * @throws IllegalArgumentException
-     *             if the feature has more than one property with this name
+     *             if the feature has more than one property with the given name
      */
     public Property<?> getProperty( QName propName );
+
+    /**
+     * Returns the envelope of the feature.
+     * 
+     * @return the envelope of the feature, or null if the feature has no geometry properties
+     */
+    public Envelope getEnvelope();
 
     /**
      * Sets the value of a specific occurence of a property with a given name.
