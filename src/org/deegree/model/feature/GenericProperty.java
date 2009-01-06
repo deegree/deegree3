@@ -50,11 +50,11 @@ import org.deegree.model.feature.types.PropertyType;
 /**
  * TODO add documentation here
  * 
- * @param <T> 
- *
+ * @param <T>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GenericProperty<T> implements Property<T> {
@@ -67,11 +67,11 @@ public class GenericProperty<T> implements Property<T> {
      * @param declaration
      * @param value
      */
-    public GenericProperty (PropertyType declaration, T value) {
+    public GenericProperty( PropertyType declaration, T value ) {
         this.declaration = declaration;
         this.value = value;
     }
-    
+
     @Override
     public QName getName() {
         return declaration.getName();
@@ -86,4 +86,10 @@ public class GenericProperty<T> implements Property<T> {
     public PropertyType getType() {
         return declaration;
     }
+
+    @Override
+    public String toString() {
+        return value == null ? "null" : value.toString();
+    }
+
 }
