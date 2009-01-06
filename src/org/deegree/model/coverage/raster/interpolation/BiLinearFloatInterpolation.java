@@ -2,7 +2,7 @@
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2009 by:
  EXSE, Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -52,9 +52,9 @@ import org.deegree.model.coverage.raster.data.RasterData;
  * This class implements a bilinear interpolation for float raster.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author: $
+ * @author last edited by: $Author$
  *
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  *
  */
 public class BiLinearFloatInterpolation implements Interpolation {

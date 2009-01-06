@@ -2,7 +2,7 @@
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2009 by:
  EXSE, Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -57,10 +57,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Responsible for the access to messages that are visible to the user.
  * <p>
- * Messages are read from the properties file <code>messages_LANG.properties</code> (LANG is
- * always a lowercased ISO 639 code), so internationalization is supported. If a certain property
- * (or the property file) for the specific default language of the system is not found, the message
- * is taken from <code>messages_en.properties</code>.
+ * Messages are read from the properties file <code>messages_LANG.properties</code> (LANG is always a lowercased ISO
+ * 639 code), so internationalization is supported. If a certain property (or the property file) for the specific
+ * default language of the system is not found, the message is taken from <code>messages_en.properties</code>.
  * 
  * @see Locale#getLanguage()
  * 
@@ -82,7 +81,7 @@ public class Messages {
     private static Map<Locale, Properties> props = new HashMap<Locale, Properties>();
 
     private static String lang;
-    
+
     private static Logger LOG = LoggerFactory.getLogger( Messages.class );
 
     /**
@@ -94,8 +93,8 @@ public class Messages {
             String fileName = "messages_en.properties";
             InputStream is = Messages.class.getResourceAsStream( fileName );
             if ( is == null ) {
-                LOG.error( "Error while initializing " + Messages.class.getName() + " : "
-                                + " default message file: '" + fileName + " not found." );
+                LOG.error( "Error while initializing " + Messages.class.getName() + " : " + " default message file: '"
+                           + fileName + " not found." );
             }
             is = Messages.class.getResourceAsStream( fileName );
             defaultProps.load( is );
@@ -190,8 +189,8 @@ public class Messages {
     }
 
     /**
-     * Returns the message assigned to the passed key. If no message is assigned, an error message
-     * will be returned that indicates the missing key.
+     * Returns the message assigned to the passed key. If no message is assigned, an error message will be returned that
+     * indicates the missing key.
      * 
      * @see MessageFormat for conventions on string formatting and escape characters.
      * 

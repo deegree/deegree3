@@ -1,7 +1,7 @@
-//$HeadURL$
+//$HeadURL:svn+ssh://rbezema@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/coverage/raster/data/RasterDataFactory.java $
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
- Copyright (C) 2001-2007 by:
+ Copyright (C) 2001-2009 by:
  Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -43,9 +43,9 @@ package org.deegree.model.coverage.raster.data;
  * This factory creates RasterData objects based on ByteBufferRasterData.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author:rbezema $
  *
- * @version $Revision$, $Date$
+ * @version $Revision:11404 $, $Date:2008-04-23 15:38:27 +0200 (Mi, 23 Apr 2008) $
  */
 public class RasterDataFactory {
 

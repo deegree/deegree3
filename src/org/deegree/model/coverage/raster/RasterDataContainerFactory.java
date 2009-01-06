@@ -2,7 +2,7 @@
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2009 by:
  EXSE, Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -52,10 +52,10 @@ import org.slf4j.LoggerFactory;
  * This class creates a RasterDataContainer. A RasterDataContainer wraps a RasterDataReader and controls the
  * loading/storing of the raster data.
  * 
- * @version $Revision: $
+ * @version $Revision$
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author: $
+ * @author last edited by: $Author$
  * 
  */
 public class RasterDataContainerFactory {

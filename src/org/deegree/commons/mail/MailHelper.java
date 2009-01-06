@@ -2,7 +2,7 @@
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2009 by:
  EXSE, Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -39,7 +39,7 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
 
- 
+
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.mail;
 
@@ -156,8 +156,8 @@ public final class MailHelper {
      *             an exception if the message is undeliverable
      * 
      * @see javax.mail.Transport
-     * @see <a href="http://java.sun.com/j2ee/tutorial/1_3-fcs/doc/Resources4.html#63060">J2EE Mail
-     *      Session connection </a>
+     * @see <a href="http://java.sun.com/j2ee/tutorial/1_3-fcs/doc/Resources4.html#63060">J2EE Mail Session connection
+     *      </a>
      */
     public void createAndSendMail( MailMessage eMess, Session session )
                             throws SendMailException {

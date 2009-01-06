@@ -3,7 +3,7 @@
 
  This file is part of deegree.
 
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2009 by:
  EXSE, Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH

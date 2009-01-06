@@ -2,7 +2,7 @@
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2009 by:
  lat/lon GmbH
  http://www.lat-lon.de
 

@@ -2,7 +2,7 @@
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2009 by:
  EXSE, Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -39,13 +39,13 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
 
- 
+
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.mail;
 
 /**
- * This class encapsulates all the info need to send an email message. This object is passed to the
- * MailerEJB sendMail(...) method.
+ * This class encapsulates all the info need to send an email message. This object is passed to the MailerEJB
+ * sendMail(...) method.
  * 
  * 
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe</A>
@@ -125,11 +125,11 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
     }
 
     /**
-     * Returns the state of this message. If sender and receiver are unequal null then this message
-     * is valid otherwise invalid.
+     * Returns the state of this message. If sender and receiver are unequal null then this message is valid otherwise
+     * invalid.
      * 
-     * @return validation state, <code>true</code> if sender and receiver are not
-     *         <code>null</code>, otherwise <code>false</code>
+     * @return validation state, <code>true</code> if sender and receiver are not <code>null</code>, otherwise
+     *         <code>false</code>
      */
     public boolean isValid() {
         if ( this.getSender() != null && this.getReceiver() != null ) {

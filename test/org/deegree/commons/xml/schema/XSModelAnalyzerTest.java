@@ -2,7 +2,7 @@
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ Copyright (C) 2001-2009 by:
  EXSE, Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -61,11 +61,17 @@ import org.junit.Test;
 public class XSModelAnalyzerTest {
 
     @Test
-    public void testPhilosopher() throws ClassCastException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        XSModelAnalyzer analyzer = new XSModelAnalyzer( "file:///home/schneider/workspace/vrom_roonline2/resources/schema/imro2008/local-IMRO2008.xsd" );
-        List<XSElementDeclaration> featureElements = analyzer.getSubstitutions( new QName ("http://www.opengis.net/gml", "_Feature"), null, true );
+    public void testPhilosopher()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+        XSModelAnalyzer analyzer = new XSModelAnalyzer(
+                                                        "file:///home/schneider/workspace/vrom_roonline2/resources/schema/imro2008/local-IMRO2008.xsd" );
+        List<XSElementDeclaration> featureElements = analyzer.getSubstitutions(
+                                                                                new QName(
+                                                                                           "http://www.opengis.net/gml",
+                                                                                           "_Feature" ), null, true );
         for ( XSElementDeclaration elementDeclaration : featureElements ) {
-            System.out.println (elementDeclaration.getName());
+            System.out.println( elementDeclaration.getName() );
         }
     }
 
