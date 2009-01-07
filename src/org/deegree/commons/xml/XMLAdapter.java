@@ -1004,7 +1004,9 @@ public class XMLAdapter {
     public static void writeElement( XMLStreamWriter writer, String namespace, String elemName, String value )
                             throws XMLStreamException {
         writer.writeStartElement( namespace, elemName );
-        writer.writeCharacters( value );
+        if ( value != null ) {
+            writer.writeCharacters( value );
+        }
         writer.writeEndElement();
     }
 
@@ -1109,7 +1111,11 @@ public class XMLAdapter {
                 break;
             }
             case START_ELEMENT: {
-                writer.writeStartElement( inStream.getPrefix(), inStream.getLocalName(), inStream.getNamespaceURI() );
+                if ( inStream.getNamespaceURI() == null ) {
+                    writer.writeStartElement( inStream.getLocalName() );
+                } else {
+                    writer.writeStartElement( inStream.getPrefix(), inStream.getLocalName(), inStream.getNamespaceURI() );
+                }
                 // copy all namespace bindings
                 for ( int i = 0; i < inStream.getNamespaceCount(); i++ ) {
                     String nsPrefix = inStream.getNamespacePrefix( i );
