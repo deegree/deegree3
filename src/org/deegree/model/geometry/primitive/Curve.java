@@ -39,8 +39,6 @@ package org.deegree.model.geometry.primitive;
 
 import java.util.List;
 
-import javax.sound.sampled.Line;
-
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.composite.CompositeCurve;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment;
