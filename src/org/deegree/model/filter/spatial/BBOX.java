@@ -45,6 +45,7 @@ package org.deegree.model.filter.spatial;
 
 import org.deegree.model.filter.FilterEvaluationException;
 import org.deegree.model.filter.MatchableObject;
+import org.deegree.model.geometry.Envelope;
 
 /**
  * TODO add documentation here
@@ -66,6 +67,10 @@ public class BBOX extends SpatialOperator {
                                              + "' operator is not implemented yet." );
     }
 
+    public Envelope getBoundingBox(){
+        return null;
+    }
+    
     public String toString( String indent ) {
         // TODO Auto-generated method stub
         return null;
