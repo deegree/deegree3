@@ -21,10 +21,12 @@
 
     <import file="${ivybuild.dir}/ivy-build.xml" optional="false" />
 
+	<echo message="basedir: ${basedir}"/>
+	
     <!-- Support the ant-contrib tasks. -->
     <taskdef resource="net/sf/antcontrib/antlib.xml">
         <classpath>
-            <pathelement location="${basedir}/libs/ant-contrib/ant-contrib-1.0b3.jar" />
+            <pathelement location="${basedir}/lib/ant-contrib/ant-contrib-1.0b3.jar" />
         </classpath>
     </taskdef>	
 	
