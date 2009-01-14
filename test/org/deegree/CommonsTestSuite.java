@@ -96,7 +96,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.model.gml.GMLFeatureParserTest.class,
                 org.deegree.model.gml.schema.GMLApplicationSchemaXSDAdapterTest.class,
                 org.deegree.model.gml.schema.XSModelGMLAnalyzerTest.class,
-                org.deegree.rendering.Java2DRenderingTest.class })
+                org.deegree.rendering.r2d.Java2DRenderingTest.class })
 public class CommonsTestSuite {
 
     private static final int DOT_CLASS_LENGTH = ".class".length();
