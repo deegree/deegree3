@@ -14,17 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
-package org.deegree.rendering.strokes;
+package org.deegree.rendering.r2d.strokes;
 
-import java.awt.BasicStroke;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.FlatteningPathIterator;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
+import java.awt.geom.Rectangle2D;
 
 /**
- * <code>WobbleStroke</code>
+ * <code>ShapeStroke</code>
  * 
  * @author Jerry Huxtable
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
@@ -32,25 +33,42 @@ import java.awt.geom.PathIterator;
  * 
  * @version $Revision$, $Date$
  */
-public class WobbleStroke implements Stroke {
-    private float detail = 2;
+public class ShapeStroke implements Stroke {
+    private Shape shapes[];
 
-    private float amplitude = 2;
+    private float advance;
+
+    private boolean repeat = true;
+
+    private AffineTransform t = new AffineTransform();
 
     private static final float FLATNESS = 1;
 
     /**
-     * @param detail
-     * @param amplitude
+     * @param shapes
+     * @param advance
      */
-    public WobbleStroke( float detail, float amplitude ) {
-        this.detail = detail;
-        this.amplitude = amplitude;
+    public ShapeStroke( Shape shapes, float advance ) {
+        this( new Shape[] { shapes }, advance );
+    }
+
+    /**
+     * @param shapes
+     * @param advance
+     */
+    public ShapeStroke( Shape shapes[], float advance ) {
+        this.advance = advance;
+        this.shapes = new Shape[shapes.length];
+
+        for ( int i = 0; i < this.shapes.length; i++ ) {
+            Rectangle2D bounds = shapes[i].getBounds2D();
+            t.setToTranslation( -bounds.getCenterX(), -bounds.getCenterY() );
+            this.shapes[i] = t.createTransformedShape( shapes[i] );
+        }
     }
 
     public Shape createStrokedShape( Shape shape ) {
         GeneralPath result = new GeneralPath();
-        shape = new BasicStroke( 10 ).createStrokedShape( shape );
         PathIterator it = new FlatteningPathIterator( shape.getPathIterator( null ), FLATNESS );
         float points[] = new float[6];
         float moveX = 0, moveY = 0;
@@ -58,13 +76,15 @@ public class WobbleStroke implements Stroke {
         float thisX = 0, thisY = 0;
         int type = 0;
         float next = 0;
+        int currentShape = 0;
+        int length = shapes.length;
 
-        while ( !it.isDone() ) {
+        while ( currentShape < length && !it.isDone() ) {
             type = it.currentSegment( points );
             switch ( type ) {
             case PathIterator.SEG_MOVETO:
-                moveX = lastX = randomize( points[0] );
-                moveY = lastY = randomize( points[1] );
+                moveX = lastX = points[0];
+                moveY = lastY = points[1];
                 result.moveTo( moveX, moveY );
                 next = 0;
                 break;
@@ -75,18 +95,24 @@ public class WobbleStroke implements Stroke {
                 // Fall into....
 
             case PathIterator.SEG_LINETO:
-                thisX = randomize( points[0] );
-                thisY = randomize( points[1] );
+                thisX = points[0];
+                thisY = points[1];
                 float dx = thisX - lastX;
                 float dy = thisY - lastY;
                 float distance = (float) Math.sqrt( dx * dx + dy * dy );
                 if ( distance >= next ) {
                     float r = 1.0f / distance;
-                    while ( distance >= next ) {
+                    float angle = (float) Math.atan2( dy, dx );
+                    while ( currentShape < length && distance >= next ) {
                         float x = lastX + next * dx * r;
                         float y = lastY + next * dy * r;
-                        result.lineTo( randomize( x ), randomize( y ) );
-                        next += detail;
+                        t.setToTranslation( x, y );
+                        t.rotate( angle );
+                        result.append( t.createTransformedShape( shapes[currentShape] ), false );
+                        next += advance;
+                        currentShape++;
+                        if ( repeat )
+                            currentShape %= length;
                     }
                 }
                 next -= distance;
@@ -98,10 +124,6 @@ public class WobbleStroke implements Stroke {
         }
 
         return result;
-    }
-
-    private float randomize( float x ) {
-        return x + (float) Math.random() * amplitude * 2 - 1;
     }
 
 }

@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering;
+package org.deegree.rendering.r2d;
 
 import static java.awt.Color.black;
 import static java.awt.Color.green;
@@ -59,8 +59,8 @@ import static org.deegree.model.styling.components.Stroke.LineCap.ROUND;
 import static org.deegree.model.styling.components.Stroke.LineCap.SQUARE;
 import static org.deegree.model.styling.components.Stroke.LineJoin.BEVEL;
 import static org.deegree.model.styling.components.Stroke.LineJoin.MITRE;
-import static org.deegree.rendering.GeometryGenerator.randomCurve;
-import static org.deegree.rendering.GeometryGenerator.randomQuad;
+import static org.deegree.rendering.r2d.GeometryGenerator.randomCurve;
+import static org.deegree.rendering.r2d.GeometryGenerator.randomQuad;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
@@ -94,6 +94,7 @@ import org.deegree.model.styling.components.LinePlacement;
 import org.deegree.model.styling.components.Mark;
 import org.deegree.model.styling.components.Stroke;
 import org.deegree.model.styling.components.Stroke.LineJoin;
+import org.deegree.rendering.r2d.Java2DRenderer;
 import org.slf4j.Logger;
 
 /**

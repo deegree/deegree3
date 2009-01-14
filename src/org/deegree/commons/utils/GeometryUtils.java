@@ -62,7 +62,7 @@ import org.deegree.model.geometry.primitive.Ring;
 import org.deegree.model.geometry.primitive.Surface;
 import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
-import org.deegree.rendering.strokes.TextStroke;
+import org.deegree.rendering.r2d.strokes.TextStroke;
 
 /**
  * <code>GeometryUtils</code>

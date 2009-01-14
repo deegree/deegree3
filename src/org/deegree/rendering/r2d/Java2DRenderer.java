@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering;
+package org.deegree.rendering.r2d;
 
 import static java.awt.BasicStroke.CAP_BUTT;
 import static java.awt.BasicStroke.CAP_ROUND;
@@ -50,7 +50,7 @@ import static java.awt.Font.PLAIN;
 import static java.awt.geom.AffineTransform.getTranslateInstance;
 import static org.deegree.commons.utils.MathUtils.isZero;
 import static org.deegree.commons.utils.MathUtils.round;
-import static org.deegree.rendering.RenderHelper.renderMark;
+import static org.deegree.rendering.r2d.RenderHelper.renderMark;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.BasicStroke;
@@ -81,8 +81,8 @@ import org.deegree.model.styling.TextStyling;
 import org.deegree.model.styling.components.Fill;
 import org.deegree.model.styling.components.Graphic;
 import org.deegree.model.styling.components.Stroke;
-import org.deegree.rendering.strokes.OffsetStroke;
-import org.deegree.rendering.strokes.TextStroke;
+import org.deegree.rendering.r2d.strokes.OffsetStroke;
+import org.deegree.rendering.r2d.strokes.TextStroke;
 import org.slf4j.Logger;
 
 /**
@@ -234,7 +234,8 @@ public class Java2DRenderer implements Renderer {
         TextLayout layout = new TextLayout( text, font, graphics.getFontRenderContext() );
         double width = layout.getBounds().getWidth();
         double height = layout.getBounds().getHeight();
-        double px = x - styling.anchorPointX * width; // width/height already include the scale through the font render
+        double px = x - styling.anchorPointX * width; // width/height already include the scale through the font
+                                                        // render
         // context
         double py = y + styling.anchorPointY * height;
 

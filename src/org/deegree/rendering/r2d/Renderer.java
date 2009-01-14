@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering;
+package org.deegree.rendering.r2d;
 
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.styling.LineStyling;

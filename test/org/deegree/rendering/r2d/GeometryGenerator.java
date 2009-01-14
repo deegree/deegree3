@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering;
+package org.deegree.rendering.r2d;
 
 import static java.util.Arrays.asList;
 import static org.deegree.model.geometry.GeometryFactoryCreator.getInstance;
