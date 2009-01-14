@@ -1,0 +1,152 @@
+//$HeadURL: svn+ssh://rbezema@svn.wald.intevation.org/deegree/deegree3/services/trunk/src/org/deegree/services/wpvs/model/data3d/geometry/TexturedGeometry.java $
+/*----------------    FILE HEADER  ------------------------------------------
+ This file is part of deegree.
+ Copyright (C) 2001-2009 by:
+ Department of Geography, University of Bonn
+ http://www.giub.uni-bonn.de/deegree/
+ lat/lon GmbH
+ http://www.lat-lon.de
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ Contact:
+
+ Andreas Poth
+ lat/lon GmbH
+ Aennchenstr. 19
+ 53177 Bonn
+ Germany
+ E-Mail: poth@lat-lon.de
+
+ Prof. Dr. Klaus Greve
+ Department of Geography
+ University of Bonn
+ Meckenheimer Allee 166
+ 53115 Bonn
+ Germany
+ E-Mail: greve@giub.uni-bonn.de
+ ---------------------------------------------------------------------------*/
+
+package org.deegree.rendering.r3d.geometry;
+
+/**
+ * The <code>RenderableTexturedGeometry</code> class TODO add class documentation here.
+ * 
+ * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+ * 
+ * @author last edited by: $Author: rbezema $
+ * 
+ * @version $Revision: 15598 $, $Date: 2009-01-12 15:03:49 +0100 (Mo, 12 Jan 2009) $
+ * 
+ */
+public class TexturedGeometry extends SimpleAccessGeometry {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3278184950712812856L;
+
+    private String texture;
+
+    // 2D
+    private float[] textureCoordinates;
+
+    /**
+     * @param geometry
+     * @param specularColor
+     * @param ambientColor
+     * @param diffuseColor
+     * @param emmisiveColor
+     * @param shininess
+     * @param texture
+     *            to use
+     * @param textureCoordinates
+     *            of this data
+     */
+    public TexturedGeometry( float[] geometry, int specularColor, int ambientColor, int diffuseColor,
+                             int emmisiveColor, float shininess, String texture, float[] textureCoordinates ) {
+        super( geometry, specularColor, ambientColor, diffuseColor, emmisiveColor, shininess );
+        this.texture = texture;
+        this.textureCoordinates = textureCoordinates;
+    }
+
+    /**
+     * @param geometry
+     * @param texture
+     * @param textureCoordinates
+     */
+    public TexturedGeometry( float[] geometry, String texture, float[] textureCoordinates ) {
+        super( geometry );
+        this.texture = texture;
+        this.textureCoordinates = textureCoordinates;
+    }
+
+    /**
+     * @return the texture
+     */
+    public final String getTexture() {
+        return texture;
+    }
+
+    /**
+     * @param texture
+     *            the texture to set
+     */
+    public final void setTexture( String texture ) {
+        this.texture = texture;
+    }
+
+    /**
+     * @return the textureCoordinates
+     */
+    public final float[] getTextureCoordinates() {
+        return textureCoordinates;
+    }
+
+    /**
+     * @param textureCoordinates
+     *            the textureCoordinates to set
+     */
+    public final void setTextureCoordinates( float[] textureCoordinates ) {
+        this.textureCoordinates = textureCoordinates;
+    }
+
+    /**
+     * @param location
+     *            of the x ordinate of the requested texture coordinate.
+     * @return a copy of the coordinate at the given location (location, location +1)
+     * @throws IndexOutOfBoundsException
+     *             is outside the coordinate array
+     */
+    public float[] getTextureCoordinate( int location ) {
+        if ( location < 0 || location + 1 > textureCoordinates.length ) {
+            throw new IndexOutOfBoundsException( "Location is out of the range" );
+        }
+        return new float[] { textureCoordinates[location], textureCoordinates[location + 1] };
+    }
+
+    /**
+     * @param vertex
+     *            the vertex index(starting at 0), e.g. if you would like to get the texture coordinates for the second
+     *            vertex the vertex index would be 1
+     * @return a copy of the texture coordinates for the given vertex.
+     * @throws IndexOutOfBoundsException
+     *             is outside the coordinate array
+     */
+    public float[] getTextureCoordinateForVertex( int vertex ) {
+        if ( vertex < 0 || ( vertex * 2 ) + 1 > textureCoordinates.length ) {
+            throw new IndexOutOfBoundsException( "No such vertex, the given index is out of range" );
+        }
+        return new float[] { textureCoordinates[vertex * 2], textureCoordinates[( vertex * 2 ) + 1] };
+    }
+
+}

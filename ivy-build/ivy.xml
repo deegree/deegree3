@@ -45,5 +45,11 @@
     <dependency org="xml" name="axiom-api" rev="1.2.6" conf="${module.name}-api" />
     
     <dependency org="xerces" name="xercesImpl" rev="2.9.1" conf="${module.name}-impl" />
+    
+    <!--  for rendering and working with 3d stuff -->
+    <dependency org="jogl" name="jogl" rev="1.1.2-+" transitive="false" conf="${module.name}-api" />
+    <dependency org="jogl" name="gluegen-rt" rev="1.1.2-+" transitive="false" conf="${module.name}-api" />
+
+    
   </dependencies>
 </ivy-module>
