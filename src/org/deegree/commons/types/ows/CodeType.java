@@ -81,7 +81,10 @@ public class CodeType {
      *             if code is null
      */
     public CodeType( String code, String codeSpace ) {
-        this( code );
+        if ( code == null ) {
+            throw new IllegalArgumentException( "code cannot be null" );
+        }
+        this.code = code;
         this.codeSpace = codeSpace;
     }
 
@@ -105,7 +108,7 @@ public class CodeType {
 
     @Override
     public String toString() {
-        return code + codeSpace == null ? " (codeSpace=" + codeSpace + ")" : "";
+        return code + (codeSpace == null ? " (codeSpace=" + codeSpace + ")" : "");
     }
 
     @Override

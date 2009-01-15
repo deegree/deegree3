@@ -86,6 +86,6 @@ public class LanguageString {
 
     @Override
     public String toString() {
-        return string + lang != null ? " (lang=" + lang + ")" : "";
+        return string + (lang != null ? " (lang=" + lang + ")" : "");
     }
 }
