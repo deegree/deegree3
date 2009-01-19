@@ -38,7 +38,7 @@
 
 package org.deegree.model.styling;
 
-import static org.deegree.commons.utils.MathUtils.isZero;
+import static org.deegree.commons.utils.math.MathUtils.isZero;
 
 import org.deegree.model.styling.components.Stroke;
 

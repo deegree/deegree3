@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.commons.utils;
+package org.deegree.commons.utils.math;
 
 import static java.lang.Math.abs;
 
@@ -53,7 +53,7 @@ public class MathUtils {
     /**
      * 
      */
-    public static final double EPSILON = 0.000000001;
+    public static final double EPSILON = 1E-10;
 
     /**
      * Helper to round a double value to an int without the need to cast.

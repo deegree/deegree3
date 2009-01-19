@@ -45,7 +45,7 @@ import static java.awt.geom.PathIterator.SEG_MOVETO;
 import static java.awt.geom.PathIterator.SEG_QUADTO;
 import static java.lang.Math.sqrt;
 import static org.deegree.commons.utils.GeometryUtils.prettyPrintShape;
-import static org.deegree.commons.utils.MathUtils.isZero;
+import static org.deegree.commons.utils.math.MathUtils.isZero;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Shape;

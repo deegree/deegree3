@@ -1,0 +1,244 @@
+//$HeadURL$
+/*----------------    FILE HEADER  ------------------------------------------
+ This file is part of deegree.
+ Copyright (C) 2001-2009 by:
+ Department of Geography, University of Bonn
+ http://www.giub.uni-bonn.de/deegree/
+ lat/lon GmbH
+ http://www.lat-lon.de
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+ Contact:
+
+ Andreas Poth
+ lat/lon GmbH
+ Aennchenstr. 19
+ 53177 Bonn
+ Germany
+ E-Mail: poth@lat-lon.de
+
+ Prof. Dr. Klaus Greve
+ Department of Geography
+ University of Bonn
+ Meckenheimer Allee 166
+ 53115 Bonn
+ Germany
+ E-Mail: greve@giub.uni-bonn.de
+ ---------------------------------------------------------------------------*/
+
+package org.deegree.commons.utils.math;
+
+/**
+ * The <code>Vectors3d</code> class supplies convenience methods for 3 dimensional vector (represented as a double
+ * array with length 3 ) calculations. No checking what so ever is done, so the callee has to make sure the arrays are
+ * initialized and have a length of 3.
+ * <p>
+ * Two different methods of almost all functions exist, one which creates a new allocated array and one which puts the
+ * result in a supplied array. Again, the callee has to make sure the supplied array is initialized and has a length of
+ * at least 3.
+ * 
+ * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+ * 
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ * 
+ */
+public class Vectors3d {
+
+    /**
+     * Subtract b from a and store the result in result.
+     * 
+     * @param a
+     *            array with length 3
+     * @param b
+     *            array with length 3
+     * @param result
+     *            array with length 3
+     */
+    public static void sub( double[] a, double[] b, double[] result ) {
+        result[0] = a[0] - b[0];
+        result[1] = a[1] - b[1];
+        result[2] = a[2] - b[2];
+    }
+
+    /**
+     * Subtract b from a and store the result in a new allocated double[3] array.
+     * 
+     * @param a
+     *            array with length 3
+     * @param b
+     *            array with length 3
+     * @return an array with length 3 containing a-b.
+     */
+    public static double[] sub( double[] a, double[] b ) {
+        double[] result = new double[3];
+        sub( a, b, result );
+        return result;
+    }
+
+    /**
+     * @param a
+     *            array with length 3
+     * @return the String representation of the scalars of given array separated by a comma (',')
+     */
+    public final static String asString( double[] a ) {
+        return a[0] + "," + a[1] + "," + a[2];
+    }
+
+    /**
+     * Calculate the normal vector for given vectors a, b, c by calculating the cross product from ab x ac and store the
+     * result in a new allocated array with length 3.
+     * 
+     * @param a
+     *            array with length 3
+     * @param b
+     *            array with length 3
+     * @param c
+     *            array with length 3
+     * @return a newly allocated array with length 3 containing the normalized normal vector.
+     */
+    public final static double[] normal( double[] a, double[] b, double[] c ) {
+        double[] result = new double[3];
+        normal( a, b, c, result );
+        return result;
+    }
+
+    /**
+     * Calculate the normal vector for given vectors a, b, c by calculating the cross product from ab x ac and store the
+     * result in given result vector.
+     * 
+     * @param a
+     *            array with length 3
+     * @param b
+     *            array with length 3
+     * @param c
+     *            array with length 3
+     * @param result
+     *            array with length 3
+     */
+    public final static void normal( double[] a, double[] b, double[] c, double[] result ) {
+        double[] v = sub( a, b );
+        double[] w = sub( a, c );
+        cross( v, w, result );
+    }
+
+    /**
+     * Calculate the normalized normal vector for given triangle with vertices a, b, c by calculating the cross product
+     * from ab x ac and normalize the result which will be stored in a new allocated array of length 3. If the resulting
+     * normal has length 0, the (unnormalized) vector will be returned .
+     * 
+     * @param a
+     *            array with length 3
+     * @param b
+     *            array with length 3
+     * @param c
+     *            array with length 3
+     * @return a new allocated array with length 3 containing the normalized normal vector.
+     */
+    public final static double[] normalizedNormal( double[] a, double[] b, double[] c ) {
+        double[] result = new double[3];
+        normalizedNormal( a, b, c, result );
+        return result;
+    }
+
+    /**
+     * Calculate the normalized normal vector for given triangle with vertices a, b, c by calculating the cross product
+     * from ab x ac and normalize the result which will be stored in the given result array with length 3. If the
+     * resulting normal has length 0, the (unnormalized) vector will be returned .
+     * 
+     * @param a
+     *            array with length 3
+     * @param b
+     *            array with length 3
+     * @param c
+     *            array with length 3
+     * @param result
+     *            array with length 3
+     */
+    public final static void normalizedNormal( double[] a, double[] b, double[] c, double[] result ) {
+        normal( a, b, c, result );
+        normalize( result );
+    }
+
+    /**
+     * Calculate the cross product of given vectors and store the result in a new allocated array of length 3.
+     * 
+     * @param a
+     *            array with length 3
+     * @param b
+     *            array with length 3
+     * @return a new allocated array with length 3.
+     */
+    public final static double[] cross( double[] a, double[] b ) {
+        double[] result = new double[3];
+        cross( a, b, result );
+        return result;
+    }
+
+    /**
+     * Calculate the cross product of given vectors and store the result in given result vector with length 3
+     * 
+     * @param a
+     *            array with length 3
+     * @param b
+     *            array with length 3
+     * @param result
+     *            array with length 3
+     * 
+     */
+    public final static void cross( double[] a, double[] b, double[] result ) {
+        result[0] = a[1] * b[2] - b[1] * a[2];
+        result[1] = a[2] * b[0] - b[2] * a[0];
+        result[2] = a[0] * b[1] - b[0] * a[1];
+    }
+
+    /**
+     * Calculate the dot product of given vectors (with length 3).
+     * 
+     * @param a
+     *            array with length 3
+     * @param b
+     *            array with length 3
+     * @return the dot product of given vectors.
+     * 
+     */
+    public final static double dot( double[] a, double[] b ) {
+        return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    }
+
+    /**
+     * @param a
+     *            array with length 3
+     * @return the euclidean length of the given vector
+     */
+    public final static double length( double[] a ) {
+        return Math.sqrt( a[0] * a[0] + a[1] * a[1] + a[2] * a[2] );
+    }
+
+    /**
+     * Normalize the given vector (of length 3) in place. If the length of the vector is 0, the vector will not be
+     * modified.
+     * 
+     * @param a
+     *            array with length 3
+     */
+    public final static void normalize( double[] a ) {
+        double length = length( a );
+        if ( length > 1E-11 ) {
+            a[0] /= length;
+            a[1] /= length;
+            a[2] /= length;
+        }
+    }
+}

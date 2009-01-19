@@ -48,8 +48,8 @@ import static java.awt.Font.BOLD;
 import static java.awt.Font.ITALIC;
 import static java.awt.Font.PLAIN;
 import static java.awt.geom.AffineTransform.getTranslateInstance;
-import static org.deegree.commons.utils.MathUtils.isZero;
-import static org.deegree.commons.utils.MathUtils.round;
+import static org.deegree.commons.utils.math.MathUtils.isZero;
+import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.rendering.r2d.RenderHelper.renderMark;
 import static org.slf4j.LoggerFactory.getLogger;
 
