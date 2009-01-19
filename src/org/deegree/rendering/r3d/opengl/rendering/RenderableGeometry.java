@@ -38,13 +38,28 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+
 import javax.media.opengl.GL;
 import javax.vecmath.Vector3f;
 
 import org.deegree.rendering.r3d.geometry.SimpleAccessGeometry;
+import org.deegree.rendering.r3d.opengl.tesselation.Tesselator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sun.opengl.util.BufferUtil;
 
 /**
- * The <code>RenderableGeometry</code> class TODO add class documentation here.
+ * The <code>RenderableGeometry</code> class uses VertexArrays to render the coordinates of it's geometry in an openGL
+ * context. For this to work the coordinates are expected to be organized as defined by the given openGLType.
+ * <p>
+ * Normally you might want to use a set of geometries for a single object (for example to create walls of a house). In
+ * this case the easiest way to create a {@link RenderableQualityModel} (containing {@link RenderableGeometry}(ies)) is
+ * the usage of the {@link Tesselator}. The {@link Tesselator} class can be used to create a sole
+ * {@link RenderableGeometry} as well.
+ * </p>
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -54,6 +69,8 @@ import org.deegree.rendering.r3d.geometry.SimpleAccessGeometry;
  * 
  */
 public class RenderableGeometry extends SimpleAccessGeometry implements Renderable {
+
+    private final transient static Logger LOG = LoggerFactory.getLogger( RenderableGeometry.class );
 
     /**
      * 
@@ -72,7 +89,17 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
     private float[] vertexNormals = null;
 
     // 4D (RGBA)
-    private int[] vertexColors;
+    private byte[] vertexColors;
+
+    private boolean hasNormals;
+
+    private boolean hasColors;
+
+    private transient FloatBuffer coordBuffer = null;
+
+    private transient FloatBuffer normalBuffer = null;
+
+    private transient ByteBuffer colorBuffer = null;
 
     /**
      * @param geometry
@@ -85,12 +112,23 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
      * @param emmisiveColor
      * @param shininess
      */
-    public RenderableGeometry( float[] geometry, int openGLType, float[] vertexNormals, int[] vertexColors,
+    public RenderableGeometry( float[] geometry, int openGLType, float[] vertexNormals, byte[] vertexColors,
                                int specularColor, int ambientColor, int diffuseColor, int emmisiveColor, float shininess ) {
         super( geometry, specularColor, ambientColor, diffuseColor, emmisiveColor, shininess );
         this.openGLType = openGLType;
+        switch ( openGLType ) {
+        case GL.GL_TRIANGLE_FAN:
+        case GL.GL_TRIANGLES:
+        case GL.GL_TRIANGLE_STRIP:
+        case GL.GL_QUADS:
+            break;
+        default:
+            throw new UnsupportedOperationException( "Unknown opengl type: " + openGLType );
+        }
         this.vertexNormals = vertexNormals;
         this.vertexColors = vertexColors;
+        this.hasNormals = ( vertexNormals != null && vertexNormals.length > 0 );
+        this.hasColors = ( vertexColors != null && vertexColors.length > 0 );
     }
 
     /**
@@ -103,7 +141,47 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
 
     @Override
     public void render( GL context, Vector3f eye ) {
-        // nottin yet
+        enableArrays( context );
+        context.glDrawArrays( openGLType, 0, getVertexCount() );
+        disableArrays( context );
+    }
+
+    /**
+     * Load the float buffers and enable the client state.
+     * 
+     * @param context
+     */
+    protected void enableArrays( GL context ) {
+
+        if ( coordBuffer == null ) {
+            LOG.trace( "Loading coordinates into float buffer" );
+            coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( getGeometry() ) );
+        }
+        if ( hasNormals && normalBuffer == null ) {
+            LOG.trace( "Loading normals into float buffer" );
+            normalBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( vertexNormals ) );
+        }
+        if ( hasColors && colorBuffer == null ) {
+            LOG.trace( "Loading colors into byte buffer" );
+            colorBuffer = BufferUtil.copyByteBuffer( ByteBuffer.wrap( vertexColors ) );
+        }
+        context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
+        if ( hasNormals ) {
+            context.glEnableClientState( GL.GL_NORMAL_ARRAY );
+            context.glNormalPointer( GL.GL_FLOAT, 0, normalBuffer );
+        }
+        if ( hasColors ) {
+            context.glEnableClientState( GL.GL_COLOR_ARRAY );
+            context.glColorPointer( 4, GL.GL_BYTE, 0, colorBuffer );
+        }
+    }
+
+    /**
+     * @param context
+     */
+    public void disableArrays( GL context ) {
+        context.glDisableClientState( GL.GL_NORMAL_ARRAY );
+        context.glDisableClientState( GL.GL_COLOR_ARRAY );
     }
 
     /**
@@ -134,7 +212,7 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
     /**
      * @return the vertexColors
      */
-    public final int[] getVertexColors() {
+    public final byte[] getVertexColors() {
         return vertexColors;
     }
 
@@ -142,7 +220,7 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
      * @param vertexColors
      *            the vertexColors to set
      */
-    public final void setVertexColors( int[] vertexColors ) {
+    public final void setVertexColors( byte[] vertexColors ) {
         this.vertexColors = vertexColors;
     }
 

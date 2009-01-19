@@ -44,15 +44,16 @@ import java.util.List;
 import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.GLUtessellatorCallbackAdapter;
-import javax.vecmath.Vector3f;
 
+import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.rendering.r3d.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.RenderableGeometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>GeometryCallBack</code> class TODO add class documentation here.
+ * The <code>GeometryCallBack</code> class will be called by the {@link Tesselator} if a {@link SimpleAccessGeometry}
+ * must be triangulated. This class will calculate the normals from the resulting vertices as well.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -63,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 
-    private static Logger LOG = LoggerFactory.getLogger( GeometryCallBack.class );
+    private final transient static Logger LOG = LoggerFactory.getLogger( GeometryCallBack.class );
 
     private GLU glu;
 
@@ -82,8 +83,27 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 
     @Override
     public void begin( int openGLType ) {
-        LOG.trace( "Tesselation: Begin of polygon called." );
-        LOG.trace( glu.gluGetString( openGLType ) );
+        if ( LOG.isTraceEnabled() ) {
+            StringBuilder sb = new StringBuilder( "Tesselation type is: " );
+            switch ( openGLType ) {
+            case GL.GL_TRIANGLES:
+                sb.append( "triangles" );
+                break;
+            case GL.GL_TRIANGLE_STRIP:
+                sb.append( "triangle strip" );
+                break;
+            case GL.GL_TRIANGLE_FAN:
+                sb.append( "triangle fan" );
+                break;
+            case GL.GL_LINE_LOOP:
+                sb.append( "line loop" );
+                break;
+            default:
+                LOG.warn( "Don't know open gl type: " + openGLType );
+                break;
+            }
+            LOG.trace( sb.toString() );
+        }
         this.openGLType = openGLType;
     }
 
@@ -103,18 +123,7 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
                              Object originalVertex ) {
         LOG.trace( "Tesselation combining data." );
 
-        // for ( int i = 0; i < coordinateData.length; ++i ) {
-        // Vertex[] vert = (Vertex[]) coordinateData[i];
-        // System.out.println( "Vertex( " + i + " ): " + vert );
-        // }
         LOG.trace( "Coordinates of vertex: " + coords[0] + "," + coords[1] + "," + coords[2] );
-
-        // super.combineData( newVertex, coordinateData, weights, newVertexOutput, originalGeometry );
-        // Vertex vertex =
-
-        // vertex[0] = coords[0];
-        // vertex[1] = coords[1];
-        // vertex[2] = coords[2];
         Vertex[] cd = new Vertex[coordinateData.length];
         for ( int i = 0; i < coordinateData.length; ++i ) {
             cd[i] = (Vertex) coordinateData[i];
@@ -124,12 +133,16 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 
     @Override
     public void edgeFlagData( boolean arg0, Object originalVertex ) {
-        LOG.trace( "Tesselation edge flag." );
+        // LOG.trace( "Tesselation edge flag." );
     }
 
     @Override
     public void vertexData( Object newVertex, Object originalVertex ) {
-        LOG.trace( "Tesselation vertex." );
+        if ( LOG.isTraceEnabled() ) {
+            StringBuilder sb = new StringBuilder( "New tesselate vertex:\n" );
+            sb.append( newVertex );
+            LOG.trace( sb.toString() );
+        }
         addVertex( (Vertex) newVertex );
     }
 
@@ -163,7 +176,8 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
      */
     public Vertex createNewVertex( int currentVertexLocation ) {
         float[] coords = geom.getCoordinateForVertex( currentVertexLocation );
-        int color = geom.getAmbientColor();
+        int ac = getGeometry().getAmbientColor();
+        byte[] color = new byte[] { (byte) ( ac >> 24 ), (byte) ( ac >> 16 ), (byte) ( ac >> 8 ), (byte) ( ac ) };
         return new Vertex( coords, null, color );
     }
 
@@ -196,11 +210,15 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
     /**
      * @return the vertex colors of the vertices created by the tesselation process.
      */
-    protected int[] getTesselatedVertexColors() {
-        int[] colors = new int[tesselatedVertices.size()];
+    protected byte[] getTesselatedVertexColors() {
+        byte[] colors = new byte[tesselatedVertices.size() * 4];
         for ( int vertex = 0; vertex < tesselatedVertices.size(); ++vertex ) {
             Vertex v = tesselatedVertices.get( vertex );
-            colors[vertex] = v.getColor();
+            byte[] color = v.getColor();
+            colors[vertex] = color[0];
+            colors[vertex + 1] = color[1];
+            colors[vertex + 2] = color[2];
+            colors[vertex + 3] = color[3];
         }
         return colors;
     }
@@ -211,7 +229,7 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
      * @return the normals appropriate for the openGL type.
      */
     protected float[] calculateNormals() {
-        // type can be triangles, trangle fan, traingel strip
+        // type can be triangles, triangle fan, triangle strip
         float[] normals = new float[tesselatedVertices.size() * 3];
         switch ( openGLType ) {
         case GL.GL_TRIANGLES:
@@ -237,16 +255,15 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
         float[] calculatedNormal = new float[3];
         for ( int vertex = 0; vertex < tesselatedVertices.size(); ++vertex ) {
             if ( vertex == 0 ) {
-                calculatedNormal = calcTriangleNormal( tesselatedVertices.get( 0 ), tesselatedVertices.get( 1 ),
-                                                       tesselatedVertices.get( 2 ) );
+                calcNormal( tesselatedVertices.get( 0 ), tesselatedVertices.get( 1 ), tesselatedVertices.get( 2 ),
+                            calculatedNormal );
                 setNormalForVertex( normals, calculatedNormal, 0 );
                 setNormalForVertex( normals, calculatedNormal, 1 );
                 setNormalForVertex( normals, calculatedNormal, 2 );
             } else {
                 if ( vertex + 1 < tesselatedVertices.size() ) {
-                    calculatedNormal = calcTriangleNormal( tesselatedVertices.get( 0 ),
-                                                           tesselatedVertices.get( vertex ),
-                                                           tesselatedVertices.get( vertex + 1 ) );
+                    calcNormal( tesselatedVertices.get( 0 ), tesselatedVertices.get( vertex ),
+                                tesselatedVertices.get( vertex + 1 ), calculatedNormal );
 
                     averageNormal( normals, calculatedNormal, 0 );
                     averageNormal( normals, calculatedNormal, vertex );
@@ -271,8 +288,8 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
         float[] calculatedNormal = new float[3];
         for ( int vertex = 0; vertex < tesselatedVertices.size(); ++vertex ) {
             if ( vertex == 0 ) {
-                calculatedNormal = calcTriangleNormal( tesselatedVertices.get( 0 ), tesselatedVertices.get( 1 ),
-                                                       tesselatedVertices.get( 2 ) );
+                calcNormal( tesselatedVertices.get( 0 ), tesselatedVertices.get( 1 ), tesselatedVertices.get( 2 ),
+                            calculatedNormal );
                 setNormalForVertex( normals, calculatedNormal, 0 );
                 setNormalForVertex( normals, calculatedNormal, 1 );
                 setNormalForVertex( normals, calculatedNormal, 2 );
@@ -281,14 +298,12 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
                     if ( ( vertex + 1 ) % 2 == 0 ) {
                         // an even counted triangle uses b,a,c for the triangle
 
-                        calculatedNormal = calcTriangleNormal( tesselatedVertices.get( vertex + 1 ),
-                                                               tesselatedVertices.get( vertex ),
-                                                               tesselatedVertices.get( vertex + 2 ) );
+                        calcNormal( tesselatedVertices.get( vertex + 1 ), tesselatedVertices.get( vertex ),
+                                    tesselatedVertices.get( vertex + 2 ), calculatedNormal );
                     } else {
                         // an odd count triangle uses a,b,c for the triangle.
-                        calculatedNormal = calcTriangleNormal( tesselatedVertices.get( vertex ),
-                                                               tesselatedVertices.get( vertex + 1 ),
-                                                               tesselatedVertices.get( vertex + 2 ) );
+                        calcNormal( tesselatedVertices.get( vertex ), tesselatedVertices.get( vertex + 1 ),
+                                    tesselatedVertices.get( vertex + 2 ), calculatedNormal );
                     }
                     averageNormal( normals, calculatedNormal, vertex );
                     averageNormal( normals, calculatedNormal, vertex + 1 );
@@ -348,9 +363,8 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
         int vertex = 0;
         float[] calculatedNormal = new float[3];
         for ( ; ( vertex + 2 ) < tesselatedVertices.size(); vertex += 3 ) {
-            calculatedNormal = calcTriangleNormal( tesselatedVertices.get( vertex ),
-                                                   tesselatedVertices.get( vertex + 1 ),
-                                                   tesselatedVertices.get( vertex + 2 ) );
+            calcNormal( tesselatedVertices.get( vertex ), tesselatedVertices.get( vertex + 1 ),
+                        tesselatedVertices.get( vertex + 2 ), calculatedNormal );
             setNormalForVertex( normals, calculatedNormal, vertex );
             setNormalForVertex( normals, calculatedNormal, vertex + 1 );
             setNormalForVertex( normals, calculatedNormal, vertex + 2 );
@@ -366,26 +380,11 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
         }
     }
 
-    /**
-     * Calculate the normalized normal vector for given triangle with vertices a, b, c by calculating the cross product
-     * from ba x ca
-     * 
-     * @param a
-     * @param b
-     * @param c
-     * @return the normalized normal vector.
-     */
-    private float[] calcTriangleNormal( Vertex a, Vertex b, Vertex c ) {
-        Vector3f first = new Vector3f( a.getCoords() );
-        Vector3f second = new Vector3f( b.getCoords() );
-        Vector3f third = new Vector3f( c.getCoords() );
-        second.sub( first );
-        third.sub( first );
-        Vector3f normal = new Vector3f();
-        normal.cross( second, third );
-        normal.normalize();
-        return new float[] { normal.x, normal.y, normal.z };
-
+    private void calcNormal( Vertex a, Vertex b, Vertex c, float[] normal ) {
+        Vectors3f.normalizedNormal( a.getCoords(), b.getCoords(), c.getCoords(), normal );
+        if ( LOG.isTraceEnabled() ) {
+            LOG.trace( "resulting normal: " + Vectors3f.asString( normal ) );
+        }
     }
 
     /**

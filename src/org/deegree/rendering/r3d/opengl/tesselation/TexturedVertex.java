@@ -98,7 +98,8 @@ public class TexturedVertex extends Vertex {
      *            of the vertex may not be <code>null</code> and must have a length of 2
      */
     TexturedVertex( float[] coordinates, float[] textureCoordinates ) {
-        this( coordinates, new float[] { 1, 0, 0 }, 0x00FFFFFF, textureCoordinates );
+        this( coordinates, new float[] { 1, 0, 0 }, new byte[] { Byte.MIN_VALUE, Byte.MAX_VALUE, Byte.MAX_VALUE,
+                                                                Byte.MAX_VALUE }, textureCoordinates );
     }
 
     /**
@@ -113,7 +114,7 @@ public class TexturedVertex extends Vertex {
      * @param textureCoordinates
      *            of the vertex may not be <code>null</code> and must have a length of 2
      */
-    public TexturedVertex( float[] coordinates, float[] normal, int vertexColor, float[] textureCoordinates ) {
+    public TexturedVertex( float[] coordinates, float[] normal, byte[] vertexColor, float[] textureCoordinates ) {
         super( coordinates, normal, vertexColor );
         if ( textureCoordinates == null || textureCoordinates.length != 2 ) {
             throw new IllegalArgumentException( "Only 2d texture coordinates are supported." );

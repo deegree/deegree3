@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TexturedGeometryCallBack extends GeometryCallBack {
 
-    private static Logger LOG = LoggerFactory.getLogger( TexturedGeometryCallBack.class );
+    private final transient static Logger LOG = LoggerFactory.getLogger( TexturedGeometryCallBack.class );
 
     /**
      * @param geom
@@ -80,14 +80,19 @@ public class TexturedGeometryCallBack extends GeometryCallBack {
 
     @Override
     public void vertexData( Object newVertex, Object originalVertex ) {
-        LOG.trace( "Tesselation vertex." );
+        if ( LOG.isTraceEnabled() ) {
+            StringBuilder sb = new StringBuilder( "New tesselate textured vertex:\n" );
+            sb.append( newVertex );
+            LOG.trace( sb.toString() );
+        }
         addVertex( (TexturedVertex) newVertex );
     }
 
     @Override
     public Vertex createNewVertex( int currentVertexLocation ) {
         float[] coords = getGeometry().getCoordinateForVertex( currentVertexLocation );
-        int color = getGeometry().getAmbientColor();
+        int ac = getGeometry().getAmbientColor();
+        byte[] color = new byte[] { (byte) ( ac >> 24 ), (byte) ( ac >> 16 ), (byte) ( ac >> 8 ), (byte) ( ac ) };
         float[] texCoords = ( (TexturedGeometry) getGeometry() ).getTextureCoordinateForVertex( currentVertexLocation );
         return new TexturedVertex( coords, null, color, texCoords );
     }

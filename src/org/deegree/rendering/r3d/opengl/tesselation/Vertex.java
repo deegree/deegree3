@@ -59,7 +59,7 @@ public class Vertex {
 
     private float[] normalizedNormal = null;
 
-    int color;
+    byte[] color;
 
     /**
      * Create a vertex from the given coordinates and the surrounding vertices.
@@ -85,12 +85,10 @@ public class Vertex {
      * @param weights
      */
     private void calcColorAndNormal( Vertex[] otherVertices, float[] weights ) {
-        color = 0;
         for ( int i = 0; i < otherVertices.length; ++i ) {
             Vertex v = otherVertices[i];
             if ( v != null ) {
                 float w = weights[i];
-                System.out.println( "V: " + v );
                 if ( v.hasNormal() ) {
                     // Lazy instancing
                     if ( this.normal == null ) {
@@ -100,16 +98,24 @@ public class Vertex {
                     this.normal[1] += w * v.normal[1];
                     this.normal[2] += w * v.normal[2];
                 }
-                color += v.color * w;
+                if ( v.color != null ) {
+                    if ( color == null ) {
+                        color = new byte[4];
+                    }
+                    color[0] += v.color[0] * w;
+                    color[1] += v.color[1] * w;
+                    color[2] += v.color[2] * w;
+                    color[3] += v.color[3] * w;
+                }
             }
         }
     }
 
     Vertex( float[] coordinates ) {
-        this( coordinates, null, 0x00FFFFFF );
+        this( coordinates, null, new byte[] { Byte.MIN_VALUE, Byte.MAX_VALUE, Byte.MAX_VALUE, Byte.MAX_VALUE } );
     }
 
-    Vertex( float[] coordinates, float[] normal, int vertexColor ) {
+    Vertex( float[] coordinates, float[] normal, byte[] vertexColor ) {
         if ( coordinates == null || coordinates.length != 3 ) {
             throw new IllegalArgumentException( "Only 3d coordinates are supported." );
         }
@@ -168,22 +174,28 @@ public class Vertex {
     /**
      * @return the color in ARGB byte values e.g 0x00 FF FF FF for white opaque
      */
-    public int getColor() {
+    public byte[] getColor() {
         return color;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append( "coord:\t" ).append( x ).append( "," ).append( y ).append( "," ).append( z ).append( "\n" );
+        sb.append( "coord:\t" ).append( x ).append( "," ).append( y ).append( "," ).append( z );
 
         if ( normal == null ) {
-            sb.append( "no normal" );
+            sb.append( "\nno normal" );
         } else {
-            sb.append( "normal:\t" );
+            sb.append( "\nnormal:\t" );
             sb.append( normal[0] ).append( "," ).append( normal[1] ).append( "," ).append( normal[2] );
         }
-        sb.append( "\ncolor:\t" ).append( color );
+        if ( color == null ) {
+            sb.append( "\nno color" );
+        } else {
+            sb.append( "\ncolor(argb):\t" );
+            sb.append( color[0] ).append( "," ).append( color[1] ).append( "," ).append( color[2] ).append( "," ).append(
+                                                                                                                          color[3] );
+        }
         return sb.toString();
     }
 }

@@ -48,9 +48,13 @@ import org.deegree.rendering.r3d.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.geometry.TexturedGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.RenderableGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.RenderableQualityModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * The <code>Tesselator</code> class TODO add class documentation here.
+ * The <code>Tesselator</code> class is a {@link GLUtessellator} utility wrapper. Its main purpose is the creation of
+ * a {@link RenderableQualityModel} out of a {@link GeometryQualityModel} by triangulating (tesselating) all it's
+ * {@link SimpleAccessGeometry}.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -60,51 +64,54 @@ import org.deegree.rendering.r3d.opengl.rendering.RenderableQualityModel;
  * 
  */
 public class Tesselator {
+    private final transient static Logger LOG = LoggerFactory.getLogger( Tesselator.class );
 
     private GLU glu;
 
+    /**
+     * Create a tesselator which triangulates all {@link SimpleAccessGeometry} of a {@link GeometryQualityModel}.
+     */
     public Tesselator() {
         glu = new GLU();
     }
 
-    public static void main( String[] args ) {
-        Tesselator t = new Tesselator();
-        ArrayList<SimpleAccessGeometry> simpleAccessGeometries = new ArrayList<SimpleAccessGeometry>();
-        simpleAccessGeometries.add( t.createStar() );
-        simpleAccessGeometries.add( t.createTexturedConcav() );
-        GeometryQualityModel gqm = new GeometryQualityModel( simpleAccessGeometries );
-        RenderableQualityModel rqm = t.createRenderableQM( gqm );
-
-    }
-
-    private SimpleAccessGeometry createStar() {
-        float[] coords = new float[] { 0, 0, 1, -1, 0, -1, 1, 0, -1, 0, 0, -1, -1, 0, 1, 1, 0, 1 };
-        // float[] coords = new float[] { 0, 0, 1, -1, 0, -1, 1, 0, -1, 0, 0, -1 };
-
-        return new SimpleAccessGeometry( coords );
-    }
-
-    private TexturedGeometry createTexturedConcav() {
-        float[] coords = new float[] { -1, -1, 1, 0.5f, -.5f, 0, 0.4f, -.4f, -.4f, -0.8f, -.2f, -1f, -.1f, .1f, -.2f,
-                                      -.2f, -.2f, .2f, -1, -1, 1 };
-        float[] texCoords = new float[] { 0, 1, 1, .6f, .9f, .3f, .1f, 0, .5f, .4f, .6f, .5f, 0, 1 };
-
-        return new TexturedGeometry( coords,
-                                     "/home/rutger/workspace/2.2_testing_igeo_standard/images/logo-deegree.png",
-                                     texCoords );
-    }
-
-    public synchronized RenderableQualityModel createRenderableQM( GeometryQualityModel originalObject ) {
+    /**
+     * Create a renderable quality model from the given 'original' geometry model, by tesselating (triangulating) its
+     * polygons.
+     * 
+     * @param originalObject
+     *            containing polygons
+     * @return the renderable object.
+     */
+    public RenderableQualityModel createRenderableQM( GeometryQualityModel originalObject ) {
         GLUtessellator tess = glu.gluNewTess();
+        if ( originalObject == null ) {
+            throw new NullPointerException( "The original object may not be null" );
+        }
         ArrayList<SimpleAccessGeometry> geometryPatches = originalObject.getGeometryPatches();
         ArrayList<RenderableGeometry> results = new ArrayList<RenderableGeometry>( geometryPatches.size() );
         for ( SimpleAccessGeometry geom : geometryPatches ) {
-            results.add( tesselatePolygon( tess, geom ) );
+            if ( geom != null ) {
+                GeometryCallBack callBack = createAndRegisterCallBack( tess, geom );
+                RenderableGeometry result = tesselatePolygon( tess, callBack );
+                if ( result != null ) {
+                    LOG.trace( "Resulting renderable has " + result.getVertexCount() + " number of vertices." );
+                    results.add( result );
+                }
+            }
         }
         glu.gluDeleteTess( tess );
         return new RenderableQualityModel( results );
     }
 
+    /**
+     * Register the callback with the given tesselator.
+     * 
+     * @param tess
+     *            to register with
+     * @param cb
+     *            the callback object.
+     */
     private void registerCallback( GLUtessellator tess, GeometryCallBack cb ) {
         glu.gluTessCallback( tess, GLU.GLU_TESS_BEGIN, cb );
         glu.gluTessCallback( tess, GLU.GLU_TESS_EDGE_FLAG_DATA, cb );
@@ -114,7 +121,35 @@ public class Tesselator {
         glu.gluTessCallback( tess, GLU.GLU_TESS_ERROR_DATA, cb );
     }
 
-    private final RenderableGeometry tesselatePolygon( GLUtessellator tess, SimpleAccessGeometry geom ) {
+    /**
+     * Create a renderable geometry from the given {@link SimpleAccessGeometry} by tesselating it.
+     * 
+     * @param originalGeometry
+     *            may not be null.
+     * @return the {@link RenderableGeometry} or <code>null</code> if the given geometry could not be triangulated.
+     */
+    public final RenderableGeometry tesselateGeometry( SimpleAccessGeometry originalGeometry ) {
+        GLUtessellator tess = glu.gluNewTess();
+        if ( originalGeometry == null ) {
+            throw new NullPointerException( "The original geometry may not be null" );
+        }
+        GeometryCallBack callBack = createAndRegisterCallBack( tess, originalGeometry );
+        RenderableGeometry result = tesselatePolygon( tess, callBack );
+        if ( result != null && LOG.isTraceEnabled() ) {
+            LOG.trace( "Resulting renderable has " + result.getVertexCount() + " number of vertices." );
+        }
+        glu.gluDeleteTess( tess );
+        return result;
+    }
+
+    /**
+     * Create a callback for the given geometry and register it with the given tesselator object.
+     * 
+     * @param tess
+     * @param geom
+     * @return
+     */
+    private final GeometryCallBack createAndRegisterCallBack( GLUtessellator tess, SimpleAccessGeometry geom ) {
         final GeometryCallBack callBack;
         if ( geom instanceof TexturedGeometry ) {
             callBack = new TexturedGeometryCallBack( (TexturedGeometry) geom );
@@ -122,31 +157,48 @@ public class Tesselator {
             callBack = new GeometryCallBack( geom );
         }
         registerCallback( tess, callBack );
+        return callBack;
+    }
 
-        int numberOfOrdinates = geom.getGeometry().length;
-        int[] innerRings = geom.getInnerRings();
+    /**
+     * Tesselate the given geometry with respect to the innerrings and texture coordinates.
+     * 
+     * @param tess
+     * @param geom
+     * @return
+     */
+    @SuppressWarnings("null")
+    private final RenderableGeometry tesselatePolygon( GLUtessellator tess, GeometryCallBack callBack ) {
+
+        int numberOfVertices = callBack.getGeometry().getVertexCount();
+        int[] innerRings = callBack.getGeometry().getInnerRings();
         // the current ring
-        int currentRing = 1;
+        int currentRing = 0;
         // the current position of the ring in the 3d float array float[0]=x ; float[1]=y; float[2]=z;
         int ringBegin = 0;
         // end of the ring in the 3d float array, if no rings, just use the whole geometry
-        int ringEnd = numberOfOrdinates;
+        int ringEnd = numberOfVertices;
         boolean hasRings = ( innerRings != null && innerRings.length > 0 );
+        LOG.trace( "SimpleAccessGeometry has " + numberOfVertices + " number of vertices." );
         glu.gluTessBeginPolygon( tess, null );
         {
             do {
                 if ( hasRings ) {
-                    // we've got innerrings
+                    // we've got innerrings, eclipse doesn't seem to understand, that the innerrings can not be null
+                    // (hasrings), so lets suppress warnings.
                     if ( currentRing < innerRings.length ) {
                         ringEnd = innerRings[currentRing++];
                     } else {
-                        ringEnd = numberOfOrdinates;
+                        ringEnd = numberOfVertices;
                     }
                 }
+                LOG.trace( "polygon begin vertex: " + ringBegin );
+                LOG.trace( "polygon end vertex: " + ringEnd );
+
                 tesselateRing( tess, ringBegin, ringEnd, callBack );
                 // the beginning of the new ring or coords.length if no more rings.
                 ringBegin = ringEnd;
-            } while ( ringBegin < numberOfOrdinates );
+            } while ( ringBegin < numberOfVertices );
             // begin/next contour are in the tesselate ring function, just close the last contour
             glu.gluTessEndContour( tess );
         }
@@ -155,7 +207,7 @@ public class Tesselator {
     }
 
     /**
-     * Tesselate a ring indexed by the begin and end.
+     * Tesselate a ring indexed by the begin and end vertices not array positions.
      * 
      * @param glu
      * @param tess
@@ -171,8 +223,8 @@ public class Tesselator {
             glu.gluNextContour( tess, GLU.GLU_INTERIOR );
         }
         {
-            for ( int i = begin; i < end; i += 3 ) {
-                Vertex vertex = callBack.createNewVertex( i / 3 );
+            for ( int i = begin; i < end; ++i ) {
+                Vertex vertex = callBack.createNewVertex( i );
                 glu.gluTessVertex( tess, vertex.getCoordsAsDouble(), 0, vertex );
             }
         }

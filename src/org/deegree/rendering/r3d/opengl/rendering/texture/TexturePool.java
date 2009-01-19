@@ -38,7 +38,18 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.texture;
 
-import javax.media.opengl.GL;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.media.opengl.GLException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sun.opengl.util.texture.Texture;
+import com.sun.opengl.util.texture.TextureIO;
 
 /**
  * The <code>Textures</code> class TODO add class documentation here.
@@ -52,13 +63,62 @@ import javax.media.opengl.GL;
  */
 public class TexturePool {
 
+    private final transient static Logger LOG = LoggerFactory.getLogger( TexturePool.class );
+
+    private static Map<String, Texture> idToTexture = new HashMap<String, Texture>();
+
+    private static Map<String, String> idToFile = new HashMap<String, String>();
+    static {
+        idToFile.put( "1", "/home/rutger/jogl.png" );
+    }
+
     /**
      * @param context
      * @param texture
      */
-    public static void loadTexture( GL context, String texture ) {
-        // TODO Auto-generated method stub
+    public static void loadTexture( String texture ) {
 
+        Texture tex = idToTexture.get( texture );
+        if ( tex == null ) {
+            tex = loadTextureFromFile( texture );
+            if ( tex == null ) {
+                LOG.warn( "No texture for id: " + texture );
+                return;
+            }
+        }
+        tex.bind();
     }
 
+    /**
+     * @param context
+     * @param texture
+     */
+    public static void dispose( String texture ) {
+
+        Texture tex = idToTexture.get( texture );
+        if ( tex != null ) {
+            tex.dispose();
+        }
+    }
+
+    private static synchronized Texture loadTextureFromFile( String textureID ) {
+        Texture result = null;
+        String fileName = idToFile.get( textureID );
+        if ( fileName != null && !"".equals( fileName.trim() ) ) {
+            File f = new File( fileName );
+            try {
+                result = TextureIO.newTexture( f, true );
+            } catch ( GLException e ) {
+                LOG.error( "Error while trying to load texture with fileName:" + fileName + " cause: "
+                           + e.getLocalizedMessage(), e );
+            } catch ( IOException e ) {
+                LOG.error( "Error while trying to load texture with fileName:" + fileName + " cause: "
+                           + e.getLocalizedMessage(), e );
+            }
+            if ( result != null ) {
+                idToTexture.put( textureID, result );
+            }
+        }
+        return result;
+    }
 }

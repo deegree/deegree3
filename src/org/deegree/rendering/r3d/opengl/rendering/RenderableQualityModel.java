@@ -82,6 +82,7 @@ public class RenderableQualityModel extends QualityModel<RenderableGeometry> imp
 
     @Override
     public void render( GL context, Vector3f eye ) {
+        context.glEnableClientState( GL.GL_VERTEX_ARRAY );
         if ( prototype != null ) {
             PrototypePool.render( context, prototype, eye );
         } else {
@@ -94,5 +95,6 @@ public class RenderableQualityModel extends QualityModel<RenderableGeometry> imp
                 }
             }
         }
+        context.glDisableClientState( GL.GL_VERTEX_ARRAY );
     }
 }

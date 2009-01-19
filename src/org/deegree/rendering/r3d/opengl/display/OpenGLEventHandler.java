@@ -48,6 +48,7 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 import javax.vecmath.Vector3f;
 
+import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.rendering.r3d.opengl.rendering.WorldRenderableObject;
@@ -69,7 +70,7 @@ import com.sun.opengl.util.GLUT;
  */
 public class OpenGLEventHandler implements GLEventListener {
 
-    private static Logger LOG = LoggerFactory.getLogger( OpenGLEventHandler.class );
+    private final transient static Logger LOG = LoggerFactory.getLogger( OpenGLEventHandler.class );
 
     private List<WorldRenderableObject> worldRenderableObjects = new ArrayList<WorldRenderableObject>();
 
@@ -89,7 +90,7 @@ public class OpenGLEventHandler implements GLEventListener {
     // Distance to end of scene
     private float farClippingPlane;
 
-    private final float testObjectSize = 0.3f;
+    private final float testObjectSize = 0.1f;
 
     private final float cubeHalf = testObjectSize * 0.5f;
 
@@ -122,9 +123,13 @@ public class OpenGLEventHandler implements GLEventListener {
         lookAt = new float[3];
         eye = new float[3];
         this.renderTestObject = renderTestObject;
-        bbox = GeometryFactoryCreator.getInstance().getGeometryFactory().createEnvelope( new double[] { -1, -1, -1 },
-                                                                                         new double[] { 1, 1, 1 }, null );
+        bbox = getDefaultBBox();
         calcViewParameters();
+    }
+
+    private Envelope getDefaultBBox() {
+        return GeometryFactoryCreator.getInstance().getGeometryFactory().createEnvelope( new double[] { -1, -1, -1 },
+                                                                                         new double[] { 1, 1, 1 }, null );
     }
 
     /**
@@ -134,7 +139,7 @@ public class OpenGLEventHandler implements GLEventListener {
         centroid = new float[] { (float) bbox.getCentroid().getX(), (float) bbox.getCentroid().getY(),
                                 (float) bbox.getCentroid().getZ() };
         lookAt = new float[] { centroid[0], centroid[1], centroid[2] };
-        farClippingPlane = (float) Math.max( bbox.getWidth(), bbox.getHeight() );
+        farClippingPlane = 2 * (float) Math.max( bbox.getWidth(), bbox.getHeight() );
         eye = new float[] { centroid[0], centroid[1] + ( farClippingPlane * .5f ),
                            centroid[2] + ( farClippingPlane * .5f ) };
         trackBall.reset();
@@ -153,8 +158,21 @@ public class OpenGLEventHandler implements GLEventListener {
         LOG.trace( "lookAt:" + lookAt[0] + "," + lookAt[1] + "," + lookAt[2] );
         LOG.trace( "eye:" + eye[0] + "," + eye[1] + "," + eye[2] );
 
+        float[] originalModelView = new float[16];
+        gl.glGetFloatv( GL.GL_MODELVIEW_MATRIX, originalModelView, 0 );
+
+        float[] tmp = new float[16];
+        float[] newEye = new float[3];
+        float[] t = new float[] { -originalModelView[12], -originalModelView[13], -originalModelView[14] };
+        newEye[0] = originalModelView[0] * t[0] + originalModelView[1] * t[1] + originalModelView[2] * t[2];
+        newEye[1] = originalModelView[4] * t[0] + originalModelView[5] * t[1] + originalModelView[6] * t[2];
+        newEye[2] = originalModelView[8] * t[0] + originalModelView[9] * t[1] + originalModelView[10] * t[2];
+
+        System.out.println( "neweye: " + Vectors3f.asString( newEye ) );
+        System.out.println( "eye: " + Vectors3f.asString( eye ) );
+
         for ( WorldRenderableObject dObj : worldRenderableObjects ) {
-            dObj.render( gl, new Vector3f( eye[0], eye[1], eye[2] ), qualityLevel );
+            dObj.render( gl, new Vector3f( newEye[0], newEye[1], newEye[2] ), qualityLevel );
         }
 
         if ( renderTestObject ) {
@@ -174,8 +192,7 @@ public class OpenGLEventHandler implements GLEventListener {
         if ( b != null ) {
             Envelope env = b.getBbox();
             if ( env != null ) {
-                if ( bbox.getMin().getX() == 0 && bbox.getMin().getY() == 0 && bbox.getMax().getX() == 1
-                     && bbox.getMax().getY() == 1 ) {
+                if ( isDefaultBBox() ) {
                     bbox = env;
                 } else {
                     bbox.merge( env );
@@ -186,8 +203,18 @@ public class OpenGLEventHandler implements GLEventListener {
         }
     }
 
+    private boolean isDefaultBBox() {
+        Envelope env = getDefaultBBox();
+        return ( Math.abs( bbox.getWidth() - env.getWidth() ) < 1E-11 )
+               && ( Math.abs( bbox.getHeight() - env.getHeight() ) < 1E-11 )
+               && ( Math.abs( bbox.getMin().getX() - env.getMin().getX() ) < 1E-11 )
+               && ( Math.abs( bbox.getMin().getY() - env.getMin().getY() ) < 1E-11 )
+               && ( Math.abs( bbox.getMin().getZ() - env.getMin().getZ() ) < 1E-11 );
+    }
+
     /**
-     * sets the quality level that should be draw for each {@link WorldRenderableObject} that has been added to a handler
+     * sets the quality level that should be draw for each {@link WorldRenderableObject} that has been added to a
+     * handler
      * 
      * @param qualityLevel
      */
@@ -346,6 +373,30 @@ public class OpenGLEventHandler implements GLEventListener {
      */
     public TrackBall getTrackBall() {
         return trackBall;
+    }
+
+    /**
+     * 
+     */
+    public void removeAllData() {
+        worldRenderableObjects.clear();
+        bbox = getDefaultBBox();
+        calcViewParameters();
+    }
+
+    /**
+     * @return the renderTestObject
+     */
+    public final boolean isTestObjectRendered() {
+        return renderTestObject;
+    }
+
+    /**
+     * @param renderTestObject
+     *            the renderTestObject to set
+     */
+    public final void renderTestObject( boolean renderTestObject ) {
+        this.renderTestObject = renderTestObject;
     }
 
 }

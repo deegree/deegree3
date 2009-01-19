@@ -38,8 +38,14 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
+import java.nio.FloatBuffer;
+
 import javax.media.opengl.GL;
-import javax.vecmath.Vector3f;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sun.opengl.util.BufferUtil;
 
 /**
  * The <code>RenderableTexturedGeometry</code> class TODO add class documentation here.
@@ -53,6 +59,8 @@ import javax.vecmath.Vector3f;
  */
 public class RenderableTexturedGeometry extends RenderableGeometry {
 
+    private final transient static Logger LOG = LoggerFactory.getLogger( RenderableTexturedGeometry.class );
+
     /**
      * 
      */
@@ -62,6 +70,8 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
 
     // 2D
     private float[] textureCoordinates;
+
+    private transient FloatBuffer textureBuffer = null;
 
     /**
      * @param geometry
@@ -78,7 +88,7 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
      * @param textureCoordinates
      *            of this data
      */
-    public RenderableTexturedGeometry( float[] geometry, int openGLType, float[] vertexNormals, int[] vertexColors,
+    public RenderableTexturedGeometry( float[] geometry, int openGLType, float[] vertexNormals, byte[] vertexColors,
                                        int specularColor, int ambientColor, int diffuseColor, int emmisiveColor,
                                        float shininess, String texture, float[] textureCoordinates ) {
         super( geometry, openGLType, vertexNormals, vertexColors, specularColor, ambientColor, diffuseColor,
@@ -100,10 +110,32 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
         this.textureCoordinates = textureCoordinates;
     }
 
+    /**
+     * Load the float buffers and enable the client state.
+     * 
+     * @param context
+     */
     @Override
-    public void render( GL context, Vector3f eye ) {
-        // TODO Auto-generated method stub
-        super.render( context, eye );
+    protected void enableArrays( GL context ) {
+        super.enableArrays( context );
+
+        if ( textureBuffer == null ) {
+            LOG.trace( "Loading texture coordinates into float buffer" );
+            textureBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( textureCoordinates ) );
+        }
+
+        context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+        context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
+
+    }
+
+    /**
+     * @param context
+     */
+    @Override
+    public void disableArrays( GL context ) {
+        super.disableArrays( context );
+        context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
     }
 
     /**

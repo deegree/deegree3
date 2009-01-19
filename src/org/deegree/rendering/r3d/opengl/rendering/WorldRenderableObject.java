@@ -57,7 +57,7 @@ import org.deegree.rendering.r3d.WorldObject;
  * 
  */
 public class WorldRenderableObject extends WorldObject<RenderableGeometry, RenderableQualityModel> implements
-                                                                                                Serializable {
+                                                                                                  Serializable {
 
     /**
      * 
@@ -100,7 +100,7 @@ public class WorldRenderableObject extends WorldObject<RenderableGeometry, Rende
      */
     public void render( GL context, Vector3f eye, int level ) {
         if ( qualityLevels != null ) {
-            if ( level > 0 && qualityLevels.length > level ) {
+            if ( level >= 0 && qualityLevels.length > level ) {
                 RenderableQualityModel model = qualityLevels[level];
                 if ( model == null ) {
                     // first find the next less quality

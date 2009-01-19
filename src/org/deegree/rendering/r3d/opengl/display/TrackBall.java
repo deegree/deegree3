@@ -69,7 +69,7 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class TrackBall extends MouseAdapter {
-    private static Logger LOG = LoggerFactory.getLogger( TrackBall.class );
+    private final transient static Logger LOG = LoggerFactory.getLogger( TrackBall.class );
 
     private static final float kTOL = 0.01f;
 
