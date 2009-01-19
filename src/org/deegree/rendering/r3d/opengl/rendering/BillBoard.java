@@ -49,7 +49,8 @@ import org.deegree.rendering.r3d.opengl.rendering.texture.TexturePool;
 import com.sun.opengl.util.BufferUtil;
 
 /**
- * The <code>BillBoard</code> class TODO add class documentation here.
+ * The <code>BillBoard</code> class represents a billboard in object always facing the viewer, with the z-axis as it's
+ * rotation axis.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -60,14 +61,14 @@ import com.sun.opengl.util.BufferUtil;
  */
 public class BillBoard extends RenderableQualityModel {
 
-    private static final transient Vector3f UP_VECTOR = new Vector3f( 0, 0, 1 );
-
     /**
      * 
      */
     private static final long serialVersionUID = -5693355972373810535L;
 
     private String texture;
+
+    private final static transient float[] NORMAL = new float[] { 0, -1, 0 };
 
     private float[] location;
 
@@ -76,26 +77,27 @@ public class BillBoard extends RenderableQualityModel {
     private static final transient FloatBuffer coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
                                                                                                                         -.5f,
                                                                                                                         0,
-                                                                                                                        -.5f,
+                                                                                                                        -.5f, // ll
                                                                                                                         .5f,
                                                                                                                         0,
-                                                                                                                        -.5f,
+                                                                                                                        -.5f,// lr
                                                                                                                         .5f,
                                                                                                                         0,
-                                                                                                                        .5f,
+                                                                                                                        .5f,// ur
                                                                                                                         -.5f,
                                                                                                                         0,
-                                                                                                                        .5f } ) );
+                                                                                                                        .5f }// ul
+    ) );
 
     private static final transient FloatBuffer textureBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
                                                                                                                           0,
-                                                                                                                          0,
-                                                                                                                          1,
-                                                                                                                          0,
                                                                                                                           1,
                                                                                                                           1,
+                                                                                                                          1,
+                                                                                                                          1,
                                                                                                                           0,
-                                                                                                                          1 } ) );
+                                                                                                                          0,
+                                                                                                                          0 } ) );
 
     /**
      * Constructs a billboard data structure with the given texture id.
@@ -118,84 +120,49 @@ public class BillBoard extends RenderableQualityModel {
         context.glEnable( GL.GL_TEXTURE_2D );
         context.glEnableClientState( GL.GL_VERTEX_ARRAY );
         context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-        // setTransformation( context, new float[] { eye.x, eye.y, eye.z } );
+        // the translation
         context.glTranslatef( location[0], location[1], location[2] );
-        // getRotation( context, new float[] { eye.x, eye.y, eye.z } );
-        // l context.glRotatef( getRotation( context, new float[] { eye.x, eye.y, eye.z } ), 0, 0, 1 );
-        // context.glScalef( scaleXZ[0], 0, scaleXZ[1] );
+        // the rotation
+        calculateAndSetRotation( context, new float[] { eye.x, eye.y, eye.z } );
+        context.glScalef( scaleXZ[0], 1, scaleXZ[1] );
 
         TexturePool.loadTexture( texture );
-        // FloatBuffer coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] { -.5f, 0, -.5f, .5f, 0,
-        // -.5f, .5f, 0, .5f, -.5f,
-        // 0, .5f } ) );
 
         context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
 
         context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
         context.glDrawArrays( GL.GL_QUADS, 0, 4 );
         context.glDisableClientState( GL.GL_VERTEX_ARRAY );
-        // context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+        context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
         context.glDisable( GL.GL_TEXTURE_2D );
         context.glPopMatrix();
     }
 
     /**
+     * Normalize the viewVector, the inner product (dot) between billboard normal and viewVector will allow the
+     * computation of the cosine of the angle. However knowing the cosine alone is not enough, since the cos(a) =
+     * cos(-a). Computing the cross product as well (the new up-vector) allows us to uniquely determine the angle. The
+     * cross product vector will have the same direction as the up vector if the angle is positive. For negative angles
+     * the up vector's direction will opposed to the up vector, effectively reversing the rotation. from
+     * http://www.lighthouse3d.com/opengl/billboarding/index.php?billCyl
+     * 
      * @param context
+     *            to set the translation to
+     * @param eye
+     *            the position of the camera in world coordinates
      */
-    private float getRotation( GL context, float[] eye ) {
+    private void calculateAndSetRotation( GL context, float[] eye ) {
 
         float[] viewVector = Vectors3f.sub( eye, location );
+        // projection to the xy plane.
+        viewVector[2] = 0;
         Vectors3f.normalizeInPlace( viewVector );
-
-        System.out.println( Vectors3f.asString( viewVector ) );
-
-        float theta = (float) Math.toDegrees( Math.PI
-                                              - Math.acos( Vectors3f.dot( viewVector, new float[] { 0, 1, 0 } ) ) );
-
-        context.glNormal3f( viewVector[0], viewVector[1], viewVector[2] );
-        System.out.println( "Theta: " + theta );
-        return theta;
-
-        // Calculate the rotationmatrix
-        // calcViewAllignment( originalModelView, eye );
-
-        // context.glLoadMatrixf( originalModelView, 0 );
-    }
-
-    /**
-     * Calculates the rotation matrix for this billboard, by crossing the view direction with the up vector, normalizing
-     * the result and than calculate the normal by calculating the normalized cross from the right and up vector, and
-     * placing the result in the rotation part of the modelview matrix.<code>
-     * r = u x viewdirection
-     * normalize( r );
-     * n = u x r
-     * normalize( n )
-     * 
-     * modelview.rotation= (r, u, n )
-     * </code>
-     * 
-     * @param modelview
-     * @param eye
-     */
-    private void calcViewAllignment( float[] modelview, Vector3f eye ) {
-        Vector3f r = new Vector3f();
-        Vector3f viewDirection = new Vector3f( eye );
-        viewDirection.negate();
-        r.cross( UP_VECTOR, viewDirection );
-        r.normalize();
-        viewDirection.cross( r, UP_VECTOR );
-        viewDirection.normalize();
-
-        modelview[0] = r.x;
-        modelview[1] = r.y;
-        modelview[2] = r.z;
-
-        modelview[4] = UP_VECTOR.x;
-        modelview[5] = UP_VECTOR.y;
-        modelview[6] = UP_VECTOR.z;
-
-        modelview[8] = viewDirection.x;
-        modelview[9] = viewDirection.y;
-        modelview[10] = viewDirection.z;
+        double angleCosine = Vectors3f.dot( viewVector, NORMAL );
+        // only do a rotation the angles are between -1 and 1.
+        if ( ( angleCosine < 0.99990 ) && ( angleCosine > -0.9999 ) ) {
+            // negative or positive orientation?
+            float[] newUp = Vectors3f.cross( NORMAL, viewVector );
+            context.glRotatef( (float) Math.toDegrees( Math.acos( angleCosine ) ), newUp[0], newUp[1], newUp[2] );
+        }
     }
 }
