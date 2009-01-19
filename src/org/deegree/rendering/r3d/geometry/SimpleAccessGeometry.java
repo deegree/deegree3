@@ -58,7 +58,10 @@ public class SimpleAccessGeometry implements Serializable {
      */
     private static final long serialVersionUID = -3704718653663592552L;
 
-    private float[] coordinates = null;
+    /**
+     * The coordinates of this geometry
+     */
+    protected float[] coordinates = null;
 
     // indizes of the startpositions of the innerrings
     private int[] innerRings = null;
@@ -78,6 +81,8 @@ public class SimpleAccessGeometry implements Serializable {
     // a single value
     private float shininess;
 
+    private int vertexCount;
+
     /**
      * @param coordinates
      * @param innerRings
@@ -89,6 +94,9 @@ public class SimpleAccessGeometry implements Serializable {
      */
     public SimpleAccessGeometry( float[] coordinates, int[] innerRings, int specularColor, int ambientColor,
                                  int diffuseColor, int emmisiveColor, float shininess ) {
+        if ( coordinates == null || coordinates.length == 0 ) {
+            throw new IllegalArgumentException( "Coordinates must be given." );
+        }
         this.coordinates = coordinates;
         this.innerRings = innerRings;
         this.specularColor = specularColor;
@@ -96,6 +104,7 @@ public class SimpleAccessGeometry implements Serializable {
         this.diffuseColor = diffuseColor;
         this.emmisiveColor = emmisiveColor;
         this.shininess = shininess;
+        vertexCount = coordinates.length / 3;
     }
 
     /**
@@ -109,6 +118,15 @@ public class SimpleAccessGeometry implements Serializable {
     public SimpleAccessGeometry( float[] coordinates, int specularColor, int ambientColor, int diffuseColor,
                                  int emmisiveColor, float shininess ) {
         this( coordinates, null, specularColor, ambientColor, diffuseColor, emmisiveColor, shininess );
+    }
+
+    /**
+     * @param coordinates
+     * @param innerRings
+     *            containing indizes to the vertex, not the array offset.
+     */
+    public SimpleAccessGeometry( float[] coordinates, int[] innerRings ) {
+        this( coordinates, innerRings, 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 1 );
     }
 
     /**
@@ -251,5 +269,12 @@ public class SimpleAccessGeometry implements Serializable {
             throw new IndexOutOfBoundsException( "No such vertex, the given index is out of range" );
         }
         return new float[] { coordinates[vertex * 3], coordinates[( vertex * 3 ) + 1], coordinates[( vertex * 3 ) + 2] };
+    }
+
+    /**
+     * @return the vertexCount
+     */
+    public final int getVertexCount() {
+        return vertexCount;
     }
 }
