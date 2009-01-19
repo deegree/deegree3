@@ -38,10 +38,15 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
+import java.nio.FloatBuffer;
+
 import javax.media.opengl.GL;
 import javax.vecmath.Vector3f;
 
+import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.rendering.r3d.opengl.rendering.texture.TexturePool;
+
+import com.sun.opengl.util.BufferUtil;
 
 /**
  * The <code>BillBoard</code> class TODO add class documentation here.
@@ -53,7 +58,7 @@ import org.deegree.rendering.r3d.opengl.rendering.texture.TexturePool;
  * @version $Revision$, $Date$
  * 
  */
-public class BillBoard implements Renderable {
+public class BillBoard extends RenderableQualityModel {
 
     private static final transient Vector3f UP_VECTOR = new Vector3f( 0, 0, 1 );
 
@@ -64,49 +69,97 @@ public class BillBoard implements Renderable {
 
     private String texture;
 
+    private float[] location;
+
+    private float[] scaleXZ;
+
+    private static final transient FloatBuffer coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
+                                                                                                                        -.5f,
+                                                                                                                        0,
+                                                                                                                        -.5f,
+                                                                                                                        .5f,
+                                                                                                                        0,
+                                                                                                                        -.5f,
+                                                                                                                        .5f,
+                                                                                                                        0,
+                                                                                                                        .5f,
+                                                                                                                        -.5f,
+                                                                                                                        0,
+                                                                                                                        .5f } ) );
+
+    private static final transient FloatBuffer textureBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
+                                                                                                                          0,
+                                                                                                                          0,
+                                                                                                                          1,
+                                                                                                                          0,
+                                                                                                                          1,
+                                                                                                                          1,
+                                                                                                                          0,
+                                                                                                                          1 } ) );
+
     /**
      * Constructs a billboard data structure with the given texture id.
      * 
      * @param texture
+     * @param location
+     *            of the billboard
+     * @param scaleXZ
+     *            the width and height of the billboard
      */
-    public BillBoard( String texture ) {
+    public BillBoard( String texture, float[] location, float[] scaleXZ ) {
         this.texture = texture;
+        this.location = location;
+        this.scaleXZ = scaleXZ;
     }
 
     @Override
     public void render( GL context, Vector3f eye ) {
         context.glPushMatrix();
-        setTransformation( context, eye );
-        TexturePool.loadTexture( context, texture );
-        context.glBegin( GL.GL_QUADS );
-        {
-            context.glVertex3f( 0, 0, 0 );
-            context.glTexCoord2f( 0, 0 );
+        context.glEnable( GL.GL_TEXTURE_2D );
+        context.glEnableClientState( GL.GL_VERTEX_ARRAY );
+        context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+        // setTransformation( context, new float[] { eye.x, eye.y, eye.z } );
+        context.glTranslatef( location[0], location[1], location[2] );
+        // getRotation( context, new float[] { eye.x, eye.y, eye.z } );
+        // l context.glRotatef( getRotation( context, new float[] { eye.x, eye.y, eye.z } ), 0, 0, 1 );
+        // context.glScalef( scaleXZ[0], 0, scaleXZ[1] );
 
-            context.glVertex3f( 1, 0, 0 );
-            context.glTexCoord2f( 1, 0 );
+        TexturePool.loadTexture( texture );
+        // FloatBuffer coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] { -.5f, 0, -.5f, .5f, 0,
+        // -.5f, .5f, 0, .5f, -.5f,
+        // 0, .5f } ) );
 
-            context.glVertex3f( 1, 0, 1 );
-            context.glTexCoord2f( 1, 1 );
+        context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
 
-            context.glVertex3f( 0, 0, 1 );
-            context.glTexCoord2f( 0, 1 );
-        }
-        context.glEnd();
+        context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
+        context.glDrawArrays( GL.GL_QUADS, 0, 4 );
+        context.glDisableClientState( GL.GL_VERTEX_ARRAY );
+        // context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+        context.glDisable( GL.GL_TEXTURE_2D );
         context.glPopMatrix();
     }
 
     /**
      * @param context
      */
-    private void setTransformation( GL context, Vector3f eye ) {
-        float originalModelView[] = new float[16];
-        context.glGetFloatv( GL.GL_MODELVIEW_MATRIX, originalModelView, 0 );
+    private float getRotation( GL context, float[] eye ) {
+
+        float[] viewVector = Vectors3f.sub( eye, location );
+        Vectors3f.normalizeInPlace( viewVector );
+
+        System.out.println( Vectors3f.asString( viewVector ) );
+
+        float theta = (float) Math.toDegrees( Math.PI
+                                              - Math.acos( Vectors3f.dot( viewVector, new float[] { 0, 1, 0 } ) ) );
+
+        context.glNormal3f( viewVector[0], viewVector[1], viewVector[2] );
+        System.out.println( "Theta: " + theta );
+        return theta;
 
         // Calculate the rotationmatrix
-        calcViewAllignment( originalModelView, eye );
+        // calcViewAllignment( originalModelView, eye );
 
-        context.glLoadMatrixf( originalModelView, 0 );
+        // context.glLoadMatrixf( originalModelView, 0 );
     }
 
     /**
