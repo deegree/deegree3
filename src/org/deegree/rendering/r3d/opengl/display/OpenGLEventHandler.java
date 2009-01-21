@@ -161,15 +161,13 @@ public class OpenGLEventHandler implements GLEventListener {
         float[] originalModelView = new float[16];
         gl.glGetFloatv( GL.GL_MODELVIEW_MATRIX, originalModelView, 0 );
 
-        float[] tmp = new float[16];
         float[] newEye = new float[3];
         float[] t = new float[] { -originalModelView[12], -originalModelView[13], -originalModelView[14] };
         newEye[0] = originalModelView[0] * t[0] + originalModelView[1] * t[1] + originalModelView[2] * t[2];
         newEye[1] = originalModelView[4] * t[0] + originalModelView[5] * t[1] + originalModelView[6] * t[2];
         newEye[2] = originalModelView[8] * t[0] + originalModelView[9] * t[1] + originalModelView[10] * t[2];
 
-        System.out.println( "neweye: " + Vectors3f.asString( newEye ) );
-        System.out.println( "eye: " + Vectors3f.asString( eye ) );
+        LOG.trace( "Eye in model space: " + Vectors3f.asString( newEye ) );
 
         for ( WorldRenderableObject dObj : worldRenderableObjects ) {
             dObj.render( gl, new Vector3f( newEye[0], newEye[1], newEye[2] ), qualityLevel );
@@ -322,7 +320,7 @@ public class OpenGLEventHandler implements GLEventListener {
     public void init( GLAutoDrawable d ) {
         d.setGL( new DebugGL( d.getGL() ) );
         GL gl = d.getGL();
-        gl.glClearColor( 0, 0, 0, 0 );
+        gl.glClearColor( 1, 0, 0, 0 );
 
         float[] lightAmbient = { 0.4f, 0.4f, 0.4f, 1.0f };
         float[] lightDiffuse = { 0.8f, 0.8f, 0.8f, 1.0f };
@@ -337,22 +335,9 @@ public class OpenGLEventHandler implements GLEventListener {
         gl.glEnable( GL.GL_DEPTH_TEST );
         gl.glEnable( GL.GL_LIGHT0 );
         gl.glEnable( GL.GL_LIGHTING );
+        gl.glEnable( GL.GL_BLEND ); // enable color and texture blending
+        gl.glBlendFunc( GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA );
 
-        // Load the textures
-
-        // try {
-        // joglTexture = TextureIO.newTexture( new File( "tutorial/Textures/jogl.png" ), true );
-        // } catch ( IOException e ) {
-        // System.err.println( "Unable to load texture jogl.png" );
-        // System.exit( 1 );
-        // }
-        //
-        // // Procedural texture
-        // // Create a texture from a buffered image
-        // BufferedImage img = drawCheckerboard();
-        // checkerboardTexture = TextureIO.newTexture( img, true );
-
-        // gl.glEnable( GL.GL_TEXTURE_2D );
         gl.glMatrixMode( GL.GL_MODELVIEW );
         gl.glLoadIdentity();
 

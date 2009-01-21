@@ -123,7 +123,7 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
             LOG.trace( "Loading texture coordinates into float buffer" );
             textureBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( textureCoordinates ) );
         }
-
+        context.glEnable( GL.GL_TEXTURE_2D );
         context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
         context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
 
@@ -136,6 +136,7 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
     public void disableArrays( GL context ) {
         super.disableArrays( context );
         context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+        context.glDisable( GL.GL_TEXTURE_2D );
     }
 
     /**

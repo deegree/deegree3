@@ -91,6 +91,18 @@ public class TexturedGeometry extends SimpleAccessGeometry {
     }
 
     /**
+     * @param geometry
+     * @param innerRings
+     * @param texture
+     * @param textureCoordinates
+     */
+    public TexturedGeometry( float[] geometry, int[] innerRings, String texture, float[] textureCoordinates ) {
+        super( geometry, innerRings );
+        this.texture = texture;
+        this.textureCoordinates = textureCoordinates;
+    }
+
+    /**
      * @return the texture
      */
     public final String getTexture() {

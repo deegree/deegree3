@@ -40,14 +40,17 @@ package org.deegree.rendering.r3d.opengl.rendering.texture;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.opengl.util.BufferUtil;
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureIO;
 
@@ -68,15 +71,21 @@ public class TexturePool {
     private static Map<String, Texture> idToTexture = new HashMap<String, Texture>();
 
     private static Map<String, String> idToFile = new HashMap<String, String>();
+
+    private static Map<String, Integer> idToUnit = new HashMap<String, Integer>();
     static {
-        idToFile.put( "1", "/home/rutger/jogl.png" );
+        idToFile.put( "1",
+                      "/home/rutger/workspace/bonn_3doptimierung/resources/data/example_data/Magnolia_grandiflora_M.png" );
+
+        idToFile.put( "2", "/home/rutger/jogl.png" );
+
     }
 
     /**
      * @param context
      * @param texture
      */
-    public static void loadTexture( String texture ) {
+    public static synchronized void loadTexture( GL context, String texture ) {
 
         Texture tex = idToTexture.get( texture );
         if ( tex == null ) {
@@ -86,7 +95,112 @@ public class TexturePool {
                 return;
             }
         }
-        tex.bind();
+        Integer texUnit = idToUnit.get( texture );
+        if ( texUnit == null ) {
+            //System.out.println( "Binding" );
+            texUnit = calcFreeTextureUnit( context, texture );
+            context.glActiveTexture( texUnit );
+            tex.bind();
+        } else {
+            System.out.println( texUnit );
+            context.glActiveTexture( toGL_Texture(texUnit) );
+            //System.out.println( "not binding" );
+        }
+
+        //System.out.println( tex.getTarget() );
+        IntBuffer t = BufferUtil.newIntBuffer( 1 );
+        context.glGetIntegerv( GL.GL_MAX_TEXTURE_IMAGE_UNITS, t );
+        //System.out.println( "Units: " + t.get( 0 ) );
+
+    }
+
+    private static Integer calcFreeTextureUnit( GL context, String id ) {
+        IntBuffer t = BufferUtil.newIntBuffer( 1 );
+        context.glGetIntegerv( GL.GL_MAX_TEXTURE_IMAGE_UNITS, t );
+        int k = t.get( 0 );
+        int result = -1;
+        int i = 0;
+        for ( ; i < k && result == -1; ++i ) {
+            if ( !idToUnit.containsValue( i ) ) {
+                result = toGL_Texture( i );
+            }
+        }
+        if ( result == -1 ) {
+            idToUnit.remove( idToUnit.get( 0 ) );
+            result = toGL_Texture( 0 );
+            i = 0;
+        }
+        idToUnit.put( id, i );
+        return result;
+    }
+
+    private static int toGL_Texture( int i ) {
+        switch ( i ) {
+        case 1:
+            return GL.GL_TEXTURE1;
+        case 2:
+            return GL.GL_TEXTURE2;
+        case 3:
+            return GL.GL_TEXTURE3;
+        case 4:
+            return GL.GL_TEXTURE4;
+        case 5:
+            return GL.GL_TEXTURE5;
+        case 6:
+            return GL.GL_TEXTURE6;
+        case 7:
+            return GL.GL_TEXTURE7;
+        case 8:
+            return GL.GL_TEXTURE8;
+        case 9:
+            return GL.GL_TEXTURE9;
+        case 10:
+            return GL.GL_TEXTURE10;
+        case 11:
+            return GL.GL_TEXTURE11;
+        case 12:
+            return GL.GL_TEXTURE12;
+        case 13:
+            return GL.GL_TEXTURE13;
+        case 14:
+            return GL.GL_TEXTURE14;
+        case 15:
+            return GL.GL_TEXTURE15;
+        case 16:
+            return GL.GL_TEXTURE16;
+        case 17:
+            return GL.GL_TEXTURE17;
+        case 18:
+            return GL.GL_TEXTURE18;
+        case 19:
+            return GL.GL_TEXTURE19;
+        case 20:
+            return GL.GL_TEXTURE20;
+        case 21:
+            return GL.GL_TEXTURE21;
+        case 22:
+            return GL.GL_TEXTURE22;
+        case 23:
+            return GL.GL_TEXTURE23;
+        case 24:
+            return GL.GL_TEXTURE24;
+        case 25:
+            return GL.GL_TEXTURE25;
+        case 26:
+            return GL.GL_TEXTURE26;
+        case 27:
+            return GL.GL_TEXTURE27;
+        case 28:
+            return GL.GL_TEXTURE28;
+        case 29:
+            return GL.GL_TEXTURE29;
+        case 30:
+            return GL.GL_TEXTURE30;
+        case 31:
+            return GL.GL_TEXTURE31;
+        default:
+            return GL.GL_TEXTURE0;
+        }
     }
 
     /**

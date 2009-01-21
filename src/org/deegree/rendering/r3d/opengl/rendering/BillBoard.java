@@ -77,16 +77,16 @@ public class BillBoard extends RenderableQualityModel {
     private static final transient FloatBuffer coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
                                                                                                                         -.5f,
                                                                                                                         0,
-                                                                                                                        -.5f, // ll
+                                                                                                                        0, // ll
                                                                                                                         .5f,
                                                                                                                         0,
-                                                                                                                        -.5f,// lr
+                                                                                                                        0,// lr
                                                                                                                         .5f,
                                                                                                                         0,
-                                                                                                                        .5f,// ur
+                                                                                                                        1,// ur
                                                                                                                         -.5f,
                                                                                                                         0,
-                                                                                                                        .5f }// ul
+                                                                                                                        1 }// ul
     ) );
 
     private static final transient FloatBuffer textureBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
@@ -126,8 +126,9 @@ public class BillBoard extends RenderableQualityModel {
         calculateAndSetRotation( context, new float[] { eye.x, eye.y, eye.z } );
         context.glScalef( scaleXZ[0], 1, scaleXZ[1] );
 
-        TexturePool.loadTexture( texture );
+        TexturePool.loadTexture( context, texture );
 
+        // context.glMaterialfv( GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, new float[] { 1, 1, 1, .1f }, 0 );
         context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
 
         context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
@@ -159,10 +160,12 @@ public class BillBoard extends RenderableQualityModel {
         Vectors3f.normalizeInPlace( viewVector );
         double angleCosine = Vectors3f.dot( viewVector, NORMAL );
         // only do a rotation the angles are between -1 and 1.
-        if ( ( angleCosine < 0.99990 ) && ( angleCosine > -0.9999 ) ) {
-            // negative or positive orientation?
-            float[] newUp = Vectors3f.cross( NORMAL, viewVector );
-            context.glRotatef( (float) Math.toDegrees( Math.acos( angleCosine ) ), newUp[0], newUp[1], newUp[2] );
+        if ( ( angleCosine > 0.999999 ) || ( angleCosine < -0.999999 ) ) {
+            angleCosine = ( angleCosine < 0 ) ? -1 : 1;
         }
+        // negative or positive orientation?
+        float[] newUp = Vectors3f.cross( NORMAL, viewVector );
+        context.glNormal3f( 0, -1, 0 );
+        context.glRotatef( (float) Math.toDegrees( Math.acos( angleCosine ) ), newUp[0], newUp[1], newUp[2] );
     }
 }
