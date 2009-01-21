@@ -157,20 +157,20 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
             LOG.trace( "Loading coordinates into float buffer" );
             coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( getGeometry() ) );
         }
-        if ( hasNormals && normalBuffer == null ) {
-            LOG.trace( "Loading normals into float buffer" );
-            normalBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( vertexNormals ) );
-        }
-        if ( hasColors && colorBuffer == null ) {
-            LOG.trace( "Loading colors into byte buffer" );
-            colorBuffer = BufferUtil.copyByteBuffer( ByteBuffer.wrap( vertexColors ) );
-        }
         context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
         if ( hasNormals ) {
+            if ( normalBuffer == null ) {
+                LOG.trace( "Loading normals into float buffer" );
+                normalBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( vertexNormals ) );
+            }
             context.glEnableClientState( GL.GL_NORMAL_ARRAY );
             context.glNormalPointer( GL.GL_FLOAT, 0, normalBuffer );
         }
         if ( hasColors ) {
+            if ( colorBuffer == null ) {
+                LOG.trace( "Loading colors into byte buffer" );
+                colorBuffer = BufferUtil.copyByteBuffer( ByteBuffer.wrap( vertexColors ) );
+            }
             context.glEnableClientState( GL.GL_COLOR_ARRAY );
             context.glColorPointer( 4, GL.GL_BYTE, 0, colorBuffer );
         }
