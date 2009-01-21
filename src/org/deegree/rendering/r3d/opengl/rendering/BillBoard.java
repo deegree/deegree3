@@ -165,7 +165,7 @@ public class BillBoard extends RenderableQualityModel {
         }
         // negative or positive orientation?
         float[] newUp = Vectors3f.cross( NORMAL, viewVector );
-        context.glNormal3f( 0, -1, 0 );
+        context.glNormal3fv( NORMAL, 0 );
         context.glRotatef( (float) Math.toDegrees( Math.acos( angleCosine ) ), newUp[0], newUp[1], newUp[2] );
     }
 }
