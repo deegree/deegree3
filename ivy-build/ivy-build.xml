@@ -85,12 +85,16 @@
         <ivy:info file="${dependencies.file}" />
         <ivy:buildnumber organisation="${ivy.organisation}" module="${ivy.module}" revision="${module.version.prefix}" defaultBuildNumber="1" revSep="" />
 
-        <!-- create version file in classpath for later inclusion in jar -->
-        <echo message="version=${ivy.new.revision}" file="${classes.dir}/${module.name}.properties" append="false" />
-
-        <!-- load generated version properties file -->
-        <property file="${classes.dir}/${module.name}.properties" />
-        <echo message="New (local) version: ${version}" />
+        <!-- create moduleinfo file (version) in classpath for later inclusion in jar -->
+        <propertyfile file="${classes.dir}/${module.name}_moduleinfo.properties">
+            <entry key="build.version" value="${ivy.new.revision}" />
+            <entry key="build.date" type="date" value="now" pattern="yyyy/MM/dd HH:mm"/>
+            <entry key="build.by" value="${user.name}" />
+        </propertyfile>
+    	
+        <!-- load generated moduleinfo file -->
+        <property file="${classes.dir}/${module.name}_moduleinfo.properties" />
+        <echo message="Building version: ${build.version}" />
     </target>
 
     <!-- ================================= 
@@ -146,8 +150,8 @@
         <jar destfile="${jar.file}-impl.jar">
             <fileset dir="${classes.dir}" />
             <manifest>
-                <attribute name="Built-By" value="${user.name}" />
-                <attribute name="Build-Version" value="${version}" />
+                <attribute name="Built-By" value="${build.by}" />
+                <attribute name="Build-Version" value="${build.version}" />
             </manifest>
         </jar>
     </target>
@@ -160,8 +164,8 @@
         <jar destfile="${jar.file}-api.jar">
             <fileset file="${classes.dir}/${module.name}.properties" />
             <manifest>
-                <attribute name="Built-By" value="${user.name}" />
-                <attribute name="Build-Version" value="${version}" />
+                <attribute name="Built-By" value="${build.by}" />
+                <attribute name="Build-Version" value="${build.version}" />
             </manifest>
         </jar>
     </target>
@@ -214,28 +218,28 @@
          ================================= -->
 
     <target name="publish-local-src" depends="zip-sources" description="-> publish ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
-        <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${version}" conf="${module-name}-src" status="integration" forcedeliver="true" overwrite="true" />
-        <echo message="project ${module.name} released with version ${version}" />
+        <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" conf="${module-name}-src" status="integration" forcedeliver="true" overwrite="true" />
+        <echo message="project ${module.name} released with version ${build.version}" />
     </target>
 
     <target name="publish-local-api" depends="build-api-jar" if="compile.change" description="-> publish ${module.name}-api in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
-        <ivy:publish conf="${module.name}-api" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${version}" status="integration" forcedeliver="true" overwrite="true" />
-        <echo message="project ${module.name}-api released with version ${version}" />
+        <ivy:publish conf="${module.name}-api" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <echo message="project ${module.name}-api released with version ${build.version}" />
     </target>
 
     <target name="publish-local-impl" depends="build-api-jar" if="compile.change" description="-> publish ${module.name}-impl in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
-        <ivy:publish conf="${module.name}-impl,${module.name}-api" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${version}" status="integration" forcedeliver="true" overwrite="true" />
-        <echo message="project ${module.name}-impl released with version ${version}" />
+        <ivy:publish conf="${module.name}-impl,${module.name}-api" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <echo message="project ${module.name}-impl released with version ${build.version}" />
     </target>
     
     <target name="publish-local-all" depends="build-api-jar" if="compile.change" description="-> publish all configurations of ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
-        <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${version}" status="integration" forcedeliver="true" overwrite="true" />
-        <echo message="project ${module.name}-impl released with version ${version}" />
+        <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <echo message="project ${module.name}-impl released with version ${build.version}" />
     </target>
     
     <target name="publish-local-release" depends="publish-local-src, publish-local-impl" if="compile.change" description="-> publish ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
-        <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${version}" conf="${module-name}-release" status="integration" forcedeliver="true" overwrite="true" />
-        <echo message="project ${module.name} released with version ${version}" />
+        <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" conf="${module-name}-release" status="integration" forcedeliver="true" overwrite="true" />
+        <echo message="project ${module.name} released with version ${build.version}" />
     </target>
 
     <target name="publish" depends="publish-local-all" if="compile.change" description="-> publish ${module.name} in the global ivy repository.">
