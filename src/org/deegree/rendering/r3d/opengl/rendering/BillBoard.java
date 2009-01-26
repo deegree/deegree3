@@ -59,20 +59,24 @@ import com.sun.opengl.util.BufferUtil;
  * @version $Revision$, $Date$
  * 
  */
-public class BillBoard extends RenderableQualityModel {
+public class BillBoard extends RenderableTexturedGeometry {
 
     /**
      * 
      */
     private static final long serialVersionUID = -5693355972373810535L;
 
-    private String texture;
-
     private final static transient float[] NORMAL = new float[] { 0, -1, 0 };
 
     private float[] location;
 
     private float[] scaleXZ;
+
+    private float rotation = 0;
+
+    private int width = -1;
+
+    private float step = 0.1f;
 
     private static final transient FloatBuffer coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
                                                                                                                         -.5f,
@@ -90,14 +94,14 @@ public class BillBoard extends RenderableQualityModel {
     ) );
 
     private static final transient FloatBuffer textureBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
-                                                                                                                          0,
-                                                                                                                          1,
-                                                                                                                          1,
-                                                                                                                          1,
-                                                                                                                          1,
-                                                                                                                          0,
-                                                                                                                          0,
-                                                                                                                          0 } ) );
+                                                                                                                          0.001f,
+                                                                                                                          0.999f,
+                                                                                                                          0.999f,
+                                                                                                                          0.999f,
+                                                                                                                          0.999f,
+                                                                                                                          0.001f,
+                                                                                                                          0.001f,
+                                                                                                                          0.001f } ) );
 
     /**
      * Constructs a billboard data structure with the given texture id.
@@ -109,7 +113,7 @@ public class BillBoard extends RenderableQualityModel {
      *            the width and height of the billboard
      */
     public BillBoard( String texture, float[] location, float[] scaleXZ ) {
-        this.texture = texture;
+        super( null, GL.GL_QUADS, null, null, 0, 0, 0, 0, 0, texture, null );
         this.location = location;
         this.scaleXZ = scaleXZ;
     }
@@ -117,8 +121,9 @@ public class BillBoard extends RenderableQualityModel {
     @Override
     public void render( GL context, Vector3f eye ) {
         context.glPushMatrix();
+        rotateTexture( context );
+        context.glDepthMask( false );
         context.glEnable( GL.GL_TEXTURE_2D );
-        context.glEnableClientState( GL.GL_VERTEX_ARRAY );
         context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
         // the translation
         context.glTranslatef( location[0], location[1], location[2] );
@@ -126,17 +131,40 @@ public class BillBoard extends RenderableQualityModel {
         calculateAndSetRotation( context, new float[] { eye.x, eye.y, eye.z } );
         context.glScalef( scaleXZ[0], 1, scaleXZ[1] );
 
-        TexturePool.loadTexture( context, texture );
+        TexturePool.loadTexture( context, getTexture() );
 
         // context.glMaterialfv( GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, new float[] { 1, 1, 1, .1f }, 0 );
         context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
 
         context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
         context.glDrawArrays( GL.GL_QUADS, 0, 4 );
-        context.glDisableClientState( GL.GL_VERTEX_ARRAY );
         context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
         context.glDisable( GL.GL_TEXTURE_2D );
+        context.glDepthMask( true );
+        // context.glMatrixMode( GL.GL_TEXTURE );
+        // context.glPopMatrix();
+        context.glMatrixMode( GL.GL_MODELVIEW );
         context.glPopMatrix();
+
+    }
+
+    private void rotateTexture( GL context ) {
+        // context.glMatrixMode( GL.GL_TEXTURE );
+        // context.glPushMatrix();
+        // if ( width == -1 ) {
+        // width = TexturePool.getWidth( getTexture() );
+        // step = width * 0.01f;
+        // }
+        // if ( width != 0 ) {
+        // rotation += step;
+        // float trans = rotation / width;
+        //
+        // context.glTranslatef( trans, 0, 0 );
+        // if ( rotation >= width ) {
+        // rotation = -width;
+        // }
+        // }
+        // context.glMatrixMode( GL.GL_MODELVIEW );
     }
 
     /**

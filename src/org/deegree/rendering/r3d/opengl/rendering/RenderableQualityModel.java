@@ -80,6 +80,15 @@ public class RenderableQualityModel extends QualityModel<RenderableGeometry> imp
         super( geometryPatches );
     }
 
+    /**
+     * Creates a GeometryQualityModel with the given geometry patches
+     * 
+     * @param geometryPatches
+     */
+    public RenderableQualityModel( RenderableGeometry geometryPatch ) {
+        super( geometryPatch );
+    }
+
     @Override
     public void render( GL context, Vector3f eye ) {
         context.glEnableClientState( GL.GL_VERTEX_ARRAY );

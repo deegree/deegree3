@@ -105,6 +105,16 @@ public class QualityModel<T extends SimpleAccessGeometry> implements Serializabl
     }
 
     /**
+     * @param geometryPatch
+     */
+    public QualityModel( T geometryPatch ) {
+        this.geometryPatches = new ArrayList<T>( 1 );
+        if ( geometryPatch != null ) {
+            this.geometryPatches.add( geometryPatch );
+        }
+    }
+
+    /**
      * @param data
      *            to add to the geometries
      * @return true (as specified by Collection.add)

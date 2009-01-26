@@ -42,6 +42,7 @@ import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
 
+import org.deegree.rendering.r3d.opengl.rendering.texture.TexturePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,14 +119,17 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
     @Override
     protected void enableArrays( GL context ) {
         super.enableArrays( context );
-
-        if ( textureBuffer == null ) {
-            LOG.trace( "Loading texture coordinates into float buffer" );
-            textureBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( textureCoordinates ) );
+        if ( textureCoordinates != null ) {
+            LOG.trace( "Enabling array state and texture 2d" );
+            context.glEnable( GL.GL_TEXTURE_2D );
+            if ( textureBuffer == null ) {
+                LOG.trace( "Loading texture coordinates into float buffer" );
+                textureBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( textureCoordinates ) );
+            }
+            TexturePool.loadTexture( context, texture );
+            context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+            context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
         }
-        context.glEnable( GL.GL_TEXTURE_2D );
-        context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-        context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
 
     }
 
@@ -135,8 +139,11 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
     @Override
     public void disableArrays( GL context ) {
         super.disableArrays( context );
-        context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-        context.glDisable( GL.GL_TEXTURE_2D );
+        if ( textureCoordinates != null ) {
+            LOG.trace( "Disabling array state and texture 2d" );
+            context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+            context.glDisable( GL.GL_TEXTURE_2D );
+        }
     }
 
     /**

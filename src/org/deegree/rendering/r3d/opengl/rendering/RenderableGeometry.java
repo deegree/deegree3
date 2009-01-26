@@ -153,26 +153,32 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
      */
     protected void enableArrays( GL context ) {
 
-        if ( coordBuffer == null ) {
-            LOG.trace( "Loading coordinates into float buffer" );
-            coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( getGeometry() ) );
-        }
-        context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
-        if ( hasNormals ) {
-            if ( normalBuffer == null ) {
-                LOG.trace( "Loading normals into float buffer" );
-                normalBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( vertexNormals ) );
+        if ( coordinates != null ) {
+            if ( coordBuffer == null ) {
+                LOG.trace( "Loading coordinates into float buffer" );
+                coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( getGeometry() ) );
             }
-            context.glEnableClientState( GL.GL_NORMAL_ARRAY );
-            context.glNormalPointer( GL.GL_FLOAT, 0, normalBuffer );
-        }
-        if ( hasColors ) {
-            if ( colorBuffer == null ) {
-                LOG.trace( "Loading colors into byte buffer" );
-                colorBuffer = BufferUtil.copyByteBuffer( ByteBuffer.wrap( vertexColors ) );
+            LOG.trace( "Loading coordbuffer" );
+            context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
+
+            if ( hasNormals ) {
+                if ( normalBuffer == null ) {
+                    LOG.trace( "Loading normals into float buffer" );
+                    normalBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( vertexNormals ) );
+                }
+                LOG.trace( "Loading normal buffer" );
+                context.glEnableClientState( GL.GL_NORMAL_ARRAY );
+                context.glNormalPointer( GL.GL_FLOAT, 0, normalBuffer );
             }
-            context.glEnableClientState( GL.GL_COLOR_ARRAY );
-            context.glColorPointer( 4, GL.GL_BYTE, 0, colorBuffer );
+            if ( hasColors ) {
+                if ( colorBuffer == null ) {
+                    LOG.trace( "Loading colors into byte buffer" );
+                    colorBuffer = BufferUtil.copyByteBuffer( ByteBuffer.wrap( vertexColors ) );
+                }
+                LOG.trace( "Loading color buffer" );
+                context.glEnableClientState( GL.GL_COLOR_ARRAY );
+                context.glColorPointer( 4, GL.GL_BYTE, 0, colorBuffer );
+            }
         }
     }
 
@@ -180,6 +186,7 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
      * @param context
      */
     public void disableArrays( GL context ) {
+        LOG.trace( "Disabling client states: normal and color" );
         context.glDisableClientState( GL.GL_NORMAL_ARRAY );
         context.glDisableClientState( GL.GL_COLOR_ARRAY );
     }

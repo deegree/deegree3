@@ -74,10 +74,13 @@ public class TexturePool {
 
     private static Map<String, Integer> idToUnit = new HashMap<String, Integer>();
     static {
-        idToFile.put( "1",
-                      "/home/rutger/workspace/bonn_3doptimierung/resources/data/example_data/Magnolia_grandiflora_M.png" );
+        idToFile.put( "4",
+                      System.getProperty("user.home") + "/workspace/bonn_3doptimierung/resources/data/example_data/Platanus_acerifolia_M.tif" );
+        idToFile.put( "3", System.getProperty("user.home") +"/workspace/bonn_3doptimierung/resources/data/example_data/Pinus_nigra_M.tif" );
+        idToFile.put( "2",
+                      System.getProperty("user.home") +"/workspace/bonn_3doptimierung/resources/data/example_data/Magnolia_grandiflora_M.png" );
 
-        idToFile.put( "2", "/home/rutger/jogl.png" );
+        idToFile.put( "1", System.getProperty("user.home") +"jogl.png" );
 
     }
 
@@ -87,44 +90,62 @@ public class TexturePool {
      */
     public static synchronized void loadTexture( GL context, String texture ) {
 
-        Texture tex = idToTexture.get( texture );
+        Texture tex = getTexture( texture );
         if ( tex == null ) {
-            tex = loadTextureFromFile( texture );
-            if ( tex == null ) {
-                LOG.warn( "No texture for id: " + texture );
-                return;
-            }
+            LOG.warn( "No texture for id: " + texture );
+            return;
         }
-        Integer texUnit = idToUnit.get( texture );
-        if ( texUnit == null ) {
-            //System.out.println( "Binding" );
-            texUnit = calcFreeTextureUnit( context, texture );
-            context.glActiveTexture( texUnit );
-            tex.bind();
-        } else {
-            System.out.println( texUnit );
-            context.glActiveTexture( toGL_Texture(texUnit) );
-            //System.out.println( "not binding" );
-        }
-
-        //System.out.println( tex.getTarget() );
+        tex.bind();
+        // bindTextureToUnit( context, texture );
+        // System.out.println( tex.getTarget() );
         IntBuffer t = BufferUtil.newIntBuffer( 1 );
         context.glGetIntegerv( GL.GL_MAX_TEXTURE_IMAGE_UNITS, t );
-        //System.out.println( "Units: " + t.get( 0 ) );
+        // System.out.println( "Units: " + t.get( 0 ) );
 
+    }
+
+    /**
+     * @param context
+     * @param texture
+     */
+    // private static void bindTextureToUnit( GL context, String texture ) {
+    // Integer texUnit = get( texture );
+    // if ( texUnit == null ) {
+    // // System.out.println( "Binding" );
+    // texUnit = calcFreeTextureUnit( context, texture );
+    // context.glActiveTexture( texUnit );
+    // tex.bind();
+    // } else {
+    // System.out.println( texUnit );
+    // context.glDisable( GL.GL_TEXTURE_2D );
+    // context.glEnable( GL.GL_TEXTURE_2D );
+    // context.glActiveTexture( toGL_Texture( texUnit ) );
+    // // System.out.println( "not binding" );
+    // }
+    // }
+    private synchronized static Texture getTexture( String id ) {
+        Texture tex = idToTexture.get( id );
+        if ( tex == null ) {
+            tex = loadTextureFromFile( id );
+        }
+        return tex;
     }
 
     private static Integer calcFreeTextureUnit( GL context, String id ) {
         IntBuffer t = BufferUtil.newIntBuffer( 1 );
         context.glGetIntegerv( GL.GL_MAX_TEXTURE_IMAGE_UNITS, t );
         int k = t.get( 0 );
+        //System.out.println( "k: " + k );
         int result = -1;
         int i = 0;
-        for ( ; i < k && result == -1; ++i ) {
-            if ( !idToUnit.containsValue( i ) ) {
+        //System.out.println( idToUnit.values() );
+        for ( ; i < k && result == -1; i++ ) {
+            if ( !idToUnit.containsValue( new Integer( i ) ) ) {
                 result = toGL_Texture( i );
             }
         }
+        //System.out.println( "result: " + result );
+        //System.out.println( "i: " + i );
         if ( result == -1 ) {
             idToUnit.remove( idToUnit.get( 0 ) );
             result = toGL_Texture( 0 );
@@ -234,5 +255,17 @@ public class TexturePool {
             }
         }
         return result;
+    }
+
+    /**
+     * @param texture
+     * @return
+     */
+    public static int getWidth( String texture ) {
+        Texture tex = getTexture( texture );
+        if ( tex != null ) {
+            return tex.getWidth();
+        }
+        return 0;
     }
 }

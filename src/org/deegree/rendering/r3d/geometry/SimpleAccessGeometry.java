@@ -59,7 +59,7 @@ public class SimpleAccessGeometry implements Serializable {
     private static final long serialVersionUID = -3704718653663592552L;
 
     /**
-     * The coordinates of this geometry
+     * The coordinates of this geometry may be null
      */
     protected float[] coordinates = null;
 
@@ -94,9 +94,6 @@ public class SimpleAccessGeometry implements Serializable {
      */
     public SimpleAccessGeometry( float[] coordinates, int[] innerRings, int specularColor, int ambientColor,
                                  int diffuseColor, int emmisiveColor, float shininess ) {
-        if ( coordinates == null || coordinates.length == 0 ) {
-            throw new IllegalArgumentException( "Coordinates must be given." );
-        }
         this.coordinates = coordinates;
         this.innerRings = innerRings;
         this.specularColor = specularColor;
@@ -104,7 +101,7 @@ public class SimpleAccessGeometry implements Serializable {
         this.diffuseColor = diffuseColor;
         this.emmisiveColor = emmisiveColor;
         this.shininess = shininess;
-        vertexCount = coordinates.length / 3;
+        vertexCount = ( coordinates == null ) ? 0 : ( coordinates.length / 3 );
     }
 
     /**
@@ -249,7 +246,7 @@ public class SimpleAccessGeometry implements Serializable {
      *             is outside the coordinate array
      */
     public float[] getCoordinate( int coordinateLocation ) {
-        if ( coordinateLocation < 0 || coordinateLocation + 2 > coordinates.length ) {
+        if ( coordinates == null || coordinateLocation < 0 || coordinateLocation + 2 > coordinates.length ) {
             throw new IndexOutOfBoundsException( "Location is out of the range" );
         }
         return new float[] { coordinates[coordinateLocation], coordinates[coordinateLocation + 1],
@@ -265,7 +262,7 @@ public class SimpleAccessGeometry implements Serializable {
      *             is outside the coordinate array
      */
     public float[] getCoordinateForVertex( int vertex ) {
-        if ( vertex < 0 || ( vertex * 3 ) + 2 > coordinates.length ) {
+        if ( coordinates == null || vertex < 0 || ( vertex * 3 ) + 2 > coordinates.length ) {
             throw new IndexOutOfBoundsException( "No such vertex, the given index is out of range" );
         }
         return new float[] { coordinates[vertex * 3], coordinates[( vertex * 3 ) + 1], coordinates[( vertex * 3 ) + 2] };
