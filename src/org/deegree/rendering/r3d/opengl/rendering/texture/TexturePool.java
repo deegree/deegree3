@@ -74,13 +74,14 @@ public class TexturePool {
 
     private static Map<String, Integer> idToUnit = new HashMap<String, Integer>();
     static {
-        idToFile.put( "4",
-                      System.getProperty("user.home") + "/workspace/bonn_3doptimierung/resources/data/example_data/Platanus_acerifolia_M.tif" );
-        idToFile.put( "3", System.getProperty("user.home") +"/workspace/bonn_3doptimierung/resources/data/example_data/Pinus_nigra_M.tif" );
-        idToFile.put( "2",
-                      System.getProperty("user.home") +"/workspace/bonn_3doptimierung/resources/data/example_data/Magnolia_grandiflora_M.png" );
+        idToFile.put( "4", System.getProperty( "user.home" )
+                           + "/workspace/bonn_3doptimierung/resources/data/example_data/Platanus_acerifolia_M.tif" );
+        idToFile.put( "3", System.getProperty( "user.home" )
+                           + "/workspace/bonn_3doptimierung/resources/data/example_data/Pinus_nigra_M.tif" );
+        idToFile.put( "2", System.getProperty( "user.home" )
+                           + "/workspace/bonn_3doptimierung/resources/data/example_data/Magnolia_grandiflora_M.png" );
 
-        idToFile.put( "1", System.getProperty("user.home") +"jogl.png" );
+        idToFile.put( "1", System.getProperty( "user.home" ) + "/jogl.png" );
 
     }
 
@@ -135,17 +136,17 @@ public class TexturePool {
         IntBuffer t = BufferUtil.newIntBuffer( 1 );
         context.glGetIntegerv( GL.GL_MAX_TEXTURE_IMAGE_UNITS, t );
         int k = t.get( 0 );
-        //System.out.println( "k: " + k );
+        // System.out.println( "k: " + k );
         int result = -1;
         int i = 0;
-        //System.out.println( idToUnit.values() );
+        // System.out.println( idToUnit.values() );
         for ( ; i < k && result == -1; i++ ) {
             if ( !idToUnit.containsValue( new Integer( i ) ) ) {
                 result = toGL_Texture( i );
             }
         }
-        //System.out.println( "result: " + result );
-        //System.out.println( "i: " + i );
+        // System.out.println( "result: " + result );
+        // System.out.println( "i: " + i );
         if ( result == -1 ) {
             idToUnit.remove( idToUnit.get( 0 ) );
             result = toGL_Texture( 0 );
