@@ -320,7 +320,7 @@ public class OpenGLEventHandler implements GLEventListener {
     public void init( GLAutoDrawable d ) {
         d.setGL( new DebugGL( d.getGL() ) );
         GL gl = d.getGL();
-        gl.glClearColor( 1, 0, 0, 0 );
+        gl.glClearColor( 0.7f, 0.7f, 1f, 0 );
 
         float[] lightAmbient = { 0.4f, 0.4f, 0.4f, 1.0f };
         float[] lightDiffuse = { 0.8f, 0.8f, 0.8f, 1.0f };
