@@ -38,10 +38,13 @@
 
 package org.deegree.rendering.r3d;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import org.deegree.model.geometry.Envelope;
 import org.deegree.rendering.r3d.geometry.SimpleAccessGeometry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>WorldRenderableObject</code> top level class, all data objects can be stored in a dbase.
@@ -59,6 +62,8 @@ import org.deegree.rendering.r3d.geometry.SimpleAccessGeometry;
  */
 public class WorldObject<G extends SimpleAccessGeometry, QM extends QualityModel<G>> implements Serializable {
 
+    private final static Logger LOG = LoggerFactory.getLogger( WorldObject.class );
+
     /**
      * 
      */
@@ -73,7 +78,7 @@ public class WorldObject<G extends SimpleAccessGeometry, QM extends QualityModel
     /**
      * The quality levels of the this object
      */
-    protected QM[] qualityLevels;
+    protected transient QM[] qualityLevels;
 
     /**
      * @param id
@@ -178,5 +183,32 @@ public class WorldObject<G extends SimpleAccessGeometry, QM extends QualityModel
      */
     public final void setBbox( Envelope bbox ) {
         this.bbox = bbox;
+    }
+
+    /**
+     * Method called while serializing this object
+     * 
+     * @param out
+     *            to write to.
+     * @throws IOException
+     */
+    private void writeObject( java.io.ObjectOutputStream out )
+                            throws IOException {
+        LOG.trace( "Serializing to object stream." );
+        out.writeObject( qualityLevels );
+    }
+
+    /**
+     * Method called while de-serializing (instancing) this object.
+     * 
+     * @param in
+     *            to create the methods from.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void readObject( java.io.ObjectInputStream in )
+                            throws IOException, ClassNotFoundException {
+        LOG.trace( "Deserializing from object stream." );
+        qualityLevels = (QM[]) in.readObject();
     }
 }

@@ -38,6 +38,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
@@ -70,7 +71,7 @@ import com.sun.opengl.util.BufferUtil;
  */
 public class RenderableGeometry extends SimpleAccessGeometry implements Renderable {
 
-    private final transient static Logger LOG = LoggerFactory.getLogger( RenderableGeometry.class );
+    private final static Logger LOG = LoggerFactory.getLogger( RenderableGeometry.class );
 
     /**
      * 
@@ -83,17 +84,17 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
     protected transient int[] glBufferIDs;
 
     // have a look at GL class.
-    private int openGLType;
+    private transient int openGLType;
 
     // 3D, same length as renderableGeometry
-    private float[] vertexNormals = null;
+    private transient float[] vertexNormals = null;
 
     // 4D (RGBA)
-    private byte[] vertexColors;
+    private transient byte[] vertexColors;
 
-    private boolean hasNormals;
+    private transient boolean hasNormals;
 
-    private boolean hasColors;
+    private transient boolean hasColors;
 
     private transient FloatBuffer coordBuffer = null;
 
@@ -236,5 +237,83 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
      */
     public final int getOpenGLType() {
         return openGLType;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder( super.toString() );
+        sb.append( "\nopenGL type: " );
+        switch ( openGLType ) {
+        case GL.GL_TRIANGLE_FAN:
+            sb.append( "Triangle fan" );
+            break;
+        case GL.GL_TRIANGLES:
+            sb.append( "Triangles" );
+            break;
+        case GL.GL_TRIANGLE_STRIP:
+            sb.append( "Triangle strip" );
+            break;
+        case GL.GL_QUADS:
+            sb.append( "Quads" );
+            break;
+        }
+        if ( hasNormals ) {
+            sb.append( "\nnormals:\n" );
+            for ( int i = 0; i + 2 < vertexNormals.length; i += 3 ) {
+                sb.append( vertexNormals[i] ).append( "," );
+                sb.append( vertexNormals[i + 1] ).append( "," );
+                sb.append( vertexNormals[i + 2] );
+                if ( i + 5 < vertexNormals.length ) {
+                    sb.append( "\n" );
+                }
+            }
+        }
+
+        if ( hasColors ) {
+            sb.append( "\ncolors:\n" );
+            for ( int i = 0; i + 3 < vertexColors.length; i += 4 ) {
+                sb.append( vertexColors[i] ).append( "," );
+                sb.append( vertexColors[i + 1] ).append( "," );
+                sb.append( vertexColors[i + 2] ).append( "," );
+                sb.append( vertexColors[i + 3] );
+                if ( i + 7 < vertexColors.length ) {
+                    sb.append( "\n" );
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Method called while serializing this object
+     * 
+     * @param out
+     *            to write to.
+     * @throws IOException
+     */
+    private void writeObject( java.io.ObjectOutputStream out )
+                            throws IOException {
+        LOG.trace( "Serializing to object stream" );
+        out.writeObject( vertexColors );
+        out.writeObject( vertexNormals );
+        out.writeInt( openGLType );
+    }
+
+    /**
+     * Method called while de-serializing (instancing) this object.
+     * 
+     * @param in
+     *            to create the methods from.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void readObject( java.io.ObjectInputStream in )
+                            throws IOException, ClassNotFoundException {
+        LOG.trace( "Deserializing from object stream" );
+        vertexColors = (byte[]) in.readObject();
+        vertexNormals = (float[]) in.readObject();
+        openGLType = in.readInt();
+        hasNormals = ( vertexNormals != null && vertexNormals.length > 0 );
+        hasColors = ( vertexColors != null && vertexColors.length > 0 );
     }
 }

@@ -38,9 +38,12 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.prototype;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import org.deegree.rendering.r3d.opengl.math.GLTransformationMatrix;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>PrototypeData</code> saves information of a prototype, and the transformation matrix to apply before
@@ -55,14 +58,16 @@ import org.deegree.rendering.r3d.opengl.math.GLTransformationMatrix;
  */
 public class PrototypeReference implements Serializable {
 
+    private final static Logger LOG = LoggerFactory.getLogger( PrototypeReference.class );
+
     /**
      * 
      */
     private static final long serialVersionUID = 417932269664979569L;
 
-    private String prototypeID;
+    private transient String prototypeID;
 
-    private GLTransformationMatrix gLTransformationMatrix;
+    private transient GLTransformationMatrix gLTransformationMatrix;
 
     /**
      * Construct a reference to a prototype, by supplying an id and a transformation matrix
@@ -103,6 +108,35 @@ public class PrototypeReference implements Serializable {
      */
     public final void setTransformationMatrix( GLTransformationMatrix gLTransformationMatrix ) {
         this.gLTransformationMatrix = gLTransformationMatrix;
+    }
+
+    /**
+     * Method called while serializing this object
+     * 
+     * @param out
+     *            to write to.
+     * @throws IOException
+     */
+    private void writeObject( java.io.ObjectOutputStream out )
+                            throws IOException {
+        LOG.trace( "Serializing to object stream" );
+        out.writeUTF( prototypeID );
+        out.writeObject( gLTransformationMatrix );
+    }
+
+    /**
+     * Method called while de-serializing (instancing) this object.
+     * 
+     * @param in
+     *            to create the methods from.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void readObject( java.io.ObjectInputStream in )
+                            throws IOException, ClassNotFoundException {
+        LOG.trace( "Deserializing from object stream" );
+        prototypeID = in.readUTF();
+        gLTransformationMatrix = (GLTransformationMatrix) in.readObject();
     }
 
 }

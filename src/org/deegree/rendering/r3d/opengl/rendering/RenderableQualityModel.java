@@ -81,9 +81,9 @@ public class RenderableQualityModel extends QualityModel<RenderableGeometry> imp
     }
 
     /**
-     * Creates a GeometryQualityModel with the given geometry patches
+     * Creates a GeometryQualityModel with the given geometry patch
      * 
-     * @param geometryPatches
+     * @param geometryPatch
      */
     public RenderableQualityModel( RenderableGeometry geometryPatch ) {
         super( geometryPatch );

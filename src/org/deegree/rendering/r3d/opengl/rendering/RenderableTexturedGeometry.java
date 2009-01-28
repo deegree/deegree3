@@ -38,6 +38,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
@@ -67,10 +68,10 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
      */
     private static final long serialVersionUID = -3278184950712812856L;
 
-    private String texture;
+    private transient String texture;
 
     // 2D
-    private float[] textureCoordinates;
+    private transient float[] textureCoordinates;
 
     private transient FloatBuffer textureBuffer = null;
 
@@ -176,4 +177,45 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
         this.textureCoordinates = textureCoordinates;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder( super.toString() );
+        sb.append( "\ntextureID: " ).append( texture );
+        if ( textureCoordinates != null && textureCoordinates.length > 0 ) {
+            sb.append( "\ntextureCoordinates:\n" );
+            for ( int i = 0; ( i + 1 ) < textureCoordinates.length; i += 2 ) {
+                sb.append( textureCoordinates[i] ).append( "," ).append( textureCoordinates[i + 1] ).append( "\n" );
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Method called while serializing this object
+     * 
+     * @param out
+     *            to write to.
+     * @throws IOException
+     */
+    private void writeObject( java.io.ObjectOutputStream out )
+                            throws IOException {
+        LOG.trace( "Serializing to object stream" );
+        out.writeUTF( texture );
+        out.writeObject( textureCoordinates );
+    }
+
+    /**
+     * Method called while de-serializing (instancing) this object.
+     * 
+     * @param in
+     *            to create the methods from.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void readObject( java.io.ObjectInputStream in )
+                            throws IOException, ClassNotFoundException {
+        LOG.trace( "Deserializing from object stream" );
+        texture = in.readUTF();
+        textureCoordinates = (float[]) in.readObject();
+    }
 }

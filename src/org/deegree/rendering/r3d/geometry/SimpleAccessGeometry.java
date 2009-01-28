@@ -38,7 +38,12 @@
 
 package org.deegree.rendering.r3d.geometry;
 
+import java.io.IOException;
 import java.io.Serializable;
+
+import org.deegree.commons.utils.math.Vectors3f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>SimpleAccessGeometry</code> class, defines geometry by a coordinate array with or without innerrings and
@@ -53,6 +58,8 @@ import java.io.Serializable;
  */
 public class SimpleAccessGeometry implements Serializable {
 
+    private final static Logger LOG = LoggerFactory.getLogger( SimpleAccessGeometry.class );
+
     /**
      * 
      */
@@ -61,27 +68,27 @@ public class SimpleAccessGeometry implements Serializable {
     /**
      * The coordinates of this geometry may be null
      */
-    protected float[] coordinates = null;
+    protected transient float[] coordinates = null;
 
     // indizes of the startpositions of the innerrings
-    private int[] innerRings = null;
+    private transient int[] innerRings = null;
 
     // length 32 bit only lowest 24 are used rgb
-    private int specularColor;
+    private transient int specularColor;
 
     // length 32 bit only lowest 24 are used rgb
-    private int ambientColor;
+    private transient int ambientColor;
 
     // length 32 bit only lowest 24 are used rgb
-    private int diffuseColor;
+    private transient int diffuseColor;
 
     // length 32 bit only lowest 24 are used rgb
-    private int emmisiveColor;
+    private transient int emmisiveColor;
 
     // a single value
-    private float shininess;
+    private transient float shininess;
 
-    private int vertexCount;
+    private transient int vertexCount;
 
     /**
      * @param coordinates
@@ -273,5 +280,86 @@ public class SimpleAccessGeometry implements Serializable {
      */
     public final int getVertexCount() {
         return vertexCount;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if ( coordinates != null && coordinates.length > 0 ) {
+            sb.append( "VertexCount: " ).append( vertexCount );
+            sb.append( "\nCoordinates:\n" );
+            for ( int i = 0; i < vertexCount; ++i ) {
+                sb.append( i ).append( ":" ).append( Vectors3f.asString( getCoordinateForVertex( i ) ) ).append( "\n" );
+            }
+            if ( innerRings != null && innerRings.length > 0 ) {
+                sb.append( "\nInnerRings at vertices: " );
+                for ( int i = 0; i < innerRings.length; ++i ) {
+                    sb.append( innerRings[i] );
+                    if ( ( i + 1 ) < innerRings.length ) {
+                        sb.append( ", " );
+                    }
+                }
+            } else {
+                sb.append( "No Inner rings defined." );
+            }
+        } else {
+            sb.append( "No geometry coordinates defined." );
+        }
+        sb.append( "\nspecularColor: " ).append( specularColor );
+        sb.append( "\nambientColor: " ).append( ambientColor );
+        sb.append( "\ndiffuseColor: " ).append( diffuseColor );
+        sb.append( "\nemmisiveColor: " ).append( emmisiveColor );
+        sb.append( "\nshininess: " ).append( shininess );
+        return sb.toString();
+    }
+
+    /**
+     * Method called while serializing this object
+     * 
+     * @param out
+     *            to write to.
+     * @throws IOException
+     */
+    private void writeObject( java.io.ObjectOutputStream out )
+                            throws IOException {
+        LOG.trace( "Serializing to object stream" );
+
+        out.writeObject( coordinates );
+        out.writeObject( innerRings );
+        out.writeInt( specularColor );
+        out.writeInt( ambientColor );
+        out.writeInt( diffuseColor );
+        out.writeInt( emmisiveColor );
+        out.writeFloat( shininess );
+        out.writeInt( vertexCount );
+
+    }
+
+    /**
+     * Method called while de-serializing (instancing) this object.
+     * 
+     * @param in
+     *            to create the methods from.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void readObject( java.io.ObjectInputStream in )
+                            throws IOException, ClassNotFoundException {
+        LOG.trace( "Deserializing from object stream" );
+        // The coordinates of this geometry may be null
+        coordinates = (float[]) in.readObject();
+        // indizes of the startpositions of the innerrings
+        innerRings = (int[]) in.readObject();
+        // length 32 bit only lowest 24 are used rgb
+        specularColor = in.readInt();
+        // length 32 bit only lowest 24 are used rgb
+        ambientColor = in.readInt();
+        // length 32 bit only lowest 24 are used rgb
+        diffuseColor = in.readInt();
+        // length 32 bit only lowest 24 are used rgb
+        emmisiveColor = in.readInt();
+        // a single value
+        shininess = in.readFloat();
+        vertexCount = in.readInt();
     }
 }

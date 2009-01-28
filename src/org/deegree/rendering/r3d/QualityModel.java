@@ -38,6 +38,7 @@
 
 package org.deegree.rendering.r3d;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -70,12 +71,12 @@ public class QualityModel<T extends SimpleAccessGeometry> implements Serializabl
     /**
      * The geometries of this quality model
      */
-    protected ArrayList<T> geometryPatches = null;
+    protected transient ArrayList<T> geometryPatches = null;
 
     /**
      * The prototype
      */
-    protected PrototypeReference prototype = null;
+    protected transient PrototypeReference prototype = null;
 
     /**
      * Creates a GeometryQualityModel with an empty list of geometry patches
@@ -169,4 +170,34 @@ public class QualityModel<T extends SimpleAccessGeometry> implements Serializabl
         }
         this.prototype = prototype;
     }
+
+    /**
+     * Method called while serializing this object
+     * 
+     * @param out
+     *            to write to.
+     * @throws IOException
+     */
+    private void writeObject( java.io.ObjectOutputStream out )
+                            throws IOException {
+        LOG.trace( "Serializing to object stream." );
+        out.writeObject( geometryPatches );
+        out.writeObject( prototype );
+    }
+
+    /**
+     * Method called while de-serializing (instancing) this object.
+     * 
+     * @param in
+     *            to create the methods from.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void readObject( java.io.ObjectInputStream in )
+                            throws IOException, ClassNotFoundException {
+        LOG.trace( "Deserializing from object stream." );
+        geometryPatches = (ArrayList<T>) in.readObject();
+        prototype = (PrototypeReference) in.readObject();
+    }
+
 }

@@ -38,6 +38,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
@@ -45,6 +46,8 @@ import javax.vecmath.Vector3f;
 
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.rendering.r3d.opengl.rendering.texture.TexturePool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.sun.opengl.util.BufferUtil;
 
@@ -61,47 +64,42 @@ import com.sun.opengl.util.BufferUtil;
  */
 public class BillBoard extends RenderableTexturedGeometry {
 
+    private final static Logger LOG = LoggerFactory.getLogger( BillBoard.class );
+
     /**
      * 
      */
     private static final long serialVersionUID = -5693355972373810535L;
 
-    private final static transient float[] NORMAL = new float[] { 0, -1, 0 };
+    private final static float[] NORMAL = new float[] { 0, -1, 0 };
 
-    private float[] location;
+    private transient float[] location;
 
-    private float[] scaleXZ;
+    private transient float[] scaleXZ;
 
-    private float rotation = 0;
-
-    private int width = -1;
-
-    private float step = 0.1f;
-
-    private static final transient FloatBuffer coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
-                                                                                                                        -.5f,
-                                                                                                                        0,
-                                                                                                                        0, // ll
-                                                                                                                        .5f,
-                                                                                                                        0,
-                                                                                                                        0,// lr
-                                                                                                                        .5f,
-                                                                                                                        0,
-                                                                                                                        1,// ur
-                                                                                                                        -.5f,
-                                                                                                                        0,
-                                                                                                                        1 }// ul
+    private static final FloatBuffer coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
+                                                                                                              -.5f,
+                                                                                                              0,
+                                                                                                              0, // ll
+                                                                                                              .5f,
+                                                                                                              0,
+                                                                                                              0,// lr
+                                                                                                              .5f,
+                                                                                                              0,
+                                                                                                              1,// ur
+                                                                                                              -.5f, 0,
+                                                                                                              1 }// ul
     ) );
 
-    private static final transient FloatBuffer textureBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
-                                                                                                                          0.001f,
-                                                                                                                          0.999f,
-                                                                                                                          0.999f,
-                                                                                                                          0.999f,
-                                                                                                                          0.999f,
-                                                                                                                          0.001f,
-                                                                                                                          0.001f,
-                                                                                                                          0.001f } ) );
+    private static final FloatBuffer textureBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
+                                                                                                                0.001f,
+                                                                                                                0.999f,
+                                                                                                                0.999f,
+                                                                                                                0.999f,
+                                                                                                                0.999f,
+                                                                                                                0.001f,
+                                                                                                                0.001f,
+                                                                                                                0.001f } ) );
 
     /**
      * Constructs a billboard data structure with the given texture id.
@@ -121,7 +119,6 @@ public class BillBoard extends RenderableTexturedGeometry {
     @Override
     public void render( GL context, Vector3f eye ) {
         context.glPushMatrix();
-        rotateTexture( context );
         context.glDepthMask( false );
         context.glEnable( GL.GL_TEXTURE_2D );
         context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
@@ -146,25 +143,6 @@ public class BillBoard extends RenderableTexturedGeometry {
         context.glMatrixMode( GL.GL_MODELVIEW );
         context.glPopMatrix();
 
-    }
-
-    private void rotateTexture( GL context ) {
-        // context.glMatrixMode( GL.GL_TEXTURE );
-        // context.glPushMatrix();
-        // if ( width == -1 ) {
-        // width = TexturePool.getWidth( getTexture() );
-        // step = width * 0.01f;
-        // }
-        // if ( width != 0 ) {
-        // rotation += step;
-        // float trans = rotation / width;
-        //
-        // context.glTranslatef( trans, 0, 0 );
-        // if ( rotation >= width ) {
-        // rotation = -width;
-        // }
-        // }
-        // context.glMatrixMode( GL.GL_MODELVIEW );
     }
 
     /**
@@ -195,5 +173,47 @@ public class BillBoard extends RenderableTexturedGeometry {
         float[] newUp = Vectors3f.cross( NORMAL, viewVector );
         context.glNormal3fv( NORMAL, 0 );
         context.glRotatef( (float) Math.toDegrees( Math.acos( angleCosine ) ), newUp[0], newUp[1], newUp[2] );
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder( super.toString() );
+        if ( location != null && location.length > 0 ) {
+            sb.append( "\nlocation: " ).append( Vectors3f.asString( location ) );
+        }
+        if ( scaleXZ != null && scaleXZ.length > 0 ) {
+            sb.append( "\nwidth: " ).append( scaleXZ[0] );
+            sb.append( "\nheight: " ).append( scaleXZ[1] );
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Method called while serializing this object
+     * 
+     * @param out
+     *            to write to.
+     * @throws IOException
+     */
+    private void writeObject( java.io.ObjectOutputStream out )
+                            throws IOException {
+        LOG.trace( "Serializing to object stream" );
+        out.writeObject( location );
+        out.writeObject( scaleXZ );
+    }
+
+    /**
+     * Method called while de-serializing (instancing) this object.
+     * 
+     * @param in
+     *            to create the methods from.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void readObject( java.io.ObjectInputStream in )
+                            throws IOException, ClassNotFoundException {
+        LOG.trace( "Deserializing from object stream" );
+        location = (float[]) in.readObject();
+        scaleXZ = (float[]) in.readObject();
     }
 }

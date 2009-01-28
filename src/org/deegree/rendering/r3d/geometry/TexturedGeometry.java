@@ -38,6 +38,11 @@
 
 package org.deegree.rendering.r3d.geometry;
 
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The <code>RenderableTexturedGeometry</code> class TODO add class documentation here.
  * 
@@ -49,16 +54,17 @@ package org.deegree.rendering.r3d.geometry;
  * 
  */
 public class TexturedGeometry extends SimpleAccessGeometry {
+    private final static Logger LOG = LoggerFactory.getLogger( TexturedGeometry.class );
 
     /**
      * 
      */
     private static final long serialVersionUID = -3278184950712812856L;
 
-    private String texture;
+    private transient String texture;
 
     // 2D
-    private float[] textureCoordinates;
+    private transient float[] textureCoordinates;
 
     /**
      * @param geometry
@@ -159,6 +165,48 @@ public class TexturedGeometry extends SimpleAccessGeometry {
             throw new IndexOutOfBoundsException( "No such vertex, the given index is out of range" );
         }
         return new float[] { textureCoordinates[vertex * 2], textureCoordinates[( vertex * 2 ) + 1] };
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder( super.toString() );
+        sb.append( "\n textureID: " ).append( texture );
+        if ( textureCoordinates != null && textureCoordinates.length > 0 ) {
+            sb.append( "\n textureCoordinates:\n" );
+            for ( int i = 0; ( i + 1 ) < textureCoordinates.length; i += 2 ) {
+                sb.append( textureCoordinates[i] ).append( "," ).append( textureCoordinates[i + 1] ).append( "\n" );
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Method called while serializing this object
+     * 
+     * @param out
+     *            to write to.
+     * @throws IOException
+     */
+    private void writeObject( java.io.ObjectOutputStream out )
+                            throws IOException {
+        LOG.trace( "Serializing to object stream" );
+        out.writeUTF( texture );
+        out.writeObject( textureCoordinates );
+    }
+
+    /**
+     * Method called while de-serializing (instancing) this object.
+     * 
+     * @param in
+     *            to create the methods from.
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void readObject( java.io.ObjectInputStream in )
+                            throws IOException, ClassNotFoundException {
+        LOG.trace( "Deserializing from object stream" );
+        texture = in.readUTF();
+        textureCoordinates = (float[]) in.readObject();
     }
 
 }
