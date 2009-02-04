@@ -33,21 +33,17 @@
     <dependency org="logging" name="log4j" rev="1.2.15" transitive="false" conf="${module.name}-build" />    
 
     <!-- mail -->
-    <!-- dependency org="javax.mail" name="mail" rev="1.4" transitive="false" conf="commons-build->default"/-->
     <dependency org="mail" name="mail" rev="1.4" conf="${module.name}-build" />
 
     <!-- xml framework build dependencies -->
-    <!--<dependency org="jaxen" name="jaxen" rev="1.1.1" transitive="false" conf="commons-build->default"/>-->
-    <dependency org="xml" name="jaxen" rev="1.1.1" conf="${module.name}-build" />
-    <!--<dependency org="org.apache.ws.commons.axiom" name="axiom-api" rev="1.2.7" transitive="false" conf="commons-build->default"/>-->
-    <dependency org="xml" name="axiom-api" rev="1.2.6" conf="${module.name}-build" />
-    
+    <dependency org="xml" name="jaxen" rev="1.1.1" conf="${module.name}-build" />    
+    <dependency org="xml" name="axiom-api" rev="1.2.8" conf="${module.name}-build" />
+    <dependency org="xml" name="axiom-impl" rev="1.2.8" conf="${module.name}-build" />   
     <dependency org="xerces" name="xercesImpl" rev="2.9.1" conf="${module.name}-build" />
     
     <!--  for rendering and working with 3d stuff -->
     <dependency org="jogl" name="jogl" rev="1.1.2-+" transitive="false" conf="${module.name}-build" />
     <dependency org="jogl" name="gluegen-rt" rev="1.1.2-+" transitive="false" conf="${module.name}-build" />
 
-    
   </dependencies>
 </ivy-module>
