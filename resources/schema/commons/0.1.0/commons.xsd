@@ -1,0 +1,92 @@
+<xs:schema targetNamespace="http://www.deegree.org/commons" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:cm="http://www.deegree.org/commons"
+  elementFormDefault="qualified" >
+  <xs:element name="currentVersion">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="0.1.0" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <!-- ========================================================== -->
+  <xs:element name="BoundingBox" type="cm:BoundingBoxType" />
+  <!-- =========================================================== -->
+  <xs:complexType name="BoundingBoxType">
+    <xs:annotation>
+      <xs:documentation>XML encoded minimum rectangular bounding box (or region) parameter, surrounding all the associated data.</xs:documentation>
+      <xs:documentation>
+        This type is adapted from the EnvelopeType of GML 3.1, with modified contents and documentation for encoding a MINIMUM size box SURROUNDING
+        all associated data.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="LowerCorner" type="cm:PositionType">
+        <xs:annotation>
+          <xs:documentation>
+            Position of the bounding box corner at which the value of each coordinate normally is the algebraic minimum within this bounding box. In
+            some cases, this position is normally displayed at the top, such as the top left for some image coordinates. For more information, see
+            Subclauses 10.2.5 and C.13.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="UpperCorner" type="cm:PositionType">
+        <xs:annotation>
+          <xs:documentation>
+            Position of the bounding box corner at which the value of each coordinate normally is the algebraic maximum within this bounding box. In
+            some cases, this position is normally displayed at the bottom, such as the bottom right for some image coordinates. For more information,
+            see Subclauses 10.2.5 and C.13.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="crs" type="xs:anyURI" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          Usually references the definition of a CRS, as specified in [OGC Topic 2]. Such a CRS definition can be XML encoded using the
+          gml:CoordinateReferenceSystemType in [GML 3.1]. For well known references, it is not required that a CRS definition exist at the location
+          the URI points to. If no anyURI value is included, the applicable CRS must be either: a) Specified outside the bounding box, but inside a
+          data structure that includes this bounding box, as specified for a specific OWS use of this bounding box type. b) Fixed and specified in the
+          Implementation Specification for a specific OWS use of the bounding box type.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+    <xs:attribute name="dimensions" type="xs:positiveInteger" use="optional">
+      <xs:annotation>
+        <xs:documentation>
+          The number of dimensions in this CRS (the length of a coordinate sequence in this use of the PositionType). This number is specified by the
+          CRS definition, but can also be specified here.
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+  <!-- =========================================================== -->
+  <xs:simpleType name="PositionType">
+    <xs:annotation>
+      <xs:documentation>
+        Position instances hold the coordinates of a position in a coordinate reference system (CRS) referenced by the related "crs" attribute or
+        elsewhere. For an angular coordinate axis that is physically continuous for multiple revolutions, but whose recorded values can be
+        discontinuous, special conditions apply when the bounding box is continuous across the value discontinuity: a) If the bounding box is
+        continuous clear around this angular axis, then ordinate values of minus and plus infinity shall be used. b) If the bounding box is continuous
+        across the value discontinuity but is not continuous clear around this angular axis, then some non-normal value can be used if specified for a
+        specific OWS use of the BoundingBoxType. For more information, see Subclauses 10.2.5 and C.13.
+      </xs:documentation>
+      <xs:documentation>
+        This type is adapted from DirectPositionType and doubleList of GML 3.1. The adaptations include omission of all the attributes, since the
+        needed information is included in the BoundingBoxType.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:list itemType="xs:double" />
+  </xs:simpleType>
+
+
+  <xs:element name="ScaleDenominators" type="cm:ScaleDenominatorsType" />
+  <xs:complexType name="ScaleDenominatorsType">
+    <xs:annotation>
+      <xs:documentation>
+        The scale denominators define the map resolution to which the datasets are valid. TODO define exact value calculation here!
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="min" type="xs:double" />
+    <xs:attribute name="max" type="xs:double" />
+  </xs:complexType>
+</xs:schema>
