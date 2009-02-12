@@ -61,3 +61,13 @@ Used for: everything that accesses the web
 Origin of Files: http://hc.apache.org/downloads.cgi
 License: The Apache Software License, Version 2.0
 Responsible: aschmitz
+
+=== jaxb ===
+Files: jaxb-impl-2.1.10.jar,jaxb-xjc-2.1.10.jar
+URL: https://jaxb.dev.java.net/
+Version: 2.1.10
+Description: Jaxb is a tool which binds schema files to java classes and vice versa
+Used for: binding of configuration schema files
+Origin of Files: jaxb distribution: https://jaxb.dev.java.net/2.1.10/JAXB2_20090206.jar
+Licence: https://jaxb.dev.java.net/
+Responsible: rbezema

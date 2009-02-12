@@ -21,51 +21,46 @@
 
     <import file="${ivybuild.dir}/ivy-build.xml" optional="false" />
 
-	<echo message="basedir: ${basedir}"/>
-	
+    <echo message="basedir: ${basedir}" />
+
     <!-- Support the ant-contrib tasks. -->
     <taskdef resource="net/sf/antcontrib/antlib.xml">
         <classpath>
             <pathelement location="${basedir}/lib/ant-contrib/ant-contrib-1.0b3.jar" />
         </classpath>
-    </taskdef>	
-	
-    <!-- ================================================
-         Target for running the xjc (jaxb) program 
-         ================================================-->
-    <target name="run-xjc">
-        <fail message="The schema.file parameter should be specified e.g. -Dschema.file='resources/schema/test.xsd'">
-            <condition>
-                <not>
-                    <isset property="schema.file" />
-                </not>
-            </condition>
-        </fail>
-        <if>
-            <not>
-                <isset property="output.dir" />
-            </not>
-            <then>
-                <echo message="The output.dir parameter was not specified e.g. -Doutput.dir='dist', defaulting to src.dir" />
-                <propertycopy name="output.dir" from="src.dir" override="yes" />
-            </then>
-        </if>
-        <if>
-            <not>
-                <isset property="other.parameters" />
-            </not>
-            <then>
-                <echo message="The other.parameters parameter was not specified e.g. -Dother.parameters='-jaxb_param test' so not using it" />
-                <property name="other.parameters" value="" />
-            </then>
-        </if>
-        <pathconvert property="class.path" refid="build.path" />
-        <exec dir="${basedir}" executable="xjc">
-            <arg line="-d ${output.dir}" />
-            <arg line="-classpath ${class.path}" />
-            <arg line="${other.parameters}" />
-            <arg line="${schema.file}" />
-        </exec>
-    </target>
+    </taskdef>
 
+
+    <target name="bind-commons-configuration">
+        <!-- Support jaxb tasks -->
+        <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+            <classpath refid="build.path" />
+        </taskdef>
+        <property name="schema.file" value="commons.xsd" />
+        <property name="schema.name" value="commons" />
+
+        <property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
+        <property name="src.output.dir" value="${src.dir}/org/deegree/${schema.name}/configuration" />
+
+        <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true">
+            <binding dir="${schema.dir}/bindings/">
+                <include name="${schema.name}_bindings.xjb" />
+            </binding>
+            <!--arg value="-episode"/>
+            <arg value="${schema.dir}/bindings/external_${schema.name}_bindings.episode" /-->
+            <produces dir="${src.output.dir}" includes="**/*.java" />
+        </xjc>
+
+        <path id="updated.path">
+            <path refid="build.path" />
+            <pathelement location="${jar.file}.jar" />
+        </path>
+        <java classpathref="updated.path" classname="org.deegree.commons.utils.jaxb.CreateExternalBindings">
+            <arg value="${src.output.dir}" />
+            <arg value="${src.dir}/META-INF/sun-jaxb.episode"/>
+            <arg value="http://www.deegree.org/${schema.name}" />
+            <arg value="../${schema.file}" />
+        </java>
+    </target>
+  
 </project>
