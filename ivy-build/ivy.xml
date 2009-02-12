@@ -44,6 +44,9 @@
     <!--  for rendering and working with 3d stuff -->
     <dependency org="jogl" name="jogl" rev="1.1.2-+" transitive="false" conf="${module.name}-build" />
     <dependency org="jogl" name="gluegen-rt" rev="1.1.2-+" transitive="false" conf="${module.name}-build" />
+    
+    <dependency org="jaxb" name="jaxb-impl" rev="2.1.10" transitive="false" conf="${module.name}-build" />
+    <dependency org="jaxb" name="jaxb-xjc" rev="2.1.10" transitive="false" conf="${module.name}-build" />
 
   </dependencies>
 </ivy-module>
