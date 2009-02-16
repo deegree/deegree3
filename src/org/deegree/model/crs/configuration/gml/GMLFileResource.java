@@ -46,9 +46,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.xml.namespace.QName;
+
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.XMLTools;
+import org.deegree.commons.xml.XPath;
 import org.deegree.model.crs.configuration.resources.XMLFileResource;
 import org.deegree.model.crs.coordinatesystems.CompoundCRS;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
@@ -60,7 +64,7 @@ import org.deegree.model.crs.transformations.coordinate.ConcatenatedTransform;
 import org.deegree.model.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
+
 
 /**
  * The <code>GMLFileResource</code> provides easy access to a gml3.2. dictionary file, which can be used together with
@@ -84,16 +88,14 @@ public class GMLFileResource extends XMLFileResource {
 
     private static final String PRE = CommonNamespaces.GML3_2_PREFIX + ":";
 
-    private static final String ID_XPATH = "//" + PRE + "dictionaryEntry/*[" + PRE + "identifier='";
-
-    private static final String OR_CONTAINS_NAMES = " or " + PRE + "name='";
-
     private static final String TRANSFORM_XPATH = "/" + PRE + "Dictionary/" + PRE + "dictionaryEntry/" + PRE
                                                   + "Transformation";
 
-    private List<Element> transformations;
+    private List<OMElement> transformations;
 
     private Map<CoordinateSystem, Helmert> cachedWGS84Transformations;
+    
+    private XMLAdapter adapter;
 
     /**
      * @param provider
@@ -102,12 +104,12 @@ public class GMLFileResource extends XMLFileResource {
     public GMLFileResource( GMLCRSProvider provider, Properties properties ) {
         super( provider, properties, "Dictionary", CommonNamespaces.GML3_2_NS );
         try {
-            transformations = XMLTools.getElements( getRootElement(), TRANSFORM_XPATH, nsContext );
-
+            transformations = getElements( getRootElement(), new XPath( TRANSFORM_XPATH, nsContext ) );
         } catch ( XMLParsingException e ) {
             LOG.error( e.getLocalizedMessage(), e );
         }
         cachedWGS84Transformations = new HashMap<CoordinateSystem, Helmert>();
+        adapter = new XMLAdapter();
     }
 
     public Helmert getWGS84Transformation( GeographicCRS sourceCRS ) {
@@ -181,7 +183,7 @@ public class GMLFileResource extends XMLFileResource {
         if ( sourceCRS == null ) {
             return null;
         }
-        List<Element> toBeRemoved = new ArrayList<Element>( transformations.size() );
+        List<OMElement> toBeRemoved = new ArrayList<OMElement>( transformations.size() );
         List<String> sourceIDs = Arrays.asList( sourceCRS.getIdentifiers() );
         List<String> targetIDs = null;
         if ( targetCRS != null ) {
@@ -191,29 +193,29 @@ public class GMLFileResource extends XMLFileResource {
         }
         Transformation result = null;
         for ( int i = 0; i < transformations.size() && result == null; ++i ) {
-            Element transElem = transformations.get( i );
+            OMElement transElem = transformations.get( i );
             if ( transElem != null ) {
                 try {
-                    Element sourceCRSProp = XMLTools.getRequiredElement( transElem, PRE + "sourceCRS", nsContext );
+                	OMElement sourceCRSProp = getRequiredElement( transElem, new XPath( PRE + "sourceCRS", nsContext  ) );
+                	
                     String transformSourceID = null;
                     String transformTargetID = null;
                     if ( sourceCRSProp != null ) {
-                        transformSourceID = sourceCRSProp.getAttributeNS( CommonNamespaces.XLNNS, "href" );
+                    	transformSourceID = sourceCRSProp.getAttribute( new QName( CommonNamespaces.XLNNS, "href" ) ).getNamespace().getNamespaceURI();
+                        
                         if ( "".equals( transformSourceID ) ) {
-                            transformSourceID = XMLTools.getRequiredNodeAsString( sourceCRSProp, "*[1]/" + PRE
-                                                                                                 + "identifier",
-                                                                                  nsContext );
+                        	transformSourceID = adapter.getRequiredNodeAsString( sourceCRSProp, new XPath( "*[1]/" + PRE
+                                    + "identifier", nsContext ) );
                         }
                     }
                     if ( targetCRS != null ) {
-                        Element targetCRSProp = XMLTools.getRequiredElement( transElem, PRE + "targetCRS", nsContext );
+                        OMElement targetCRSProp = adapter.getRequiredElement( transElem, new XPath( PRE + "targetCRS", nsContext ) );
                         if ( targetCRSProp != null ) {
 
-                            transformTargetID = targetCRSProp.getAttributeNS( CommonNamespaces.XLNNS, "href" );
+                        	transformTargetID = targetCRSProp.getAttribute( new QName( CommonNamespaces.XLNNS, "href" ) ).getNamespace().getNamespaceURI();
                             if ( "".equals( transformTargetID ) ) {
-                                transformTargetID = XMLTools.getRequiredNodeAsString( targetCRSProp, "*[1]/" + PRE
-                                                                                                     + "identifier",
-                                                                                      nsContext );
+                            	transformTargetID = adapter.getRequiredNodeAsString( targetCRSProp, new XPath( "*[1]/" + PRE
+                                        + "identifier", nsContext ) );
                             }
                         }
                     }
@@ -228,16 +230,16 @@ public class GMLFileResource extends XMLFileResource {
                             }
                         } else {
                             if ( !targetIDs.contains( transformTargetID ) ) {
-                                LOG.debug( "Found a transformation with gml:id: "
-                                           + transElem.getAttributeNS( CommonNamespaces.GML3_2_NS, "id" )
-                                           + ", but the target does not match the source crs, trying to build transformation chain." );
+                            	LOG.debug( "Found a transformation with gml:id: "
+                                        + transElem.getAttribute( new QName( CommonNamespaces.GML3_2_NS, "id" ) ).getNamespace().getNamespaceURI()
+                                        + ", but the target does not match the source crs, trying to build transformation chain." );
                                 Transformation second = getTransformation( result.getTargetCRS(), targetCRS );
                                 if ( second != null ) {
                                     result = new ConcatenatedTransform( result, second );
                                 } else {
-                                    LOG.debug( "The transformation with gml:id: "
-                                               + transElem.getAttributeNS( CommonNamespaces.GML3_2_NS, "id" )
-                                               + " is not the start of transformation chain, discarding it. " );
+                                	LOG.debug( "The transformation with gml:id: "
+                                            + transElem.getAttribute( new QName( CommonNamespaces.GML3_2_NS, "id" ) ).getNamespace().getNamespaceURI()
+                                            + " is not the start of transformation chain, discarding it. " );
                                     result = null;
                                 }
                             }
@@ -247,8 +249,8 @@ public class GMLFileResource extends XMLFileResource {
                 } catch ( XMLParsingException e ) {
                     toBeRemoved.add( transElem );
                     LOG.warn( "No source CRS id could be found in this transformation(gml:id): "
-                              + transElem.getAttributeNS( CommonNamespaces.GML3_2_NS, "id" )
-                              + " this is not correct, removing transformation from cache." );
+                            + transElem.getAttribute( new QName( CommonNamespaces.GML3_2_NS, "id" ) ).getNamespace().getNamespaceURI()
+                            + " this is not correct, removing transformation from cache." );
                     LOG.warn( e.getMessage() );
                 }
             }
@@ -259,12 +261,12 @@ public class GMLFileResource extends XMLFileResource {
         return result;
     }
 
-    public Element getURIAsType( String uri )
+    public OMElement getURIAsType( String uri )
                             throws IOException {
-        Element result = null;
+        OMElement result = null;
         try {
-            result = XMLTools.getElement( getRootElement(), ID_XPATH + uri + "'" + OR_CONTAINS_NAMES + uri + "']",
-                                          nsContext );
+        	result = adapter.getElement( getRootElement(), new XPath( "//gml3_2:dictionaryEntry/gml3_2:*[gml3_2:identifier='" + uri + "']" +
+        			" | //gml3_2:dictionaryEntry/gml3_2:*[gml3_2:name='" + uri + "']", nsContext ) );        		
         } catch ( XMLParsingException e ) {
             LOG.error( e.getLocalizedMessage(), e );
         }

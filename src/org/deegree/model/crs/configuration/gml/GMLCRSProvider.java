@@ -38,11 +38,11 @@
 
 package org.deegree.model.crs.configuration.gml;
 
-import static org.deegree.commons.xml.XMLTools.getElement;
-import static org.deegree.commons.xml.XMLTools.getNodesAsStrings;
-import static org.deegree.commons.xml.XMLTools.getRequiredElement;
-import static org.deegree.commons.xml.XMLTools.getRequiredNodeAsDouble;
-import static org.deegree.commons.xml.XMLTools.getRequiredNodeAsString;
+//import static org.deegree.commons.xml.XMLTools.getElement;
+//import static org.deegree.commons.xml.XMLTools.getNodesAsStrings;
+//import static org.deegree.commons.xml.XMLTools.getRequiredElement;
+//import static org.deegree.commons.xml.XMLTools.getRequiredNodeAsDouble;
+//import static org.deegree.commons.xml.XMLTools.getRequiredNodeAsString;
 import static org.deegree.model.crs.components.Unit.createUnitFromString;
 
 import java.io.IOException;
@@ -52,12 +52,16 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.vecmath.Point2d;
+import javax.xml.namespace.QName;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.XMLTools;
+import org.deegree.commons.xml.XPath;
+//import org.deegree.commons.xml.XMLTools;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
@@ -86,7 +90,7 @@ import org.deegree.model.crs.transformations.coordinate.NotSupportedTransformati
 import org.deegree.model.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
+
 
 /**
  * The <code>GMLCRSProvider</code> is a provider for a GML 3.2 backend, this may be a dictionary or a database.
@@ -101,13 +105,15 @@ import org.w3c.dom.Element;
  * @version $Revision$, $Date$
  * 
  */
-public class GMLCRSProvider extends AbstractCRSProvider<Element> {
+public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
 
     private static Logger LOG = LoggerFactory.getLogger( GMLCRSProvider.class );
 
     private static String PRE = CommonNamespaces.GML3_2_PREFIX + ":";
 
     private static NamespaceContext nsContext = CommonNamespaces.getNamespaceContext();
+    
+    private XMLAdapter adapter;
 
     /**
      * The 'default constructor' which will be called by the CRSConfiguration
@@ -116,10 +122,11 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      *            the properties which can hold information about the configuration of this GML provider.
      */
     public GMLCRSProvider( Properties properties ) {
-        super( properties, XMLResource.class, null );
+    	super( properties, XMLResource.class, null );    	
         if ( getResolver() == null ) {
-            setResolver( new GMLFileResource( this, properties ) );
+            setResolver( new GMLFileResource( this, new Properties( properties ) ) );
         }
+        adapter = new XMLAdapter();
     }
 
     public boolean canExport() {
@@ -149,7 +156,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      *             if something went wrong.
      */
     @Override
-    protected CoordinateSystem parseCoordinateSystem( Element rootElement )
+    protected CoordinateSystem parseCoordinateSystem( OMElement rootElement )
                             throws CRSConfigurationException {
         if ( rootElement == null ) {
             LOG.debug( "The given crs root element is null, returning nothing" );
@@ -182,7 +189,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      * Calls parseGMLTransformation for the catching of {@link XMLParsingException}.
      */
     @Override
-    public Transformation parseTransformation( Element rootElement )
+    public Transformation parseTransformation( OMElement rootElement )
                             throws CRSConfigurationException {
         try {
             return parseGMLTransformation( rootElement );
@@ -201,7 +208,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      * @throws XMLParsingException
      * @throws IOException
      */
-    protected Transformation parseGMLTransformation( Element rootElement )
+    protected Transformation parseGMLTransformation( OMElement rootElement )
                             throws XMLParsingException, IOException {
         if ( rootElement == null ) {
             return null;
@@ -215,24 +222,23 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
         }
         Transformation result = getCachedIdentifiable( Transformation.class, id );
         if ( result == null ) {
-            Element crsProp = getRequiredElement( rootElement, PRE + "sourceCRS", nsContext );
-            Element crsElem = getRequiredXlinkedElement( crsProp, "*[1]" );
+            OMElement crsProp = adapter.getRequiredElement( rootElement, new XPath(PRE + "sourceCRS", nsContext ) );
+            OMElement crsElem = getRequiredXlinkedElement( crsProp, "*[1]" );
             CoordinateSystem sourceCRS = parseCoordinateSystem( crsElem );
             if ( sourceCRS == null ) {
-                throw new XMLParsingException(
-                                               "The transformation could not be parsed, because the sourceCRS is not supported." );
+            	throw new XMLParsingException( adapter, rootElement, "The transformation could not be parsed, because the sourceCRS is not supported." );
             }
-            crsProp = getRequiredElement( rootElement, PRE + "targetCRS", nsContext );
+            //crsProp = getRequiredElement( rootElement, PRE + "targetCRS", nsContext );
+            crsProp = adapter.getRequiredElement( rootElement, new XPath( PRE + "targetCRS", nsContext ) );
             crsElem = getRequiredXlinkedElement( crsProp, "*[1]" );
             CoordinateSystem targetCRS = parseCoordinateSystem( crsElem );
             if ( targetCRS == null ) {
-                throw new XMLParsingException(
-                                               "The transformation could not be parsed, because the targetCRS is not supported." );
+            	throw new XMLParsingException(adapter, rootElement, "The transformation could not be parsed, because the targetCRS is not supported." );
             }
 
-            Element method = getRequiredElement( rootElement, PRE + "method", nsContext );
+            OMElement method = adapter.getRequiredElement( rootElement, new XPath( PRE + "method", nsContext ) );
 
-            Element conversionMethod = getRequiredXlinkedElement( method, PRE + "OperationMethod" );
+            OMElement conversionMethod = getRequiredXlinkedElement( method, PRE + "OperationMethod" );
             CRSIdentifiable conversionMethodID = parseIdentifiedObject( conversionMethod );
             SupportedTransformations transform = mapTransformation( conversionMethodID.getIdentifiers() );
 
@@ -342,7 +348,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      * @throws XMLParsingException
      *             if the given rootElement could not be parsed.
      */
-    protected CRSIdentifiable parseIdentifiedObject( Element rootElement )
+    protected CRSIdentifiable parseIdentifiedObject( OMElement rootElement )
                             throws XMLParsingException {
         if ( rootElement == null ) {
             return null;
@@ -352,7 +358,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
         List<String> areasOfUse = new ArrayList<String>();
         String identifier = null;
         try {
-            identifier = getRequiredNodeAsString( rootElement, PRE + "identifier", nsContext );
+        	identifier = adapter.getRequiredNodeAsString( rootElement, new XPath( PRE + "identifier", nsContext ) );
         } catch ( XMLParsingException e ) {
             LOG.error( "Could not find the required identifier node for the given gml:identifiable with localname: "
                        + rootElement.getLocalName() );
@@ -360,19 +366,20 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
         }
         String[] identifiers = { identifier };
 
-        String tmpDesc = XMLTools.getNodeAsString( rootElement, PRE + "description", nsContext, null );
+        String tmpDesc = adapter.getNodeAsString( rootElement, new XPath( PRE + "description", nsContext ), null );
+        
         if ( tmpDesc != null ) {
             descriptions.add( tmpDesc );
         }
         // try to find the href
-        Element descRef = XMLTools.getElement( rootElement, PRE + "descriptionReference", nsContext );
+        OMElement descRef = adapter.getElement( rootElement, new XPath( PRE + "descriptionReference", nsContext ) );
         if ( descRef != null ) {
-            String href = descRef.getAttributeNS( CommonNamespaces.XLNNS, "href" );
+            String href = descRef.getAttributeValue( new QName( CommonNamespaces.XLNNS, "href" ) );       
             if ( !"".equals( href ) ) {
                 descriptions.add( href );
             }
         }
-        List<Element> metaDatas = XMLTools.getElements( rootElement, PRE + "metaDataProperty", nsContext );
+        List<OMElement> metaDatas = adapter.getElements(rootElement, new XPath( PRE + "metaDataProperty", nsContext ) );
         if ( metaDatas != null && metaDatas.size() > 0 ) {
             LOG.warn( "Ignoring meta data properties" );
             // for ( Element metaDataElement : metaDatas ) {
@@ -382,7 +389,8 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
             // }
         }
 
-        List<Element> domainsOfValidity = XMLTools.getElements( rootElement, PRE + "domainOfValidity", nsContext );
+        //List<Element> domainsOfValidity = XMLTools.getElements( rootElement, PRE + "domainOfValidity", nsContext );
+        List<OMElement> domainsOfValidity = adapter.getElements( rootElement, new XPath( PRE + "domainOfValidity", nsContext ) );
         if ( domainsOfValidity != null && domainsOfValidity.size() > 0 ) {
             LOG.warn( "Ignoring domains of validity" );
             // // LOG.debug( "domains of validity will not be parsed, but put in a area of use instead" );
@@ -393,7 +401,8 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
             // areasOfUse.add( validDomain );
             // }
         }
-        String[] scopes = XMLTools.getNodesAsStrings( rootElement, PRE + "scope", nsContext );
+        //String[] scopes = XMLTools.getNodesAsStrings( rootElement, PRE + "scope", nsContext );
+        String[] scopes = adapter.getNodesAsStrings( rootElement, new XPath( PRE + "scope", nsContext ) );
         if ( scopes != null && scopes.length > 0 ) {
             // LOG.debug( "scopes will be put in the area of uses" );
             for ( String scope : scopes ) {
@@ -401,7 +410,8 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
             }
         }
 
-        String[] names = getNodesAsStrings( rootElement, PRE + "name", nsContext );
+        //String[] names = getNodesAsStrings( rootElement, PRE + "name", nsContext );
+        String[] names = adapter.getNodesAsStrings( rootElement, new XPath( PRE + "name", nsContext ) );
         if ( names != null && names.length > 0 ) {
             // LOG.debug( "Using defined names as identifiers as well" );
             // +1 for the identifier
@@ -432,8 +442,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      * @throws XMLParsingException
      * @throws IOException
      */
-    @SuppressWarnings("null")
-    protected CompoundCRS parseCompoundCRS( Element rootElement )
+    protected CompoundCRS parseCompoundCRS( OMElement rootElement )
                             throws XMLParsingException, IOException {
         if ( rootElement == null ) {
             LOG.debug( "The given crs root element is null, returning nothing" );
@@ -448,29 +457,26 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
             LOG.debug( "Parsing id of compound crs resulted in: " + Arrays.toString( id.getIdentifiers() ) );
         }
 
-        List<Element> compRefSysProp = XMLTools.getRequiredElements( rootElement, PRE + "componentReferenceSystem",
-                                                                     nsContext );
+        List<OMElement> compRefSysProp = adapter.getRequiredElements( rootElement, new XPath( PRE + "componentReferenceSystem", nsContext ) );
         if ( compRefSysProp.size() != 2 ) {
-            throw new XMLParsingException(
-                                           "Currently, compound crs definitions can only constist of exactly two base crs's, you supplied: "
-                                                                   + compRefSysProp.size() );
+            throw new XMLParsingException(adapter, rootElement, "Currently, compound crs definitions can only constist of exactly two base crs's, you supplied: " + compRefSysProp.size() );
         }
 
         // Find the first and second crs's of the compound crs.
-        Element first = compRefSysProp.get( 0 );
-        Element second = compRefSysProp.get( 1 );
+        OMElement first = compRefSysProp.get( 0 );
+        OMElement second = compRefSysProp.get( 1 );
         // | " + PRE + "VerticalCRS"
-        Element xlinkedElem1 = retrieveAndResolveXLink( first );
-        Element xlinkedElem2 = retrieveAndResolveXLink( second );
+        OMElement xlinkedElem1 = retrieveAndResolveXLink( first );
+        OMElement xlinkedElem2 = retrieveAndResolveXLink( second );
 
-        Element crsElement1 = null;
-        Element crsElement2 = null;
+        OMElement crsElement1 = null;
+        OMElement crsElement2 = null;
 
         if ( xlinkedElem1 == null ) {
-            crsElement1 = getRequiredElement( first, "*[1]", nsContext );
+        	crsElement1 = adapter.getRequiredElement( first, new XPath( "*[1]", nsContext ) );        	
         }
         if ( xlinkedElem2 == null ) {
-            crsElement2 = getRequiredElement( first, "*[2]", nsContext );
+        	crsElement2 = adapter.getRequiredElement( first, new XPath( "*[2]", nsContext ) );
         }
 
         ProjectedCRS underlying = null;
@@ -487,9 +493,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
                 vertical = parseVerticalCRS( crsElement2 );
 
             } else {
-                throw new XMLParsingException(
-                                               "Currently only Compoundcrs's with the ProjectedCRS and VerticalCRS combination are supported, instead a:"
-                                                                       + crsElement2.getLocalName() + " was found." );
+            	throw new XMLParsingException(adapter, crsElement2, "Currently only Compoundcrs's with the ProjectedCRS and VerticalCRS combination are supported, instead a:"+ crsElement2.getLocalName() + " was found." );
             }
         } else if ( "VerticalCRS".equals( crsElement1.getLocalName() ) ) {
             if ( "ProjectedCRS".equals( crsElement2.getLocalName() ) ) {
@@ -501,16 +505,10 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
                 }
                 vertical = parseVerticalCRS( crsElement1 );
             } else {
-                throw new XMLParsingException(
-                                               "Currently only Compoundcrs's with the ProjectedCRS and VerticalCRS combination are supported, instead a:"
-                                                                       + crsElement1.getLocalName() + " was found." );
+                throw new XMLParsingException(adapter, crsElement2, "Currently only Compoundcrs's with the ProjectedCRS and VerticalCRS combination are supported, instead a:"+ crsElement1.getLocalName() + " was found." );
             }
         } else {
-            throw new XMLParsingException(
-                                           "Currently only Compoundcrs's with the ProjectedCRS and VerticalCRS combination are supported, following elements were found:"
-                                                                   + crsElement1.getLocalName()
-                                                                   + " and "
-                                                                   + crsElement2.getLocalName() + "." );
+        	throw new XMLParsingException(adapter, crsElement1, "Currently only Compoundcrs's with the ProjectedCRS and VerticalCRS combination are supported, following elements were found:"+ crsElement1.getLocalName()+ " and "+ crsElement2.getLocalName() + "." );
         }
 
         return new CompoundCRS( vertical.getVerticalAxis(), underlying, 0, id );
@@ -526,7 +524,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      * @throws IOException
      *             if a retrieval of an xlink of one of the subelements failed.
      */
-    protected CoordinateSystem parseProjectedCRS( Element rootElement )
+    protected CoordinateSystem parseProjectedCRS( OMElement rootElement )
                             throws XMLParsingException, IOException {
         if ( rootElement == null ) {
             LOG.debug( "The given crs root element is null, returning nothing" );
@@ -540,34 +538,33 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
             LOG.debug( "Parsing id of projected crs resulted in: " + Arrays.toString( id.getIdentifiers() ) );
         }
 
-        Element baseGEOCRSElementProperty = getRequiredElement( rootElement, PRE + "baseGeodeticCRS", nsContext );
+        OMElement baseGEOCRSElementProperty = adapter.getRequiredElement( rootElement, new XPath( PRE + "baseGeodeticCRS", nsContext ) );
 
         CoordinateSystem parsedBaseCRS = parseGeodeticCRS( getRequiredXlinkedElement( baseGEOCRSElementProperty,
                                                                                       PRE + "GeodeticCRS" ) );
         if ( parsedBaseCRS == null ) {
-            throw new XMLParsingException(
-                                           "No basetype for the projected crs found, each projected crs must have a base crs." );
+        	throw new XMLParsingException( adapter, baseGEOCRSElementProperty, "No basetype for the projected crs found, each projected crs must have a base crs." );
         }
         GeographicCRS underlyingCRS = null;
         if ( parsedBaseCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
             CoordinateSystem cmpBase = ( (CompoundCRS) parsedBaseCRS ).getUnderlyingCRS();
             if ( cmpBase.getType() != CoordinateSystem.GEOGRAPHIC_CRS ) {
-                throw new XMLParsingException( "Only geographic crs's can be the base type of a projected crs." );
+            	throw new XMLParsingException( adapter, baseGEOCRSElementProperty, "Only geographic crs's can be the base type of a projected crs." );
             }
             underlyingCRS = (GeographicCRS) cmpBase;
         } else if ( parsedBaseCRS.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
             underlyingCRS = (GeographicCRS) parsedBaseCRS;
         } else {
-            throw new XMLParsingException( "Only geographic crs's can be the base type of a projected crs." );
+        	throw new XMLParsingException( adapter, baseGEOCRSElementProperty, "Only geographic crs's can be the base type of a projected crs." );
         }
 
-        Element cartesianCSProperty = getRequiredElement( rootElement, PRE + "cartesianCS", nsContext );
+        OMElement cartesianCSProperty = adapter.getRequiredElement( rootElement, new XPath( PRE + "cartesianCS", nsContext ) );
         Axis[] axis = parseAxisFromCSType( getRequiredXlinkedElement( cartesianCSProperty, PRE + "CartesianCS" ) );
         if ( axis.length != 2 ) {
-            throw new XMLParsingException( "The ProjectedCRS may only have 2 axis defined" );
+            throw new XMLParsingException( adapter, cartesianCSProperty, "The ProjectedCRS may only have 2 axis defined" );
         }
 
-        Element conversionElementProperty = getRequiredElement( rootElement, PRE + "conversion", nsContext );
+        OMElement conversionElementProperty = adapter.getRequiredElement( rootElement, new XPath( PRE + "conversion", nsContext ) );
         Projection projection = parseProjection(
                                                  getRequiredXlinkedElement( conversionElementProperty, PRE
                                                                                                        + "Conversion" ),
@@ -590,7 +587,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      * @throws XMLParsingException
      * @throws IOException
      */
-    protected CoordinateSystem parseGeodeticCRS( Element rootElement )
+    protected CoordinateSystem parseGeodeticCRS( OMElement rootElement )
                             throws XMLParsingException, IOException {
         if ( rootElement == null ) {
             LOG.debug( "The given crs root element is null, returning nothing" );
@@ -606,20 +603,19 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
             LOG.debug( "Parsing id of geodetic crs resulted in: " + Arrays.toString( id.getIdentifiers() ) );
         }
 
-        Element datumElementProp = getRequiredElement( rootElement, PRE + "geodeticDatum", nsContext );
-        Element datumElement = getRequiredXlinkedElement( datumElementProp, PRE + "GeodeticDatum" );
+        OMElement datumElementProp = adapter.getRequiredElement( rootElement, new XPath( PRE + "geodeticDatum", nsContext ) );
+        OMElement datumElement = getRequiredXlinkedElement( datumElementProp, PRE + "GeodeticDatum" );
 
-        Element csTypeProp = getElement( rootElement, PRE + "ellipsoidalCS", nsContext );
-        Element csTypeElement = null;
+        OMElement csTypeProp = adapter.getElement( rootElement, new XPath( PRE + "ellipsoidalCS", nsContext ) );
+        OMElement csTypeElement = null;
         if ( csTypeProp == null ) {
-            csTypeProp = getElement( rootElement, PRE + "cartesianCS", nsContext );
+        	csTypeProp = adapter.getElement( rootElement, new XPath(PRE + "cartesianCS", nsContext ) );        	
             if ( csTypeProp == null ) {
-                csTypeProp = getElement( rootElement, PRE + "sphericalCS", nsContext );
+            	csTypeProp = adapter.getElement( rootElement, new XPath( PRE + "sphericalCS", nsContext ) );
                 if ( csTypeProp == null ) {
-                    throw new XMLParsingException(
-                                                   "The geodetic datum does not define one of the required cs types: ellipsoidal, cartesian or spherical." );
+                	throw new XMLParsingException(adapter, rootElement, "The geodetic datum does not define one of the required cs types: ellipsoidal, cartesian or spherical." );
                 }
-                throw new XMLParsingException( "The sphericalCS is currently not supported." );
+                throw new XMLParsingException( adapter, csTypeProp, "The sphericalCS is currently not supported." );
             }
             csTypeElement = getRequiredXlinkedElement( csTypeProp, PRE + "CartesianCS" );
 
@@ -641,7 +637,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
                 result = new GeocentricCRS( datum, axis, id );
             }
         } else {
-            throw new XMLParsingException( "No Axis were found in the geodetic crs, this may not be." );
+        	throw new XMLParsingException( adapter, csTypeElement, "No Axes were found in the geodetic crs, this may not be." );
         }
 
         return result;
@@ -657,7 +653,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      * @throws IOException
      *             if a retrieval of an xlink of one of the subelements failed.
      */
-    protected GeodeticDatum parseDatum( Element rootElement )
+    protected GeodeticDatum parseDatum( OMElement rootElement )
                             throws IOException, XMLParsingException {
         if ( rootElement == null ) {
             LOG.debug( "The given datum element is null, returning nothing" );
@@ -672,12 +668,12 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
         }
         GeodeticDatum result = getCachedIdentifiable( GeodeticDatum.class, id );
         if ( result == null ) {
-            Element pmElementProp = getRequiredElement( rootElement, PRE + "primeMeridian", nsContext );
-            Element pmElement = getRequiredXlinkedElement( pmElementProp, PRE + "PrimeMeridian" );
+        	OMElement pmElementProp = adapter.getRequiredElement( rootElement, new XPath( PRE + "primeMeridian", nsContext ) );
+            OMElement pmElement = getRequiredXlinkedElement( pmElementProp, PRE + "PrimeMeridian" );
             PrimeMeridian pm = parsePrimeMeridian( pmElement );
 
-            Element ellipsoidElementProp = getRequiredElement( rootElement, PRE + "ellipsoid", nsContext );
-            Element ellipsoidElement = getRequiredXlinkedElement( ellipsoidElementProp, PRE + "Ellipsoid" );
+            OMElement ellipsoidElementProp = adapter.getRequiredElement( rootElement, new XPath( PRE + "ellipsoid", nsContext ) );
+            OMElement ellipsoidElement = getRequiredXlinkedElement( ellipsoidElementProp, PRE + "Ellipsoid" );
             Ellipsoid ellipsoid = parseEllipsoid( ellipsoidElement );
             result = new GeodeticDatum( ellipsoid, pm, id );
         }
@@ -699,41 +695,39 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      * @throws IOException
      *             if a retrieval of an xlink of one of the subelements failed.
      */
-    protected Axis[] parseAxisFromCSType( Element rootElement )
+    protected Axis[] parseAxisFromCSType( OMElement rootElement )
                             throws XMLParsingException, IOException {
         if ( rootElement == null ) {
             LOG.debug( "The given coordinate type element is null, returning nothing" );
             return null;
         }
-        List<Element> axisProps = XMLTools.getRequiredElements( rootElement, PRE + "axis", nsContext );
+        List<OMElement> axisProps = adapter.getRequiredElements( rootElement, new XPath( PRE + "axis", nsContext ) );
 
         if ( axisProps.size() > 3 ) {
-            throw new XMLParsingException( "The CS type defines to many axis." );
+        	throw new XMLParsingException( adapter, rootElement, "The CS type defines to many axes." );
         }
         if ( axisProps.size() == 0 ) {
-            throw new XMLParsingException( "The CS type defines no axis." );
+        	throw new XMLParsingException( adapter, rootElement, "The CS type defines no axes." );
         }
 
         Axis[] axis = new Axis[axisProps.size()];
         for ( int i = 0; i < axisProps.size(); i++ ) {
-            Element axisElement = getRequiredXlinkedElement( axisProps.get( i ), PRE + "CoordinateSystemAxis" );
+            OMElement axisElement = getRequiredXlinkedElement( axisProps.get( i ), PRE + "CoordinateSystemAxis" );
             Axis a = parseAxis( axisElement );
             if ( a == null ) {
-                throw new XMLParsingException( "Axis: " + i + " of the CS Type is null, this may not be." );
+            	throw new XMLParsingException( adapter, axisElement, "Axis: " + i + " of the CS Type is null, this may not be." );
             }
             axis[i] = a;
         }
         if ( "cartesianCS".equalsIgnoreCase( rootElement.getLocalName() ) ) {
             for ( int i = 0; i < axis.length; ++i ) {
                 if ( !axis[i].getUnits().canConvert( Unit.METRE ) ) {
-                    throw new XMLParsingException(
-                                                   "The units of all axis of a (cartesian) cs must be convertable to metres. Axis "
-                                                                           + i + " is not: " + axis[i] );
+                    throw new XMLParsingException( adapter, rootElement, "The units of all axis of a (cartesian) cs must be convertable to metres. Axis "+ i + " is not: " + axis[i] );
                 }
             }
         } else if ( "ellipsoidalCS".equalsIgnoreCase( rootElement.getLocalName() ) ) {
             if ( axis.length < 2 && axis.length > 3 ) {
-                throw new XMLParsingException( "An ellipsoidal cs can only have 2 or 3 axis." );
+            	throw new XMLParsingException( adapter, rootElement, "An ellipsoidal cs can only have 2 or 3 axis." );
             }
             if ( axis[0].getUnits() == null ) {
                 LOG.debug( "Could not check axis [0]: " + axis + " because it has no units." );
@@ -741,17 +735,14 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
                 LOG.debug( "Could not check axis [1]: " + axis + " because it has no units." );
             } else {
                 if ( !( axis[0].getUnits().canConvert( Unit.RADIAN ) && axis[1].getUnits().canConvert( Unit.RADIAN ) ) ) {
-                    throw new XMLParsingException( "The axis of the geodetic (Geographic) crs are not consistent: "
-                                                   + axis[0] + ", " + axis[1] );
+                	throw new XMLParsingException( adapter, rootElement, "The axis of the geodetic (Geographic) crs are not consistent: "+ axis[0] + ", " + axis[1] );
                 }
                 if ( axis.length == 3 ) {
                     if ( axis[2].getUnits() == null ) {
                         LOG.debug( "Could not check axis [2]: " + axis + " because it has no units." );
                     } else {
                         if ( !axis[2].getUnits().canConvert( Unit.METRE ) ) {
-                            throw new XMLParsingException(
-                                                           "The units of the third axis of the ellipsoidal CS type must be convertable to metre it is not: "
-                                                                                   + axis[2] );
+                        	throw new XMLParsingException(adapter, rootElement, "The units of the third axis of the ellipsoidal CS type must be convertable to metre it is not: "+ axis[2] );
                         }
                     }
 
@@ -760,12 +751,10 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
 
         } else if ( "verticalcs".equalsIgnoreCase( rootElement.getLocalName() ) ) {
             if ( axis.length != 1 ) {
-                throw new XMLParsingException( "A vertical cs can only have 1 axis." );
+            	throw new XMLParsingException( adapter, rootElement, "A vertical cs can only have 1 axis." );
             }
             if ( !axis[0].getUnits().canConvert( Unit.METRE ) ) {
-                throw new XMLParsingException(
-                                               "The axis of the vertical crs is not convertable to metre, other values are currently not supported: "
-                                                                       + axis[0] );
+            	throw new XMLParsingException( adapter, rootElement, "The axis of the vertical crs is not convertable to metre, other values are currently not supported: "+ axis[0] );
             }
         }
 
@@ -782,14 +771,14 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      * @throws XMLParsingException
      *             if the dom tree is not consistent or a required element is missing.
      */
-    protected Axis parseAxis( Element rootElement )
+    protected Axis parseAxis( OMElement rootElement )
                             throws XMLParsingException {
         if ( rootElement == null ) {
             LOG.debug( "The given axis element is null, returning nothing" );
             return null;
         }
-        String name = getRequiredNodeAsString( rootElement, PRE + "axisAbbrev", nsContext );
-        String orientation = getRequiredNodeAsString( rootElement, PRE + "axisDirection", nsContext );
+        String name = adapter.getRequiredNodeAsString( rootElement, new XPath( PRE + "axisAbbrev", nsContext ) );
+        String orientation = adapter.getRequiredNodeAsString( rootElement, new XPath( PRE + "axisDirection", nsContext ) );
         Unit unit = parseUnitOfMeasure( rootElement );
         if ( unit == null ) {
             unit = Unit.METRE;
@@ -806,7 +795,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      *             if the dom tree is not consistent or a required element is missing.
      * 
      */
-    protected Ellipsoid parseEllipsoid( Element rootElement )
+    protected Ellipsoid parseEllipsoid( OMElement rootElement )
                             throws XMLParsingException {
         if ( rootElement == null ) {
             LOG.debug( "The given ellipsoid element is null, returning nothing" );
@@ -822,21 +811,19 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
         Ellipsoid result = getCachedIdentifiable( Ellipsoid.class, id );
         if ( result == null ) {
 
-            Element semiMajorAxisElem = getRequiredElement( rootElement, PRE + "semiMajorAxis", nsContext );
-            double semiMajorAxis = getRequiredNodeAsDouble( semiMajorAxisElem, ".", nsContext );
+        	OMElement semiMajorAxisElem = adapter.getRequiredElement( rootElement, new XPath( PRE + "semiMajorAxis", nsContext ) );
+        	double semiMajorAxis = adapter.getRequiredNodeAsDouble(semiMajorAxisElem, new XPath( ".", nsContext ) );
             Unit unit = parseUnitOfMeasure( semiMajorAxisElem );
 
-            Element otherParam = getRequiredElement( rootElement, PRE + "secondDefiningParameter/" + PRE
-                                                                  + "SecondDefiningParameter", nsContext );
-            Element param = getElement( otherParam, PRE + "inverseFlattening", nsContext );
+            OMElement otherParam = adapter.getRequiredElement( rootElement, new XPath( PRE + "secondDefiningParameter/" + PRE + "SecondDefiningParameter", nsContext ) );
+            OMElement param = adapter.getElement( otherParam, new XPath( PRE + "inverseFlattening", nsContext ) );
             int type = 0;// inverseFlattening
             if ( param == null ) {
-                param = getElement( otherParam, PRE + "semiMinorAxis", nsContext );
+            	param = adapter.getElement( otherParam, new XPath( PRE + "semiMinorAxis", nsContext ) );
                 if ( param == null ) {
-                    param = getElement( otherParam, PRE + "isSphere", nsContext );
+                	param = adapter.getElement( otherParam, new XPath( PRE + "isSphere", nsContext ) );
                     if ( param == null ) {
-                        throw new XMLParsingException(
-                                                       "The ellipsoid is missing one of inverseFlattening, semiMinorAxis or isSphere" );
+                        throw new XMLParsingException( adapter, otherParam, "The ellipsoid is missing one of inverseFlattening, semiMinorAxis or isSphere" );
                     }
                     type = 2; // sphere
                 } else {
@@ -849,16 +836,16 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
             } else {
                 Unit secondUnit = parseUnitOfMeasure( param );
 
-                value = XMLTools.getNodeAsDouble( param, ".", nsContext, Double.NaN );
+                value = adapter.getNodeAsDouble( param, new XPath( ".", nsContext ), Double.NaN );
                 if ( Double.isNaN( value ) ) {
-                    throw new XMLParsingException( "The second defining ellipsoid parameter is missing." );
+                	throw new XMLParsingException( adapter, param, "The second defining ellipsoid parameter is missing." );
                 }
                 if ( secondUnit != null ) {
                     if ( !secondUnit.canConvert( unit ) ) {
-                        throw new XMLParsingException(
-                                                       "Ellispoid axis can only contain comparable unit, supplied are: "
-                                                                               + unit + " and " + secondUnit
-                                                                               + " which are not convertable." );
+                    	throw new XMLParsingException(adapter, param,  
+                                "Ellispoid axis can only contain comparable unit, supplied are: "
+                                                        + unit + " and " + secondUnit
+                                                        + " which are not convertable." );
                     }
                     if ( !secondUnit.equals( unit ) ) {
                         value = secondUnit.convert( value, unit );
@@ -880,7 +867,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      * @return {@link PrimeMeridian#GREENWICH} or the appropriate pm if a longitude is defined.
      * @throws XMLParsingException
      */
-    protected PrimeMeridian parsePrimeMeridian( Element rootElement )
+    protected PrimeMeridian parsePrimeMeridian( OMElement rootElement )
                             throws XMLParsingException {
         if ( rootElement == null ) {
             LOG.debug( "The given prime meridian element is null, returning Greenwich" );
@@ -899,8 +886,8 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
         // cache = getCachedIdentifiable( result.getIdentifiers() );
         // }
         if ( result == null ) {
-            Element gwLongitudeElem = getRequiredElement( rootElement, PRE + "greenwichLongitude", nsContext );
-            double gwLongitude = getRequiredNodeAsDouble( gwLongitudeElem, ".", nsContext );
+        	OMElement gwLongitudeElem = adapter.getRequiredElement( rootElement, new XPath( PRE + "greenwichLongitude", nsContext ) );
+            double gwLongitude = adapter.getRequiredNodeAsDouble( gwLongitudeElem, new XPath( ".", nsContext) );
             Unit unit = parseUnitOfMeasure( gwLongitudeElem );
             if ( unit != null && !unit.canConvert( Unit.RADIAN ) ) {
                 LOG.error( "The primemeridian must have RADIAN as a base unit." );
@@ -933,7 +920,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      *             if the dom tree is not consistent or a required element is missing.
      * 
      */
-    protected VerticalCRS parseVerticalCRS( Element rootElement )
+    protected VerticalCRS parseVerticalCRS( OMElement rootElement )
                             throws XMLParsingException, IOException {
         if ( rootElement == null ) {
             LOG.debug( "The given vertical crs root element is null, returning nothing" );
@@ -946,12 +933,12 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Parsing id of vertical crs resulted in: " + Arrays.toString( id.getIdentifiers() ) );
         }
-        Element verticalCSProp = getRequiredElement( rootElement, PRE + "verticalCS", nsContext );
-        Element verticalCSType = getRequiredXlinkedElement( verticalCSProp, PRE + "VerticalCS" );
+        OMElement verticalCSProp = adapter.getRequiredElement( rootElement, new XPath( PRE + "verticalCS", nsContext ) );
+        OMElement verticalCSType = getRequiredXlinkedElement( verticalCSProp, PRE + "VerticalCS" );
         // the axis will be one which is metre consistent.
         Axis[] axis = parseAxisFromCSType( verticalCSType );
-        Element verticalDatumProp = getRequiredElement( rootElement, PRE + "verticalDatum", nsContext );
-        Element vdType = getRequiredXlinkedElement( verticalDatumProp, PRE + "VerticalDatum" );
+        OMElement verticalDatumProp = adapter.getRequiredElement( rootElement, new XPath( PRE + "verticalDatum", nsContext ) );
+        OMElement vdType = getRequiredXlinkedElement( verticalDatumProp, PRE + "VerticalDatum" );
         VerticalDatum vd = parseVerticalDatum( vdType );
 
         return new VerticalCRS( vd, axis, id );
@@ -966,7 +953,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      *             if the dom tree is not consistent or a required element is missing.
      * 
      */
-    protected VerticalDatum parseVerticalDatum( Element rootElement )
+    protected VerticalDatum parseVerticalDatum( OMElement rootElement )
                             throws XMLParsingException {
         if ( rootElement == null ) {
             LOG.debug( "The given vertical datum root element is null, returning nothing" );
@@ -1000,7 +987,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      *             if the dom tree is not consistent or a required element is missing.
      * @throws IOException
      */
-    protected Projection parseProjection( Element rootElement, GeographicCRS underlyingCRS )
+    protected Projection parseProjection( OMElement rootElement, GeographicCRS underlyingCRS )
                             throws XMLParsingException, IOException {
         if ( rootElement == null || !"Conversion".equals( rootElement.getLocalName() ) ) {
             LOG.debug( "The given conversion root element is null, returning nothing" );
@@ -1017,9 +1004,9 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
 
         Projection result = getCachedIdentifiable( Projection.class, id.getIdentifiers() );
         if ( result == null ) {
-            Element method = getRequiredElement( rootElement, PRE + "method", nsContext );
+        	OMElement method = adapter.getRequiredElement( rootElement, new XPath( PRE + "method", nsContext ) );
 
-            Element conversionMethod = getRequiredXlinkedElement( method, PRE + "OperationMethod" );
+            OMElement conversionMethod = getRequiredXlinkedElement( method, PRE + "OperationMethod" );
             CRSIdentifiable conversionMethodID = parseIdentifiedObject( conversionMethod );
 
             double falseNorthing = 0, falseEasting = 0, scale = 1, firstParallelLatitude = 0, secondParallelLatitude = 0, trueScaleLatitude = 0;
@@ -1106,10 +1093,9 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
                            + " is currently not supported by the deegree crs package." );
             }
 
-            String remarks = XMLTools.getNodeAsString( rootElement, PRE + "remarks", nsContext, null );
+            String remarks = adapter.getNodeAsString(rootElement, new XPath( PRE + "remarks", nsContext ), null);
             LOG.debug( "The remarks fo the conversion are not evaluated: " + remarks );
-            String accuracy = XMLTools.getNodeAsString( rootElement, PRE + "coordinateOperationAccuracy", nsContext,
-                                                        null );
+            String accuracy = adapter.getNodeAsString( rootElement, new XPath( PRE + "coordinateOperationAccuracy", nsContext ), null );
             LOG.debug( "The coordinateOperationAccuracy for the conversion are not evaluated: " + accuracy );
         }
         return addIdToCache( result, false );
@@ -1125,18 +1111,18 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      *             if the dom tree is not consistent or a required element is missing.
      * @throws IOException
      */
-    protected List<Pair<CRSIdentifiable, Pair<Unit, Double>>> parseParameterValues( Element rootElement )
+    protected List<Pair<CRSIdentifiable, Pair<Unit, Double>>> parseParameterValues( OMElement rootElement )
                             throws XMLParsingException, IOException {
         List<Pair<CRSIdentifiable, Pair<Unit, Double>>> result = new ArrayList<Pair<CRSIdentifiable, Pair<Unit, Double>>>();
         if ( rootElement == null ) {
             LOG.debug( "The given parameter property root element is null, returning nothing" );
             return result;
         }
-        List<Element> parameterValues = XMLTools.getElements( rootElement, PRE + "parameterValue", nsContext );
+        List<OMElement> parameterValues = adapter.getElements(rootElement, new XPath( PRE + "parameterValue", nsContext) );
         if ( parameterValues == null || parameterValues.size() < 0 ) {
             LOG.debug( "The root element: " + rootElement.getLocalName() + " does not define any parameters." );
         } else {
-            for ( Element paramValueProp : parameterValues ) {
+            for ( OMElement paramValueProp : parameterValues ) {
                 if ( paramValueProp != null ) {
                     Pair<CRSIdentifiable, Pair<Unit, Double>> r = parseParameterValue( paramValueProp );
                     if ( r != null ) {
@@ -1157,29 +1143,29 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      *             if the dom tree is not consistent or a required element is missing.
      * @throws IOException
      */
-    protected Pair<CRSIdentifiable, Pair<Unit, Double>> parseParameterValue( Element rootElement )
+    protected Pair<CRSIdentifiable, Pair<Unit, Double>> parseParameterValue( OMElement rootElement )
                             throws XMLParsingException, IOException {
         if ( rootElement == null ) {
             LOG.debug( "The given parameter property root element is null, returning nothing" );
             return null;
         }
-        Element paramValue = getRequiredElement( rootElement, PRE + "ParameterValue", nsContext );
+        OMElement paramValue = adapter.getRequiredElement( rootElement, new XPath( PRE + "ParameterValue", nsContext ) );
 
-        Element operationParameterProp = getRequiredElement( paramValue, PRE + "operationParameter", nsContext );
+        OMElement operationParameterProp = adapter.getRequiredElement( paramValue, new XPath( PRE + "operationParameter", nsContext ) );
 
-        Element operationParameter = getRequiredXlinkedElement( operationParameterProp, PRE + "OperationParameter" );
+        OMElement operationParameter = getRequiredXlinkedElement( operationParameterProp, PRE + "OperationParameter" );
         CRSIdentifiable paramID = parseIdentifiedObject( operationParameter );
 
-        Element valueElem = XMLTools.getElement( paramValue, PRE + "value", nsContext );
+        OMElement valueElem = adapter.getElement( paramValue, new XPath( PRE + "value", nsContext ) );
         if ( valueElem == null ) {
             LOG.debug( "No gml:value found in the gml:Conversion/gml:parameterValue/gml:ParameterValue/ node, trying gml:integerValue instead." );
-            valueElem = XMLTools.getElement( paramValue, PRE + "integerValue", nsContext );
+            valueElem = adapter.getElement( paramValue, new XPath( PRE + "integerValue", nsContext ) );
             if ( valueElem == null ) {
                 LOG.debug( "Neither found a gml:integerValue in the gml:Conversion/gml:parameterValue/gml:ParameterValue/ node, ignoring this parameter value." );
             }
         }
 
-        double value = XMLTools.getNodeAsDouble( valueElem, ".", nsContext, Double.NaN );
+        double value = adapter.getNodeAsDouble( valueElem, new XPath( ".", nsContext ), Double.NaN );
         Unit units = parseUnitOfMeasure( valueElem );
         return new Pair<CRSIdentifiable, Pair<Unit, Double>>( paramID, new Pair<Unit, Double>( units, value ) );
     }
@@ -1195,13 +1181,13 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      *         or no appropriate mapping could be found.
      * @throws XMLParsingException
      */
-    protected Unit parseUnitOfMeasure( Element elementContainingUOMAttribute )
+    protected Unit parseUnitOfMeasure( OMElement elementContainingUOMAttribute )
                             throws XMLParsingException {
         if ( elementContainingUOMAttribute == null ) {
             return null;
         }
 
-        String uomAttribute = elementContainingUOMAttribute.getAttribute( "uom" );
+        String uomAttribute = elementContainingUOMAttribute.getAttributeValue( new QName( elementContainingUOMAttribute.getNamespace().getNamespaceURI(), "uom" ) );
         if ( "".equals( uomAttribute.trim() ) ) {
             return null;
         }
@@ -1210,7 +1196,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
             result = createUnitFromString( uomAttribute );
             if ( result == null && uomAttribute.indexOf( ":" ) != -1 ) {
                 LOG.debug( "Trying to resolve the uri: " + uomAttribute + " from a gml:value/@uom node" );
-                Element unitElement = null;
+                OMElement unitElement = null;
                 try {
                     unitElement = getResolver().getURIAsType( uomAttribute );
                 } catch ( IOException e ) {
@@ -1251,14 +1237,14 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      * @throws IOException
      *             if the xlink could not be properly resolved
      */
-    protected Element getRequiredXlinkedElement( Element propertyElement, String alternativeXPath )
+    protected OMElement getRequiredXlinkedElement( OMElement propertyElement, String alternativeXPath )
                             throws XMLParsingException, IOException {
         if ( propertyElement == null ) {
-            throw new XMLParsingException( "The propertyElement may not be null" );
+        	throw new XMLParsingException( adapter, propertyElement, "The propertyElement may not be null" );
         }
-        Element child = retrieveAndResolveXLink( propertyElement );
+        OMElement child = retrieveAndResolveXLink( propertyElement );
         if ( child == null ) {
-            child = getRequiredElement( propertyElement, alternativeXPath, nsContext );
+        	child = adapter.getRequiredElement( propertyElement, new XPath( alternativeXPath, nsContext ) );
         }
         return child;
     }
@@ -1272,14 +1258,14 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      *         resolved (or was not given) or the rootElement is null.
      * @throws IOException
      */
-    protected Element retrieveAndResolveXLink( Element rootElement )
+    protected OMElement retrieveAndResolveXLink( OMElement rootElement )
                             throws IOException {
         if ( rootElement == null ) {
             LOG.debug( "Rootelement is null no xlink to retrieve." );
             return null;
         }
         String xlink = retrieveXLink( rootElement );
-        Element result = null;
+        OMElement result = null;
         if ( !"".equals( xlink ) ) {
             LOG.debug( "Found an xlink: " + xlink );
             // The conversion is given by a link, so resolve it.
@@ -1312,11 +1298,12 @@ public class GMLCRSProvider extends AbstractCRSProvider<Element> {
      *            to get the attribute from.
      * @return the trimmed xlink:href attribute value or the empty String if not found or the rootElement is null;
      */
-    protected String retrieveXLink( Element rootElement ) {
+    protected String retrieveXLink( OMElement rootElement ) {
         if ( rootElement == null ) {
             return "";
         }
-        return rootElement.getAttributeNS( CommonNamespaces.XLNNS, "href" ).trim();
+        //return rootElement.getAttribute( new QName( CommonNamespaces.XLNNS, "href" ) ).getNamespace().getNamespaceURI().trim();
+        return rootElement.getAttributeValue( new QName( CommonNamespaces.XLNNS, "href" ) );
     }
 
     public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
