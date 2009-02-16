@@ -46,15 +46,13 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Properties;
 
-import org.deegree.commons.xml.XMLFragment;
+import org.apache.axiom.om.OMElement;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.model.crs.configuration.AbstractCRSProvider;
 import org.deegree.model.crs.exceptions.CRSConfigurationException;
 import org.deegree.model.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
 /**
  * The <code>XMLFileResource</code> class TODO add class documentation here.
  * 
@@ -65,11 +63,11 @@ import org.xml.sax.SAXException;
  * @version $Revision$, $Date$
  * 
  */
-public abstract class XMLFileResource extends XMLFragment implements XMLResource {
+public abstract class XMLFileResource extends XMLAdapter implements XMLResource {
 
     private static Logger LOG = LoggerFactory.getLogger( XMLFileResource.class );
 
-    private AbstractCRSProvider<Element> provider = null;
+    private AbstractCRSProvider<OMElement> provider = null;
 
     /**
      * @param provider
@@ -83,7 +81,7 @@ public abstract class XMLFileResource extends XMLFragment implements XMLResource
      * @param requiredNamespace
      *            check for the root elements namespace, may be <code>null</code>
      */
-    public XMLFileResource( AbstractCRSProvider<Element> provider, Properties properties, String requiredRootLocalName,
+    public XMLFileResource( AbstractCRSProvider<OMElement> provider, Properties properties, String requiredRootLocalName,
                             String requiredNamespace ) {
         if ( properties == null ) {
             throw new IllegalArgumentException( "The properties may not be null" );
@@ -118,7 +116,7 @@ public abstract class XMLFileResource extends XMLFragment implements XMLResource
             }
             read = new BufferedReader( new InputStreamReader( is ) );
 
-            load( read, XMLFragment.DEFAULT_URL );
+            load( read );
             if ( getRootElement() == null ) {
                 throw new NullPointerException( "The file: " + fileName + " does not contain a root element. " );
             }
@@ -129,36 +127,17 @@ public abstract class XMLFileResource extends XMLFragment implements XMLResource
                 }
             }
             if ( requiredNamespace != null ) {
-                if ( !requiredNamespace.equals( getRootElement().getNamespaceURI() ) ) {
+                if ( !requiredNamespace.equals( getRootElement().getNamespace().getNamespaceURI() ) ) {
                     throw new IllegalArgumentException(
                                                         "The root element of the given file is not in the required namespace: "
                                                                                 + requiredNamespace + " aborting." );
                 }
             }
 
-        } catch ( SAXException e ) {
+        }  catch ( IOException e ) {
             LOG.error( e.getLocalizedMessage(), e );
             throw new IllegalArgumentException( "File: " + fileName + " is an invalid xml file resource because: "
                                                 + e.getLocalizedMessage() );
-        } catch ( IOException e ) {
-            LOG.error( e.getLocalizedMessage(), e );
-            throw new IllegalArgumentException( "File: " + fileName + " is an invalid xml file resource because: "
-                                                + e.getLocalizedMessage() );
-        } finally {
-            if ( read != null ) {
-                try {
-                    read.close();
-                } catch ( IOException e ) {
-                    LOG.error( e.getLocalizedMessage(), e );
-                }
-            }
-            if ( is != null ) {
-                try {
-                    is.close();
-                } catch ( IOException e ) {
-                    LOG.error( e.getLocalizedMessage(), e );
-                }
-            }
         }
         this.provider = provider;
     }
@@ -168,7 +147,7 @@ public abstract class XMLFileResource extends XMLFragment implements XMLResource
      *            to be used for callback.
      * @param rootElement
      */
-    public XMLFileResource( AbstractCRSProvider<Element> provider, Element rootElement ) {
+    public XMLFileResource( AbstractCRSProvider<OMElement> provider, OMElement rootElement ) {
         super( rootElement );
         this.provider = provider;
     }
@@ -176,7 +155,7 @@ public abstract class XMLFileResource extends XMLFragment implements XMLResource
     /**
      * @return the provider used for reversed look ups, will never be <code>null</code>
      */
-    public AbstractCRSProvider<Element> getProvider() {
+    public AbstractCRSProvider<OMElement> getProvider() {
         return provider;
     }
 }

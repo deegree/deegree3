@@ -38,7 +38,7 @@
 
 package org.deegree.model.crs.configuration.resources;
 
-import org.w3c.dom.Element;
+import org.apache.axiom.om.OMElement;
 
 /**
  * The <code>XMLResource</code> class TODO add class documentation here.
@@ -50,6 +50,6 @@ import org.w3c.dom.Element;
  * @version $Revision$, $Date$
  * 
  */
-public interface XMLResource extends CRSResource<Element> {
+public interface XMLResource extends CRSResource<OMElement> {
     // marker class
 }
