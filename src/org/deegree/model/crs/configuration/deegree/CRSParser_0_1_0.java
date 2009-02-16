@@ -38,10 +38,11 @@
 
 package org.deegree.model.crs.configuration.deegree;
 
+
 import java.util.Properties;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.CommonNamespaces;
-import org.w3c.dom.Element;
 
 /**
  * The <code>CRSParser_0_1_0</code> class TODO add class documentation here.
@@ -69,7 +70,7 @@ public class CRSParser_0_1_0 extends CRSParser {
      * @param rootElement
      *            to be used as configuration backend.
      */
-    public CRSParser_0_1_0( DeegreeCRSProvider provider, Properties properties, Element rootElement ) {
+    public CRSParser_0_1_0( DeegreeCRSProvider provider, Properties properties, OMElement rootElement ) {
         super( provider, rootElement );
     }
 
@@ -81,4 +82,5 @@ public class CRSParser_0_1_0 extends CRSParser {
         super( provider, properties, "definitions", CommonNamespaces.CRSNS );
         // TODO Auto-generated constructor stub
     }
+   
 }
