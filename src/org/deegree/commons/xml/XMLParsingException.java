@@ -102,6 +102,6 @@ public class XMLParsingException extends XMLProcessingException {
     @Override
     public String getMessage() {
 
-        return ( ( errorPosition != null ) ? errorPosition.getAsMessage() : "Unknon error position" ) + ": " + msg;
+        return ( ( errorPosition != null ) ? errorPosition.getAsMessage() : "Unknown error position" ) + ": " + msg;
     }
 }
