@@ -87,7 +87,7 @@ public class CRSConfiguration {
 
     public static final Map<String, CRSConfiguration> DEFINED_CONFIGURATIONS = new HashMap<String, CRSConfiguration>();
 
-    private static final String DEFAULT_PROVIDER_CLASS = "org.deegree.model.crs.configuration.DeegreeCRSProvider";
+    private static final String DEFAULT_PROVIDER_CLASS = "org.deegree.model.crs.configuration.deegree.DeegreeCRSProvider";
 
     private static String CONFIGURED_DEFAULT_PROVIDER_CLASS = DEFAULT_PROVIDER_CLASS;
 
@@ -115,7 +115,7 @@ public class CRSConfiguration {
                     LOG.info( "Using the supplied crs.configuration property for the crs_configuration location." );
                     configuredProperties.put( "crs.configuration", crs_configuration );
                 }
-                configuredProperties.put( "crs.default.configuration", "deegree-crs-configuration.xml" );
+                configuredProperties.put( "crs.default.configuration", "deegree-crs-configuration.xml" );                
             } catch ( Exception e ) {
                 LOG.error( e.getMessage(), e );
             } finally {
@@ -176,6 +176,7 @@ public class CRSConfiguration {
                 LOG.debug( "Trying to load configured CRS provider from classname: " + provName );
                 Constructor<?> constructor = t.getConstructor( Properties.class );
                 if ( constructor != null ) {
+                	LOG.debug("Invoking constructor: " + constructor);
                     provider = (CRSProvider) constructor.newInstance( new Properties( configuredProperties ) );
                 }
             } catch ( InstantiationException e ) {
@@ -191,6 +192,7 @@ public class CRSConfiguration {
             } catch ( IllegalArgumentException e ) {
                 LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", provName, e.getMessage() ), e );
             } catch ( InvocationTargetException e ) {
+            	LOG.error( e.getCause().getMessage(), e.getCause() );
                 LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", provName, e.getMessage() ), e );
             } catch ( Throwable t ) {
                 LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", provName, t.getMessage() ), t );
