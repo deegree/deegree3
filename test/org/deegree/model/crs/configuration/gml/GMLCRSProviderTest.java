@@ -54,6 +54,7 @@ import org.deegree.model.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.model.crs.projections.Projection;
 import org.deegree.model.crs.projections.cylindric.TransverseMercator;
 import org.deegree.model.crs.transformations.helmert.Helmert;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,9 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class GMLCRSProviderTest extends TestCase {
-    private static final String CONFIG_FILE = "${user.home}/workspace/adv_registry2/docs/specification/AdV-Registry-P2_130-v02_dictionary_2.xml";
+
+	private static final String CONFIG_FILE = "/home/ionita/workspace/d3_commons/test/org/deegree/model/crs/configuration/gml/gmlDictionary.xml";
+    											//"${user.home}/workspace/adv_registry2/docs/specification/AdV-Registry-P2_130-v02_dictionary_2.xml";
 
     private static Logger LOG = LoggerFactory.getLogger( GMLCRSProviderTest.class );
 
@@ -80,7 +83,7 @@ public class GMLCRSProviderTest extends TestCase {
             throw new NullPointerException( "The file was not found. " );
         }
         final String old_value = CRSConfiguration.setDefaultFileProperty( CONFIG_FILE );
-        CRSProvider provider = CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.gml.GMLCRSProvider" ).getProvider();
+        CRSProvider provider = CRSConfiguration.getCRSConfiguration( "org.deegree.model.crs.configuration.gml.GMLCRSProvider" ).getProvider();
         assertNotNull( provider );
         if ( !( provider instanceof GMLCRSProvider ) ) {
             throw new NullPointerException( "The provider was not loaded. " );
@@ -93,6 +96,7 @@ public class GMLCRSProviderTest extends TestCase {
     /**
      * Tries to load the configuration
      */
+    @Test    
     public void testLoadingConfiguration() {
         try {
             GMLCRSProvider gProvider = getProvider();
@@ -105,11 +109,15 @@ public class GMLCRSProviderTest extends TestCase {
     /**
      * Tries to create a crs by id.
      */
+    @Test    
     public void testCRSByID() {
         try {
             GMLCRSProvider gProvider = getProvider();
+//            for (String id : gProvider.getCRSByID(""))) {
+//            	System.out.println ("id: " + id);
+//            }
             // try loading the gaus krueger zone 3.
-            CoordinateSystem testCRS = gProvider.getCRSByID( "urn:adv:crs:DE_DHDN_3GK3" );
+            CoordinateSystem testCRS = gProvider.getCRSByID( "urn:ogc:def:crs:EPSG::31467" );
             testCRS_31467( testCRS );
             testCRS = gProvider.getCRSByID( "SOME_DUMMY_CODE" );
             assertTrue( testCRS == null );
@@ -184,7 +192,7 @@ public class GMLCRSProviderTest extends TestCase {
         try {
             GMLCRSProvider gProvider = getProvider();
 
-            CoordinateSystem testCRS = gProvider.getCRSByID( "urn:adv:crs:DE_DHDN_3GK3" );
+            CoordinateSystem testCRS = gProvider.getCRSByID( "urn:ogc:def:crs:EPSG::31467" );
             testCRS_31467( testCRS );
 
             testCRS = gProvider.getCRSByID( "urn:adv:crs:DE_DHDN_3GK3" );
