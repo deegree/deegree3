@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crs:definitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs ../../../../../resources/crs/schema/crsdefinition.xsd">
+<crs:definitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs ../../../../../resources/crs/schema/crsdefinition.xsd" version="0.1.0">
   <crs:ellipsoid>
     <crs:id>ELLIPSOID_11</crs:id>
     <crs:name>Proj4 defined ellipsoid</crs:name>
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 28192</crs:description>
     <crs:semiMajorAxis>6378300.789</crs:semiMajorAxis>
-    <crs:inverseFlatting>293.4663155389811</crs:inverseFlatting>
+    <crs:inverseFlattening>293.4663155389811</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -16,7 +16,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7034</crs:id>
     <crs:name>Clarke 1880 mod.</crs:name>
     <crs:semiMajorAxis>6378249.145</crs:semiMajorAxis>
-    <crs:inverseFlatting>293.4663</crs:inverseFlatting>
+    <crs:inverseFlattening>293.4663</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -26,7 +26,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7022</crs:id>
     <crs:name>International 1909 (Hayford)</crs:name>
     <crs:semiMajorAxis>6378388.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>297.0</crs:inverseFlatting>
+    <crs:inverseFlattening>297.0</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -36,7 +36,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7019</crs:id>
     <crs:name>GRS 1980(IUGG, 1980)</crs:name>
     <crs:semiMajorAxis>6378137.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.257222101</crs:inverseFlatting>
+    <crs:inverseFlattening>298.257222101</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -46,7 +46,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7050</crs:id>
     <crs:name>Australian Natl &amp; S. Amer. 1969</crs:name>
     <crs:semiMajorAxis>6378160.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.25</crs:inverseFlatting>
+    <crs:inverseFlattening>298.25</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -55,7 +55,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4222</crs:description>
     <crs:semiMajorAxis>6378249.145</crs:semiMajorAxis>
-    <crs:inverseFlatting>293.4663076999949</crs:inverseFlatting>
+    <crs:inverseFlattening>293.4663076999949</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -65,7 +65,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7004</crs:id>
     <crs:name>Bessel 1841</crs:name>
     <crs:semiMajorAxis>6377397.155</crs:semiMajorAxis>
-    <crs:inverseFlatting>299.1528128</crs:inverseFlatting>
+    <crs:inverseFlattening>299.1528128</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -74,7 +74,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 26193</crs:description>
     <crs:semiMajorAxis>6378249.2</crs:semiMajorAxis>
-    <crs:inverseFlatting>293.4660212936269</crs:inverseFlatting>
+    <crs:inverseFlattening>293.4660212936269</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -84,7 +84,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7008</crs:id>
     <crs:name>Clarke 1866</crs:name>
     <crs:semiMajorAxis>6378206.4</crs:semiMajorAxis>
-    <crs:inverseFlatting>294.9786982138982</crs:inverseFlatting>
+    <crs:inverseFlattening>294.9786982138982</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -94,7 +94,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7043</crs:id>
     <crs:name>WGS 72</crs:name>
     <crs:semiMajorAxis>6378135.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.26</crs:inverseFlatting>
+    <crs:inverseFlattening>298.26</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -103,7 +103,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4299</crs:description>
     <crs:semiMajorAxis>6377340.189</crs:semiMajorAxis>
-    <crs:inverseFlatting>299.324964599999</crs:inverseFlatting>
+    <crs:inverseFlattening>299.324964599999</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -113,14 +113,14 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7024</crs:id>
     <crs:name>Krassowsky, 1942</crs:name>
     <crs:semiMajorAxis>6378245.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.3</crs:inverseFlatting>
+    <crs:inverseFlattening>298.3</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
     <crs:id>EPSG:7030</crs:id>
     <crs:name>WGS84_Ellipsoid</crs:name>
     <crs:semiMajorAxis>6378137.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.257223563</crs:inverseFlatting>
+    <crs:inverseFlattening>298.257223563</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -130,7 +130,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7020</crs:id>
     <crs:name>Helmert 1906</crs:name>
     <crs:semiMajorAxis>6378200.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.3</crs:inverseFlatting>
+    <crs:inverseFlattening>298.3</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -140,7 +140,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7036</crs:id>
     <crs:name>GRS 67(IUGG 1967)</crs:name>
     <crs:semiMajorAxis>6378160.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.247167427</crs:inverseFlatting>
+    <crs:inverseFlattening>298.247167427</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -149,7 +149,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 24377</crs:description>
     <crs:semiMajorAxis>6377301.243</crs:semiMajorAxis>
-    <crs:inverseFlatting>300.80172550000657</crs:inverseFlatting>
+    <crs:inverseFlattening>300.80172550000657</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -158,7 +158,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4732</crs:description>
     <crs:semiMajorAxis>6378270.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>296.99999999999557</crs:inverseFlatting>
+    <crs:inverseFlattening>296.99999999999557</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -168,7 +168,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7001</crs:id>
     <crs:name>Airy 1830</crs:name>
     <crs:semiMajorAxis>6377563.396</crs:semiMajorAxis>
-    <crs:inverseFlatting>299.3249753150345</crs:inverseFlatting>
+    <crs:inverseFlattening>299.3249753150345</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -177,7 +177,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 2160</crs:description>
     <crs:semiMajorAxis>6378300.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>295.999999999999</crs:inverseFlatting>
+    <crs:inverseFlattening>295.999999999999</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -186,7 +186,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4052</crs:description>
     <crs:semiMajorAxis>6370997.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>0.0</crs:inverseFlatting>
+    <crs:inverseFlattening>0.0</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -195,7 +195,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4015</crs:description>
     <crs:semiMajorAxis>6377276.345</crs:semiMajorAxis>
-    <crs:inverseFlatting>300.8016999999937</crs:inverseFlatting>
+    <crs:inverseFlattening>300.8016999999937</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -204,7 +204,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 2291</crs:description>
     <crs:semiMajorAxis>6378135.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.2569999999998</crs:inverseFlatting>
+    <crs:inverseFlattening>298.2569999999998</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -213,7 +213,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 26813</crs:description>
     <crs:semiMajorAxis>6378450.047548896</crs:semiMajorAxis>
-    <crs:inverseFlatting>294.97869716467716</crs:inverseFlatting>
+    <crs:inverseFlattening>294.97869716467716</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -222,7 +222,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4901</crs:description>
     <crs:semiMajorAxis>6376523.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>308.63999999999953</crs:inverseFlatting>
+    <crs:inverseFlattening>308.63999999999953</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -231,7 +231,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4028</crs:description>
     <crs:semiMajorAxis>6378298.3</crs:semiMajorAxis>
-    <crs:inverseFlatting>294.7300000000063</crs:inverseFlatting>
+    <crs:inverseFlattening>294.7300000000063</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -240,7 +240,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4035</crs:description>
     <crs:semiMajorAxis>6371000.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>0.0</crs:inverseFlatting>
+    <crs:inverseFlattening>0.0</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -249,7 +249,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4243</crs:description>
     <crs:semiMajorAxis>6377299.36559538</crs:semiMajorAxis>
-    <crs:inverseFlatting>300.80169999999447</crs:inverseFlatting>
+    <crs:inverseFlattening>300.80169999999447</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -258,7 +258,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 27394</crs:description>
     <crs:semiMajorAxis>6377492.018</crs:semiMajorAxis>
-    <crs:inverseFlatting>299.15281280000056</crs:inverseFlatting>
+    <crs:inverseFlattening>299.15281280000056</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -267,7 +267,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4157</crs:description>
     <crs:semiMajorAxis>6378293.645208759</crs:semiMajorAxis>
-    <crs:inverseFlatting>294.26067636926064</crs:inverseFlatting>
+    <crs:inverseFlattening>294.26067636926064</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -276,7 +276,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 23891</crs:description>
     <crs:semiMajorAxis>6378160.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.247</crs:inverseFlatting>
+    <crs:inverseFlattening>298.247</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -285,7 +285,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4014</crs:description>
     <crs:semiMajorAxis>6378249.2</crs:semiMajorAxis>
-    <crs:inverseFlatting>293.46598000000307</crs:inverseFlatting>
+    <crs:inverseFlattening>293.46598000000307</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -294,14 +294,14 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4748</crs:description>
     <crs:semiMajorAxis>6378306.3696</crs:semiMajorAxis>
-    <crs:inverseFlatting>293.4663076556355</crs:inverseFlatting>
+    <crs:inverseFlattening>293.4663076556355</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
     <crs:id>WGS66</crs:id>
     <crs:name>WGS 66</crs:name>
     <crs:semiMajorAxis>6378145.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.25</crs:inverseFlatting>
+    <crs:inverseFlattening>298.25</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -310,7 +310,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 24379</crs:description>
     <crs:semiMajorAxis>6377299.151</crs:semiMajorAxis>
-    <crs:inverseFlatting>300.8017255000053</crs:inverseFlatting>
+    <crs:inverseFlattening>300.8017255000053</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -320,7 +320,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7046</crs:id>
     <crs:name>Bessel 1841 (Namibia)</crs:name>
     <crs:semiMajorAxis>6377483.865</crs:semiMajorAxis>
-    <crs:inverseFlatting>299.1528128</crs:inverseFlatting>
+    <crs:inverseFlattening>299.1528128</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -329,7 +329,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 24547</crs:description>
     <crs:semiMajorAxis>6377304.063</crs:semiMajorAxis>
-    <crs:inverseFlatting>300.8017000000039</crs:inverseFlatting>
+    <crs:inverseFlattening>300.8017000000039</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -338,7 +338,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 2332</crs:description>
     <crs:semiMajorAxis>6378140.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.2569999999957</crs:inverseFlatting>
+    <crs:inverseFlattening>298.2569999999957</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -347,7 +347,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4740</crs:description>
     <crs:semiMajorAxis>6378136.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.2578393029947</crs:inverseFlatting>
+    <crs:inverseFlattening>298.2578393029947</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -356,7 +356,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4047</crs:description>
     <crs:semiMajorAxis>6371007.0</crs:semiMajorAxis>
-    <crs:inverseFlatting>0.0</crs:inverseFlatting>
+    <crs:inverseFlattening>0.0</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -365,7 +365,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4751</crs:description>
     <crs:semiMajorAxis>6377295.664</crs:semiMajorAxis>
-    <crs:inverseFlatting>300.80169999999714</crs:inverseFlatting>
+    <crs:inverseFlattening>300.80169999999714</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -374,7 +374,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4657</crs:description>
     <crs:semiMajorAxis>6377019.27</crs:semiMajorAxis>
-    <crs:inverseFlatting>300.0000000000021</crs:inverseFlatting>
+    <crs:inverseFlattening>300.0000000000021</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -384,7 +384,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7016</crs:id>
     <crs:name>Everest (Sabah &amp; Sarawak)</crs:name>
     <crs:semiMajorAxis>6377298.556</crs:semiMajorAxis>
-    <crs:inverseFlatting>300.8017</crs:inverseFlatting>
+    <crs:inverseFlattening>300.8017</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -393,7 +393,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4032</crs:description>
     <crs:semiMajorAxis>6378136.2</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.2572235630046</crs:inverseFlatting>
+    <crs:inverseFlattening>298.2572235630046</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -402,7 +402,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4033</crs:description>
     <crs:semiMajorAxis>6378136.3</crs:semiMajorAxis>
-    <crs:inverseFlatting>298.25722356299553</crs:inverseFlatting>
+    <crs:inverseFlattening>298.25722356299553</crs:inverseFlattening>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:geodeticDatum>
