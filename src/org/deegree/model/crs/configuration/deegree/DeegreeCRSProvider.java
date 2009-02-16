@@ -48,10 +48,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.XMLTools;
+import org.deegree.commons.xml.XPath;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.configuration.AbstractCRSProvider;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
@@ -61,7 +62,7 @@ import org.deegree.model.crs.transformations.Transformation;
 import org.deegree.model.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Element;
+
 
 /**
  * The <code>DeegreeCRSProvider</code> reads the deegree crs-config (based on it's own xml-schema) and creates the
@@ -129,7 +130,7 @@ import org.w3c.dom.Element;
  * 
  */
 
-public class DeegreeCRSProvider extends AbstractCRSProvider<Element> {
+public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
 
     private static Logger LOG = LoggerFactory.getLogger( DeegreeCRSProvider.class );
 
@@ -247,13 +248,13 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<Element> {
             String version = versionedParser.getVersion();
             if ( !"".equals( version ) ) {
                 version = version.trim().replaceAll( "\\.", "_" );
-                String className = "org.deegree.model.crs.deegree.configuration.CRSParser_" + version;
+                String className = "org.deegree.model.crs.configuration.deegree.CRSParser_" + version;
                 try {
                     Class<?> tClass = Class.forName( className );
                     tClass.asSubclass( CRSParser.class );
                     LOG.debug( "Trying to load configured CRS provider from classname: " + className );
                     Constructor<?> constructor = tClass.getConstructor( this.getClass(), Properties.class,
-                                                                        Element.class );
+                                                                        OMElement.class );
                     if ( constructor == null ) {
                         LOG.error( "No constructor ( " + this.getClass() + ", Properties.class) found in class:"
                                    + className );
@@ -261,7 +262,7 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<Element> {
                         versionedParser = (CRSParser) constructor.newInstance( this, new Properties( properties ),
                                                                                versionedParser.getRootElement() );
                     }
-                    className = "org.deegree.model.crs.deegree.configuration.CRSExporter_" + version;
+                    className = "org.deegree.model.crs.configuration.deegree.CRSExporter_" + version;
                     tClass = Class.forName( className );
                     tClass.asSubclass( CRSExporter.class );
                     LOG.debug( "Trying to load configured CRS exporter for version: " + version + " from classname: "
@@ -270,7 +271,7 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<Element> {
                     if ( constructor == null ) {
                         LOG.error( "No constructor ( Properties.class ) found in class:" + className );
                     } else {
-                        versionedParser = (CRSParser) constructor.newInstance( new Properties( properties ) );
+                    	exporter = (CRSExporter) constructor.newInstance( new Properties( properties ) );
                     }
                 } catch ( InstantiationException e ) {
                     LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", className, e.getMessage() ) );
@@ -326,26 +327,27 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<Element> {
 
     public List<String> getAvailableCRSIds()
                             throws CRSConfigurationException {
-        List<Element> allCRSIDs = new LinkedList<Element>();
+        List<OMElement> allCRSIDs = new LinkedList<OMElement>();
 
         try {
-            allCRSIDs.addAll( XMLTools.getElements( getResolver().getRootElement(), "//" + PRE + "geographicCRS/" + PRE
-                                                                                    + "id", nsContext ) );
-            allCRSIDs.addAll( XMLTools.getElements( getResolver().getRootElement(), "//" + PRE + "projectedCRS/" + PRE
-                                                                                    + "id", nsContext ) );
-            allCRSIDs.addAll( XMLTools.getElements( getResolver().getRootElement(), "//" + PRE + "geocentricCRS/" + PRE
-                                                                                    + "id", nsContext ) );
-            allCRSIDs.addAll( XMLTools.getElements( getResolver().getRootElement(), "//" + PRE + "compoundCRS/" + PRE
-                                                                                    + "id", nsContext ) );
+            allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "geographicCRS/" + PRE
+                                                                                    + "id", nsContext ) ) );
+            //allCRSIDs.addAll( XMLTools.getElements( getResolver().getRootElement(), "//" + PRE + "projectedCRS/" + PRE + "id", nsContext ) );
+            allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "projectedCRS/" + PRE
+                    																+ "id", nsContext ) ) );
+            allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "geocentricCRS/" + PRE
+                                                                                    + "id", nsContext ) ) );
+            allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "compoundCRS/" + PRE
+                                                                                    + "id", nsContext ) ) );
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException(
                                                  Messages.getMessage( "CRS_CONFIG_GET_ALL_ELEMENT_IDS", e.getMessage() ),
                                                  e );
         }
         List<String> result = new LinkedList<String>();
-        for ( Element crs : allCRSIDs ) {
+        for ( OMElement crs : allCRSIDs ) {
             if ( crs != null ) {
-                result.add( XMLTools.getStringValue( crs ) );
+                result.add( getResolver().getNodeAsString(crs, new XPath( ".", nsContext), null ) );
             }
         }
         return result;
@@ -355,17 +357,18 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<Element> {
                             throws CRSConfigurationException {
         List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
         if ( getResolver().getRootElement() != null ) {
-            List<Element> allCRSIDs = new LinkedList<Element>();
+            List<OMElement> allCRSIDs = new LinkedList<OMElement>();
 
             try {
-                allCRSIDs.addAll( XMLTools.getElements( getResolver().getRootElement(), "//" + PRE + "geographicCRS/"
-                                                                                        + PRE + "id", nsContext ) );
-                allCRSIDs.addAll( XMLTools.getElements( getResolver().getRootElement(), "//" + PRE + "projectedCRS/"
-                                                                                        + PRE + "id", nsContext ) );
-                allCRSIDs.addAll( XMLTools.getElements( getResolver().getRootElement(), "//" + PRE + "geocentricCRS/"
-                                                                                        + PRE + "id", nsContext ) );
-                allCRSIDs.addAll( XMLTools.getElements( getResolver().getRootElement(), "//" + PRE + "compoundCRS/"
-                                                                                        + PRE + "id", nsContext ) );
+                //allCRSIDs.addAll( XMLTools.getElements( getResolver().getRootElement(), "//" + PRE + "geographicCRS/" + PRE + "id", nsContext ) );
+            	allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "geographicCRS/" 
+            																			+ PRE + "id", nsContext ) ) );
+                allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "projectedCRS/"
+                                                                                        + PRE + "id", nsContext ) ) );
+                allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "geocentricCRS/"
+                                                                                        + PRE + "id", nsContext ) ) );
+                allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "compoundCRS/"
+                                                                                        + PRE + "id", nsContext ) ) );
             } catch ( XMLParsingException e ) {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_GET_ALL_ELEMENT_IDS",
                                                                           e.getMessage() ), e );
@@ -375,9 +378,10 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<Element> {
             int percentage = (int) Math.round( total / 100.d );
             int number = 0;
             System.out.println( "Trying to create a total of " + total + " coordinate systems." );
-            for ( Element crsID : allCRSIDs ) {
+            for ( OMElement crsID : allCRSIDs ) {
                 if ( crsID != null ) {
-                    String id = crsID.getTextContent();
+                    //String id = crsID.getTextContent();
+                	String id = crsID.getText();
                     if ( id != null && !"".equals( id.trim() ) ) {
                         if ( count++ % percentage == 0 ) {
                             System.out.print( "\r" + ( number ) + ( ( number++ < 10 ) ? "  " : " " ) + "% created" );
@@ -500,13 +504,13 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<Element> {
     }
 
     @Override
-    protected CoordinateSystem parseCoordinateSystem( Element crsDefinition )
+    protected CoordinateSystem parseCoordinateSystem( OMElement crsDefinition )
                             throws CRSConfigurationException {
         return getResolver().parseCoordinateSystem( crsDefinition );
     }
 
     @Override
-    public Transformation parseTransformation( Element transformationDefinition )
+    public Transformation parseTransformation( OMElement transformationDefinition )
                             throws CRSConfigurationException {
         return getResolver().parseTransformation( transformationDefinition );
 
