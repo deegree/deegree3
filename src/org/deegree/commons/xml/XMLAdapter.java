@@ -750,7 +750,8 @@ public class XMLAdapter {
                             throws XMLParsingException {
         return getNodes( context, xpath );
     }
-
+    
+    //TODO Should we consider changing OMElement in OMNode for getNode* methods?
     public Object getNode( OMElement context, XPath xpath )
                             throws XMLParsingException {
         Object node;
@@ -871,6 +872,39 @@ public class XMLAdapter {
             throw new XMLParsingException( this, context, e.getMessage() );
         }
         return nodes;
+    }
+     
+    public String[] getNodesAsStrings( OMElement contextNode, XPath xpath ) {
+    	String[] values = null;
+    	List<?> nl = getNodes( contextNode, xpath );
+    	if ( nl != null ) {
+    		values = new String[nl.size()];
+    		for ( int i = 0; i < nl.size(); i++ ) {
+    			Object node = nl.get( i );
+    			String value = null;
+    			if ( node != null ) {
+    	            try {
+    	                if ( node instanceof OMText ) {
+    	                    value = ( (OMText) node ).getText();
+    	                } else if ( node instanceof OMElement ) {
+    	                    value = ( (OMElement) node ).getText();
+    	                } else if ( node instanceof OMAttribute ) {
+    	                    value = ( (OMAttribute) node ).getAttributeValue();
+    	                } else {
+    	                    String msg = "Unexpected node type '" + node.getClass() + "'.";
+    	                    throw new XMLParsingException( this, contextNode, msg );
+    	                }
+    	            } catch ( OMException ex ) {
+    	                String msg = "Internal error while accessing node '" + ex.getMessage() + "'.";
+    	                throw new XMLParsingException( this, contextNode, msg );
+    	            }
+    	        }
+    			values[i] = value;
+    		}
+    	} else {
+    		values = new String[0];
+    	}
+    	return values;
     }
 
     public OMElement getRequiredElement( OMElement context, XPath xpath )
