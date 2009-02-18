@@ -30,8 +30,7 @@
         </classpath>
     </taskdef>
 
-
-    <target name="bind-commons-configuration">
+    <target name="bind" depends="resolve">
         <!-- Support jaxb tasks -->
         <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
             <classpath refid="build.path" />
@@ -42,25 +41,11 @@
         <property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
         <property name="src.output.dir" value="${src.dir}/org/deegree/${schema.name}/configuration" />
 
-        <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true">
-            <binding dir="${schema.dir}/bindings/">
-                <include name="${schema.name}_bindings.xjb" />
-            </binding>
-            <!--arg value="-episode"/>
-            <arg value="${schema.dir}/bindings/external_${schema.name}_bindings.episode" /-->
+        <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
             <produces dir="${src.output.dir}" includes="**/*.java" />
         </xjc>
-
-        <path id="updated.path">
-            <path refid="build.path" />
-            <pathelement location="${jar.file}.jar" />
-        </path>
-        <java classpathref="updated.path" classname="org.deegree.commons.utils.jaxb.CreateExternalBindings">
-            <arg value="${src.output.dir}" />
-            <arg value="${src.dir}/META-INF/sun-jaxb.episode"/>
-            <arg value="http://www.deegree.org/${schema.name}" />
-            <arg value="../${schema.file}" />
-        </java>
     </target>
-  
+
+    <target name="bind-commons-configuration" depends="bind, publish" description="Bind the commons configuration files and publish the result." />
+
 </project>
