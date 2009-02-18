@@ -148,10 +148,10 @@ public class CreateExternalBindings {
         writer.writeAttribute( "scd", "x-schema::tns" );
         writer.setPrefix( "tns", namespace );
         writer.writeAttribute( "map", "false" );
-        writer.writeEmptyElement( XJC_NS, "noUnmarshaller" );
-        writer.writeEmptyElement( XJC_NS, "noMarshaller" );
-        writer.writeEmptyElement( XJC_NS, "noValidator" );
-        writer.writeEmptyElement( XJC_NS, "noValidatingUnmarshaller" );
+        // writer.writeEmptyElement( XJC_NS, "noUnmarshaller" );
+        // writer.writeEmptyElement( XJC_NS, "noMarshaller" );
+        // writer.writeEmptyElement( XJC_NS, "noValidator" );
+        // writer.writeEmptyElement( XJC_NS, "noValidatingUnmarshaller" );
         writer.writeStartElement( JAXB_NS, "schemaBindings" );
         // <schemaBindings map="false">
         // <package name="org.deegree.dataaccess.configuration"></package>
