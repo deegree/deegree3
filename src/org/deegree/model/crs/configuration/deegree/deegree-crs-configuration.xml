@@ -80659,7 +80659,7 @@
     <crs:projection>
       <crs:transverseMercator>
         <crs:latitudeOfNaturalOrigin inDegrees="true">0.0</crs:latitudeOfNaturalOrigin>
-        <crs:longitudeOfNaturalOrigin inDegrees="true">14.999999999999982</crs:longitudeOfNaturalOrigin>
+        <crs:longitudeOfNaturalOrigin inDegrees="true">15</crs:longitudeOfNaturalOrigin>
         <crs:scaleFactor>0.9996</crs:scaleFactor>
         <crs:falseEasting>500000.0</crs:falseEasting>
         <crs:falseNorthing>0.0</crs:falseNorthing>
@@ -80667,6 +80667,36 @@
       </crs:transverseMercator>
     </crs:projection>
   </crs:projectedCRS>
+  <crs:projectedCRS>
+        <crs:id>EPSG:325833</crs:id>
+        <crs:id>URN:OGC:DEF:CRS:EPSG::325833</crs:id>
+        <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#325833</crs:id>
+        <crs:id>URN:OPENGIS:DEF:CRS:EPSG::325833</crs:id>
+        <crs:name>ETRS89 / UTM zone 33N</crs:name>
+        <crs:version>2008-1-16T9:49</crs:version>
+        <crs:Axis>
+            <crs:name>x</crs:name>
+            <crs:units>metre</crs:units>
+            <crs:axisOrientation>east</crs:axisOrientation>
+        </crs:Axis>
+        <crs:Axis>
+            <crs:name>y</crs:name>
+            <crs:units>metre</crs:units>
+            <crs:axisOrientation>north</crs:axisOrientation>
+        </crs:Axis>
+        <crs:axisOrder>x, y</crs:axisOrder>
+        <crs:usedGeographicCRS>EPSG:4258</crs:usedGeographicCRS>
+        <crs:projection>
+            <crs:transverseMercator>
+                <crs:latitudeOfNaturalOrigin inDegrees="true">0.0</crs:latitudeOfNaturalOrigin>
+                <crs:longitudeOfNaturalOrigin inDegrees="true">15</crs:longitudeOfNaturalOrigin>
+                <crs:scaleFactor>0.9996</crs:scaleFactor>
+                <crs:falseEasting>3500000.0</crs:falseEasting>
+                <crs:falseNorthing>0.0</crs:falseNorthing>
+                <crs:northernHemisphere>true</crs:northernHemisphere>
+            </crs:transverseMercator>
+        </crs:projection>
+    </crs:projectedCRS>  
   <crs:projectedCRS>
     <crs:id>EPSG:26741</crs:id>
     <crs:id>URN:OGC:DEF:CRS:EPSG::26741</crs:id>
