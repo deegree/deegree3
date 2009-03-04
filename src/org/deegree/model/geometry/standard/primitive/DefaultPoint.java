@@ -80,7 +80,10 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
 
     @Override
     public double get( int dimension ) {
-        return coordinates.length;
+        if ( coordinates.length > dimension && dimension > 0 ) {
+            return coordinates[dimension];
+        }
+        throw new IndexOutOfBoundsException( "Dimemsion not inside coordinate array." );
     }
 
     @Override
@@ -123,15 +126,15 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
 
     @Override
     public boolean equals( Geometry geometry ) {
-        if (!(geometry instanceof Point)) {
+        if ( !( geometry instanceof Point ) ) {
             return false;
         }
-        double [] coordinates = ((Point) geometry).getAsArray();
-        if (coordinates.length != this.coordinates.length) {
+        double[] coordinates = ( (Point) geometry ).getAsArray();
+        if ( coordinates.length != this.coordinates.length ) {
             return false;
         }
         for ( int i = 0; i < coordinates.length; i++ ) {
-            if (!(coordinates [i] == this.coordinates[i])) {
+            if ( !( coordinates[i] == this.coordinates[i] ) ) {
                 return false;
             }
         }
@@ -197,14 +200,14 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
     public GeometryType getGeometryType() {
         return GeometryType.PRIMITIVE_GEOMETRY;
     }
-    
+
     @Override
-    public String toString () {
-        String s = "(" + coordinates [0]; 
+    public String toString() {
+        String s = "(" + coordinates[0];
         for ( int i = 1; i < coordinates.length; i++ ) {
-            s += "," + coordinates [i];
+            s += "," + coordinates[i];
         }
         s += ")";
-        return s;           
+        return s;
     }
 }
