@@ -116,7 +116,13 @@ public class BillBoard extends RenderableQualityModel {
     public BillBoard( String texture, float[] location, float[] scaleXZ ) {
         super();
         this.location = location;
+        if ( location == null ) {
+            this.location = new float[] { 0, 0, 0 };
+        }
         this.scaleXZ = scaleXZ;
+        if ( scaleXZ == null ) {
+            this.scaleXZ = new float[] { 1, 1 };
+        }
         this.textureID = texture;
     }
 
@@ -236,5 +242,35 @@ public class BillBoard extends RenderableQualityModel {
         localSize += AllocatedHeapMemory.sizeOfFloatArray( scaleXZ, true );
         localSize += AllocatedHeapMemory.sizeOfString( textureID, true, true );
         return localSize;
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+        boolean result = false;
+        if ( obj != null && obj instanceof BillBoard ) {
+            BillBoard that = (BillBoard) obj;
+            result = super.equals( that ) && this.textureID.equals( that.textureID )
+                     && Vectors3f.equals( this.location, that.location, 1E-11f );
+            if ( result ) {
+                result = Math.abs( this.scaleXZ[0] - that.scaleXZ[0] ) < 1E-11f
+                         && Math.abs( this.scaleXZ[1] - that.scaleXZ[1] ) < 1E-11f;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return the id of it's texture
+     */
+    public final String getTextureID() {
+        return textureID;
+    }
+
+    /**
+     * 
+     * @return the location of this billboard (it's center axis)
+     */
+    public final float[] getLocation() {
+        return location;
     }
 }
