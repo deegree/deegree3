@@ -57,6 +57,20 @@ package org.deegree.commons.utils.math;
 public class Vectors3f {
 
     /**
+     * Returns the distance between the two given vectors.
+     * 
+     * @param a
+     *            array with length 3
+     * @param b
+     *            array with length 3
+     * @return the distance between a and b.
+     */
+    public static float distance( float[] a, float[] b ) {
+        return (float) Math.sqrt( ( a[0] - b[0] ) * ( a[0] - b[0] ) + ( a[1] - b[1] ) * ( a[1] - b[1] )
+                                  + ( a[2] - b[2] ) * ( a[2] - b[2] ) );
+    }
+
+    /**
      * Subtract b from a and store the result in result.
      * 
      * @param a
@@ -456,5 +470,16 @@ public class Vectors3f {
         float[] result = new float[] { a[0], a[1], a[2] };
         normalizeInPlace( result );
         return result;
+    }
+
+    /**
+     * @param first
+     * @param second
+     * @param precision
+     * @return true if the ordinate values of the vectors are in range of precision.
+     */
+    public static boolean equals( float[] first, float[] second, float precision ) {
+        return ( Math.abs( first[0] - second[0] ) < precision ) && ( Math.abs( first[1] - second[1] ) < precision )
+               && ( Math.abs( first[2] - second[2] ) < precision );
     }
 }
