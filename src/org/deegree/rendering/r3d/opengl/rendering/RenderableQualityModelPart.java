@@ -38,28 +38,18 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
-import javax.media.opengl.GL;
-import javax.vecmath.Vector3f;
+import org.deegree.rendering.r3d.QualityModelPart;
 
 /**
- * The <code>Renderable</code> class TODO add class documentation here.
+ * The <code>RenderableQualityModelPart</code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  * 
  */
-public interface Renderable {
+public interface RenderableQualityModelPart extends QualityModelPart, Renderable {
 
-    /**
-     * The draw function must be implemented for each data element.
-     * 
-     * @param context
-     * @param eye
-     *            TODO
-     */
-    public void render( GL context, Vector3f eye );
+    // marker interface
 
 }

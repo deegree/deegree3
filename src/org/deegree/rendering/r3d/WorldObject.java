@@ -38,11 +38,15 @@
 
 package org.deegree.rendering.r3d;
 
+import static org.deegree.commons.utils.AllocatedHeapMemory.sizeOfEnvelope;
+import static org.deegree.commons.utils.AllocatedHeapMemory.sizeOfObjectArray;
+import static org.deegree.commons.utils.AllocatedHeapMemory.sizeOfString;
+
 import java.io.IOException;
 import java.io.Serializable;
 
+import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.deegree.model.geometry.Envelope;
-import org.deegree.rendering.r3d.geometry.SimpleAccessGeometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,14 +64,14 @@ import org.slf4j.LoggerFactory;
  *            the quality model type
  *
  */
-public class WorldObject<G extends SimpleAccessGeometry, QM extends QualityModel<G>> implements Serializable {
-
-    private final static Logger LOG = LoggerFactory.getLogger( WorldObject.class );
+public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>> implements Serializable, MemoryAware {
 
     /**
      * 
      */
-    private static final long serialVersionUID = 2998719476993351372L;
+    private static final long serialVersionUID = 628773986403744985L;
+
+    private final static Logger LOG = LoggerFactory.getLogger( WorldObject.class );
 
     private transient String id;
 
@@ -206,9 +210,29 @@ public class WorldObject<G extends SimpleAccessGeometry, QM extends QualityModel
      * @throws IOException
      * @throws ClassNotFoundException
      */
+    @SuppressWarnings("unchecked")
     private void readObject( java.io.ObjectInputStream in )
                             throws IOException, ClassNotFoundException {
         LOG.trace( "Deserializing from object stream." );
         qualityLevels = (QM[]) in.readObject();
+    }
+
+    /**
+     * @return the approximate size in bytes of this world object. This value is not perfectly correct (references in
+     *         the rendering.r3 package are called) but it will give an estimate of the amount of memory a worldobject
+     *         uses.
+     */
+    public long sizeOf() {
+        long localSize = AllocatedHeapMemory.INSTANCE_SIZE;// class address is 8 bytes
+        localSize += sizeOfObjectArray( qualityLevels, true );
+        if ( qualityLevels != null && qualityLevels.length > 0 ) {
+            for ( QualityModel<?> qm : qualityLevels ) {
+                localSize += qm.sizeOf();
+            }
+        }
+        localSize += sizeOfString( id, true, true );
+        localSize += sizeOfString( time, true, true );
+        localSize += sizeOfEnvelope( bbox, true );
+        return localSize;
     }
 }

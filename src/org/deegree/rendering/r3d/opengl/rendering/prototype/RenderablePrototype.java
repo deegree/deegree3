@@ -36,30 +36,55 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering.r3d.opengl.rendering;
+package org.deegree.rendering.r3d.opengl.rendering.prototype;
 
-import javax.media.opengl.GL;
 import javax.vecmath.Vector3f;
 
+import org.deegree.model.geometry.Envelope;
+import org.deegree.rendering.r3d.opengl.rendering.RenderableQualityModel;
+import org.deegree.rendering.r3d.opengl.rendering.WorldRenderableObject;
+
 /**
- * The <code>Renderable</code> class TODO add class documentation here.
+ * The <code>RenderablePrototype</code> is a {@link WorldRenderableObject} which only has one level of detail.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  * 
  */
-public interface Renderable {
+public class RenderablePrototype extends WorldRenderableObject {
 
     /**
-     * The draw function must be implemented for each data element.
      * 
-     * @param context
-     * @param eye
-     *            TODO
      */
-    public void render( GL context, Vector3f eye );
+    private static final long serialVersionUID = -6438620186289443235L;
+
+    /**
+     * @param id
+     * @param time
+     * @param bbox
+     */
+    public RenderablePrototype( String id, String time, Envelope bbox ) {
+        super( id, time, bbox, 0 );
+    }
+
+    /**
+     * @param id
+     * @param time
+     * @param bbox
+     * @param qualityLevel
+     */
+    public RenderablePrototype( String id, String time, Envelope bbox, RenderableQualityModel qualityLevel ) {
+        super( id, time, bbox, new RenderableQualityModel[] { qualityLevel } );
+    }
+
+    /**
+     * @param eye
+     * @return the level to render.
+     */
+    @Override
+    protected int calcQualityLevel( Vector3f eye ) {
+        return 0;
+    }
 
 }

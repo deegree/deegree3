@@ -39,9 +39,10 @@
 package org.deegree.rendering.r3d.geometry;
 
 import java.io.IOException;
-import java.io.Serializable;
 
+import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.deegree.commons.utils.math.Vectors3f;
+import org.deegree.rendering.r3d.QualityModelPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,14 +57,14 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: 15598 $, $Date: 2009-01-12 15:03:49 +0100 (Mo, 12 Jan 2009) $
  * 
  */
-public class SimpleAccessGeometry implements Serializable {
-
-    private final static Logger LOG = LoggerFactory.getLogger( SimpleAccessGeometry.class );
+public class SimpleAccessGeometry extends SimpleGeometryStyle implements QualityModelPart {
 
     /**
      * 
      */
-    private static final long serialVersionUID = -3704718653663592552L;
+    private static final long serialVersionUID = -5069487647474073270L;
+
+    private final static Logger LOG = LoggerFactory.getLogger( SimpleAccessGeometry.class );
 
     /**
      * The coordinates of this geometry may be null
@@ -71,24 +72,9 @@ public class SimpleAccessGeometry implements Serializable {
     protected transient float[] coordinates = null;
 
     // indizes of the startpositions of the innerrings
-    private transient int[] innerRings = null;
+    transient int[] innerRings = null;
 
-    // length 32 bit only lowest 24 are used rgb
-    private transient int specularColor;
-
-    // length 32 bit only lowest 24 are used rgb
-    private transient int ambientColor;
-
-    // length 32 bit only lowest 24 are used rgb
-    private transient int diffuseColor;
-
-    // length 32 bit only lowest 24 are used rgb
-    private transient int emmisiveColor;
-
-    // a single value
-    private transient float shininess;
-
-    private transient int vertexCount;
+    transient int vertexCount;
 
     /**
      * @param coordinates
@@ -101,13 +87,9 @@ public class SimpleAccessGeometry implements Serializable {
      */
     public SimpleAccessGeometry( float[] coordinates, int[] innerRings, int specularColor, int ambientColor,
                                  int diffuseColor, int emmisiveColor, float shininess ) {
+        super( specularColor, ambientColor, diffuseColor, emmisiveColor, shininess );
         this.coordinates = coordinates;
         this.innerRings = innerRings;
-        this.specularColor = specularColor;
-        this.ambientColor = ambientColor;
-        this.diffuseColor = diffuseColor;
-        this.emmisiveColor = emmisiveColor;
-        this.shininess = shininess;
         vertexCount = ( coordinates == null ) ? 0 : ( coordinates.length / 3 );
     }
 
@@ -153,81 +135,6 @@ public class SimpleAccessGeometry implements Serializable {
      */
     public final void setGeometry( float[] coordinates ) {
         this.coordinates = coordinates;
-    }
-
-    /**
-     * @return the specularColor
-     */
-    public final int getSpecularColor() {
-        return specularColor;
-    }
-
-    /**
-     * @param specularColor
-     *            the specularColor to set
-     */
-    public final void setSpecularColor( int specularColor ) {
-        this.specularColor = specularColor;
-    }
-
-    /**
-     * @return the ambientColor
-     */
-    public final int getAmbientColor() {
-        return ambientColor;
-    }
-
-    /**
-     * @param ambientColor
-     *            the ambientColor to set
-     */
-    public final void setAmbientColor( int ambientColor ) {
-        this.ambientColor = ambientColor;
-    }
-
-    /**
-     * @return the diffuseColor
-     */
-    public final int getDiffuseColor() {
-        return diffuseColor;
-    }
-
-    /**
-     * @param diffuseColor
-     *            the diffuseColor to set
-     */
-    public final void setDiffuseColor( int diffuseColor ) {
-        this.diffuseColor = diffuseColor;
-    }
-
-    /**
-     * @return the emmisiveColor
-     */
-    public final int getEmmisiveColor() {
-        return emmisiveColor;
-    }
-
-    /**
-     * @param emmisiveColor
-     *            the emmisiveColor to set
-     */
-    public final void setEmmisiveColor( int emmisiveColor ) {
-        this.emmisiveColor = emmisiveColor;
-    }
-
-    /**
-     * @return the shininess
-     */
-    public final float getShininess() {
-        return shininess;
-    }
-
-    /**
-     * @param shininess
-     *            the shininess to set
-     */
-    public final void setShininess( float shininess ) {
-        this.shininess = shininess;
     }
 
     /**
@@ -284,7 +191,7 @@ public class SimpleAccessGeometry implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder( super.toString() );
         if ( coordinates != null && coordinates.length > 0 ) {
             sb.append( "VertexCount: " ).append( vertexCount );
             sb.append( "\nCoordinates:\n" );
@@ -305,11 +212,6 @@ public class SimpleAccessGeometry implements Serializable {
         } else {
             sb.append( "No geometry coordinates defined." );
         }
-        sb.append( "\nspecularColor: " ).append( specularColor );
-        sb.append( "\nambientColor: " ).append( ambientColor );
-        sb.append( "\ndiffuseColor: " ).append( diffuseColor );
-        sb.append( "\nemmisiveColor: " ).append( emmisiveColor );
-        sb.append( "\nshininess: " ).append( shininess );
         return sb.toString();
     }
 
@@ -326,11 +228,6 @@ public class SimpleAccessGeometry implements Serializable {
 
         out.writeObject( coordinates );
         out.writeObject( innerRings );
-        out.writeInt( specularColor );
-        out.writeInt( ambientColor );
-        out.writeInt( diffuseColor );
-        out.writeInt( emmisiveColor );
-        out.writeFloat( shininess );
         out.writeInt( vertexCount );
 
     }
@@ -351,15 +248,15 @@ public class SimpleAccessGeometry implements Serializable {
         // indizes of the startpositions of the innerrings
         innerRings = (int[]) in.readObject();
         // length 32 bit only lowest 24 are used rgb
-        specularColor = in.readInt();
-        // length 32 bit only lowest 24 are used rgb
-        ambientColor = in.readInt();
-        // length 32 bit only lowest 24 are used rgb
-        diffuseColor = in.readInt();
-        // length 32 bit only lowest 24 are used rgb
-        emmisiveColor = in.readInt();
-        // a single value
-        shininess = in.readFloat();
         vertexCount = in.readInt();
+    }
+
+    @Override
+    public long sizeOf() {
+        long localSize = super.sizeOf();
+        localSize += AllocatedHeapMemory.sizeOfFloatArray( coordinates, true );
+        localSize += AllocatedHeapMemory.sizeOfIntArray( innerRings, true );
+        localSize += AllocatedHeapMemory.INT_SIZE;
+        return localSize;
     }
 }

@@ -111,8 +111,6 @@ public class OpenGLEventHandler implements GLEventListener {
 
     private GLUT glut = new GLUT();
 
-    private int qualityLevel = 0;
-
     /**
      * 
      * @param renderTestObject
@@ -170,7 +168,7 @@ public class OpenGLEventHandler implements GLEventListener {
         LOG.trace( "Eye in model space: " + Vectors3f.asString( newEye ) );
 
         for ( WorldRenderableObject dObj : worldRenderableObjects ) {
-            dObj.render( gl, new Vector3f( newEye[0], newEye[1], newEye[2] ), qualityLevel );
+            dObj.render( gl, new Vector3f( newEye[0], newEye[1], newEye[2] ) );
         }
 
         if ( renderTestObject ) {
@@ -208,16 +206,6 @@ public class OpenGLEventHandler implements GLEventListener {
                && ( Math.abs( bbox.getMin().getX() - env.getMin().getX() ) < 1E-11 )
                && ( Math.abs( bbox.getMin().getY() - env.getMin().getY() ) < 1E-11 )
                && ( Math.abs( bbox.getMin().getZ() - env.getMin().getZ() ) < 1E-11 );
-    }
-
-    /**
-     * sets the quality level that should be draw for each {@link WorldRenderableObject} that has been added to a
-     * handler
-     * 
-     * @param qualityLevel
-     */
-    public void setRenderableQualiyLevel( int qualityLevel ) {
-        this.qualityLevel = qualityLevel;
     }
 
     /**

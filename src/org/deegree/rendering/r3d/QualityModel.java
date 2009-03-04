@@ -42,7 +42,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.deegree.rendering.r3d.geometry.SimpleAccessGeometry;
+import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.deegree.rendering.r3d.opengl.rendering.prototype.PrototypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,22 +56,22 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  * @param <T>
- *            the geometry type
+ *            the qualitymodel type
  * 
  */
-public class QualityModel<T extends SimpleAccessGeometry> implements Serializable {
+public class QualityModel<T extends QualityModelPart> implements Serializable, MemoryAware {
 
     /**
      * 
      */
-    private static final long serialVersionUID = -5064310622827744008L;
+    private static final long serialVersionUID = 9016130832456126790L;
 
     private transient static Logger LOG = LoggerFactory.getLogger( QualityModel.class );
 
     /**
      * The geometries of this quality model
      */
-    protected transient ArrayList<T> geometryPatches = null;
+    protected transient ArrayList<T> qualityModelParts = null;
 
     /**
      * The prototype
@@ -83,16 +83,16 @@ public class QualityModel<T extends SimpleAccessGeometry> implements Serializabl
      * 
      */
     public QualityModel() {
-        this.geometryPatches = new ArrayList<T>();
+        this.qualityModelParts = new ArrayList<T>();
     }
 
     /**
      * Creates a GeometryQualityModel with the given geometry patches
      * 
-     * @param geometryPatches
+     * @param qualityModelParts
      */
-    public QualityModel( ArrayList<T> geometryPatches ) {
-        this.geometryPatches = geometryPatches;
+    public QualityModel( ArrayList<T> qualityModelParts ) {
+        this.qualityModelParts = qualityModelParts;
     }
 
     /**
@@ -106,48 +106,48 @@ public class QualityModel<T extends SimpleAccessGeometry> implements Serializabl
     }
 
     /**
-     * @param geometryPatch
+     * @param qualityModelPart
      */
-    public QualityModel( T geometryPatch ) {
-        this.geometryPatches = new ArrayList<T>( 1 );
-        if ( geometryPatch != null ) {
-            this.geometryPatches.add( geometryPatch );
+    public QualityModel( T qualityModelPart ) {
+        this.qualityModelParts = new ArrayList<T>( 1 );
+        if ( qualityModelPart != null ) {
+            this.qualityModelParts.add( qualityModelPart );
         }
     }
 
     /**
-     * @param data
+     * @param part
      *            to add to the geometries
      * @return true (as specified by Collection.add)
      */
-    public final boolean addGeometryData( T data ) {
-        if ( geometryPatches == null ) {
-            geometryPatches = new ArrayList<T>();
+    public final boolean addQualityModelPart( T part ) {
+        if ( qualityModelParts == null ) {
+            qualityModelParts = new ArrayList<T>();
             if ( prototype != null ) {
                 LOG.debug( "Setting prototype reference to null" );
                 prototype = null;
             }
         }
-        return geometryPatches.add( data );
+        return qualityModelParts.add( part );
     }
 
     /**
      * @param index
      * @return the geometry data at given index or <code>null</code> if the index is out of bounds.
      */
-    public final T getGeometryData( int index ) {
-        if ( geometryPatches == null || index < 0 || index > geometryPatches.size() ) {
+    public final T getQualityModelPart( int index ) {
+        if ( qualityModelParts == null || index < 0 || index > qualityModelParts.size() ) {
             return null;
         }
-        return geometryPatches.get( index );
+        return qualityModelParts.get( index );
     }
 
     /**
-     * @return the reference to the geometryPatches, alterations to the patches will be reflected, may be
+     * @return the reference to the qualityModelParts, alterations to the patches will be reflected, may be
      *         <code>null</code>
      */
-    public final ArrayList<T> getGeometryPatches() {
-        return geometryPatches;
+    public final ArrayList<T> getQualityModelParts() {
+        return qualityModelParts;
     }
 
     /**
@@ -163,9 +163,9 @@ public class QualityModel<T extends SimpleAccessGeometry> implements Serializabl
      */
     public final void setPrototype( PrototypeReference prototype ) {
         if ( prototype != null ) {
-            if ( geometryPatches != null ) {
-                LOG.debug( "Setting geometry patches to null" );
-                geometryPatches = null;
+            if ( qualityModelParts != null ) {
+                LOG.debug( "Setting quality model parts to null" );
+                qualityModelParts = null;
             }
         }
         this.prototype = prototype;
@@ -181,7 +181,7 @@ public class QualityModel<T extends SimpleAccessGeometry> implements Serializabl
     private void writeObject( java.io.ObjectOutputStream out )
                             throws IOException {
         LOG.trace( "Serializing to object stream." );
-        out.writeObject( geometryPatches );
+        out.writeObject( qualityModelParts );
         out.writeObject( prototype );
     }
 
@@ -193,11 +193,30 @@ public class QualityModel<T extends SimpleAccessGeometry> implements Serializabl
      * @throws IOException
      * @throws ClassNotFoundException
      */
+    @SuppressWarnings("unchecked")
     private void readObject( java.io.ObjectInputStream in )
                             throws IOException, ClassNotFoundException {
         LOG.trace( "Deserializing from object stream." );
-        geometryPatches = (ArrayList<T>) in.readObject();
+        qualityModelParts = (ArrayList<T>) in.readObject();
         prototype = (PrototypeReference) in.readObject();
+    }
+
+    /**
+     * @return approximate size in bytes
+     */
+    public long sizeOf() {
+        long localSize = AllocatedHeapMemory.INSTANCE_SIZE;
+        localSize += AllocatedHeapMemory.sizeOfList( qualityModelParts, true );
+        if ( qualityModelParts != null ) {
+            for ( T part : qualityModelParts ) {
+                localSize += part.sizeOf();
+            }
+        } else {
+            if ( prototype != null ) {
+                localSize += AllocatedHeapMemory.REF_SIZE + prototype.getApproximateSizeInBytes();
+            }
+        }
+        return localSize;
     }
 
 }

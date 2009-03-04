@@ -40,6 +40,7 @@ package org.deegree.rendering.r3d.geometry;
 
 import java.io.IOException;
 
+import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,12 +55,12 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class TexturedGeometry extends SimpleAccessGeometry {
-    private final static Logger LOG = LoggerFactory.getLogger( TexturedGeometry.class );
-
     /**
      * 
      */
-    private static final long serialVersionUID = -3278184950712812856L;
+    private static final long serialVersionUID = -8283523043454581251L;
+
+    private final static Logger LOG = LoggerFactory.getLogger( TexturedGeometry.class );
 
     private transient String texture;
 
@@ -207,6 +208,19 @@ public class TexturedGeometry extends SimpleAccessGeometry {
         LOG.trace( "Deserializing from object stream" );
         texture = in.readUTF();
         textureCoordinates = (float[]) in.readObject();
+    }
+
+    /**
+     * @return the bytes this geometry occupies
+     */
+    @Override
+    public long sizeOf() {
+        long localSize = super.sizeOf();
+        // id
+        localSize += AllocatedHeapMemory.sizeOfString( texture, true, true );
+        // texture coordinates
+        localSize += AllocatedHeapMemory.sizeOfFloatArray( textureCoordinates, true );
+        return localSize;
     }
 
 }

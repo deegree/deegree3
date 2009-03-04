@@ -41,6 +41,7 @@ package org.deegree.rendering.r3d.opengl.rendering.prototype;
 import java.io.IOException;
 import java.io.Serializable;
 
+import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.deegree.rendering.r3d.opengl.math.GLTransformationMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,6 +138,22 @@ public class PrototypeReference implements Serializable {
         LOG.trace( "Deserializing from object stream" );
         prototypeID = in.readUTF();
         gLTransformationMatrix = (GLTransformationMatrix) in.readObject();
+    }
+
+    /**
+     * @return the approximate size of this prototype in bytes.
+     */
+    public long getApproximateSizeInBytes() {
+        long localSize = AllocatedHeapMemory.INSTANCE_SIZE;
+        if ( gLTransformationMatrix != null ) {
+            // transform matrix
+            localSize += AllocatedHeapMemory.instanceAndReferenceSize( true );
+            localSize += 16 * ( AllocatedHeapMemory.FLOAT_SIZE    );
+            localSize += AllocatedHeapMemory.DOUBLE_SIZE;
+        }
+        localSize = AllocatedHeapMemory.sizeOfString( prototypeID, true, true );
+
+        return localSize;
     }
 
 }

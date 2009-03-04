@@ -38,6 +38,10 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
+import static org.deegree.rendering.r3d.opengl.rendering.utils.BufferIO.readByteBufferFromStream;
+import static org.deegree.rendering.r3d.opengl.rendering.utils.BufferIO.readFloatBufferFromStream;
+import static org.deegree.rendering.r3d.opengl.rendering.utils.BufferIO.writeBufferToStream;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -45,7 +49,9 @@ import java.nio.FloatBuffer;
 import javax.media.opengl.GL;
 import javax.vecmath.Vector3f;
 
-import org.deegree.rendering.r3d.geometry.SimpleAccessGeometry;
+import org.deegree.commons.utils.AllocatedHeapMemory;
+import org.deegree.rendering.r3d.geometry.SimpleGeometryStyle;
+import org.deegree.rendering.r3d.opengl.rendering.utils.BufferIO;
 import org.deegree.rendering.r3d.opengl.tesselation.Tesselator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,28 +75,17 @@ import com.sun.opengl.util.BufferUtil;
  * @version $Revision$, $Date$
  * 
  */
-public class RenderableGeometry extends SimpleAccessGeometry implements Renderable {
-
-    private final static Logger LOG = LoggerFactory.getLogger( RenderableGeometry.class );
+public class RenderableGeometry extends SimpleGeometryStyle implements RenderableQualityModelPart {
 
     /**
      * 
      */
-    private static final long serialVersionUID = -7188698491925826649L;
+    private static final long serialVersionUID = -2746400840307665734L;
 
-    /**
-     * an array of integers which can be used to store gl pointers (vertexlists, displaylist etc).
-     */
-    protected transient int[] glBufferIDs;
+    private final static Logger LOG = LoggerFactory.getLogger( RenderableGeometry.class );
 
     // have a look at GL class.
     private transient int openGLType;
-
-    // 3D, same length as renderableGeometry
-    private transient float[] vertexNormals = null;
-
-    // 4D (RGBA)
-    private transient byte[] vertexColors;
 
     private transient boolean hasNormals;
 
@@ -98,12 +93,16 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
 
     private transient FloatBuffer coordBuffer = null;
 
+    // 3D, same length as renderableGeometry
     private transient FloatBuffer normalBuffer = null;
 
+    // 4D (RGBA)
     private transient ByteBuffer colorBuffer = null;
 
+    private transient int vertexCount;
+
     /**
-     * @param geometry
+     * @param vertices
      * @param openGLType
      * @param vertexNormals
      * @param vertexColors
@@ -113,9 +112,11 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
      * @param emmisiveColor
      * @param shininess
      */
-    public RenderableGeometry( float[] geometry, int openGLType, float[] vertexNormals, byte[] vertexColors,
+    public RenderableGeometry( float[] vertices, int openGLType, float[] vertexNormals, byte[] vertexColors,
                                int specularColor, int ambientColor, int diffuseColor, int emmisiveColor, float shininess ) {
-        super( geometry, specularColor, ambientColor, diffuseColor, emmisiveColor, shininess );
+        super( specularColor, ambientColor, diffuseColor, emmisiveColor, shininess );
+
+        this.vertexCount = loadVertexBuffer( vertices );
         this.openGLType = openGLType;
         switch ( openGLType ) {
         case GL.GL_TRIANGLE_FAN:
@@ -126,24 +127,43 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
         default:
             throw new UnsupportedOperationException( "Unknown opengl type: " + openGLType );
         }
-        this.vertexNormals = vertexNormals;
-        this.vertexColors = vertexColors;
-        this.hasNormals = ( vertexNormals != null && vertexNormals.length > 0 );
-        this.hasColors = ( vertexColors != null && vertexColors.length > 0 );
+
+        setVertexNormals( vertexNormals );
+        setVertexColors( vertexColors );
+    }
+
+    private int loadVertexBuffer( float[] vertices ) {
+        if ( vertices == null || vertices.length == 0 ) {
+            throw new IllegalArgumentException(
+                                                "A RenderableGeometry must have vertices to work with (the vertices array may not be null or empty). " );
+        }
+
+        coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( vertices ) );
+        return vertices.length / 3;
     }
 
     /**
-     * @param geometry
+     * @param vertices
      * @param openGLType
      */
-    public RenderableGeometry( float[] geometry, int openGLType ) {
-        this( geometry, openGLType, null, null, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 1 );
+    public RenderableGeometry( float[] vertices, int openGLType ) {
+        this( vertices, openGLType, null, null, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 1 );
+    }
+
+    /**
+     * @param vertices
+     * @param openGLType
+     * @param vertexNormals
+     * @param vertexColors
+     */
+    public RenderableGeometry( float[] vertices, int openGLType, float[] vertexNormals, byte[] vertexColors ) {
+        this( vertices, openGLType, vertexNormals, vertexColors, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 1 );
     }
 
     @Override
     public void render( GL context, Vector3f eye ) {
         enableArrays( context );
-        context.glDrawArrays( openGLType, 0, getVertexCount() );
+        context.glDrawArrays( openGLType, 0, vertexCount );
         disableArrays( context );
     }
 
@@ -154,32 +174,18 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
      */
     protected void enableArrays( GL context ) {
 
-        if ( coordinates != null ) {
-            if ( coordBuffer == null ) {
-                LOG.trace( "Loading coordinates into float buffer" );
-                coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( getGeometry() ) );
-            }
-            LOG.trace( "Loading coordbuffer" );
-            context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
+        LOG.trace( "Loading coordbuffer" );
+        context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
 
-            if ( hasNormals ) {
-                if ( normalBuffer == null ) {
-                    LOG.trace( "Loading normals into float buffer" );
-                    normalBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( vertexNormals ) );
-                }
-                LOG.trace( "Loading normal buffer" );
-                context.glEnableClientState( GL.GL_NORMAL_ARRAY );
-                context.glNormalPointer( GL.GL_FLOAT, 0, normalBuffer );
-            }
-            if ( hasColors ) {
-                if ( colorBuffer == null ) {
-                    LOG.trace( "Loading colors into byte buffer" );
-                    colorBuffer = BufferUtil.copyByteBuffer( ByteBuffer.wrap( vertexColors ) );
-                }
-                LOG.trace( "Loading color buffer" );
-                context.glEnableClientState( GL.GL_COLOR_ARRAY );
-                context.glColorPointer( 4, GL.GL_BYTE, 0, colorBuffer );
-            }
+        if ( hasNormals ) {
+            LOG.trace( "Loading normal buffer" );
+            context.glEnableClientState( GL.GL_NORMAL_ARRAY );
+            context.glNormalPointer( GL.GL_FLOAT, 0, normalBuffer );
+        }
+        if ( hasColors ) {
+            LOG.trace( "Loading color buffer" );
+            context.glEnableClientState( GL.GL_COLOR_ARRAY );
+            context.glColorPointer( 4, GL.GL_BYTE, 0, colorBuffer );
         }
     }
 
@@ -189,47 +195,69 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
     public void disableArrays( GL context ) {
         LOG.trace( "Disabling client states: normal and color" );
         context.glDisableClientState( GL.GL_NORMAL_ARRAY );
-        context.glDisableClientState( GL.GL_COLOR_ARRAY );
+        // context.glDisableClientState( GL.GL_COLOR_ARRAY );
     }
 
     /**
-     * @param geometry
-     *            the originalGeometry to set
+     * @param vertices
+     *            the vertices to set
      * @param openGLType
      */
-    public final void setGeometry( float[] geometry, int openGLType ) {
-        setGeometry( geometry );
+    public final void setVertices( float[] vertices, int openGLType ) {
+        vertexCount = loadVertexBuffer( vertices );
         this.openGLType = openGLType;
     }
 
     /**
      * @return the vertexNormals
      */
-    public final float[] getVertexNormals() {
-        return vertexNormals;
+    public final FloatBuffer getVertexNormals() {
+        return normalBuffer;
     }
 
     /**
      * @param vertexNormals
      *            the vertexNormals to set
      */
+    @SuppressWarnings("null")
     public final void setVertexNormals( float[] vertexNormals ) {
-        this.vertexNormals = vertexNormals;
+        this.hasNormals = ( vertexNormals != null && vertexNormals.length > 0 );
+        if ( hasNormals ) {
+            if ( vertexNormals.length % 3 != 0 ) {
+                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                   )
+                                                    + ") must be kongruent to 3." );
+            } else if ( ( vertexNormals.length / 3 ) != vertexCount ) {
+                throw new IllegalArgumentException( "The number of normals (" + ( vertexNormals.length / 3 )
+                                                    + ") must equal the number of vertices (" + vertexCount + ")." );
+            }
+            this.normalBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( vertexNormals ) );
+        }
     }
 
     /**
      * @return the vertexColors
      */
-    public final byte[] getVertexColors() {
-        return vertexColors;
+    public final ByteBuffer getVertexColors() {
+        return colorBuffer;
     }
 
     /**
      * @param vertexColors
      *            the vertexColors to set
      */
+    @SuppressWarnings("null")
     public final void setVertexColors( byte[] vertexColors ) {
-        this.vertexColors = vertexColors;
+        this.hasColors = ( vertexColors != null && vertexColors.length > 0 );
+        if ( hasColors ) {
+            if ( vertexColors.length % 4 != 0 ) {
+                throw new IllegalArgumentException( "The number of vertex colors(" + ( vertexColors.length                                                       )
+                                                    + ") must be kongruent to 4." );
+            } else if ( ( vertexColors.length / 4 ) != vertexCount ) {
+                throw new IllegalArgumentException( "The number of vertex colors(" + ( vertexColors.length / 4 )
+                                                    + ") must equal the number of vertices (" + vertexCount + ")." );
+            }
+            this.colorBuffer = BufferUtil.copyByteBuffer( ByteBuffer.wrap( vertexColors ) );
+        }
     }
 
     /**
@@ -257,13 +285,27 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
             sb.append( "Quads" );
             break;
         }
+        // sb.append( coordBuffer.toString() );
+        sb.append( "\nvertices(" ).append( vertexCount ).append( "):\n" );
+        int vertex = 1;
+        for ( int i = 0; i + 2 < coordBuffer.capacity(); i += 3 ) {
+            sb.append( vertex++ ).append( ": " );
+            sb.append( coordBuffer.get( i ) ).append( "," );
+            sb.append( coordBuffer.get( i + 1 ) ).append( "," );
+            sb.append( coordBuffer.get( i + 2 ) );
+            if ( i + 5 < coordBuffer.capacity() ) {
+                sb.append( "\n" );
+            }
+        }
         if ( hasNormals ) {
+            vertex = 1;
             sb.append( "\nnormals:\n" );
-            for ( int i = 0; i + 2 < vertexNormals.length; i += 3 ) {
-                sb.append( vertexNormals[i] ).append( "," );
-                sb.append( vertexNormals[i + 1] ).append( "," );
-                sb.append( vertexNormals[i + 2] );
-                if ( i + 5 < vertexNormals.length ) {
+            for ( int i = 0; i + 2 < normalBuffer.capacity(); i += 3 ) {
+                sb.append( vertex++ ).append( ": " );
+                sb.append( normalBuffer.get( i ) ).append( "," );
+                sb.append( normalBuffer.get( i + 1 ) ).append( "," );
+                sb.append( normalBuffer.get( i + 2 ) );
+                if ( i + 5 < normalBuffer.capacity() ) {
                     sb.append( "\n" );
                 }
             }
@@ -271,12 +313,14 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
 
         if ( hasColors ) {
             sb.append( "\ncolors:\n" );
-            for ( int i = 0; i + 3 < vertexColors.length; i += 4 ) {
-                sb.append( vertexColors[i] ).append( "," );
-                sb.append( vertexColors[i + 1] ).append( "," );
-                sb.append( vertexColors[i + 2] ).append( "," );
-                sb.append( vertexColors[i + 3] );
-                if ( i + 7 < vertexColors.length ) {
+            vertex = 1;
+            for ( int i = 0; i + 3 < colorBuffer.capacity(); i += 4 ) {
+                sb.append( vertex++ ).append( ": " );
+                sb.append( colorBuffer.get( i ) ).append( "," );
+                sb.append( colorBuffer.get( i + 1 ) ).append( "," );
+                sb.append( colorBuffer.get( i + 2 ) ).append( "," );
+                sb.append( colorBuffer.get( i + 3 ) );
+                if ( i + 7 < colorBuffer.capacity() ) {
                     sb.append( "\n" );
                 }
             }
@@ -294,9 +338,12 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
     private void writeObject( java.io.ObjectOutputStream out )
                             throws IOException {
         LOG.trace( "Serializing to object stream" );
-        out.writeObject( vertexColors );
-        out.writeObject( vertexNormals );
+        writeBufferToStream( coordBuffer, out );
+        writeBufferToStream( normalBuffer, out );
+        writeBufferToStream( colorBuffer, out );
+
         out.writeInt( openGLType );
+
     }
 
     /**
@@ -308,12 +355,52 @@ public class RenderableGeometry extends SimpleAccessGeometry implements Renderab
      * @throws ClassNotFoundException
      */
     private void readObject( java.io.ObjectInputStream in )
-                            throws IOException, ClassNotFoundException {
+                            throws IOException {
         LOG.trace( "Deserializing from object stream" );
-        vertexColors = (byte[]) in.readObject();
-        vertexNormals = (float[]) in.readObject();
+        // float[] t = (float[]) in.readObject();
+        coordBuffer = BufferIO.readFloatBufferFromStream( in );
+        if ( coordBuffer == null ) {
+            LOG.error( "An error occurred while de-serializing a Renderable Geometry, vertex buffer may not be null." );
+            throw new IOException(
+                                   "An error occurred while de-serializing a Renderable Geometry, vertex buffer may not be null." );
+        }
+
+        vertexCount = coordBuffer.capacity() / 3;
+        normalBuffer = readFloatBufferFromStream( in );
+        hasNormals = ( normalBuffer != null );
+        colorBuffer = readByteBufferFromStream( in );
+        hasColors = ( colorBuffer != null );
+
         openGLType = in.readInt();
-        hasNormals = ( vertexNormals != null && vertexNormals.length > 0 );
-        hasColors = ( vertexColors != null && vertexColors.length > 0 );
+    }
+
+    /**
+     * @return the bytes this geometry occupies
+     */
+    @Override
+    public long sizeOf() {
+        long localSize = super.sizeOf();
+        // coordbuffer
+        localSize += AllocatedHeapMemory.sizeOfBuffer( coordBuffer, true );
+        // colorbuffer
+        localSize += AllocatedHeapMemory.sizeOfBuffer( colorBuffer, true );
+        // normal buffer
+        localSize += AllocatedHeapMemory.sizeOfBuffer( normalBuffer, true );
+        // hasNormals
+        localSize += AllocatedHeapMemory.INT_SIZE;
+        // hasColors
+        localSize += AllocatedHeapMemory.INT_SIZE;
+        // openGLType
+        localSize += AllocatedHeapMemory.INT_SIZE;
+        // vertexCount
+        localSize += AllocatedHeapMemory.INT_SIZE;
+        return localSize;
+    }
+
+    /**
+     * @return number of vertices of this renderable geometry.
+     */
+    public final int getVertexCount() {
+        return vertexCount;
     }
 }

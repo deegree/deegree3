@@ -99,8 +99,8 @@ public class TexturePool {
         tex.bind();
         // bindTextureToUnit( context, texture );
         // System.out.println( tex.getTarget() );
-        IntBuffer t = BufferUtil.newIntBuffer( 1 );
-        context.glGetIntegerv( GL.GL_MAX_TEXTURE_IMAGE_UNITS, t );
+        // IntBuffer t = BufferUtil.newIntBuffer( 1 );
+        // context.glGetIntegerv( GL.GL_MAX_TEXTURE_IMAGE_UNITS, t );
         // System.out.println( "Units: " + t.get( 0 ) );
 
     }

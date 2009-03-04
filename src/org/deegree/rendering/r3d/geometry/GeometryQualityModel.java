@@ -57,7 +57,7 @@ public class GeometryQualityModel extends QualityModel<SimpleAccessGeometry> {
     /**
      * 
      */
-    private static final long serialVersionUID = -7456058181660155157L;
+    private static final long serialVersionUID = 6512563995304520151L;
 
     /**
      * Creates a GeometryQualityModel with an empty list of geometry patches
@@ -68,11 +68,11 @@ public class GeometryQualityModel extends QualityModel<SimpleAccessGeometry> {
     }
 
     /**
-     * Creates a GeometryQualityModel with the given geometry patches
+     * Creates a GeometryQualityModel with the given qualityModelParts
      * 
-     * @param geometryPatches
+     * @param qualityModelParts
      */
-    public GeometryQualityModel( ArrayList<SimpleAccessGeometry> geometryPatches ) {
-        super( geometryPatches );
+    public GeometryQualityModel( ArrayList<SimpleAccessGeometry> qualityModelParts ) {
+        super( qualityModelParts );
     }
 }

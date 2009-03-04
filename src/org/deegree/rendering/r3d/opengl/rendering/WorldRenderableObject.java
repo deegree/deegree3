@@ -38,8 +38,6 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
-import java.io.Serializable;
-
 import javax.media.opengl.GL;
 import javax.vecmath.Vector3f;
 
@@ -56,8 +54,8 @@ import org.deegree.rendering.r3d.WorldObject;
  * @version $Revision$, $Date$
  * 
  */
-public class WorldRenderableObject extends WorldObject<RenderableGeometry, RenderableQualityModel> implements
-                                                                                                  Serializable {
+public class WorldRenderableObject extends WorldObject<RenderableQualityModelPart, RenderableQualityModel> implements
+                                                                                                          Renderable {
 
     /**
      * 
@@ -98,7 +96,7 @@ public class WorldRenderableObject extends WorldObject<RenderableGeometry, Rende
      * @param eye
      * @param level
      */
-    public void render( GL context, Vector3f eye, int level ) {
+    private void render( GL context, Vector3f eye, int level ) {
         if ( qualityLevels != null ) {
             if ( level >= 0 && qualityLevels.length > level ) {
                 RenderableQualityModel model = qualityLevels[level];
@@ -118,5 +116,18 @@ public class WorldRenderableObject extends WorldObject<RenderableGeometry, Rende
                 }
             }
         }
+    }
+
+    @Override
+    public void render( GL context, Vector3f eye ) {
+        render( context, eye, calcQualityLevel( eye ) );
+    }
+
+    /**
+     * @param eye
+     * @return the level to render.
+     */
+    protected int calcQualityLevel( Vector3f eye ) {
+        return 0;
     }
 }

@@ -56,12 +56,12 @@ import org.deegree.rendering.r3d.opengl.rendering.prototype.PrototypePool;
  * @version $Revision$, $Date$
  * 
  */
-public class RenderableQualityModel extends QualityModel<RenderableGeometry> implements Renderable {
+public class RenderableQualityModel extends QualityModel<RenderableQualityModelPart> implements Renderable {
 
     /**
      * 
      */
-    private static final long serialVersionUID = -7176025467303167541L;
+    private static final long serialVersionUID = 4351593641629010871L;
 
     /**
      * Creates a GeometryQualityModel with an empty list of geometry patches
@@ -74,10 +74,10 @@ public class RenderableQualityModel extends QualityModel<RenderableGeometry> imp
     /**
      * Creates a GeometryQualityModel with the given geometry patches
      * 
-     * @param geometryPatches
+     * @param qualityModelParts
      */
-    public RenderableQualityModel( ArrayList<RenderableGeometry> geometryPatches ) {
-        super( geometryPatches );
+    public RenderableQualityModel( ArrayList<RenderableQualityModelPart> qualityModelParts ) {
+        super( qualityModelParts );
     }
 
     /**
@@ -85,7 +85,7 @@ public class RenderableQualityModel extends QualityModel<RenderableGeometry> imp
      * 
      * @param geometryPatch
      */
-    public RenderableQualityModel( RenderableGeometry geometryPatch ) {
+    public RenderableQualityModel( RenderableQualityModelPart geometryPatch ) {
         super( geometryPatch );
     }
 
@@ -96,8 +96,8 @@ public class RenderableQualityModel extends QualityModel<RenderableGeometry> imp
             PrototypePool.render( context, prototype, eye );
         } else {
             // no prototype to render, trying geometries
-            if ( geometryPatches != null && geometryPatches.size() > 0 ) {
-                for ( RenderableGeometry data : geometryPatches ) {
+            if ( qualityModelParts != null && qualityModelParts.size() > 0 ) {
+                for ( RenderableQualityModelPart data : qualityModelParts ) {
                     if ( data != null ) {
                         data.render( context, eye );
                     }
@@ -105,5 +105,24 @@ public class RenderableQualityModel extends QualityModel<RenderableGeometry> imp
             }
         }
         context.glDisableClientState( GL.GL_VERTEX_ARRAY );
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder( "RenderableQualitModel:" );
+        if ( prototype != null ) {
+            sb.append( "\nPrototype: " );
+            sb.append( prototype.toString() );
+        } else {
+            if ( qualityModelParts != null && qualityModelParts.size() > 0 ) {
+                for ( RenderableQualityModelPart data : qualityModelParts ) {
+                    sb.append( "\nQualityModelPart: " );
+                    if ( data != null ) {
+                        sb.append( data.toString() );
+                    }
+                }
+            }
+        }
+        return sb.toString();
     }
 }

@@ -44,6 +44,7 @@ import java.nio.FloatBuffer;
 import javax.media.opengl.GL;
 import javax.vecmath.Vector3f;
 
+import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.rendering.r3d.opengl.rendering.texture.TexturePool;
 import org.slf4j.Logger;
@@ -62,20 +63,22 @@ import com.sun.opengl.util.BufferUtil;
  * @version $Revision$, $Date$
  * 
  */
-public class BillBoard extends RenderableTexturedGeometry {
-
-    private final static Logger LOG = LoggerFactory.getLogger( BillBoard.class );
+public class BillBoard extends RenderableQualityModel {
 
     /**
      * 
      */
-    private static final long serialVersionUID = -5693355972373810535L;
+    private static final long serialVersionUID = -2746400840307665734L;
+
+    private final static Logger LOG = LoggerFactory.getLogger( BillBoard.class );
 
     private final static float[] NORMAL = new float[] { 0, -1, 0 };
 
     private transient float[] location;
 
     private transient float[] scaleXZ;
+
+    private transient String textureID;
 
     private static final FloatBuffer coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
                                                                                                               -.5f,
@@ -111,9 +114,10 @@ public class BillBoard extends RenderableTexturedGeometry {
      *            the width and height of the billboard
      */
     public BillBoard( String texture, float[] location, float[] scaleXZ ) {
-        super( null, GL.GL_QUADS, null, null, 0, 0, 0, 0, 0, texture, null );
+        super();
         this.location = location;
         this.scaleXZ = scaleXZ;
+        this.textureID = texture;
     }
 
     @Override
@@ -121,14 +125,16 @@ public class BillBoard extends RenderableTexturedGeometry {
         context.glPushMatrix();
         context.glDepthMask( false );
         context.glEnable( GL.GL_TEXTURE_2D );
+        context.glEnableClientState( GL.GL_VERTEX_ARRAY );
         context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
         // the translation
         context.glTranslatef( location[0], location[1], location[2] );
         // the rotation
         calculateAndSetRotation( context, new float[] { eye.x, eye.y, eye.z } );
+
         context.glScalef( scaleXZ[0], 1, scaleXZ[1] );
 
-        TexturePool.loadTexture( context, getTexture() );
+        TexturePool.loadTexture( context, textureID );
 
         // context.glMaterialfv( GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, new float[] { 1, 1, 1, .1f }, 0 );
         context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
@@ -136,6 +142,7 @@ public class BillBoard extends RenderableTexturedGeometry {
         context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
         context.glDrawArrays( GL.GL_QUADS, 0, 4 );
         context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+        context.glDisableClientState( GL.GL_VERTEX_ARRAY );
         context.glDisable( GL.GL_TEXTURE_2D );
         context.glDepthMask( true );
         // context.glMatrixMode( GL.GL_TEXTURE );
@@ -200,6 +207,7 @@ public class BillBoard extends RenderableTexturedGeometry {
         LOG.trace( "Serializing to object stream" );
         out.writeObject( location );
         out.writeObject( scaleXZ );
+        out.writeUTF( textureID );
     }
 
     /**
@@ -215,5 +223,18 @@ public class BillBoard extends RenderableTexturedGeometry {
         LOG.trace( "Deserializing from object stream" );
         location = (float[]) in.readObject();
         scaleXZ = (float[]) in.readObject();
+        textureID = in.readUTF();
+    }
+
+    /**
+     * @return the bytes this geometry occupies
+     */
+    @Override
+    public long sizeOf() {
+        long localSize = super.sizeOf();
+        localSize += AllocatedHeapMemory.sizeOfFloatArray( location, true );
+        localSize += AllocatedHeapMemory.sizeOfFloatArray( scaleXZ, true );
+        localSize += AllocatedHeapMemory.sizeOfString( textureID, true, true );
+        return localSize;
     }
 }

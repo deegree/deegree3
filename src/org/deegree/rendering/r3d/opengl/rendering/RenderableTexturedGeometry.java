@@ -38,11 +38,15 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
+import static org.deegree.rendering.r3d.opengl.rendering.utils.BufferIO.readFloatBufferFromStream;
+import static org.deegree.rendering.r3d.opengl.rendering.utils.BufferIO.writeBufferToStream;
+
 import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
 
+import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.deegree.rendering.r3d.opengl.rendering.texture.TexturePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,22 +65,19 @@ import com.sun.opengl.util.BufferUtil;
  */
 public class RenderableTexturedGeometry extends RenderableGeometry {
 
-    private final transient static Logger LOG = LoggerFactory.getLogger( RenderableTexturedGeometry.class );
-
     /**
      * 
      */
-    private static final long serialVersionUID = -3278184950712812856L;
+    private static final long serialVersionUID = 2809495291716138222L;
+
+    private final transient static Logger LOG = LoggerFactory.getLogger( RenderableTexturedGeometry.class );
 
     private transient String texture;
-
-    // 2D
-    private transient float[] textureCoordinates;
 
     private transient FloatBuffer textureBuffer = null;
 
     /**
-     * @param geometry
+     * @param vertices
      * @param openGLType
      * @param vertexNormals
      * @param vertexColors
@@ -90,26 +91,38 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
      * @param textureCoordinates
      *            of this data
      */
-    public RenderableTexturedGeometry( float[] geometry, int openGLType, float[] vertexNormals, byte[] vertexColors,
+    public RenderableTexturedGeometry( float[] vertices, int openGLType, float[] vertexNormals, byte[] vertexColors,
                                        int specularColor, int ambientColor, int diffuseColor, int emmisiveColor,
                                        float shininess, String texture, float[] textureCoordinates ) {
-        super( geometry, openGLType, vertexNormals, vertexColors, specularColor, ambientColor, diffuseColor,
+        super( vertices, openGLType, vertexNormals, vertexColors, specularColor, ambientColor, diffuseColor,
                emmisiveColor, shininess );
         this.texture = texture;
-        this.textureCoordinates = textureCoordinates;
+        loadTextureCoordinates( textureCoordinates );
+    }
+
+    private void loadTextureCoordinates( float[] textureCoordinates ) {
+        if ( textureCoordinates == null || textureCoordinates.length == 0 ) {
+            throw new IllegalArgumentException(
+                                                "A Renderable Textured Geometry must have texture coordinates to work with (the textureCoordinates array may not be null or empty). " );
+        }
+        if ( textureCoordinates.length / 2 != getVertexCount() ) {
+            throw new IllegalArgumentException( "The number of texture coordinates ("
+                                                + ( textureCoordinates.length / 2 )
+                                                + ") must equal the number of vertices (" + getVertexCount() + ")." );
+        }
+        textureBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( textureCoordinates ) );
     }
 
     /**
-     * @param originalGeometry
+     * @param vertices
      * @param openGLType
      * @param texture
      * @param textureCoordinates
      */
-    public RenderableTexturedGeometry( float[] originalGeometry, int openGLType, String texture,
-                                       float[] textureCoordinates ) {
-        super( originalGeometry, openGLType );
+    public RenderableTexturedGeometry( float[] vertices, int openGLType, String texture, float[] textureCoordinates ) {
+        super( vertices, openGLType );
         this.texture = texture;
-        this.textureCoordinates = textureCoordinates;
+        loadTextureCoordinates( textureCoordinates );
     }
 
     /**
@@ -120,18 +133,11 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
     @Override
     protected void enableArrays( GL context ) {
         super.enableArrays( context );
-        if ( textureCoordinates != null ) {
-            LOG.trace( "Enabling array state and texture 2d" );
-            context.glEnable( GL.GL_TEXTURE_2D );
-            if ( textureBuffer == null ) {
-                LOG.trace( "Loading texture coordinates into float buffer" );
-                textureBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( textureCoordinates ) );
-            }
-            TexturePool.loadTexture( context, texture );
-            context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-            context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
-        }
-
+        LOG.trace( "Enabling array state and texture 2d" );
+        context.glEnable( GL.GL_TEXTURE_2D );
+        TexturePool.loadTexture( context, texture );
+        context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+        context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
     }
 
     /**
@@ -140,11 +146,9 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
     @Override
     public void disableArrays( GL context ) {
         super.disableArrays( context );
-        if ( textureCoordinates != null ) {
-            LOG.trace( "Disabling array state and texture 2d" );
-            context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-            context.glDisable( GL.GL_TEXTURE_2D );
-        }
+        LOG.trace( "Disabling array state and texture 2d" );
+        context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+        context.glDisable( GL.GL_TEXTURE_2D );
     }
 
     /**
@@ -165,8 +169,8 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
     /**
      * @return the textureCoordinates
      */
-    public final float[] getTextureCoordinates() {
-        return textureCoordinates;
+    public final FloatBuffer getTextureCoordinates() {
+        return textureBuffer;
     }
 
     /**
@@ -174,17 +178,17 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
      *            the textureCoordinates to set
      */
     public final void setTextureCoordinates( float[] textureCoordinates ) {
-        this.textureCoordinates = textureCoordinates;
+        loadTextureCoordinates( textureCoordinates );
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder( super.toString() );
         sb.append( "\ntextureID: " ).append( texture );
-        if ( textureCoordinates != null && textureCoordinates.length > 0 ) {
+        if ( textureBuffer != null && textureBuffer.capacity() > 0 ) {
             sb.append( "\ntextureCoordinates:\n" );
-            for ( int i = 0; ( i + 1 ) < textureCoordinates.length; i += 2 ) {
-                sb.append( textureCoordinates[i] ).append( "," ).append( textureCoordinates[i + 1] ).append( "\n" );
+            for ( int i = 0; ( i + 1 ) < textureBuffer.capacity(); i += 2 ) {
+                sb.append( textureBuffer.get( i ) ).append( "," ).append( textureBuffer.get( i + 1 ) ).append( "\n" );
             }
         }
         return sb.toString();
@@ -201,7 +205,7 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
                             throws IOException {
         LOG.trace( "Serializing to object stream" );
         out.writeUTF( texture );
-        out.writeObject( textureCoordinates );
+        writeBufferToStream( textureBuffer, out );
     }
 
     /**
@@ -213,9 +217,20 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
      * @throws ClassNotFoundException
      */
     private void readObject( java.io.ObjectInputStream in )
-                            throws IOException, ClassNotFoundException {
+                            throws IOException {
         LOG.trace( "Deserializing from object stream" );
         texture = in.readUTF();
-        textureCoordinates = (float[]) in.readObject();
+        textureBuffer = readFloatBufferFromStream( in );
+    }
+
+    /**
+     * @return the bytes this geometry occupies
+     */
+    @Override
+    public long sizeOf() {
+        long localSize = super.sizeOf();
+        localSize += AllocatedHeapMemory.sizeOfString( texture, true, true );
+        localSize += AllocatedHeapMemory.sizeOfBuffer( textureBuffer, true );
+        return localSize;
     }
 }

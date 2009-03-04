@@ -55,7 +55,7 @@ public class WorldGeometryObject extends WorldObject<SimpleAccessGeometry, Geome
     /**
      * 
      */
-    private static final long serialVersionUID = 3493834376192852752L;
+    private static final long serialVersionUID = 1352860202021497685L;
 
     /**
      * Creates a new WorldGeometryObject with given number of data quality levels (LOD)

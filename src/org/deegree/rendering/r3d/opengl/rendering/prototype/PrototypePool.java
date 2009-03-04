@@ -45,7 +45,6 @@ import javax.media.opengl.GL;
 import javax.vecmath.Vector3f;
 
 import org.deegree.rendering.r3d.opengl.rendering.Renderable;
-import org.deegree.rendering.r3d.opengl.rendering.RenderableQualityModel;
 
 /**
  * The <code>Prototypes</code> class TODO add class documentation here.
@@ -59,7 +58,7 @@ import org.deegree.rendering.r3d.opengl.rendering.RenderableQualityModel;
  */
 public class PrototypePool {
 
-    private static final Map<String, Renderable> prototypes = new HashMap<String, Renderable>();
+    private static final Map<String, RenderablePrototype> prototypes = new HashMap<String, RenderablePrototype>();
 
     /**
      * @param context
@@ -86,7 +85,7 @@ public class PrototypePool {
      * @param id
      * @param model
      */
-    public static synchronized void addPrototype( String id, RenderableQualityModel model ) {
+    public static synchronized void addPrototype( String id, RenderablePrototype model ) {
         if ( id == null || "".equals( id ) || model == null || prototypes.containsKey( id ) ) {
             return;
         }
@@ -96,7 +95,7 @@ public class PrototypePool {
     /**
      * @return the reference to the prototype map (not a copy), changes to the map will reflect the pool.
      */
-    public static final Map<String, Renderable> getPrototypes() {
+    public static final Map<String, RenderablePrototype> getPrototypes() {
         return prototypes;
     }
 }

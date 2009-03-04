@@ -48,6 +48,7 @@ import org.deegree.rendering.r3d.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.geometry.TexturedGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.RenderableGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.RenderableQualityModel;
+import org.deegree.rendering.r3d.opengl.rendering.RenderableQualityModelPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,8 +89,9 @@ public class Tesselator {
         if ( originalObject == null ) {
             throw new NullPointerException( "The original object may not be null" );
         }
-        ArrayList<SimpleAccessGeometry> geometryPatches = originalObject.getGeometryPatches();
-        ArrayList<RenderableGeometry> results = new ArrayList<RenderableGeometry>( geometryPatches.size() );
+        ArrayList<SimpleAccessGeometry> geometryPatches = originalObject.getQualityModelParts();
+        ArrayList<RenderableQualityModelPart> results = new ArrayList<RenderableQualityModelPart>(
+                                                                                                   geometryPatches.size() );
         for ( SimpleAccessGeometry geom : geometryPatches ) {
             if ( geom != null ) {
                 GeometryCallBack callBack = createAndRegisterCallBack( tess, geom );

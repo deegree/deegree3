@@ -36,30 +36,23 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering.r3d.opengl.rendering;
-
-import javax.media.opengl.GL;
-import javax.vecmath.Vector3f;
+package org.deegree.rendering.r3d;
 
 /**
- * The <code>Renderable</code> class TODO add class documentation here.
+ * The <code>MemoryAware</code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  * 
  */
-public interface Renderable {
+public interface MemoryAware {
 
     /**
-     * The draw function must be implemented for each data element.
-     * 
-     * @param context
-     * @param eye
-     *            TODO
+     * @return the approximate size in bytes of this object. This value might not be perfectly correct (references in
+     *         the rendering.r3 package are called) but it will give an estimate of the amount of memory an
+     *         implementation uses.
      */
-    public void render( GL context, Vector3f eye );
+    public abstract long sizeOf();
 
 }

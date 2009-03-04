@@ -36,30 +36,20 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering.r3d.opengl.rendering;
+package org.deegree.rendering.r3d;
 
-import javax.media.opengl.GL;
-import javax.vecmath.Vector3f;
+import java.io.Serializable;
 
 /**
- * The <code>Renderable</code> class TODO add class documentation here.
+ * The <code>RenderableQualityModelPart</code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
  * @author last edited by: $Author$
- * 
  * @version $Revision$, $Date$
  * 
  */
-public interface Renderable {
+public interface QualityModelPart extends MemoryAware, Serializable {
 
-    /**
-     * The draw function must be implemented for each data element.
-     * 
-     * @param context
-     * @param eye
-     *            TODO
-     */
-    public void render( GL context, Vector3f eye );
+    // marker interface
 
 }
