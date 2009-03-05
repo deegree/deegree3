@@ -44,7 +44,7 @@ import java.awt.image.DataBuffer;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author:rbezema $
- *
+ * 
  * @version $Revision:11404 $, $Date:2008-04-23 15:38:27 +0200 (Mi, 23 Apr 2008) $
  * 
  */
@@ -53,27 +53,27 @@ public enum DataType {
     /**
      * 
      */
-    BYTE( 1 ), 
+    BYTE( Byte.SIZE / 8 ),
     /**
      * 
      */
-    INT( 4 ), 
+    INT( Integer.SIZE / 8 ),
     /**
      * 
      */
-    USHORT( 2 ), 
+    USHORT( Short.SIZE / 8 ),
     /**
      * 
      */
-    SHORT( 2 ), 
+    SHORT( Short.SIZE / 8 ),
     /**
      * 
      */
-    FLOAT( 4 ),
+    FLOAT( Float.SIZE / 8 ),
     /**
      * 
      */
-    DOUBLE( 8 ), 
+    DOUBLE( Double.SIZE / 8 ),
     /**
      * 
      */
@@ -95,7 +95,8 @@ public enum DataType {
     /**
      * Convert from {@link DataBuffer}-Types to {@link DataType}s.
      * 
-     * @param type The {@link DataBuffer}-Type (eg. TYPE_BYTE, etc.)
+     * @param type
+     *            The {@link DataBuffer}-Type (eg. TYPE_BYTE, etc.)
      * @return The according DataType
      */
     public static DataType fromDataBufferType( int type ) {
@@ -120,7 +121,8 @@ public enum DataType {
     /**
      * Convert from {@link DataType}s to {@link DataBuffer}-Types.
      * 
-     * @param type The DataType.
+     * @param type
+     *            The DataType.
      * @return The according {@link DataBuffer}-Type (eg. TYPE_BYTE, etc.)
      */
     public static int toDataBufferType( DataType type ) {

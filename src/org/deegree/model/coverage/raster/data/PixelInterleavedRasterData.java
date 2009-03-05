@@ -64,7 +64,7 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
     public PixelInterleavedRasterData( int width, int height, int bands, DataType dataType ) {
         super( width, height, bands, dataType );
     }
-    
+
     private PixelInterleavedRasterData( int width, int height, int bands, DataType dataType, boolean init ) {
         super( width, height, bands, dataType, init );
     }
@@ -104,7 +104,7 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
         if ( result == null ) {
             result = new byte[getBands() * bands];
         }
-        if ( 0 > x || x >= width || 0 > y || y >= height  ) {
+        if ( 0 > x || x >= width || 0 > y || y >= height ) {
             System.arraycopy( nodata, 0, result, 0, result.length );
             return result;
         }
@@ -124,28 +124,27 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
         // clamp to maximum possible size
         int subWidth = min( this.width - x0, width, srcRaster.getWidth() - xOffset );
         int subHeight = min( this.height - y0, height, srcRaster.getHeight() - yOffset );
-        
+
         if ( subHeight <= 0 || subWidth <= 0 ) {
             return;
         }
-        
-        // copy data direct if interleaving type is identical
-        boolean set = false;
 
+        // copy data direct if interleaving type is identical
         if ( srcRaster instanceof PixelInterleavedRasterData ) {
             PixelInterleavedRasterData raster = (PixelInterleavedRasterData) srcRaster;
-            ByteBuffer srcData = raster.getByteBuffer();
-            byte[] tmp = new byte[subWidth * getPixelStride()];
+            ByteBuffer srcData = raster.getByteBuffer().asReadOnlyBuffer();
+            // byte[] tmp = new byte[subWidth * getPixelStride()];
+            int length = subWidth * getPixelStride();
             for ( int i = 0; i < subHeight; i++ ) {
                 // order of .position and .get calls is significant, if bytebuffer is identical
+                srcData.limit( length );
                 srcData.position( raster.calculatePos( xOffset, i + yOffset ) );
-                srcData.get( tmp );
+                // srcData.get( tmp );
                 data.position( calculatePos( x0, y0 + i ) );
-                data.put( tmp );
+                data.put( srcData.slice() );
             }
-            set = true;
-        }
-        if ( !set ) { // else use generic setSubset method
+        } else {
+            // else use generic setSubset method
             super.setSubset( x0, y0, width, height, srcRaster, xOffset, yOffset );
         }
     }
