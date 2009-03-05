@@ -137,8 +137,9 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
             int length = subWidth * getPixelStride();
             for ( int i = 0; i < subHeight; i++ ) {
                 // order of .position and .get calls is significant, if bytebuffer is identical
-                srcData.limit( length );
-                srcData.position( raster.calculatePos( xOffset, i + yOffset ) );
+                int pos = raster.calculatePos( xOffset, i + yOffset );
+                srcData.limit( pos + length );
+                srcData.position( pos );                
                 // srcData.get( tmp );
                 data.position( calculatePos( x0, y0 + i ) );
                 data.put( srcData.slice() );
