@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL:svn+ssh://rbezema@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/coverage/raster/data/RasterRect.java $
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -35,46 +35,61 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster;
-
-import java.util.List;
-
-import org.deegree.model.geometry.Envelope;
+package org.deegree.model.coverage.raster.geom;
 
 /**
- * This interface wraps tiles and abstracts from the source of the tiles.
- * 
- * Some possible sources are in memory list of AbstractRasters, a shape file with a tile index, or a database with tile
- * information.
+ * Simple data structure for a raster rectangle. Stores upper-left pixel coordinate and width and height.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
+ * @author last edited by: $Author:rbezema $
+ *
+ * @version $Revision:11404 $, $Date:2008-04-23 15:38:27 +0200 (Mi, 23 Apr 2008) $
  */
-public interface TileContainer {
+public class RasterRect {
+    /**
+     * The x pixel position.
+     */
+    public int x;
+    
+    /**
+     * The y pixel position.
+     */
+    public int y;
 
     /**
-     * Returns all tiles that intersects the envelope.
-     * 
-     * @param env
-     *            return List with tiles
-     * @return A <code>List</code> with all intersecting tiles.
-     */
-    public List<AbstractRaster> getTiles( Envelope env );
+     * The width in pixel.
+    */
+    public int width;
 
     /**
-     * Returns the envelope of all tiles in this container.
-     * 
-     * @return The envelope of all tiles.
+     * The height in pixel.
      */
-    public Envelope getEnvelope();
+    public int height;
 
     /**
-     * Returns the RasterEnvelope of all tiles in this container.
+     * Creates a new RasterRect
      * 
-     * @return The raster envelope of the tiles.
+     * @param x
+     *            upper-left pixel
+     * @param y
+     *            upper-left pixel
+     * @param width
+     *            width of rectangle
+     * @param height
+     *            height of rectangle
      */
-    public RasterEnvelope getRasterEnvelope();
+    public RasterRect( int x, int y, int width, int height ) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
+    /**
+     * Creates a new RasterRect with position 0, 0 and size 0, 0.
+     */
+    public RasterRect() {
+        this( 0, 0, 0, 0 );
+    }
 
 }

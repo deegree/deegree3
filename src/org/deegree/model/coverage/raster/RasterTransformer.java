@@ -51,9 +51,11 @@ import javax.media.jai.WarpPolynomial;
 import javax.vecmath.Point3d;
 
 import org.deegree.model.coverage.raster.data.RasterData;
+import org.deegree.model.coverage.raster.geom.RasterEnvelope;
 import org.deegree.model.coverage.raster.interpolation.Interpolation;
 import org.deegree.model.coverage.raster.interpolation.InterpolationFactory;
 import org.deegree.model.coverage.raster.interpolation.InterpolationType;
+import org.deegree.model.coverage.raster.io.RasterFactory;
 import org.deegree.model.crs.Transformer;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;

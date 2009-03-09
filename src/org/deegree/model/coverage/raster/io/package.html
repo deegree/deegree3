@@ -1,0 +1,32 @@
+<body>
+
+Defines the io operations for reading and writing rasters (not the
+data).
+<p>An implementation of data RasterIOProvider provides some
+Implementations of the RasterReader RasterWriter interface. The loading
+of such a provider is loaded using the ServiceLoading mechanism, the
+default deegree 3 io providers are contained in the d3_dataaccess
+module. Current implementations are (see d3_dataaccess/src/META-INF/):
+<ul>
+	<li>org.deegree.dataaccess.imageio.IIORasterIOProvider</li>
+	<li>org.deegree.dataaccess.jai.JAIRasterIOProvider</li>
+</ul>
+<p>
+<h2>Related Documentation</h2>
+A RasterIOProvider provide a RasterReader, which provides methods about
+the possible file types it can handle, but the loading of the actual
+data (the raster/coverage images) is done by supplying an implementation
+of a RasterDataReader, which provides methods to retrieve a
+datacontainer.
+
+<p>Both above mentioned implementations supply implementations of
+these RasterDataReaders. For example:
+</p> 
+<p>the <code>org.deegree.dataaccess.imageio.IIORasterIOProvider</code>
+provide the <code>org.deegree.dataaccess.imageio.IIORasterReader</code>
+(an implementation of the <code>org.deegree.commons.model.raster.io.RasterReader</code>)
+which adds the possible file types of imageIO. It then uses <code>org.deegree.dataaccess.imageio.IIORasterDataReader</code>
+(an implementation of <code>org.deegree.commons.model.raster.io.RasterReader</code>)
+to access the images/raster files.
+</p>
+</body>

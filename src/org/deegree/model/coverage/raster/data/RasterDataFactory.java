@@ -37,6 +37,11 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster.data;
 
+import org.deegree.model.coverage.raster.data.nio.BandInterleavedRasterData;
+import org.deegree.model.coverage.raster.data.nio.ByteBufferRasterData;
+import org.deegree.model.coverage.raster.data.nio.LineInterleavedRasterData;
+import org.deegree.model.coverage.raster.data.nio.PixelInterleavedRasterData;
+
 /**
  * This class creates RasterData objects with a given interleaving type.
  * 

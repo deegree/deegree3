@@ -40,37 +40,58 @@
  E-Mail: greve@giub.uni-bonn.de
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster;
+package org.deegree.model.coverage.raster.io;
 
-import java.util.ServiceLoader;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import org.deegree.model.coverage.raster.AbstractRaster;
 
 /**
- * This interface is for all classes that provide raster IO. It uses the new Java 6 ServiceLoader.
- * 
- * <p>
- * To add your own raster IO to deegree you have to implement this interface and put the class name of _your_
- * implementing class in META-INF/services/org.deegree.model.coverage.raster within _your_ .jar or classes directory.
- * Then you have to add your implementation to the classpath of deegree.
- * 
- * @see ServiceLoader
+ * This interface is for abstraction of the raster writing handling.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
+ * @version $Revision$
  * 
  */
-public interface RasterIOProvider {
-    /**
-     * @param type
-     * @return a raster reader of the requested type, or null
-     */
-    public RasterReader getRasterReader( String type );
+public interface RasterWriter {
 
     /**
-     * @param type
-     * @return a raster writer of the requested type, or null
+     * Write the raster into file.
+     * 
+     * @param raster
+     * @param file
+     * @param options
+     *            additional information for the raster writer (format, etc)
+     * @throws IOException
+     *             may be thrown when the file can't be written
      */
-    public RasterWriter getRasterWriter( String type );
+    public void write( AbstractRaster raster, File file, RasterIOOptions options )
+                            throws IOException;
+    
+    /**
+     * Write the raster into strem.
+     * 
+     * @param raster
+     * @param out
+     * @param options
+     *            additional information for the raster writer (format, etc)
+     * @throws IOException
+     *             may be thrown when the file can't be written
+     */
+    public void write( AbstractRaster raster, OutputStream out, RasterIOOptions options )
+                            throws IOException;
+
+    /**
+     * Check if the raster writer is able to write the given raster.
+     * 
+     * @param raster
+     * @param options
+     * @return true if the class can write the raster
+     */
+    public boolean canWrite( AbstractRaster raster, RasterIOOptions options );
 
 }

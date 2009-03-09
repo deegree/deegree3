@@ -38,6 +38,7 @@
 package org.deegree.model.coverage.raster;
 
 import org.deegree.model.coverage.AbstractCoverage;
+import org.deegree.model.coverage.raster.geom.RasterEnvelope;
 import org.deegree.model.geometry.Envelope;
 
 /**
@@ -103,7 +104,8 @@ public abstract class AbstractRaster extends AbstractCoverage {
     /**
      * Extends current RasterEnvelope with rasterEnv. Useful for extending the raster, e.g. adding a tile.
      * 
-     * @param rasterEnv The raster envelope to add to the current.
+     * @param rasterEnv
+     *            The raster envelope to add to the current.
      */
     protected void extendRasterEnvelope( RasterEnvelope rasterEnv ) {
         if ( this.rasterEnv == null ) {
@@ -120,11 +122,12 @@ public abstract class AbstractRaster extends AbstractCoverage {
      *            The envelope to check for.
      */
     protected void checkBounds( Envelope envelope ) {
-        assert ( envelope.getMin().getX() < envelope.getMax().getX() );
-        assert ( envelope.getMin().getY() < envelope.getMax().getY() );
-        assert ( getEnvelope().getMin().getX() < getEnvelope().getMax().getX() );
-        assert ( getEnvelope().getMin().getY() < getEnvelope().getMax().getY() );
-        if ( ! getEnvelope().contains( envelope ) ) {
+        // rb: following checks are unnecessary because the creation of envelopes should check it.
+        // assert ( envelope.getMin().getX() < envelope.getMax().getX() );
+        // assert ( envelope.getMin().getY() < envelope.getMax().getY() );
+        // assert ( getEnvelope().getMin().getX() < getEnvelope().getMax().getX() );
+        // assert ( getEnvelope().getMin().getY() < getEnvelope().getMax().getY() );
+        if ( !getEnvelope().contains( envelope ) ) {
             throw new IndexOutOfBoundsException();
         }
     }

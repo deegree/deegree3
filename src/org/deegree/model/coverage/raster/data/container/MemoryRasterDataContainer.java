@@ -35,10 +35,11 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster;
+package org.deegree.model.coverage.raster.data.container;
 
 import org.deegree.model.coverage.raster.data.RasterData;
-import org.deegree.model.coverage.raster.data.RasterDataReader;
+import org.deegree.model.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
+import org.deegree.model.coverage.raster.data.io.RasterDataReader;
 
 /**
  * This class implements a RasterDataContainer that keeps RasterData in memory.
@@ -53,15 +54,13 @@ public class MemoryRasterDataContainer implements RasterDataContainer, RasterDat
 
     private RasterData raster;
 
-
     /**
      * Creates an empty RasterDataContainer that stores the raster data in memory.
      */
-    public MemoryRasterDataContainer( ) {
+    public MemoryRasterDataContainer() {
         // empty consturctor
     }
 
-    
     /**
      * Reads RasterData from RasterReader and wraps it in a RasterDataContainer. RasterData stays in memory.
      * 
@@ -108,7 +107,7 @@ public class MemoryRasterDataContainer implements RasterDataContainer, RasterDat
     public RasterData getRasterData() {
         return raster;
     }
-    
+
     @Override
     public RasterData getReadOnlyRasterData() {
         return getRasterData().asReadOnly();
@@ -118,12 +117,11 @@ public class MemoryRasterDataContainer implements RasterDataContainer, RasterDat
         this.raster = reader.read();
     }
 
-    public RasterDataContainer getRasterDataContainer( String type ) {
-        if ( type.equalsIgnoreCase( RasterDataContainerFactory.LoadingPolicy.MEMORY.toString() ) ) {
+    public RasterDataContainer getRasterDataContainer( LoadingPolicy type ) {
+        if ( type == LoadingPolicy.MEMORY ) {
             // the service loader caches provider instances, so return a new instance
-            return new MemoryRasterDataContainer();  
+            return new MemoryRasterDataContainer();
         }
         return null;
     }
-
 }

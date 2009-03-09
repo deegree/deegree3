@@ -35,9 +35,13 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster.data;
+package org.deegree.model.coverage.raster.data.nio;
 
 import java.nio.ByteBuffer;
+
+import org.deegree.model.coverage.raster.data.DataType;
+import org.deegree.model.coverage.raster.data.InterleaveType;
+import org.deegree.model.coverage.raster.data.RasterData;
 
 /**
  * This class implements a pixel-interleaved, ByteBuffer-based RasterData.

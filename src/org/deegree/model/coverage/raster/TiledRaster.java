@@ -39,7 +39,10 @@ package org.deegree.model.coverage.raster;
 
 import java.util.List;
 
+import org.deegree.model.coverage.raster.container.MemoryTileContainer;
+import org.deegree.model.coverage.raster.container.TileContainer;
 import org.deegree.model.coverage.raster.data.RasterData;
+import org.deegree.model.coverage.raster.geom.RasterEnvelope;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.primitive.Curve;
@@ -111,7 +114,8 @@ public class TiledRaster extends AbstractRaster {
         for ( AbstractRaster r : tileContainer.getTiles( env ) ) {
             try {
                 Geometry intersection = r.getEnvelope().intersection( env );
-                
+
+                // rb: is this actually needed, because the tilecontainer checks this as well?
                 if ( intersection == null ) {
                     continue;
                 }
@@ -176,6 +180,9 @@ public class TiledRaster extends AbstractRaster {
 
         Envelope env = getEnvelope();
         List<AbstractRaster> tiles = getTileContainer().getTiles( env );
+        if ( tiles == null || tiles.isEmpty() ) {
+            throw new NullPointerException( "The given tile container does not contain any tiles. " );
+        }
         SimpleRaster result = tiles.get( 0 ).getAsSimpleRaster().createCompatibleSimpleRaster( getRasterEnvelope(), env );
 
         for ( AbstractRaster r : tiles ) {

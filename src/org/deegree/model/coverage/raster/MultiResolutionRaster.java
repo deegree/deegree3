@@ -48,6 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.model.coverage.AbstractCoverage;
+import org.deegree.model.coverage.raster.geom.RasterEnvelope;
 import org.deegree.model.geometry.Envelope;
 
 /**
@@ -88,19 +89,21 @@ public class MultiResolutionRaster extends AbstractCoverage {
      * 
      * @param res
      *            resolution in units per pixel
-     * @return raster for resolution
+     * @return raster for resolution or <code>null</code> if no rasters were defined.
      */
     public AbstractRaster getRaster( double res ) {
         Iterator<AbstractRaster> iter = resolutions.iterator();
-        AbstractRaster prevRaster = iter.next();
-
-        boolean found = false;
-        while ( !found && iter.hasNext() ) {
-            AbstractRaster curRaster = iter.next();
-            if ( curRaster.getRasterEnvelope().getXRes() > res ) {
-                found = true;
-            } else {
-                prevRaster = curRaster;
+        AbstractRaster prevRaster = null;
+        if ( iter.hasNext() ) {
+            prevRaster = iter.next();
+            boolean found = false;
+            while ( !found && iter.hasNext() ) {
+                AbstractRaster curRaster = iter.next();
+                if ( curRaster.getRasterEnvelope().getXRes() > res ) {
+                    found = true;
+                } else {
+                    prevRaster = curRaster;
+                }
             }
         }
         return prevRaster;

@@ -40,11 +40,11 @@
  E-Mail: greve@giub.uni-bonn.de
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster;
+package org.deegree.model.coverage.raster.data.container;
 
 import java.util.ServiceLoader;
 
-import org.deegree.model.coverage.raster.data.RasterDataReader;
+import org.deegree.model.coverage.raster.data.io.RasterDataReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,19 +90,24 @@ public class RasterDataContainerFactory {
      */
     public static RasterDataContainer withLoadingPolicy( RasterDataReader reader, LoadingPolicy policy ) {
         RasterDataContainer result;
-        switch ( policy ) {
-        case NONE:
-        case MEMORY:    
-            result = getRasterDataContainer( "memory" );
-            break;
-        case LAZY:
-            result = getRasterDataContainer( "lazy" );
-            break;
-        case CACHED:
-            result = getRasterDataContainer( "cached" );
-            break;
-        default:
-            throw new UnsupportedOperationException( "Unsupported LoadingPolicy" );
+        if ( policy == null ) {
+            LOG.info( "Empty policy provided, using default loading policy (Memory) instead." );
+            result = getRasterDataContainer( defaultLoadingPolicy );
+        } else {
+            switch ( policy ) {
+            case NONE:
+            case MEMORY:
+                result = getRasterDataContainer( LoadingPolicy.MEMORY );
+                break;
+            case LAZY:
+                result = getRasterDataContainer( policy );
+                break;
+            case CACHED:
+                result = getRasterDataContainer( policy );
+                break;
+            default:
+                throw new UnsupportedOperationException( "Unsupported LoadingPolicy: " + policy.name() + "." );
+            }
         }
         result.setRasterDataReader( reader );
         return result;
@@ -118,14 +123,15 @@ public class RasterDataContainerFactory {
         return withLoadingPolicy( reader, defaultLoadingPolicy );
     }
 
-    private static RasterDataContainer getRasterDataContainer( String type ) {
+    private static RasterDataContainer getRasterDataContainer( LoadingPolicy l ) {
         for ( RasterDataContainerProvider provider : rasterContainerLoader ) {
-            RasterDataContainer container = provider.getRasterDataContainer( type );
+            RasterDataContainer container = provider.getRasterDataContainer( l );
             if ( container != null ) {
                 return container;
             }
         }
-        LOG.error( "RasterDataContainer for type " + type + " not found, returning default MemoryRasterDataContainer" );
+        LOG.error( "RasterDataContainer for type " + l
+                   + " not found, returning memory raster data container (the default)" );
         return new MemoryRasterDataContainer();
     }
 
@@ -133,8 +139,19 @@ public class RasterDataContainerFactory {
      * Sets the default loading policy for all new raster container.
      * 
      * @param policy
+     *            if <code>null</code> it will be ignored.
      */
-    public static void setDefaultLoadingPolicy( LoadingPolicy policy ) {
-        defaultLoadingPolicy = policy;
+    public synchronized static void setDefaultLoadingPolicy( LoadingPolicy policy ) {
+        if ( policy != null ) {
+            defaultLoadingPolicy = policy;
+        }
+    }
+
+    /**
+     * 
+     * @return the default loading policy
+     */
+    public synchronized static LoadingPolicy getDefaultLoadingPolicy() {
+        return defaultLoadingPolicy;
     }
 }

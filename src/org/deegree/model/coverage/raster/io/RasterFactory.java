@@ -40,7 +40,7 @@
  E-Mail: greve@giub.uni-bonn.de
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster;
+package org.deegree.model.coverage.raster.io;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +49,7 @@ import java.io.OutputStream;
 import java.util.ServiceLoader;
 
 import org.deegree.commons.utils.FileUtils;
+import org.deegree.model.coverage.raster.AbstractRaster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

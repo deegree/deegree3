@@ -35,10 +35,14 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster.data;
+package org.deegree.model.coverage.raster.data.nio;
 
 import java.nio.ByteBuffer;
 
+import org.deegree.model.coverage.raster.data.DataType;
+import org.deegree.model.coverage.raster.data.InterleaveType;
+import org.deegree.model.coverage.raster.data.RasterData;
+import org.deegree.model.coverage.raster.geom.RasterRect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

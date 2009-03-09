@@ -40,52 +40,31 @@
  E-Mail: greve@giub.uni-bonn.de
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster;
+package org.deegree.model.coverage.raster.data.container;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.ServiceLoader;
+
+import org.deegree.model.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
+
 
 /**
- * This interface is for abstraction of the raster loading handling.
+ * This interface is for all classes that provide {@link RasterDataContainer}. A RasterDataContainer can implement lazy
+ * loading or caching of raster data. The implemented provider will be used by the new Java 6 ServiceLoader.
+ * 
+ * @see ServiceLoader
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
- * @version $Revision$
+ * @version $Revision$, $Date$
  * 
  */
-public interface RasterReader {
+public interface RasterDataContainerProvider {
     /**
-     * Read the given raster file into an abstract raster.
+     * Returns a new RasterDataContainer for given type or null, if the implementation doesn't provide this type.
      * 
-     * @param filename
-     * @param options
-     * @return the loaded raster
-     * @throws IOException
-     *             may be thrown when there is a problem with reading the raster.
+     * @param type
+     * @return a RasterDataContainer for given type or null
      */
-    public AbstractRaster load( File filename, RasterIOOptions options )
-                            throws IOException;
-
-    /**
-     * Read the given input stream into an abstract raster.
-     * 
-     * @param stream
-     * @param options
-     * @return the loaded raster
-     * @throws IOException
-     *             may be thrown when there is a problem with reading the raster.
-     */
-    public AbstractRaster load( InputStream stream, RasterIOOptions options )
-                            throws IOException;
-
-    /**
-     * Check if the raster reader is able to read the given raster file.
-     * 
-     * @param filename
-     * @return true if the class can read the raster
-     */
-    public boolean canLoad( File filename );
-
+    RasterDataContainer getRasterDataContainer( LoadingPolicy type );
 }

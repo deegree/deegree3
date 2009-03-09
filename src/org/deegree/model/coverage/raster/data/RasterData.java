@@ -37,6 +37,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster.data;
 
+import org.deegree.model.coverage.raster.geom.RasterRect;
+
 /**
  * Interface for a 2 dimensional raster.
  * <p>

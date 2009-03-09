@@ -40,71 +40,54 @@
  E-Mail: greve@giub.uni-bonn.de
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster;
+package org.deegree.model.coverage.raster.io;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.deegree.commons.utils.FileUtils;
+import org.deegree.model.coverage.raster.AbstractRaster;
 
 /**
- * This class is a container for various RasterIO options.
+ * This interface is for abstraction of the raster loading handling.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date$
+ * @version $Revision$
  * 
  */
-public class RasterIOOptions {
-    
+public interface RasterReader {
     /**
-     * This key stores the (output) format.
-     */
-    public static final String OPT_FORMAT = "FORMAT";
-
-    private final Map<String, String> options = new HashMap<String, String>();
-
-    /**
-     * @param key
-     * @param value
-     */
-    public void add( String key, String value ) {
-        options.put( key, value );
-    }
-    
-    /**
-     * @param key
-     * @return true if it contains the option
-     */
-    public boolean contains( String key ) {
-        return options.containsKey( key );
-    }
-    
-    /**
-     * @param key
-     * @return the option value or <code>null</code>
-     */
-    public String get( String key ) {
-        return options.get( key );
-    }
-    
-    /**
-     * Return a RasterIOOption object with the format set according to the given file.
+     * Read the given raster file into an abstract raster.
      * 
-     * @param file
-     * @return RasterIOOption proper format.
+     * @param filename
+     * @param options
+     * @return the loaded raster
+     * @throws IOException
+     *             may be thrown when there is a problem with reading the raster.
      */
-    public static RasterIOOptions forFile( File file ) {
-        RasterIOOptions result = new RasterIOOptions();
-        String ext = FileUtils.getFileExtension( file );
-        result.add( OPT_FORMAT, ext );
-        return result;
-    }
-    
-    @Override
-    public String toString() {
-        return options.toString();
-    }
+    public AbstractRaster load( File filename, RasterIOOptions options )
+                            throws IOException;
+
+    /**
+     * Read the given input stream into an abstract raster.
+     * 
+     * @param stream
+     * @param options
+     * @return the loaded raster
+     * @throws IOException
+     *             may be thrown when there is a problem with reading the raster.
+     */
+    public AbstractRaster load( InputStream stream, RasterIOOptions options )
+                            throws IOException;
+
+    /**
+     * Check if the raster reader is able to read the given raster file.
+     * 
+     * @param filename
+     * @return true if the class can read the raster
+     */
+    public boolean canLoad( File filename );
+
 }

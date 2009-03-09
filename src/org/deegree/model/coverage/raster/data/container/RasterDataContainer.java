@@ -35,10 +35,10 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster;
+package org.deegree.model.coverage.raster.data.container;
 
 import org.deegree.model.coverage.raster.data.RasterData;
-import org.deegree.model.coverage.raster.data.RasterDataReader;
+import org.deegree.model.coverage.raster.data.io.RasterDataReader;
 
 /**
  * This interface is for abstraction of RasterData providers. Implementations of this interface can control the loading

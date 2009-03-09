@@ -35,7 +35,10 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster.data;
+package org.deegree.model.coverage.raster.data.nio;
+
+import org.deegree.model.coverage.raster.data.DataType;
+import org.deegree.model.coverage.raster.data.InterleaveType;
 
 
 /**

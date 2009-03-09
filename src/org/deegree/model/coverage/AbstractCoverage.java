@@ -57,7 +57,7 @@ public abstract class AbstractCoverage {
     private GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
 
     private CoordinateSystem crs;
-    
+
     private Envelope envelope;
 
     /**
@@ -131,6 +131,7 @@ public abstract class AbstractCoverage {
     public void setCoordinateSystem( CoordinateSystem crs ) {
         this.crs = crs;
         if ( envelope != null ) {
+            // rb: this is not correct, the values of the envelope should be converted to the given crs, shouldn't they.
             this.envelope = geomFactory.createEnvelope( envelope.getMin().getAsArray(), envelope.getMax().getAsArray(),
                                                         envelope.getPrecision(), crs );
         }

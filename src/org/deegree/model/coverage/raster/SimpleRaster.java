@@ -38,7 +38,10 @@
 package org.deegree.model.coverage.raster;
 
 import org.deegree.model.coverage.raster.data.RasterData;
-import org.deegree.model.coverage.raster.data.RasterRect;
+import org.deegree.model.coverage.raster.data.container.MemoryRasterDataContainer;
+import org.deegree.model.coverage.raster.data.container.RasterDataContainer;
+import org.deegree.model.coverage.raster.geom.RasterEnvelope;
+import org.deegree.model.coverage.raster.geom.RasterRect;
 import org.deegree.model.geometry.Envelope;
 
 /**
@@ -153,7 +156,7 @@ public class SimpleRaster extends AbstractRaster {
     public RasterData getRasterData() {
         return rasterDataContainer.getRasterData();
     }
-    
+
     /**
      * Returns a read-only copy of the RasterData of this SimpleRaster
      * 

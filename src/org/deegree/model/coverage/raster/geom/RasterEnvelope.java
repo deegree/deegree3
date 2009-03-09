@@ -35,14 +35,13 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster;
+package org.deegree.model.coverage.raster.geom;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.signum;
 
-import org.deegree.model.coverage.raster.data.RasterRect;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.GeometryFactory;

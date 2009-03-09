@@ -1,4 +1,4 @@
-//$HeadURL:svn+ssh://rbezema@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/coverage/raster/data/RasterRect.java $
+//$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -35,61 +35,37 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.coverage.raster.data;
+package org.deegree.model.coverage.raster.data.io;
+
+import org.deegree.model.coverage.raster.data.RasterData;
+
 
 /**
- * Simple data structure for a raster rectangle. Stores upper-left pixel coordinate and width and height.
+ * Simple interface to read RasterData.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author:rbezema $
- *
- * @version $Revision:11404 $, $Date:2008-04-23 15:38:27 +0200 (Mi, 23 Apr 2008) $
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ * 
  */
-public class RasterRect {
-    /**
-     * The x pixel position.
-     */
-    public int x;
-    
-    /**
-     * The y pixel position.
-     */
-    public int y;
+public interface RasterDataReader {
 
     /**
-     * The width in pixel.
-    */
-    public int width;
-
-    /**
-     * The height in pixel.
-     */
-    public int height;
-
-    /**
-     * Creates a new RasterRect
+     * Read the raster data.
      * 
-     * @param x
-     *            upper-left pixel
-     * @param y
-     *            upper-left pixel
-     * @param width
-     *            width of rectangle
-     * @param height
-     *            height of rectangle
+     * @return Return the underlying raster data.
      */
-    public RasterRect( int x, int y, int width, int height ) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-    }
+    public RasterData read();
 
     /**
-     * Creates a new RasterRect with position 0, 0 and size 0, 0.
+     * @return The width in pixel of the raster data.
      */
-    public RasterRect() {
-        this( 0, 0, 0, 0 );
-    }
+    public int getWidth();
+
+    /**
+     * @return The height in pixel of the raster data.
+     */
+    public int getHeight();
 
 }
