@@ -39,8 +39,9 @@ package org.deegree.model.coverage.raster;
 
 import static org.junit.Assert.*;
 
-import org.deegree.model.coverage.raster.RasterEnvelope.Type;
-import org.deegree.model.coverage.raster.data.RasterRect;
+import org.deegree.model.coverage.raster.geom.RasterEnvelope;
+import org.deegree.model.coverage.raster.geom.RasterRect;
+import org.deegree.model.coverage.raster.geom.RasterEnvelope.Type;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
