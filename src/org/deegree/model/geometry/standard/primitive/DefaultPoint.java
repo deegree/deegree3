@@ -80,7 +80,7 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
 
     @Override
     public double get( int dimension ) {
-        if ( coordinates.length > dimension && dimension > 0 ) {
+        if ( coordinates.length > dimension && dimension >= 0 ) {
             return coordinates[dimension];
         }
         throw new IndexOutOfBoundsException( "Dimemsion not inside coordinate array." );
