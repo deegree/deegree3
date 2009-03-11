@@ -49,6 +49,7 @@ import java.util.Map;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.model.coverage.raster.data.container.RasterDataContainerFactory;
 import org.deegree.model.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
+import org.deegree.model.coverage.raster.geom.RasterEnvelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +82,15 @@ public class RasterIOOptions {
     public static final String DATA_LOADING_POLICY = "LOADING_POLICIY";
 
     private final Map<String, String> options = new HashMap<String, String>();
+
+    private RasterEnvelope envelope;
+
+    public RasterIOOptions() {
+    }
+
+    public RasterIOOptions( RasterEnvelope envelope ) {
+        this.envelope = envelope;
+    }
 
     /**
      * @param key
@@ -121,6 +131,23 @@ public class RasterIOOptions {
         return result;
     }
 
+    /**
+     * Return a RasterIOOption object with the format set according to the given file with an optional
+     * {@link RasterEnvelope}.
+     * 
+     * @param file
+     * @param envelope
+     * @return RasterIOOption proper format.
+     */
+    public static RasterIOOptions forFile( File file, RasterEnvelope envelope ) {
+        RasterIOOptions result = new RasterIOOptions( envelope );
+        String ext = FileUtils.getFileExtension( file );
+        result.add( OPT_FORMAT, ext );
+        result.add( READ_WLD_FILE, null );
+        result.add( DATA_LOADING_POLICY, RasterDataContainerFactory.getDefaultLoadingPolicy().name() );
+        return result;
+    }
+
     @Override
     public String toString() {
         return options.toString();
@@ -144,5 +171,13 @@ public class RasterIOOptions {
             LOG.error( "Unable to map loading policy, using memory instead." );
         }
         return result;
+    }
+
+    public boolean hasEnvelope() {
+        return envelope != null;
+    }
+
+    public RasterEnvelope getEnvelope() {
+        return envelope;
     }
 }
