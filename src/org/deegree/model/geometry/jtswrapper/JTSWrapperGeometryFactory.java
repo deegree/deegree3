@@ -238,7 +238,21 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CoordinateSystem crs ) {        
+    public Envelope createEnvelope( List<Double> lowerCorner, List<Double> upperCorner, CoordinateSystem crs ) {
+        if ( lowerCorner.size() != upperCorner.size() ) {
+            throw new IllegalArgumentException( "LowerCorner must be of same dimension as upperCorner." );
+        }
+        double[] lc = new double[lowerCorner.size()];
+        double[] uc = new double[upperCorner.size()];
+        for ( int i = 0; i < lc.length; ++i ) {
+            lc[i] = lowerCorner.get( i );
+            uc[i] = upperCorner.get( i );
+        }
+        return createEnvelope( lc, uc, crs );
+    }
+
+    @Override
+    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CoordinateSystem crs ) {
         return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, crs );
     }
 

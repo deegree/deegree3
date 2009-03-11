@@ -204,21 +204,35 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     public Envelope createEnvelope( double[] min, double[] max, CoordinateSystem crs ) {
         return new DefaultEnvelope( null, crs, new DefaultPoint( null, crs, min ), new DefaultPoint( null, crs, max ) );
     }
-    
+
     @Override
     public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CoordinateSystem crs ) {
         return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, crs );
     }
 
     @Override
-    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, double precision, CoordinateSystem crs ) {
+    public Envelope createEnvelope( List<Double> lowerCorner, List<Double> upperCorner, CoordinateSystem crs ) {
+        if ( lowerCorner.size() != upperCorner.size() ) {
+            throw new IllegalArgumentException( "LowerCorner must be of same dimension as upperCorner." );
+        }
+        double[] lc = new double[lowerCorner.size()];
+        double[] uc = new double[upperCorner.size()];
+        for ( int i = 0; i < lc.length; ++i ) {
+            lc[i] = lowerCorner.get( i );
+            uc[i] = upperCorner.get( i );
+        }
+        return createEnvelope( lc, uc, crs );
+    }
+
+    @Override
+    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, double precision,
+                                    CoordinateSystem crs ) {
         return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, precision, crs );
     }
 
     @Override
     public Envelope createEnvelope( String id, SurfacePatch patch ) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException( "not yet supported" );
     }
 
     @Override
@@ -228,14 +242,14 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public Point createPoint( String id, double x, double y, CoordinateSystem crs ) {
-        return new DefaultPoint( id, crs, new double [] {x, y} );
-    }    
+        return new DefaultPoint( id, crs, new double[] { x, y } );
+    }
 
     @Override
     public Point createPoint( String id, double x, double y, double z, CoordinateSystem crs ) {
-        return new DefaultPoint( id, crs, new double [] {x, y, z} );
-    }    
-    
+        return new DefaultPoint( id, crs, new double[] { x, y, z } );
+    }
+
     @Override
     public Point createPoint( String id, double[] coordinates, double precision, CoordinateSystem crs ) {
         return new DefaultPoint( id, crs, coordinates );
@@ -408,4 +422,5 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     public MultiGeometry<Geometry> createMultiGeometry( String id, CoordinateSystem crs, List<Geometry> members ) {
         return new DefaultMultiGeometry<Geometry>( id, crs, members );
     }
+
 }

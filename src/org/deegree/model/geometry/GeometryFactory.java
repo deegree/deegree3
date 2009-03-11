@@ -217,7 +217,7 @@ public interface GeometryFactory {
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
-    public Point createPoint( String id, double x, double y, CoordinateSystem crs );    
+    public Point createPoint( String id, double x, double y, CoordinateSystem crs );
 
     /**
      * Creates a georeferenced point with a default precision.
@@ -235,8 +235,8 @@ public interface GeometryFactory {
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
-    public Point createPoint( String id, double x, double y, double z, CoordinateSystem crs );    
-    
+    public Point createPoint( String id, double x, double y, double z, CoordinateSystem crs );
+
     /**
      * creates a georeferenced point
      * 
@@ -267,7 +267,7 @@ public interface GeometryFactory {
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
-    public Point createPoint( String id, double[] coordinates, CoordinateSystem crs );  
+    public Point createPoint( String id, double[] coordinates, CoordinateSystem crs );
 
     /**
      * Creates a {@link LineString} geometry.
@@ -575,7 +575,7 @@ public interface GeometryFactory {
      * @return created {@link Envelope}
      */
     public Envelope createEnvelope( double[] min, double[] max, CoordinateSystem crs );
-    
+
     /**
      * creates an {@link Envelope} with default precision
      * 
@@ -589,15 +589,16 @@ public interface GeometryFactory {
      *            miximum y corner coordinates
      * @param precision
      *            precision of the corner coordinates in units of the used CRS. This value will be used for comparing
-     *            two points to be equal or not.   
-     *         
+     *            two points to be equal or not.
+     * 
      * @param crs
      *            evenlopes coordinate reference system. If a point does not have a CRS or it is not known
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Envelope}
      */
-    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, double precision,  CoordinateSystem crs );
-    
+    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, double precision,
+                                    CoordinateSystem crs );
+
     /**
      * creates an {@link Envelope} with default precision
      * 
@@ -609,7 +610,7 @@ public interface GeometryFactory {
      *            miximum x corner coordinates
      * @param maxy
      *            miximum y corner coordinates
-     *         
+     * 
      * @param crs
      *            evenlopes coordinate reference system. If a point does not have a CRS or it is not known
      *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
@@ -916,4 +917,14 @@ public interface GeometryFactory {
      */
     public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs,
                                                                           List<GeometricPrimitive> memberPrimitives );
+
+    /**
+     * Create an envelope of a list of Doubles
+     * 
+     * @param lowerCorner
+     * @param upperCorner
+     * @param crs
+     * @return the envelope
+     */
+    public Envelope createEnvelope( List<Double> lowerCorner, List<Double> upperCorner, CoordinateSystem crs );
 }
