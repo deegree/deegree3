@@ -38,59 +38,18 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.managers;
 
-import java.util.Comparator;
-import java.util.List;
-
-import org.deegree.commons.utils.math.Vectors3f;
-import org.deegree.model.geometry.Envelope;
-import org.deegree.rendering.r3d.opengl.rendering.WorldRenderableObject;
-
 /**
- * The <code>TreeManager</code> will hold the bill board references.
+ * The <code>Positionable</code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
  * 
  */
-public class BuildingManager extends RenderableManager<WorldRenderableObject> {
+public interface Positionable {
 
     /**
-     * @param validDomain
-     * @param numberOfObjectsInLeaf
+     * @return the position of the implementing class.
      */
-    public BuildingManager( Envelope validDomain, int numberOfObjectsInLeaf ) {
-        super( validDomain, numberOfObjectsInLeaf );
-    }
-
-    /**
-     * 
-     * @param eye
-     * @return an ordered List of trees.
-     */
-    public List<WorldRenderableObject> getBuildingsForEyePosition( float[] eye ) {
-        BuildingComparator comp = new BuildingComparator( eye );
-        return getObjects( comp );
-    }
-
-    private class BuildingComparator implements Comparator<WorldRenderableObject> {
-        private float[] eye;
-
-        /**
-         * @param eye
-         *            to compare this billboard to.
-         * 
-         */
-        public BuildingComparator( float[] eye ) {
-            this.eye = eye;
-        }
-
-        @Override
-        public int compare( WorldRenderableObject o1, WorldRenderableObject o2 ) {
-            float distA = Vectors3f.distance( eye, o1.getPosition() );
-            float distB = Vectors3f.distance( eye, o2.getPosition() );
-            return Float.compare( distA, distB );
-        }
-
-    }
+    public float[] getPosition();
 }

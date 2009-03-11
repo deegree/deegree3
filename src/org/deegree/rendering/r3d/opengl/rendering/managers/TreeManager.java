@@ -38,14 +38,11 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.managers;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
 
 import org.deegree.commons.utils.math.Vectors3f;
+import org.deegree.model.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.BillBoard;
 
 /**
@@ -56,35 +53,14 @@ import org.deegree.rendering.r3d.opengl.rendering.BillBoard;
  * @version $Revision$, $Date$
  * 
  */
-public class TreeManager {
-
-    private final Map<String, List<BillBoard>> trees = new HashMap<String, List<BillBoard>>();
+public class TreeManager extends RenderableManager<BillBoard> {
 
     /**
-     * @param tree
-     *            to add to the tree manager
+     * @param validDomain
+     * @param numberOfObjectsInLeaf
      */
-    public synchronized void addTree( BillBoard tree ) {
-        if ( tree != null ) {
-            List<BillBoard> currentTrees = trees.get( tree.getTextureID() );
-            if ( !trees.containsKey( tree.getTextureID() ) || currentTrees == null ) {
-                currentTrees = new ArrayList<BillBoard>();
-                trees.put( tree.getTextureID(), currentTrees );
-            }
-            currentTrees.add( tree );
-        }
-    }
-
-    /**
-     * @param listOfTrees
-     *            to add to the tree manager
-     */
-    public void addTrees( List<BillBoard> listOfTrees ) {
-        if ( listOfTrees != null && !listOfTrees.isEmpty() ) {
-            for ( BillBoard billBoard : listOfTrees ) {
-                addTree( billBoard );
-            }
-        }
+    public TreeManager( Envelope validDomain, int numberOfObjectsInLeaf ) {
+        super( validDomain, numberOfObjectsInLeaf );
     }
 
     /**
@@ -94,14 +70,7 @@ public class TreeManager {
      */
     public List<BillBoard> getTreesForEyePosition( float[] eye ) {
         TreeComparator a = new TreeComparator( eye );
-        List<BillBoard> s = new ArrayList<BillBoard>();
-        for ( List<BillBoard> l : trees.values() ) {
-            TreeSet<BillBoard> t = new TreeSet<BillBoard>( a );
-            t.addAll( l );
-            // use the positional parameter to sort the list.
-            s.addAll( t.descendingSet() );
-        }
-        return s;
+        return getObjects( a );
     }
 
     private class TreeComparator implements Comparator<BillBoard> {
@@ -118,14 +87,13 @@ public class TreeManager {
 
         @Override
         public int compare( BillBoard o1, BillBoard o2 ) {
-            int result = 0;
-            if ( o1 != null && o2 != null ) {
-                float distA = Vectors3f.distance( eye, o1.getLocation() );
-                float distB = Vectors3f.distance( eye, o2.getLocation() );
-                distA = distA - distB;
-                result = ( distA < 0 ) ? -1 : ( ( Math.abs( distA ) < 1E-11 ) ? 0 : 1 );
+            int res = o1.getTextureID().compareTo( o2.getTextureID() );
+            if ( res == 0 ) {
+                float distA = Vectors3f.distance( eye, o1.getPosition() );
+                float distB = Vectors3f.distance( eye, o2.getPosition() );
+                res = Float.compare( distA, distB );
             }
-            return result;
+            return res;
         }
 
     }

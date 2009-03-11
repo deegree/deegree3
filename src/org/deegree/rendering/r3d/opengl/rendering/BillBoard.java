@@ -46,6 +46,7 @@ import javax.vecmath.Vector3f;
 
 import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.deegree.commons.utils.math.Vectors3f;
+import org.deegree.rendering.r3d.opengl.rendering.managers.Positionable;
 import org.deegree.rendering.r3d.opengl.rendering.texture.TexturePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,7 @@ import com.sun.opengl.util.BufferUtil;
  * @version $Revision$, $Date$
  * 
  */
-public class BillBoard extends RenderableQualityModel {
+public class BillBoard extends RenderableQualityModel implements Positionable {
 
     /**
      * 
@@ -248,6 +249,7 @@ public class BillBoard extends RenderableQualityModel {
     public boolean equals( Object obj ) {
         boolean result = false;
         if ( obj != null && obj instanceof BillBoard ) {
+
             BillBoard that = (BillBoard) obj;
             result = super.equals( that ) && this.textureID.equals( that.textureID )
                      && Vectors3f.equals( this.location, that.location, 1E-11f );
@@ -271,6 +273,11 @@ public class BillBoard extends RenderableQualityModel {
      * @return the location of this billboard (it's center axis)
      */
     public final float[] getLocation() {
+        return location;
+    }
+
+    @Override
+    public float[] getPosition() {
         return location;
     }
 }
