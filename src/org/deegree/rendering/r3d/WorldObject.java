@@ -47,6 +47,8 @@ import java.io.Serializable;
 
 import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.deegree.model.geometry.Envelope;
+import org.deegree.model.geometry.primitive.Point;
+import org.deegree.rendering.r3d.opengl.rendering.managers.Positionable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +66,8 @@ import org.slf4j.LoggerFactory;
  *            the quality model type
  *
  */
-public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>> implements Serializable, MemoryAware {
+public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>> implements Serializable, MemoryAware,
+                                                                                 Positionable {
 
     /**
      * 
@@ -78,6 +81,8 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
     private transient String time;
 
     private transient Envelope bbox;
+
+    private transient float[] position;
 
     /**
      * The quality levels of the this object
@@ -101,6 +106,9 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
             throw new NullPointerException( "Bbox may not be null" );
         }
         this.bbox = bbox;
+        Point p = bbox.getCentroid();
+        position = new float[] { (float) p.getX(), (float) p.getY(),
+                                (float) ( ( p.getCoordinateDimension() == 3 ) ? p.getZ() : 0 ) };
         this.qualityLevels = qualityLevels;
     }
 
@@ -186,7 +194,13 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
      *            the bbox to set
      */
     public final void setBbox( Envelope bbox ) {
+        if ( bbox == null ) {
+            throw new NullPointerException( "Bbox may not be null" );
+        }
         this.bbox = bbox;
+        Point p = bbox.getCentroid();
+        position = new float[] { (float) p.getX(), (float) p.getY(),
+                                (float) ( ( p.getCoordinateDimension() == 3 ) ? p.getZ() : 0 ) };
     }
 
     /**
@@ -234,5 +248,10 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
         localSize += sizeOfString( time, true, true );
         localSize += sizeOfEnvelope( bbox, true );
         return localSize;
+    }
+
+    @Override
+    public float[] getPosition() {
+        return position;
     }
 }
