@@ -156,6 +156,8 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
                 result = geomFactory.createEnvelope( new double[] { newMinX, newMinY },
                                                      new double[] { newMaxX, newMaxY }, DELTA, null );
+            } else {
+                
             }
             break;
         }
@@ -329,4 +331,9 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
         return centroid;
     }
 
+    @Override
+    public String toString () {
+        return "min: " + min + ", max: " + max;
+    }
+    
 }
