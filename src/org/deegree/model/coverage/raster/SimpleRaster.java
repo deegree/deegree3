@@ -169,10 +169,12 @@ public class SimpleRaster extends AbstractRaster {
     @Override
     public SimpleRaster getSubset( Envelope envelope ) {
         // checkBounds(envelope);
-        RasterRect rasterRect = getRasterEnvelope().convertEnvelopeToRasterCRS( envelope );
+        //RasterRect rasterRect = getRasterEnvelope().convertEnvelopeToRasterCRS( envelope );
         RasterEnvelope rasterEnv = getRasterEnvelope().createSubEnvelope( envelope );
-
-        return new SimpleRaster( getReadOnlyRasterData().getSubset( rasterRect ), envelope, rasterEnv );
+        // RasterData data = getReadOnlyRasterData();
+        // data.getSubset( rasterRect );
+        // return new SimpleRaster( getReadOnlyRasterData().getSubset( rasterRect ), envelope, rasterEnv );
+        return new SimpleRaster( getReadOnlyRasterData(), envelope, rasterEnv );
     }
 
     @Override
