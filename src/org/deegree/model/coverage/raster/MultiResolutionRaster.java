@@ -52,7 +52,8 @@ import org.deegree.model.coverage.raster.geom.RasterEnvelope;
 import org.deegree.model.geometry.Envelope;
 
 /**
- * This class represents a collection of AbstractRaster, each with a different resolution.
+ * This class represents a collection of {@link AbstractRaster} instances that describe the same spatial region, but
+ * with different resolutions.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -82,14 +83,14 @@ public class MultiResolutionRaster extends AbstractCoverage {
     }
 
     /**
-     * Returns an AbstractRaster for given resolution.
+     * Returns the best-fitting raster for a given resolution.
      * 
      * This method tries to return the optimal raster for the requested resolution. It returns the next best resolution
      * (lower resolution value) if available, otherwise it returns the next raster with a higher resolution value.
      * 
      * @param res
-     *            resolution in units per pixel
-     * @return raster for resolution or <code>null</code> if no rasters were defined.
+     *            resolution in world units per pixel
+     * @return raster for resolution or <code>null</code> if no rasters were defined
      */
     public AbstractRaster getRaster( double res ) {
         Iterator<AbstractRaster> iter = resolutions.iterator();
@@ -117,6 +118,24 @@ public class MultiResolutionRaster extends AbstractCoverage {
     }
 
     /**
+     * Returns a subset of the raster for a given resolution.
+     * 
+     * The matching raster is selected using {@link #getRaster(double)}.
+     * 
+     * @see #getRaster(double)
+     * 
+     * @param envelope
+     *            envelope of the subset
+     * @param resolution
+     *            resolution in world units per pixel
+     * @return subset of the best-fitting raster
+     */
+    public AbstractRaster getSubset( Envelope envelope, double resolution ) {
+        AbstractRaster raster = getRaster( resolution );
+        return raster.getSubset( envelope );
+    }
+
+    /**
      * Returns a list with the highest resolution of every level. The list is sorted ascending (from highest to lowest
      * resolution).
      * 
@@ -130,5 +149,4 @@ public class MultiResolutionRaster extends AbstractCoverage {
         }
         return res;
     }
-
 }
