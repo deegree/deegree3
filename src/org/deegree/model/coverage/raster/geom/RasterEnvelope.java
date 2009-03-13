@@ -56,6 +56,7 @@ import org.deegree.model.geometry.GeometryFactoryCreator;
  * @version $Revision$, $Date$
  */
 public class RasterEnvelope {
+
     private double x0;
 
     private double y0;
@@ -136,7 +137,7 @@ public class RasterEnvelope {
 
         this.xRes = env.getWidth() / width;
         this.yRes = -1 * env.getHeight() / height;
-
+        this.delta = Math.abs( xRes * 10e-6 );
     }
 
     /**
@@ -406,10 +407,10 @@ public class RasterEnvelope {
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer( 200 );
-        sb.append( "x0: " ).append( x0 ).append( "\n" );
-        sb.append( "y0: " ).append( y0 ).append( "\n" );
-        sb.append( "xRes: " ).append( xRes ).append( "\n" );
-        sb.append( "yRes: " ).append( yRes );
+        sb.append( "{x0=" ).append( x0 ).append( "," );
+        sb.append( "y0=" ).append( y0 ).append( "," );
+        sb.append( "xRes=" ).append( xRes ).append( "," );
+        sb.append( "yRes=" ).append( yRes ).append ("}");
         return sb.toString();
     }
 
