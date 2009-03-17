@@ -105,7 +105,7 @@ public class TiledRaster extends AbstractRaster {
     }
 
     @Override
-    public AbstractRaster getSubset( Envelope env ) {
+    public AbstractRaster getSubRaster( Envelope env ) {
         // checkBounds( env );
 
         MemoryTileContainer resultTC = new MemoryTileContainer();
@@ -128,7 +128,7 @@ public class TiledRaster extends AbstractRaster {
                 }
                 Envelope subsetEnv = intersection.getEnvelope();
 
-                resultTC.addTile( r.getSubset( subsetEnv ) );
+                resultTC.addTile( r.getSubRaster( subsetEnv ) );
             } catch ( IndexOutOfBoundsException e ) {
                 // TODO remove after touches-bug is fixed
             }
@@ -141,12 +141,12 @@ public class TiledRaster extends AbstractRaster {
     }
 
     @Override
-    public void setSubset( Envelope envelope, AbstractRaster source ) {
+    public void setSubRaster( Envelope envelope, AbstractRaster source ) {
         for ( AbstractRaster r : getTileContainer().getTiles( envelope ) ) {
             if ( r instanceof SimpleRaster ) {
                 SimpleRaster sr = (SimpleRaster) r;
                 Envelope subsetEnv = sr.getEnvelope().intersection( envelope ).getEnvelope();
-                sr.setSubset( subsetEnv, source );
+                sr.setSubRaster( subsetEnv, source );
             } else {
                 throw new UnsupportedOperationException();
             }
@@ -154,23 +154,23 @@ public class TiledRaster extends AbstractRaster {
     }
 
     @Override
-    public void setSubset( double x, double y, AbstractRaster source ) {
+    public void setSubRaster( double x, double y, AbstractRaster source ) {
         RasterEnvelope srcREnv = source.getRasterEnvelope();
         RasterEnvelope dstREnv = new RasterEnvelope( x, y, srcREnv.getXRes(), srcREnv.getYRes() );
         Envelope dstEnv = dstREnv.getEnvelope( source.getColumns(), source.getRows() );
         RasterData srcData = source.getAsSimpleRaster().getRasterData();
         SimpleRaster movedRaster = new SimpleRaster( srcData, dstEnv, dstREnv );
-        setSubset( dstEnv, movedRaster );
+        setSubRaster( dstEnv, movedRaster );
     }
 
     @Override
-    public void setSubset( double x, double y, int dstBand, AbstractRaster source ) {
+    public void setSubRaster( double x, double y, int dstBand, AbstractRaster source ) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setSubset( Envelope env, int dstBand, AbstractRaster source ) {
+    public void setSubRaster( Envelope env, int dstBand, AbstractRaster source ) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
@@ -192,7 +192,7 @@ public class TiledRaster extends AbstractRaster {
                     continue;
                 }
                 Envelope subsetEnv = intersec.getEnvelope();
-                result.setSubset( subsetEnv, r );
+                result.setSubRaster( subsetEnv, r );
             }
         }
 

@@ -149,7 +149,7 @@ public class RasterTransformer extends Transformer {
         AbstractRaster source = createSourceRaster( sourceRaster, dstEnvelope );
         RasterData srcRaster = source.getAsSimpleRaster().getReadOnlyRasterData();
 
-        RasterData dstRaster = srcRaster.createCompatibleRasterData( dstWidth, dstHeight, srcRaster.getBands() );
+        RasterData dstRaster = srcRaster.createCompatibleRasterData( dstWidth, dstHeight );
         RasterEnvelope srcREnv = source.getRasterEnvelope();
         RasterEnvelope dstREnv = new RasterEnvelope( dstEnvelope, dstWidth, dstHeight );
 
@@ -200,7 +200,7 @@ public class RasterTransformer extends Transformer {
         // get the data we need as a simple raster (can be a part of a large tiled raster)
         AbstractRaster source;
         try {
-            source = sourceRaster.getSubset( dataEnv );
+            source = sourceRaster.getSubRaster( dataEnv );
         } catch ( IndexOutOfBoundsException ex ) {
             throw new TransformationException( "no source data found" );
         }

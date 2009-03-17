@@ -40,6 +40,7 @@ package org.deegree.model.coverage.raster;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.model.coverage.raster.data.BandType;
 import org.deegree.model.geometry.Envelope;
 
 /**
@@ -110,20 +111,20 @@ public class MultiRangedRaster extends AbstractRaster {
     }
 
     @Override
-    public MultiRangedRaster getSubset( Envelope env ) {
+    public MultiRangedRaster getSubRaster( Envelope env ) {
         checkBounds( env );
         MultiRangedRaster result = new MultiRangedRaster();
         for ( AbstractRaster raster : multiRange ) {
-            result.addRaster( raster.getSubset( env ) );
+            result.addRaster( raster.getSubRaster( env ) );
         }
         return result;
     }
 
     @Override
-    public MultiRangedRaster getSubset( double x, double y, double x2, double y2 ) {
+    public MultiRangedRaster getSubRaster( double x, double y, double x2, double y2 ) {
         Envelope env = getGeometryFactory().createEnvelope( new double[] { x, y }, new double[] { x2, y2 },
                                                             getRasterEnvelope().getDelta(), null );
-        return getSubset( env );
+        return getSubRaster( env );
     }
 
     /**
@@ -139,7 +140,7 @@ public class MultiRangedRaster extends AbstractRaster {
      *            data to copy
      */
     @Override
-    public void setSubset( double x, double y, AbstractRaster source ) {
+    public void setSubRaster( double x, double y, AbstractRaster source ) {
         // checkBounds(x, y, source.getColumns(), source.getRows());
         SimpleRaster src = source.getAsSimpleRaster();
         if ( src.getBands() != getNumberOfRanges() ) {
@@ -147,7 +148,7 @@ public class MultiRangedRaster extends AbstractRaster {
         }
         for ( int i = 0; i < getNumberOfRanges(); i++ ) {
             SimpleRaster raster = multiRange.get( i ).getAsSimpleRaster();
-            raster.setSubset( x, y, src.getBand( i ).getAsSimpleRaster() );
+            raster.setSubRaster( x, y, src.getBand( i ).getAsSimpleRaster() );
             multiRange.set( i, raster );
         }
     }
@@ -165,13 +166,13 @@ public class MultiRangedRaster extends AbstractRaster {
      *            data to copy (first band will be used)
      */
     @Override
-    public void setSubset( double x, double y, int index, AbstractRaster source ) {
+    public void setSubRaster( double x, double y, int index, AbstractRaster source ) {
         // checkBounds(x, y, source.getColumns(), source.getRows());
         if ( index >= getNumberOfRanges() ) {
             throw new IndexOutOfBoundsException();
         }
         SimpleRaster raster = multiRange.get( index ).getAsSimpleRaster();
-        raster.setSubset( x, y, source );
+        raster.setSubRaster( x, y, source );
         multiRange.set( index, raster );
     }
 
@@ -194,23 +195,23 @@ public class MultiRangedRaster extends AbstractRaster {
         }
         for ( int i = 0; i < getNumberOfRanges(); i++ ) {
             SimpleRaster raster = multiRange.get( i ).getAsSimpleRaster();
-            raster.setSubset( x, y, source.getRange( i ).getAsSimpleRaster() );
+            raster.setSubRaster( x, y, source.getRange( i ).getAsSimpleRaster() );
             multiRange.set( i, raster );
         }
     }
 
     @Override
-    public void setSubset( Envelope env, AbstractRaster source ) {
-        AbstractRaster subset = source.getSubset( env );
+    public void setSubRaster( Envelope env, AbstractRaster source ) {
+        AbstractRaster subset = source.getSubRaster( env );
         double[] pos = subset.getRasterEnvelope().convertToCRS( 0, 0 );
-        setSubset( pos[0], pos[1], source );
+        setSubRaster( pos[0], pos[1], source );
     }
 
     @Override
-    public void setSubset( Envelope env, int dstBand, AbstractRaster source ) {
-        AbstractRaster subset = source.getSubset( env );
+    public void setSubRaster( Envelope env, int dstBand, AbstractRaster source ) {
+        AbstractRaster subset = source.getSubRaster( env );
         double[] pos = subset.getRasterEnvelope().convertToCRS( 0, 0 );
-        setSubset( pos[0], pos[1], dstBand, source );
+        setSubRaster( pos[0], pos[1], dstBand, source );
     }
 
     @Override
@@ -218,12 +219,12 @@ public class MultiRangedRaster extends AbstractRaster {
         int i = 0;
         SimpleRaster raster = multiRange.get( i ).getAsSimpleRaster();
 
-        SimpleRaster result = raster.createCompatibleSimpleRaster( multiRange.size() );
+        SimpleRaster result = raster.createCompatibleSimpleRaster( BandType.fromBufferedImageType( 0, multiRange.size() ) );
 
-        result.setSubset( getEnvelope(), i, raster );
+        result.setSubRaster( getEnvelope(), i, raster );
         for ( i = 1; i < multiRange.size(); i++ ) {
             raster = multiRange.get( i ).getAsSimpleRaster();
-            result.setSubset( getEnvelope(), i, raster );
+            result.setSubRaster( getEnvelope(), i, raster );
         }
         return result;
     }

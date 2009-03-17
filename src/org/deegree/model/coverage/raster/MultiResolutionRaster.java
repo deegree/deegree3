@@ -132,7 +132,7 @@ public class MultiResolutionRaster extends AbstractCoverage {
      */
     public AbstractRaster getSubset( Envelope envelope, double resolution ) {
         AbstractRaster raster = getRaster( resolution );
-        return raster.getSubset( envelope );
+        return raster.getSubRaster( envelope );
     }
 
     /**

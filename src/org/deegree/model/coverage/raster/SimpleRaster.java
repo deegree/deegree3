@@ -37,6 +37,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster;
 
+import org.deegree.model.coverage.raster.data.BandType;
 import org.deegree.model.coverage.raster.data.RasterData;
 import org.deegree.model.coverage.raster.data.container.MemoryRasterDataContainer;
 import org.deegree.model.coverage.raster.data.container.RasterDataContainer;
@@ -106,7 +107,7 @@ public class SimpleRaster extends AbstractRaster {
      *            number of bands
      * @return new empty SimpleRaster
      */
-    public SimpleRaster createCompatibleSimpleRaster( int bands ) {
+    public SimpleRaster createCompatibleSimpleRaster( BandType[] bands ) {
         RasterData newRaster = getRasterData().createCompatibleRasterData( bands );
         return new SimpleRaster( newRaster, getEnvelope(), getRasterEnvelope() );
     }
@@ -119,8 +120,7 @@ public class SimpleRaster extends AbstractRaster {
     public SimpleRaster createCompatibleSimpleRaster() {
         int height = this.getRows();
         int width = this.getColumns();
-        int bands = this.getBands();
-        RasterData newRaster = this.getRasterData().createCompatibleRasterData( width, height, bands );
+        RasterData newRaster = this.getRasterData().createCompatibleRasterData( width, height );
         return new SimpleRaster( newRaster, this.getEnvelope(), this.getRasterEnvelope() );
     }
 
@@ -135,16 +135,17 @@ public class SimpleRaster extends AbstractRaster {
      */
     public SimpleRaster createCompatibleSimpleRaster( RasterEnvelope rEnv, Envelope env ) {
         int[] size = rEnv.getSize( env );
-        int bands = this.getBands();
-        RasterData newRaster = this.getRasterData().createCompatibleRasterData( size[0], size[1], bands );
-
+        RasterData newRaster = this.getRasterData().createCompatibleWritableRasterData(
+                                                                                        new RasterRect( 0, 0, size[0],
+                                                                                                        size[1] ),
+                                                                                        this.getRasterData().getBandTypes() );
         return new SimpleRaster( newRaster, env, rEnv );
     }
 
     @Override
     public SimpleRaster copy() {
         SimpleRaster result = this.createCompatibleSimpleRaster();
-        result.setSubset( getEnvelope(), this );
+        result.setSubRaster( getEnvelope(), this );
         return result;
     }
 
@@ -167,21 +168,20 @@ public class SimpleRaster extends AbstractRaster {
     }
 
     @Override
-    public SimpleRaster getSubset( Envelope envelope ) {
-        // checkBounds(envelope);
-        //RasterRect rasterRect = getRasterEnvelope().convertEnvelopeToRasterCRS( envelope );
+    public SimpleRaster getSubRaster( Envelope envelope ) {
+        if ( getEnvelope().equals( envelope ) ) {
+            return this;
+        }
+        RasterRect rasterRect = getRasterEnvelope().convertEnvelopeToRasterCRS( envelope );
         RasterEnvelope rasterEnv = getRasterEnvelope().createSubEnvelope( envelope );
-        // RasterData data = getReadOnlyRasterData();
-        // data.getSubset( rasterRect );
-        // return new SimpleRaster( getReadOnlyRasterData().getSubset( rasterRect ), envelope, rasterEnv );
-        return new SimpleRaster( getReadOnlyRasterData(), envelope, rasterEnv );
+        return new SimpleRaster( getReadOnlyRasterData().getSubset( rasterRect ), envelope, rasterEnv );
     }
 
     @Override
-    public SimpleRaster getSubset( double x, double y, double x2, double y2 ) {
+    public SimpleRaster getSubRaster( double x, double y, double x2, double y2 ) {
         Envelope env = getGeometryFactory().createEnvelope( new double[] { x, y }, new double[] { x2, y2 },
                                                             getRasterEnvelope().getDelta(), null );
-        return getSubset( env );
+        return getSubRaster( env );
     }
 
     /**
@@ -197,15 +197,15 @@ public class SimpleRaster extends AbstractRaster {
     }
 
     @Override
-    public void setSubset( Envelope env, AbstractRaster source ) {
+    public void setSubRaster( Envelope env, AbstractRaster source ) {
         RasterRect rect = getRasterEnvelope().convertEnvelopeToRasterCRS( env );
-        SimpleRaster src = source.getSubset( env ).getAsSimpleRaster();
+        SimpleRaster src = source.getSubRaster( env ).getAsSimpleRaster();
         // source.getSubset( env ) already returns a copy, no need for getReadOnlyRasterData
         getRasterData().setSubset( rect.x, rect.y, rect.width, rect.height, src.getRasterData() );
     }
 
     @Override
-    public void setSubset( double x, double y, AbstractRaster source ) {
+    public void setSubRaster( double x, double y, AbstractRaster source ) {
         // calculate position in RasterData
         int offset[] = getRasterEnvelope().convertToRasterCRS( x, y );
         RasterData sourceRD = source.getAsSimpleRaster().getReadOnlyRasterData();
@@ -213,14 +213,14 @@ public class SimpleRaster extends AbstractRaster {
     }
 
     @Override
-    public void setSubset( double x, double y, int dstBand, AbstractRaster source ) {
+    public void setSubRaster( double x, double y, int dstBand, AbstractRaster source ) {
         // calculate position in RasterData
         int offset[] = getRasterEnvelope().convertToRasterCRS( x, y );
         getRasterData().setSubset( offset[0], offset[1], dstBand, 0, source.getAsSimpleRaster().getReadOnlyRasterData() );
     }
 
     @Override
-    public void setSubset( Envelope env, int dstBand, AbstractRaster source ) {
+    public void setSubRaster( Envelope env, int dstBand, AbstractRaster source ) {
         // calculate position in RasterData
         RasterRect rect = getRasterEnvelope().convertEnvelopeToRasterCRS( env );
 
@@ -242,6 +242,13 @@ public class SimpleRaster extends AbstractRaster {
      */
     public int getBands() {
         return getRasterData().getBands();
+    }
+
+    /**
+     * @return the number of bands in this raster.
+     */
+    public BandType[] getBandTypes() {
+        return getRasterData().getBandTypes();
     }
 
     @Override

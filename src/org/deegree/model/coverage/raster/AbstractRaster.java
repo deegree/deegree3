@@ -146,7 +146,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
      *            envelope of the subset
      * @return subset of the raster
      */
-    public abstract AbstractRaster getSubset( Envelope env );
+    public abstract AbstractRaster getSubRaster( Envelope env );
 
     /**
      * Returns a subset of the raster.
@@ -161,10 +161,10 @@ public abstract class AbstractRaster extends AbstractCoverage {
      *            lower boundary
      * @return subset of the raster
      */
-    public AbstractRaster getSubset( double x, double y, double x2, double y2 ) {
+    public AbstractRaster getSubRaster( double x, double y, double x2, double y2 ) {
         Envelope env = getGeometryFactory().createEnvelope( new double[] { x, y }, new double[] { x2, y2 },
                                                             getRasterEnvelope().getDelta(), null );
-        return getSubset( env );
+        return getSubRaster( env );
     }
 
     /**
@@ -175,7 +175,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
      * @param env
      *            Envelope with the destination area
      */
-    public abstract void setSubset( Envelope env, AbstractRaster source );
+    public abstract void setSubRaster( Envelope env, AbstractRaster source );
 
     /**
      * Sets the raster with data from source.
@@ -187,7 +187,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
      * @param source
      *            data to copy
      */
-    public abstract void setSubset( double x, double y, AbstractRaster source );
+    public abstract void setSubRaster( double x, double y, AbstractRaster source );
 
     /**
      * Sets a single band with data from source.
@@ -203,7 +203,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
      * @param source
      *            data to copy
      */
-    public abstract void setSubset( double x, double y, int dstBand, AbstractRaster source );
+    public abstract void setSubRaster( double x, double y, int dstBand, AbstractRaster source );
 
     /**
      * Sets a single band with data from source.
@@ -215,7 +215,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
      * @param source
      *            data to copy
      */
-    public abstract void setSubset( Envelope env, int dstBand, AbstractRaster source );
+    public abstract void setSubRaster( Envelope env, int dstBand, AbstractRaster source );
 
     /**
      * Returns the AbstractRaster as a SimpleRaster. The data gets cropped (TiledRaster) or merged (MultiRange) if
