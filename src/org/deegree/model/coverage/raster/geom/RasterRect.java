@@ -42,7 +42,7 @@ package org.deegree.model.coverage.raster.geom;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author:rbezema $
- *
+ * 
  * @version $Revision:11404 $, $Date:2008-04-23 15:38:27 +0200 (Mi, 23 Apr 2008) $
  */
 public class RasterRect {
@@ -50,7 +50,7 @@ public class RasterRect {
      * The x pixel position.
      */
     public int x;
-    
+
     /**
      * The y pixel position.
      */
@@ -58,7 +58,7 @@ public class RasterRect {
 
     /**
      * The width in pixel.
-    */
+     */
     public int width;
 
     /**
@@ -90,6 +90,11 @@ public class RasterRect {
      */
     public RasterRect() {
         this( 0, 0, 0, 0 );
+    }
+
+    @Override
+    public String toString() {
+        return "{x=" + x + ",y=" + y + ", width=" + width + ", height=" + height + "}";
     }
 
 }
