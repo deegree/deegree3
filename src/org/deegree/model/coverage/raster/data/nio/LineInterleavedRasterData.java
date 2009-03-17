@@ -37,16 +37,18 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster.data.nio;
 
+import org.deegree.model.coverage.raster.data.BandType;
 import org.deegree.model.coverage.raster.data.DataType;
 import org.deegree.model.coverage.raster.data.InterleaveType;
-
+import org.deegree.model.coverage.raster.data.RasterData;
+import org.deegree.model.coverage.raster.geom.RasterRect;
 
 /**
  * This class implements a line-interleaved, ByteBuffer-based RasterData.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class LineInterleavedRasterData extends ByteBufferRasterData {
@@ -54,41 +56,66 @@ public class LineInterleavedRasterData extends ByteBufferRasterData {
     /**
      * Creates a new LineInterleavedRasterData with given size, number of bands and data type
      * 
-     * @param width
-     *            width of new raster
-     * @param height
-     *            height of new raster
+     * @param sampleDomain
+     *            the raster rectangle defining the sample domain of this raster data.
+     * @param rasterWidth
+     *            width of the underlying raster data.
+     * @param rasterHeight
+     *            height of the underlying raster data.
      * @param bands
      *            number of bands
      * @param type
      *            DataType of raster samples
      */
-    public LineInterleavedRasterData( int width, int height, int bands, DataType type ) {
-        super( width, height, bands, type );
+    public LineInterleavedRasterData( RasterRect sampleDomain, int rasterWidth, int rasterHeight, BandType[] bands,
+                                      DataType type ) {
+        super( sampleDomain, rasterWidth, rasterHeight, bands, type );
     }
-    
-    private LineInterleavedRasterData( int width, int height, int bands, DataType type, boolean init ) {
-        super( width, height, bands, type, init );
+
+    /**
+     * Creates a new LineInterleavedRasterData with given size, number of bands and data type and initializes a new
+     * bytebuffer if init is set to true.
+     * 
+     * @param sampleDomain
+     *            the raster rectangle defining the sample domain of this raster data.
+     * @param rasterWidth
+     *            width of the underlying raster data.
+     * @param rasterHeight
+     *            height of the underlying raster data.
+     * @param bands
+     *            number of bands
+     * @param type
+     *            DataType of raster samples
+     */
+    private LineInterleavedRasterData( RasterRect sampleDomain, int rasterWidth, int rasterHeight, BandType[] bands,
+                                       DataType type, boolean init ) {
+        super( sampleDomain, rasterWidth, rasterHeight, bands, type, init );
     }
 
     @Override
-    public LineInterleavedRasterData createCompatibleRasterData( int width, int height, int bands ) {
-        return new LineInterleavedRasterData( width, height, bands, this.dataType, true );
+    public LineInterleavedRasterData createCompatibleRasterData( RasterRect env, BandType[] bands ) {
+        return new LineInterleavedRasterData( env, rasterWidth, rasterHeight, bands, this.dataType, false );
     }
-    
+
+    @Override
+    public RasterData createCompatibleWritableRasterData( RasterRect sampleDomain, BandType[] bands ) {
+        return new LineInterleavedRasterData( sampleDomain, sampleDomain.width, sampleDomain.height, bands,
+                                              this.dataType, true );
+    }
+
     @Override
     protected ByteBufferRasterData createCompatibleEmptyRasterData() {
-        return new LineInterleavedRasterData( width, height, bands, this.dataType, false );
+        return new LineInterleavedRasterData( view, rasterWidth, rasterHeight, bandsTypes, this.dataType, false );
     }
 
     @Override
     public final int getBandStride() {
-        return width * getPixelStride();
+        return rasterWidth * getPixelStride();
     }
 
     @Override
     public final int getLineStride() {
-        return width * getPixelStride() * bands;
+        return rasterWidth * getPixelStride() * bands;
     }
 
     @Override

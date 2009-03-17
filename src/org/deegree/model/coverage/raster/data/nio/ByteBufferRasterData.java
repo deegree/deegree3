@@ -39,6 +39,7 @@ package org.deegree.model.coverage.raster.data.nio;
 
 import java.nio.ByteBuffer;
 
+import org.deegree.model.coverage.raster.data.BandType;
 import org.deegree.model.coverage.raster.data.DataType;
 import org.deegree.model.coverage.raster.data.InterleaveType;
 import org.deegree.model.coverage.raster.data.RasterData;
@@ -78,16 +79,21 @@ import org.slf4j.LoggerFactory;
 public abstract class ByteBufferRasterData implements RasterData {
 
     private static Logger LOG = LoggerFactory.getLogger( ByteBufferRasterData.class );
-    
+
+    /**
+     * Offset in samples to a sub data raster.
+     */
+    protected RasterRect view;
+
     /**
      * the width of the raster
      */
-    protected int width;
+    protected int rasterWidth;
 
     /**
      * the height of the raster
      */
-    protected int height;
+    protected int rasterHeight;
 
     /**
      * The number of bands in this raster.
@@ -100,6 +106,11 @@ public abstract class ByteBufferRasterData implements RasterData {
     protected DataType dataType;
 
     /**
+     * The {@link BandType} of this raster.
+     */
+    protected BandType[] bandsTypes;
+
+    /**
      * The NODATA value.
      */
     protected byte[] nodata;
@@ -109,50 +120,61 @@ public abstract class ByteBufferRasterData implements RasterData {
      */
     protected ByteBuffer data;
 
+    // private int view.x;
+
+    // private int view.y;
+
     /**
      * Creates a new ByteBufferRasterData instance.
      * 
+     * @param env
+     *            the raster rectangle defining the sample domain of this raster data.
+     * @param rasterWidth
+     *            width of the raster data
+     * @param rasterHeight
+     *            height of the raster data
      * @param dataType
      *            sample data type
-     * @param width
-     *            size of the raster
-     * @param height
-     *            size of the raster
      * @param bands
      *            number of bands
      */
-    protected ByteBufferRasterData( int width, int height, int bands, DataType dataType ) {
-        this( width, height, bands, dataType, true );
+    protected ByteBufferRasterData( RasterRect env, int rasterWidth, int rasterHeight, BandType[] bands,
+                                    DataType dataType ) {
+        this( env, rasterWidth, rasterHeight, bands, dataType, true );
     }
 
     /**
      * Creates a new ByteBufferRasterData instance.
      * 
+     * @param env
+     *            the raster rectangle defining the sample domain of this raster data.
+     * @param rasterWidth
+     *            width of the raster data
+     * @param rasterHeight
+     *            height of the raster data
      * @param dataType
      *            sample data type
-     * @param width
-     *            size of the raster
-     * @param height
-     *            size of the raster
      * @param bands
      *            number of bands
      * @param init
      *            true if the ByteBuffer should be initialized
      */
-    protected ByteBufferRasterData( int width, int height, int bands, DataType dataType, boolean init ) {
-        this.width = width;
-        this.height = height;
+    protected ByteBufferRasterData( RasterRect env, int rasterWidth, int rasterHeight, BandType[] bands,
+                                    DataType dataType, boolean init ) {
+        view = env;
+        this.rasterWidth = rasterWidth;
+        this.rasterHeight = rasterHeight;
 
-        this.bands = bands;
+        this.bandsTypes = bands;
+        this.bands = bandsTypes.length;
         this.dataType = dataType;
 
-        this.nodata = new byte[dataType.getSize() * bands];
+        this.nodata = new byte[dataType.getSize() * this.bands];
         if ( init ) {
             initByteBuffer();
         }
-        
     }
-    
+
     /**
      * Initialize the internal ByteBuffer
      */
@@ -164,21 +186,36 @@ public abstract class ByteBufferRasterData implements RasterData {
         return ByteBuffer.allocate( getBufferSize() );
     }
 
-    public abstract ByteBufferRasterData createCompatibleRasterData( int width, int height, int bands );
-    
+    /**
+     * Implementation should create a view of this raster data.
+     * 
+     * @param env
+     * @param bands
+     * @return a view or new raster data object, backed by a {@link java.nio.ByteBuffer}
+     */
+    public abstract ByteBufferRasterData createCompatibleRasterData( RasterRect env, BandType[] bands );
+
     /**
      * @return ByteBufferRasterData with unset data
      */
     protected abstract ByteBufferRasterData createCompatibleEmptyRasterData();
-    
-    public ByteBufferRasterData createCompatibleRasterData( int bands ) {
-        return createCompatibleRasterData( width, height, bands );
+
+    public ByteBufferRasterData createCompatibleRasterData( int width, int height ) {
+        return createCompatibleRasterData( new RasterRect( view.x, view.y, width, height ), bandsTypes );
+    }
+
+    public ByteBufferRasterData createCompatibleRasterData( RasterRect env ) {
+        return createCompatibleRasterData( env, bandsTypes );
+    }
+
+    public ByteBufferRasterData createCompatibleRasterData( BandType[] bands ) {
+        return createCompatibleRasterData( new RasterRect( view.x, view.y, rasterWidth, rasterHeight ), bands );
     }
 
     public ByteBufferRasterData createCompatibleRasterData() {
-        return createCompatibleRasterData( width, height, bands );
+        return createCompatibleRasterData( new RasterRect( view.x, view.y, rasterWidth, rasterHeight ), bandsTypes );
     }
-    
+
     @Override
     public RasterData asReadOnly() {
         ByteBufferRasterData copy = createCompatibleEmptyRasterData();
@@ -190,12 +227,16 @@ public abstract class ByteBufferRasterData implements RasterData {
         return bands;
     }
 
+    public final BandType[] getBandTypes() {
+        return bandsTypes;
+    }
+
     public final int getWidth() {
-        return width;
+        return rasterWidth;
     }
 
     public final int getHeight() {
-        return height;
+        return rasterHeight;
     }
 
     public final DataType getDataType() {
@@ -208,7 +249,7 @@ public abstract class ByteBufferRasterData implements RasterData {
      * @return size of the buffer
      */
     public final int getBufferSize() {
-        return width * height * bands * dataType.getSize();
+        return rasterWidth * rasterHeight * bands * dataType.getSize();
     }
 
     public abstract InterleaveType getInterleaveType();
@@ -276,7 +317,8 @@ public abstract class ByteBufferRasterData implements RasterData {
      * @return <code>true</code> if the given rect is inside the raster, else <code>false</code>
      */
     protected final boolean checkBounds( int x, int y, int width, int height ) {
-        if ( ( (x + width) > this.width ) || ( ( y + height) > this.height ) || ( x < 0 ) || ( y < 0 ) ) {
+        if ( ( ( view.x + x + width ) > this.rasterWidth ) || ( ( view.y + y + height ) > this.rasterHeight )
+             || ( view.x + x < 0 ) || ( view.y + y < 0 ) ) {
             return false;
         }
         return true;
@@ -295,7 +337,7 @@ public abstract class ByteBufferRasterData implements RasterData {
      * @return byte offset to the pixel with the specified coordinate
      */
     public final int calculatePos( int x, int y ) {
-        return y * getLineStride() + x * getPixelStride();
+        return ( ( view.y + y ) * getLineStride() ) + ( ( view.x + x ) * getPixelStride() );
     }
 
     /**
@@ -313,7 +355,7 @@ public abstract class ByteBufferRasterData implements RasterData {
      * @return byte offset to the sample with the specified coordinate
      */
     public final int calculatePos( int x, int y, int band ) {
-        return y * getLineStride() + x * getPixelStride() + band * getBandStride();
+        return ( ( view.y + y ) * getLineStride() ) + ( ( view.x + x ) * getPixelStride() ) + ( band * getBandStride() );
     }
 
     /**
@@ -367,7 +409,7 @@ public abstract class ByteBufferRasterData implements RasterData {
             System.arraycopy( values, 0, nodata, 0, nodata.length );
         } else {
             for ( int b = 0; b < getBands(); b++ ) {
-                System.arraycopy( values, 0, nodata, getDataType().getSize()*b, getDataType().getSize() );
+                System.arraycopy( values, 0, nodata, getDataType().getSize() * b, getDataType().getSize() );
             }
         }
     }
@@ -387,8 +429,6 @@ public abstract class ByteBufferRasterData implements RasterData {
         data.position( calculatePos( x, y, band ) );
         data.put( value );
     }
-
-
 
     public byte getByteSample( int x, int y, int band ) {
         return data.get( calculatePos( x, y, band ) );
@@ -428,7 +468,7 @@ public abstract class ByteBufferRasterData implements RasterData {
         if ( result == null ) {
             result = new byte[numBands * sampleSize];
         }
-        if ( 0 > x || x >= width || 0 > y || y >= width ) {
+        if ( 0 > x || x >= rasterWidth || 0 > y || y >= rasterWidth ) {
             System.arraycopy( nodata, 0, result, 0, result.length );
             return result;
         }
@@ -439,7 +479,7 @@ public abstract class ByteBufferRasterData implements RasterData {
 
         return result;
     }
-    
+
     public byte[] getBytePixel( int x, int y, byte[] result ) {
         if ( result == null ) {
             result = new byte[getBands()];
@@ -469,7 +509,7 @@ public abstract class ByteBufferRasterData implements RasterData {
         }
         return result;
     }
-   
+
     public void setBytePixel( int x, int y, byte[] pixel ) {
         for ( int band = 0; band < bands; band++ ) {
             data.put( calculatePos( x, y, band ), pixel[band] );
@@ -550,19 +590,34 @@ public abstract class ByteBufferRasterData implements RasterData {
             }
         }
     }
-    
+
     public ByteBufferRasterData getSubset( int x0, int y0, int width, int height ) {
-        ByteBufferRasterData result = createCompatibleRasterData( width, height, bands );
-        result.setSubset( 0, 0, width, height, this, x0, y0 );
+        ByteBufferRasterData result = createCompatibleRasterData( width, height );
+        // result.setSubset( 0, 0, width, height, this, x0, y0 );
         return result;
     }
 
-    public ByteBufferRasterData getSubset( RasterRect env ) {
-        return this.getSubset( env.x, env.y, env.width, env.height );
+    public ByteBufferRasterData getSubset( RasterRect sampleDomain ) {
+        // return this.getSubset( env.x, env.y, env.width, env.height );
+        // return createCompatibleRasterData( sampleDomain );
+        ByteBufferRasterData result = createCompatibleRasterData( new RasterRect( view.x + sampleDomain.x,
+                                                                                  view.y + sampleDomain.y,
+                                                                                  sampleDomain.width,
+                                                                                  sampleDomain.height ) );
+        result.data = this.data.asReadOnlyBuffer();
+        return result;
+
     }
 
     public ByteBufferRasterData getSubset( int x0, int y0, int width, int height, int band ) {
-        ByteBufferRasterData result = createCompatibleRasterData( width, height, 1 );
+        ByteBufferRasterData result = (ByteBufferRasterData) createCompatibleWritableRasterData(
+                                                                                                 new RasterRect(
+                                                                                                                 view.x,
+                                                                                                                 view.y,
+                                                                                                                 width,
+                                                                                                                 height ),
+                                                                                                 new BandType[] { bandsTypes[band] } );
+        // result.data = this.data.asReadOnlyBuffer();
         result.setSubset( 0, 0, width, height, 0, this, band, x0, y0 );
         return result;
     }
@@ -577,14 +632,14 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     public void setSubset( int x0, int y0, int width, int height, RasterData sourceRaster, int xOffset, int yOffset ) {
         // clamp to maximum possible size
-        int subWidth = min( this.width - x0, width, sourceRaster.getWidth() );
-        int subHeight = min( this.height - y0, height, sourceRaster.getHeight() );
-        
+        int subWidth = min( this.rasterWidth - x0, width, sourceRaster.getWidth() );
+        int subHeight = min( this.rasterHeight - y0, height, sourceRaster.getHeight() );
+
         byte[] tmp = new byte[getDataType().getSize()];
         for ( int y = 0; y < subHeight; y++ ) {
             for ( int x = 0; x < subWidth; x++ ) {
                 for ( int band = 0; band < this.bands; band++ ) {
-                    tmp = sourceRaster.getSample( x  + xOffset, y+yOffset, band, tmp );
+                    tmp = sourceRaster.getSample( x + xOffset, y + yOffset, band, tmp );
                     setSample( x0 + x, y0 + y, band, tmp );
                 }
             }
@@ -594,9 +649,9 @@ public abstract class ByteBufferRasterData implements RasterData {
     public void setSubset( int x0, int y0, int width, int height, int dstBand, RasterData sourceRaster, int srcBand,
                            int xOffset, int yOffset ) {
         // clamp to maximum possible size
-        int subWidth = min( this.width - x0, width, sourceRaster.getWidth() );
-        int subHeight = min( this.height - y0, height, sourceRaster.getHeight() );
-        
+        int subWidth = min( this.rasterWidth - x0, width, sourceRaster.getWidth() );
+        int subHeight = min( this.rasterHeight - y0, height, sourceRaster.getHeight() );
+
         byte[] tmp = new byte[getDataType().getSize()];
         for ( int y = 0; y < subHeight; y++ ) {
             for ( int x = 0; x < subWidth; x++ ) {
@@ -610,14 +665,15 @@ public abstract class ByteBufferRasterData implements RasterData {
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append( "RasterData: type " + dataType + ", " );
-        result.append( "size " + width + "x" + height + "(" + width + "x" + height + ")" );
+        result.append( "size " + rasterWidth + "x" + rasterHeight + "(" + rasterWidth + "x" + rasterHeight + ")" );
         result.append( ", interleaving " + getInterleaveType() );
 
         return result.toString();
     }
-    
+
     /**
      * Returns the smallest value of all <code>int</code>s.
+     * 
      * @param sizes
      * @return the smalles value
      */
