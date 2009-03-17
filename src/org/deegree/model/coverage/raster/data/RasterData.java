@@ -37,6 +37,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.coverage.raster.data;
 
+import org.deegree.model.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.model.coverage.raster.geom.RasterRect;
 
 /**
@@ -67,6 +68,16 @@ import org.deegree.model.coverage.raster.geom.RasterRect;
 public interface RasterData {
 
     /**
+     * Integer defining the RGB byte bands
+     */
+    public static final int TYPE_BYTE_RGB = -100;
+
+    /**
+     * Integer defining the RGBA byte bands with.
+     */
+    public static final int TYPE_BYTE_RGBA = -101;
+
+    /**
      * Returns the data type of the raster.
      * 
      * @return data type of the raster
@@ -86,6 +97,13 @@ public interface RasterData {
      * @return the bands
      */
     public int getBands();
+
+    /**
+     * Returns the band types of the raster
+     * 
+     * @return the band types
+     */
+    public BandType[] getBandTypes();
 
     /**
      * Returns the height of the raster
@@ -121,24 +139,54 @@ public interface RasterData {
     /**
      * Returns a new RasterData with the same DataType and InterleaveType
      * 
+     * @param sampleDomain
+     *            the raster rectangle defining the sample domain of this raster data.
+     * @param bands
+     *            indices to the requested bands
+     * @return new empty raster
+     */
+    public RasterData createCompatibleRasterData( RasterRect sampleDomain, BandType[] bands );
+
+    /**
+     * Create a writable compatible raster with the height and width of the given sample domain.
+     * 
+     * @param sampleDomain
+     *            the raster rectangle defining the sample domain of this raster data.
+     * @param bands
+     *            indices to the requested bands
+     * @return new empty raster
+     */
+    public RasterData createCompatibleWritableRasterData( RasterRect sampleDomain, BandType[] bands );
+
+    /**
+     * Returns a view as a new RasterData with the same DataType and InterleaveType but valid only for the given rect.
+     * 
+     * @param sampleDomain
+     *            the raster rectangle defining the sample domain of this raster data.
+     * 
+     * @return new raster backed by the readonly data of original raster.
+     */
+    public ByteBufferRasterData createCompatibleRasterData( RasterRect sampleDomain );
+
+    /**
+     * Returns a new RasterData with the same DataType and InterleaveType and all bands
+     * 
      * @param width
      *            width of the new raster
      * @param height
      *            height of the new raster
-     * @param bands
-     *            number of bands
      * @return new empty raster
      */
-    public RasterData createCompatibleRasterData( int width, int height, int bands );
+    public RasterData createCompatibleRasterData( int width, int height );
 
     /**
      * Returns a new RasterData with the same size, DataType and InterleaveType
      * 
      * @param bands
-     *            number of bands
+     *            definitions of the new rasterdata.
      * @return new empty raster
      */
-    public RasterData createCompatibleRasterData( int bands );
+    public RasterData createCompatibleRasterData( BandType[] bands );
 
     /**
      * Returns a new RasterData with the same size, bands, DataType and InterleaveType

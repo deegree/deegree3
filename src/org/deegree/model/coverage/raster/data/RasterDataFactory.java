@@ -41,6 +41,7 @@ import org.deegree.model.coverage.raster.data.nio.BandInterleavedRasterData;
 import org.deegree.model.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.model.coverage.raster.data.nio.LineInterleavedRasterData;
 import org.deegree.model.coverage.raster.data.nio.PixelInterleavedRasterData;
+import org.deegree.model.coverage.raster.geom.RasterRect;
 
 /**
  * This class creates RasterData objects with a given interleaving type.
@@ -49,7 +50,7 @@ import org.deegree.model.coverage.raster.data.nio.PixelInterleavedRasterData;
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author:rbezema $
- *
+ * 
  * @version $Revision:11404 $, $Date:2008-04-23 15:38:27 +0200 (Mi, 23 Apr 2008) $
  */
 public class RasterDataFactory {
@@ -66,7 +67,7 @@ public class RasterDataFactory {
      * @return new RasterData
      */
     public static ByteBufferRasterData createRasterData( int width, int height, DataType dataType ) {
-        return createRasterData( width, height, 1, dataType, InterleaveType.PIXEL );
+        return createRasterData( width, height, new BandType[] { BandType.BAND_0 }, dataType, InterleaveType.PIXEL );
     }
 
     /**
@@ -77,24 +78,27 @@ public class RasterDataFactory {
      * @param height
      *            height of the raster
      * @param bands
-     *            number of bands
+     *            number and type of the bands
      * @param dataType
      *            data type for samples
      * @param interleaveType
      *            interleaving type for the raster
      * @return new RasterData
      */
-    public static ByteBufferRasterData createRasterData( int width, int height, int bands, DataType dataType,
+    public static ByteBufferRasterData createRasterData( int width, int height, BandType[] bands, DataType dataType,
                                                          InterleaveType interleaveType ) {
 
         ByteBufferRasterData result;
 
         if ( interleaveType == InterleaveType.PIXEL ) {
-            result = new PixelInterleavedRasterData( width, height, bands, dataType );
+            result = new PixelInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, bands,
+                                                     dataType );
         } else if ( interleaveType == InterleaveType.LINE ) {
-            result = new LineInterleavedRasterData( width, height, bands, dataType );
+            result = new LineInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, bands,
+                                                    dataType );
         } else if ( interleaveType == InterleaveType.BAND ) {
-            result = new BandInterleavedRasterData( width, height, bands, dataType );
+            result = new BandInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, bands,
+                                                    dataType );
         } else {
             throw new UnsupportedOperationException( "Interleaving type " + interleaveType + " not supported!" );
         }
