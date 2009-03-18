@@ -232,11 +232,11 @@ public abstract class ByteBufferRasterData implements RasterData {
     }
 
     public final int getWidth() {
-        return rasterWidth;
+        return view.width;
     }
 
     public final int getHeight() {
-        return rasterHeight;
+        return view.height;
     }
 
     public final DataType getDataType() {

@@ -153,10 +153,12 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
     @Override
     public void setSubset( int x0, int y0, int width, int height, RasterData srcRaster, int xOffset, int yOffset ) {
         // clamp to maximum possible size
-        int wx0 = this.rasterWidth - x0;
-        int hy0 = this.rasterHeight - y0;
-        int srcw = ( (ByteBufferRasterData) srcRaster ).view.width - xOffset;
-        int srch = ( (ByteBufferRasterData) srcRaster ).view.height - yOffset;
+//        int wx0 = this.rasterWidth - x0;
+//        int hy0 = this.rasterHeight - y0;
+        int wx0 = this.getWidth() - x0;
+        int hy0 = this.getHeight() - y0;
+        int srcw = srcRaster.getWidth() - xOffset;
+        int srch = srcRaster.getHeight()- yOffset;
         int subWidth = min( wx0, width, srcw );
         int subHeight = min( hy0, height, srch );
 
