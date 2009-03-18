@@ -50,7 +50,7 @@ import java.awt.image.DataBuffer;
  * 
  */
 public enum BandType {
-   
+
     /**
      * 
      */
@@ -112,10 +112,16 @@ public enum BandType {
      */
     UNDEFINED( "No information about the band of this raster image." );
 
+    /**
+     * A standard RGB band type array
+     */
     public final static BandType[] RGB = new BandType[] { RED, GREEN, BLUE };
 
-    public final static BandType[] RGBA = new BandType[] { RED, GREEN, BLUE, ALPHA };    
-    
+    /**
+     * A standard RGBA band type array
+     */
+    public final static BandType[] RGBA = new BandType[] { RED, GREEN, BLUE, ALPHA };
+
     private final String info;
 
     BandType( String info ) {
