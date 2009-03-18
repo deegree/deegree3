@@ -67,6 +67,10 @@ public class RasterEnvelope {
 
     private double delta;
 
+    private static final double DELTA_SCALE = 10e-6;
+
+    private static final double INV_DELTA_SCALE = 10e6;
+
     private RasterEnvelope() {
         this( 0.0, 0.0, 1.0, -1.0 );
     }
@@ -121,7 +125,7 @@ public class RasterEnvelope {
         }
         this.xRes = xRes;
         this.yRes = yRes;
-        this.delta = Math.abs( xRes * 10e-6 );
+        this.delta = Math.abs( xRes * DELTA_SCALE );
     }
 
     /**
@@ -137,7 +141,7 @@ public class RasterEnvelope {
 
         this.xRes = env.getWidth() / width;
         this.yRes = -1 * env.getHeight() / height;
-        this.delta = Math.abs( xRes * 10e-6 );
+        this.delta = Math.abs( xRes * DELTA_SCALE );
     }
 
     /**
@@ -231,7 +235,7 @@ public class RasterEnvelope {
         double xVal = ( x - x0 ) / xRes;
         double yVal = ( y - y0 ) / yRes;
 
-        return new int[] { (int) ( xVal + delta / 10e6 ), (int) ( yVal + delta / 10e6 ) };
+        return new int[] { (int) ( xVal + ( delta / INV_DELTA_SCALE ) ), (int) ( yVal + ( delta / INV_DELTA_SCALE ) ) };
     }
 
     /**
@@ -263,6 +267,7 @@ public class RasterEnvelope {
         result.x = abs( min( min[0], max[0] ) );
         result.y = abs( min( min[1], max[1] ) );
 
+        // rb: why +1?????
         result.width = ( abs( max[0] - min[0] ) ) + 1;
         result.height = ( abs( max[1] - min[1] ) ) + 1;
 
@@ -282,7 +287,7 @@ public class RasterEnvelope {
     public Envelope getEnvelope( int width, int height ) {
         return getEnvelope( width, height, null );
     }
-    
+
     /**
      * Returns an Envelope for a raster with given size.
      * 
@@ -290,14 +295,15 @@ public class RasterEnvelope {
      * 
      * @param width
      * @param height
-     * @param crs the coordinate system for the envelope
+     * @param crs
+     *            the coordinate system for the envelope
      * 
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height, CoordinateSystem crs ) {
         return getEnvelope( width, height, crs, RasterEnvelope.Type.OUTER );
     }
-    
+
     /**
      * Returns an Envelope for a raster with given size.
      * 
@@ -305,8 +311,10 @@ public class RasterEnvelope {
      * 
      * @param width
      * @param height
-     * @param crs the coordinate system for the envelope
-     * @param type if the result envelope should span from pixel center or the outer pixel edge
+     * @param crs
+     *            the coordinate system for the envelope
+     * @param type
+     *            if the result envelope should span from pixel center or the outer pixel edge
      * 
      * @return the calculated envelope
      */
@@ -314,19 +322,19 @@ public class RasterEnvelope {
         GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
 
         double x0, y0, x1, y1;
-        
-        if (type == RasterEnvelope.Type.OUTER) {
+
+        if ( type == RasterEnvelope.Type.OUTER ) {
             x0 = this.x0;
             y0 = this.y0;
             x1 = x0 + width * xRes;
             y1 = y0 + height * yRes;
         } else {
-            x0 = this.x0 + xRes/2;
-            y0 = this.y0 + yRes/2;
-            x1 = x0 + width * xRes - xRes/2;
-            y1 = y0 + height * yRes - yRes/2;
+            x0 = this.x0 + xRes / 2;
+            y0 = this.y0 + yRes / 2;
+            x1 = x0 + width * xRes - xRes / 2;
+            y1 = y0 + height * yRes - yRes / 2;
         }
-        
+
         double xmin = min( x0, x1 );
         double xmax = max( x0, x1 );
         double ymin = min( y0, y1 );
@@ -410,7 +418,7 @@ public class RasterEnvelope {
         sb.append( "{x0=" ).append( x0 ).append( "," );
         sb.append( "y0=" ).append( y0 ).append( "," );
         sb.append( "xRes=" ).append( xRes ).append( "," );
-        sb.append( "yRes=" ).append( yRes ).append ("}");
+        sb.append( "yRes=" ).append( yRes ).append( "}" );
         return sb.toString();
     }
 
