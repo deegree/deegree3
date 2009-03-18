@@ -89,8 +89,8 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
      * @param init
      *            true if a new buffer should be initialized
      */
-    private PixelInterleavedRasterData( RasterRect sampleDomain, int rasterWidth, int rasterHeight, BandType[] bands,
-                                        DataType dataType, boolean init ) {
+    protected PixelInterleavedRasterData( RasterRect sampleDomain, int rasterWidth, int rasterHeight, BandType[] bands,
+                                          DataType dataType, boolean init ) {
         super( sampleDomain, rasterWidth, rasterHeight, bands, dataType, init );
     }
 
@@ -153,12 +153,12 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
     @Override
     public void setSubset( int x0, int y0, int width, int height, RasterData srcRaster, int xOffset, int yOffset ) {
         // clamp to maximum possible size
-//        int wx0 = this.rasterWidth - x0;
-//        int hy0 = this.rasterHeight - y0;
+        // int wx0 = this.rasterWidth - x0;
+        // int hy0 = this.rasterHeight - y0;
         int wx0 = this.getWidth() - x0;
         int hy0 = this.getHeight() - y0;
         int srcw = srcRaster.getWidth() - xOffset;
-        int srch = srcRaster.getHeight()- yOffset;
+        int srch = srcRaster.getHeight() - yOffset;
         int subWidth = min( wx0, width, srcw );
         int subHeight = min( hy0, height, srch );
 
