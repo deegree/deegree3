@@ -114,7 +114,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 7.12, point.getX() );
         Assert.assertEquals( 50.72, point.getY() );
         Assert.assertEquals( 2, point.getCoordinateDimension() );
-        Assert.assertEquals( "EPSG:4326", point.getCoordinateSystem().getIdentifier() );
+        Assert.assertEquals( "EPSG:4326", point.getCoordinateSystem().getCode() );
     }
 
     @Test
@@ -129,7 +129,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 7.12, point.getX() );
         Assert.assertEquals( 50.72, point.getY() );
         Assert.assertEquals( 2, point.getCoordinateDimension() );
-        Assert.assertEquals( "EPSG:4326", point.getCoordinateSystem().getIdentifier() );
+        Assert.assertEquals( "EPSG:4326", point.getCoordinateSystem().getCode() );
     }
 
     @Test
@@ -144,7 +144,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 7.12, point.getX() );
         Assert.assertEquals( 50.72, point.getY() );
         Assert.assertEquals( 2, point.getCoordinateDimension() );
-        Assert.assertEquals( "EPSG:4326", point.getCoordinateSystem().getIdentifier() );
+        Assert.assertEquals( "EPSG:4326", point.getCoordinateSystem().getCode() );
     }
 
     @Test
@@ -414,7 +414,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Solid" ), xmlReader.getName() );
         Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
-        Assert.assertEquals( "EPSG:31466", solid.getCoordinateSystem().getIdentifier() );
+        Assert.assertEquals( "EPSG:31466", solid.getCoordinateSystem().getCode() );
         Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
         Assert.assertEquals(
                              2568786.096,
@@ -475,7 +475,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( SolidType.CompositeSolid, compositeSolid.getSolidType() );
         Solid solid = compositeSolid.get( 0 );
         Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
-        Assert.assertEquals( "EPSG:31466", solid.getCoordinateSystem().getIdentifier() );
+        Assert.assertEquals( "EPSG:31466", solid.getCoordinateSystem().getCode() );
         Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
         Assert.assertEquals(
                              2568786.096,
@@ -508,7 +508,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "GeometricComplex" ), xmlReader.getName() );
         Solid solid = (Solid) compositeGeometry.get( 0 );
         Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
-        Assert.assertEquals( "EPSG:31466", solid.getCoordinateSystem().getIdentifier() );
+        Assert.assertEquals( "EPSG:31466", solid.getCoordinateSystem().getCode() );
         Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
         Assert.assertEquals(
                              2568786.096,
@@ -670,7 +670,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 22.0, envelope.getMin().getY() );
         Assert.assertEquals( 44.0, envelope.getMax().getX() );
         Assert.assertEquals( 88.0, envelope.getMax().getY() );
-        Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getIdentifier() );
+        Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getCode() );
     }
 
     @Test
@@ -686,7 +686,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 22.0, envelope.getMin().getY() );
         Assert.assertEquals( 44.0, envelope.getMax().getX() );
         Assert.assertEquals( 88.0, envelope.getMax().getY() );
-        Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getIdentifier() );
+        Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getCode() );
     }
 
     @Test
@@ -702,7 +702,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 22.0, envelope.getMin().getY() );
         Assert.assertEquals( 44.0, envelope.getMax().getX() );
         Assert.assertEquals( 88.0, envelope.getMax().getY() );
-        Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getIdentifier() );
+        Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getCode() );
     }
 
     @Test
@@ -718,7 +718,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 22.0, envelope.getMin().getY() );
         Assert.assertEquals( 44.0, envelope.getMax().getX() );
         Assert.assertEquals( 88.0, envelope.getMax().getY() );
-        Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getIdentifier() );
+        Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getCode() );
     }
 
     private XMLStreamReaderWrapper getParser( String fileName )

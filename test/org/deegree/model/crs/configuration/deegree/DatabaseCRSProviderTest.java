@@ -1,46 +1,8 @@
-//$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
- Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
- Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
- Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
-
 package org.deegree.model.crs.configuration.deegree;
 
 import junit.framework.TestCase;
 
-import org.deegree.model.crs.EPSGCode;
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -48,7 +10,7 @@ import org.deegree.model.crs.components.PrimeMeridian;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.configuration.CRSConfiguration;
 import org.deegree.model.crs.configuration.CRSProvider;
-import org.deegree.model.crs.configuration.deegree.xml.DeegreeCRSProvider;
+import org.deegree.model.crs.configuration.deegree.db.DatabaseCRSProvider;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.coordinatesystems.ProjectedCRS;
@@ -58,28 +20,34 @@ import org.deegree.model.crs.transformations.helmert.Helmert;
 import org.junit.Test;
 
 /**
- * <code>DeegreeCRSProviderTest</code> test the loading of a projected crs as well as the loading of the default
- * configuration.
+ * <code>DBCRSProviderTest</code> test the loading of a projected crs as well as the loading of the default
+ * configuration using the Database backend .
  * 
- * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
- * @author last edited by: $Author$
+ * @author last edited by: $Author: aionita $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 15508 $, $Date: 2009-01-06 12:08:22 +0100 (Tue, 06 Jan 2009) $
  * 
  */
-public class DeegreeCRSProviderTest extends TestCase {
+public class DatabaseCRSProviderTest extends TestCase {
 
     /**
      * Tries to load the configuration
      */
-	@Test
+    @Test
     public void testLoadingConfiguration() {
-        CRSProvider provider = CRSConfiguration.getCRSConfiguration().getProvider();
+        CRSProvider provider = CRSConfiguration.getCRSConfiguration( "org.deegree.model.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
         assertNotNull( provider );
-        assertTrue( provider instanceof DeegreeCRSProvider );
-        DeegreeCRSProvider dProvider = (DeegreeCRSProvider) provider;
+        assertTrue( provider instanceof DatabaseCRSProvider );
+        DatabaseCRSProvider dProvider = (DatabaseCRSProvider) provider;
         assertTrue( dProvider.canExport() );
+        
+        // connecting to the database
+        dProvider.connectToDatabase();
+        
+        // disconnecting
+        dProvider.closeDatabaseConnection();
     }
 
     /**
@@ -87,10 +55,14 @@ public class DeegreeCRSProviderTest extends TestCase {
      */
     @Test
     public void testCRSByID() {
-        CRSProvider provider = CRSConfiguration.getCRSConfiguration().getProvider();
+        CRSProvider provider = CRSConfiguration.getCRSConfiguration( "org.deegree.model.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
         assertNotNull( provider );
-        assertTrue( provider instanceof DeegreeCRSProvider );
-        DeegreeCRSProvider dProvider = (DeegreeCRSProvider) provider;
+        assertTrue( provider instanceof DatabaseCRSProvider );
+        DatabaseCRSProvider dProvider = (DatabaseCRSProvider) provider;
+
+        // connecting to the database
+        dProvider.connectToDatabase();
+        
         // try loading the gaus krueger zone 2.
         CoordinateSystem testCRS = dProvider.getCRSByID( "EPSG:31466" );
         assertNotNull( testCRS );
@@ -111,13 +83,16 @@ public class DeegreeCRSProviderTest extends TestCase {
         // test the datum.
         GeodeticDatum datum = realCRS.getGeodeticDatum();
         assertNotNull( datum );
-        assertEquals( new EPSGCode( 6314 ), datum.getCode() );
-        assertEquals( PrimeMeridian.GREENWICH, datum.getPrimeMeridian() );
+        assertEquals( CRSCodeType.valueOf( "EPSG:6314" ), datum.getCode() );
+        
+        // This assert will not be true since the new CRSIdentifiables have the series of codes reduced under the EPSG codespace
+        //assertEquals( PrimeMeridian.GREENWICH, datum.getPrimeMeridian() ); 
+        
 
         // test the ellips
         Ellipsoid ellips = datum.getEllipsoid();
         assertNotNull( ellips );
-        assertEquals( new EPSGCode( 7004 ), ellips.getCode() );
+        assertEquals( CRSCodeType.valueOf( "EPSG:7004" ), ellips.getCode() );
         assertEquals( Unit.METRE, ellips.getUnits() );
         assertEquals( 6377397.155, ellips.getSemiMajorAxis() );
         assertEquals( 299.1528128, ellips.getInverseFlattening() );
@@ -126,7 +101,7 @@ public class DeegreeCRSProviderTest extends TestCase {
         Helmert toWGS = datum.getWGS84Conversion();
         assertNotNull( toWGS );
         assertTrue( toWGS.hasValues() );
-        assertEquals( new EPSGCode( 1777 ), toWGS.getCode() );
+        assertEquals( CRSCodeType.valueOf( "EPSG:1777" ), toWGS.getCode() );
         assertEquals( 598.1, toWGS.dx );
         assertEquals( 73.7, toWGS.dy );
         assertEquals( 418.2, toWGS.dz );
@@ -138,7 +113,7 @@ public class DeegreeCRSProviderTest extends TestCase {
         // test the geographic
         GeographicCRS geographic = realCRS.getGeographicCRS();
         assertNotNull( geographic );
-        assertEquals( new EPSGCode( 4314 ), geographic.getCode() );
+        assertEquals( CRSCodeType.valueOf( "EPSG:4314" ), geographic.getCode() );
         Axis[] ax = geographic.getAxis();
         assertEquals( 2, ax.length );
         assertEquals( Axis.AO_EAST, ax[0].getOrientation() );
@@ -148,6 +123,11 @@ public class DeegreeCRSProviderTest extends TestCase {
 
         testCRS = dProvider.getCRSByID( "SOME_DUMMY_CODE" );
         assertTrue( testCRS == null );
+        
+//        dProvider.getAvailableCRSs();
+        
+        // disconnecting
+        dProvider.closeDatabaseConnection();
 
     }
 }

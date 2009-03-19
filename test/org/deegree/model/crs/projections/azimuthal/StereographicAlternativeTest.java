@@ -40,6 +40,8 @@ package org.deegree.model.crs.projections.azimuthal;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.model.crs.CRSCodeType;
+import org.deegree.model.crs.EPSGCode;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -64,14 +66,14 @@ import org.junit.Test;
 public class StereographicAlternativeTest extends ProjectionTest {
 
     private static final Ellipsoid ellipsoid_7004 = new Ellipsoid( 6377397.155, Unit.METRE, 299.1528128,
-                                                                   new String[] { "EPSG:7004" } );
+                                                                   new EPSGCode[] { new EPSGCode( 7004 ) } );
 
     private static final Helmert wgs_56 = new Helmert( 565.04, 49.91, 465.84, -0.40941295127179994, 0.3608190255680464,
                                                        -1.8684910003505757, 4.0772, GeographicCRS.WGS84,
-                                                       GeographicCRS.WGS84, new String[] { "TOWGS_56" } );
+                                                       GeographicCRS.WGS84, new CRSCodeType[] { new CRSCodeType( "TOWGS_56" ) } );
 
     private static final GeodeticDatum datum_171 = new GeodeticDatum( ellipsoid_7004, wgs_56,
-                                                                      new String[] { "DATUM_171" } );
+                                                                      new CRSCodeType[] { new CRSCodeType( "DATUM_171" ) } );
 
     private static final GeographicCRS geographic_204 = new GeographicCRS( datum_171,
                                                                            new Axis[] {
@@ -79,7 +81,7 @@ public class StereographicAlternativeTest extends ProjectionTest {
                                                                                                  Axis.AO_EAST ),
                                                                                        new Axis( "latitude",
                                                                                                  Axis.AO_NORTH ) },
-                                                                           new String[] { "GEO_CRS_204" } );
+                                                                           new CRSCodeType[] { new CRSCodeType( "GEO_CRS_204" ) } );
 
     private static final StereographicAlternative projection_28992 = new StereographicAlternative(
                                                                                                    geographic_204,

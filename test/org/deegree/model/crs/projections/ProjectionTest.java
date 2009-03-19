@@ -42,6 +42,7 @@ import javax.vecmath.Point2d;
 
 import junit.framework.TestCase;
 
+import org.deegree.model.crs.EPSGCode;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -74,7 +75,7 @@ public class ProjectionTest extends TestCase {
      * A common ellipsoid also known as GRS 1980
      */
     protected static final Ellipsoid ellipsoid_7019 = new Ellipsoid( 6378137.0, Unit.METRE, 298.257222101,
-                                                                     new String[] { "EPSG:7019" } );
+                                                                     new EPSGCode[] { new EPSGCode( 7019 ) } );
 
     /**
      * No wgs84 conversion needed.
@@ -83,19 +84,19 @@ public class ProjectionTest extends TestCase {
      * No wgs84 conversion needed.
      */
     protected static final Helmert wgs_1188 = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84,
-                                                           new String[] { "EPSG:1188" } );
+                                                           new EPSGCode[] { new EPSGCode( 1188 ) } );
 
     /**
      * European Terrestrial Reference System 1989
      */
     protected static final GeodeticDatum datum_6258 = new GeodeticDatum( ellipsoid_7019, wgs_1188,
-                                                                         new String[] { "EPSG:6258" } );
+                                                                         new EPSGCode[] { new EPSGCode( 6258 ) } );
 
     /**
      * Also known as ETRS89
      */
     protected static final GeographicCRS geographic_4258 = new GeographicCRS( datum_6258, axis_degree,
-                                                                              new String[] { "EPSG:4258" } );
+                                                                              new EPSGCode[] { new EPSGCode( 4258 ) } );
 
     private static Logger LOG = LoggerFactory.getLogger( ProjectionTest.class );
 

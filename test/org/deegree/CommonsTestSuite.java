@@ -77,7 +77,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.model.crs.projections.azimuthal.StereographicTest.class,
                 org.deegree.model.crs.projections.conic.LambertConformalConicTest.class,
                 org.deegree.model.crs.projections.cylindric.TransverseMercatorTest.class,
-                org.deegree.model.crs.transformations.TransformationTest.class,
+                org.deegree.model.crs.configuration.deegree.TransformationAccuracyTest.class,
                 org.deegree.model.feature.FilterEvaluationTest.class,
                 org.deegree.model.feature.xpath.FeatureXPathTest.class,
                 org.deegree.model.filter.Filter110XMLAdapterTest.class,

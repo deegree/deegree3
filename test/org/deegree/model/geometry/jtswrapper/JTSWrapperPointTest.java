@@ -44,7 +44,7 @@ package org.deegree.model.geometry.jtswrapper;
 
 import static org.junit.Assert.*;
 
-import org.deegree.model.crs.CRSFactory;
+import org.deegree.model.crs.CRSRegistry;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
@@ -67,7 +67,7 @@ public class JTSWrapperPointTest {
     static double delta = 0.001;
     static double testDelta = 0.00001;
 
-    static CoordinateSystem crs = CRSFactory.createDummyCRS( "dummy" );
+    static CoordinateSystem crs = CRSRegistry.lookupDummyCRS( "dummy" );
 
     /**
      * @throws java.lang.Exception

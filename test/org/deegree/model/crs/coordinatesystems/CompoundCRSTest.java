@@ -42,7 +42,9 @@ import javax.vecmath.Point2d;
 
 import junit.framework.TestCase;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
+import org.deegree.model.crs.EPSGCode;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -74,14 +76,14 @@ public class CompoundCRSTest extends TestCase {
                             throws IllegalArgumentException {
 
         // Source crs espg:28992
-        Ellipsoid sourceEllipsoid = new Ellipsoid( 6377397.155, Unit.METRE, 299.1528128, new String[] { "EPSG:7004" } );
-        GeodeticDatum sourceDatum = new GeodeticDatum( sourceEllipsoid, null, new String[] { "DATUM_171" } );
+        Ellipsoid sourceEllipsoid = new Ellipsoid( 6377397.155, Unit.METRE, 299.1528128, new EPSGCode[] { new EPSGCode(7004) } );
+        GeodeticDatum sourceDatum = new GeodeticDatum( sourceEllipsoid, null, new CRSCodeType[] { new CRSCodeType( "DATUM_171" ) } );
         GeographicCRS geoSource = new GeographicCRS( sourceDatum, new Axis[] { new Axis( "longitude", Axis.AO_EAST ),
                                                                               new Axis( "latitude", Axis.AO_NORTH ) },
-                                                     new String[] { "GEO_CRS_204" } );
+                                                     new CRSCodeType[] { new CRSCodeType( "GEO_CRS_204" ) } );
         Helmert sourceWGS = new Helmert( 565.04, 49.91, 465.84, -0.40941295127179994, 0.3608190255680464,
                                          -1.8684910003505757, 4.0772, geoSource, GeographicCRS.WGS84,
-                                         new String[] { "TOWGS_56" } );
+                                         new CRSCodeType[] { new CRSCodeType( "TOWGS_56" ) } );
         sourceDatum.setToWGS84( sourceWGS );
         Projection sourceProj = new StereographicAlternative( geoSource, 463000.0, 155000.0,
                                                               new Point2d( Math.toRadians( 5.38763888888889 ),
@@ -89,10 +91,10 @@ public class CompoundCRSTest extends TestCase {
                                                               Unit.METRE, 0.9999079 );
         ProjectedCRS sourceCRS = new ProjectedCRS( sourceProj, new Axis[] { new Axis( "x", Axis.AO_EAST ),
                                                                            new Axis( "y", Axis.AO_NORTH ) },
-                                                   new String[] { "EPSG:28992" } );
+                                                   new EPSGCode[] { new EPSGCode( 28992 ) } );
 
         CompoundCRS sourceCompound = new CompoundCRS( new Axis( "z", Axis.AO_UP ), sourceCRS, 100,
-                                                      new CRSIdentifiable( new String[] { "test_case" } ) );
+                                                      new CRSIdentifiable( new CRSCodeType[] { new CRSCodeType( "test_case" ) } ) );
         assertEquals( 100.0, sourceCompound.getDefaultHeight() );
         // standard projection values.
         assertEquals( Math.toRadians( 5.38763888888889 ),
@@ -123,20 +125,20 @@ public class CompoundCRSTest extends TestCase {
         assertEquals( sourceCRS, sourceCompound.getUnderlyingCRS() );
 
         // Target crs espg:25832
-        Ellipsoid targetEllipsoid = new Ellipsoid( 6378137.0, Unit.METRE, 298.257222101, new String[] { "EPSG:1188" } );
-        Helmert targetWGS = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, new String[] { "EPSG:1188" } );
-        GeodeticDatum targetDatum = new GeodeticDatum( targetEllipsoid, targetWGS, new String[] { "EPSG:6258" } );
+        Ellipsoid targetEllipsoid = new Ellipsoid( 6378137.0, Unit.METRE, 298.257222101, new EPSGCode[] { new EPSGCode( 1188 ) } );
+        Helmert targetWGS = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, new EPSGCode[] { new EPSGCode( 1188 ) } );
+        GeodeticDatum targetDatum = new GeodeticDatum( targetEllipsoid, targetWGS, new EPSGCode[] { new EPSGCode( 6258 ) } );
         GeographicCRS targetGEO = new GeographicCRS( targetDatum, new Axis[] { new Axis( "longitude", Axis.AO_EAST ),
                                                                               new Axis( "latitude", Axis.AO_NORTH ) },
-                                                     new String[] { "EPSG:4258" } );
+                                                     new EPSGCode[] { new EPSGCode( 4258 ) } );
         Projection targetProj = new TransverseMercator( true, targetGEO, 0, 500000.0, new Point2d( Math.toRadians( 9 ),
                                                                                                    0 ), Unit.METRE,
                                                         0.9996 );
         ProjectedCRS targetCRS = new ProjectedCRS( targetProj, new Axis[] { new Axis( "x", Axis.AO_EAST ),
                                                                            new Axis( "y", Axis.AO_NORTH ) },
-                                                   new String[] { "EPSG:28992" } );
+                                                   new EPSGCode[] { new EPSGCode( 28992 ) } );
         CompoundCRS targetCompound = new CompoundCRS( new Axis( "z", Axis.AO_UP ), targetCRS, 2,
-                                                      new CRSIdentifiable( new String[] { "test_case_2" } ) );
+                                                      new CRSIdentifiable( new CRSCodeType[] { new CRSCodeType( "test_case_2" ) } ) );
         assertEquals( 2., targetCompound.getDefaultHeight() );
         assertEquals( Math.toRadians( 9 ),
                       ( (ProjectedCRS) targetCompound.getUnderlyingCRS() ).getProjection().getProjectionLongitude() );

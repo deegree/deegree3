@@ -146,7 +146,7 @@ public class GMLCRSProviderTest extends TestCase {
         GeodeticDatum datum = realCRS.getGeodeticDatum();
         assertNotNull( datum );
         // assertEquals( "EPSG:6314", datum.getIdentifier() );
-        assertEquals( "urn:adv:datum:DHDN", datum.getIdentifier() );
+        assertEquals( "urn:adv:datum:DHDN", datum.getCode() );
         // assertEquals( PrimeMeridian.GREENWICH, datum.getPrimeMeridian() );
         // assertEquals( "urn:adv:meridian:Greenwich", datum.getPrimeMeridian().getIdentifier() );
 
@@ -154,7 +154,7 @@ public class GMLCRSProviderTest extends TestCase {
         Ellipsoid ellips = datum.getEllipsoid();
         assertNotNull( ellips );
         // assertEquals( "EPSG:7004", ellips.getIdentifier() );
-        assertEquals( "urn:adv:ellipsoid:Bessel", ellips.getIdentifier() );
+        assertEquals( "urn:adv:ellipsoid:Bessel", ellips.getCode() );
         assertEquals( Unit.METRE, ellips.getUnits() );
         assertEquals( 6377397.155, ellips.getSemiMajorAxis() );
         assertEquals( 299.1528128, ellips.getInverseFlattening() );
@@ -163,7 +163,7 @@ public class GMLCRSProviderTest extends TestCase {
         Helmert toWGS = datum.getWGS84Conversion();
         assertNotNull( toWGS );
         assertTrue( toWGS.hasValues() );
-        assertEquals( "urn:adv:coordinateOperation:DHDN_ETRS89_3m", toWGS.getIdentifier() );
+        assertEquals( "urn:adv:coordinateOperation:DHDN_ETRS89_3m", toWGS.getCode() );
         assertEquals( 598.1, toWGS.dx );
         assertEquals( 73.7, toWGS.dy );
         assertEquals( 418.2, toWGS.dz );
@@ -175,7 +175,7 @@ public class GMLCRSProviderTest extends TestCase {
         // test the geographic
         GeographicCRS geographic = realCRS.getGeographicCRS();
         assertNotNull( geographic );
-        assertEquals( "urn:adv:crs:DE_DHDN", geographic.getIdentifier() );
+        assertEquals( "urn:adv:crs:DE_DHDN", geographic.getCode() );
         // assertEquals( "EPSG:4314", geographic.getIdentifier() );
         Axis[] ax = geographic.getAxis();
         assertEquals( 2, ax.length );
