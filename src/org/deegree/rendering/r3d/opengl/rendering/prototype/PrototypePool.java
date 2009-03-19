@@ -44,7 +44,7 @@ import java.util.Map;
 import javax.media.opengl.GL;
 import javax.vecmath.Vector3f;
 
-import org.deegree.rendering.r3d.opengl.rendering.Renderable;
+import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
 
 /**
  * The <code>Prototypes</code> class TODO add class documentation here.
@@ -70,7 +70,7 @@ public class PrototypePool {
         if ( prototype == null || prototype.getTransformationMatrix() == null || prototype.getPrototypeID() == null ) {
             return;
         }
-        Renderable model = prototypes.get( prototype.getPrototypeID() );
+        JOGLRenderable model = prototypes.get( prototype.getPrototypeID() );
         if ( model == null ) {
             return;
         }

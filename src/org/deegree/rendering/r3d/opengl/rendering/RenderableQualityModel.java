@@ -56,7 +56,7 @@ import org.deegree.rendering.r3d.opengl.rendering.prototype.PrototypePool;
  * @version $Revision$, $Date$
  * 
  */
-public class RenderableQualityModel extends QualityModel<RenderableQualityModelPart> implements Renderable {
+public class RenderableQualityModel extends QualityModel<RenderableQualityModelPart> implements JOGLRenderable {
 
     /**
      * 

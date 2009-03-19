@@ -55,7 +55,7 @@ import org.deegree.rendering.r3d.WorldObject;
  * 
  */
 public class WorldRenderableObject extends WorldObject<RenderableQualityModelPart, RenderableQualityModel> implements
-                                                                                                          Renderable {
+                                                                                                          JOGLRenderable {
 
     /**
      * 
