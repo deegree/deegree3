@@ -123,7 +123,7 @@ public class RasterDataContainerFactory {
         return withLoadingPolicy( reader, defaultLoadingPolicy );
     }
 
-    private static RasterDataContainer getRasterDataContainer( LoadingPolicy l ) {
+    private synchronized static RasterDataContainer getRasterDataContainer( LoadingPolicy l ) {
         for ( RasterDataContainerProvider provider : rasterContainerLoader ) {
             RasterDataContainer container = provider.getRasterDataContainer( l );
             if ( container != null ) {
