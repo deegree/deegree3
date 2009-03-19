@@ -77,9 +77,11 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
 
     private transient float[] location;
 
-    private transient float[] scaleXZ;
-
     private transient String textureID;
+
+    private transient float width;
+
+    private transient float height;
 
     private static final FloatBuffer coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
                                                                                                               -.5f,
@@ -111,19 +113,20 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
      * @param texture
      * @param location
      *            of the billboard
-     * @param scaleXZ
-     *            the width and height of the billboard
+     * @param width
+     *            of this billboard
+     * @param height
+     *            of this billboard
      */
-    public BillBoard( String texture, float[] location, float[] scaleXZ ) {
+    public BillBoard( String texture, float[] location, float width, float height ) {
         super();
         this.location = location;
         if ( location == null ) {
             this.location = new float[] { 0, 0, 0 };
         }
-        this.scaleXZ = scaleXZ;
-        if ( scaleXZ == null ) {
-            this.scaleXZ = new float[] { 1, 1 };
-        }
+        this.width = width;
+        this.height = height;
+
         this.textureID = texture;
     }
 
@@ -139,7 +142,7 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
         // the rotation
         calculateAndSetRotation( context, new float[] { eye.x, eye.y, eye.z } );
 
-        context.glScalef( scaleXZ[0], 1, scaleXZ[1] );
+        context.glScalef( width, 1, height );
 
         TexturePool.loadTexture( context, textureID );
 
@@ -195,10 +198,8 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
         if ( location != null && location.length > 0 ) {
             sb.append( "\nlocation: " ).append( Vectors3f.asString( location ) );
         }
-        if ( scaleXZ != null && scaleXZ.length > 0 ) {
-            sb.append( "\nwidth: " ).append( scaleXZ[0] );
-            sb.append( "\nheight: " ).append( scaleXZ[1] );
-        }
+        sb.append( "\nwidth: " ).append( width );
+        sb.append( "\nheight: " ).append( height );
         return sb.toString();
     }
 
@@ -213,7 +214,8 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
                             throws IOException {
         LOG.trace( "Serializing to object stream" );
         out.writeObject( location );
-        out.writeObject( scaleXZ );
+        out.writeFloat( width );
+        out.writeFloat( height );
         out.writeUTF( textureID );
     }
 
@@ -229,7 +231,8 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
                             throws IOException, ClassNotFoundException {
         LOG.trace( "Deserializing from object stream" );
         location = (float[]) in.readObject();
-        scaleXZ = (float[]) in.readObject();
+        width = in.readFloat();
+        height = in.readFloat();
         textureID = in.readUTF();
     }
 
@@ -240,7 +243,8 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
     public long sizeOf() {
         long localSize = super.sizeOf();
         localSize += AllocatedHeapMemory.sizeOfFloatArray( location, true );
-        localSize += AllocatedHeapMemory.sizeOfFloatArray( scaleXZ, true );
+        localSize += AllocatedHeapMemory.FLOAT_SIZE;
+        localSize += AllocatedHeapMemory.FLOAT_SIZE;
         localSize += AllocatedHeapMemory.sizeOfString( textureID, true, true );
         return localSize;
     }
@@ -254,8 +258,7 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
             result = super.equals( that ) && this.textureID.equals( that.textureID )
                      && Vectors3f.equals( this.location, that.location, 1E-11f );
             if ( result ) {
-                result = Math.abs( this.scaleXZ[0] - that.scaleXZ[0] ) < 1E-11f
-                         && Math.abs( this.scaleXZ[1] - that.scaleXZ[1] ) < 1E-11f;
+                result = Math.abs( this.width - that.width ) < 1E-11f && Math.abs( this.height - that.height ) < 1E-11f;
             }
         }
         return result;
@@ -279,5 +282,19 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
     @Override
     public float[] getPosition() {
         return location;
+    }
+
+    /**
+     * @return the width
+     */
+    public final float getWidth() {
+        return width;
+    }
+
+    /**
+     * @return the height
+     */
+    public final float getHeight() {
+        return height;
     }
 }
