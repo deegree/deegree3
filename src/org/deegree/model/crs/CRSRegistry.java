@@ -63,8 +63,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * The <code>CRSFactory</code> class wraps the access to the CRSProvider in the org.deegree.model.crs package by
- * supplying a static create method, thus encapsulating the access to the CoordinateSystems.
+ * The <code>CRSRegistry</code> class wraps the access to the CRSProvider in the org.deegree.model.crs package by
+ * supplying a static <code>create</code> method, thus encapsulating the access to the CoordinateSystems.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -73,9 +73,9 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-public class CRSFactory {
+public class CRSRegistry {
 
-    private static Logger LOG = LoggerFactory.getLogger( CRSFactory.class );
+    private static Logger LOG = LoggerFactory.getLogger( CRSRegistry.class );
 
     private synchronized static CRSProvider getProvider( String providerName ) {
         CRSConfiguration crsConfig = CRSConfiguration.getCRSConfiguration( providerName );
@@ -94,10 +94,10 @@ public class CRSFactory {
      * @throws UnknownCRSException
      *             if the crs-name is not known
      */
-    public synchronized static CoordinateSystem create( String providerName, String name )
+    public synchronized static CoordinateSystem lookup( String providerName, String name )
                             throws UnknownCRSException {
         CRSProvider crsProvider = getProvider( providerName );
-        org.deegree.model.crs.coordinatesystems.CoordinateSystem realCRS = null;
+        CoordinateSystem realCRS = null;
         try {
             realCRS = crsProvider.getCRSByID( name );
         } catch ( CRSConfigurationException e ) {
@@ -105,6 +105,22 @@ public class CRSFactory {
         }
         if ( realCRS == null ) {
             throw new UnknownCRSException( name );
+        }
+        LOG.debug( "Successfully created the crs with id: " + name );
+        return realCRS;
+    }
+
+    public synchronized static CoordinateSystem lookup( String providerName, CRSCodeType name )
+                                throws UnknownCRSException {
+        CRSProvider crsProvider = getProvider( providerName );
+        CoordinateSystem realCRS = null;
+        try {
+            realCRS = crsProvider.getCRSByID( name );
+        } catch ( CRSConfigurationException e ) {
+            LOG.error( e.getMessage(), e );
+        }
+        if ( realCRS == null ) {
+            throw new UnknownCRSException( name.getEquivalentString() );
         }
         LOG.debug( "Successfully created the crs with id: " + name );
         return realCRS;
@@ -154,20 +170,25 @@ public class CRSFactory {
      * @throws UnknownCRSException
      *             if the crs-name is not known
      */
-    public synchronized static CoordinateSystem create( String name )
+    public synchronized static CoordinateSystem lookup( String name )
                             throws UnknownCRSException {
-        return create( null, name );
+        return lookup( null, name );
+    }
+    
+    public synchronized static CoordinateSystem lookup( CRSCodeType name )
+                                throws UnknownCRSException {
+        return lookup( null, name );
     }
 
     /**
-     * Wrapper for the private constructor of the org.deegree.model.model.crs.CoordinateSystem class.
+     * Wrapper for the private constructor of the org.deegree.model.crs class.
      * 
      * @param realCRS
      *            to wrap
      * 
-     * @return a CoordinateSystem corresponding to the given crs.
+     * @return a CRSDeliverable corresponding to the given crs.
      */
-    public static CoordinateSystem create( org.deegree.model.crs.coordinatesystems.CoordinateSystem realCRS ) {
+    public static CoordinateSystem lookup( CoordinateSystem realCRS ) {
         return realCRS;
     }
 
@@ -180,7 +201,7 @@ public class CRSFactory {
      * 
      * @return a dummy CoordinateSystem having filled out all the essential values.
      */
-    public static CoordinateSystem createDummyCRS( String name ) {
+    public static CoordinateSystem lookupDummyCRS( String name ) {
         if ( name == null || "".equals( name.trim() ) ) {
             name = "dummy";
         }
@@ -191,14 +212,16 @@ public class CRSFactory {
                                                new Axis( Unit.DEGREE, "lat", Axis.AO_NORTH ) };
         final Axis[] axis_projection = new Axis[] { new Axis( "x", Axis.AO_EAST ), new Axis( "y", Axis.AO_NORTH ) };
 
-        final Helmert wgs_info = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, name + "_wgs" );
-        final GeodeticDatum datum = new GeodeticDatum( Ellipsoid.WGS84, wgs_info, new String[] { name + "_datum" } );
-        final GeographicCRS geographicCRS = new GeographicCRS( datum, axis_degree, new String[] { name
-                                                                                                  + "geographic_crs" } );
+        final Helmert wgs_info = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, CRSCodeType.valueOf( name + "_wgs" ) );
+        final GeodeticDatum datum = new GeodeticDatum( Ellipsoid.WGS84, wgs_info, 
+                                                       new CRSCodeType[] { CRSCodeType.valueOf( name + "_datum" ) } );
+        final GeographicCRS geographicCRS = new GeographicCRS( datum, axis_degree, 
+                                                               new CRSCodeType[] { CRSCodeType.valueOf( name + "geographic_crs" ) } );
         final TransverseMercator projection = new TransverseMercator( true, geographicCRS, 0, 0, new Point2d( 0, 0 ),
                                                                       Unit.METRE, 1 );
 
-        return new ProjectedCRS( projection, axis_projection, new String[] { name + "projected_crs" } );
+        return new ProjectedCRS( projection, axis_projection, 
+                                                 new CRSCodeType[] { CRSCodeType.valueOf( name + "projected_crs" ) } );
 
     }
 }

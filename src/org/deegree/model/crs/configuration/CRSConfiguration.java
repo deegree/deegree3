@@ -53,7 +53,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.deegree.model.crs.configuration.deegree.DeegreeCRSProvider;
+import org.deegree.model.crs.CRSCodeType;
+import org.deegree.model.crs.configuration.deegree.db.DatabaseCRSProvider;
+import org.deegree.model.crs.configuration.deegree.xml.DeegreeCRSProvider;
 import org.deegree.model.crs.configuration.proj4.PROJ4CRSProvider;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.coordinatesystems.ProjectedCRS;
@@ -67,7 +69,7 @@ import org.deegree.model.i18n.Messages;
  * The <code>CRSConfiguration</code> creates, instantiates and supplies a configured CRS-Provider. Because only one
  * crs-configuration is needed inside the JVM, this implementation uses a singleton pattern.
  * <p>
- * The configuration will try to read the file: crs_providers.properties. It uses following strategie to load this file,
+ * The configuration will try to read the file: crs_providers.properties. It uses following strategy to load this file,
  * first the root directory (e.g. '/' or WEB-INF/classes ) will be searched. If no file was found there, it will try to
  * load from the package. The properties file must denote a property with name 'CRS_PROVIDER' followed by a '=' and a
  * fully qualified name denoting the class (an instance of CRSProvider) which should be available in the classpath. This
@@ -87,11 +89,14 @@ public class CRSConfiguration {
 
     public static final Map<String, CRSConfiguration> DEFINED_CONFIGURATIONS = new HashMap<String, CRSConfiguration>();
 
-    private static final String DEFAULT_PROVIDER_CLASS = "org.deegree.model.crs.configuration.deegree.DeegreeCRSProvider";
+    // Load from XML file
+    private static final String DEFAULT_PROVIDER_CLASS = "org.deegree.model.crs.configuration.deegree.xml.DeegreeCRSProvider"; 
+
+    // Load from DB
+    //private static final String DEFAULT_PROVIDER_CLASS = "org.deegree.model.crs.configuration.deegree.db.DatabaseCRSProvider";
 
     private static String CONFIGURED_DEFAULT_PROVIDER_CLASS = DEFAULT_PROVIDER_CLASS;
 
-    //
     private final static String PROVIDER_CONFIG = "crs_providers.properties";
 
     private static Properties configuredProperties = null;
@@ -126,7 +131,6 @@ public class CRSConfiguration {
                 }
             }
         }
-
     }
 
     // private static CRSConfiguration CONFIG = null;
@@ -142,7 +146,7 @@ public class CRSConfiguration {
     /**
      * Creates or returns an instance of the CRSConfiguration by trying to instantiate the given provider class. If the
      * name is null or "" the Provider configured in the 'crs_providers.properties' will be returned. If the
-     * instantiation of this class fails a {@link org.deegree.model.crs.configuration.deegree.DeegreeCRSProvider} will be
+     * instantiation of this class fails a {@link org.deegree.model.crs.configuration.deegree.xml.DeegreeCRSProvider} will be
      * returned.
      * 
      * @param providerName
@@ -166,8 +170,9 @@ public class CRSConfiguration {
         CRSProvider provider = null;
 
         if ( CONFIGURED_DEFAULT_PROVIDER_CLASS.equals( provName )
-             && CONFIGURED_DEFAULT_PROVIDER_CLASS.equals( DEFAULT_PROVIDER_CLASS ) ) {
+                                && CONFIGURED_DEFAULT_PROVIDER_CLASS.equals( DEFAULT_PROVIDER_CLASS ) ) {
             provider = new DeegreeCRSProvider( new Properties( configuredProperties ) );
+            //provider = new DatabaseCRSProvider( configuredProperties );
         } else {
             try {
                 // use reflection to instantiate the configured provider.
@@ -176,8 +181,9 @@ public class CRSConfiguration {
                 LOG.debug( "Trying to load configured CRS provider from classname: " + provName );
                 Constructor<?> constructor = t.getConstructor( Properties.class );
                 if ( constructor != null ) {
-                	LOG.debug("Invoking constructor: " + constructor);
-                    provider = (CRSProvider) constructor.newInstance( new Properties( configuredProperties ) );
+                    LOG.debug("Invoking constructor: " + constructor);
+                    //provider = (CRSProvider) constructor.newInstance( new Properties( configuredProperties ) );
+                    provider = (CRSProvider) constructor.newInstance( configuredProperties );
                 }
             } catch ( InstantiationException e ) {
                 LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", provName, e.getMessage() ), e );
@@ -192,15 +198,16 @@ public class CRSConfiguration {
             } catch ( IllegalArgumentException e ) {
                 LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", provName, e.getMessage() ), e );
             } catch ( InvocationTargetException e ) {
-            	LOG.error( e.getCause().getMessage(), e.getCause() );
+                LOG.error( e.getCause().getMessage(), e.getCause() );
                 LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", provName, e.getMessage() ), e );
             } catch ( Throwable t ) {
                 LOG.error( Messages.getMessage( "CRS_CONFIG_INSTANTIATION_ERROR", provName, t.getMessage() ), t );
             } finally {
                 if ( provider == null ) {
                     LOG.info( "The configured class: " + provName
-                                 + " was not created. Trying to create a deegree-crs-provider" );
+                              + " was not created. Trying to create a deegree-crs-provider" );
                     provider = new DeegreeCRSProvider( new Properties( configuredProperties ) );
+                    //provider = new DatabaseCRSProvider( configuredProperties );
                 }
             }
         }
@@ -220,7 +227,7 @@ public class CRSConfiguration {
      *             if --anything-- went wrong while instantiating the CRSProvider.
      */
     public synchronized static CRSConfiguration getCRSConfiguration()
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         return getCRSConfiguration( null );
     }
 
@@ -239,16 +246,21 @@ public class CRSConfiguration {
     }
 
     /**
-     * export the given file to the deegree-crs format.
+     * Export the CoordinateSystems from a given Input format to a given Output format and place
+     * the result into an output File.
+     * If the input format is Proj4, an input File will be provided.
+     * If the -verify option is provided, then the program will check whether there is an Input-CRS that
+     * is not found in an Output-CRS. If this is so, all Input CRS's will be exported to the Output format.
      * 
      * @param args
      * @throws Exception
      */
     public static void main( String[] args )
-                            throws Exception {
+    throws Exception {
         if ( args.length == 0 ) {
             outputHelp();
-        }
+        }       
+        // organize the command-line arguments in the params map ( argument -> value that comes next in the list )
         Map<String, String> params = new HashMap<String, String>( 5 );
         for ( int i = 0; i < args.length; i++ ) {
             String arg = args[i];
@@ -276,7 +288,7 @@ public class CRSConfiguration {
             inFormat = "proj4";
         }
         String inFile = params.get( "-inFile" );
-        if ( inFile == null || "".equals( inFile.trim() ) ) {
+        if ( ( inFile == null || "".equals( inFile.trim() ) ) && (! inFormat.equals( "database" ) ) ) {
             System.out.println( "No input file set, exiting\n" );
             outputHelp();
             throw new Exception( "No input file set, exiting" );
@@ -291,32 +303,45 @@ public class CRSConfiguration {
         }
 
         String veri = params.get( "-verify" );
-        boolean verify = ( veri != null && !"".equals( inFile.trim() ) );
+        boolean verify = ( veri != null && !"".equals( veri.trim() ) );
 
-        Properties inProps = new Properties();
-        inProps.put( "crs.configuration", inFile );
-        CRSProvider in = new PROJ4CRSProvider( inProps );
+        Properties inProps = null;
+        if (! inFormat.equalsIgnoreCase( "database" ) ) {
+            inProps = new Properties();
+            inProps.put( "crs.configuration", inFile );
+        }
+        CRSProvider in = null;
         if ( "deegree".equalsIgnoreCase( inFormat ) ) {
             try {
                 in = new DeegreeCRSProvider( new Properties( configuredProperties ) );
             } catch ( CRSConfigurationException e ) {
                 e.printStackTrace();
             }
+        } else if ( "proj4".equalsIgnoreCase( inFormat ) ) {
+            in = new PROJ4CRSProvider( inProps );
+        } else if ( "database".equalsIgnoreCase( inFormat ) ) {
+            in = new DatabaseCRSProvider();
         }
 
         CRSProvider out = new DeegreeCRSProvider( new Properties( configuredProperties ) );
         if ( "proj4".equalsIgnoreCase( outFormat ) ) {
             out = new PROJ4CRSProvider();
+        } else if ( "database".equalsIgnoreCase( outFormat ) ) {
+            out = new DatabaseCRSProvider();
+        } else if ( "deegree".equalsIgnoreCase( outFormat ) ) {
+            out = new DeegreeCRSProvider( new Properties( configuredProperties ) );
         }
 
-        try {
+        try {            
+            if ( in instanceof DatabaseCRSProvider )
+                ( (DatabaseCRSProvider) in ).connectToDatabase();
             List<CoordinateSystem> allSystems = in.getAvailableCRSs();
-            if ( verify ) {
+            if ( verify ) { // perform check that the inFormat Projection definitions conform the outFormat  
                 out = new DeegreeCRSProvider( null );
                 List<CoordinateSystem> notExported = new LinkedList<CoordinateSystem>();
                 for ( CoordinateSystem inCRS : allSystems ) {
                     if ( inCRS.getType() == CoordinateSystem.PROJECTED_CRS ) {
-                        String id = inCRS.getIdentifier();
+                        CRSCodeType id = inCRS.getCode();
                         CoordinateSystem outCRS = out.getCRSByID( id );
                         // System.out.print( "Getting crs: " + id + " and projection: " +
                         // ((ProjectedCRS)inCRS).getProjection().getDeegreeSpecificName() );
@@ -356,8 +381,10 @@ public class CRSConfiguration {
                         System.out.println( sb.toString() );
                     }
                 }
+            } else if ( outFormat.equals( "database" ) ) {
+                DatabaseCRSProvider dbOut = ( DatabaseCRSProvider ) out;
+                dbOut.export( allSystems );
             } else {
-
                 StringBuilder sb = new StringBuilder( allSystems.size() * 2000 );
                 out.export( sb, allSystems );
                 if ( outFile != null && !"".equals( outFile.trim() ) ) {
@@ -376,7 +403,6 @@ public class CRSConfiguration {
             e.printStackTrace();
         }
 
-        // CRSConfiguration config = new CRSConfiguration(
     }
 
     private static void outputHelp() {
@@ -403,7 +429,7 @@ public class CRSConfiguration {
     @Override
     public String toString() {
         return "CRSConfiguration is using "
-               + ( ( provider == null ) ? "no crs provider, this is strange."
-                                       : "crs provider: " + provider.getClass().getCanonicalName() );
+        + ( ( provider == null ) ? "no crs provider, this is strange."
+                                   : "crs provider: " + provider.getClass().getCanonicalName() );
     }
 }

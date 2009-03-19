@@ -36,15 +36,17 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.crs.configuration.deegree;
+package org.deegree.model.crs.configuration.deegree.xml;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.vecmath.Point2d;
 import javax.xml.namespace.QName;
@@ -53,6 +55,7 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
@@ -144,7 +147,7 @@ public class CRSParser extends XMLFileResource {
      *             if something went wrong while constructing the crs.
      */
     public CoordinateSystem parseCoordinateSystem( OMElement crsDefintion )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         if ( crsDefintion == null ) {
             return null;
         }
@@ -169,9 +172,9 @@ public class CRSParser extends XMLFileResource {
         return result;
     }
 
-	// TODO find a better name
+    // TODO find a better name
     public OMElement getURIAsType( String uri )
-                            throws IOException {
+    throws IOException {
         if ( uri == null || "".equals( uri ) ) {
             return null;
         }
@@ -181,8 +184,8 @@ public class CRSParser extends XMLFileResource {
         String xPath = XPATH_PRE + id + "']";
         try {
             //crsElement = XMLTools.getElement( getRootElement(), xPath, nsContext );
-        	crsElement = getElement( getRootElement(), new XPath( xPath, nsContext ) );
-        	
+            crsElement = getElement( getRootElement(), new XPath( xPath, nsContext ) );
+
         } catch ( XMLParsingException e ) {
             LOG.error( Messages.getMessage( "CRS_CONFIG_NO_RESULT_FOR_ID", id, e.getMessage() ), e );
         }
@@ -206,8 +209,7 @@ public class CRSParser extends XMLFileResource {
      * @throws CRSConfigurationException
      *             if the root element is empty
      */
-    public String getVersion()
-                            throws CRSConfigurationException {
+    public String getVersion() throws CRSConfigurationException {
         if ( getRootElement() == null ) {
             throw new CRSConfigurationException( "The crs parser has no root element, this cannot be." );
         }
@@ -222,13 +224,12 @@ public class CRSParser extends XMLFileResource {
      * @return the identifiable object or <code>null</code> if no id was given.
      * @throws CRSConfigurationException
      */
-    protected CRSIdentifiable parseIdentifiable( OMElement element )
-                            throws CRSConfigurationException {
+    protected CRSIdentifiable parseIdentifiable( OMElement element ) throws CRSConfigurationException {
         try {
-        	String[] identifiers = getNodesAsStrings( element, new XPath( "crs:id", nsContext ) );
+            String[] identifiers = getNodesAsStrings( element, new XPath( "crs:id", nsContext ) );
             if ( identifiers == null || identifiers.length == 0 ) {
                 String msg = Messages.getMessage( "CRS_CONFIG_NO_ID", ( ( element == null ) ? "null"
-                                                                                           : element.getLocalName() ) );
+                                                                                              : element.getLocalName() ) );
                 throw new CRSConfigurationException( msg );
             }
             for ( int i = 0; i < identifiers.length; ++i ) {
@@ -240,12 +241,18 @@ public class CRSParser extends XMLFileResource {
             String[] versions = getNodesAsStrings( element, new XPath( "crs:version", nsContext ) );
             String[] descriptions = getNodesAsStrings( element, new XPath( "crs:description", nsContext ) );
             String[] areasOfUse = getNodesAsStrings( element, new XPath( "crs:areaOfuse", nsContext ) );
-            return new CRSIdentifiable( identifiers, names, versions, descriptions, areasOfUse );
+
+            // convert the string IDs to CRSCodeTypes
+            Set<CRSCodeType> codeSet = new HashSet<CRSCodeType>();
+            int n = identifiers.length;
+            for ( int i = 0; i < n; i++)
+                codeSet.add( CRSCodeType.valueOf( identifiers[i] ) );
+            return new CRSIdentifiable( codeSet.toArray( new CRSCodeType[ codeSet.size() ] ), names, versions, descriptions, areasOfUse );
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "CRSIdentifiable",
                                                                       ( ( element == null ) ? "null"
-                                                                                           : element.getLocalName() ),
-                                                                      e.getMessage() ), e );
+                                                                                              : element.getLocalName() ),
+                                                                                              e.getMessage() ), e );
         }
     }
 
@@ -260,27 +267,27 @@ public class CRSParser extends XMLFileResource {
      *             names which were not defined in the axis elements.
      */
     protected Axis[] parseAxisOrder( OMElement crsElement )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         String axisOrder = null;
         try {
-        	axisOrder = getRequiredNodeAsString( crsElement, new XPath( "crs:axisOrder", nsContext ) );
+            axisOrder = getRequiredNodeAsString( crsElement, new XPath( "crs:axisOrder", nsContext ) );
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException(
-                                                 Messages.getMessage(
-                                                                      "CRS_CONFIG_PARSE_ERROR",
-                                                                      "AxisOrder",
-                                                                      ( ( crsElement == null ) ? "null"
-                                                                                              : crsElement.getLocalName() ),
-                                                                      e.getMessage() ), e );
+                                                Messages.getMessage(
+                                                                    "CRS_CONFIG_PARSE_ERROR",
+                                                                    "AxisOrder",
+                                                                    ( ( crsElement == null ) ? "null"
+                                                                                               : crsElement.getLocalName() ),
+                                                                                               e.getMessage() ), e );
         }
         if ( axisOrder == null || "".equals( axisOrder.trim() ) ) {
             throw new CRSConfigurationException(
-                                                 Messages.getMessage(
-                                                                      "CRS_CONFIG_PARSE_ERROR",
-                                                                      "AxisOrder",
-                                                                      ( ( crsElement == null ) ? "null"
-                                                                                              : crsElement.getLocalName() ),
-                                                                      " axisOrder element may not be empty" ) );
+                                                Messages.getMessage(
+                                                                    "CRS_CONFIG_PARSE_ERROR",
+                                                                    "AxisOrder",
+                                                                    ( ( crsElement == null ) ? "null"
+                                                                                               : crsElement.getLocalName() ),
+                                                " axisOrder element may not be empty" ) );
         }
         axisOrder = axisOrder.trim();
         String[] order = axisOrder.trim().split( "," );
@@ -292,19 +299,19 @@ public class CRSParser extends XMLFileResource {
                 t = t.trim();
                 try {
                     //OMElement axisElement = XMLTools.getRequiredElement( crsElement, XPATH + t + "']", nsContext );
-                	OMElement axisElement = getRequiredElement( crsElement, new XPath( XPATH + t + "']", nsContext ) );
+                    OMElement axisElement = getRequiredElement( crsElement, new XPath( XPATH + t + "']", nsContext ) );
                     //String axisOrientation = XMLTools.getRequiredNodeAsString( axisElement, PRE + "axisOrientation", nsContext );
                     String axisOrientation = getRequiredNodeAsString( axisElement, new XPath( "crs:axisOrientation", nsContext ) );
                     Unit unit = parseUnit( axisElement );
                     axis[i] = new Axis( unit, t, axisOrientation );
                 } catch ( XMLParsingException e ) {
                     throw new CRSConfigurationException(
-                                                         Messages.getMessage(
-                                                                              "CRS_CONFIG_PARSE_ERROR",
-                                                                              "Axis",
-                                                                              ( ( crsElement == null ) ? "null"
-                                                                                                      : crsElement.getLocalName() ),
-                                                                              e.getMessage() ), e );
+                                                        Messages.getMessage(
+                                                                            "CRS_CONFIG_PARSE_ERROR",
+                                                                            "Axis",
+                                                                            ( ( crsElement == null ) ? "null"
+                                                                                                       : crsElement.getLocalName() ),
+                                                                                                       e.getMessage() ), e );
                 }
             }
         }
@@ -319,7 +326,7 @@ public class CRSParser extends XMLFileResource {
      */
     public Transformation parseTransformation( OMElement transformationDefinition ) {
         throw new UnsupportedOperationException(
-                                                 "The parsing of transformations is not supported by this version of the deegree crs parser." );
+        "The parsing of transformations is not supported by this version of the deegree crs parser." );
     }
 
     /**
@@ -332,7 +339,7 @@ public class CRSParser extends XMLFileResource {
     protected List<PolynomialTransformation> parseAlternativeTransformations( OMElement crsElement ) {
         List<OMElement> usedTransformations = null;
         try {
-        	usedTransformations = getElements( crsElement, new XPath( "crs:polynomialTransformation", nsContext ) );
+            usedTransformations = getElements( crsElement, new XPath( "crs:polynomialTransformation", nsContext ) );
         } catch ( XMLParsingException e ) {
             LOG.error( e.getMessage(), e );
         }
@@ -360,7 +367,7 @@ public class CRSParser extends XMLFileResource {
     protected PolynomialTransformation getTransformation( OMElement transformationElement ) {
         if ( transformationElement == null ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_INVALID_NULL_PARAMETER",
-                                                                      "transformationElement" ) );
+            "transformationElement" ) );
         }
 
         // order is not evaluated yet, because I do not know if it is required.
@@ -370,7 +377,7 @@ public class CRSParser extends XMLFileResource {
         List<Double> bValues = new LinkedList<Double>();
         OMElement usedTransformation = null;
         try {
-        	usedTransformation = getRequiredElement( transformationElement, new XPath("*[1]", nsContext ) );
+            usedTransformation = getRequiredElement( transformationElement, new XPath("*[1]", nsContext ) );
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
                                                                       "the transformation to use",
@@ -380,10 +387,10 @@ public class CRSParser extends XMLFileResource {
 
         try {
             // order = XMLTools.getNodeAsInt( usedTransformation, PRE + "polynomialOrder", nsContext, -1 );
-        	tCRS = getRequiredNodeAsString( usedTransformation, new XPath( "crs: targetCRS", nsContext ) );
-        	OMElement tmp = getRequiredElement( usedTransformation, new XPath( "crs:xParameters", nsContext ) );
-        	String tmpValues = getNodeAsString( tmp, new XPath( ".", nsContext ), null );
-        	
+            tCRS = getRequiredNodeAsString( usedTransformation, new XPath( "crs: targetCRS", nsContext ) );
+            OMElement tmp = getRequiredElement( usedTransformation, new XPath( "crs:xParameters", nsContext ) );
+            String tmpValues = getNodeAsString( tmp, new XPath( ".", nsContext ), null );
+
             if ( tmpValues != null && !"".equals( tmpValues.trim() ) ) {
                 String[] split = tmpValues.split( "\\s" );
                 for ( String t : split ) {
@@ -404,17 +411,17 @@ public class CRSParser extends XMLFileResource {
 
         if ( tCRS == null ) {
             throw new CRSConfigurationException(
-                                                 Messages.getMessage(
-                                                                      "CRS_CONFIG_PARSE_ERROR",
-                                                                      "targetCRS",
-                                                                      ( ( usedTransformation == null ) ? "null"
-                                                                                                      : usedTransformation.getLocalName() ),
-                                                                      "it is required and must denote a valid crs )" ) );
+                                                Messages.getMessage(
+                                                                    "CRS_CONFIG_PARSE_ERROR",
+                                                                    "targetCRS",
+                                                                    ( ( usedTransformation == null ) ? "null"
+                                                                                                       : usedTransformation.getLocalName() ),
+                                                "it is required and must denote a valid crs )" ) );
         }
 
         if ( aValues.size() == 0 || bValues.size() == 0 ) {
             throw new CRSConfigurationException(
-                                                 "The polynomial variables (xParameters and yParameters element) defining the approximation to a given transformation function are required and may not be empty" );
+            "The polynomial variables (xParameters and yParameters element) defining the approximation to a given transformation function are required and may not be empty" );
         }
 
         CoordinateSystem targetCRS = getProvider().getCRSByID( tCRS );
@@ -436,7 +443,7 @@ public class CRSParser extends XMLFileResource {
                     if ( child != null ) {
                         String localName = child.getLocalName().trim();
                         if ( !( "targetCRS".equals( localName ) || "xParameters".equals( localName )
-                                || "yParameters".equals( localName ) || "polynomialOrder".equals( localName ) ) ) {
+                                                || "yParameters".equals( localName ) || "polynomialOrder".equals( localName ) ) ) {
                             otherValues.add( child );
                         }
                     }
@@ -476,13 +483,13 @@ public class CRSParser extends XMLFileResource {
             float scaleY = 1;
             try {
                 //scaleX = (float) XMLTools.getNodeAsDouble( usedTransformation, PRE + "scaleX", nsContext, 1 );
-            	scaleX = (float) getNodeAsDouble( usedTransformation, new XPath( "crs:scaleX", nsContext ), 1 );
+                scaleX = (float) getNodeAsDouble( usedTransformation, new XPath( "crs:scaleX", nsContext ), 1 );
             } catch ( XMLParsingException e ) {
                 LOG.error( "Could not parse scaleX from crs:leastsquare, because: " + e.getMessage(), e );
             }
             try {
                 //scaleY = (float) XMLTools.getNodeAsDouble( usedTransformation, PRE + "scaleY", nsContext, 1 );
-            	scaleY = (float) getNodeAsDouble( usedTransformation, new XPath( "crs:scaleY", nsContext ), 1 );
+                scaleY = (float) getNodeAsDouble( usedTransformation, new XPath( "crs:scaleY", nsContext ), 1 );
             } catch ( XMLParsingException e ) {
                 LOG.error( "Could not parse scaleY from crs:leastsquare, because: " + e.getMessage(), e );
             }
@@ -501,27 +508,27 @@ public class CRSParser extends XMLFileResource {
      *             if the unit object could not be created.
      */
     protected Unit parseUnit( OMElement parent )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         String unitId = null;
         try {
-        	unitId = getNodeAsString( parent, new XPath( "crs:units", nsContext ), null );
+            unitId = getNodeAsString( parent, new XPath( "crs:units", nsContext ), null );
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "units",
                                                                       ( ( parent == null ) ? "null"
-                                                                                          : parent.getLocalName() ),
-                                                                      e.getMessage() ), e );
+                                                                                             : parent.getLocalName() ),
+                                                                                             e.getMessage() ), e );
         }
         Unit result = getProvider().getCachedIdentifiable( Unit.class, unitId );
         if ( result == null ) {
             result = Unit.createUnitFromString( unitId );
             if ( result == null ) {
                 throw new CRSConfigurationException(
-                                                     Messages.getMessage(
-                                                                          "CRS_CONFIG_PARSE_ERROR",
-                                                                          "units",
-                                                                          ( ( parent == null ) ? "null"
-                                                                                              : parent.getLocalName() ),
-                                                                          "unknown unit: " + unitId ) );
+                                                    Messages.getMessage(
+                                                                        "CRS_CONFIG_PARSE_ERROR",
+                                                                        "units",
+                                                                        ( ( parent == null ) ? "null"
+                                                                                               : parent.getLocalName() ),
+                                                                                               "unknown unit: " + unitId ) );
             }
         }
         return result;
@@ -535,7 +542,7 @@ public class CRSParser extends XMLFileResource {
      *             if a required element could not be found, or an xmlParsingException occurred.
      */
     protected CoordinateSystem parseProjectedCRS( OMElement crsElement )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         if ( crsElement == null ) {
             return null;
         }
@@ -549,8 +556,8 @@ public class CRSParser extends XMLFileResource {
         OMElement usedProjection = null;
         String usedGeographicCRS = null;
         try {
-        	usedProjection = getRequiredElement( crsElement, new XPath( "crs:projection", nsContext ) );
-        	usedGeographicCRS = getRequiredNodeAsString( crsElement, new XPath( "crs:usedGeographicCRS", nsContext ) );
+            usedProjection = getRequiredElement( crsElement, new XPath( "crs:projection", nsContext ) );
+            usedGeographicCRS = getRequiredNodeAsString( crsElement, new XPath( "crs:usedGeographicCRS", nsContext ) );
 
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
@@ -561,12 +568,12 @@ public class CRSParser extends XMLFileResource {
         // first create the datum.
         if ( usedGeographicCRS == null || "".equals( usedGeographicCRS.trim() ) ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_REFERENCE_ID_IS_EMPTY",
-                                                                      "usedGeographicCRS", id.getIdentifier() ) );
+                                                                      "usedGeographicCRS", id.getCode() ) );
         }
         GeographicCRS geoCRS = (GeographicCRS) getProvider().getCRSByID( usedGeographicCRS );
         if ( geoCRS == null || geoCRS.getType() != CoordinateSystem.GEOGRAPHIC_CRS ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_FALSE_CRSREF",
-                                                                      id.getIdentifier(), usedGeographicCRS ) );
+                                                                      id.getCode(), usedGeographicCRS ) );
         }
 
         // // then the projection.
@@ -578,7 +585,7 @@ public class CRSParser extends XMLFileResource {
         Projection projection = parseProjection( usedProjection, geoCRS, axis[0].getUnits() );
         if ( projection == null ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_FALSE_PROJREF",
-                                                                      id.getIdentifier(), usedProjection ) );
+                                                                      id.getCode(), usedProjection ) );
         }
         // adding to cache will be done in AbstractCRSProvider.
         return new ProjectedCRS( transformations, projection, axis, id );
@@ -593,7 +600,7 @@ public class CRSParser extends XMLFileResource {
      *             if a required element could not be found, or an xmlParsingException occurred.
      */
     protected CoordinateSystem parseGeographicCRS( OMElement crsElement )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         if ( crsElement == null ) {
             return null;
         }
@@ -602,7 +609,7 @@ public class CRSParser extends XMLFileResource {
         Axis[] axis = parseAxisOrder( crsElement );
         List<PolynomialTransformation> transformations = parseAlternativeTransformations( crsElement );
         // get the datum
-        GeodeticDatum usedDatum = parseReferencedGeodeticDatum( crsElement, id.getIdentifier() );
+        GeodeticDatum usedDatum = parseReferencedGeodeticDatum( crsElement, id.getCode().getEquivalentString() );
 
         GeographicCRS result = new GeographicCRS( transformations, usedDatum, axis, id );
         // adding to cache will be done in AbstractCRSProvider.
@@ -617,12 +624,12 @@ public class CRSParser extends XMLFileResource {
      *             if a required element could not be found, or an xmlParsingException occurred.
      */
     protected CoordinateSystem parseGeocentricCRS( OMElement crsElement )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         // no need to get it from the cache, because the abstract provider checked it already.
         CRSIdentifiable id = parseIdentifiable( crsElement );
         Axis[] axis = parseAxisOrder( crsElement );
         List<PolynomialTransformation> transformations = parseAlternativeTransformations( crsElement );
-        GeodeticDatum usedDatum = parseReferencedGeodeticDatum( crsElement, id.getIdentifier() );
+        GeodeticDatum usedDatum = parseReferencedGeodeticDatum( crsElement, id.getCode().getEquivalentString() );
         GeocentricCRS result = new GeocentricCRS( transformations, usedDatum, axis, id );
         // adding to cache will be done in AbstractCRSProvider.
         return result;
@@ -641,35 +648,35 @@ public class CRSParser extends XMLFileResource {
         CRSIdentifiable id = parseIdentifiable( crsElement );
         String usedCRS = null;
         try {
-        	usedCRS = getRequiredNodeAsString( crsElement, new XPath( "crs:usedCRS", nsContext ) );
+            usedCRS = getRequiredNodeAsString( crsElement, new XPath( "crs:usedCRS", nsContext ) );
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException(
-                                                 Messages.getMessage(
-                                                                      "CRS_CONFIG_PARSE_ERROR",
-                                                                      "usedCRS",
-                                                                      ( ( crsElement == null ) ? "null"
-                                                                                              : crsElement.getLocalName() ),
-                                                                      e.getMessage() ), e );
+                                                Messages.getMessage(
+                                                                    "CRS_CONFIG_PARSE_ERROR",
+                                                                    "usedCRS",
+                                                                    ( ( crsElement == null ) ? "null"
+                                                                                               : crsElement.getLocalName() ),
+                                                                                               e.getMessage() ), e );
 
         }
         if ( usedCRS == null || "".equals( usedCRS.trim() ) ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_REFERENCE_ID_IS_EMPTY", "usedCRS",
-                                                                      id.getIdentifier() ) );
+                                                                      id.getCode() ) );
         }
         CoordinateSystem usedCoordinateSystem = getProvider().getCRSByID( usedCRS );
         if ( usedCoordinateSystem == null
-             || ( usedCoordinateSystem.getType() != CoordinateSystem.GEOGRAPHIC_CRS && usedCoordinateSystem.getType() != CoordinateSystem.PROJECTED_CRS ) ) {
+                                || ( usedCoordinateSystem.getType() != CoordinateSystem.GEOGRAPHIC_CRS && usedCoordinateSystem.getType() != CoordinateSystem.PROJECTED_CRS ) ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_COMPOUND_FALSE_CRSREF",
-                                                                      id.getIdentifier(), usedCRS ) );
+                                                                      id.getCode(), usedCRS ) );
         }
 
         // get the datum
         Axis heigtAxis = null;
         double defaultHeight = 0;
         try {
-        	OMElement axisElement = getRequiredElement( crsElement, new XPath( "crs:heightAxis", nsContext ) );
-        	String axisName = getRequiredNodeAsString( axisElement, new XPath( "crs:name", nsContext ) );
-        	String axisOrientation = getRequiredNodeAsString( axisElement, new XPath( "crs:axisOrientation", nsContext ) );
+            OMElement axisElement = getRequiredElement( crsElement, new XPath( "crs:heightAxis", nsContext ) );
+            String axisName = getRequiredNodeAsString( axisElement, new XPath( "crs:name", nsContext ) );
+            String axisOrientation = getRequiredNodeAsString( axisElement, new XPath( "crs:axisOrientation", nsContext ) );
             Unit unit = parseUnit( axisElement );
             heigtAxis = new Axis( unit, axisName, axisOrientation );
             defaultHeight = getNodeAsDouble( crsElement, new XPath( "crs:defaultHeight", nsContext ), 0 );
@@ -694,18 +701,18 @@ public class CRSParser extends XMLFileResource {
      *             given.
      */
     protected GeodeticDatum parseReferencedGeodeticDatum( OMElement parentElement, String parentID )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         String datumID = null;
         try {
-        	datumID = getRequiredNodeAsString( parentElement, new XPath( "crs:usedDatum", nsContext ) );
+            datumID = getRequiredNodeAsString( parentElement, new XPath( "crs:usedDatum", nsContext ) );
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException(
-                                                 Messages.getMessage(
-                                                                      "CRS_CONFIG_PARSE_ERROR",
-                                                                      "datumID",
-                                                                      ( ( parentElement == null ) ? "null"
-                                                                                                 : parentElement.getLocalName() ),
-                                                                      e.getMessage() ), e );
+                                                Messages.getMessage(
+                                                                    "CRS_CONFIG_PARSE_ERROR",
+                                                                    "datumID",
+                                                                    ( ( parentElement == null ) ? "null"
+                                                                                                  : parentElement.getLocalName() ),
+                                                                                                  e.getMessage() ), e );
         }
         if ( datumID == null || "".equals( datumID.trim() ) ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_REFERENCE_ID_IS_EMPTY", "usedDatum",
@@ -714,7 +721,7 @@ public class CRSParser extends XMLFileResource {
         GeodeticDatum usedDatum = getGeodeticDatumFromID( datumID );
         if ( usedDatum == null ) {
             throw new CRSConfigurationException(
-                                                 Messages.getMessage( "CRS_CONFIG_USEDDATUM_IS_NULL", datumID, parentID ) );
+                                                Messages.getMessage( "CRS_CONFIG_USEDDATUM_IS_NULL", datumID, parentID ) );
         }
         return usedDatum;
     }
@@ -725,7 +732,7 @@ public class CRSParser extends XMLFileResource {
      * @throws CRSConfigurationException
      */
     protected GeodeticDatum getGeodeticDatumFromID( String datumID )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         if ( datumID == null || "".equals( datumID.trim() ) ) {
             return null;
         }
@@ -747,15 +754,15 @@ public class CRSParser extends XMLFileResource {
             // get the ellipsoid.
             Ellipsoid ellipsoid = null;
             try {
-            	String ellipsID = getRequiredNodeAsString( datumElement, new XPath( "crs: usedEllipsoid", nsContext ) );
+                String ellipsID = getRequiredNodeAsString( datumElement, new XPath( "crs: usedEllipsoid", nsContext ) );
                 if ( ellipsID != null && !"".equals( ellipsID.trim() ) ) {
                     ellipsoid = getEllipsoidFromID( ellipsID );
                 }
             } catch ( XMLParsingException e ) {
                 throw new CRSConfigurationException(
-                                                     Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "usedEllipsoid",
-                                                                          datumElement.getLocalName(), e.getMessage() ),
-                                                     e );
+                                                    Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "usedEllipsoid",
+                                                                         datumElement.getLocalName(), e.getMessage() ),
+                                                                         e );
             }
             if ( ellipsoid == null ) {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_DATUM_HAS_NO_ELLIPSOID",
@@ -765,7 +772,7 @@ public class CRSParser extends XMLFileResource {
             // get the primemeridian if any.
             PrimeMeridian pMeridian = null;
             try {
-            	String pMeridianID = getNodeAsString( datumElement, new XPath( "crs:usedPrimeMeridian", nsContext), null );
+                String pMeridianID = getNodeAsString( datumElement, new XPath( "crs:usedPrimeMeridian", nsContext), null );
                 if ( pMeridianID != null && !"".equals( pMeridianID.trim() ) ) {
                     pMeridian = getPrimeMeridianFromID( pMeridianID );
                 }
@@ -774,17 +781,17 @@ public class CRSParser extends XMLFileResource {
                 }
             } catch ( XMLParsingException e ) {
                 throw new CRSConfigurationException(
-                                                     Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
-                                                                          "usedPrimeMeridian",
-                                                                          datumElement.getLocalName(), e.getMessage() ),
-                                                     e );
+                                                    Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
+                                                                         "usedPrimeMeridian",
+                                                                         datumElement.getLocalName(), e.getMessage() ),
+                                                                         e );
             }
 
             // get the WGS84 if any.
             Helmert cInfo = null;
             try {
-            	String infoID = getNodeAsString( datumElement, new XPath( "crs:usedWGS84ConversionInfo", nsContext ), null );
-                                                          
+                String infoID = getNodeAsString( datumElement, new XPath( "crs:usedWGS84ConversionInfo", nsContext ), null );
+
                 if ( infoID != null && !"".equals( infoID.trim() ) ) {
                     cInfo = getConversionInfoFromID( infoID );
                 }
@@ -793,13 +800,13 @@ public class CRSParser extends XMLFileResource {
                 // }
             } catch ( XMLParsingException e ) {
                 throw new CRSConfigurationException(
-                                                     Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
-                                                                          "wgs84ConversionInfo",
-                                                                          datumElement.getLocalName(), e.getMessage() ),
-                                                     e );
+                                                    Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
+                                                                         "wgs84ConversionInfo",
+                                                                         datumElement.getLocalName(), e.getMessage() ),
+                                                                         e );
             }
 
-            result = new GeodeticDatum( ellipsoid, pMeridian, cInfo, id.getIdentifiers(), id.getNames(),
+            result = new GeodeticDatum( ellipsoid, pMeridian, cInfo, id.getCodes(), id.getNames(),
                                         id.getVersions(), id.getDescriptions(), id.getAreasOfUse() );
         }
         return getProvider().addIdToCache( result, false );
@@ -814,7 +821,7 @@ public class CRSParser extends XMLFileResource {
      *             if the longitude was not set or the units could not be parsed.
      */
     protected PrimeMeridian getPrimeMeridianFromID( String meridianID )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         if ( meridianID == null || "".equals( meridianID.trim() ) ) {
             return null;
         }
@@ -834,7 +841,7 @@ public class CRSParser extends XMLFileResource {
             Unit units = parseUnit( meridianElement );
             double longitude = 0;
             try {
-            	longitude = getRequiredNodeAsDouble( meridianElement, new XPath( "crs:longitude", nsContext ) );
+                longitude = getRequiredNodeAsDouble( meridianElement, new XPath( "crs:longitude", nsContext ) );
                 boolean inDegrees = getNodeAsBoolean( meridianElement, new XPath( "crs:longitude/@inDegrees", nsContext ), true );
                 longitude = ( longitude != 0 && inDegrees ) ? Math.toRadians( longitude ) : longitude;
             } catch ( XMLParsingException e ) {
@@ -857,7 +864,7 @@ public class CRSParser extends XMLFileResource {
      *             if something went wrong.
      */
     protected Ellipsoid getEllipsoidFromID( String ellipsoidID )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         if ( ellipsoidID == null || "".equals( ellipsoidID.trim() ) ) {
             return null;
         }
@@ -882,10 +889,10 @@ public class CRSParser extends XMLFileResource {
             double semiMinorAxis = Double.NaN;
 
             try {
-            	semiMajor = getRequiredNodeAsDouble( ellipsoidElement, new XPath( "crs:semiMajorAxis", nsContext ) );
-            	inverseFlattening = getNodeAsDouble( ellipsoidElement, new XPath( "crs:inverseFlattening", nsContext ), Double.NaN );
-            	eccentricity = getNodeAsDouble( ellipsoidElement, new XPath( "crs:eccentricity", nsContext ), Double.NaN );
-            	semiMinorAxis = getNodeAsDouble( ellipsoidElement, new XPath( "crs:semiMinorAxis", nsContext ), Double.NaN );
+                semiMajor = getRequiredNodeAsDouble( ellipsoidElement, new XPath( "crs:semiMajorAxis", nsContext ) );
+                inverseFlattening = getNodeAsDouble( ellipsoidElement, new XPath( "crs:inverseFlattening", nsContext ), Double.NaN );
+                eccentricity = getNodeAsDouble( ellipsoidElement, new XPath( "crs:eccentricity", nsContext ), Double.NaN );
+                semiMinorAxis = getNodeAsDouble( ellipsoidElement, new XPath( "crs:semiMinorAxis", nsContext ), Double.NaN );
             } catch ( XMLParsingException e ) {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PARSE_ERROR", "ellipsoid",
                                                                           ellipsoidElement.getLocalName(),
@@ -896,13 +903,13 @@ public class CRSParser extends XMLFileResource {
                                                                           ellipsoidID ) );
             }
             if ( !Double.isNaN( inverseFlattening ) ) {
-                result = new Ellipsoid( semiMajor, units, inverseFlattening, id.getIdentifiers(), id.getNames(),
+                result = new Ellipsoid( semiMajor, units, inverseFlattening, id.getCodes(), id.getNames(),
                                         id.getVersions(), id.getDescriptions(), id.getAreasOfUse() );
             } else if ( !Double.isNaN( eccentricity ) ) {
-                result = new Ellipsoid( semiMajor, eccentricity, units, id.getIdentifiers(), id.getNames(),
+                result = new Ellipsoid( semiMajor, eccentricity, units, id.getCodes(), id.getNames(),
                                         id.getVersions(), id.getDescriptions(), id.getAreasOfUse() );
             } else {
-                result = new Ellipsoid( units, semiMajor, semiMinorAxis, id.getIdentifiers(), id.getNames(),
+                result = new Ellipsoid( units, semiMajor, semiMinorAxis, id.getCodes(), id.getNames(),
                                         id.getVersions(), id.getDescriptions(), id.getAreasOfUse() );
             }
         }
@@ -917,7 +924,7 @@ public class CRSParser extends XMLFileResource {
      * @throws CRSConfigurationException
      */
     protected Helmert getConversionInfoFromID( String infoID )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         if ( infoID == null || "".equals( infoID.trim() ) ) {
             return null;
         }
@@ -938,7 +945,7 @@ public class CRSParser extends XMLFileResource {
             CRSIdentifiable identifiable = parseIdentifiable( cInfoElement );
             double xT = 0, yT = 0, zT = 0, xR = 0, yR = 0, zR = 0, scale = 0;
             try {
-            	xT = getNodeAsDouble( cInfoElement, new XPath( "crs:xAxisTranslation", nsContext ), 0 );
+                xT = getNodeAsDouble( cInfoElement, new XPath( "crs:xAxisTranslation", nsContext ), 0 );
                 yT = getNodeAsDouble( cInfoElement, new XPath( "crs:yAxisTranslation", nsContext ), 0 );
                 zT = getNodeAsDouble( cInfoElement, new XPath( "crs:zAxisTranslation", nsContext ), 0 );
                 xR = getNodeAsDouble( cInfoElement, new XPath( "crs:xAxisRotation", nsContext ), 0 );
@@ -967,25 +974,25 @@ public class CRSParser extends XMLFileResource {
      * @throws CRSConfigurationException
      */
     protected Projection parseProjection( OMElement projectionElement, GeographicCRS underlyingCRS, Unit units )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         if ( projectionElement == null ) {
             throw new CRSConfigurationException(
-                                                 Messages.getMessage( "CRS_INVALID_NULL_PARAMETER", "projectionElement" ) );
+                                                Messages.getMessage( "CRS_INVALID_NULL_PARAMETER", "projectionElement" ) );
         }
         try {
-        	OMElement usedProjection = getRequiredElement( projectionElement, new XPath( "*[1]", nsContext ) );
+            OMElement usedProjection = getRequiredElement( projectionElement, new XPath( "*[1]", nsContext ) );
             // All projections will have following parameters
-        	double latitudeOfNaturalOrigin = getNodeAsDouble( usedProjection, new XPath( "crs:latitudeOfNaturalOrigin", nsContext ), 0 );
-        	boolean inDegrees = getNodeAsBoolean( usedProjection, new XPath( "crs:latitudeOfNaturalOrigin/@inDegrees",
-                                                           nsContext ), true );
+            double latitudeOfNaturalOrigin = getNodeAsDouble( usedProjection, new XPath( "crs:latitudeOfNaturalOrigin", nsContext ), 0 );
+            boolean inDegrees = getNodeAsBoolean( usedProjection, new XPath( "crs:latitudeOfNaturalOrigin/@inDegrees",
+                                                                             nsContext ), true );
             latitudeOfNaturalOrigin = ( latitudeOfNaturalOrigin != 0 && inDegrees ) ? Math.toRadians( latitudeOfNaturalOrigin )
-                                                                                   : latitudeOfNaturalOrigin;
+                                                                                    : latitudeOfNaturalOrigin;
 
             double longitudeOfNaturalOrigin = getNodeAsDouble( usedProjection, new XPath( 
-            																			"crs:longitudeOfNaturalOrigin", nsContext ), 0 );
+                                                                                         "crs:longitudeOfNaturalOrigin", nsContext ), 0 );
             inDegrees = getNodeAsBoolean( usedProjection, new XPath( "crs:longitudeOfNaturalOrigin/@inDegrees", nsContext), true );
             longitudeOfNaturalOrigin = ( longitudeOfNaturalOrigin != 0 && inDegrees ) ? Math.toRadians( longitudeOfNaturalOrigin )
-                                                                                     : longitudeOfNaturalOrigin;
+                                                                                      : longitudeOfNaturalOrigin;
 
             double scaleFactor = getNodeAsDouble( usedProjection, new XPath( "crs:scaleFactor", nsContext ), 0 );
             double falseEasting = getNodeAsDouble( usedProjection, new XPath( "crs:falseEasting", nsContext ), 0 );
@@ -1014,8 +1021,8 @@ public class CRSParser extends XMLFileResource {
                         if ( child != null ) {
                             String localName = child.getLocalName().trim();
                             if ( !( "latitudeOfNaturalOrigin".equals( localName )
-                                    || "longitudeOfNaturalOrigin".equals( localName )
-                                    || "scaleFactor".equals( localName ) || "falseEasting".equals( localName ) || "falseNorthing".equals( localName ) ) ) {
+                                                    || "longitudeOfNaturalOrigin".equals( localName )
+                                                    || "scaleFactor".equals( localName ) || "falseEasting".equals( localName ) || "falseNorthing".equals( localName ) ) ) {
                                 otherValues.add( child );
                             }
                         }
@@ -1050,15 +1057,15 @@ public class CRSParser extends XMLFileResource {
                 // no selfdefined projection, try one of the following, for the projection specific parameters, if any.
                 if ( "transverseMercator".equalsIgnoreCase( projectionName ) ) {
                     // change schema to let projection be identifiable. fix method geodetic
-                	boolean northernHemi = getNodeAsBoolean( usedProjection, new XPath( "crs:northernHemisphere", nsContext ), true );
+                    boolean northernHemi = getNodeAsBoolean( usedProjection, new XPath( "crs:northernHemisphere", nsContext ), true );
                     result = new TransverseMercator( northernHemi, underlyingCRS, falseNorthing, falseEasting,
                                                      naturalOrigin, units, scaleFactor );
                 } else if ( "lambertAzimuthalEqualArea".equalsIgnoreCase( projectionName ) ) {
                     result = new LambertAzimuthalEqualArea( underlyingCRS, falseNorthing, falseEasting, naturalOrigin,
                                                             units, scaleFactor );
                 } else if ( "lambertConformalConic".equalsIgnoreCase( projectionName ) ) {
-                	double firstP = getNodeAsDouble( usedProjection, new XPath( "crs:firstParallelLatitude", nsContext ), Double.NaN );
-                	inDegrees = getNodeAsBoolean( usedProjection, new XPath( "crs:firstParallelLatitude/@inDegrees", nsContext ), true );
+                    double firstP = getNodeAsDouble( usedProjection, new XPath( "crs:firstParallelLatitude", nsContext ), Double.NaN );
+                    inDegrees = getNodeAsBoolean( usedProjection, new XPath( "crs:firstParallelLatitude/@inDegrees", nsContext ), true );
                     firstP = ( !Double.isNaN( firstP ) && inDegrees ) ? Math.toRadians( firstP ) : firstP;
 
                     double secondP = getNodeAsDouble( usedProjection, new XPath( "crs:secondParallelLatitude", nsContext ), Double.NaN );
@@ -1067,10 +1074,10 @@ public class CRSParser extends XMLFileResource {
                     result = new LambertConformalConic( firstP, secondP, underlyingCRS, falseNorthing, falseEasting,
                                                         naturalOrigin, units, scaleFactor );
                 } else if ( "stereographicAzimuthal".equalsIgnoreCase( projectionName ) ) {
-                	double trueScaleL = getNodeAsDouble( usedProjection, new XPath( "crs:trueScaleLatitude", nsContext ), Double.NaN );
-                	inDegrees = getNodeAsBoolean( usedProjection, new XPath( "crs:trueScaleLatitude/@inDegrees", nsContext ), true );
+                    double trueScaleL = getNodeAsDouble( usedProjection, new XPath( "crs:trueScaleLatitude", nsContext ), Double.NaN );
+                    inDegrees = getNodeAsBoolean( usedProjection, new XPath( "crs:trueScaleLatitude/@inDegrees", nsContext ), true );
                     trueScaleL = ( !Double.isNaN( trueScaleL ) && inDegrees ) ? Math.toRadians( trueScaleL )
-                                                                             : trueScaleL;
+                                                                              : trueScaleL;
                     result = new StereographicAzimuthal( trueScaleL, underlyingCRS, falseNorthing, falseEasting,
                                                          naturalOrigin, units, scaleFactor );
                 } else if ( "StereographicAlternative".equalsIgnoreCase( projectionName ) ) {
@@ -1078,20 +1085,20 @@ public class CRSParser extends XMLFileResource {
                                                            units, scaleFactor );
                 } else {
                     throw new CRSConfigurationException(
-                                                         Messages.getMessage(
-                                                                              "CRS_CONFIG_PROJECTEDCRS_INVALID_PROJECTION",
-                                                                              projectionName,
-                                                                              "StereographicAlternative, stereographicAzimuthal, lambertConformalConic, lambertAzimuthalEqualArea, transverseMercator" ) );
+                                                        Messages.getMessage(
+                                                                            "CRS_CONFIG_PROJECTEDCRS_INVALID_PROJECTION",
+                                                                            projectionName,
+                                                        "StereographicAlternative, stereographicAzimuthal, lambertConformalConic, lambertAzimuthalEqualArea, transverseMercator" ) );
 
                 }
             }
             return result;
         } catch ( XMLParsingException e ) {
             throw new CRSConfigurationException(
-                                                 Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
-                                                                      "projection parameters",
-                                                                      projectionElement.getLocalName(), e.getMessage() ),
-                                                 e );
+                                                Messages.getMessage( "CRS_CONFIG_PARSE_ERROR",
+                                                                     "projection parameters",
+                                                                     projectionElement.getLocalName(), e.getMessage() ),
+                                                                     e );
 
         }
     }
@@ -1108,17 +1115,17 @@ public class CRSParser extends XMLFileResource {
      * @return the cached T if found or the given identifiable.
      */
     protected <T extends CRSIdentifiable> T checkForUniqueness( List<T> uniqueList, Map<String, String> mapping,
-                                                             T toBeChecked ) {
+                                                                T toBeChecked ) {
         T result = toBeChecked;
         if ( uniqueList.contains( toBeChecked ) ) {
             int index = uniqueList.indexOf( toBeChecked );
-            LOG.info( "The CRSIdentifiable with id: " + toBeChecked.getIdentifier() + " was found to be equal with: "
-                      + uniqueList.get( index ).getIdentifier() );
-            String key = uniqueList.get( index ).getIdentifier();
+            LOG.info( "The CRSIdentifiable with id: " + toBeChecked.getCode() + " was found to be equal with: "
+                      + uniqueList.get( index ).getCode() );
+            String key = uniqueList.get( index ).getCode().getEquivalentString();
             boolean updatedEPSG = false;
             if ( key != null && !"".equals( key.trim() ) ) {
                 String value = mapping.get( key );
-                String tbcID = toBeChecked.getIdentifier().toUpperCase();
+                String tbcID = toBeChecked.getCode().getEquivalentString().toUpperCase();
                 // it would be nicest to get the epsg code if any.
                 if ( !key.toUpperCase().startsWith( "EPSG:" ) && tbcID.startsWith( "EPSG:" ) ) {
                     if ( value == null || "".equals( value ) ) {
@@ -1128,12 +1135,12 @@ public class CRSParser extends XMLFileResource {
                     }
                     updatedEPSG = true;
                     mapping.remove( key );
-                    key = toBeChecked.getIdentifier();
+                    key = toBeChecked.getCode().getEquivalentString();
                 } else {
                     if ( value == null || "".equals( value ) ) {
-                        value = toBeChecked.getIdentifier();
+                        value = toBeChecked.getCode().getEquivalentString();
                     } else {
-                        value += ", " + toBeChecked.getIdentifier();
+                        value += ", " + toBeChecked.getCode();
                     }
                 }
                 mapping.put( key, value );
@@ -1146,7 +1153,7 @@ public class CRSParser extends XMLFileResource {
                 result = uniqueList.get( index );
             }
         } else {
-            LOG.debug( "Adding: " + toBeChecked.getIdentifier() + " to cache." );
+            LOG.debug( "Adding: " + toBeChecked.getCode() + " to cache." );
             uniqueList.add( toBeChecked );
         }
         return result;
@@ -1195,7 +1202,7 @@ public class CRSParser extends XMLFileResource {
                 } else if ( localName.equals( "geodeticDatum" ) ) {
                     result = getGeodeticDatumFromID( id );
                 } else if ( localName.equals( "projectedCRS" ) || localName.equals( "geographicCRS" )
-                            || localName.equals( "compoundCRS" ) || localName.equals( "geocentricCRS" ) ) {
+                                        || localName.equals( "compoundCRS" ) || localName.equals( "geocentricCRS" ) ) {
                     result = getProvider().getCRSByID( id );
                 } else if ( localName.equals( "primeMeridian" ) ) {
                     result = getPrimeMeridianFromID( id );
@@ -1206,4 +1213,39 @@ public class CRSParser extends XMLFileResource {
         }
         return result;
     }
+
+    public List<String> getAvailableCRSIds() throws CRSConfigurationException {
+        List<OMElement> allCRSIDs = getAvailableCRSs();
+        List<String> result = new LinkedList<String>();
+        for ( OMElement crs : allCRSIDs ) {
+            if ( crs != null ) {
+                result.add( getNodeAsString(crs, new XPath( ".", nsContext), null ) );
+            }
+        }
+        return result;
+    }
+
+    public List<OMElement> getAvailableCRSs() throws CRSConfigurationException {
+        List<OMElement> allCRSIDs = new LinkedList<OMElement>();
+        if ( getRootElement() != null ) {
+            try {
+                allCRSIDs.addAll( getElements( getRootElement(), new XPath( "//" + PRE + "geographicCRS/" 
+                                                                            + PRE + "id", nsContext ) ) );
+                allCRSIDs.addAll( getElements( getRootElement(), new XPath( "//" + PRE + "projectedCRS/"
+                                                                            + PRE + "id", nsContext ) ) );
+                allCRSIDs.addAll( getElements( getRootElement(), new XPath( "//" + PRE + "geocentricCRS/"
+                                                                            + PRE + "id", nsContext ) ) );
+                allCRSIDs.addAll( getElements( getRootElement(), new XPath( "//" + PRE + "compoundCRS/"
+                                                                            + PRE + "id", nsContext ) ) );
+            } catch ( XMLParsingException e ) {
+                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_GET_ALL_ELEMENT_IDS",
+                                                                          e.getMessage() ), e );
+            }
+
+        } else {
+            LOG.debug( "The root element is null, is this correct behaviour?" );
+        }
+        return allCRSIDs;
+    }
+
 }

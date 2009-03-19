@@ -38,6 +38,9 @@
 
 package org.deegree.model.crs.components;
 
+import org.deegree.model.crs.CRSCodeType;
+import org.deegree.model.crs.CRSIdentifiable;
+
 /**
  * The <code>Axis</code> class describe the orientation, unit and the name of a crs-axis.
  * 
@@ -49,7 +52,7 @@ package org.deegree.model.crs.components;
  * 
  */
 
-public class Axis {
+public class Axis extends CRSIdentifiable {
 
     /**
      * Axis is pointing NORTH ( == -SOUTH) e.g Polar axis positive northwards.
@@ -104,7 +107,7 @@ public class Axis {
 
     private Unit units;
 
-    private String name;
+    private String axisName;
 
     private int orientation;
 
@@ -116,16 +119,16 @@ public class Axis {
      * @param orientation
      *            of the positive scale direction, one of Axis.AO*. If an unknown value is supplied AO_OTHER is assumed.
      */
-    public Axis( Unit units, String name, final int orientation ) {
+    public Axis( Unit units, String axisName, final int orientation ) {
+        super( new CRSCodeType[] { CRSCodeType.valueOf( "no-id-for-this-axis " + axisName + orientation + units.getName()) } , new String[] { axisName }, new String[] { }, new String[] { }, new String[] { } );
         this.units = units;
-        this.name = name;
+        this.axisName = axisName;
         this.orientation = orientation;
         if ( orientation != AO_NORTH && orientation != AO_SOUTH && orientation != AO_WEST && orientation != AO_EAST
              && orientation != AO_UP && orientation != AO_DOWN && orientation != AO_FRONT && orientation != AO_BACK
              && orientation != AO_PERPENDICULAR ) {
             this.orientation = AO_OTHER;
         }
-
     }
 
     /**
@@ -139,9 +142,10 @@ public class Axis {
      * @param orientation
      *            of the axis as a string for example north
      */
-    public Axis( Unit units, String name, String orientation ) {
+    public Axis( Unit units, String axisName, String orientation ) {
+        super( new CRSCodeType[] { CRSCodeType.valueOf( "no-id-for-this-axis " + axisName + orientation + units.getName() ) } , new String[] { axisName }, new String[] { }, new String[] { }, new String[] { } );
         this.units = units;
-        this.name = name;
+        this.axisName = axisName;
         this.orientation = AO_OTHER;
         if ( orientation != null ) {
             String tmp = orientation.trim().toLowerCase();
@@ -192,12 +196,12 @@ public class Axis {
         this( Unit.METRE, name, orientation );
     }
 
-    /**
-     * @return the name.
-     */
-    public final String getName() {
-        return name;
-    }
+//    /**
+//     * @return the name.
+//     */
+//    public final String getName() {
+//        return name;
+//    }
 
     /**
      * @return the orientation.
@@ -215,7 +219,7 @@ public class Axis {
 
     @Override
     public String toString() {
-        return new StringBuilder( "name: " ).append( name ).append( " orientation: " ).append( getOrientationAsString() ).append(
+        return new StringBuilder( "name: " ).append( axisName ).append( " orientation: " ).append( getOrientationAsString() ).append(
                                                                                                                                   " units: " ).append(
                                                                                                                                                        units ).toString();
     }

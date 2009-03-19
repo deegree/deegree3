@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.GeodeticDatum;
 import org.deegree.model.crs.configuration.resources.CRSResource;
@@ -85,7 +86,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( AbstractCRSProvider.class );
 
-    private static Map<String, CRSIdentifiable> cachedIdentifiables = new HashMap<String, CRSIdentifiable>( 42124 );
+    private static Map<CRSCodeType, CRSIdentifiable> cachedIdentifiables = new HashMap<CRSCodeType, CRSIdentifiable>( 42124 );
 
     private CRSResource<T> resolver;
 
@@ -181,10 +182,10 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
             }
             if ( cachedIdentifiables.containsKey( id ) ) {
                 CRSIdentifiable r = cachedIdentifiables.get( id );
-                LOG.debug( "Found CRSIdentifiable: " + r.getIdAndName() + " from given id: " + id );
+                LOG.debug( "Found CRSIdentifiable: " + r.getCodeAndName() + " from given id: " + id );
                 if ( !( r instanceof CoordinateSystem ) ) {
-                    LOG.error( "Found CRSIdentifiable: " + r.getIdAndName()
-                                  + " but it is not a coordinate system, your db is inconsistend return null." );
+                    LOG.error( "Found CRSIdentifiable: " + r.getCodeAndName()
+                                  + " but it is not a coordinate system, your db is inconsistent return null." );
                     r = null;
                 }
                 result = (CoordinateSystem) r;
@@ -254,11 +255,15 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
             } else if ( result.getType() == CoordinateSystem.PROJECTED_CRS ) {
                 addIdToCache( ( (ProjectedCRS) result ).getGeographicCRS(), false );
             }
-
         }
         return result;
-
     }
+    
+    public CoordinateSystem getCRSByID( CRSCodeType id )
+                            throws CRSConfigurationException {
+       return getCRSByID( id.getCodeSpace() + ":" + id.getCode() ); 
+    }
+
 
     /**
      * Set the resolver to the given resolver.
@@ -314,7 +319,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         if ( ids == null ) {
             return null;
         }
-        return getCachedIdentifiable( expectedType, ids.getIdentifiers() );
+        return getCachedIdentifiable( expectedType, ids.getCodes() );
     }
 
     /**
@@ -337,12 +342,27 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
             result = getCachedIdentifiable( expectedType, ids[i] );
             if ( LOG.isDebugEnabled() ) {
                 LOG.debug( "Searched for id: " + ids[i] + " resulted in: "
-                              + ( ( result == null ) ? "null" : result.getIdentifier() ) );
+                              + ( ( result == null ) ? "null" : result.getCode() ) );
             }
         }
         return result;
     }
 
+    public <V extends CRSIdentifiable> V getCachedIdentifiable( Class<V> expectedType, CRSCodeType[] ids ) {
+        if ( ids == null || ids.length == 0 ) {
+            return null;
+        }
+        V result = null;
+        for ( int i = 0; i < ids.length && result == null; i++ ) {
+            result = getCachedIdentifiable( expectedType, ids[i] );
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "Searched for id: " + ids[i] + " resulted in: "
+                              + ( ( result == null ) ? "null" : result.getCode() ) );
+            }
+        }
+        return result;
+    }
+    
     /**
      * The id is as it is, not trimming 'upcasing' or other modifications will be done in this method.
      * 
@@ -369,7 +389,27 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Searched for id: " + id + " resulted in: "
-                          + ( ( result == null ) ? "null" : result.getIdentifier() ) );
+                          + ( ( result == null ) ? "null" : result.getCode() ) );
+        }
+        return result;
+    }
+    
+    // TODO add doc and replace the String-parameter version of it
+    @SuppressWarnings("unchecked")
+    public <V extends CRSIdentifiable> V getCachedIdentifiable( Class<V> expectedType, CRSCodeType id ) {
+        if ( id == null ) {
+            return null;
+        }
+        V result = null;
+        try {
+            result = (V) cachedIdentifiables.get( id );
+        } catch ( ClassCastException cce ) {
+            LOG.error( "Given id is not of type: " + expectedType.getCanonicalName() + " found following error: "
+                          + cce.getLocalizedMessage() );
+        }
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( "Searched for id: " + id + " resulted in: "
+                          + ( ( result == null ) ? "null" : result.getCode() ) );
         }
         return result;
     }
@@ -392,7 +432,20 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         V result = (V) cachedIdentifiables.get( id );
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Searched for id: " + id + " resulted in: "
-                          + ( ( result == null ) ? "null" : result.getIdentifier() ) );
+                          + ( ( result == null ) ? "null" : result.getCode() ) );
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public <V extends CRSIdentifiable> V getCachedIdentifiable( CRSCodeType id ) {
+        if ( id == null ) {
+            return null;
+        }
+        V result = (V) cachedIdentifiables.get( id );
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( "Searched for id: " + id + " resulted in: "
+                          + ( ( result == null ) ? "null" : result.getCode() ) );
         }
         return result;
     }
@@ -412,9 +465,9 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         if ( identifiable == null ) {
             return null;
         }
-
-        for ( String idString : identifiable.getIdentifiers() ) {
-            if ( idString != null && !"".equals( idString.trim() ) ) {
+        for ( CRSCodeType idString : identifiable.getCodes() ) {
+//            if ( idString != null && !"".equals( idString.trim() ) ) {
+            if ( idString != null ) {
                 if ( cachedIdentifiables.containsKey( idString ) && cachedIdentifiables.get( idString ) != null ) {
                     if ( update ) {
                         LOG.debug( "Updating cache with new identifiable: " + idString );
@@ -426,7 +479,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
                 }
             } else {
                 LOG.warn( "Not adding the null string id to the cache of identifiable: "
-                                + identifiable.getIdentifier() );
+                                + identifiable.getCode() );
             }
 
         }
@@ -619,17 +672,17 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * 
-     * @param identifiers
+     * @param codes
      *            to check for.
      * @return a mapped projection or {@link SupportedProjections#NOT_SUPPORTED}, never <code>null</code>
      */
-    protected SupportedProjections mapProjections( String[] identifiers ) {
-        if ( identifiers == null || identifiers.length == 0 ) {
+    protected SupportedProjections mapProjections( CRSCodeType[] codes ) {
+        if ( codes == null || codes.length == 0 ) {
             return SupportedProjections.NOT_SUPPORTED;
         }
-        for ( String id : identifiers ) {
-            if ( id != null && !"".equals( id.trim() ) ) {
-                String compare = id.trim();
+        for ( CRSCodeType code : codes ) {
+            if ( code != null ) {
+                String compare = code.getEquivalentString();
                 if ( "TransverseMercator".equalsIgnoreCase( compare )
                      || "Transverse Merctator".equalsIgnoreCase( compare )
                      || matchEPSGString( compare, "method", "9807" ) ) {
@@ -663,18 +716,18 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * 
-     * @param identifiers
+     * @param codes
      *            to check for.
      * @return a mapped projections parameters or {@link SupportedProjectionParameters#NOT_SUPPORTED}, never
      *         <code>null</code>
      */
-    protected SupportedProjectionParameters mapProjectionParameters( String[] identifiers ) {
-        if ( identifiers == null || identifiers.length == 0 ) {
+    protected SupportedProjectionParameters mapProjectionParameters( CRSCodeType[] codes ) {
+        if ( codes == null || codes.length == 0 ) {
             return SupportedProjectionParameters.NOT_SUPPORTED;
         }
-        for ( String name : identifiers ) {
-            if ( name != null && !"".equals( name.trim() ) ) {
-                String compare = name.trim();
+        for ( CRSCodeType name : codes ) {
+            if ( name != null ) {
+                String compare = name.getEquivalentString();
                 if ( "Latitude of natural origin".equalsIgnoreCase( compare )
                      || "Latitude of false origin".equalsIgnoreCase( compare )
                      || "central latitude".equalsIgnoreCase( compare )
@@ -734,17 +787,17 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * 
-     * @param identifiers
+     * @param codes
      *            to check for.
      * @return a mapped transformation or {@link SupportedTransformations#NOT_SUPPORTED}, never <code>null</code>
      */
-    protected SupportedTransformations mapTransformation( String[] identifiers ) {
-        if ( identifiers == null || identifiers.length == 0 ) {
+    protected SupportedTransformations mapTransformation( CRSCodeType[] codes ) {
+        if ( codes == null || codes.length == 0 ) {
             return SupportedTransformations.NOT_SUPPORTED;
         }
-        for ( String id : identifiers ) {
-            if ( id != null && !"".equals( id.trim() ) ) {
-                String compare = id.trim();
+        for ( CRSCodeType code : codes ) {
+            if ( code != null ) {
+                String compare = code.getEquivalentString();
                 if ( "Longitude rotation".equalsIgnoreCase( compare ) || matchEPSGString( compare, "method", "9601" ) ) {
                     return SupportedTransformations.LONGITUDE_ROTATION;
                 } else if ( "Geographic/geocentric conversions".equalsIgnoreCase( compare )
@@ -772,17 +825,17 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * 
-     * @param identifiers
+     * @param codes
      *            to check for.
      * @return a mapped transformation or {@link SupportedTransformations#NOT_SUPPORTED}, never <code>null</code>
      */
-    protected SupportedTransformationParameters mapTransformationParameters( String[] identifiers ) {
-        if ( identifiers == null || identifiers.length == 0 ) {
+    protected SupportedTransformationParameters mapTransformationParameters( CRSCodeType[] codes ) {
+        if ( codes == null || codes.length == 0 ) {
             return SupportedTransformationParameters.NOT_SUPPORTED;
         }
-        for ( String id : identifiers ) {
-            if ( id != null && !"".equals( id.trim() ) ) {
-                String compare = id.trim();
+        for ( CRSCodeType code : codes ) {
+            if ( code != null ) {
+                String compare = code.getEquivalentString();
                 if ( "Longitude offset".equalsIgnoreCase( compare ) || matchEPSGString( compare, "parameter", "8602" ) ) {
                     return SupportedTransformationParameters.LONGITUDE_OFFSET;
                 } else if ( "X-axis translation".equalsIgnoreCase( compare )

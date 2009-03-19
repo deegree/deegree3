@@ -1,7 +1,7 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2008 by:
  Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -36,51 +36,35 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.crs.configuration.deegree;
-
-
-import java.util.Properties;
-
-import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.CommonNamespaces;
+package org.deegree.model.crs.exceptions;
 
 /**
- * The <code>CRSParser_0_1_0</code> class TODO add class documentation here.
+ * The <code>CRSExportingException</code> class reports an error that occurred in the process of exporting a CRS to a file, database, etc.     
  * 
- * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
- * @author last edited by: $Author$
+ * @author last edited by: $Author: ionita $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: $, $Date: $
  * 
  */
-public class CRSParser_0_1_0 extends CRSParser {
+public class CRSExportingException extends RuntimeException {
 
     /**
      * 
      */
-    private static final long serialVersionUID = 5619333696132594126L;
-
-    /**
-     * Another constructor, which is used for the automatic loading of the crs definitions file 0_1_0.
-     * 
-     * @param provider
-     *            to be used for callback.
-     * @param properties
-     * @param rootElement
-     *            to be used as configuration backend.
-     */
-    public CRSParser_0_1_0( DeegreeCRSProvider provider, Properties properties, OMElement rootElement ) {
-        super( provider, rootElement );
+    private static final long serialVersionUID = 253985026986808212L;
+    
+    public CRSExportingException( String message ) {
+        super( message );
     }
-
-    /**
-     * @param provider
-     * @param properties
-     */
-    public CRSParser_0_1_0( DeegreeCRSProvider provider, Properties properties ) {
-        super( provider, properties, "definitions", CommonNamespaces.CRSNS );
-        // TODO Auto-generated constructor stub
+    
+    public CRSExportingException( String message, Exception e ) {
+        super( message, e );
     }
-   
+    
+    public CRSExportingException( Exception e ) {
+        super( e );
+    }    
+
 }

@@ -47,6 +47,7 @@ import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 
@@ -153,7 +154,7 @@ public class MatrixTransform extends CRSTransformation {
      * @param matrix
      */
     public MatrixTransform( CoordinateSystem source, CoordinateSystem target, final GMatrix matrix ) {
-        this( source, target, matrix, new CRSIdentifiable( createFromTo( source.getIdentifier(), target.getIdentifier() ) ) );
+        this( source, target, matrix, new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( source.getCode().toString(), target.getCode().toString() ) ) ) );
     }
 
     /**
@@ -186,7 +187,7 @@ public class MatrixTransform extends CRSTransformation {
      * @param matrix
      */
     public MatrixTransform( CoordinateSystem source, CoordinateSystem target, final Matrix3d matrix ) {
-        this( source, target, matrix, new CRSIdentifiable( createFromTo( source.getIdentifier(), target.getIdentifier() ) ) );
+        this( source, target, matrix, new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( source.getCode().toString(), target.getCode().toString() ) ) ) );
     }
 
     /**
@@ -219,7 +220,7 @@ public class MatrixTransform extends CRSTransformation {
      * @param matrix
      */
     public MatrixTransform( CoordinateSystem source, CoordinateSystem target, Matrix4d matrix ) {
-        this( source, target, matrix, new CRSIdentifiable( createFromTo( source.getIdentifier(), target.getIdentifier() ) ) );
+        this( source, target, matrix, new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( source.getCode().toString(), target.getCode().toString() ) ) ) );
     }
 
     /**
@@ -257,7 +258,7 @@ public class MatrixTransform extends CRSTransformation {
      *            the 'optional' name of the transformation, which is useful to specify the 'helmert' transformation.
      */
     public MatrixTransform( CoordinateSystem source, CoordinateSystem target, Matrix4d matrix, String transformationName ) {
-        this( source, target, matrix, new CRSIdentifiable( createFromTo( source.getIdentifier(), target.getIdentifier() ) ) );
+        this( source, target, matrix, new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( source.getCode().toString(), target.getCode().toString() ) ) ) );
     }
 
     @Override

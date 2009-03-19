@@ -49,7 +49,9 @@ import java.util.Set;
 
 import javax.vecmath.Point2d;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
+import org.deegree.model.crs.EPSGCode;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -205,6 +207,12 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
         String[] descriptions = null;
         String id = params.get( "identifier" );
         String[] ids = getPredefinedIDs( id );
+        
+        // convert ids to codes
+        CRSCodeType[] codes = new CRSCodeType[ ids.length ]; 
+        for ( int i = 0; i < ids.length; i++ )
+            codes[i] = CRSCodeType.valueOf( ids[i] );
+        
         String geoID = "GEO_CRS_" + geographicCRSCount;
         if ( "3068".equals( id ) || "31466".equals( id ) || "31467".equals( id ) || "31468".equals( id )
              || "31469".equals( id ) ) {
@@ -216,7 +224,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
         Projection projection = createProjection( projectionName, underLyingCRS, params );
 
         return new ProjectedCRS( projection, new Axis[] { new Axis( projection.getUnits(), "x", Axis.AO_EAST ),
-                                                         new Axis( projection.getUnits(), "y", Axis.AO_NORTH ) }, ids,
+                                                         new Axis( projection.getUnits(), "y", Axis.AO_NORTH ) }, codes,
                                  names, versions, descriptions, areasOfUse );
     }
 
@@ -244,11 +252,17 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
         String[] names = new String[] { name };
         String description = "Handmade proj4 geographic crs definition (parsed from nad/epsg).";
         String ids[] = new String[] { identifier };
+        CRSCodeType[] codes = new CRSCodeType[ ids.length ];
         String tmpIdentifier = identifier;
         String tmpProjectedID = projectedID;
         if ( tmpIdentifier == null || "".equals( tmpIdentifier.trim() ) ) {
             tmpIdentifier = params.get( "identifier" );
             ids = getPredefinedIDs( tmpIdentifier );
+            
+            // convert ids to codes             
+            for ( int i = 0; i < ids.length; i++ )
+                codes[i] = CRSCodeType.valueOf( ids[i] );
+            
             // if the id was not set, we create a geocrs, which means that no projectedID has been
             // set, we want to build the datum with the id though!
             tmpProjectedID = tmpIdentifier;
@@ -261,7 +275,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
         GeographicCRS result = new GeographicCRS( datum,
                                                   new Axis[] { new Axis( Unit.RADIAN, "longitude", Axis.AO_EAST ),
                                                               new Axis( Unit.RADIAN, "latitude", Axis.AO_NORTH ) },
-                                                  ids, names, versions, descriptions, areasOfUse );
+                                                  codes, names, versions, descriptions, areasOfUse );
         return result;
     }
 
@@ -299,7 +313,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
             String description = "Handmade proj4 datum definition (parsed from nad/epsg) used by crs with id: "
                                  + ( EPSG_PRE + identifier );
             PrimeMeridian pm = createPrimeMeridian( params );
-            result = new GeodeticDatum( ellipsoid, pm, null, id, name, version, description, areaOfUse );
+            result = new GeodeticDatum( ellipsoid, pm, null, CRSCodeType.valueOf( id ), name, version, description, areaOfUse );
         }
         return result;
     }
@@ -403,7 +417,11 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
             if ( !id.startsWith( "pm_" ) ) {
                 ids = getPredefinedIDs( id );
             }
-            result = new PrimeMeridian( Unit.RADIAN, longitude, ids, names, meridianVersions, descs, aous );
+            
+            CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+            for (int i = 0; i < ids.length; i++ )
+                codes[i] = CRSCodeType.valueOf( ids[i] );
+            result = new PrimeMeridian( Unit.RADIAN, longitude, codes, names, meridianVersions, descs, aous );
         }
         return result;
     }
@@ -546,20 +564,20 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
             String name = "Proj4 defined ellipsoid";
 
             if ( !Double.isNaN( eccentricitySquared ) ) {
-                result = new Ellipsoid( semiMajorAxis, Math.sqrt( eccentricitySquared ), Unit.METRE, id, name, version,
+                result = new Ellipsoid( semiMajorAxis, Math.sqrt( eccentricitySquared ), Unit.METRE, CRSCodeType.valueOf( id ), name, version,
                                         description, areaOfUse );
             } else if ( !Double.isNaN( eccentricity ) ) {
-                result = new Ellipsoid( semiMajorAxis, eccentricity, Unit.METRE, id, name, version, description,
+                result = new Ellipsoid( semiMajorAxis, eccentricity, Unit.METRE, CRSCodeType.valueOf( id ), name, version, description,
                                         areaOfUse );
             } else if ( !Double.isNaN( inverseFlattening ) ) {
-                result = new Ellipsoid( semiMajorAxis, Unit.METRE, inverseFlattening, id, name, version, description,
+                result = new Ellipsoid( semiMajorAxis, Unit.METRE, inverseFlattening, CRSCodeType.valueOf( id ), name, version, description,
                                         areaOfUse );
             } else if ( !Double.isNaN( semiMinorAxis ) ) {
-                result = new Ellipsoid( Unit.METRE, semiMajorAxis, semiMinorAxis, id, name, version, description,
+                result = new Ellipsoid( Unit.METRE, semiMajorAxis, semiMinorAxis, CRSCodeType.valueOf( id ), name, version, description,
                                         areaOfUse );
             } else {
                 LOG.debug( "Only a semimajor defined, assuming a sphere (instead of an ellipsoid) is to be created." );
-                result = new Ellipsoid( Unit.METRE, semiMajorAxis, semiMajorAxis, id, name, version, description,
+                result = new Ellipsoid( Unit.METRE, semiMajorAxis, semiMajorAxis, CRSCodeType.valueOf( id ), name, version, description,
                                         areaOfUse );
             }
         }
@@ -580,15 +598,20 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
         if ( datumName != null && !"".equals( datumName.trim() ) ) {
             datumName = datumName.trim();
             String[] datumIDs = null;
+            CRSCodeType[] datumCodes = null;
             String[] datumNames = null;
             String[] datumDescriptions = null;
             String[] datumVersions = null;
             String[] datumAOU = null;
-            Helmert confInfo = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, "Created by proj4 CRSProvider" );
+            Helmert confInfo = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, CRSCodeType.valueOf( "Created by proj4 CRSProvider" ) );
             Ellipsoid ellipsoid = null;
             if ( "GGRS87".equalsIgnoreCase( datumName ) ) {
+                String[] ids = getPredefinedIDs( "1272" );
+                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                for ( int i = 0; i < ids.length; i++ )
+                    codes[i] = CRSCodeType.valueOf( ids[i] );
                 confInfo = new Helmert( -199.87, 74.79, 246.62, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
-                                        getPredefinedIDs( "1272" ), new String[] {}, null, null, null );
+                                       codes , new String[] {}, null, null, null );
 
                 datumIDs = getPredefinedIDs( "6121" );
                 datumNames = new String[] { "Greek_Geodetic_Reference_System_1987" };
@@ -599,8 +622,13 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                     ellipsoid = getPredefinedEllipsoid( definedEllipsoid );
                 }
             } else if ( "NAD27".equalsIgnoreCase( datumName ) ) {
+                String[] ids = getPredefinedIDs( "1173" );
+                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                for ( int i = 0; i < ids.length; i++ )
+                    codes[i] = CRSCodeType.valueOf( ids[i] );
+                
                 confInfo = new Helmert( -8, 160, 176, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
-                                        getPredefinedIDs( "1173" ), new String[] { "North_American_Datum_1983" }, null,
+                                        codes, new String[] { "North_American_Datum_1983" }, null,
                                         null, null );
 
                 datumIDs = getPredefinedIDs( "6267" );
@@ -614,7 +642,12 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                     ellipsoid = getPredefinedEllipsoid( definedEllipsoid );
                 }
             } else if ( "NAD83".equalsIgnoreCase( datumName ) ) {
-                confInfo = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, getPredefinedIDs( "1188" ), null,
+                String[] ids = getPredefinedIDs( "1188" );
+                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                for ( int i = 0; i < ids.length; i++ )
+                    codes[i] = CRSCodeType.valueOf( ids[i] );
+                
+                confInfo = new Helmert( GeographicCRS.WGS84, GeographicCRS.WGS84, codes, null,
                                         null, new String[] { "Derived at 312 stations." },
                                         new String[] { "North America - all Canada and USA subunits" } );
                 datumIDs = getPredefinedIDs( "6269" );
@@ -626,6 +659,11 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                     ellipsoid = getPredefinedEllipsoid( definedEllipsoid );
                 }
             } else if ( "OSGB36".equalsIgnoreCase( datumName ) ) {
+                String[] ids = getPredefinedIDs( "1314" );
+                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                for ( int i = 0; i < ids.length; i++ )
+                    codes[i] = CRSCodeType.valueOf( ids[i] );
+                
                 confInfo = new Helmert(
                                         446.448,
                                         -125.157,
@@ -636,7 +674,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                                         -20.4894,
                                         GeographicCRS.WGS84,
                                         GeographicCRS.WGS84,
-                                        getPredefinedIDs( "1314" ),
+                                        codes,
                                         null,
                                         null,
                                         new String[] { "For a more accurate transformation see OSGB 1936 / British National Grid to ETRS89 (2) (code 1039): contact the Ordnance Survey of Great Britain (http://www.gps.gov.uk/gpssurveying.asp) for details." },
@@ -652,8 +690,13 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
             } else if ( "WGS84".equalsIgnoreCase( datumName ) ) {
                 return GeodeticDatum.WGS84;
             } else if ( "carthage".equalsIgnoreCase( datumName ) ) {
+                String[] ids = getPredefinedIDs( "1130" );
+                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                for ( int i = 0; i < ids.length; i++ )
+                    codes[i] = CRSCodeType.valueOf( ids[i] );
+                
                 confInfo = new Helmert( -263.0, 6.0, 431.0, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
-                                        getPredefinedIDs( "1130" ), null, null,
+                                        codes, null, null,
                                         new String[] { "Derived at 5 stations." }, new String[] { "Tunisia" } );
                 datumIDs = getPredefinedIDs( "6816" );
                 datumNames = new String[] { "Carthage 1934 Tunisia" };
@@ -664,8 +707,13 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                     ellipsoid = getPredefinedEllipsoid( definedEllipsoid );
                 }
             } else if ( "hermannskogel".equalsIgnoreCase( datumName ) ) {
+                String[] ids = new String[] { "kogel", EPSG_PRE + "1306" };
+                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                for ( int i = 0; i < ids.length; i++ )
+                    codes[i] = CRSCodeType.valueOf( ids[i] );
+                
                 confInfo = new Helmert( 653.0, -212.0, 449.0, 0, 0, 0, 0, GeographicCRS.WGS84, GeographicCRS.WGS84,
-                                        new String[] { "kogel", EPSG_PRE + "1306" }, null, null,
+                                        codes, null, null,
                                         new String[] { "No epsg code was found." }, null );
                 datumIDs = new String[] { "Hermannskogel" };
                 datumNames = new String[] { "some undefined proj4 datum" };
@@ -676,8 +724,13 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                     ellipsoid = getPredefinedEllipsoid( definedEllipsoid );
                 }
             } else if ( "ire65".equalsIgnoreCase( datumName ) ) {
+                String[] ids = new String[] { "ire65_conversion" };
+                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                for ( int i = 0; i < ids.length; i++ )
+                    codes[i] = CRSCodeType.valueOf( ids[i] );
+                
                 confInfo = new Helmert( 482.530, -130.596, 564.557, -1.042, -0.214, -0.631, 8.15, GeographicCRS.WGS84,
-                                        GeographicCRS.WGS84, new String[] { "ire65_conversion" }, null, null,
+                                        GeographicCRS.WGS84, codes, null, null,
                                         new String[] { "no epsg code was found" }, null );
                 datumIDs = new String[] { "Ireland 1965" };
                 datumNames = new String[] { "no epsg code was found." };
@@ -688,6 +741,11 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                     ellipsoid = getPredefinedEllipsoid( definedEllipsoid );
                 }
             } else if ( "nzgd49".equalsIgnoreCase( datumName ) ) {
+                String[] ids = getPredefinedIDs( "1564" );
+                CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                for ( int i = 0; i < ids.length; i++ )
+                    codes[i] = CRSCodeType.valueOf( ids[i] );
+                
                 confInfo = new Helmert(
                                         59.47,
                                         -5.04,
@@ -698,7 +756,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                                         -4.5993,
                                         GeographicCRS.WGS84,
                                         GeographicCRS.WGS84,
-                                        getPredefinedIDs( "1564" ),
+                                        codes,
                                         new String[] { "NZGD49 to WGS 84 (2)" },
                                         new String[] { "OSG-Nzl 4m" },
                                         new String[] { "hese parameter values are taken from NZGD49 to NZGD2000 (4) (code 1701) and assume that NZGD2000 and WGS 84 are coincident to within the accuracy of the transformation. For improved accuracy use NZGD49 to WGS 84 (4) (code 1670)." },
@@ -715,6 +773,11 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                 if ( ( crsID != null && !"".equals( crsID ) ) && "3068".equals( crsID ) || "4314".equals( crsID )
                      || "31466".equals( crsID ) || "31467".equals( crsID ) || "31468".equals( crsID )
                      || "31469".equals( crsID ) ) {
+                    String[] ids = getPredefinedIDs( "1777" );
+                    CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                    for ( int i = 0; i < ids.length; i++ )
+                        codes[i] = CRSCodeType.valueOf( ids[i] );
+                    
                     confInfo = new Helmert(
                                             598.1,
                                             73.7,
@@ -725,7 +788,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                                             6.7,
                                             GeographicCRS.WGS84,
                                             GeographicCRS.WGS84,
-                                            getPredefinedIDs( "1777" ),
+                                            codes,
                                             new String[] { "DHDN to WGS 84" },
                                             new String[] { "EPSG-Deu W 3m" },
                                             new String[] { "Parameter values from DHDN to ETRS89 (2) (code 1776) assuming that ETRS89 is equivalent to WGS 84 within the accuracy of the transformation. Replaces DHDN to WGS 84 (1) (tfm code 1673)." },
@@ -736,6 +799,11 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                     datumDescriptions = new String[] { "Fundamental point: Rauenberg. Latitude: 52 deg 27 min 12.021 sec N; Longitude: 13 deg 22 min 04.928 sec E (of Greenwich). This station was destroyed in 1910 and the station at Potsdam substituted as the fundamental point." };
                     datumAOU = new String[] { "Germany - states of former West Germany - Baden-Wurtemberg, Bayern, Hessen, Niedersachsen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland, Schleswig-Holstein." };
                 } else {
+                    String[] ids = getPredefinedIDs( "15955" );
+                    CRSCodeType[] codes = new CRSCodeType[ ids.length ];
+                    for ( int i = 0; i < ids.length; i++ )
+                        codes[i] = CRSCodeType.valueOf( ids[i] );
+                    
                     confInfo = new Helmert(
                                             606.0,
                                             23.0,
@@ -746,12 +814,13 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                                             0,
                                             GeographicCRS.WGS84,
                                             GeographicCRS.WGS84,
-                                            getPredefinedIDs( "15955" ),
+                                            codes,
                                             new String[] { "RD/83 to WGS 84 (1)" },
                                             new String[] { "OGP-Deu BeTA2007" },
                                             new String[] { "These parameter values are taken from DHDN to ETRS89 (8) (code 15948) as RD/83 and ETRS89 may be considered equivalent to DHDN and WGS 84 respectively within the accuracy of the transformation." },
                                             new String[] { "Germany-Sachsen" } );
                     datumIDs = getPredefinedIDs( "6746" );
+                                        
                     datumNames = new String[] { "Potsdam Rauenberg 1950 DHDN" };
                 }
 
@@ -765,7 +834,12 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                 return null;
             }
 
-            return new GeodeticDatum( ellipsoid, PrimeMeridian.GREENWICH, confInfo, datumIDs, datumNames,
+            // convert datumIDs to datumCodes
+            datumCodes = new CRSCodeType[ datumIDs.length ];
+            for ( int i = 0; i < datumIDs.length; i++ )
+                datumCodes[i] = CRSCodeType.valueOf( datumIDs[i] );
+
+            return new GeodeticDatum( ellipsoid, PrimeMeridian.GREENWICH, confInfo, datumCodes, datumNames,
                                       datumVersions, datumDescriptions, datumAOU );
         }
         return null;
@@ -1253,9 +1327,10 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
                 throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_UNKNOWN_ELLIPSOID",
                                                                           ellipsoidName ) );
             }
-            String[] ids = new String[] { id };
+//            String[] ids = new String[] { id };
+            CRSCodeType[] ids = new EPSGCode[] { new EPSGCode( Integer.parseInt( id ) ) };
             if ( !ellipsoidName.equals( id ) ) {
-                ids = new String[] { EPSG_PRE + id, OGC_URN + id, OPENGIS_URL + id, OPENGIS_URN + id };
+                ids = new CRSCodeType[] { CRSCodeType.valueOf( EPSG_PRE + id), CRSCodeType.valueOf( OGC_URN + id ), CRSCodeType.valueOf( OPENGIS_URL + id ), CRSCodeType.valueOf( OPENGIS_URN + id ) };
             }
             Ellipsoid ellips = null;
             if ( Double.isNaN( semiMinorAxis ) ) {
@@ -1424,5 +1499,12 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
     public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
                             throws CRSConfigurationException {
         return getResolver().getTransformation( sourceCRS, targetCRS );
+    }
+
+    @Override
+    public CoordinateSystem getCRSByID( CRSCodeType id )
+                            throws CRSConfigurationException {
+        // TODO
+        return null;
     }
 }

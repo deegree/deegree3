@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: https://svn.wald.intevation.org/svn/deegree/deegree3/commons/trunk/src/org/deegree/model/crs/projections/cylindric/TransverseMercator.java $
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -75,15 +75,15 @@ import org.slf4j.LoggerFactory;
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
- * @author last edited by: $Author$
+ * @author last edited by: $Author: rbezema $
  * 
- * @version $Revision$, $Date$
+ * @version $Revision: 15508 $, $Date: 2009-01-06 12:08:22 +0100 (Tue, 06 Jan 2009) $
  * 
  */
 
-public class TransverseMercator extends CylindricalProjection {
+public class MyTransverseMercator extends CylindricalProjection {
 
-    private static Logger LOG = LoggerFactory.getLogger( TransverseMercator.class );
+    private static Logger LOG = LoggerFactory.getLogger( MyTransverseMercator.class );
 
     /**
      * Constants used for the forward and inverse transform for the elliptical case of the Transverse Mercator.
@@ -119,7 +119,7 @@ public class TransverseMercator extends CylindricalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public TransverseMercator( boolean northernHemisphere, GeographicCRS geographicCRS, double falseNorthing,
+    public MyTransverseMercator( boolean northernHemisphere, GeographicCRS geographicCRS, double falseNorthing,
                                double falseEasting, Point2d naturalOrigin, Unit units, double scale, CRSIdentifiable id ) {
         super( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, true,// always conformal
                false/* not equalArea */, id );
@@ -149,10 +149,10 @@ public class TransverseMercator extends CylindricalProjection {
      * @param units
      * @param scale
      */
-    public TransverseMercator( boolean northernHemisphere, GeographicCRS geographicCRS, double falseNorthing,
+    public MyTransverseMercator( boolean northernHemisphere, GeographicCRS geographicCRS, double falseNorthing,
                                double falseEasting, Point2d naturalOrigin, Unit units, double scale ) {
         this( northernHemisphere, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale,
-              new CRSIdentifiable(  new EPSGCode( 9807 ) ) );
+              new CRSIdentifiable( new EPSGCode( 9807 ) ) );
     }
 
     /**
@@ -169,7 +169,7 @@ public class TransverseMercator extends CylindricalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public TransverseMercator( int zone, boolean northernHemisphere, GeographicCRS geographicCRS, Unit units,
+    public MyTransverseMercator( int zone, boolean northernHemisphere, GeographicCRS geographicCRS, Unit units,
                                CRSIdentifiable id ) {
         super( geographicCRS, ( northernHemisphere ? 0 : 10000000 ), 500000, new Point2d( ( --zone + .5 ) * Math.PI
                                                                                           / 30. - Math.PI, 0 ), units,
@@ -199,7 +199,7 @@ public class TransverseMercator extends CylindricalProjection {
      * @param geographicCRS
      * @param units
      */
-    public TransverseMercator( int zone, boolean northernHemisphere, GeographicCRS geographicCRS, Unit units ) {
+    public MyTransverseMercator( int zone, boolean northernHemisphere, GeographicCRS geographicCRS, Unit units ) {
         this( zone, northernHemisphere, geographicCRS, units, new CRSIdentifiable( new EPSGCode( 9807 ) ) );
     }
 
@@ -212,7 +212,7 @@ public class TransverseMercator extends CylindricalProjection {
      * @param naturalOrigin
      * @param units
      */
-    public TransverseMercator( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
+    public MyTransverseMercator( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
                                Point2d naturalOrigin, Unit units ) {
         this( true, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1. );
     }
@@ -228,7 +228,7 @@ public class TransverseMercator extends CylindricalProjection {
      * @param id
      *            an identifiable instance containing information about this projection
      */
-    public TransverseMercator( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
+    public MyTransverseMercator( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
                                Point2d naturalOrigin, Unit units, CRSIdentifiable id ) {
         this( true, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, 1., id );
     }

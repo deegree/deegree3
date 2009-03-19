@@ -40,7 +40,7 @@ package org.deegree.model.geometry;
 
 import java.util.List;
 
-import org.deegree.model.crs.CRSFactory;
+import org.deegree.model.crs.CRSRegistry;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.composite.CompositeCurve;
 import org.deegree.model.geometry.composite.CompositeGeometry;
@@ -214,7 +214,7 @@ public interface GeometryFactory {
      *            value for second coordinate
      * @param crs
      *            points coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
     public Point createPoint( String id, double x, double y, CoordinateSystem crs );
@@ -232,7 +232,7 @@ public interface GeometryFactory {
      *            value for third coordinate
      * @param crs
      *            points coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
     public Point createPoint( String id, double x, double y, double z, CoordinateSystem crs );
@@ -249,7 +249,7 @@ public interface GeometryFactory {
      *            points to be equal or not.
      * @param crs
      *            points coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
     public Point createPoint( String id, double[] coordinates, double precision, CoordinateSystem crs );
@@ -264,7 +264,7 @@ public interface GeometryFactory {
      *            coordinate values
      * @param crs
      *            points coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
     public Point createPoint( String id, double[] coordinates, CoordinateSystem crs );
@@ -292,7 +292,7 @@ public interface GeometryFactory {
      *            array of curve coordinates
      * @param crs
      *            curves coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Curve}
      */
     public Curve createCurve( String id, Point[][] coordinates, CoordinateSystem crs );
@@ -307,7 +307,7 @@ public interface GeometryFactory {
      *            segments a curve shall be created from
      * @param crs
      *            curves coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Curve}
      */
     public Curve createCurve( String id, CurveSegment[] segments, CoordinateSystem crs );
@@ -513,7 +513,7 @@ public interface GeometryFactory {
      *            patches to create a surface
      * @param crs
      *            surfaces coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Surface}
      */
     public Surface createSurface( String id, List<SurfacePatch> patches, CoordinateSystem crs );
@@ -525,7 +525,7 @@ public interface GeometryFactory {
      *            identifier of the new geometry instance
      * @param crs
      *            coordinate reference system. If the polygon does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @param exteriorRing
      *            ring that defines the outer boundary, this may be null (see section 9.2.2.5 of GML spec)
      * @param interiorRings
@@ -557,7 +557,7 @@ public interface GeometryFactory {
      *            two points to be equal or not.
      * @param crs
      *            evenlopes coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Envelope}
      */
     public Envelope createEnvelope( double[] min, double[] max, double precision, CoordinateSystem crs );
@@ -571,7 +571,7 @@ public interface GeometryFactory {
      *            maximum corner coordinates
      * @param crs
      *            evenlopes coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Envelope}
      */
     public Envelope createEnvelope( double[] min, double[] max, CoordinateSystem crs );
@@ -593,7 +593,7 @@ public interface GeometryFactory {
      * 
      * @param crs
      *            evenlopes coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Envelope}
      */
     public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, double precision,
@@ -613,7 +613,7 @@ public interface GeometryFactory {
      * 
      * @param crs
      *            evenlopes coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Envelope}
      */
     public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CoordinateSystem crs );
@@ -753,7 +753,7 @@ public interface GeometryFactory {
      *            identifier of the new geometry instance
      * @param crs
      *            solids coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @param exteriorSurface
      *            the exterior surface (shell) of the solid, may be null
      * @param interiorSurfaces
@@ -768,7 +768,7 @@ public interface GeometryFactory {
      * @param id
      *            identifier of the new geometry instance
      * @param crs
-     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            coordinate reference system, if the crs it is not known {@link CRSRegistry#lookupDummyCRS(String)}
      *            shall be used instead of <code>null</code>
      * @param geometries
      * @return created {@link MultiGeometry}
@@ -781,7 +781,7 @@ public interface GeometryFactory {
      * @param id
      *            identifier of the new geometry instance
      * @param crs
-     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            coordinate reference system, if the crs it is not known {@link CRSRegistry#lookupDummyCRS(String)}
      *            shall be used instead of <code>null</code>
      * @param members
      *            points that constitute the collection
@@ -795,7 +795,7 @@ public interface GeometryFactory {
      * @param id
      *            identifier of the new geometry instance
      * @param crs
-     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            coordinate reference system, if the crs it is not known {@link CRSRegistry#lookupDummyCRS(String)}
      *            shall be used instead of <code>null</code>
      * @param members
      *            curves that constitute the collection
@@ -809,7 +809,7 @@ public interface GeometryFactory {
      * @param id
      *            identifier of the new geometry instance
      * @param crs
-     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            coordinate reference system, if the crs it is not known {@link CRSRegistry#lookupDummyCRS(String)}
      *            shall be used instead of <code>null</code>
      * @param members
      *            curves that constitute the collection
@@ -823,7 +823,7 @@ public interface GeometryFactory {
      * @param id
      *            identifier of the new geometry instance
      * @param crs
-     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            coordinate reference system, if the crs it is not known {@link CRSRegistry#lookupDummyCRS(String)}
      *            shall be used instead of <code>null</code>
      * @param members
      *            surfaces that constitute the collection
@@ -837,7 +837,7 @@ public interface GeometryFactory {
      * @param id
      *            identifier of the new geometry instance
      * @param crs
-     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            coordinate reference system, if the crs it is not known {@link CRSRegistry#lookupDummyCRS(String)}
      *            shall be used instead of <code>null</code>
      * @param members
      *            polygons that constitute the collection
@@ -851,7 +851,7 @@ public interface GeometryFactory {
      * @param id
      *            identifier of the new geometry instance
      * @param crs
-     *            coordinate reference system, if the crs it is not known {@link CRSFactory#createDummyCRS(String)}
+     *            coordinate reference system, if the crs it is not known {@link CRSRegistry#lookupDummyCRS(String)}
      *            shall be used instead of <code>null</code>
      * @param members
      *            solids that constitute the collection
@@ -866,7 +866,7 @@ public interface GeometryFactory {
      *            identifier of the new geometry instance
      * @param crs
      *            coordinate reference system. If the curve does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @param members
      *            curves that constitute the composited curve, each curve must end at the start point of the subsequent
      *            curve in the list
@@ -881,7 +881,7 @@ public interface GeometryFactory {
      *            identifier of the new geometry instance
      * @param crs
      *            coordinate reference system. If the surface does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @param memberSurfaces
      *            surfaces that constitute the composited surface, the surfaces must join in pairs on common boundary
      *            curves and must, when considered as a whole, form a single surface
@@ -896,7 +896,7 @@ public interface GeometryFactory {
      *            identifier of the new geometry instance
      * @param crs
      *            coordinate reference system. If the solid does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @param memberSolids
      *            solids that constitute the composited solid, the solids must join in pairs on common boundary surfaces
      *            and which, when considered as a whole, form a single solid
@@ -911,7 +911,7 @@ public interface GeometryFactory {
      *            identifier of the new geometry instance
      * @param crs
      *            coordinate reference system. If the complex does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @param memberPrimitives
      * @return created {@link CompositeGeometry}
      */

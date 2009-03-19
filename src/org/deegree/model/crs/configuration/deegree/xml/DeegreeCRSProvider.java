@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.crs.configuration.deegree;
+package org.deegree.model.crs.configuration.deegree.xml;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
@@ -49,10 +49,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.CommonNamespaces;
-import org.deegree.commons.xml.NamespaceContext;
-import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.XPath;
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.configuration.AbstractCRSProvider;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
@@ -136,15 +133,15 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
 
     private CRSExporter exporter;
 
-    /**
-     * The namespaces used in deegree.
-     */
-    private static NamespaceContext nsContext = CommonNamespaces.getNamespaceContext();
-
-    /**
-     * The prefix to use.
-     */
-    private final static String PRE = CommonNamespaces.CRS_PREFIX + ":";
+//    /**
+//     * The namespaces used in deegree.
+//     */
+//    private static NamespaceContext nsContext = CommonNamespaces.getNamespaceContext();
+//
+//    /**
+//     * The prefix to use.
+//     */
+//    private final static String PRE = CommonNamespaces.CRS_PREFIX + ":";
 
     // /**
     // * The EPSG-Database defines only 48 different ellipsoids, set to 60, will --probably-- result in no collisions.
@@ -248,7 +245,7 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
             String version = versionedParser.getVersion();
             if ( !"".equals( version ) ) {
                 version = version.trim().replaceAll( "\\.", "_" );
-                String className = "org.deegree.model.crs.configuration.deegree.CRSParser_" + version;
+                String className = "org.deegree.model.crs.configuration.deegree.xml.CRSParser_" + version;
                 try {
                     Class<?> tClass = Class.forName( className );
                     tClass.asSubclass( CRSParser.class );
@@ -262,7 +259,7 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
                         versionedParser = (CRSParser) constructor.newInstance( this, new Properties( properties ),
                                                                                versionedParser.getRootElement() );
                     }
-                    className = "org.deegree.model.crs.configuration.deegree.CRSExporter_" + version;
+                    className = "org.deegree.model.crs.configuration.deegree.xml.CRSExporter_" + version;
                     tClass = Class.forName( className );
                     tClass.asSubclass( CRSExporter.class );
                     LOG.debug( "Trying to load configured CRS exporter for version: " + version + " from classname: "
@@ -307,7 +304,8 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintWriter writer = new PrintWriter( out );
-        exporter.export( writer, crsToExport );
+        exporter.setWriter( writer );
+        exporter.export( crsToExport );
 
         try {
             sb.append( out.toString( Charset.defaultCharset().displayName() ) );
@@ -325,172 +323,134 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
         return (CRSParser) super.getResolver();
     }
 
-    public List<String> getAvailableCRSIds()
-                            throws CRSConfigurationException {
-        List<OMElement> allCRSIDs = new LinkedList<OMElement>();
-
-        try {
-            allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "geographicCRS/" + PRE
-                                                                                    + "id", nsContext ) ) );
-            //allCRSIDs.addAll( XMLTools.getElements( getResolver().getRootElement(), "//" + PRE + "projectedCRS/" + PRE + "id", nsContext ) );
-            allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "projectedCRS/" + PRE
-                    																+ "id", nsContext ) ) );
-            allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "geocentricCRS/" + PRE
-                                                                                    + "id", nsContext ) ) );
-            allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "compoundCRS/" + PRE
-                                                                                    + "id", nsContext ) ) );
-        } catch ( XMLParsingException e ) {
-            throw new CRSConfigurationException(
-                                                 Messages.getMessage( "CRS_CONFIG_GET_ALL_ELEMENT_IDS", e.getMessage() ),
-                                                 e );
-        }
-        List<String> result = new LinkedList<String>();
-        for ( OMElement crs : allCRSIDs ) {
-            if ( crs != null ) {
-                result.add( getResolver().getNodeAsString(crs, new XPath( ".", nsContext), null ) );
-            }
-        }
-        return result;
+    public List<String> getAvailableCRSIds() {
+        return getResolver().getAvailableCRSIds();
     }
 
-    public List<CoordinateSystem> getAvailableCRSs()
-                            throws CRSConfigurationException {
+    public List<CoordinateSystem> getAvailableCRSs() {
         List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
-        if ( getResolver().getRootElement() != null ) {
-            List<OMElement> allCRSIDs = new LinkedList<OMElement>();
-
-            try {
-                //allCRSIDs.addAll( XMLTools.getElements( getResolver().getRootElement(), "//" + PRE + "geographicCRS/" + PRE + "id", nsContext ) );
-            	allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "geographicCRS/" 
-            																			+ PRE + "id", nsContext ) ) );
-                allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "projectedCRS/"
-                                                                                        + PRE + "id", nsContext ) ) );
-                allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "geocentricCRS/"
-                                                                                        + PRE + "id", nsContext ) ) );
-                allCRSIDs.addAll( getResolver().getElements( getResolver().getRootElement(), new XPath( "//" + PRE + "compoundCRS/"
-                                                                                        + PRE + "id", nsContext ) ) );
-            } catch ( XMLParsingException e ) {
-                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_GET_ALL_ELEMENT_IDS",
-                                                                          e.getMessage() ), e );
-            }
-            final int total = allCRSIDs.size();
-            int count = 0;
-            int percentage = (int) Math.round( total / 100.d );
-            int number = 0;
-            System.out.println( "Trying to create a total of " + total + " coordinate systems." );
-            for ( OMElement crsID : allCRSIDs ) {
-                if ( crsID != null ) {
-                    //String id = crsID.getTextContent();
-                	String id = crsID.getText();
-                    if ( id != null && !"".equals( id.trim() ) ) {
-                        if ( count++ % percentage == 0 ) {
-                            System.out.print( "\r" + ( number ) + ( ( number++ < 10 ) ? "  " : " " ) + "% created" );
-                        }
+        List<OMElement> allCRSIDs = getResolver().getAvailableCRSs();
+        final int total = allCRSIDs.size();
+        int count = 0;
+        int percentage = (int) Math.round( total / 100.d );
+        int number = 0;
+        System.out.println( "Trying to create a total of " + total + " coordinate systems." );
+        for ( OMElement crsID : allCRSIDs ) {
+            if ( crsID != null ) {
+                //String id = crsID.getTextContent();
+                String id = crsID.getText();
+                if ( id != null && !"".equals( id.trim() ) ) {
+                    if ( count++ % percentage == 0 ) {
+                        System.out.print( "\r" + ( number ) + ( ( number++ < 10 ) ? "  " : " " ) + "% created" );
+                    }
+                    boolean createdAlready = false; 
+                    for( int i = 0; i < allSystems.size() && !createdAlready; ++i ){
+                        CoordinateSystem c = allSystems.get( i );
+                        createdAlready = ( c !=null && c.hasCode( CRSCodeType.valueOf( id ) ) ) ;
+                    }
+                    if( !createdAlready ){
                         allSystems.add( getCRSByID( id ) );
                     }
                 }
             }
-            System.out.println();
-            // if ( checkForDoubleDefinition ) {
-            // allSystems.addAll( cachedGeoCRSs );
-            // allSystems.addAll( cachedProjCRSs );
-            // allSystems.addAll( cachedGeocentricCRSs );
-            // allSystems.addAll( cachedCompoundCRSs );
-            // StringBuilder cachedGeos = new StringBuilder( "Cached Geographic coordinatesystems (" );
-            // cachedGeos.append( cachedGeoCRSs.size() ).append( "):\n" );
-            // for ( GeographicCRS geo : cachedGeoCRSs ) {
-            // cachedGeos.append( geo.getIdentifier() ).append( "\n" );
-            // }
-            // System.out.println( cachedGeos.toString() );
-            // if ( !doubleGeos.isEmpty() ) {
-            // Set<String> keys = doubleGeos.keySet();
-            // LOG.info( "Following geographic crs's could probably be mapped on eachother" );
-            // for ( String key : keys ) {
-            // LOG.info( key + " : " + doubleGeos.get( key ) );
-            // }
-            // }
-            // if ( !doubleProjCRS.isEmpty() ) {
-            // Set<String> keys = doubleProjCRS.keySet();
-            // LOG.info( "Following projected crs's could probably be mapped on eachother" );
-            // for ( String key : keys ) {
-            // LOG.info( key + " : " + doubleProjCRS.get( key ) );
-            // }
-            //
-            // }
-            // if ( !doubleGeocentricCRSs.isEmpty() ) {
-            // Set<String> keys = doubleGeocentricCRSs.keySet();
-            // LOG.info( "Following geocentric crs's could probably be mapped on eachother" );
-            // for ( String key : keys ) {
-            // LOG.info( key + " : " + doubleGeocentricCRSs.get( key ) );
-            // }
-            // }
-            //
-            // if ( !doubleProjections.isEmpty() ) {
-            // Set<String> keys = doubleProjections.keySet();
-            // LOG.info( "Following projections could probably be mapped on eachother" );
-            // for ( String key : keys ) {
-            // LOG.info( key + " : " + doubleProjections.get( key ) );
-            // }
-            // }
-            // if ( !doubleDatums.isEmpty() ) {
-            // Set<String> keys = doubleDatums.keySet();
-            // LOG.info( "Following datums could probably be mapped on eachother" );
-            // for ( String key : keys ) {
-            // LOG.info( key + " : " + doubleDatums.get( key ) );
-            // }
-            // }
-            // if ( !doubleToWGS.isEmpty() ) {
-            // Set<String> keys = doubleToWGS.keySet();
-            // LOG.info( "Following wgs conversion infos could probably be mapped on eachother" );
-            // for ( String key : keys ) {
-            // LOG.info( key + " : " + doubleToWGS.get( key ) );
-            // }
-            // }
-            // if ( !doubleEllipsoids.isEmpty() ) {
-            // Set<String> keys = doubleEllipsoids.keySet();
-            // LOG.info( "Following ellipsoids could probably be mapped on eachother" );
-            // for ( String key : keys ) {
-            // LOG.info( key + " : " + doubleEllipsoids.get( key ) );
-            // }
-            // }
-            // if ( !doubleMeridians.isEmpty() ) {
-            // Set<String> keys = doubleEllipsoids.keySet();
-            // LOG.info( "Following prime meridians could probably be mapped on eachother" );
-            // for ( String key : keys ) {
-            // LOG.info( key + " : " + doubleMeridians.get( key ) );
-            // }
-            // }
-            // } else {
-            // Collection<CompoundCRS> cCRSs = compoundCRSs.values();
-            // for ( String key : compoundCRSs.keySet() ) {
-            // CompoundCRS crs = compoundCRSs.get( key );
-            // if ( !allSystems.contains( crs ) ) {
-            // allSystems.add( crs );
-            // }
-            // }
-            // for ( String key : geographicCRSs.keySet() ) {
-            // GeographicCRS crs = geographicCRSs.get( key );
-            // if ( !allSystems.contains( crs ) ) {
-            // allSystems.add( crs );
-            // }
-            // }
-            // for ( String key : geocentricCRSs.keySet() ) {
-            // GeocentricCRS crs = geocentricCRSs.get( key );
-            // if ( !allSystems.contains( crs ) ) {
-            // allSystems.add( crs );
-            // }
-            // }
-            // for ( String key : projectedCRSs.keySet() ) {
-            // ProjectedCRS crs = projectedCRSs.get( key );
-            // if ( !allSystems.contains( crs ) ) {
-            // allSystems.add( crs );
-            // }
-            // }
-            // }
-
-        } else {
-            LOG.debug( "The root element is null, is this correct behaviour?" );
         }
+        System.out.println();
+        // if ( checkForDoubleDefinition ) {
+        // allSystems.addAll( cachedGeoCRSs );
+        // allSystems.addAll( cachedProjCRSs );
+        // allSystems.addAll( cachedGeocentricCRSs );
+        // allSystems.addAll( cachedCompoundCRSs );
+        // StringBuilder cachedGeos = new StringBuilder( "Cached Geographic coordinatesystems (" );
+        // cachedGeos.append( cachedGeoCRSs.size() ).append( "):\n" );
+        // for ( GeographicCRS geo : cachedGeoCRSs ) {
+        // cachedGeos.append( geo.getIdentifier() ).append( "\n" );
+        // }
+        // System.out.println( cachedGeos.toString() );
+        // if ( !doubleGeos.isEmpty() ) {
+        // Set<String> keys = doubleGeos.keySet();
+        // LOG.info( "Following geographic crs's could probably be mapped on eachother" );
+        // for ( String key : keys ) {
+        // LOG.info( key + " : " + doubleGeos.get( key ) );
+        // }
+        // }
+        // if ( !doubleProjCRS.isEmpty() ) {
+        // Set<String> keys = doubleProjCRS.keySet();
+        // LOG.info( "Following projected crs's could probably be mapped on eachother" );
+        // for ( String key : keys ) {
+        // LOG.info( key + " : " + doubleProjCRS.get( key ) );
+        // }
+        //
+        // }
+        // if ( !doubleGeocentricCRSs.isEmpty() ) {
+        // Set<String> keys = doubleGeocentricCRSs.keySet();
+        // LOG.info( "Following geocentric crs's could probably be mapped on eachother" );
+        // for ( String key : keys ) {
+        // LOG.info( key + " : " + doubleGeocentricCRSs.get( key ) );
+        // }
+        // }
+        //
+        // if ( !doubleProjections.isEmpty() ) {
+        // Set<String> keys = doubleProjections.keySet();
+        // LOG.info( "Following projections could probably be mapped on eachother" );
+        // for ( String key : keys ) {
+        // LOG.info( key + " : " + doubleProjections.get( key ) );
+        // }
+        // }
+        // if ( !doubleDatums.isEmpty() ) {
+        // Set<String> keys = doubleDatums.keySet();
+        // LOG.info( "Following datums could probably be mapped on eachother" );
+        // for ( String key : keys ) {
+        // LOG.info( key + " : " + doubleDatums.get( key ) );
+        // }
+        // }
+        // if ( !doubleToWGS.isEmpty() ) {
+        // Set<String> keys = doubleToWGS.keySet();
+        // LOG.info( "Following wgs conversion infos could probably be mapped on eachother" );
+        // for ( String key : keys ) {
+        // LOG.info( key + " : " + doubleToWGS.get( key ) );
+        // }
+        // }
+        // if ( !doubleEllipsoids.isEmpty() ) {
+        // Set<String> keys = doubleEllipsoids.keySet();
+        // LOG.info( "Following ellipsoids could probably be mapped on eachother" );
+        // for ( String key : keys ) {
+        // LOG.info( key + " : " + doubleEllipsoids.get( key ) );
+        // }
+        // }
+        // if ( !doubleMeridians.isEmpty() ) {
+        // Set<String> keys = doubleEllipsoids.keySet();
+        // LOG.info( "Following prime meridians could probably be mapped on eachother" );
+        // for ( String key : keys ) {
+        // LOG.info( key + " : " + doubleMeridians.get( key ) );
+        // }
+        // }
+        // } else {
+        // Collection<CompoundCRS> cCRSs = compoundCRSs.values();
+        // for ( String key : compoundCRSs.keySet() ) {
+        // CompoundCRS crs = compoundCRSs.get( key );
+        // if ( !allSystems.contains( crs ) ) {
+        // allSystems.add( crs );
+        // }
+        // }
+        // for ( String key : geographicCRSs.keySet() ) {
+        // GeographicCRS crs = geographicCRSs.get( key );
+        // if ( !allSystems.contains( crs ) ) {
+        // allSystems.add( crs );
+        // }
+        // }
+        // for ( String key : geocentricCRSs.keySet() ) {
+        // GeocentricCRS crs = geocentricCRSs.get( key );
+        // if ( !allSystems.contains( crs ) ) {
+        // allSystems.add( crs );
+        // }
+        // }
+        // for ( String key : projectedCRSs.keySet() ) {
+        // ProjectedCRS crs = projectedCRSs.get( key );
+        // if ( !allSystems.contains( crs ) ) {
+        // allSystems.add( crs );
+        // }
+        // }
+        // }
         return allSystems;
     }
 
@@ -519,6 +479,12 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
     public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
                             throws CRSConfigurationException {
         return getResolver().getTransformation( sourceCRS, targetCRS );
+    }
+
+    @Override
+    public CoordinateSystem getCRSByID( CRSCodeType id )
+                            throws CRSConfigurationException {
+        return getCRSByID( id.getEquivalentString() );
     }
 
 }

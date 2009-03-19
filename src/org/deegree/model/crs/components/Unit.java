@@ -40,6 +40,7 @@ package org.deegree.model.crs.components;
 import static org.deegree.model.crs.projections.ProjectionUtils.DTR;
 import static org.deegree.model.crs.utilities.MappingUtils.matchEPSGString;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 
 /**
@@ -125,8 +126,8 @@ public final class Unit extends CRSIdentifiable {
      * @param id
      *            of the unit
      */
-    public Unit( final String symbol, final String name, final String id ) {
-        super( new CRSIdentifiable( new String[] { id }, new String[] { name }, null, null, null ) );
+    public Unit( final String symbol, final String name, final CRSCodeType code ) {
+        super( new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null, null ) );
         this.symbol = symbol;
         this.scale = 1;
         this.baseType = this;
@@ -140,7 +141,7 @@ public final class Unit extends CRSIdentifiable {
      *            of the unit, e.g. metre
      */
     public Unit( final String symbol, final String name ) {
-        this( symbol, name, name );
+        this( symbol, name, CRSCodeType.valueOf( name ) );
     }
 
     /**
@@ -156,7 +157,7 @@ public final class Unit extends CRSIdentifiable {
      *            the baseType
      */
     public Unit( final String symbol, String name, final double scale, final Unit baseType ) {
-        this( symbol, name, name, scale, baseType );
+        this( symbol, name, CRSCodeType.valueOf( name ), scale, baseType );
     }
 
     /**
@@ -173,8 +174,8 @@ public final class Unit extends CRSIdentifiable {
      * @param baseType
      *            the baseType
      */
-    public Unit( final String symbol, String name, String id, final double scale, final Unit baseType ) {
-        super( new CRSIdentifiable( new String[] { id }, new String[] { name }, null, null, null ) );
+    public Unit( final String symbol, String name, CRSCodeType code, final double scale, final Unit baseType ) {
+        super( new CRSIdentifiable( new CRSCodeType[] { code }, new String[] { name }, null, null, null ) );
         this.symbol = symbol;
         this.scale = scale;
         this.baseType = baseType;

@@ -45,6 +45,7 @@ import static org.deegree.model.crs.projections.ProjectionUtils.QUARTERPI;
 import javax.vecmath.Point2d;
 
 import org.deegree.model.crs.CRSIdentifiable;
+import org.deegree.model.crs.EPSGCode;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.exceptions.ProjectionException;
@@ -183,7 +184,7 @@ public class StereographicAlternative extends AzimuthalProjection {
      */
     public StereographicAlternative( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
                                      Point2d naturalOrigin, Unit units, double scale ) {
-        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, new CRSIdentifiable( "EPSG::9809" ) );
+        this( geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale, new CRSIdentifiable( new EPSGCode( 9809 ) ) );
     }
 
     /*

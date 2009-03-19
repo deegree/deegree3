@@ -46,7 +46,7 @@ package org.deegree.model.geometry.standard.primitive;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.model.crs.CRSFactory;
+import org.deegree.model.crs.CRSRegistry;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.GeometryFactory;
@@ -80,7 +80,7 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
      *            identifier of the new geometry instance
      * @param crs
      *            coordinate reference system. If the polygon does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of
      *            <code>null</code>
      * @param exteriorRing
      *            ring that defines the outer boundary, may be null (see section 9.2.2.5 of GML

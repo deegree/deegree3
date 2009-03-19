@@ -151,7 +151,7 @@ public class CoordinateTransformer extends Transformer {
                 if ( resultCoord == null ) {
                     resultCoord = new Point3d( coord );
                 }
-                sb.append( trans.getSourceCRS().getIdentifier() );
+                sb.append( trans.getSourceCRS().getCode() );
                 sb.append( ";" );
                 sb.append( coord.x );
                 sb.append( ";" );
@@ -161,7 +161,7 @@ public class CoordinateTransformer extends Transformer {
                     sb.append( coord.z );
                     sb.append( ";" );
                 }
-                sb.append( trans.getTargetCRS().getIdentifier() );
+                sb.append( trans.getTargetCRS().getCode() );
                 sb.append( ";" );
                 sb.append( resultCoord.x );
                 sb.append( ";" );

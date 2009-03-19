@@ -95,7 +95,7 @@ public abstract class Transformer {
      *             if the given parameter is null.
      */
     protected Transformer( String targetCRS ) throws UnknownCRSException, IllegalArgumentException {
-        this.targetCRS = CRSFactory.create( targetCRS );
+        this.targetCRS = CRSRegistry.lookup( targetCRS );
     }
 
     /**
@@ -157,7 +157,8 @@ public abstract class Transformer {
                                                                      "sourceCRS" ) );
         }
         TransformationFactory factory = TransformationFactory.getInstance();
-        return factory.createFromCoordinateSystems( CRSFactory.create( sourceCRS ), targetCRS );
+        return factory.createFromCoordinateSystems( CRSRegistry.lookup( sourceCRS ), 
+                                                    targetCRS );
     }
 
     /**
@@ -179,7 +180,7 @@ public abstract class Transformer {
     private synchronized Transformation checkOrCreateTransformation( CoordinateSystem sourceCRS )
                             throws TransformationException {
         if ( definedTransformation == null
-             || !( definedTransformation.getSourceCRS().equals( sourceCRS ) && definedTransformation.getTargetCRS().equals(
+             || ! ( definedTransformation.getSourceCRS().equals( sourceCRS ) && definedTransformation.getTargetCRS().equals(
                                                                                                                             targetCRS ) ) ) {
             definedTransformation = TransformationFactory.getInstance().createFromCoordinateSystems( sourceCRS,
                                                                                                      targetCRS );

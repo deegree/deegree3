@@ -108,7 +108,7 @@ public class CodeType {
 
     @Override
     public String toString() {
-        return code + (codeSpace == null ? " (codeSpace=" + codeSpace + ")" : "");
+        return code + (codeSpace != null ? " (codeSpace=" + codeSpace + ")" : "");
     }
 
     @Override

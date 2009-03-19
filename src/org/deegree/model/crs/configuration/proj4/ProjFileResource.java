@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.configuration.resources.CRSResource;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
@@ -120,7 +121,14 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
         if ( sourceCRS == null ) {
             return null;
         }
-        for ( String id : sourceCRS.getIdentifiers() ) {
+        
+        // convert codes to ids
+        CRSCodeType[] codes = sourceCRS.getCodes();
+        String[] ids = new String[ codes.length ];
+        for ( int i = 0; i < ids.length; i++ )
+            ids[i] = codes[i].getEquivalentString();
+        
+        for ( String id : ids ) {
             Map<String, String> params = null;
             try {
                 params = getURIAsType( id );
@@ -178,21 +186,21 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
             }
             if ( values != null ) {
                 String description = "Handmade proj4 towgs84 definition (parsed from nad/epsg) used by crs with id: "
-                                     + sourceCRS.getIdentifier() + "identifier";
+                                     + sourceCRS.getCode() + "identifier";
                 String name = "Proj4 defined toWGS84 params";
 
-                String id = Transformation.createFromTo( sourceCRS.getIdentifier(), GeographicCRS.WGS84.getIdentifier() );
+                String id = Transformation.createFromTo( sourceCRS.getCode().getEquivalentString(), GeographicCRS.WGS84.getCode().getEquivalentString() );
 
                 if ( values.length == 3 ) {
                     result = new Helmert( values[0], values[1], values[2], 0, 0, 0, 0, sourceCRS, GeographicCRS.WGS84,
-                                          id, name, sourceCRS.getVersion(), description, sourceCRS.getAreaOfUse() );
+                                          CRSCodeType.valueOf( id ), name, sourceCRS.getVersion(), description, sourceCRS.getAreaOfUse() );
                 } else if ( values.length == 7 ) {
                     result = new Helmert( values[0], values[1], values[2], values[3], values[4], values[5], values[6],
-                                          sourceCRS, GeographicCRS.WGS84, id, name, sourceCRS.getVersion(),
+                                          sourceCRS, GeographicCRS.WGS84, CRSCodeType.valueOf( id ), name, sourceCRS.getVersion(),
                                           description, sourceCRS.getAreaOfUse() );
                 } else {
                     throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJ4_WGS84_PARAMS",
-                                                                              sourceCRS.getIdentifier() + "identifier",
+                                                                              sourceCRS.getCode() + "identifier",
                                                                               Integer.toString( values.length ) ) );
                 }
             }

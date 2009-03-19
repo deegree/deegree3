@@ -62,6 +62,7 @@ import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 //import org.deegree.commons.xml.XMLTools;
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
@@ -218,7 +219,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             return null;
         }
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Parsing id of transformation method resulted in: " + Arrays.toString( id.getIdentifiers() ) );
+            LOG.debug( "Parsing id of transformation method resulted in: " + Arrays.toString( id.getCodes() ) );
         }
         Transformation result = getCachedIdentifiable( Transformation.class, id );
         if ( result == null ) {
@@ -240,7 +241,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
 
             OMElement conversionMethod = getRequiredXlinkedElement( method, PRE + "OperationMethod" );
             CRSIdentifiable conversionMethodID = parseIdentifiedObject( conversionMethod );
-            SupportedTransformations transform = mapTransformation( conversionMethodID.getIdentifiers() );
+            SupportedTransformations transform = mapTransformation( conversionMethodID.getCodes() );
 
             List<Pair<CRSIdentifiable, Pair<Unit, Double>>> parameterValues = parseParameterValues( rootElement );
             switch ( transform ) {
@@ -265,7 +266,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                             if ( !Double.isNaN( value ) ) {
                                 CRSIdentifiable paramID = paramValue.first;
                                 if ( paramID != null ) {
-                                    SupportedTransformationParameters paramType = mapTransformationParameters( paramID.getIdentifiers() );
+                                    SupportedTransformationParameters paramType = mapTransformationParameters( paramID.getCodes() );
                                     Unit unit = second.first;
                                     // If a unit was given, convert the value to the internally used
                                     // unit.
@@ -295,7 +296,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                                         ppm = value;
                                         break;
                                     default:
-                                        LOG.warn( "The (helmert) transformation parameter: " + paramID.getIdAndName()
+                                        LOG.warn( "The (helmert) transformation parameter: " + paramID.getCodeAndName()
                                                   + " could not be mapped to a valid parameter and will not be used." );
                                         break;
                                     }
@@ -419,7 +420,13 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             identifiers[0] = identifier;
             System.arraycopy( names, 0, identifiers, 1, names.length );
         }
-        CRSIdentifiable result = new CRSIdentifiable( identifiers, names, versions.toArray( new String[0] ),
+        
+        // convert identifiers to codes
+        CRSCodeType[] crsCodes = new CRSCodeType[ identifiers.length ];
+        int n = identifiers.length;
+        for ( int i = 0; i < n; i++ )
+            crsCodes[i] = CRSCodeType.valueOf( identifiers[i] );
+        CRSIdentifiable result = new CRSIdentifiable( crsCodes, names, versions.toArray( new String[0] ),
                                                 descriptions.toArray( new String[0] ),
                                                 areasOfUse.toArray( new String[0] ) );
         return result;
@@ -454,7 +461,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             return null;
         }
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Parsing id of compound crs resulted in: " + Arrays.toString( id.getIdentifiers() ) );
+            LOG.debug( "Parsing id of compound crs resulted in: " + Arrays.toString( id.getCodes() ) );
         }
 
         List<OMElement> compRefSysProp = adapter.getRequiredElements( rootElement, new XPath( PRE + "componentReferenceSystem", nsContext ) );
@@ -535,7 +542,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             return null;
         }
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Parsing id of projected crs resulted in: " + Arrays.toString( id.getIdentifiers() ) );
+            LOG.debug( "Parsing id of projected crs resulted in: " + Arrays.toString( id.getCodes() ) );
         }
 
         OMElement baseGEOCRSElementProperty = adapter.getRequiredElement( rootElement, new XPath( PRE + "baseGeodeticCRS", nsContext ) );
@@ -600,7 +607,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             return null;
         }
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Parsing id of geodetic crs resulted in: " + Arrays.toString( id.getIdentifiers() ) );
+            LOG.debug( "Parsing id of geodetic crs resulted in: " + Arrays.toString( id.getCodes() ) );
         }
 
         OMElement datumElementProp = adapter.getRequiredElement( rootElement, new XPath( PRE + "geodeticDatum", nsContext ) );
@@ -664,7 +671,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             return null;
         }
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Parsing id of datum resulted in: " + Arrays.toString( id.getIdentifiers() ) );
+            LOG.debug( "Parsing id of datum resulted in: " + Arrays.toString( id.getCodes() ) );
         }
         GeodeticDatum result = getCachedIdentifiable( GeodeticDatum.class, id );
         if ( result == null ) {
@@ -806,7 +813,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             return null;
         }
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Parsing id of ellipsoid resulted in: " + Arrays.toString( id.getIdentifiers() ) );
+            LOG.debug( "Parsing id of ellipsoid resulted in: " + Arrays.toString( id.getCodes() ) );
         }
         Ellipsoid result = getCachedIdentifiable( Ellipsoid.class, id );
         if ( result == null ) {
@@ -878,9 +885,9 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             return null;
         }
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Parsing id of prime meridian resulted in: " + Arrays.toString( id.getIdentifiers() ) );
+            LOG.debug( "Parsing id of prime meridian resulted in: " + Arrays.toString( id.getCodes() ) );
         }
-        PrimeMeridian result = getCachedIdentifiable( PrimeMeridian.class, id.getIdentifiers() );
+        PrimeMeridian result = getCachedIdentifiable( PrimeMeridian.class, id.getCodes() );
         // if ( cache == null ) {
         // // check if the greenwich is already present.
         // cache = getCachedIdentifiable( result.getIdentifiers() );
@@ -897,12 +904,12 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                 result = new PrimeMeridian( unit, gwLongitude, id );
             }
             if ( result == null ) {
-                String[] ids = PrimeMeridian.GREENWICH.getIdentifiers();
-                String[] foundIDS = id.getIdentifiers();
-                String[] resultIDS = new String[ids.length + foundIDS.length];
-                System.arraycopy( ids, 0, resultIDS, 0, ids.length );
-                System.arraycopy( foundIDS, 0, resultIDS, foundIDS.length, foundIDS.length );
-                id = new CRSIdentifiable( resultIDS, id.getNames(), id.getVersions(), id.getDescriptions(),
+                CRSCodeType[] codes = PrimeMeridian.GREENWICH.getCodes();
+                CRSCodeType[] foundCodes = id.getCodes();
+                CRSCodeType[] resultCodes = new CRSCodeType[codes.length + foundCodes.length];
+                System.arraycopy( codes, 0, resultCodes, 0, codes.length );
+                System.arraycopy( foundCodes, 0, resultCodes, foundCodes.length, foundCodes.length );
+                id = new CRSIdentifiable( resultCodes, id.getNames(), id.getVersions(), id.getDescriptions(),
                                        id.getAreasOfUse() );
                 result = new PrimeMeridian( Unit.RADIAN, 0, id );
             }
@@ -931,7 +938,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             return null;
         }
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Parsing id of vertical crs resulted in: " + Arrays.toString( id.getIdentifiers() ) );
+            LOG.debug( "Parsing id of vertical crs resulted in: " + Arrays.toString( id.getCodes() ) );
         }
         OMElement verticalCSProp = adapter.getRequiredElement( rootElement, new XPath( PRE + "verticalCS", nsContext ) );
         OMElement verticalCSType = getRequiredXlinkedElement( verticalCSProp, PRE + "VerticalCS" );
@@ -967,7 +974,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         if ( result == null ) {
             result = new VerticalDatum( id );
             if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "Parsing id of vertical datum resulted in: " + Arrays.toString( id.getIdentifiers() ) );
+                LOG.debug( "Parsing id of vertical datum resulted in: " + Arrays.toString( id.getCodes() ) );
             }
         }
         return addIdToCache( result, false );
@@ -999,10 +1006,10 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             return null;
         }
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Parsing id of projection method resulted in: " + Arrays.toString( id.getIdentifiers() ) );
+            LOG.debug( "Parsing id of projection method resulted in: " + Arrays.toString( id.getCodes() ) );
         }
 
-        Projection result = getCachedIdentifiable( Projection.class, id.getIdentifiers() );
+        Projection result = getCachedIdentifiable( Projection.class, id.getCodes() );
         if ( result == null ) {
         	OMElement method = adapter.getRequiredElement( rootElement, new XPath( PRE + "method", nsContext ) );
 
@@ -1021,7 +1028,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                         if ( !Double.isNaN( value ) ) {
                             CRSIdentifiable paramID = paramValue.first;
                             if ( paramID != null ) {
-                                SupportedProjectionParameters paramType = mapProjectionParameters( paramID.getIdentifiers() );
+                                SupportedProjectionParameters paramType = mapProjectionParameters( paramID.getCodes() );
                                 Unit unit = second.first;
                                 // If a unit was given, convert the value to the internally used unit.
                                 if ( unit != null && !unit.isBaseType() ) {
@@ -1053,7 +1060,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                                     trueScaleLatitude = value;
                                 case NOT_SUPPORTED:
                                 default:
-                                    LOG.warn( "The projection parameter: " + paramID.getIdAndName()
+                                    LOG.warn( "The projection parameter: " + paramID.getCodeAndName()
                                               + " could not be mapped to any projection and will not be used." );
                                     break;
                                 }
@@ -1064,7 +1071,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                 }
             }
 
-            SupportedProjections projection = mapProjections( conversionMethodID.getIdentifiers() );
+            SupportedProjections projection = mapProjections( conversionMethodID.getCodes() );
             switch ( projection ) {
             case TRANSVERSE_MERCATOR:
                 boolean northernHemisphere = falseNorthing < 10000000;
@@ -1089,7 +1096,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                 break;
             case NOT_SUPPORTED:
             default:
-                LOG.error( "The conversion method (Projection): " + conversionMethodID.getIdentifier()
+                LOG.error( "The conversion method (Projection): " + conversionMethodID.getCode()
                            + " is currently not supported by the deegree crs package." );
             }
 
@@ -1208,9 +1215,9 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                 } else {
                     CRSIdentifiable unitID = parseIdentifiedObject( unitElement );
                     if ( unitID != null ) {
-                        String[] ids = unitID.getIdentifiers();
-                        for ( int i = 0; i < ids.length && result == null; ++i ) {
-                            result = createUnitFromString( ids[i] );
+                        CRSCodeType[] codes = unitID.getCodes();
+                        for ( int i = 0; i < codes.length && result == null; ++i ) {
+                            result = createUnitFromString( codes[i].getEquivalentString() );
                         }
                     }
 

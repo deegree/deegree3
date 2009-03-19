@@ -38,8 +38,10 @@
 
 package org.deegree.model.crs.configuration;
 
+import java.sql.SQLException;
 import java.util.List;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.CRSConfigurationException;
@@ -104,7 +106,12 @@ public interface CRSProvider {
      */
     public CoordinateSystem getCRSByID( String id )
                             throws CRSConfigurationException;
-
+    
+    // TODO add doc and eventually replace the getCRSByID( String )
+    public CoordinateSystem getCRSByID( CRSCodeType id )
+                            throws CRSConfigurationException;
+    
+    
     /**
      * This method should be called to see if the provider is able to create all defined crs's, thus verifying the
      * correctness of the configuration.
@@ -114,6 +121,7 @@ public interface CRSProvider {
      *             if the implementation was confronted by an exception and could not deliver the requested crs. This
      *             exception should not be thrown if no CoordinateSystems were found, in the latter case an empty List (
      *             a list with size == 0 ) should be returned.
+     * @throws SQLException 
      */
     public List<CoordinateSystem> getAvailableCRSs()
                             throws CRSConfigurationException;

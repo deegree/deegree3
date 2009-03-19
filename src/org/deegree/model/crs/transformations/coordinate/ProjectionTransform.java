@@ -43,6 +43,7 @@ import java.util.List;
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.coordinatesystems.ProjectedCRS;
@@ -115,8 +116,8 @@ public class ProjectionTransform extends CRSTransformation {
      *            The crs containing a projection.
      */
     public ProjectionTransform( ProjectedCRS projectedCRS ) {
-        this( projectedCRS, new CRSIdentifiable( createFromTo( projectedCRS.getGeographicCRS().getIdentifier(),
-                                                            projectedCRS.getIdentifier() ) ) );
+        this( projectedCRS, new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( projectedCRS.getGeographicCRS().getCode().toString(),
+                                                            projectedCRS.getCode().toString() ) ) ) );
     }
 
     @Override

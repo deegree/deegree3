@@ -43,6 +43,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Datum;
@@ -139,9 +140,9 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      * @param descriptions
      * @param areasOfUse
      */
-    public CoordinateSystem( Datum datum, Axis[] axisOrder, String[] identifiers, String[] names, String[] versions,
+    public CoordinateSystem( Datum datum, Axis[] axisOrder, CRSCodeType[] codes, String[] names, String[] versions,
                              String[] descriptions, String[] areasOfUse ) {
-        super( identifiers, names, versions, descriptions, areasOfUse );
+        super( codes, names, versions, descriptions, areasOfUse );
         this.axisOrder = axisOrder;
         this.usedDatum = datum;
         this.transformations = new LinkedList<PolynomialTransformation>();
@@ -150,16 +151,16 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
     /**
      * @param transformations
      *            to use instead of the helmert transformation(s).
-     * @param geodeticDatum
+     * @param datum
      *            of this crs
      * @param axisOrder
      * @param identity
      */
-    public CoordinateSystem( List<PolynomialTransformation> transformations, Datum geodeticDatum, Axis[] axisOrder,
+    public CoordinateSystem( List<PolynomialTransformation> transformations, Datum datum, Axis[] axisOrder,
                              CRSIdentifiable identity ) {
         super( identity );
         this.axisOrder = axisOrder;
-        this.usedDatum = geodeticDatum;
+        this.usedDatum = datum;
         if ( transformations == null ) {
             transformations = new LinkedList<PolynomialTransformation>();
         }
@@ -390,5 +391,9 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
     public final List<PolynomialTransformation> getTransformations() {
         return transformations;
     }
+
+//    public void setDefaultIdentifier( CRSCodeType crsCode ) {
+//        super.setDefaultIdentifier( crsCode );        
+//    }
 
 }

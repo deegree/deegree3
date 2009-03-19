@@ -42,6 +42,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
@@ -90,7 +91,7 @@ public class DirectTransform extends CRSTransformation {
         this(
               transformation,
               sourceCRS,
-              new CRSIdentifiable( createFromTo( sourceCRS.getIdentifier(), transformation.getTargetCRS().getIdentifier() ) ) );
+              new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( sourceCRS.getCode().toString(), transformation.getTargetCRS().getCode().toString() ) ) ) );
 
     }
 

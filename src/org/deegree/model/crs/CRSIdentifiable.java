@@ -38,10 +38,13 @@
 
 package org.deegree.model.crs;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.deegree.model.i18n.Messages;
 
 /**
- * The <code>CRSIdentifiable</code> class can be used to identify a crs, ellipsoid, Datum and primemeridian
+ * The <code>CRSIdentifiable</code> class can be used to identify any crs, Ellipsoid, Geodetic Datum and Prime Meridian
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -53,7 +56,7 @@ import org.deegree.model.i18n.Messages;
 
 public class CRSIdentifiable {
 
-    private String[] identifiers;
+    private CRSCodeType[] codes;
 
     private String[] versions;
 
@@ -70,13 +73,13 @@ public class CRSIdentifiable {
      *            identifiable object.
      */
     public CRSIdentifiable( CRSIdentifiable other ) {
-        this( other.getIdentifiers(), other.getNames(), other.getVersions(), other.getDescriptions(),
+        this( other.getCodes(), other.getNames(), other.getVersions(), other.getDescriptions(),
               other.getAreasOfUse() );
     }
 
     /**
      * 
-     * @param identifiers
+     * @param codes
      * @param names
      *            the human readable names of the object.
      * @param versions
@@ -85,12 +88,12 @@ public class CRSIdentifiable {
      * @throws IllegalArgumentException
      *             if no identifier(s) was/were given.
      */
-    public CRSIdentifiable( String[] identifiers, String[] names, String[] versions, String[] descriptions,
+    public CRSIdentifiable( CRSCodeType[] codes, String[] names, String[] versions, String[] descriptions,
                          String[] areasOfUse ) {
-        if ( identifiers == null || identifiers.length == 0 ) {
+        if ( codes == null || codes.length == 0 ) {
             throw new IllegalArgumentException( "An identifiable object must at least have one identifier." );
         }
-        this.identifiers = identifiers;
+        this.codes = codes;
 
         this.names = names;
         this.versions = versions;
@@ -104,7 +107,7 @@ public class CRSIdentifiable {
      * @param identifiers
      *            of the object.
      */
-    public CRSIdentifiable( String[] identifiers ) {
+    public CRSIdentifiable( CRSCodeType[] identifiers ) {
         this( identifiers, null, null, null, null );
     }
 
@@ -123,8 +126,8 @@ public class CRSIdentifiable {
      * @param id
      *            of the Identifier
      */
-    public CRSIdentifiable( String id ) {
-        this( new String[] { id } );
+    public CRSIdentifiable( CRSCodeType id ) {
+        this( new CRSCodeType[] { id } );
     }
 
     /**
@@ -144,8 +147,8 @@ public class CRSIdentifiable {
     /**
      * @return the first of all identifiers.
      */
-    public final String getIdentifier() {
-        return identifiers[0];
+    public final CRSCodeType getCode() {
+        return codes[0];
     }
 
     /**
@@ -228,9 +231,9 @@ public class CRSIdentifiable {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder( "id: [" );
-        for ( int i = 0; i < identifiers.length; ++i ) {
-            sb.append( identifiers[i] );
-            if ( ( i + 1 ) < identifiers.length ) {
+        for ( int i = 0; i < codes.length; ++i ) {
+            sb.append( codes[i] );
+            if ( ( i + 1 ) < codes.length ) {
                 sb.append( ", " );
             }
         }
@@ -276,8 +279,8 @@ public class CRSIdentifiable {
     /**
      * @return the first id and the name (if given) as id: id, name: name.
      */
-    public String getIdAndName() {
-        StringBuilder sb = new StringBuilder( "id: " ).append( getIdentifier() );
+    public String getCodeAndName() {
+        StringBuilder sb = new StringBuilder( "id: " ).append( getCode() );
         if ( getName() != null ) {
             sb.append( ", name: " ).append( getName() );
         }
@@ -286,54 +289,27 @@ public class CRSIdentifiable {
 
     @Override
     public boolean equals( Object other ) {
-        if ( other != null && other instanceof CRSIdentifiable ) {
-            final CRSIdentifiable that = (CRSIdentifiable) other;
-            boolean isThisEPSG = false;
-            boolean isThatEPSG = false;
-            for ( String id : getIdentifiers() ) {
-                if ( id.toLowerCase().contains( "epsg" ) ) {
-                    isThisEPSG = true;
-                    break;
-                }
+        if ( other != null && other instanceof CRSIdentifiable 
+                             && ((CRSIdentifiable) other).getCodes().length == getCodes().length ) {
+            
+            // compare the codes from each part as sets 
+            CRSCodeType[] thisArray = getCodes();
+            CRSCodeType[] otherArray = ( (CRSIdentifiable) other).getCodes();
+            Set<CRSCodeType> thisSet = new HashSet<CRSCodeType>();
+            Set<CRSCodeType> otherSet = new HashSet<CRSCodeType>();
+            int n = getCodes().length;
+            for ( int i = 0; i < n; i++ ) {
+                thisSet.add( thisArray[i] );
+                otherSet.add( otherArray[i] );
             }
-            for ( String id : that.getIdentifiers() ) {
-                if ( id.toLowerCase().contains( "epsg" ) ) {
-                    isThatEPSG = true;
-                    break;
-                }
-            }
-            if ( isThatEPSG && isThisEPSG ) {
-                return idsMatch( that.identifiers );
-            }
-            return true;// idsMatch( that.identifiers );
-        }
-        return false;
-    }
-
-    /**
-     * Checks for the equality of id's between to different identifiable objects.
-     * 
-     * @param otherIDs
-     *            of the other identifiable object.
-     * @return true if the given strings match this.identifiers false otherwise.
-     */
-    private boolean idsMatch( String[] otherIDs ) {
-        if ( otherIDs == null || identifiers.length != otherIDs.length ) {
-            return false;
-        }
-        for ( int i = 0; i < identifiers.length; ++i ) {
-            String tmp = identifiers[i];
-            String other = otherIDs[i];
-            if ( tmp != null ) {
-                if ( !tmp.equals( other ) ) {
-                    return false;
-                }
-            } else if ( other != null ) {
+            
+            if ( ! thisSet.equals( otherSet ) )
                 return false;
-            }
+            
+            return true;
         }
-        return true;
-
+            
+        return false;
     }
 
     /**
@@ -353,8 +329,8 @@ public class CRSIdentifiable {
     /**
      * @return the identifiers, each identifiable object has atleast one id.
      */
-    public final String[] getIdentifiers() {
-        return identifiers;
+    public final CRSCodeType[] getCodes() {
+        return codes;
     }
 
     /**
@@ -376,15 +352,11 @@ public class CRSIdentifiable {
      *            a string which could match this identifiable.
      * @return true if this identifiable can be identified with the given string, false otherwise.
      */
-    public boolean hasID( String id ) {
-        if ( id == null || "".equals( id.trim() ) ) {
-            return false;
-        }
-        for ( String s : getIdentifiers() ) {
-            if ( id.equalsIgnoreCase( s ) ) {
+    public boolean hasCode( CRSCodeType id ) {
+        for ( CRSCodeType code : codes ) {
+            if ( code.equals( id ) )
                 return true;
-            }
         }
-        return false;
+        return false;        
     }
 }

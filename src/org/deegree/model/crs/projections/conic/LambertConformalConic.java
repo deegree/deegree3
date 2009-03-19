@@ -51,6 +51,7 @@ import static org.deegree.model.crs.projections.ProjectionUtils.tanHalfCoLatitud
 import javax.vecmath.Point2d;
 
 import org.deegree.model.crs.CRSIdentifiable;
+import org.deegree.model.crs.EPSGCode;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 
@@ -204,7 +205,7 @@ public class LambertConformalConic extends ConicProjection {
                                   GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
                                   Point2d naturalOrigin, Unit units, double scale ) {
         this( firstParallelLatitude, secondParallelLatitude, geographicCRS, falseNorthing, falseEasting, naturalOrigin,
-              units, scale, new CRSIdentifiable( "EPSG::9802" ) );
+              units, scale, new CRSIdentifiable( new EPSGCode( 9802 ) ) );
     }
 
     /**

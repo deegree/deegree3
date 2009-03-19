@@ -51,6 +51,7 @@ import javax.media.jai.WarpQuadratic;
 import javax.vecmath.Point3d;
 
 import org.deegree.model.crs.CRSIdentifiable;
+import org.deegree.model.crs.EPSGCode;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
 import org.deegree.model.i18n.Messages;
@@ -156,7 +157,7 @@ public class LeastSquareApproximation extends PolynomialTransformation {
      */
     public LeastSquareApproximation( List<Double> firstParameters, List<Double> secondParameters,
                                      CoordinateSystem sourceCRS, CoordinateSystem targetCRS, float scaleX, float scaleY ) {
-        this( firstParameters, secondParameters, sourceCRS, targetCRS, scaleX, scaleY, new CRSIdentifiable( "EPSG::9645" ) );
+        this( firstParameters, secondParameters, sourceCRS, targetCRS, scaleX, scaleY, new CRSIdentifiable( new EPSGCode( 9645 ) ) );
     }
 
     @Override

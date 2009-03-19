@@ -196,8 +196,8 @@ public class GeometryTransformer extends Transformer {
             }
         } catch ( GeometryException ge ) {
             throw new TransformationException( Messages.getMessage( "CRS_TRANSFORMATION_ERROR",
-                                                                    geo.getCoordinateSystem().getIdentifier(),
-                                                                    getTargetCRS().getIdentifier(), ge.getMessage() ),
+                                                                    geo.getCoordinateSystem().getCodes(),
+                                                                    getTargetCRS().getCodes(), ge.getMessage() ),
                                                ge );
         }
         return transformedGeometry;

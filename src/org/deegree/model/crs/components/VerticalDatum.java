@@ -38,6 +38,7 @@
 
 package org.deegree.model.crs.components;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 
 /**
@@ -67,9 +68,9 @@ public class VerticalDatum extends Datum {
      * @param descriptions
      * @param areasOfUse
      */
-    public VerticalDatum( String[] identifiers, String[] names, String[] versions, String[] descriptions,
+    public VerticalDatum( CRSCodeType[] codes, String[] names, String[] versions, String[] descriptions,
                           String[] areasOfUse ) {
-        this( new CRSIdentifiable( identifiers, names, versions, descriptions, areasOfUse ) );
+        this( new CRSIdentifiable( codes, names, versions, descriptions, areasOfUse ) );
     }
 
     /**
@@ -79,16 +80,16 @@ public class VerticalDatum extends Datum {
      * @param description
      * @param areaOfUse
      */
-    public VerticalDatum( String identifier, String name, String version, String description, String areaOfUse ) {
-        this( new String[] { identifier }, new String[] { name }, new String[] { version },
+    public VerticalDatum( CRSCodeType code, String name, String version, String description, String areaOfUse ) {
+        this( new CRSCodeType[] { code }, new String[] { name }, new String[] { version },
               new String[] { description }, new String[] { areaOfUse } );
     }
 
     /**
      * @param identifier
      */
-    public VerticalDatum( String identifier ) {
-        this( new String[] { identifier }, null, null, null, null );
+    public VerticalDatum( CRSCodeType code ) {
+        this( new CRSCodeType[] { code }, null, null, null, null );
     }
 
 }

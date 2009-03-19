@@ -42,6 +42,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.exceptions.TransformationException;
 import org.deegree.model.crs.transformations.Transformation;
@@ -103,8 +104,8 @@ public class ConcatenatedTransform extends CRSTransformation {
      *            The second transformation to apply to given points.
      */
     public ConcatenatedTransform( Transformation first, Transformation second ) {
-        this( first, second, new CRSIdentifiable( Transformation.createFromTo( first.getIdentifier(),
-                                                                            second.getIdentifier() ) ) );
+        this( first, second, new CRSIdentifiable( CRSCodeType.valueOf( Transformation.createFromTo( first.getCode().toString(),
+                                                                            second.getCode().toString() ) ) ) );
     }
 
     @Override

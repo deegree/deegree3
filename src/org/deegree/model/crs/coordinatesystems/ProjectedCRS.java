@@ -40,6 +40,7 @@ package org.deegree.model.crs.coordinatesystems;
 
 import java.util.List;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.projections.Projection;
@@ -88,14 +89,14 @@ public class ProjectedCRS extends CoordinateSystem {
      * @param descriptions
      * @param areasOfUse
      */
-    public ProjectedCRS( Projection projection, Axis[] axisOrder, String[] identifiers, String[] names,
+    public ProjectedCRS( Projection projection, Axis[] axisOrder, CRSCodeType[] codes, String[] names,
                          String[] versions, String[] descriptions, String[] areasOfUse ) {
-        super( projection.getGeographicCRS().getGeodeticDatum(), axisOrder, identifiers, names, versions, descriptions,
+        super( projection.getGeographicCRS().getGeodeticDatum(), axisOrder, codes, names, versions, descriptions,
                areasOfUse );
         this.underlyingCRS = projection.getGeographicCRS();
         this.projection = projection;
     }
-
+    
     /**
      * 
      * @param projection
@@ -105,8 +106,8 @@ public class ProjectedCRS extends CoordinateSystem {
      *            of this projection.
      * @param identifiers
      */
-    public ProjectedCRS( Projection projection, Axis[] axisOrder, String[] identifiers ) {
-        this( projection, axisOrder, identifiers, null, null, null, null );
+    public ProjectedCRS( Projection projection, Axis[] axisOrder, CRSCodeType[] codes ) {
+        this( projection, axisOrder, codes, null, null, null, null );
     }
 
     /**
@@ -121,9 +122,9 @@ public class ProjectedCRS extends CoordinateSystem {
      * @param description
      * @param areaOfUse
      */
-    public ProjectedCRS( Projection projection, Axis[] axisOrder, String identifier, String name, String version,
+    public ProjectedCRS( Projection projection, Axis[] axisOrder, CRSCodeType code, String name, String version,
                          String description, String areaOfUse ) {
-        this( projection, axisOrder, new String[] { identifier }, new String[] { name }, new String[] { version },
+        this( projection, axisOrder, new CRSCodeType[] { code }, new String[] { name }, new String[] { version },
               new String[] { description }, new String[] { areaOfUse } );
     }
 
@@ -136,8 +137,8 @@ public class ProjectedCRS extends CoordinateSystem {
      *            of this projection.
      * @param identifier
      */
-    public ProjectedCRS( Projection projection, Axis[] axisOrder, String identifier ) {
-        this( projection, axisOrder, identifier, null, null, null, null );
+    public ProjectedCRS( Projection projection, Axis[] axisOrder, CRSCodeType code ) {
+        this( projection, axisOrder, code, null, null, null, null );
     }
 
     /**
@@ -154,7 +155,6 @@ public class ProjectedCRS extends CoordinateSystem {
         super( transformations, projection.getGeographicCRS().getGeodeticDatum(), axisOrder, identity );
         this.underlyingCRS = projection.getGeographicCRS();
         this.projection = projection;
-
     }
 
     /*

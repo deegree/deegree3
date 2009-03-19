@@ -45,7 +45,7 @@ package org.deegree.model.geometry.standard.primitive;
 
 import java.util.List;
 
-import org.deegree.model.crs.CRSFactory;
+import org.deegree.model.crs.CRSRegistry;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.primitive.Solid;
 import org.deegree.model.geometry.primitive.Surface;
@@ -72,7 +72,7 @@ public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
      *            identifier of the new geometry instance
      * @param crs
      *            solids coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSFactory#createDummyCRS(String)} shall be used instead of <code>null</code>
+     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @param exteriorSurface
      *            the exterior surface (shell) of the solid, may be null
      * @param interiorSurfaces

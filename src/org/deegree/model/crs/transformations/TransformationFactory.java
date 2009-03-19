@@ -45,6 +45,7 @@ import javax.vecmath.GMatrix;
 import javax.vecmath.Matrix3d;
 import javax.vecmath.Matrix4d;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
@@ -141,6 +142,9 @@ public class TransformationFactory {
         if ( targetCRS == null ) {
             throw new IllegalArgumentException( "The target CRS may not be null" );
         }
+        //1) Call crs-config.getTransformation for source and target (caching????)
+        //2) if( helmert, use this class)
+        //3) if direct, do this=????
         if ( ( sourceCRS.getType() != CoordinateSystem.GEOGRAPHIC_CRS
                && sourceCRS.getType() != CoordinateSystem.COMPOUND_CRS
                && sourceCRS.getType() != CoordinateSystem.PROJECTED_CRS && sourceCRS.getType() != CoordinateSystem.GEOCENTRIC_CRS )
@@ -164,8 +168,9 @@ public class TransformationFactory {
             PolynomialTransformation direct = sourceCRS.getDirectTransformation( targetCRS );
             LOG.debug( "Using direct (polynomial) transformation instead of a helmert transformation: "
                        + direct.getImplementationName() );
-            result = new DirectTransform( direct, sourceCRS, new CRSIdentifiable( new String[] { direct.getIdentifier()
-                                                                                              + "-CRSTransformation" } ) );
+            result = new DirectTransform( direct, sourceCRS, new CRSIdentifiable( 
+                                                               new CRSCodeType[] { CRSCodeType.valueOf( direct.getCode()
+                                                                                              + "-CRSTransformation" ) } ) );
         } else {
             if ( sourceCRS.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
                 /**
@@ -181,8 +186,9 @@ public class TransformationFactory {
                 } else if ( targetCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
                     CompoundCRS target = (CompoundCRS) targetCRS;
                     CompoundCRS sTmp = new CompoundCRS( target.getHeightAxis(), source, target.getDefaultHeight(),
-                                                        new CRSIdentifiable( new String[] { source.getIdentifier()
-                                                                                         + "_compound" } ) );
+                                                        new CRSIdentifiable( 
+                                                          new CRSCodeType[] { CRSCodeType.valueOf( source.getCode()
+                                                                                         + "_compound" ) } ) );
                     result = createTransformation( sTmp, target );
                 }
             } else if ( sourceCRS.getType() == CoordinateSystem.PROJECTED_CRS ) {
@@ -199,8 +205,9 @@ public class TransformationFactory {
                 } else if ( targetCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
                     CompoundCRS target = (CompoundCRS) targetCRS;
                     CompoundCRS sTmp = new CompoundCRS( target.getHeightAxis(), source, target.getDefaultHeight(),
-                                                        new CRSIdentifiable( new String[] { source.getIdentifier()
-                                                                                         + "_compound" } ) );
+                                                        new CRSIdentifiable( 
+                                                             new CRSCodeType[] { CRSCodeType.valueOf( source.getCode()
+                                                                                         + "_compound" ) } ) );
                     result = createTransformation( sTmp, target );
                 }
             } else if ( sourceCRS.getType() == CoordinateSystem.GEOCENTRIC_CRS ) {
@@ -217,8 +224,9 @@ public class TransformationFactory {
                 } else if ( targetCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
                     CompoundCRS target = (CompoundCRS) targetCRS;
                     CompoundCRS sTmp = new CompoundCRS( target.getHeightAxis(), source, target.getDefaultHeight(),
-                                                        new CRSIdentifiable( new String[] { source.getIdentifier()
-                                                                                         + "_compound" } ) );
+                                                        new CRSIdentifiable( 
+                                                          new CRSCodeType[] { CRSCodeType.valueOf( source.getCode()
+                                                                                         + "_compound" ) } ) );
                     result = createTransformation( sTmp, target );
                 }
             } else if ( sourceCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
@@ -233,7 +241,8 @@ public class TransformationFactory {
                                               targetCRS,
                                               source.getDefaultHeight(),
                                               new CRSIdentifiable(
-                                                                new String[] { targetCRS.getIdentifier() + "_compound" } ) );
+                                                new CRSCodeType[] { CRSCodeType.valueOf( targetCRS.getCode() + 
+                                                                                         "_compound" ) } ) );
                 } else {
                     target = (CompoundCRS) targetCRS;
                 }
@@ -350,9 +359,9 @@ public class TransformationFactory {
         if ( sourceCRS.getUnderlyingCRS().equals( targetCRS.getUnderlyingCRS() ) ) {
             return null;
         }
-        LOG.debug( "Creating compound( " + sourceCRS.getUnderlyingCRS().getIdentifier()
-                   + ") ->compound transformation( " + targetCRS.getUnderlyingCRS().getIdentifier()
-                   + "): from (source): " + sourceCRS.getIdentifier() + " to(target): " + targetCRS.getIdentifier() );
+        LOG.debug( "Creating compound( " + sourceCRS.getUnderlyingCRS().getCode()
+                   + ") ->compound transformation( " + targetCRS.getUnderlyingCRS().getCode()
+                   + "): from (source): " + sourceCRS.getCode() + " to(target): " + targetCRS.getCode() );
         final int sourceType = sourceCRS.getUnderlyingCRS().getType();
         final int targetType = targetCRS.getUnderlyingCRS().getType();
         Transformation result = null;
@@ -373,16 +382,18 @@ public class TransformationFactory {
             if ( sourceType == CoordinateSystem.GEOCENTRIC_CRS ) {
                 sourceGeocentric = (GeocentricCRS) sourceCRS.getUnderlyingCRS();
             } else {
-                sourceGeocentric = new GeocentricCRS( sourceCRS.getGeodeticDatum(), "tmp_" + sourceCRS.getIdentifier()
-                                                                                    + "_geocentric",
+                sourceGeocentric = new GeocentricCRS( sourceCRS.getGeodeticDatum(), 
+                                                      CRSCodeType.valueOf( "tmp_" + sourceCRS.getCode()
+                                                                                    + "_geocentric" ),
                                                       sourceCRS.getName() + "_Geocentric" );
             }
             GeocentricCRS targetGeocentric = null;
             if ( targetType == CoordinateSystem.GEOCENTRIC_CRS ) {
                 targetGeocentric = (GeocentricCRS) targetCRS.getUnderlyingCRS();
             } else {
-                targetGeocentric = new GeocentricCRS( targetCRS.getGeodeticDatum(), "tmp_" + targetCRS.getIdentifier()
-                                                                                    + "_geocentric",
+                targetGeocentric = new GeocentricCRS( targetCRS.getGeodeticDatum(), 
+                                                      CRSCodeType.valueOf( "tmp_" + targetCRS.getCode()
+                                                                                    + "_geocentric" ),
                                                       targetCRS.getName() + "_Geocentric" );
             }
             Transformation helmertTransformation = createTransformation( sourceGeocentric, targetGeocentric );
@@ -479,12 +490,12 @@ public class TransformationFactory {
         final GeodeticDatum sourceDatum = sourceCRS.getGeodeticDatum();
         final GeodeticDatum targetDatum = targetCRS.getGeodeticDatum();
         if ( sourceDatum.equals( targetDatum ) ) {
-            LOG.debug( "The datums of geographic (source): " + sourceCRS.getIdentifier()
-                       + " equals geographic (target): " + targetCRS.getIdentifier() + " returning null" );
+            LOG.debug( "The datums of geographic (source): " + sourceCRS.getCode()
+                       + " equals geographic (target): " + targetCRS.getCode() + " returning null" );
             return null;
         }
-        LOG.debug( "Creating geographic ->geographic transformation: from (source): " + sourceCRS.getIdentifier()
-                   + " to(target): " + targetCRS.getIdentifier() );
+        LOG.debug( "Creating geographic ->geographic transformation: from (source): " + sourceCRS.getCode()
+                   + " to(target): " + targetCRS.getCode() );
         final Ellipsoid sourceEllipsoid = sourceDatum.getEllipsoid();
         final Ellipsoid targetEllipsoid = targetDatum.getEllipsoid();
         // if a conversion needs totake place
@@ -495,9 +506,9 @@ public class TransformationFactory {
              * If the two geographic coordinate systems use different ellipsoid, convert from the source to target
              * ellipsoid through the geocentric coordinate system.
              */
-            final GeocentricCRS sourceGCS = new GeocentricCRS( sourceDatum, sourceCRS.getIdentifier(),
+            final GeocentricCRS sourceGCS = new GeocentricCRS( sourceDatum, sourceCRS.getCode(),
                                                                sourceCRS.getName() + "_Geocentric" );
-            final GeocentricCRS targetGCS = new GeocentricCRS( targetDatum, targetCRS.getIdentifier(),
+            final GeocentricCRS targetGCS = new GeocentricCRS( targetDatum, targetCRS.getCode(),
                                                                targetCRS.getName() + "_Geocentric" );
             Transformation step1 = createTransformation( sourceCRS, sourceGCS );
             LOG.debug( "Step 1 from geographic to geographic:\n" + step1 );
@@ -544,8 +555,8 @@ public class TransformationFactory {
     private Transformation createTransformation( final GeographicCRS sourceCRS, final ProjectedCRS targetCRS )
                             throws TransformationException {
 
-        LOG.debug( "Creating geographic->projected transformation: from (source): " + sourceCRS.getIdentifier()
-                   + " to(target): " + targetCRS.getIdentifier() );
+        LOG.debug( "Creating geographic->projected transformation: from (source): " + sourceCRS.getCode()
+                   + " to(target): " + targetCRS.getCode() );
         final GeographicCRS stepGeoCS = targetCRS.getGeographicCRS();
 
         final Transformation geo2geo = createTransformation( sourceCRS, stepGeoCS );
@@ -580,16 +591,17 @@ public class TransformationFactory {
     private Transformation createTransformation( final GeographicCRS sourceCRS, final GeocentricCRS targetCRS )
                             throws TransformationException {
         LOG.debug( "Creating geographic -> geocentric (helmert) transformation: from (source): "
-                   + sourceCRS.getIdentifier() + " to(target): " + targetCRS.getIdentifier() );
+                   + sourceCRS.getCode() + " to(target): " + targetCRS.getCode() );
         /*
          * if ( !PrimeMeridian.GREENWICH.equals( targetCRS.getGeodeticDatum().getPrimeMeridian() ) ) { throw new
          * TransformationException( "The rotation from " +
          * targetCRS.getGeodeticDatum().getPrimeMeridian().getIdentifier() + " to Greenwich prime meridian is not yet
          * implemented" ); }
          */
-        GeocentricCRS sourceGeocentric = new GeocentricCRS( sourceCRS.getGeodeticDatum(), "tmp_"
-                                                                                          + sourceCRS.getIdentifier()
-                                                                                          + "_geocentric",
+        GeocentricCRS sourceGeocentric = new GeocentricCRS( sourceCRS.getGeodeticDatum(), 
+                                                            CRSCodeType.valueOf( "tmp_"
+                                                                                          + sourceCRS.getCode()
+                                                                                          + "_geocentric" ),
                                                             sourceCRS.getName() + "_geocentric" );
         CRSTransformation helmertTransformation = createTransformation( sourceGeocentric, targetCRS );
         // if no helmert transformation is needed, the targetCRS equals the source-geocentric.
@@ -637,8 +649,8 @@ public class TransformationFactory {
      */
     private Transformation createTransformation( final ProjectedCRS sourceCRS, final ProjectedCRS targetCRS )
                             throws TransformationException {
-        LOG.debug( "Creating projected -> projected transformation: from (source): " + sourceCRS.getIdentifier()
-                   + " to(target): " + targetCRS.getIdentifier() );
+        LOG.debug( "Creating projected -> projected transformation: from (source): " + sourceCRS.getCode()
+                   + " to(target): " + targetCRS.getCode() );
         if ( sourceCRS.getProjection().equals( targetCRS.getProjection() ) ) {
             return null;
         }
@@ -665,8 +677,8 @@ public class TransformationFactory {
      */
     private Transformation createTransformation( final ProjectedCRS sourceCRS, final GeocentricCRS targetCRS )
                             throws TransformationException {
-        LOG.debug( "Creating projected -> geocentric transformation: from (source): " + sourceCRS.getIdentifier()
-                   + " to(target): " + targetCRS.getIdentifier() );
+        LOG.debug( "Creating projected -> geocentric transformation: from (source): " + sourceCRS.getCode()
+                   + " to(target): " + targetCRS.getCode() );
         final GeographicCRS sourceGCS = sourceCRS.getGeographicCRS();
 
         final Transformation inverseProjection = createTransformation( sourceCRS, sourceGCS );
@@ -691,8 +703,8 @@ public class TransformationFactory {
      */
     private Transformation createTransformation( final ProjectedCRS sourceCRS, final GeographicCRS targetCRS )
                             throws TransformationException {
-        LOG.debug( "Creating projected->geographic transformation: from (source): " + sourceCRS.getIdentifier()
-                   + " to(target): " + targetCRS.getIdentifier() );
+        LOG.debug( "Creating projected->geographic transformation: from (source): " + sourceCRS.getCode()
+                   + " to(target): " + targetCRS.getCode() );
         Transformation result = createTransformation( targetCRS, sourceCRS );
         if ( result != null ) {
             result.inverse();
@@ -717,8 +729,8 @@ public class TransformationFactory {
      */
     private CRSTransformation createTransformation( final GeocentricCRS sourceCRS, final GeocentricCRS targetCRS )
                             throws TransformationException {
-        LOG.debug( "Creating geocentric->geocetric transformation: from (source): " + sourceCRS.getIdentifier()
-                   + " to(target): " + targetCRS.getIdentifier() );
+        LOG.debug( "Creating geocentric->geocetric transformation: from (source): " + sourceCRS.getCode()
+                   + " to(target): " + targetCRS.getCode() );
         final GeodeticDatum sourceDatum = sourceCRS.getGeodeticDatum();
         final GeodeticDatum targetDatum = targetCRS.getGeodeticDatum();
         /*
@@ -737,8 +749,8 @@ public class TransformationFactory {
             if ( sourceEllipsoid != null
                  && !sourceEllipsoid.equals( targetEllipsoid )
                  && ( ( sourceDatum.getWGS84Conversion() != null && sourceDatum.getWGS84Conversion().hasValues() ) || ( targetDatum.getWGS84Conversion() != null && targetDatum.getWGS84Conversion().hasValues() ) ) ) {
-                LOG.debug( "Creating helmert transformation: source(" + sourceCRS.getIdentifier() + ")->target("
-                           + targetCRS.getIdentifier() + ")." );
+                LOG.debug( "Creating helmert transformation: source(" + sourceCRS.getCode() + ")->target("
+                           + targetCRS.getCode() + ")." );
 
                 // Transform between different ellipsoids using Bursa Wolf parameters.
                 Matrix tmp = swapAxis( sourceCRS, GeocentricCRS.WGS84 );
@@ -799,8 +811,8 @@ public class TransformationFactory {
                     }
                 }
 
-                LOG.debug( "The resulting helmert transformation matrix: from( " + sourceCRS.getIdentifier() + ") to("
-                           + targetCRS.getIdentifier() + ")\n " + resultMatrix );
+                LOG.debug( "The resulting helmert transformation matrix: from( " + sourceCRS.getCode() + ") to("
+                           + targetCRS.getCode() + ")\n " + resultMatrix );
                 result = new MatrixTransform( sourceCRS, targetCRS, resultMatrix, "Helmert-Transformation" );
 
             }
@@ -1006,7 +1018,7 @@ public class TransformationFactory {
     private Matrix swapAxis( final CoordinateSystem sourceCRS, final CoordinateSystem targetCRS )
                             throws TransformationException {
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Creating swap matrix from: " + sourceCRS.getIdentifier() + " to: " + targetCRS.getIdentifier() );
+            LOG.debug( "Creating swap matrix from: " + sourceCRS.getCode() + " to: " + targetCRS.getCode() );
             LOG.debug( "Source Axis:\n" + Arrays.toString( sourceCRS.getAxis() ) );
             LOG.debug( "Target Axis:\n" + Arrays.toString( targetCRS.getAxis() ) );
         }
@@ -1032,8 +1044,8 @@ public class TransformationFactory {
     private Matrix swapAndRotateGeoAxis( final GeographicCRS sourceCRS, final GeographicCRS targetCRS )
                             throws TransformationException {
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Creating geo swap/rotate matrix from: " + sourceCRS.getIdentifier() + " to: "
-                       + targetCRS.getIdentifier() );
+            LOG.debug( "Creating geo swap/rotate matrix from: " + sourceCRS.getCode() + " to: "
+                       + targetCRS.getCode() );
         }
         Matrix matrix = swapAxis( sourceCRS, targetCRS );
         if ( !sourceCRS.getGeodeticDatum().getPrimeMeridian().equals( targetCRS.getGeodeticDatum().getPrimeMeridian() ) ) {

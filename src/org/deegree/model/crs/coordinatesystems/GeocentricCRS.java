@@ -40,6 +40,7 @@ package org.deegree.model.crs.coordinatesystems;
 
 import java.util.List;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -64,7 +65,7 @@ public class GeocentricCRS extends CoordinateSystem {
      * axis points towards the prime meridian (e.g. front). The <var>Y</var> axis points East. The <var>Z</var> axis
      * points North.
      */
-    public static final GeocentricCRS WGS84 = new GeocentricCRS( GeodeticDatum.WGS84, "GC_WGS84", "Geocentric WGS84" );
+    public static final GeocentricCRS WGS84 = new GeocentricCRS( GeodeticDatum.WGS84, CRSCodeType.valueOf( "GC_WGS84" ), "Geocentric WGS84" );
 
     /**
      * @param datum
@@ -84,9 +85,9 @@ public class GeocentricCRS extends CoordinateSystem {
      * @param descriptions
      * @param areasOfUse
      */
-    public GeocentricCRS( GeodeticDatum datum, Axis[] axisOrder, String[] identifiers, String[] names,
+    public GeocentricCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType[] codes, String[] names,
                           String[] versions, String[] descriptions, String[] areasOfUse ) {
-        super( datum, axisOrder, identifiers, names, versions, descriptions, areasOfUse );
+        super( datum, axisOrder, codes, names, versions, descriptions, areasOfUse );
     }
 
     /**
@@ -98,9 +99,9 @@ public class GeocentricCRS extends CoordinateSystem {
      * @param description
      * @param areaOfUse
      */
-    public GeocentricCRS( GeodeticDatum datum, Axis[] axisOrder, String identifier, String name, String version,
+    public GeocentricCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType code, String name, String version,
                           String description, String areaOfUse ) {
-        this( datum, axisOrder, new String[] { identifier }, new String[] { name }, new String[] { version },
+        this( datum, axisOrder, new CRSCodeType[] { code }, new String[] { name }, new String[] { version },
               new String[] { description }, new String[] { areaOfUse } );
     }
 
@@ -109,8 +110,8 @@ public class GeocentricCRS extends CoordinateSystem {
      * @param axisOrder
      * @param identifier
      */
-    public GeocentricCRS( GeodeticDatum datum, Axis[] axisOrder, String identifier ) {
-        this( datum, axisOrder, new String[] { identifier }, null, null, null, null );
+    public GeocentricCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType code ) {
+        this( datum, axisOrder, new CRSCodeType[] { code }, null, null, null, null );
     }
 
     /**
@@ -120,9 +121,9 @@ public class GeocentricCRS extends CoordinateSystem {
      * @param identifier
      * @param name
      */
-    public GeocentricCRS( GeodeticDatum datum, String identifier, String name ) {
+    public GeocentricCRS( GeodeticDatum datum, CRSCodeType code, String name ) {
         this( datum, new Axis[] { new Axis( "X", Axis.AO_FRONT ), new Axis( "Y", Axis.AO_EAST ),
-                                 new Axis( "Z", Axis.AO_NORTH ) }, new String[] { identifier }, new String[] { name },
+                                 new Axis( "Z", Axis.AO_NORTH ) }, new CRSCodeType[] { code }, new String[] { name },
               null, null, null );
     }
 

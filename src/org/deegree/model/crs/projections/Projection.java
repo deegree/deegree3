@@ -111,6 +111,11 @@ public abstract class Projection extends CRSIdentifiable {
     private final GeographicCRS geographicCRS;
 
     private boolean isSpherical;
+    
+    /**
+     * For custom projections 
+     */
+    private String className;
 
     /**
      * Creates a Projection. <b>Caution</b>, the given natural origin should be given in radians rather then degrees.
@@ -144,6 +149,66 @@ public abstract class Projection extends CRSIdentifiable {
         this.falseNorthing = falseNorthing;
         this.falseEasting = falseEasting;
         this.units = units;
+        this.setClassName( null );
+
+        checkForNullObject( geographicCRS, "Projection", "geographicCRS" );
+        checkForNullObject( geographicCRS.getGeodeticDatum(), "Projection", "geographicCRS.datum" );
+        checkForNullObject( geographicCRS.getGeodeticDatum().getEllipsoid(), "Projection",
+                            "geographicCRS.datum.ellipsoid" );
+        checkForNullObject( naturalOrigin, "Projection", "naturalOrigin" );
+        checkForNullObject( units, "Projection", "units" );
+
+        this.scaleFactor = scale * getSemiMajorAxis();
+
+        this.naturalOrigin = new Point2d( normalizeLongitude( naturalOrigin.x ), normalizeLatitude( naturalOrigin.y ) );
+
+        // uses different library
+        // this.projectionLongitude = this.naturalOrigin.getX();
+        // this.projectionLatitude = this.naturalOrigin.getY();
+        this.projectionLongitude = this.naturalOrigin.x;
+        this.projectionLatitude = this.naturalOrigin.y;
+
+        sinphi0 = Math.sin( projectionLatitude );
+        cosphi0 = Math.cos( projectionLatitude );
+
+        isSpherical = geographicCRS.getGeodeticDatum().getEllipsoid().getEccentricity() < 0.0000001;
+    }
+    
+    /**
+     * Creates a Projection. <b>Caution</b>, the given natural origin should be given in radians rather then degrees.
+     * 
+     * @param geographicCRS
+     *            which this projection uses.
+     * @param falseNorthing
+     *            in given units
+     * @param falseEasting
+     *            in given units
+     * @param naturalOrigin
+     *            in radians longitude, latitude.
+     * @param units
+     *            of the map projection
+     * @param scale
+     *            at the prime meridian (e.g. 0.9996 for UTM)
+     * @param conformal
+     *            if the projection is conformal
+     * @param equalArea
+     *            if the projection result in an equal area map
+     * @param id
+     *            an identifiable instance containing information about this projection.
+     * @param className
+     *            the class for custom projections            
+     */
+    public Projection( GeographicCRS geographicCRS, double falseNorthing, double falseEasting, Point2d naturalOrigin,
+                       Unit units, double scale, boolean conformal, boolean equalArea, CRSIdentifiable id, String className ) {
+        super( id );
+        this.scale = scale;
+        this.conformal = conformal;
+        this.equalArea = equalArea;
+        this.geographicCRS = geographicCRS;
+        this.falseNorthing = falseNorthing;
+        this.falseEasting = falseEasting;
+        this.units = units;
+        this.setClassName( className );
 
         checkForNullObject( geographicCRS, "Projection", "geographicCRS" );
         checkForNullObject( geographicCRS.getGeodeticDatum(), "Projection", "geographicCRS.datum" );
@@ -453,5 +518,13 @@ public abstract class Projection extends CRSIdentifiable {
         }
 
         return (int) ( code >>> 32 ) ^ (int) code;
+    }
+
+    public void setClassName( String className ) {
+        this.className = className;
+    }
+
+    public String getClassName() {
+        return className;
     }
 }

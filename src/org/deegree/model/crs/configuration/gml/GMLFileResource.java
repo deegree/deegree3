@@ -53,6 +53,7 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.configuration.resources.XMLFileResource;
 import org.deegree.model.crs.coordinatesystems.CompoundCRS;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
@@ -118,14 +119,14 @@ public class GMLFileResource extends XMLFileResource {
         }
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Searching for wgs84 transformation for given sourceCRS: "
-                       + Arrays.toString( sourceCRS.getIdentifiers() ) );
+                       + Arrays.toString( sourceCRS.getCodes() ) );
         }
         Helmert result = cachedWGS84Transformations.get( sourceCRS );
         if ( result == null ) {
             Transformation parsedTransformation = getTransformation( sourceCRS, null );
             if ( parsedTransformation instanceof Helmert ) {
                 LOG.debug( "Found an helmert transformation for sourceCRS: "
-                           + Arrays.toString( sourceCRS.getIdentifiers() ) );
+                           + Arrays.toString( sourceCRS.getCodes() ) );
                 result = (Helmert) parsedTransformation;
             } else {
                 if ( parsedTransformation instanceof CRSTransformation ) {
@@ -133,8 +134,8 @@ public class GMLFileResource extends XMLFileResource {
                     GeographicCRS t = null;
                     if ( LOG.isDebugEnabled() ) {
                         LOG.debug( "Found crstransformation for sourceCRS: "
-                                   + Arrays.toString( sourceCRS.getIdentifiers() ) + " and targetCRS: "
-                                   + Arrays.toString( target.getIdentifiers() )
+                                   + Arrays.toString( sourceCRS.getCodes() ) + " and targetCRS: "
+                                   + Arrays.toString( target.getCodes() )
                                    + " will now use the targetCRS to find a Helmert transformation." );
                     }
                     if ( target.getType() == CoordinateSystem.COMPOUND_CRS ) {
@@ -155,7 +156,7 @@ public class GMLFileResource extends XMLFileResource {
                     if ( t != null ) {
                         if ( LOG.isDebugEnabled() ) {
                             LOG.debug( "Trying to resolve target to find a wgs84transformation for the 'targetCRS': "
-                                       + Arrays.toString( t.getIdentifiers() ) );
+                                       + Arrays.toString( t.getCodes() ) );
                         }
                         result = getWGS84Transformation( t );
                     }
@@ -167,14 +168,14 @@ public class GMLFileResource extends XMLFileResource {
 
         if ( result != null ) {
             if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "For the given crs: " + sourceCRS.getIdentifier()
+                LOG.debug( "For the given crs: " + sourceCRS.getCode()
                            + " following helmert transformation was found:\n" + result );
 
             }
 
             cachedWGS84Transformations.put( sourceCRS, result );
         } else {
-            LOG.info( "No helmert transformation found for the given crs: " + sourceCRS.getIdentifier() );
+            LOG.info( "No helmert transformation found for the given crs: " + sourceCRS.getCode() );
         }
         return result;
     }
@@ -184,10 +185,16 @@ public class GMLFileResource extends XMLFileResource {
             return null;
         }
         List<OMElement> toBeRemoved = new ArrayList<OMElement>( transformations.size() );
-        List<String> sourceIDs = Arrays.asList( sourceCRS.getIdentifiers() );
+        List<CRSCodeType> sourceCodes = Arrays.asList( sourceCRS.getCodes() );
+        List<String> sourceIDs = new ArrayList<String>();
+        for ( CRSCodeType sourceCode : sourceCodes )
+            sourceIDs.add( sourceCode.getEquivalentString() );
         List<String> targetIDs = null;
         if ( targetCRS != null ) {
-            targetIDs = Arrays.asList( targetCRS.getIdentifiers() );
+            targetIDs = new ArrayList<String>();
+            List<CRSCodeType> targetCodes = Arrays.asList( targetCRS.getCodes() );
+            for ( CRSCodeType targetCode : targetCodes ) 
+                targetIDs.add( targetCode.getEquivalentString() );
         } else {
             targetIDs = new ArrayList<String>();
         }

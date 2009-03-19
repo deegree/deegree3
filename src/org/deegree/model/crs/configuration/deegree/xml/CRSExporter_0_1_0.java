@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: https://svn.wald.intevation.org/svn/deegree/deegree3/commons/trunk/src/org/deegree/model/crs/configuration/deegree/CRSExporter_0_1_0.java $
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -36,41 +36,14 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.crs.components;
+package org.deegree.model.crs.configuration.deegree.xml;
 
-import org.deegree.model.crs.CRSCodeType;
-import org.deegree.model.crs.CRSIdentifiable;
+import java.util.Properties;
 
-/**
- * The <code>Datum</code> is a generic type for all datums.
- * 
- * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
- */
 
-public class Datum extends CRSIdentifiable {
-
-    /**
-     * @param id
-     *            containing all relevant id data.
-     */
-    public Datum( CRSIdentifiable id ) {
-        super( id );
-
-    }
-
-    /**
-     * @param identifiers
-     * @param names
-     * @param versions
-     * @param descriptions
-     * @param areasOfUse
-     */
-    public Datum( CRSCodeType[] codes, String[] names, String[] versions, String[] descriptions, String[] areasOfUse ) {
-        this( new CRSIdentifiable( codes, names, versions, descriptions, areasOfUse ) );
-    }
+public class CRSExporter_0_1_0 extends CRSExporter {
+	
+	public CRSExporter_0_1_0( Properties properties ) {
+		super( properties);
+	}
 }

@@ -50,6 +50,7 @@ import static org.deegree.model.crs.projections.ProjectionUtils.tanHalfCoLatitud
 
 import javax.vecmath.Point2d;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Unit;
 import org.deegree.model.crs.coordinatesystems.GeographicCRS;
@@ -217,7 +218,7 @@ public class StereographicAzimuthal extends AzimuthalProjection {
     public StereographicAzimuthal( double trueScaleLatitude, GeographicCRS geographicCRS, double falseNorthing,
                                    double falseEasting, Point2d naturalOrigin, Unit units, double scale ) {
         this( trueScaleLatitude, geographicCRS, falseNorthing, falseEasting, naturalOrigin, units, scale,
-              new CRSIdentifiable( "Snyder-StereoGraphic" ) );
+              new CRSIdentifiable( CRSCodeType.valueOf( "Snyder-StereoGraphic" ) ) );
     }
 
     /**

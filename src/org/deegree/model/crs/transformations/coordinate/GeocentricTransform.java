@@ -46,6 +46,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.Unit;
@@ -148,7 +149,7 @@ public class GeocentricTransform extends CRSTransformation {
      *            the geocentric crs.
      */
     public GeocentricTransform( CoordinateSystem source, GeocentricCRS target ) {
-        this( source, target, new CRSIdentifiable( createFromTo( source.getIdentifier(), target.getIdentifier() ) ) );
+        this( source, target, new CRSIdentifiable( CRSCodeType.valueOf( createFromTo( source.getCode().toString(), target.getCode().toString() ) ) ) );
     }
 
     @Override

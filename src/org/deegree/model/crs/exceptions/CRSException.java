@@ -40,7 +40,7 @@ package org.deegree.model.crs.exceptions;
 
 /**
  * A <code>CRSException</code> will inform the user that an error occurred while transforming,
- * projecting or creating a crs.
+ * projecting or creating a crs. The exporting process has been halted.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 

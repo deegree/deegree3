@@ -40,6 +40,8 @@ package org.deegree.model.crs.coordinatesystems;
 
 import java.util.List;
 
+import org.deegree.model.crs.EPSGCode;
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -72,7 +74,7 @@ public class GeographicCRS extends CoordinateSystem {
                                                                              new Axis( Unit.DEGREE, "lon",
                                                                                        Axis.AO_EAST ),
                                                                              new Axis( Unit.DEGREE, "lat", Axis.AO_NORTH ) },
-                                                                 "EPSG:4326", "WGS 84" );
+                                                                 new EPSGCode( 4326 ), "WGS 84" );
 
     /**
      * A geographic coordinate system using WGS84 datum. This coordinate system use <var>longitude</var>/<var>latitude</var>
@@ -85,7 +87,7 @@ public class GeographicCRS extends CoordinateSystem {
                                                                                           Axis.AO_NORTH ),
                                                                                 new Axis( Unit.DEGREE, "lon",
                                                                                           Axis.AO_EAST ) },
-                                                                    "EPSG:4326", "WGS 84" );
+                                                                    new EPSGCode( 4326 ), "WGS 84" );
 
     /**
      * @param datum
@@ -110,10 +112,10 @@ public class GeographicCRS extends CoordinateSystem {
      * @throws IllegalArgumentException
      *             if the axisOrder.length != 2.
      */
-    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, String[] identifiers, String[] names,
+    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType[] codes, String[] names,
                           String[] versions, String[] descriptions, String[] areasOfUse )
                             throws IllegalArgumentException {
-        super( datum, axisOrder, identifiers, names, versions, descriptions, areasOfUse );
+        super( datum, axisOrder, codes, names, versions, descriptions, areasOfUse );
         if ( axisOrder.length != 2 ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_COORDINATESYSTEMS_WRONG_AXIS_DIM",
                                                                      "Geographic", "2" ) );
@@ -125,8 +127,8 @@ public class GeographicCRS extends CoordinateSystem {
      * @param axisOrder
      * @param identifiers
      */
-    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, String[] identifiers ) {
-        this( datum, axisOrder, identifiers, null, null, null, null );
+    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType[] codes ) {
+        this( datum, axisOrder, codes, null, null, null, null );
     }
 
     /**
@@ -138,9 +140,9 @@ public class GeographicCRS extends CoordinateSystem {
      * @param description
      * @param areaOfUse
      */
-    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, String identifier, String name, String version,
+    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType code, String name, String version,
                           String description, String areaOfUse ) {
-        this( datum, axisOrder, new String[] { identifier }, new String[] { name }, new String[] { version },
+        this( datum, axisOrder, new CRSCodeType[] { code }, new String[] { name }, new String[] { version },
               new String[] { description }, new String[] { areaOfUse } );
     }
 
@@ -150,8 +152,8 @@ public class GeographicCRS extends CoordinateSystem {
      * @param identifier
      * @param name
      */
-    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, String identifier, String name ) {
-        this( datum, axisOrder, new String[] { identifier }, new String[] { name }, null, null, null );
+    public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType code, String name ) {
+        this( datum, axisOrder, new CRSCodeType[] { code }, new String[] { name }, null, null, null );
     }
 
     /**

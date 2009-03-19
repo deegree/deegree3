@@ -6,14 +6,15 @@
 -->
 </head>
 <body bgcolor="white">
-The org.deegree.model.crs.configuraton package contains the classes necessary to read crs-definitions from a file.
+The org.deegree.model.crs.configuraton package contains the classes necessary to read crs-definitions from a specified 
+backend ( database or xml-file).
 <p>For this purpose the CRSProvider interface is created. It allows the CRSConfiguration to rely on a wide variety
 of different 'crs-definitions-formats' for example deegree-crs, wkt (not implemented yet), proj4 or gml (not
 implementedj yet). The good thing is, the interface defines an export method, which can be called with a crs to receive
 a crs-definitions for the implementing interface, thus allowing to create an arbitrary configuration swift between the
 implementations.</p>
 <p>The default crs configuration can be changed by editing the <code>org.deegree.model.crs.configuration.crs_providers.properties</code>
-file, the default provider is {@link org.deegree.model.crs.configuration.deegree.DeegreeCRSProvider}.</p>
+file, the default provider is {@link org.deegree.model.crs.configuration.deegree.DatabaseCRSProvider}.</p>
 <h2>Automatic loading of projection/transformation classes</h2>
 It is possible to create your own projection/transformation classes, which the default provider will load automatically.
 <p>You can achieve this loading by supplying the <b><code>class</code></b> attribute to a <code>crs:projectedCRS/crs:projection</code>

@@ -44,6 +44,7 @@ import java.util.List;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.TransformationException;
@@ -169,9 +170,9 @@ public class Helmert extends Transformation {
      * @param descriptions
      * @param areasOfUse
      */
-    public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String[] identifiers, String[] names,
+    public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType[] codes, String[] names,
                     String[] versions, String[] descriptions, String[] areasOfUse ) {
-        this( 0, 0, 0, 0, 0, 0, 0, sourceCRS, targetCRS, new CRSIdentifiable( identifiers, names, versions, descriptions,
+        this( 0, 0, 0, 0, 0, 0, 0, sourceCRS, targetCRS, new CRSIdentifiable( codes, names, versions, descriptions,
                                                                            areasOfUse ) );
     }
 
@@ -184,8 +185,8 @@ public class Helmert extends Transformation {
      *            of this helmert transformation
      * @param identifier
      */
-    public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String identifier ) {
-        this( sourceCRS, targetCRS, new String[] { identifier } );
+    public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType code ) {
+        this( sourceCRS, targetCRS, new CRSCodeType[] { code } );
     }
 
     /**
@@ -197,8 +198,8 @@ public class Helmert extends Transformation {
      *            of this helmert transformation
      * @param identifiers
      */
-    public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String[] identifiers ) {
-        this( sourceCRS, targetCRS, identifiers, null, null, null, null );
+    public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType[] codes ) {
+        this( sourceCRS, targetCRS, codes, null, null, null, null );
     }
 
     /**
@@ -227,9 +228,9 @@ public class Helmert extends Transformation {
      * @param areaOfUses
      */
     public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String[] identifiers, String[] names,
+                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType[] codes, String[] names,
                     String[] versions, String[] descriptions, String[] areaOfUses ) {
-        this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new CRSIdentifiable( identifiers, names, versions,
+        this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new CRSIdentifiable( codes, names, versions,
                                                                                    descriptions, areaOfUses ) );
     }
 
@@ -259,9 +260,9 @@ public class Helmert extends Transformation {
      * @param areaOfUse
      */
     public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String identifier, String name,
+                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType code, String name,
                     String version, String description, String areaOfUse ) {
-        this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new String[] { identifier }, new String[] { name },
+        this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new CRSCodeType[] { code }, new String[] { name },
               new String[] { version }, new String[] { description }, new String[] { areaOfUse } );
     }
 
@@ -287,8 +288,8 @@ public class Helmert extends Transformation {
      * @param identifiers
      */
     public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String[] identifiers ) {
-        this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, identifiers, null, null, null, null );
+                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType[] codes ) {
+        this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, codes, null, null, null, null );
     }
 
     /**
@@ -313,8 +314,8 @@ public class Helmert extends Transformation {
      * @param identifier
      */
     public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, String identifier ) {
-        this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new String[] { identifier } );
+                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType code ) {
+        this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new CRSCodeType[] { code } );
     }
 
     /**
@@ -387,7 +388,7 @@ public class Helmert extends Transformation {
      */
     @Override
     public String toString() {
-        final StringBuffer buffer = new StringBuffer( super.getIdAndName() );
+        final StringBuffer buffer = new StringBuffer( super.getCodeAndName() );
         buffer.append( "\n[\"" );
         buffer.append( dx );
         buffer.append( ", " );

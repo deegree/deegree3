@@ -114,8 +114,8 @@ public class TransformationException extends Exception {
      */
     public TransformationException( CoordinateSystem sourceCS, CoordinateSystem targetCS, String cause ) {
         super(
-               new StringBuilder( "Can't transform from: " ).append( sourceCS.getIdentifier() ).append( " into " ).append(
-                                                                                                                           targetCS.getIdentifier() ).append(
+               new StringBuilder( "Can't transform from: " ).append( sourceCS.getCode() ).append( " into " ).append(
+                                                                                                                           targetCS.getCode() ).append(
                                                                                                                                                               " because: " ).append(
                                                                                                                                                                                      cause ).toString() );
     }
