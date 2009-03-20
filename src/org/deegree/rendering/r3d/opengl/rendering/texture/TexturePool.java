@@ -82,6 +82,8 @@ public class TexturePool {
                            + "/workspace/bonn_3doptimierung/resources/data/example_data/Magnolia_grandiflora_M.png" );
 
         idToFile.put( "1", System.getProperty( "user.home" ) + "/jogl.png" );
+        
+        idToFile.put( "18",  "/home/schneider/Desktop/tree.png" );
 
     }
 
@@ -91,12 +93,12 @@ public class TexturePool {
      */
     public static synchronized void loadTexture( GL context, String texture ) {
 
-        Texture tex = getTexture( texture );
+        Texture tex = getTexture("18" );
         if ( tex == null ) {
             LOG.warn( "No texture for id: " + texture );
             return;
         }
-        tex.bind();
+        tex.bind();        
         // bindTextureToUnit( context, texture );
         // System.out.println( tex.getTarget() );
         // IntBuffer t = BufferUtil.newIntBuffer( 1 );

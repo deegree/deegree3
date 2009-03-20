@@ -39,7 +39,7 @@
 package org.deegree.rendering.r3d.opengl.rendering;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Vector3f;
+import javax.vecmath.Tuple3f;
 
 /**
  * The <code>Renderable</code> class TODO add class documentation here.
@@ -60,6 +60,6 @@ public interface JOGLRenderable {
      * @param eye
      *            TODO
      */
-    public void render( GL context, Vector3f eye );
+    public void render( GL context, Tuple3f eye );
 
 }

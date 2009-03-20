@@ -42,7 +42,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Vector3f;
+import javax.vecmath.Tuple3f;
 
 import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
 
@@ -66,7 +66,7 @@ public class PrototypePool {
      * @param eye
      *            of the beholder
      */
-    public synchronized static void render( GL context, PrototypeReference prototype, Vector3f eye ) {
+    public synchronized static void render( GL context, PrototypeReference prototype, Tuple3f eye ) {
         if ( prototype == null || prototype.getTransformationMatrix() == null || prototype.getPrototypeID() == null ) {
             return;
         }

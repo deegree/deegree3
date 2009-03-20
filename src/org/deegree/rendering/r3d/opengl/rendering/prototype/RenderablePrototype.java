@@ -38,7 +38,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.prototype;
 
-import javax.vecmath.Vector3f;
+import javax.vecmath.Tuple3f;
 
 import org.deegree.model.geometry.Envelope;
 import org.deegree.rendering.r3d.opengl.rendering.RenderableQualityModel;
@@ -83,7 +83,7 @@ public class RenderablePrototype extends WorldRenderableObject {
      * @return the level to render.
      */
     @Override
-    protected int calcQualityLevel( Vector3f eye ) {
+    protected int calcQualityLevel( Tuple3f eye ) {
         return 0;
     }
 

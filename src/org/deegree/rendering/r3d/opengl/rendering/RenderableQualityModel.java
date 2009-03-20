@@ -41,7 +41,7 @@ package org.deegree.rendering.r3d.opengl.rendering;
 import java.util.ArrayList;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Vector3f;
+import javax.vecmath.Tuple3f;
 
 import org.deegree.rendering.r3d.QualityModel;
 import org.deegree.rendering.r3d.opengl.rendering.prototype.PrototypePool;
@@ -90,7 +90,7 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
     }
 
     @Override
-    public void render( GL context, Vector3f eye ) {
+    public void render( GL context, Tuple3f eye ) {
         context.glEnableClientState( GL.GL_VERTEX_ARRAY );
         if ( prototype != null ) {
             PrototypePool.render( context, prototype, eye );

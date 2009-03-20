@@ -42,7 +42,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Vector3f;
+import javax.vecmath.Tuple3f;
 
 import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.deegree.commons.utils.math.Vectors3f;
@@ -131,7 +131,7 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
     }
 
     @Override
-    public void render( GL context, Vector3f eye ) {
+    public void render( GL context, Tuple3f eye ) {
         context.glPushMatrix();
         context.glDepthMask( false );
         context.glEnable( GL.GL_TEXTURE_2D );
@@ -150,7 +150,11 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
         context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
 
         context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
+//        context.glDisableClientState( GL.GL_NORMAL_ARRAY );
+        
         context.glDrawArrays( GL.GL_QUADS, 0, 4 );
+        
+//        context.glEnableClientState( GL.GL_NORMAL_ARRAY );
         context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
         context.glDisableClientState( GL.GL_VERTEX_ARRAY );
         context.glDisable( GL.GL_TEXTURE_2D );
@@ -177,7 +181,8 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
      */
     private void calculateAndSetRotation( GL context, float[] eye ) {
 
-        float[] viewVector = Vectors3f.sub( eye, location );
+        float[] t = new float[]{location[0]-2568000.0f, location[1]-5606000.0f, location[2]};
+        float[] viewVector = Vectors3f.sub( eye, t );
         // projection to the xy plane.
         viewVector[2] = 0;
         Vectors3f.normalizeInPlace( viewVector );
