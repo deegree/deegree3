@@ -74,7 +74,7 @@ public class Filter110XMLAdapterTest {
     public void parseBrokenIdFilterDocument() {
         Filter110XMLAdapter adapter = new Filter110XMLAdapter();
         // URL filterURL = Filter110XMLAdapterTest.class.getResourceAsStream( "testfilter_110_id_broken.xml" );
-        adapter.load( Filter110XMLAdapterTest.class.getResourceAsStream( "testfilter_110_id_broken.xml" ) );
+        adapter.load( Filter110XMLAdapterTest.class.getResourceAsStream( "testfilter_110_id.invalid_xml" ) );
         adapter.parse();
     }
 
