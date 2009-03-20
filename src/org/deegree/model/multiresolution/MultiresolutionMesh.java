@@ -45,7 +45,7 @@ import java.nio.channels.FileChannel;
 import java.util.List;
 
 import org.deegree.model.multiresolution.crit.LODCriterion;
-import org.deegree.model.multiresolution.io.MeshFragmentReader;
+import org.deegree.model.multiresolution.io.MeshFragmentDataReader;
 import org.deegree.rendering.r3d.Frustum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +62,7 @@ import org.slf4j.LoggerFactory;
  * <li>arcs: each arc describes the refinement of a certain region</li>
  * <li>fragments: each fragment describes a certain region of the geometry at a certain LOD</li>
  * </ul>
+ * </p>
  * 
  * @see SelectiveRefinement
  * @see SpatialSelection
@@ -150,8 +151,8 @@ public class MultiresolutionMesh {
         blobBuffer.limit( arcsSegmentStart );
         ByteBuffer nodesBuffer = blobBuffer.slice();
 
-        LOG.debug( "Initializing MultiresolutionMesh: #fragments: " + numFragments + ", flags=" + flags + ", #nodes: "
-                   + numNodes + ", #arcs: " + numArcs );
+        LOG.info( "MultiresolutionMesh: flags=" + flags + ", #fragments: " + numFragments + ", #nodes: " + numNodes
+                  + ", #arcs: " + numArcs );
         LOG.debug( "- nodesBuffer: [" + nodesSegmentStart + '-' + ( arcsSegmentStart - 1 ) + "]" );
         LOG.debug( "- arcsBuffer: [" + arcsSegmentStart + '-' + ( fragmentsSegmentStart - 1 ) + "]" );
         LOG.debug( "- patchesBuffer: [" + fragmentsSegmentStart + '-' + ( blobBuffer.capacity() - 1 ) + "]" );
@@ -160,7 +161,7 @@ public class MultiresolutionMesh {
 
         nodes = createNodes( nodesBuffer );
         arcs = createArcs( arcsBuffer );
-        fragments = createFragmentInfos( fragmentsInfoBuffer, new MeshFragmentReader( meshFragments ) );
+        fragments = createFragmentInfos( fragmentsInfoBuffer, new MeshFragmentDataReader( meshFragments ) );
     }
 
     /**
@@ -202,7 +203,7 @@ public class MultiresolutionMesh {
         return arcs;
     }
 
-    private MeshFragment[] createFragmentInfos( ByteBuffer patchBuffer, MeshFragmentReader patchDataReader ) {
+    private MeshFragment[] createFragmentInfos( ByteBuffer patchBuffer, MeshFragmentDataReader patchDataReader ) {
         MeshFragment[] patches = new MeshFragment[patchBuffer.capacity() / MeshFragment.SIZE];
         for ( int i = 0; i < patches.length; i++ ) {
             int baseOffset = i * MeshFragment.SIZE;

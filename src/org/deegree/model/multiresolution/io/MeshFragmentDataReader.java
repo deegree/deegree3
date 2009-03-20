@@ -46,9 +46,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
-import java.sql.SQLException;
-import java.util.zip.DataFormatException;
 
+import org.deegree.model.multiresolution.MeshFragmentData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,28 +59,23 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$
  */
-public class MeshFragmentReader {
+public class MeshFragmentDataReader {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MeshFragmentReader.class );
+    private static final Logger LOG = LoggerFactory.getLogger( MeshFragmentDataReader.class );
 
     private FileChannel channel;
 
-    public MeshFragmentReader( File meshFragments ) throws FileNotFoundException {
+    public MeshFragmentDataReader( File meshFragments ) throws FileNotFoundException {
         this.channel = new FileInputStream( meshFragments ).getChannel();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see mrdt.model.PatchReader#readPatchData(int, long, int)
-     */
-    public Buffer[] readPatchData( int patchId, long offset, int length )
-                            throws IOException, DataFormatException, SQLException {
+    public MeshFragmentData read( int fragmentId, long offset, int length )
+                            throws IOException {
 
         ByteBuffer rawTileBuffer = ByteBuffer.allocateDirect( length );
         rawTileBuffer.order( ByteOrder.nativeOrder() );        
         
-        LOG.debug( "Reading surface patch with id " + patchId + " (offset: " + offset + ", length: " + length + ")." );
+        LOG.debug( "Reading mesh fragment with id " + fragmentId + " (offset: " + offset + ", length: " + length + ")." );
         long begin = System.currentTimeMillis();
         channel.read( rawTileBuffer, offset );
         long elapsed = System.currentTimeMillis() - begin;
@@ -118,6 +112,6 @@ public class MeshFragmentReader {
         } else {
             indexBuffer = indexSlice.asIntBuffer();
         }
-        return new Buffer[] { vertexBuffer, normalsBuffer, indexBuffer };
+        return new MeshFragmentData( vertexBuffer, normalsBuffer, indexBuffer);
     }
 }

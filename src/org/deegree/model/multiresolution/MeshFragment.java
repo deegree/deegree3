@@ -37,11 +37,10 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.multiresolution;
 
-import java.nio.Buffer;
+import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 
-import org.deegree.model.multiresolution.io.MeshFragmentReader;
+import org.deegree.model.multiresolution.io.MeshFragmentDataReader;
 
 /**
  * Encapsulates the bounding box and approximation error for a fragment of a {@link MultiresolutionMesh} and provides
@@ -65,27 +64,17 @@ public class MeshFragment {
 
     public final float[][] bbox = new float[2][3];
 
-    public final float error;  
+    public final float error;
     
-    private FloatBuffer vertexBuffer;
-
-    private Buffer indexBuffer;
-
-    private FloatBuffer normalsBuffer;
-
-    // private int numVertices;
-
-    private int numTriangles;
-
-    private boolean isLoaded;
-
-    private MeshFragmentReader patchReader;
-
     private long blobPosition;
 
-    private int length;
-
-    public MeshFragment( int id, ByteBuffer buffer, MeshFragmentReader patchReader ) {
+    private int length;    
+    
+    private MeshFragmentDataReader patchReader;
+    
+    private MeshFragmentData data;
+   
+    public MeshFragment( int id, ByteBuffer buffer, MeshFragmentDataReader patchReader ) {
         this.id = id;
         this.patchReader = patchReader;
         this.bbox[0][0] = buffer.getFloat();
@@ -107,66 +96,22 @@ public class MeshFragment {
         return blobPosition + length - 1;
     }
 
-    public int getNumTriangles() {
-        if ( !isLoaded ) {
-            loadData();
-        }
-        return numTriangles;
-    }
-
-    public FloatBuffer getVertices() {
-        if ( !isLoaded ) {
-            loadData();
-        }
-        return vertexBuffer;
-    }
-
-    /**
-     * Returns a buffer that contains the vertices of the triangles.
-     * <p>
-     * The returned buffer can be (depending on the numer of vertices in the Patch):
-     * <ul>
-     * <li>a <code>ByteBuffer</code></li>
-     * <li>a <code>ShortBuffer</code></li>
-     * <li>an <code>IntBuffer</code></li>
-     * </ul>
-     * 
-     * @return buffer the contains the triangles (as vertex indexes)
-     */
-    public Buffer getTriangles() {
-        if ( !isLoaded ) {
-            loadData();
-        }
-        return indexBuffer;
-    }
-
-    public FloatBuffer getNormals() {
-        if ( !isLoaded ) {
-            loadData();
-        }
-        return normalsBuffer;
-    }
-
+    public MeshFragmentData getData() {
+        return data;
+    }    
+    
     public void loadData() {
-        try {
-            Object[] dataBuffers = patchReader.readPatchData( id, blobPosition, length );
-            vertexBuffer = (FloatBuffer) dataBuffers[0];
-            normalsBuffer = (FloatBuffer) dataBuffers[1];
-            indexBuffer = (Buffer) dataBuffers[2];
-        } catch ( Exception e ) {
-            e.printStackTrace();
+        if (data == null) {
+            try {
+                data = patchReader.read( id, blobPosition, length );
+            } catch ( IOException e ) {
+                e.printStackTrace();
+            }
         }
-
-        // numVertices = vertexBuffer.capacity() / 3;
-        numTriangles = indexBuffer.capacity() / 3;
-        isLoaded = true;
     }
 
     public void unloadData() {
-        vertexBuffer = null;
-        indexBuffer = null;
-        normalsBuffer = null;
-        isLoaded = false;
+        data = null;
     }
 
     public static void store( ByteBuffer target, float minX, float minY, float minZ, float maxX, float maxY,
@@ -195,7 +140,7 @@ public class MeshFragment {
     }
 
     public boolean isLoaded() {
-        return isLoaded;
+        return data != null;
     }
 
     @Override

@@ -150,30 +150,7 @@ public class Arc {
      * @return true, if the arc interferes with the geometry, false otherwise
      */
     public boolean interferes(Frustum roi) {
-        boolean interferes = false;
-        
-        float[][] bbox = getBBox();
-        interferes = roi.intersects(bbox);
-
-//        if (geometry instanceof Box) {
-//            float[][] bbox = getBBox();
-//            Box bboxObject = Box.createNew(bbox[0][0], bbox[0][1], bbox[0][2], bbox[1][0],
-//                    bbox[1][1], bbox[1][2]);
-//            interferes = bboxObject.intersects((Box) geometry);
-//        } else if (geometry instanceof Frustum) {
-//            Frustum frustum = (Frustum) geometry;
-//            float[][] bbox = getBBox();
-//            interferes = frustum.intersects(bbox);
-//        } else if (geometry instanceof Plane) {
-//            Plane plane = (Plane) geometry;
-//            float[][] bbox = getBBox();
-//            interferes = plane.intersects(bbox);
-//        } else {
-//            throw new UnsupportedOperationException(
-//                    "Edge#interferes(Geometry) is not implemented for geometries of class: '"
-//                            + geometry.getClass().getName() + "'.");
-//        }
-        return interferes;
+        return roi.intersects(getBBox());
     }
 
     /**
