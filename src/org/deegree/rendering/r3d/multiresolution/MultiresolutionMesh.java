@@ -35,7 +35,7 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.multiresolution;
+package org.deegree.rendering.r3d.multiresolution;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,9 +44,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
-import org.deegree.model.multiresolution.crit.LODCriterion;
-import org.deegree.model.multiresolution.io.MeshFragmentDataReader;
 import org.deegree.rendering.r3d.Frustum;
+import org.deegree.rendering.r3d.multiresolution.crit.LODCriterion;
+import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

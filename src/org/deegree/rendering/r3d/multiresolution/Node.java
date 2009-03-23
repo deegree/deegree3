@@ -35,7 +35,7 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.multiresolution;
+package org.deegree.rendering.r3d.multiresolution;
 
 import java.nio.ByteBuffer;
 

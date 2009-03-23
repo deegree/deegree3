@@ -47,9 +47,9 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Tuple3f;
 
 import org.deegree.commons.utils.AllocatedHeapMemory;
+import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.geometry.SimpleGeometryStyle;
 import org.deegree.rendering.r3d.opengl.rendering.utils.BufferIO;
 import org.deegree.rendering.r3d.opengl.tesselation.Tesselator;
@@ -161,7 +161,7 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
     }
 
     @Override
-    public void render( GL context, Tuple3f eye ) {
+    public void render( GL context, ViewParams params ) {
         enableArrays( context );
         context.glDrawArrays( openGLType, 0, vertexCount );
         disableArrays( context );

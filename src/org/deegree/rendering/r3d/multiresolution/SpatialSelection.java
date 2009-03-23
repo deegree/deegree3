@@ -35,15 +35,15 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.multiresolution;
+package org.deegree.rendering.r3d.multiresolution;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.model.multiresolution.crit.LODCriterion;
 import org.deegree.rendering.r3d.Frustum;
+import org.deegree.rendering.r3d.multiresolution.crit.LODCriterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

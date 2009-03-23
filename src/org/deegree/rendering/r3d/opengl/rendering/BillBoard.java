@@ -42,10 +42,11 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Tuple3f;
+import javax.vecmath.Point3f;
 
 import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.deegree.commons.utils.math.Vectors3f;
+import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.managers.Positionable;
 import org.deegree.rendering.r3d.opengl.rendering.texture.TexturePool;
 import org.slf4j.Logger;
@@ -131,7 +132,8 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
     }
 
     @Override
-    public void render( GL context, Tuple3f eye ) {
+    public void render( GL context, ViewParams params ) {
+        Point3f eye = params.getViewFrustum().getEyePos();
         context.glPushMatrix();
         context.glDepthMask( false );
         context.glEnable( GL.GL_TEXTURE_2D );

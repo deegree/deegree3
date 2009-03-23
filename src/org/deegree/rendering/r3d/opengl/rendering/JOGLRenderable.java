@@ -39,27 +39,36 @@
 package org.deegree.rendering.r3d.opengl.rendering;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Tuple3f;
+
+import org.deegree.rendering.r3d.ViewParams;
 
 /**
- * The <code>Renderable</code> class TODO add class documentation here.
+ * Interface for objects that can be rendered to a 3D OpenGL scene.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public interface JOGLRenderable {
 
     /**
-     * The draw function must be implemented for each data element.
+     * Called to render this object to an OpenGL context.
+     * <p>
+     * The following pre-conditions hold:
+     * <ul>
+     * <li>The projection matrix of <code>context</code> has been set up correctly by the caller.</li>
+     * <li>The view parameters <code>params</code> matches the projection and the screen size, so the callee can depend
+     * on them to perform view frustum culling and LOD adaptation.</li>
+     * </ul>
+     * </p>
      * 
      * @param context
-     * @param eye
-     *            TODO
+     *            JOGL context
+     * @param params
+     *            viewing parameters
      */
-    public void render( GL context, Tuple3f eye );
+    public void render( GL context, ViewParams params );
 
 }

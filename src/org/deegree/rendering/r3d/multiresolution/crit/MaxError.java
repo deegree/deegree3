@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/rendering/r3d/QualityModel.java $
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
  Copyright (C) 2001-2009 by:
@@ -35,46 +35,44 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.multiresolution.crit;
 
-import org.deegree.model.multiresolution.Arc;
-import org.deegree.model.multiresolution.MultiresolutionMesh;
-import org.deegree.model.multiresolution.SelectiveRefinement;
-import org.deegree.model.multiresolution.SpatialSelection;
+package org.deegree.rendering.r3d.multiresolution.crit;
+
+import org.deegree.rendering.r3d.multiresolution.Arc;
+import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 
 /**
- * Interface for LOD criteria, i.e. functions that determine whether {@link Arc}s in the DAG have to be "applied" (the
- * arcs correspond to mesh refinements) during <i>selective refinement</i> / <i>spatial selection</i>.
- * 
- * @see MultiresolutionMesh
- * @see SelectiveRefinement
- * @see SpatialSelection
+ * {@link LODCriterion} that requests the smallest LOD in a {@link MultiresolutionMesh} with an approximation error that
+ * does not exceed a given bound.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: schneider $
  * 
- * @version $Revision: 310 $
+ * @version $Revision: $, $Date: $
  */
-public interface LODCriterion {
+public class MaxError implements LODCriterion {
+
+    private float c;
 
     /**
-     * Static instance of a {@link Coarsest} criterion, use this to extract the coarsest LOD contained in a
-     * {@link MultiresolutionMesh}.
+     * Creates a new {@link MaxError} instance.
+     * 
+     * @param maxTolerableError
+     *            the maximum tolerable error for the LOD (in world units)
      */
-    public static final LODCriterion COARSEST = new Coarsest();
+    public MaxError( float maxTolerableError ) {
+        this.c = maxTolerableError;
+    }
 
     /**
-     * Static instance of a {@link Finest} criterion, use this to extract the finest LOD contained in a
-     * {@link MultiresolutionMesh}.
-     */
-    public static final LODCriterion FINEST = new Finest();
-
-    /**
-     * Checks whether the given {@link Arc} is necessary in order to satisfy this LOD criterion.
+     * Returns true, iff the geometric error associated with the arc is greater than the maximum tolerable error.
      * 
      * @param arc
      *            arc to be checked
-     * @return true, if the arc is necessary, false otherwise
+     * @return true, iff the arc's geometric error is greater than the maximum tolerable error
      */
-    public abstract boolean needsRefinement( Arc arc );
+    @Override
+    public boolean needsRefinement( Arc arc ) {
+        return arc.getGeometricError() > c;
+    }
 }

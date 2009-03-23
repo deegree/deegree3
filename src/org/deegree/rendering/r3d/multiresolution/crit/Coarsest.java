@@ -36,61 +36,30 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.multiresolution;
+package org.deegree.rendering.r3d.multiresolution.crit;
 
-import java.nio.Buffer;
-import java.nio.FloatBuffer;
+import org.deegree.rendering.r3d.multiresolution.Arc;
+import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * {@link LODCriterion} that requests the coarsest LOD available in a {@link MultiresolutionMesh}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class MeshFragmentData {
-
-    private int numTriangles;
-
-    private final FloatBuffer vertexBuffer;
-
-    private final Buffer indexBuffer;
-
-    private final FloatBuffer normalsBuffer;
-
-    public MeshFragmentData( FloatBuffer vertexBuffer, FloatBuffer normalsBuffer, Buffer indexBuffer ) {
-        this.vertexBuffer = vertexBuffer;
-        this.normalsBuffer = normalsBuffer;
-        this.indexBuffer = indexBuffer;
-        this.numTriangles = indexBuffer.capacity() / 3;
-    }
-
-    public int getNumTriangles() {
-        return numTriangles;
-    }
-
-    public FloatBuffer getVertices() {
-        return vertexBuffer;
-    }
+public class Coarsest implements LODCriterion {
 
     /**
-     * Returns the buffer that contains the vertices of the triangles.
-     * <p>
-     * The returned buffer can be (depending on the number of vertices in the fragment):
-     * <ul>
-     * <li>a <code>ByteBuffer</code></li>
-     * <li>a <code>ShortBuffer</code></li>
-     * <li>an <code>IntBuffer</code></li>
-     * </ul>
+     * Always returns false, so no refinements are applied -> the resulting LOD is the coarsest available.
      * 
-     * @return buffer the contains the triangles (as vertex indexes)
+     * @param arc
+     *            arc to be checked
+     * @return always false
      */
-    public Buffer getTriangles() {
-        return indexBuffer;
-    }
-
-    public FloatBuffer getNormals() {
-        return normalsBuffer;
+    @Override
+    public boolean needsRefinement( Arc arc ) {
+        return false;
     }
 }

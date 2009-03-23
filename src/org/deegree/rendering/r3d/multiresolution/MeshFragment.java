@@ -35,12 +35,12 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.multiresolution;
+package org.deegree.rendering.r3d.multiresolution;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.deegree.model.multiresolution.io.MeshFragmentDataReader;
+import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
 
 /**
  * Encapsulates the bounding box and approximation error for a fragment of a {@link MultiresolutionMesh} and provides

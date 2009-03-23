@@ -39,10 +39,9 @@
 package org.deegree.rendering.r3d.opengl.rendering;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
 
 import org.deegree.model.geometry.Envelope;
+import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.WorldObject;
 
 /**
@@ -57,10 +56,6 @@ import org.deegree.rendering.r3d.WorldObject;
  */
 public class WorldRenderableObject extends WorldObject<RenderableQualityModelPart, RenderableQualityModel> implements
                                                                                                           JOGLRenderable {
-
-    /**
-     * 
-     */
     private static final long serialVersionUID = 2998719476993351372L;
 
     /**
@@ -94,10 +89,10 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
      * Renders the model at the given quality level or the lesser quality level if the requested one is not available.
      * 
      * @param context
-     * @param eye
+     * @param params
      * @param level
      */
-    private void render( GL context, Tuple3f eye, int level ) {
+    private void render( GL context, ViewParams params, int level ) {
         if ( qualityLevels != null ) {
             if ( level >= 0 && qualityLevels.length > level ) {
                 RenderableQualityModel model = qualityLevels[level];
@@ -113,22 +108,22 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
                     }
                 }
                 if ( model != null ) {
-                    model.render( context, eye );
+                    model.render( context, params );
                 }
             }
         }
     }
 
     @Override
-    public void render( GL context, Tuple3f eye ) {
-        render( context, eye, calcQualityLevel( eye ) );
+    public void render( GL context, ViewParams params ) {
+        render( context, params, calcQualityLevel( params ) );
     }
 
     /**
      * @param eye
      * @return the level to render.
      */
-    protected int calcQualityLevel( Tuple3f eye ) {
+    protected int calcQualityLevel( ViewParams eye ) {
         return 0;
     }
 }

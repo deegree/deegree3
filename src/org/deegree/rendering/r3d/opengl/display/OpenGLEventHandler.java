@@ -46,11 +46,14 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.GeometryFactoryCreator;
+import org.deegree.rendering.r3d.Frustum;
+import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.WorldRenderableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,6 +114,10 @@ public class OpenGLEventHandler implements GLEventListener {
 
     private GLUT glut = new GLUT();
 
+    private int width;
+
+    private int height;
+
     /**
      * 
      * @param renderTestObject
@@ -167,8 +174,14 @@ public class OpenGLEventHandler implements GLEventListener {
 
         LOG.trace( "Eye in model space: " + Vectors3f.asString( newEye ) );
 
+        Point3f newEyeP = new Point3f( newEye[0], newEye[1], newEye[2] );
+        Point3f center = new Point3f( lookAt[0], lookAt[1], lookAt[2] );
+        Vector3f up = new Vector3f( 0, 0, 1 );
+        Frustum vf = new Frustum( 60.0f, (float) width / height, 0.5f, farClippingPlane, newEyeP, center, up );
+        ViewParams params = new ViewParams( vf, width, height );
+
         for ( WorldRenderableObject dObj : worldRenderableObjects ) {
-            dObj.render( gl, new Vector3f( newEye[0], newEye[1], newEye[2] ) );
+            dObj.render( gl, params );
         }
 
         if ( renderTestObject ) {
@@ -333,6 +346,8 @@ public class OpenGLEventHandler implements GLEventListener {
 
     @Override
     public void reshape( GLAutoDrawable d, int x, int y, int width, int height ) {
+        this.width = width;
+        this.height = height;
         GL gl = d.getGL();
         gl.glMatrixMode( GL.GL_PROJECTION );
         gl.glLoadIdentity();

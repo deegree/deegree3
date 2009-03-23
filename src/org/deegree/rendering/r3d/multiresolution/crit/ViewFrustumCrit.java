@@ -35,10 +35,10 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
-package org.deegree.model.multiresolution.crit;
+package org.deegree.rendering.r3d.multiresolution.crit;
 
-import org.deegree.model.multiresolution.Arc;
 import org.deegree.rendering.r3d.Frustum;
+import org.deegree.rendering.r3d.multiresolution.Arc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

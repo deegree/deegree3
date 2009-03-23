@@ -36,43 +36,65 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.model.multiresolution.crit;
-
-import org.deegree.model.multiresolution.Arc;
-import org.deegree.model.multiresolution.MultiresolutionMesh;
+package org.deegree.rendering.r3d;
 
 /**
- * {@link LODCriterion} that requests the smallest LOD in a {@link MultiresolutionMesh} with an approximation error that
- * does not exceed a given bound.
+ * Encapsulates the relevant viewing and projection parameters that are needed for performing view frustum culling and
+ * LOD (level-of-detail) adaptation.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class MaxError implements LODCriterion {
+public class ViewParams {
 
-    private float c;
+    private Frustum vf;
+
+    private int screenSizeX;
+
+    private int screenSizeY;
 
     /**
-     * Creates a new {@link MaxError} instance.
+     * Creates a new {@link ViewParams} instance from the given parameters.
      * 
-     * @param maxTolerableError
-     *            the maximum tolerable error for the LOD (in world units)
+     * @param vf
+     *            view frustum (volume visible to the viewer)
+     * @param screenSizeX
+     *            number of pixels of the projected image in the x direction 
+     * @param screenSizeY
+     *            number of pixels of the projected image in the y direction
      */
-    public MaxError( float maxTolerableError ) {
-        this.c = maxTolerableError;
+    public ViewParams( Frustum vf, int screenSizeX, int screenSizeY ) {
+        this.vf = vf;
+        this.screenSizeX = screenSizeX;
+        this.screenSizeY = screenSizeY;
     }
 
     /**
-     * Returns true, iff the geometric error associated with the arc is greater than the maximum tolerable error.
+     * Returns the view frustum (volume visible to the viewer).
      * 
-     * @param arc
-     *            arc to be checked
-     * @return true, iff the arc's geometric error is greater than the maximum tolerable error
+     * @return view frustum
      */
-    @Override
-    public boolean needsRefinement( Arc arc ) {
-        return arc.getGeometricError() > c;
+    public Frustum getViewFrustum() {
+        return vf;
+    }
+
+    /**
+     * Returns the number of pixels of the projected image in x direction.
+     * 
+     * @return number of pixels in x direction
+     */
+    public int getScreenPixelsX() {
+        return screenSizeX;
+    }
+
+    /**
+     * Returns the number of pixels of the projected image in y direction.
+     * 
+     * @return number of pixels in y direction
+     */    
+    public int getScreenPixelsY() {
+        return screenSizeY;
     }
 }
