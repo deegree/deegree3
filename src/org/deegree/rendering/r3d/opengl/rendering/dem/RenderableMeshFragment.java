@@ -42,9 +42,9 @@ import java.nio.ShortBuffer;
 
 import javax.media.opengl.GL;
 
-import org.deegree.model.multiresolution.MeshFragment;
-import org.deegree.model.multiresolution.MeshFragmentData;
-import org.deegree.model.multiresolution.MultiresolutionMesh;
+import org.deegree.rendering.r3d.multiresolution.MeshFragment;
+import org.deegree.rendering.r3d.multiresolution.MeshFragmentData;
+import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

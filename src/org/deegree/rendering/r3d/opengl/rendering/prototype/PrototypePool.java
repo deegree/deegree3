@@ -42,8 +42,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Tuple3f;
 
+import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
 
 /**
@@ -66,7 +66,7 @@ public class PrototypePool {
      * @param eye
      *            of the beholder
      */
-    public synchronized static void render( GL context, PrototypeReference prototype, Tuple3f eye ) {
+    public synchronized static void render( GL context, ViewParams params, PrototypeReference prototype ) {
         if ( prototype == null || prototype.getTransformationMatrix() == null || prototype.getPrototypeID() == null ) {
             return;
         }
@@ -77,7 +77,7 @@ public class PrototypePool {
         context.glPushMatrix();
         context.glLoadMatrixf( prototype.getTransformationMatrix().getValues() );
         // render prototype
-        model.render( context, eye );
+        model.render( context, params );
         context.glPopMatrix();
     }
 
