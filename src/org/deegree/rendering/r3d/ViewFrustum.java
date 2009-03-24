@@ -431,10 +431,7 @@ public class ViewFrustum {
 
     public void rotateZ( double delta ) {
         rotate( right, forward, delta );
-        rotate( up, forward, delta );
-
-        center = new Point3d(eye);
-        center.add (forward);        
+        rotate( up, forward, delta );    
         
         setCameraParams( eye, center, up );
     }
