@@ -42,7 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.rendering.r3d.Frustum;
+import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.multiresolution.crit.LODCriterion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +72,7 @@ public class SpatialSelection {
     private LODCriterion crit;
 
     // associated region of interest
-    private Frustum roi;
+    private ViewFrustum roi;
 
     // determines the current lod (contains arcs)
     private Set<Arc> lod;
@@ -88,7 +88,7 @@ public class SpatialSelection {
      * @param crit
      * @param roi
      */
-    public SpatialSelection( MultiresolutionMesh mt, LODCriterion crit, Frustum roi ) {
+    public SpatialSelection( MultiresolutionMesh mt, LODCriterion crit, ViewFrustum roi ) {
         this.mt = mt;
         this.crit = crit;
         this.roi = roi;
@@ -99,7 +99,7 @@ public class SpatialSelection {
      * 
      * @return PatchInfo objects of all patches that make up the LOD fragment
      */
-    public List<MeshFragment> extractLODFragment() {
+    public List<MeshFragment> determineLODFragment() {
 
         List<MeshFragment> fragments = new ArrayList<MeshFragment>();
 

@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of a <i>selective refinement</i> algorithm that operates on {@link MultiresolutionMesh} instances.
  * <p>
- * The function {@link #extractLOD()} solves the following problem: Given a multiresolution model <i>M</i> (as a
+ * The function {@link #determineLOD()} solves the following problem: Given a multiresolution model <i>M</i> (as a
  * {@link MultiresolutionMesh} instance) and a level-of-detail criterion <i>c</i> (as a {@link LODCriterion} instance),
  * determine the smallest mesh produceable by <i>M</i> so that <i>c</i> is fullfilled everywhere on the surface of the
  * mesh.
@@ -97,7 +97,7 @@ public class SelectiveRefinement {
      * 
      * @return PatchInfo objects of all patches that make up the LOD
      */
-    public List<MeshFragment> extractLOD() {
+    public List<MeshFragment> determineLOD() {
 
         List<MeshFragment> fragments = new ArrayList<MeshFragment>();
 

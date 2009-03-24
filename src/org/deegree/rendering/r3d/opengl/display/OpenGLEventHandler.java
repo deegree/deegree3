@@ -46,13 +46,14 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.GeometryFactoryCreator;
-import org.deegree.rendering.r3d.Frustum;
+import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.WorldRenderableObject;
 import org.slf4j.Logger;
@@ -174,10 +175,10 @@ public class OpenGLEventHandler implements GLEventListener {
 
         LOG.trace( "Eye in model space: " + Vectors3f.asString( newEye ) );
 
-        Point3f newEyeP = new Point3f( newEye[0], newEye[1], newEye[2] );
-        Point3f center = new Point3f( lookAt[0], lookAt[1], lookAt[2] );
-        Vector3f up = new Vector3f( 0, 0, 1 );
-        Frustum vf = new Frustum( 60.0f, (float) width / height, 0.5f, farClippingPlane, newEyeP, center, up );
+        Point3d newEyeP = new Point3d( newEye[0], newEye[1], newEye[2] );
+        Point3d center = new Point3d( lookAt[0], lookAt[1], lookAt[2] );
+        Vector3d up = new Vector3d( 0, 0, 1 );
+        ViewFrustum vf = new ViewFrustum( 60.0, (double) width / height, 0.5, farClippingPlane, newEyeP, center, up );
         ViewParams params = new ViewParams( vf, width, height );
 
         for ( WorldRenderableObject dObj : worldRenderableObjects ) {

@@ -37,7 +37,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.crit;
 
-import org.deegree.rendering.r3d.Frustum;
+import org.deegree.rendering.r3d.ViewFrustum;
+import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.Arc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,9 +61,24 @@ public class ViewFrustumCrit implements LODCriterion {
 
     private int screenY;
 
-    private Frustum viewRegion;
+    private ViewFrustum viewRegion;
 
     private BoxPointDistance distance = new BoxPointDistance();
+
+    /**
+     * Creates a new {@link ViewFrustumCrit} instance.
+     * 
+     * @param viewParams
+     *            specifies the visible space volume (viewer position, view direction, etc.)
+     * @param maxPixelError
+     *            maximum tolerable screen space error in pixels (in the rendered image)
+     */
+    public ViewFrustumCrit( ViewParams viewParams, float maxPixelError ) {
+        this.pixelError = maxPixelError;
+        this.screenX = viewParams.getScreenPixelsX();
+        this.screenY = viewParams.getScreenPixelsY();
+        this.viewRegion = viewParams.getViewFrustum();
+    }
 
     /**
      * Creates a new {@link ViewFrustumCrit} instance.
@@ -76,7 +92,7 @@ public class ViewFrustumCrit implements LODCriterion {
      * @param screenY
      *            number of pixels in y direction
      */
-    public ViewFrustumCrit( Frustum viewVolume, float maxPixelError, int screenX, int screenY ) {
+    public ViewFrustumCrit( ViewFrustum viewVolume, float maxPixelError, int screenX, int screenY ) {
         this.pixelError = maxPixelError;
         this.screenX = screenX;
         this.screenY = screenY;
@@ -103,9 +119,9 @@ public class ViewFrustumCrit implements LODCriterion {
 
         // step 2: only refine if the region currently violates the screen-space constraint
         float[] eyePos = new float[3];
-        eyePos[0] = viewRegion.getEyePos().x;
-        eyePos[1] = viewRegion.getEyePos().y;
-        eyePos[2] = viewRegion.getEyePos().z;
+        eyePos[0] = (float) viewRegion.getEyePos().x;
+        eyePos[1] = (float) viewRegion.getEyePos().y;
+        eyePos[2] = (float) viewRegion.getEyePos().z;
         float dist = distance.getMinDistance( nodeBBox, eyePos );
         float projectionFactor = estimatePixelSizeForSpaceUnit( dist );
         float maxEdgeLen = pixelError * 1.0f;
@@ -140,11 +156,6 @@ public class ViewFrustumCrit implements LODCriterion {
     private float estimatePixelSizeForSpaceUnit( float dist ) {
         float h = 2.0f * dist * (float) Math.tan( Math.toRadians( viewRegion.getFOVY() * 0.5f ) );
         return screenY / h;
-    }
-
-    @Override
-    public String toString() {
-        return "{screenX = " + screenX + ", screenY=" + screenY + "}";
     }
 
     /**
@@ -271,5 +282,10 @@ public class ViewFrustumCrit implements LODCriterion {
             }
             return value;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "frustum=" + viewRegion + ",pixelsX=" + screenX + ",pixelsY=" + screenY + ",maxError=" + pixelError;
     }
 }

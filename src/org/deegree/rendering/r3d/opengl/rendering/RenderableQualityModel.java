@@ -41,7 +41,7 @@ package org.deegree.rendering.r3d.opengl.rendering;
 import java.util.ArrayList;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 
 import org.deegree.rendering.r3d.QualityModel;
 import org.deegree.rendering.r3d.ViewParams;
@@ -92,7 +92,6 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
 
     @Override
     public void render( GL context, ViewParams params ) {
-        Point3f eye = params.getViewFrustum().getEyePos();
         context.glEnableClientState( GL.GL_VERTEX_ARRAY );
         if ( prototype != null ) {
             PrototypePool.render( context, params, prototype );

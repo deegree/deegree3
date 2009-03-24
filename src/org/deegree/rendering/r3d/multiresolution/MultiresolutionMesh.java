@@ -44,7 +44,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
-import org.deegree.rendering.r3d.Frustum;
+import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.multiresolution.crit.LODCriterion;
 import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
 import org.slf4j.Logger;
@@ -172,7 +172,7 @@ public class MultiresolutionMesh {
      * @return smallest LOD that satisfies the given LOD criterion
      */
     public List<MeshFragment> extractLOD( LODCriterion crit ) {
-        return new SelectiveRefinement( this, crit ).extractLOD();
+        return new SelectiveRefinement( this, crit ).determineLOD();
     }
 
     /**
@@ -183,8 +183,8 @@ public class MultiresolutionMesh {
      * @param roi
      * @return smallest LOD that satisfies the given LOD criterion
      */
-    public List<MeshFragment> extractLODFragment( LODCriterion crit, Frustum roi ) {
-        return new SpatialSelection( this, crit, roi ).extractLODFragment();
+    public List<MeshFragment> extractLODFragment( LODCriterion crit, ViewFrustum roi ) {
+        return new SpatialSelection( this, crit, roi ).determineLODFragment();
     }
 
     private Node[] createNodes( ByteBuffer nodesBuffer ) {

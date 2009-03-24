@@ -42,7 +42,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Point3f;
+import javax.vecmath.Point3d;
 
 import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.deegree.commons.utils.math.Vectors3f;
@@ -133,7 +133,7 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
 
     @Override
     public void render( GL context, ViewParams params ) {
-        Point3f eye = params.getViewFrustum().getEyePos();
+        Point3d eye = params.getViewFrustum().getEyePos();
         context.glPushMatrix();
         context.glDepthMask( false );
         context.glEnable( GL.GL_TEXTURE_2D );
@@ -142,7 +142,7 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
         // the translation
         context.glTranslatef( location[0], location[1], location[2] );
         // the rotation
-        calculateAndSetRotation( context, new float[] { eye.x, eye.y, eye.z } );
+        calculateAndSetRotation( context, new float[] { (float) eye.x, (float) eye.y, (float) eye.z } );
 
         context.glScalef( width, 1, height );
 

@@ -40,7 +40,7 @@ package org.deegree.rendering.r3d.multiresolution;
 import java.nio.ByteBuffer;
 
 import org.deegree.model.geometry.Geometry;
-import org.deegree.rendering.r3d.Frustum;
+import org.deegree.rendering.r3d.ViewFrustum;
 
 /**
  * A directed arc of a {@link MultiresolutionMesh}.
@@ -149,7 +149,7 @@ public class Arc {
      *                geometry that is tested for interference
      * @return true, if the arc interferes with the geometry, false otherwise
      */
-    public boolean interferes(Frustum roi) {
+    public boolean interferes(ViewFrustum roi) {
         return roi.intersects(getBBox());
     }
 

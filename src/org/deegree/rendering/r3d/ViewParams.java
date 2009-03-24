@@ -38,6 +38,9 @@
 
 package org.deegree.rendering.r3d;
 
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
+
 /**
  * Encapsulates the relevant viewing and projection parameters that are needed for performing view frustum culling and
  * LOD (level-of-detail) adaptation.
@@ -49,11 +52,15 @@ package org.deegree.rendering.r3d;
  */
 public class ViewParams {
 
-    private Frustum vf;
+    private ViewFrustum vf;
 
-    private int screenSizeX;
+    private int screenSizeX = -1;
 
-    private int screenSizeY;
+    private int screenSizeY = -1;
+
+    public ViewParams( Point3d eye, Point3d lookingAt, Vector3d viewerUp, double fovy, double zNear, double zFar ) {
+        this.vf = new ViewFrustum( fovy, 1.0, zNear, zFar, eye, lookingAt, viewerUp );
+    }
 
     /**
      * Creates a new {@link ViewParams} instance from the given parameters.
@@ -61,11 +68,11 @@ public class ViewParams {
      * @param vf
      *            view frustum (volume visible to the viewer)
      * @param screenSizeX
-     *            number of pixels of the projected image in the x direction 
+     *            number of pixels of the projected image in the x direction
      * @param screenSizeY
      *            number of pixels of the projected image in the y direction
      */
-    public ViewParams( Frustum vf, int screenSizeX, int screenSizeY ) {
+    public ViewParams( ViewFrustum vf, int screenSizeX, int screenSizeY ) {
         this.vf = vf;
         this.screenSizeX = screenSizeX;
         this.screenSizeY = screenSizeY;
@@ -76,7 +83,7 @@ public class ViewParams {
      * 
      * @return view frustum
      */
-    public Frustum getViewFrustum() {
+    public ViewFrustum getViewFrustum() {
         return vf;
     }
 
@@ -93,8 +100,22 @@ public class ViewParams {
      * Returns the number of pixels of the projected image in y direction.
      * 
      * @return number of pixels in y direction
-     */    
+     */
     public int getScreenPixelsY() {
         return screenSizeY;
+    }
+
+    public void setScreenDimensions( int width, int height ) {
+        screenSizeX = width;
+        screenSizeY = height;
+        double aspect = (double) width / height;
+        vf.setPerspectiveParams( vf.getFOVY(), aspect, vf.getZNear(), vf.getZFar() );
+        vf.setCameraParams( vf.getEyePos(), vf.getLookingAt(), vf.getViewerUp() );
+    }
+
+    @Override
+    public String toString() {
+        String s = "{frustum=" + vf + ",pixelsX=" + screenSizeX + ",pixelsY=" + screenSizeY + "}";
+        return s;
     }
 }
