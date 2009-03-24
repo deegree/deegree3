@@ -109,6 +109,18 @@ public class ViewFrustum {
     public Vector3d getViewerUp() {
         return up;
     }
+    
+    public double getFOVY() {
+        return fovy;
+    }
+
+    public double getZNear() {
+        return zNear;
+    }
+
+    public double getZFar() {
+        return zFar;
+    }    
 
     public boolean intersects( double[][] box ) {
         int classification = intersectsFrustum( box );
@@ -284,6 +296,91 @@ public class ViewFrustum {
         pl[FARP] = new Plane( ftr, ftl, fbl );
     }
 
+    public void moveX( double delta ) {
+        Vector3d deltaVector = new Vector3d( right );
+        deltaVector.scale( delta );
+        eye.add( deltaVector );
+        center.add(deltaVector);
+        setCameraParams( eye, center, up );
+    }
+
+    public void moveY( double delta ) {
+        Vector3d deltaVector = new Vector3d( up );
+        deltaVector.scale( delta );
+        eye.add( deltaVector );
+        center.add(deltaVector);
+        setCameraParams( eye, center, up );
+    }
+
+    public void moveZ( double delta ) {
+        Vector3d deltaVector = new Vector3d( forward );
+        deltaVector.scale(delta);
+        eye.sub(deltaVector);
+        center.sub(deltaVector);
+        setCameraParams( eye, center, up );
+    }
+
+    public void rotateX( double delta ) {
+        rotate( up, right, delta );
+        rotate( forward, right, delta );
+
+        center = new Point3d(eye);
+        center.add (forward);
+
+        setCameraParams( eye, center, up );
+    }
+
+    public void rotateY( double delta ) {
+        rotate( right, up, delta );
+        rotate( forward, up, delta );
+
+        center = new Point3d(eye);
+        center.add (forward);        
+        
+        setCameraParams( eye, center, up );
+    }
+
+    public void rotateZ( double delta ) {
+        rotate( right, forward, delta );
+        rotate( up, forward, delta );    
+        
+        setCameraParams( eye, center, up );
+    }
+
+    /**
+     * Rotates the point around the given axis and angle.
+     * 
+     * @param axis
+     * @param angle
+     *            rotation angle in radians
+     */
+    private void rotate( Vector3d p, Vector3d axis, double angle ) {
+
+        double sin = Math.sin( angle );
+        double cos = Math.cos( angle );
+
+        double a11 = axis.x * axis.x * ( 1 - cos ) + cos;
+        double a12 = axis.x * axis.y * ( 1 - cos ) - axis.z * sin;
+        double a13 = axis.x * axis.z * ( 1 - cos ) + axis.y * sin;
+        double a21 = axis.x * axis.y * ( 1 - cos ) + axis.z * sin;
+        double a22 = axis.y * axis.y * ( 1 - cos ) + cos;
+        double a23 = axis.y * axis.z * ( 1 - cos ) - axis.x * sin;
+        double a31 = axis.x * axis.z * ( 1 - cos ) - axis.y * sin;
+        double a32 = axis.y * axis.z * ( 1 - cos ) + axis.x * sin;
+        double a33 = axis.z * axis.z * ( 1 - cos ) + cos;
+
+        double[] rotated = new double[3];
+        rotated[0] = p.x * a11 + p.y * a12 + p.z * a13;
+        rotated[1] = p.x * a21 + p.y * a22 + p.z * a23;
+        rotated[2] = p.x * a31 + p.y * a32 + p.z * a33;
+        p.set( rotated );
+    }
+
+    @Override
+    public String toString() {
+        return "{eye=" + eye + ",lookingAt=" + center + ",zNear=" + zNear + ",zFar=" + zFar + ",aspect=" + aspect + ",forward=" + forward + "}";
+    }
+    
     /**
      * Used to represent one surface of the frustum.
      */
@@ -371,102 +468,5 @@ public class ViewFrustum {
         double distance( Point3d p ) {
             return A * p.x + B * p.y + C * p.z + D;
         }
-    }
-
-    public double getFOVY() {
-        return fovy;
-    }
-
-    public double getZNear() {
-        return zNear;
-    }
-
-    public double getZFar() {
-        return zFar;
-    }
-
-    public void moveX( double delta ) {
-        Vector3d deltaVector = new Vector3d( right );
-        deltaVector.scale( delta );
-        eye.add( deltaVector );
-        center.add(deltaVector);
-        setCameraParams( eye, center, up );
-    }
-
-    public void moveY( double delta ) {
-        Vector3d deltaVector = new Vector3d( up );
-        deltaVector.scale( delta );
-        eye.add( deltaVector );
-        center.add(deltaVector);
-        setCameraParams( eye, center, up );
-    }
-
-    public void moveZ( double delta ) {
-        Vector3d deltaVector = new Vector3d( forward );
-        deltaVector.scale(delta);
-        eye.sub(deltaVector);
-        center.sub(deltaVector);
-        setCameraParams( eye, center, up );
-    }
-
-    public void rotateX( double delta ) {
-        rotate( up, right, delta );
-        rotate( forward, right, delta );
-
-        center = new Point3d(eye);
-        center.add (forward);
-
-        setCameraParams( eye, center, up );
-    }
-
-    public void rotateY( double delta ) {
-        rotate( right, up, delta );
-        rotate( forward, up, delta );
-
-        center = new Point3d(eye);
-        center.add (forward);        
-        
-        setCameraParams( eye, center, up );
-    }
-
-    public void rotateZ( double delta ) {
-        rotate( right, forward, delta );
-        rotate( up, forward, delta );    
-        
-        setCameraParams( eye, center, up );
-    }
-
-    /**
-     * Rotates the point around the given axis and angle.
-     * 
-     * @param axis
-     * @param angle
-     *            rotation angle in radians
-     */
-    private void rotate( Vector3d p, Vector3d axis, double angle ) {
-
-        double sin = Math.sin( angle );
-        double cos = Math.cos( angle );
-
-        double a11 = axis.x * axis.x * ( 1 - cos ) + cos;
-        double a12 = axis.x * axis.y * ( 1 - cos ) - axis.z * sin;
-        double a13 = axis.x * axis.z * ( 1 - cos ) + axis.y * sin;
-        double a21 = axis.x * axis.y * ( 1 - cos ) + axis.z * sin;
-        double a22 = axis.y * axis.y * ( 1 - cos ) + cos;
-        double a23 = axis.y * axis.z * ( 1 - cos ) - axis.x * sin;
-        double a31 = axis.x * axis.z * ( 1 - cos ) - axis.y * sin;
-        double a32 = axis.y * axis.z * ( 1 - cos ) + axis.x * sin;
-        double a33 = axis.z * axis.z * ( 1 - cos ) + cos;
-
-        double[] rotated = new double[3];
-        rotated[0] = p.x * a11 + p.y * a12 + p.z * a13;
-        rotated[1] = p.x * a21 + p.y * a22 + p.z * a23;
-        rotated[2] = p.x * a31 + p.y * a32 + p.z * a33;
-        p.set( rotated );
-    }
-
-    @Override
-    public String toString() {
-        return "{eye=" + eye + ",lookingAt=" + center + ",zNear=" + zNear + ",zFar=" + zFar + ",aspect=" + aspect + ",forward=" + forward + "}";
-    }
+    }    
 }

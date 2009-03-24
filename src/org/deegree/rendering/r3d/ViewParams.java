@@ -105,6 +105,19 @@ public class ViewParams {
         return screenSizeY;
     }
 
+    /**
+     * Returns a guaranteed upper bound for the size that a world-space unit (e.g. a line with length 1) has in pixels
+     * after perspective projection, i.e. in pixels on the screen.
+     * 
+     * @param dist
+     *            distance of the object (from the point-of-view)
+     * @return maximum number of pixels that an object of size 1 will cover
+     */
+    public double estimatePixelSizeForSpaceUnit( double dist ) {
+        double h = 2.0 * dist * (float) Math.tan( Math.toRadians( vf.getFOVY() * 0.5f ) );
+        return screenSizeY / h;
+    }    
+    
     public void setScreenDimensions( int width, int height ) {
         screenSizeX = width;
         screenSizeY = height;
