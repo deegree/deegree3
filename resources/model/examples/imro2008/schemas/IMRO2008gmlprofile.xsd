@@ -6,11 +6,18 @@ gedocumenteerde uitzonderingen op dit profiel zijn:
 1. We hebben propertytypes met een <choice> gebruikt.
 2. We maken gebruik van gml:MultiGeometry.
 -->
-<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml4nl="http://www.geonovum.nl/gml4nl/1.0" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://www.opengis.net/gml" elementFormDefault="qualified" version="1.0.0">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml4nl="http://www.geonovum.nl/gml4nl/1.0D3" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://www.opengis.net/gml" elementFormDefault="qualified" version="1.0.0">
+	<annotation>
+		<appinfo>
+			<gml4nl:ComplianceLevel>2</gml4nl:ComplianceLevel>
+			<gml4nl:GMLProfileSchema>http://www.geonovum.nl/gml4nl/gml4nl.xsd</gml4nl:GMLProfileSchema>
+		</appinfo>
+	</annotation>
 	<!-- ============================================================= -->
 	<!-- === includes and imports                                  === -->
 	<!-- ============================================================= -->
-	<import namespace="http://www.geonovum.nl/gml4nl/1.0" schemaLocation="gml4nlLevels.xsd"/>
+	<include schemaLocation="gml4nl.xsd"/>
+	<import namespace="http://www.geonovum.nl/gml4nl/1.0D3" schemaLocation="gml4nlLevels.xsd"/>
 	<!-- =========================================================== -->
 	<!-- toevoeging multigeometry -->
 	<complexType name="GeometryArrayPropertyType">
