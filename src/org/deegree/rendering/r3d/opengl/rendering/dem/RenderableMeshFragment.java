@@ -51,7 +51,11 @@ import org.slf4j.LoggerFactory;
 import com.sun.opengl.util.BufferUtil;
 
 /**
- * Represents a fragment of a {@link MultiresolutionMesh} that can be rendered via JOGL.
+ * A {@link MeshFragment} of a {@link MultiresolutionMesh} that can be rendered via JOGL, with an optionally associated
+ * {@link TextureTile}.
+ * 
+ * @see MultiresolutionMesh
+ * @see MeshFragment
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -104,9 +108,6 @@ public class RenderableMeshFragment {
             // texture information has been loaded and texture coordinate buffer has been prepared
             gl.glEnable( GL.GL_TEXTURE_2D );
             gl.glBindTexture( GL.GL_TEXTURE_2D, textureTile.getGLTextureId( gl ) );
-            //            
-            // textureTile.getTexture().enable();
-            // textureTile.getTexture().bind();
             gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
 
             gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[3] );
@@ -129,14 +130,14 @@ public class RenderableMeshFragment {
 
         loadToGPU( gl );
         textureTile.loadToGPU( gl );
-       
+
         // bind vertex buffer object (vertex coordinates)
         gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[3] );
         gl.glBufferDataARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, texCoordsBuffer.capacity() * 4, texCoordsBuffer,
                             GL.GL_STATIC_DRAW_ARB );
         this.textureTile = textureTile;
-    }    
-    
+    }
+
     public void untexturize( GL gl ) {
         if ( textureTile != null ) {
             textureTile.unloadFromGPU( gl );
@@ -144,16 +145,30 @@ public class RenderableMeshFragment {
         }
     }
 
-    public void destroy( GL gl ) {
-        int[] bufferObjectIds = this.glBufferObjectIds;
-        this.glBufferObjectIds = null;
-        gl.glDeleteBuffersARB( bufferObjectIds.length, bufferObjectIds, 0 );
-        this.textureTile = null;
-    }
-
     public void loadToGPU( GL gl ) {
         if ( glBufferObjectIds == null ) {
-            createBufferObjects( gl );
+            glBufferObjectIds = new int[4];
+            gl.glGenBuffersARB( 4, glBufferObjectIds, 0 );
+
+            MeshFragmentData data = fragment.getData();
+            FloatBuffer vertexBuffer = data.getVertices();
+            ShortBuffer indexBuffer = (ShortBuffer) data.getTriangles();
+            FloatBuffer normalsBuffer = data.getNormals();
+
+            // bind vertex buffer object (vertices)
+            gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[0] );
+            gl.glBufferDataARB( GL.GL_ARRAY_BUFFER_ARB, vertexBuffer.capacity() * 4, vertexBuffer,
+                                GL.GL_STATIC_DRAW_ARB );
+
+            // bind vertex buffer object (normals)
+            gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[1] );
+            gl.glBufferDataARB( GL.GL_ARRAY_BUFFER_ARB, normalsBuffer.capacity() * 4, normalsBuffer,
+                                GL.GL_STATIC_DRAW_ARB );
+
+            // bind element buffer object (triangles)
+            gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[2] );
+            gl.glBufferDataARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer.capacity() * 2, indexBuffer,
+                                GL.GL_STATIC_DRAW_ARB );
         }
     }
 
@@ -164,30 +179,6 @@ public class RenderableMeshFragment {
             gl.glDeleteBuffersARB( bufferObjectIds.length, bufferObjectIds, 0 );
         }
         untexturize( gl );
-    }
-
-    private void createBufferObjects( GL gl ) {
-
-        glBufferObjectIds = new int[4];
-        gl.glGenBuffersARB( 4, glBufferObjectIds, 0 );
-
-        MeshFragmentData data = fragment.getData();
-        FloatBuffer vertexBuffer = data.getVertices();
-        ShortBuffer indexBuffer = (ShortBuffer) data.getTriangles();
-        FloatBuffer normalsBuffer = data.getNormals();
-
-        // bind vertex buffer object (vertices)
-        gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[0] );
-        gl.glBufferDataARB( GL.GL_ARRAY_BUFFER_ARB, vertexBuffer.capacity() * 4, vertexBuffer, GL.GL_STATIC_DRAW_ARB );
-
-        // bind vertex buffer object (normals)
-        gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[1] );
-        gl.glBufferDataARB( GL.GL_ARRAY_BUFFER_ARB, normalsBuffer.capacity() * 4, normalsBuffer, GL.GL_STATIC_DRAW_ARB );
-
-        // bind element buffer object (triangles)
-        gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[2] );
-        gl.glBufferDataARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer.capacity() * 2, indexBuffer,
-                            GL.GL_STATIC_DRAW_ARB );
     }
 
     public MeshFragment fragmentInfo() {
@@ -203,6 +194,9 @@ public class RenderableMeshFragment {
     }
 
     public float getCurrentTextureResolution() {
+        if (delayedTextureTile != null) {
+            return delayedTextureTile.getMetersPerPixel();
+        }
         if ( textureTile == null ) {
             return Float.MAX_VALUE;
         }
@@ -211,10 +205,10 @@ public class RenderableMeshFragment {
 
     public void delayedTexturize( TextureTile tile ) {
         this.delayedTextureTile = tile;
-        this.delayedTexCoordsBuffer = getTexCoordsBuffer( tile );        
+        this.delayedTexCoordsBuffer = getTexCoordsBuffer( tile );
     }
-    
-    private FloatBuffer getTexCoordsBuffer (TextureTile textureTile) {
+
+    private FloatBuffer getTexCoordsBuffer( TextureTile textureTile ) {
 
         float patchXMin = fragment.bbox[0][0];
         float patchYMin = fragment.bbox[0][1];
