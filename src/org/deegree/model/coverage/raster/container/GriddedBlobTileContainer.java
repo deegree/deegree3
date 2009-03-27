@@ -72,10 +72,10 @@ import org.slf4j.LoggerFactory;
  */
 public class GriddedBlobTileContainer extends GriddedTileContainer {
 
+    private static Logger LOG = LoggerFactory.getLogger( GriddedBlobTileContainer.class );    
+
     public static final String METAINFO_FILE_NAME = "gridded_raster.info";    
     
-    private static Logger LOG = LoggerFactory.getLogger( GriddedBlobTileContainer.class );
-
     private final long bytesPerTile;
 
     private final int tilesPerBlob;
@@ -201,7 +201,7 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
             }
 
             long elapsed = System.currentTimeMillis() - begin;
-            LOG.debug( "Loading of tile (" + tileSamplesX + "x" + tileSamplesY + ") in " + elapsed + " milliseconds." );
+            LOG.debug( "Loading of tile (" + tileSamplesX + "x" + tileSamplesY + ") in " + elapsed + " ms." );
 
             tile = new SimpleRaster( tileData, tileEnvelope, tileRasterEnvelope );
             // cache.put( tileId, tile );

@@ -183,7 +183,8 @@ public abstract class ByteBufferRasterData implements RasterData {
     }
 
     private ByteBuffer createByteBuffer() {
-        return ByteBuffer.allocateDirect( getBufferSize() );
+        return ByteBuffer.allocate( getBufferSize() );
+//        return ByteBuffer.allocateDirect( getBufferSize() );
     }
 
     /**
