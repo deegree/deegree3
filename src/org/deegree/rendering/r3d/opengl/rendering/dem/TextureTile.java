@@ -42,8 +42,13 @@ import java.nio.ByteBuffer;
 
 import javax.media.opengl.GL;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TextureTile {
 
+    private static final Logger LOG = LoggerFactory.getLogger( TextureTile.class );    
+    
     private int[] textureID;
 
     private float minX, minY, maxX, maxY;
@@ -55,6 +60,9 @@ public class TextureTile {
     private ByteBuffer imageData;
     
     private static int idsInUse = 0;
+    
+    // counts the number of references, if 0, data can be unloaded
+    private int numReferences;
 
     public TextureTile( float minX, float minY, float maxX, float maxY, int pixelsX, int pixelsY, ByteBuffer imageData ) {
         this.minX = minX;
@@ -105,14 +113,12 @@ public class TextureTile {
         return pixelsY;
     }
 
-    public int getGLTextureId( GL gl ) {
-        if ( textureID == null ) {
-            loadToGPU( gl );
-        }
+    public int enable ( GL gl ) {
+        loadToGPU( gl );
         return textureID[0];
     }
 
-    public void loadToGPU( GL gl ) {
+    private void loadToGPU( GL gl ) {
         if ( textureID == null ) {
             textureID = new int[1];
             idsInUse++;
@@ -126,10 +132,16 @@ public class TextureTile {
             gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGB, pixelsX, pixelsY, 0, GL.GL_RGB, GL.GL_UNSIGNED_BYTE,
                              imageData );
         }
+        numReferences++;
     }
 
     public void unloadFromGPU( GL gl ) {
-        if ( textureID != null ) {
+        numReferences--;
+        if (numReferences < 0) {
+            throw new RuntimeException();
+        }
+        if (numReferences == 0 && textureID != null ) {
+            LOG.info ("No more references. Deleting.");
             gl.glDeleteTextures( 1, textureID, 0 );
             textureID = null;
             idsInUse--;
