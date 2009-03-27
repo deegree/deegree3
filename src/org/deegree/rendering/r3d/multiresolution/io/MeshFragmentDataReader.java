@@ -47,6 +47,8 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.channels.FileChannel;
 
+import org.deegree.commons.utils.nio.DirectByteBufferPool;
+import org.deegree.commons.utils.nio.PooledByteBuffer;
 import org.deegree.rendering.r3d.multiresolution.MeshFragmentData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +65,10 @@ public class MeshFragmentDataReader {
 
     private static final Logger LOG = LoggerFactory.getLogger( MeshFragmentDataReader.class );
 
-    private FileChannel channel;
+    // TODO not static
+    private static final DirectByteBufferPool bufferPool = new DirectByteBufferPool(100 * 1024 * 1024, 200);
+    
+    private final FileChannel channel;
 
     public MeshFragmentDataReader( File meshFragments ) throws FileNotFoundException {
         this.channel = new FileInputStream( meshFragments ).getChannel();
@@ -72,9 +77,11 @@ public class MeshFragmentDataReader {
     public MeshFragmentData read( int fragmentId, long offset, int length )
                             throws IOException {
 
-        ByteBuffer rawTileBuffer = ByteBuffer.allocateDirect( length );
-        rawTileBuffer.order( ByteOrder.nativeOrder() );        
-        
+        PooledByteBuffer pooledByteBuffer = bufferPool.allocate( length );
+//        PooledByteBuffer pooledByteBuffer = new PooledByteBuffer(length);
+        ByteBuffer rawTileBuffer = pooledByteBuffer.getBuffer();
+        rawTileBuffer.order( ByteOrder.nativeOrder() );
+
         LOG.debug( "Reading mesh fragment with id " + fragmentId + " (offset: " + offset + ", length: " + length + ")." );
         long begin = System.currentTimeMillis();
         channel.read( rawTileBuffer, offset );
@@ -112,6 +119,6 @@ public class MeshFragmentDataReader {
         } else {
             indexBuffer = indexSlice.asIntBuffer();
         }
-        return new MeshFragmentData( vertexBuffer, normalsBuffer, indexBuffer);
+        return new MeshFragmentData( pooledByteBuffer, vertexBuffer, normalsBuffer, indexBuffer );
     }
 }

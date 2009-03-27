@@ -109,7 +109,7 @@ public class ViewFrustum {
     public Vector3d getViewerUp() {
         return up;
     }
-    
+
     public double getFOVY() {
         return fovy;
     }
@@ -120,7 +120,7 @@ public class ViewFrustum {
 
     public double getZFar() {
         return zFar;
-    }    
+    }
 
     public boolean intersects( double[][] box ) {
         int classification = intersectsFrustum( box );
@@ -217,17 +217,17 @@ public class ViewFrustum {
         this.forward = new Vector3d( eye );
         this.forward.sub( center );
         this.forward.normalize();
-               
+
         this.right = new Vector3d();
         right.cross( up, forward );
         right.normalize();
-        
+
         // compute the Z axis of camera
         // this axis points in the opposite direction from
         // the looking direction
         Vector3d Z = new Vector3d( eye );
         Z.sub( center );
-        Z.normalize();        
+        Z.normalize();
 
         // X axis of camera with given "up" vector and Z axis
         Vector3d X = new Vector3d();
@@ -300,7 +300,7 @@ public class ViewFrustum {
         Vector3d deltaVector = new Vector3d( right );
         deltaVector.scale( delta );
         eye.add( deltaVector );
-        center.add(deltaVector);
+        center.add( deltaVector );
         setCameraParams( eye, center, up );
     }
 
@@ -308,15 +308,15 @@ public class ViewFrustum {
         Vector3d deltaVector = new Vector3d( up );
         deltaVector.scale( delta );
         eye.add( deltaVector );
-        center.add(deltaVector);
+        center.add( deltaVector );
         setCameraParams( eye, center, up );
     }
 
     public void moveZ( double delta ) {
         Vector3d deltaVector = new Vector3d( forward );
-        deltaVector.scale(delta);
-        eye.sub(deltaVector);
-        center.sub(deltaVector);
+        deltaVector.scale( delta );
+        eye.sub( deltaVector );
+        center.sub( deltaVector );
         setCameraParams( eye, center, up );
     }
 
@@ -324,8 +324,8 @@ public class ViewFrustum {
         rotate( up, right, delta );
         rotate( forward, right, delta );
 
-        center = new Point3d(eye);
-        center.add (forward);
+        center = new Point3d( eye );
+        center.add( forward );
 
         setCameraParams( eye, center, up );
     }
@@ -334,16 +334,16 @@ public class ViewFrustum {
         rotate( right, up, delta );
         rotate( forward, up, delta );
 
-        center = new Point3d(eye);
-        center.add (forward);        
-        
+        center = new Point3d( eye );
+        center.add( forward );
+
         setCameraParams( eye, center, up );
     }
 
     public void rotateZ( double delta ) {
         rotate( right, forward, delta );
-        rotate( up, forward, delta );    
-        
+        rotate( up, forward, delta );
+
         setCameraParams( eye, center, up );
     }
 
@@ -378,9 +378,17 @@ public class ViewFrustum {
 
     @Override
     public String toString() {
-        return "{eye=" + eye + ",lookingAt=" + center + ",zNear=" + zNear + ",zFar=" + zFar + ",aspect=" + aspect + ",forward=" + forward + "}";
+        return "{eye=" + eye + ",lookingAt=" + center + ",zNear=" + zNear + ",zFar=" + zFar + ",aspect=" + aspect
+               + ",forward=" + forward + "}";
     }
-    
+
+    public String toInitString() {
+        String s = "Point3d eye = new Point3d( " + eye.x + "," + eye.y + "," + eye.z + ");\n";
+        s += "Vector3d lookingAt = new Vector3d( " + center.x + "," + center.y + "," + center.z + ");\n";
+        s += "Vector3d viewerUp = new Vector3d( " + up.x + "," + up.y + "," + up.z + ");\n";
+        return s;
+    }
+
     /**
      * Used to represent one surface of the frustum.
      */
@@ -468,5 +476,5 @@ public class ViewFrustum {
         double distance( Point3d p ) {
             return A * p.x + B * p.y + C * p.z + D;
         }
-    }    
+    }
 }

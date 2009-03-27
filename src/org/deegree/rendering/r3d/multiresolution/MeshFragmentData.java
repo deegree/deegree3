@@ -41,6 +41,9 @@ package org.deegree.rendering.r3d.multiresolution;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 
+import org.deegree.commons.utils.nio.DirectByteBufferPool;
+import org.deegree.commons.utils.nio.PooledByteBuffer;
+
 /**
  * The <code></code> class TODO add class documentation here.
  * 
@@ -53,13 +56,16 @@ public class MeshFragmentData {
 
     private int numTriangles;
 
+    private final PooledByteBuffer rawBuffer;    
+    
     private final FloatBuffer vertexBuffer;
 
     private final Buffer indexBuffer;
 
     private final FloatBuffer normalsBuffer;
 
-    public MeshFragmentData( FloatBuffer vertexBuffer, FloatBuffer normalsBuffer, Buffer indexBuffer ) {
+    public MeshFragmentData( PooledByteBuffer rawBuffer, FloatBuffer vertexBuffer, FloatBuffer normalsBuffer, Buffer indexBuffer ) {
+        this.rawBuffer = rawBuffer;
         this.vertexBuffer = vertexBuffer;
         this.normalsBuffer = normalsBuffer;
         this.indexBuffer = indexBuffer;
@@ -92,5 +98,9 @@ public class MeshFragmentData {
 
     public FloatBuffer getNormals() {
         return normalsBuffer;
+    }
+    
+    public void freeBuffers () {
+        rawBuffer.free();
     }
 }

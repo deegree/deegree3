@@ -51,7 +51,7 @@ import org.deegree.rendering.r3d.multiresolution.io.MeshFragmentDataReader;
  * 
  * @version $Revision$
  */
-public class MeshFragment {
+public class MeshFragment implements Comparable<MeshFragment> {
 
     /**
      * Size of binary representation (in bytes).
@@ -65,16 +65,14 @@ public class MeshFragment {
     public final float[][] bbox = new float[2][3];
 
     public final float error;
-    
+
     private long blobPosition;
 
-    private int length;    
-    
+    private int length;
+
     private MeshFragmentDataReader patchReader;
-    
-    private MeshFragmentData data;
-   
-    public MeshFragment( int id, ByteBuffer buffer, MeshFragmentDataReader patchReader ) {
+
+    MeshFragment( int id, ByteBuffer buffer, MeshFragmentDataReader patchReader ) {
         this.id = id;
         this.patchReader = patchReader;
         this.bbox[0][0] = buffer.getFloat();
@@ -96,22 +94,19 @@ public class MeshFragment {
         return blobPosition + length - 1;
     }
 
-    public MeshFragmentData getData() {
-        return data;
-    }    
-    
-    public void loadData() {
-        if (data == null) {
-            try {
-                data = patchReader.read( id, blobPosition, length );
-            } catch ( IOException e ) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void unloadData() {
-        data = null;
+    /**
+     * Retrieves the actual geometry data of the {@link MeshFragment}.
+     * <p>
+     * NOTE: Calling this method usually involves I/O and memory allocation operations and the caller should probably
+     * incorporate caching mechanisms to reduce the number of calls.
+     * </p>
+     * 
+     * @return the actual geometry data of the fragment
+     * @throws IOException
+     */
+    public MeshFragmentData loadData()
+                            throws IOException {
+        return patchReader.read( id, blobPosition, length );
     }
 
     public static void store( ByteBuffer target, float minX, float minY, float minZ, float maxX, float maxY,
@@ -139,12 +134,19 @@ public class MeshFragment {
         target.putInt( length );
     }
 
-    public boolean isLoaded() {
-        return data != null;
-    }
-
     @Override
     public String toString() {
         return "blobPosition: " + blobPosition + ", length: " + length;
+    }
+
+    @Override
+    public int compareTo( MeshFragment o ) {
+        if (id < o.id) {
+            return -1;
+        }
+        if (id > o.id) {
+            return 1;
+        }
+        return 0;
     }
 }
