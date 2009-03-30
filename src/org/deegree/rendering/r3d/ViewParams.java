@@ -59,7 +59,7 @@ public class ViewParams {
     private int screenSizeY = -1;
 
     public ViewParams( Point3d eye, Point3d lookingAt, Vector3d viewerUp, double fovy, double zNear, double zFar ) {
-        this.vf = new ViewFrustum( fovy, 1.0, zNear, zFar, eye, lookingAt, viewerUp );
+        this.vf = new ViewFrustum( eye, lookingAt, viewerUp, fovy, 1.0, zNear, zFar );
     }
 
     /**
@@ -116,14 +116,14 @@ public class ViewParams {
     public double estimatePixelSizeForSpaceUnit( double dist ) {
         double h = 2.0 * dist * (float) Math.tan( Math.toRadians( vf.getFOVY() * 0.5f ) );
         return screenSizeY / h;
-    }    
-    
+    }
+
     public void setScreenDimensions( int width, int height ) {
         screenSizeX = width;
         screenSizeY = height;
         double aspect = (double) width / height;
         vf.setPerspectiveParams( vf.getFOVY(), aspect, vf.getZNear(), vf.getZFar() );
-        vf.setCameraParams( vf.getEyePos(), vf.getLookingAt(), vf.getViewerUp() );
+        vf.setCameraParams( vf.getEyePos(), vf.getLookingAt(), vf.getUp() );
     }
 
     @Override

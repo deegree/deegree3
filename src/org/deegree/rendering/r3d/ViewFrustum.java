@@ -42,6 +42,15 @@ import javax.vecmath.Vector3d;
 
 /**
  * Models a frustum volume, commonly used for view frustums (space volume visible to a viewer of a 3D scene).
+ * <p>
+ * Offers convenient methods for view-frustum culling ({@link #intersects(double[][])}, {@link #intersects(float[][])}),
+ * viewer-relative movements ({@link #moveForward(double)}, {@link #moveRight(double)}, {@link moveUp}) as well as
+ * rotations ({@link #rotateX(double)}, {@link #rotateY(double)}, {@link #rotateZ(double)}).
+ * </p>
+ * <p>
+ * NOTE: The viewer-local coordinate system is modelled as a right-handed one, which must be taken into account when
+ * using the rotation methods: the Z-axis is oriented towards the opposite viewing direction.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -93,7 +102,7 @@ public class ViewFrustum {
 
     private static final int FARP = 5;
 
-    public ViewFrustum( double fovy, double aspect, double zNear, double zFar, Point3d eye, Point3d center, Vector3d up ) {
+    public ViewFrustum( Point3d eye, Point3d center, Vector3d up, double fovy, double aspect, double zNear, double zFar ) {
         setPerspectiveParams( fovy, aspect, zNear, zFar );
         setCameraParams( eye, center, up );
     }
@@ -106,8 +115,16 @@ public class ViewFrustum {
         return lookingAt;
     }
 
-    public Vector3d getViewerUp() {
+    public Vector3d getUp() {
         return up;
+    }
+
+    public Vector3d getRight() {
+        return right;
+    }
+
+    public Vector3d getBackward() {
+        return backward;
     }
 
     public double getFOVY() {
@@ -176,9 +193,11 @@ public class ViewFrustum {
      * Sets the view frustum parameters that correspond to the perspective transformation matrix.
      * <p>
      * The parameters correspond to those of the OpenGL <code>gluPerspective()</code> function.
+     * </p>
      * <p>
-     * NOTE: When this method is called, it is necessary to call {@link #setCameraParams(Point3d, Point3d, Vector3d)} as
-     * well.
+     * NOTE: When this method is called, it is necessary to call {@link #setCameraParams(Point3d, Point3d, Vector3d)}
+     * afterwards, so the internal state is consistent.
+     * </p>
      * 
      * @param fovy
      * @param aspect
@@ -217,7 +236,7 @@ public class ViewFrustum {
         this.backward = new Vector3d( eye );
         this.backward.sub( lookingAt );
         this.backward.normalize();
-     
+
         this.right = new Vector3d();
         right.cross( up, backward );
         right.normalize();
@@ -280,7 +299,7 @@ public class ViewFrustum {
         pl[FARP] = new Plane( ftr, ftl, fbl );
     }
 
-    public void moveX( double delta ) {
+    public void moveRight( double delta ) {
         Vector3d deltaVector = new Vector3d( right );
         deltaVector.scale( delta );
         eye.add( deltaVector );
@@ -288,7 +307,7 @@ public class ViewFrustum {
         setCameraParams( eye, lookingAt, up );
     }
 
-    public void moveY( double delta ) {
+    public void moveUp( double delta ) {
         Vector3d deltaVector = new Vector3d( up );
         deltaVector.scale( delta );
         eye.add( deltaVector );
@@ -296,10 +315,10 @@ public class ViewFrustum {
         setCameraParams( eye, lookingAt, up );
     }
 
-    public void moveZ( double delta ) {
+    public void moveForward( double delta ) {
         Vector3d deltaVector = new Vector3d( backward );
-        deltaVector.scale( delta );
-        eye.sub( deltaVector );
+        deltaVector.scale( -delta );
+        eye.add( deltaVector );
         lookingAt.add( deltaVector );
         setCameraParams( eye, lookingAt, up );
     }
@@ -362,8 +381,8 @@ public class ViewFrustum {
 
     @Override
     public String toString() {
-        return "{eye=" + eye + ",lookingAt=" + lookingAt + ",up=" + up + ",zNear=" + zNear + ",zFar=" + zFar + ",aspect=" + aspect
-               + ",backward=" + backward + "}";
+        return "{eye=" + eye + ",lookingAt=" + lookingAt + ",up=" + up + ",zNear=" + zNear + ",zFar=" + zFar
+               + ",aspect=" + aspect + ",backward=" + backward + "}";
     }
 
     public String toInitString() {
@@ -460,16 +479,5 @@ public class ViewFrustum {
         double distance( Point3d p ) {
             return A * p.x + B * p.y + C * p.z + D;
         }
-    }
-    
-    public static void main (String [] args) {
-    	Point3d eye = new Point3d(0,0,0);
-    	Point3d lookingAt = new Point3d(0,0,-1);
-    	Vector3d up = new Vector3d( 0, 1, -0);
-    	
-    	ViewFrustum vf = new ViewFrustum(50.0, 1.0, 0.1, 10000, eye, lookingAt, up);
-    	System.out.println ("vf: " + vf);
-    	vf.moveY(1.0);
-    	System.out.println ("vf: " + vf);
     }
 }

@@ -178,7 +178,7 @@ public class OpenGLEventHandler implements GLEventListener {
         Point3d newEyeP = new Point3d( newEye[0], newEye[1], newEye[2] );
         Point3d center = new Point3d( lookAt[0], lookAt[1], lookAt[2] );
         Vector3d up = new Vector3d( 0, 0, 1 );
-        ViewFrustum vf = new ViewFrustum( 60.0, (double) width / height, 0.5, farClippingPlane, newEyeP, center, up );
+        ViewFrustum vf = new ViewFrustum(newEyeP, center, up,  60.0, (double) width / height, 0.5, farClippingPlane );
         ViewParams params = new ViewParams( vf, width, height );
 
         for ( WorldRenderableObject dObj : worldRenderableObjects ) {
