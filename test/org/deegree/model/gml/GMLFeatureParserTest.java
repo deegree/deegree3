@@ -64,14 +64,13 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.FeatureCollection;
 import org.deegree.model.feature.types.ApplicationSchema;
-import org.deegree.model.feature.types.FeaturePropertyType;
 import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.feature.types.GenericFeatureCollectionType;
 import org.deegree.model.feature.types.GenericFeatureType;
-import org.deegree.model.feature.types.GeometryPropertyType;
-import org.deegree.model.feature.types.PropertyType;
-import org.deegree.model.feature.types.SimplePropertyType;
-import org.deegree.model.gml.schema.GMLApplicationSchema;
+import org.deegree.model.feature.types.property.FeaturePropertyType;
+import org.deegree.model.feature.types.property.GeometryPropertyType;
+import org.deegree.model.feature.types.property.PropertyType;
+import org.deegree.model.feature.types.property.SimplePropertyType;
 import org.deegree.model.gml.schema.GMLApplicationSchemaXSDAdapter;
 import org.deegree.model.gml.schema.GMLVersion;
 import org.junit.Test;
@@ -101,7 +100,7 @@ public class GMLFeatureParserTest {
 
         FeatureType ft = new GenericFeatureType( new QName( "http://www.deegree.org/app", "Country" ), propDecls, false );
         FeatureType[] fts = new FeatureType[] { ft };
-        ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>() );
+        ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>(), null );
 
         GMLFeatureParser adapter = new GMLFeatureParser( schema );
 
@@ -137,7 +136,7 @@ public class GMLFeatureParserTest {
 
         FeatureType ft = new GenericFeatureType( new QName( "Country" ), propDecls, false );
         FeatureType[] fts = new FeatureType[] { ft };
-        ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>() );
+        ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>(), null );
         GMLFeatureParser adapter = new GMLFeatureParser( schema );
 
         URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "SimpleFeatureExampleNoNS1.gml" );
@@ -184,7 +183,7 @@ public class GMLFeatureParserTest {
                                                 new QName( "http://www.opengis.net/gml", "_Feature" ) ) );
         fts[1] = new GenericFeatureCollectionType( new QName( "http://www.opengis.net/gml", "FeatureCollection" ),
                                                    propDecls, false );
-        ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>() );
+        ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>(), null );
         GMLFeatureParser adapter = new GMLFeatureParser( schema );
 
         URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "SimpleFeatureCollectionExample1.gml" );
