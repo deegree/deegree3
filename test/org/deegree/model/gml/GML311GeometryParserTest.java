@@ -51,6 +51,8 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.model.crs.CRSRegistry;
+import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryFactory;
@@ -101,9 +103,11 @@ public class GML311GeometryParserTest {
 
     private static final String BASE_DIR = "testdata/geometries/";
 
+    private static double DELTA = 0.00000001;
+
     @Test
     public void parsePointPos()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
 
         XMLStreamReaderWrapper xmlReader = getParser( "Point_pos.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
@@ -111,40 +115,40 @@ public class GML311GeometryParserTest {
         Point point = (Point) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
-        Assert.assertEquals( 7.12, point.getX() );
-        Assert.assertEquals( 50.72, point.getY() );
+        Assert.assertEquals( 7.12, point.getX(), DELTA );
+        Assert.assertEquals( 50.72, point.getY(), DELTA );
         Assert.assertEquals( 2, point.getCoordinateDimension() );
-        Assert.assertEquals( "EPSG:4326", point.getCoordinateSystem().getCode() );
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), point.getCoordinateSystem() );
     }
 
     @Test
     public void parsePointCoordinates()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "Point_coordinates.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
         Point point = (Point) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
-        Assert.assertEquals( 7.12, point.getX() );
-        Assert.assertEquals( 50.72, point.getY() );
+        Assert.assertEquals( 7.12, point.getX(), DELTA );
+        Assert.assertEquals( 50.72, point.getY(), DELTA );
         Assert.assertEquals( 2, point.getCoordinateDimension() );
-        Assert.assertEquals( "EPSG:4326", point.getCoordinateSystem().getCode() );
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), point.getCoordinateSystem() );
     }
 
     @Test
     public void parsePointCoord()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "Point_coord.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
         Point point = (Point) new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
-        Assert.assertEquals( 7.12, point.getX() );
-        Assert.assertEquals( 50.72, point.getY() );
+        Assert.assertEquals( 7.12, point.getX(), DELTA );
+        Assert.assertEquals( 50.72, point.getY(), DELTA );
         Assert.assertEquals( 2, point.getCoordinateDimension() );
-        Assert.assertEquals( "EPSG:4326", point.getCoordinateSystem().getCode() );
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), point.getCoordinateSystem() );
     }
 
     @Test
@@ -170,12 +174,12 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 1, curve.getCurveSegments().size() );
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 0 ).getInterpolation() );
         Assert.assertEquals( 3, curve.getAsLineString().getControlPoints().size() );
-        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX() );
-        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY() );
-        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX() );
-        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY() );
-        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX() );
-        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY() );
+        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX(), DELTA );
+        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY(), DELTA );
+        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX(), DELTA );
+        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY(), DELTA );
+        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX(), DELTA );
+        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY(), DELTA );
     }
 
     @Test
@@ -190,12 +194,12 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 1, curve.getCurveSegments().size() );
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 0 ).getInterpolation() );
         Assert.assertEquals( 3, curve.getAsLineString().getControlPoints().size() );
-        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX() );
-        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY() );
-        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX() );
-        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY() );
-        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX() );
-        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY() );
+        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX(), DELTA );
+        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY(), DELTA );
+        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX(), DELTA );
+        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY(), DELTA );
+        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX(), DELTA );
+        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY(), DELTA );
     }
 
     @Test
@@ -210,12 +214,12 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 1, curve.getCurveSegments().size() );
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 0 ).getInterpolation() );
         Assert.assertEquals( 3, curve.getAsLineString().getControlPoints().size() );
-        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX() );
-        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY() );
-        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX() );
-        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY() );
-        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX() );
-        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY() );
+        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX(), DELTA );
+        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY(), DELTA );
+        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX(), DELTA );
+        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY(), DELTA );
+        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX(), DELTA );
+        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY(), DELTA );
     }
 
     @Test
@@ -230,12 +234,12 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 1, curve.getCurveSegments().size() );
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 0 ).getInterpolation() );
         Assert.assertEquals( 3, curve.getAsLineString().getControlPoints().size() );
-        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX() );
-        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY() );
-        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX() );
-        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY() );
-        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX() );
-        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY() );
+        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX(), DELTA );
+        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY(), DELTA );
+        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX(), DELTA );
+        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY(), DELTA );
+        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX(), DELTA );
+        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY(), DELTA );
     }
 
     @Test
@@ -250,12 +254,12 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( 1, curve.getCurveSegments().size() );
         Assert.assertEquals( Interpolation.linear, curve.getCurveSegments().get( 0 ).getInterpolation() );
         Assert.assertEquals( 3, curve.getAsLineString().getControlPoints().size() );
-        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX() );
-        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY() );
-        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX() );
-        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY() );
-        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX() );
-        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY() );
+        Assert.assertEquals( 7.12, curve.getAsLineString().getControlPoints().get( 0 ).getX(), DELTA );
+        Assert.assertEquals( 50.72, curve.getAsLineString().getControlPoints().get( 0 ).getY(), DELTA );
+        Assert.assertEquals( 9.98, curve.getAsLineString().getControlPoints().get( 1 ).getX(), DELTA );
+        Assert.assertEquals( 53.55, curve.getAsLineString().getControlPoints().get( 1 ).getY(), DELTA );
+        Assert.assertEquals( 13.42, curve.getAsLineString().getControlPoints().get( 2 ).getX(), DELTA );
+        Assert.assertEquals( 52.52, curve.getAsLineString().getControlPoints().get( 2 ).getY(), DELTA );
     }
 
     @Test
@@ -385,10 +389,10 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( SurfaceType.Tin, surface.getSurfaceType() );
         Assert.assertEquals( 2, surface.getStopLines().size() );
         Assert.assertEquals( 1, surface.getBreakLines().size() );
-        Assert.assertEquals( 15.0, surface.getMaxLength().getValue() );
+        Assert.assertEquals( 15.0, surface.getMaxLength().getValue(), DELTA );
         Assert.assertEquals( 3, surface.getControlPoints().size() );
-        Assert.assertEquals( 3.0, surface.getControlPoints().get( 2 ).getX() );
-        Assert.assertEquals( 4.0, surface.getControlPoints().get( 2 ).getY() );
+        Assert.assertEquals( 3.0, surface.getControlPoints().get( 2 ).getX(), DELTA );
+        Assert.assertEquals( 4.0, surface.getControlPoints().get( 2 ).getY(), DELTA );
     }
 
     @Test
@@ -406,7 +410,7 @@ public class GML311GeometryParserTest {
 
     @Test
     public void parseSolid()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "Solid.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Solid" ), xmlReader.getName() );
@@ -414,26 +418,26 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Solid" ), xmlReader.getName() );
         Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
-        Assert.assertEquals( "EPSG:31466", solid.getCoordinateSystem().getCode() );
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:31466" ), solid.getCoordinateSystem() );
         Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
         Assert.assertEquals(
                              2568786.096,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getX() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getX(), DELTA );
         Assert.assertEquals(
                              5662881.386,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getY() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getY(), DELTA );
         Assert.assertEquals(
                              60.3842642785516,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getZ() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getZ(), DELTA );
         Assert.assertEquals(
                              2568786.096,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getX() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getX(), DELTA );
         Assert.assertEquals(
                              5662881.386,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getY() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getY(), DELTA );
         Assert.assertEquals(
                              60.3842642785516,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getZ() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getZ(), DELTA );
     }
 
     @Test
@@ -465,7 +469,7 @@ public class GML311GeometryParserTest {
 
     @Test
     public void parseCompositeSolid()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "CompositeSolid.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "CompositeSolid" ), xmlReader.getName() );
@@ -475,31 +479,31 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( SolidType.CompositeSolid, compositeSolid.getSolidType() );
         Solid solid = compositeSolid.get( 0 );
         Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
-        Assert.assertEquals( "EPSG:31466", solid.getCoordinateSystem().getCode() );
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:31466"), solid.getCoordinateSystem() );
         Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
         Assert.assertEquals(
                              2568786.096,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getX() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getX(), DELTA );
         Assert.assertEquals(
                              5662881.386,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getY() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getY(), DELTA );
         Assert.assertEquals(
                              60.3842642785516,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getZ() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getZ(), DELTA );
         Assert.assertEquals(
                              2568786.096,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getX() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getX(), DELTA );
         Assert.assertEquals(
                              5662881.386,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getY() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getY(), DELTA );
         Assert.assertEquals(
                              60.3842642785516,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getZ() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getZ(), DELTA );
     }
 
     @Test
     public void parseGeometricComplex()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "GeometricComplex.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "GeometricComplex" ), xmlReader.getName() );
@@ -508,26 +512,26 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "GeometricComplex" ), xmlReader.getName() );
         Solid solid = (Solid) compositeGeometry.get( 0 );
         Assert.assertEquals( SolidType.Solid, solid.getSolidType() );
-        Assert.assertEquals( "EPSG:31466", solid.getCoordinateSystem().getCode() );
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:31466"), solid.getCoordinateSystem() );
         Assert.assertEquals( 8, solid.getExteriorSurface().getPatches().size() );
         Assert.assertEquals(
                              2568786.096,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getX() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getX(), DELTA );
         Assert.assertEquals(
                              5662881.386,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getY() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getY(), DELTA );
         Assert.assertEquals(
                              60.3842642785516,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getZ() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getStartPoint().getZ(), DELTA );
         Assert.assertEquals(
                              2568786.096,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getX() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getX(), DELTA );
         Assert.assertEquals(
                              5662881.386,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getY() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getY(), DELTA );
         Assert.assertEquals(
                              60.3842642785516,
-                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getZ() );
+                             ( (PolygonPatch) solid.getExteriorSurface().getPatches().get( 7 ) ).getExteriorRing().getEndPoint().getZ(), DELTA );
         Curve curve = (Curve) compositeGeometry.get( 1 );
         Assert.assertEquals( 2, curve.getCurveSegments().size() );
         Assert.assertEquals( Interpolation.circularArc3Points, curve.getCurveSegments().get( 0 ).getInterpolation() );
@@ -659,66 +663,66 @@ public class GML311GeometryParserTest {
 
     @Test
     public void parseEnvelope()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "Envelope.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Envelope" ), xmlReader.getName() );
         Envelope envelope = new GML311GeometryParser( geomFac, xmlReader ).parseEnvelope( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Envelope" ), xmlReader.getName() );
-        Assert.assertEquals( 11.0, envelope.getMin().getX() );
-        Assert.assertEquals( 22.0, envelope.getMin().getY() );
-        Assert.assertEquals( 44.0, envelope.getMax().getX() );
-        Assert.assertEquals( 88.0, envelope.getMax().getY() );
-        Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getCode() );
+        Assert.assertEquals( 11.0, envelope.getMin().getX(), DELTA );
+        Assert.assertEquals( 22.0, envelope.getMin().getY(), DELTA );
+        Assert.assertEquals( 44.0, envelope.getMax().getX(), DELTA );
+        Assert.assertEquals( 88.0, envelope.getMax().getY(), DELTA );
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326"), envelope.getCoordinateSystem() );
     }
 
     @Test
     public void parseEnvelopeCoord()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "Envelope_coord.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Envelope" ), xmlReader.getName() );
         Envelope envelope = new GML311GeometryParser( geomFac, xmlReader ).parseEnvelope( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Envelope" ), xmlReader.getName() );
-        Assert.assertEquals( 11.0, envelope.getMin().getX() );
-        Assert.assertEquals( 22.0, envelope.getMin().getY() );
-        Assert.assertEquals( 44.0, envelope.getMax().getX() );
-        Assert.assertEquals( 88.0, envelope.getMax().getY() );
-        Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getCode() );
+        Assert.assertEquals( 11.0, envelope.getMin().getX(), DELTA );
+        Assert.assertEquals( 22.0, envelope.getMin().getY(), DELTA );
+        Assert.assertEquals( 44.0, envelope.getMax().getX(), DELTA );
+        Assert.assertEquals( 88.0, envelope.getMax().getY(), DELTA );
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326"), envelope.getCoordinateSystem() );
     }
 
     @Test
     public void parseEnvelopePos()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "Envelope_pos.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Envelope" ), xmlReader.getName() );
         Envelope envelope = new GML311GeometryParser( geomFac, xmlReader ).parseEnvelope( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Envelope" ), xmlReader.getName() );
-        Assert.assertEquals( 11.0, envelope.getMin().getX() );
-        Assert.assertEquals( 22.0, envelope.getMin().getY() );
-        Assert.assertEquals( 44.0, envelope.getMax().getX() );
-        Assert.assertEquals( 88.0, envelope.getMax().getY() );
-        Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getCode() );
+        Assert.assertEquals( 11.0, envelope.getMin().getX(), DELTA );
+        Assert.assertEquals( 22.0, envelope.getMin().getY(), DELTA );
+        Assert.assertEquals( 44.0, envelope.getMax().getX(), DELTA );
+        Assert.assertEquals( 88.0, envelope.getMax().getY(), DELTA );
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326"), envelope.getCoordinateSystem() );
     }
 
     @Test
     public void parseEnvelopeCoordinates()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "Envelope_coordinates.gml" );
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Envelope" ), xmlReader.getName() );
         Envelope envelope = new GML311GeometryParser( geomFac, xmlReader ).parseEnvelope( null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Envelope" ), xmlReader.getName() );
-        Assert.assertEquals( 11.0, envelope.getMin().getX() );
-        Assert.assertEquals( 22.0, envelope.getMin().getY() );
-        Assert.assertEquals( 44.0, envelope.getMax().getX() );
-        Assert.assertEquals( 88.0, envelope.getMax().getY() );
-        Assert.assertEquals( "EPSG:4326", envelope.getCoordinateSystem().getCode() );
+        Assert.assertEquals( 11.0, envelope.getMin().getX(), DELTA );
+        Assert.assertEquals( 22.0, envelope.getMin().getY(), DELTA );
+        Assert.assertEquals( 44.0, envelope.getMax().getX(), DELTA );
+        Assert.assertEquals( 88.0, envelope.getMax().getY(), DELTA );
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326"), envelope.getCoordinateSystem() );
     }
 
     private XMLStreamReaderWrapper getParser( String fileName )
