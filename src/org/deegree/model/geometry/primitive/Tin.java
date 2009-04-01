@@ -39,8 +39,8 @@ package org.deegree.model.geometry.primitive;
 
 import java.util.List;
 
+import org.deegree.commons.types.Length;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.model.gml.Length;
 
 /**
  * A {@link Tin} is a {@link TriangulatedSurface} that uses the Delauny algorithm or a similar algorithm complemented

@@ -41,7 +41,7 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature.types;
+package org.deegree.model.feature.types.property;
 
 import javax.xml.namespace.QName;
 

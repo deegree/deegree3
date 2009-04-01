@@ -45,13 +45,13 @@ package org.deegree.model.geometry.standard.primitive;
 
 import java.util.List;
 
+import org.deegree.commons.types.Length;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.Tin;
 import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.model.gml.Length;
 
 /**
  * Default implementation of {@link Tin}.

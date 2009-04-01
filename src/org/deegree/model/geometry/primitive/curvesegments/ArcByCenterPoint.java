@@ -37,9 +37,9 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive.curvesegments;
 
+import org.deegree.commons.types.Length;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.gml.Angle;
-import org.deegree.model.gml.Length;
 
 /**
  * Circular {@link CurveSegment} that consists of a single arc.

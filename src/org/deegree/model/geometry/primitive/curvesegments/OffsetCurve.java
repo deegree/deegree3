@@ -37,9 +37,9 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.primitive.curvesegments;
 
+import org.deegree.commons.types.Length;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.gml.Length;
 
 /**
  * A {@link CurveSegment} that is defined by a base {@link Curve} and an offset.

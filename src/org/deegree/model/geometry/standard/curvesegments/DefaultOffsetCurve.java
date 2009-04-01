@@ -43,11 +43,11 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.standard.curvesegments;
 
+import org.deegree.commons.types.Length;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.OffsetCurve;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
-import org.deegree.model.gml.Length;
 
 /**
  * Default implementation of {@link OffsetCurve} segments.

@@ -54,9 +54,9 @@ import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.Property;
 import org.deegree.model.feature.types.ApplicationSchema;
-import org.deegree.model.feature.types.FeaturePropertyType;
 import org.deegree.model.feature.types.FeatureType;
-import org.deegree.model.feature.types.PropertyType;
+import org.deegree.model.feature.types.property.FeaturePropertyType;
+import org.deegree.model.feature.types.property.PropertyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

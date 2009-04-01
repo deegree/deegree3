@@ -51,7 +51,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.types.FeatureCollectionType;
-import org.deegree.model.feature.types.PropertyType;
+import org.deegree.model.feature.types.property.PropertyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,15 +92,13 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         this.ft = ft;
         this.fid = fid;
         for ( Property<?> prop : props ) {
-            if ( FEATURE_MEMBER.equals( prop.getName() ) ) {
-                // TODO do this a better way                
-                if (prop.getValue() instanceof Feature) {
-                    memberFeatures.add(  (Feature) prop.getValue() );                    
-                } else {
-                    memberFeatures.add(  null );
-                }
-            } else if ( FEATURE_MEMBERS.equals( prop.getName() ) ) {
-                for (Feature feature : (Feature []) prop.getValue()) {
+
+            // TODO do this a better way
+            Object propValue = prop.getValue();
+            if (propValue instanceof Feature ) {
+                memberFeatures.add(  (Feature) prop.getValue() );
+            } else if (propValue instanceof Feature[] ) {
+                for (Feature feature : (Feature []) propValue) {
                     memberFeatures.add( feature );
                 }
             } else {
@@ -252,27 +250,58 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
         memberFeatures.set( featureNum, (Feature) value );
     }
 
+    
+    // TODO also allow the retrieval of featureMember properties in the methods below
+    
     @Override
     public Property<?>[] getProperties( QName propName ) {
-        // TODO Auto-generated method stub
-        return null;
+        List<Property<?>> namedProps = new ArrayList<Property<?>>( nonMemberProps.size() );
+        for ( Property<?> property : nonMemberProps ) {
+            if ( propName.equals( property.getName() ) ) {
+                namedProps.add( property );
+            }
+        }
+        return namedProps.toArray( new Property<?>[namedProps.size()] );
     }
 
     @Override
     public Property<?> getProperty( QName propName ) {
-        // TODO Auto-generated method stub
-        return null;
+        Property<?> prop = null;
+        for ( Property<?> property : nonMemberProps ) {
+            if ( propName.equals( property.getName() ) ) {
+                if ( prop != null ) {
+                    String msg = "Feature has more than one property with name '" + propName + "'.";
+                    throw new IllegalArgumentException( msg );
+                }
+                prop = property;
+            }
+        }
+        return prop;
     }
 
     @Override
     public Object getPropertyValue( QName propName ) {
-        // TODO Auto-generated method stub
-        return null;
+        Object value = null;
+        for ( Property<?> property : nonMemberProps ) {
+            if ( propName.equals( property.getName() ) ) {
+                if ( value != null ) {
+                    String msg = "Feature has more than one property with name '" + propName + "'.";
+                    throw new IllegalArgumentException( msg );
+                }
+                value = property.getValue();
+            }
+        }
+        return value;
     }
 
     @Override
     public Object[] getPropertyValues( QName propName ) {
-        // TODO Auto-generated method stub
-        return null;
+        List<Object> propValues = new ArrayList<Object>( nonMemberProps.size() );
+        for ( Property<?> property : nonMemberProps ) {
+            if ( propName.equals( property.getName() ) ) {
+                propValues.add( property.getValue() );
+            }
+        }
+        return propValues.toArray( new Object[propValues.size()] );
     }
 }

@@ -53,6 +53,7 @@ import javax.xml.namespace.QName;
 import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.GenericFeatureCollection;
 import org.deegree.model.feature.Property;
+import org.deegree.model.feature.types.property.PropertyType;
 
 /**
  * TODO add documentation here

@@ -49,6 +49,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.Property;
+import org.deegree.model.feature.types.property.PropertyType;
 
 /**
  * A {@link FeatureType} describes a class of {@link Feature}s.

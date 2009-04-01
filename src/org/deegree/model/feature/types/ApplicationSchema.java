@@ -50,7 +50,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.gml.GMLFeatureParser;
+import org.apache.xerces.xs.XSModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,14 +66,16 @@ public class ApplicationSchema {
     
     private static final Logger LOG = LoggerFactory.getLogger( ApplicationSchema.class );    
 
-    private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
+    private final Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
     // key: feature type A, value: feature type B (A is in substitutionGroup B)
-    private Map<FeatureType, FeatureType> ftToSubstitutionGroup = new HashMap<FeatureType, FeatureType>();
+    private final Map<FeatureType, FeatureType> ftToSubstitutionGroup = new HashMap<FeatureType, FeatureType>();
 
     // key: feature type A, value: feature types B0...Bn (A is in substitutionGroup B0,
     // B0 is in substitutionGroup B1, ..., B(n-1) is in substitutionGroup Bn)
-    private Map<FeatureType, List<FeatureType>> ftToSubstitutionGroups = new HashMap<FeatureType, List<FeatureType>>();
+    private final Map<FeatureType, List<FeatureType>> ftToSubstitutionGroups = new HashMap<FeatureType, List<FeatureType>>();
+
+    private final XSModel model;
 
     /**
      * Creates a new <code>ApplicationSchema</code> from the given {@link FeatureType}s and their substitution group
@@ -83,8 +85,9 @@ public class ApplicationSchema {
      *            all feature types (abstract and non-abstract)
      * @param ftSubstitutionGroupRelation
      *            key: feature type A, value: feature type B (A is in substitutionGroup B)
+     * @param model 
      */
-    public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftSubstitutionGroupRelation ) {
+    public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftSubstitutionGroupRelation, XSModel model ) {        
         for ( FeatureType ft : fts ) {
             ftNameToFt.put( ft.getName(), ft );
         }
@@ -100,6 +103,7 @@ public class ApplicationSchema {
             }
             ftToSubstitutionGroups.put( ft, substitutionGroups );
         }
+        this.model = model;
     }
 
     /**
@@ -148,7 +152,7 @@ public class ApplicationSchema {
      *         </ul>
      */
     public boolean isValidSubstitution( FeatureType ft, FeatureType substitution ) {
-        LOG.error ("ft: " + ft.getName() + ", substitution: " + substitution.getName());
+        LOG.debug ("ft: " + ft.getName() + ", substitution: " + substitution.getName());
         if (ft == substitution) {
             return true;
         }
@@ -161,5 +165,9 @@ public class ApplicationSchema {
             }
         }
         return false;
+    }
+
+    public XSModel getXSModel() {
+        return model;
     }
 }

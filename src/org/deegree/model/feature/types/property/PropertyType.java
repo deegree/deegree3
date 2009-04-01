@@ -41,28 +41,52 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature.types;
+package org.deegree.model.feature.types.property;
 
 import javax.xml.namespace.QName;
 
-public class CustomComplexPropertyType extends AbstractPropertyType {
+import org.deegree.model.feature.types.FeatureType;
 
-    private QName xsdType;
+/**
+ * Declares a named property of a {@link FeatureType}.
+ * 
+ * @see FeatureType
 
-    public CustomComplexPropertyType (QName name, int minOccurs, int maxOccurs, QName xsdType) {
-        super (name, minOccurs, maxOccurs);
-        this.xsdType = xsdType;
-    }
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author:$
+ *
+ * @version $Revision:$, $Date:$
+ */
+public interface PropertyType {
 
-    @Override
-    public QName getXSDValueType() {
-        return xsdType;
-    }
+    /**
+     * Returns the name of the declared property.
+     * <p>
+     * In a common GML representation, this corresponds to the property's element name.
+     * </p>
+     * 
+     * @return the name of the property
+     */
+    public QName getName();
 
-    @Override
-    public String toString() {
-        String s = "- custom property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
-                   + ", content xsd type: " + xsdType;
-        return s;
-    }          
+    /**
+     * Specifies the minimum number of times that this property must be present in a feature instance.
+     * 
+     * @return the minimum number of times that this property must be present
+     */
+    public int getMinOccurs();
+
+    /**
+     * Specifies the maximum number of times that this property must be present in a feature instance.
+     * 
+     * @return the maximum number of times that this property must be present, or -1 (=unbounded)
+     */    
+    public int getMaxOccurs();
+
+    /**
+     * Returns the name of the XML type definition.
+     *
+     * @return the name of the XML type
+     */
+    public QName getXSDValueType();
 }

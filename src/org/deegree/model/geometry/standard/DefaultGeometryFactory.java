@@ -41,6 +41,7 @@ package org.deegree.model.geometry.standard;
 import java.util.Arrays;
 import java.util.List;
 
+import org.deegree.commons.types.Length;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.AbstractGeometryFactory;
 import org.deegree.model.geometry.Envelope;
@@ -136,7 +137,6 @@ import org.deegree.model.geometry.standard.surfacepatches.DefaultPolygonPatch;
 import org.deegree.model.geometry.standard.surfacepatches.DefaultRectangle;
 import org.deegree.model.geometry.standard.surfacepatches.DefaultTriangle;
 import org.deegree.model.gml.Angle;
-import org.deegree.model.gml.Length;
 
 /**
  * 

@@ -50,7 +50,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.feature.types.GenericFeatureType;
-import org.deegree.model.feature.types.PropertyType;
+import org.deegree.model.feature.types.property.PropertyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

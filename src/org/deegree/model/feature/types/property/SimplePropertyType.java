@@ -41,37 +41,50 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard.curvesegments;
+package org.deegree.model.feature.types.property;
 
-import org.deegree.commons.types.Length;
-import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.curvesegments.CircleByCenterPoint;
-import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
-import org.deegree.model.gml.Angle;
+import javax.xml.namespace.QName;
+
+import org.apache.xerces.impl.dv.XSSimpleType;
 
 /**
- * Default implementation of {@link CircleByCenterPoint} segments.
+ * A {@link PropertyType} that defines a property with a simple value, e.g. a string or a number.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision: $, $Date: $
  */
-public class DefaultCircleByCenterPoint extends DefaultArcByCenterPoint implements CircleByCenterPoint {
+public class SimplePropertyType extends AbstractPropertyType {
 
-    /**
-     * Creates a new <code>DefaultCircleByCenterPoint</code> instance from the given parameters.
-     * 
-     * @param midPoint
-     * @param radius
-     * @param startAngle
-     */
-    public DefaultCircleByCenterPoint( Point midPoint, Length radius, Angle startAngle ) {
-        super( midPoint, radius, startAngle, startAngle );
+    private QName xsdType;
+
+    private XSSimpleType typeDef;
+
+    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, XSSimpleType typeDef ) {
+        super( name, minOccurs, maxOccurs );
+        this.typeDef = typeDef;
     }
-    
+
+    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, QName xsdType ) {
+        super( name, minOccurs, maxOccurs );
+        this.xsdType = xsdType;
+    }
+
     @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.CIRCLE_BY_CENTER_POINT;
-    }    
+    public QName getXSDValueType() {
+        return xsdType;
+    }
+
+    @Override
+    public String toString() {
+        String s = "- simple property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+                   + ", xsdType: ";
+        if ( xsdType != null ) {
+            s += xsdType;
+        } else {
+            s += typeDef;
+        }
+        return s;
+    }
 }

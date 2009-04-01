@@ -51,6 +51,9 @@ import org.deegree.model.filter.FilterEvaluationException;
 
 /**
  * A feature collection is a collection of {@link Feature} instances.
+ * <p>
+ * Note that a {@link FeatureCollection} is a {@link Feature} itself.
+ * </p>
  * 
  * @see Feature
  * 

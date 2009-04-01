@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/feature/Feature.java $
 /*----------------    FILE HEADER  ------------------------------------------
 
  This file is part of deegree.
@@ -41,50 +41,52 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature.types;
-
-import javax.xml.namespace.QName;
+package org.deegree.commons.types;
 
 /**
- * Declares a named property of a {@link FeatureType}.
+ * Number with a scale.
  * 
- * @see FeatureType
-
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public interface PropertyType {
+public class Measure {
 
-    /**
-     * Returns the name of the declared property.
-     * <p>
-     * In a common GML representation, this corresponds to the property's element name.
-     * </p>
-     * 
-     * @return the name of the property
-     */
-    public QName getName();
+    private double value;
 
-    /**
-     * Specifies the minimum number of times that this property must be present in a feature instance.
-     * 
-     * @return the minimum number of times that this property must be present
-     */
-    public int getMinOccurs();
+    private String uomURI;
 
-    /**
-     * Specifies the maximum number of times that this property must be present in a feature instance.
-     * 
-     * @return the maximum number of times that this property must be present, or -1 (=unbounded)
-     */    
-    public int getMaxOccurs();
+    public Measure( double value, String uomURI ) {
+        this.value = value;
+        this.uomURI = uomURI;
+    }
 
-    /**
-     * Returns the name of the XML type definition.
-     *
-     * @return the name of the XML type
-     */
-    public QName getXSDValueType();
+    public double getValue() {
+        return value;
+    }
+
+    public String getUomUri() {
+        return uomURI;
+    }
+
+    public boolean equals( Object obj ) {
+        if ( !( obj instanceof Measure ) ) {
+            return false;
+        }
+        Measure m = (Measure) obj;
+        if ( value == m.value ) {
+            if ( uomURI != null ) {
+                return uomURI.equals( m.uomURI );
+            } else {
+                return m.uomURI == null;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return value + ( uomURI == null ? "" : " " + uomURI );
+    }
 }

@@ -1,4 +1,4 @@
-package org.deegree.model.gml;
+package org.deegree.commons.types;
 
 public class Length extends Measure {
 

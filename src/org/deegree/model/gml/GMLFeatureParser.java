@@ -52,6 +52,10 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.xerces.xs.XSElementDeclaration;
+import org.apache.xerces.xs.XSModel;
+import org.deegree.commons.types.Measure;
+import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
@@ -60,13 +64,17 @@ import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.GenericProperty;
 import org.deegree.model.feature.Property;
 import org.deegree.model.feature.types.ApplicationSchema;
-import org.deegree.model.feature.types.CustomComplexPropertyType;
-import org.deegree.model.feature.types.FeaturePropertyType;
 import org.deegree.model.feature.types.FeatureType;
-import org.deegree.model.feature.types.GeometryPropertyType;
-import org.deegree.model.feature.types.PropertyType;
-import org.deegree.model.feature.types.SimplePropertyType;
+import org.deegree.model.feature.types.property.CodePropertyType;
+import org.deegree.model.feature.types.property.CustomComplexPropertyType;
+import org.deegree.model.feature.types.property.EnvelopePropertyType;
+import org.deegree.model.feature.types.property.FeaturePropertyType;
+import org.deegree.model.feature.types.property.GeometryPropertyType;
+import org.deegree.model.feature.types.property.MeasurePropertyType;
+import org.deegree.model.feature.types.property.PropertyType;
+import org.deegree.model.feature.types.property.SimplePropertyType;
 import org.deegree.model.geometry.Geometry;
+import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.gml.GMLIdContext.XLinkProperty;
 import org.deegree.model.i18n.Messages;
@@ -93,6 +101,10 @@ public class GMLFeatureParser extends XMLAdapter {
 
     private ApplicationSchema schema;
 
+    private XSModel xsModel;
+
+    private GeometryFactory geomFac;
+
     /**
      * Creates a new <code>FeatureGMLAdapter</code> instance instance that is configured for building features with the
      * specified feature types.
@@ -102,6 +114,9 @@ public class GMLFeatureParser extends XMLAdapter {
      */
     public GMLFeatureParser( ApplicationSchema schema ) {
         this.schema = schema;
+        this.xsModel = schema.getXSModel();
+
+        this.geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
     }
 
     /**
@@ -142,7 +157,7 @@ public class GMLFeatureParser extends XMLAdapter {
         while ( xmlStream.nextTag() == START_ELEMENT ) {
             QName propName = xmlStream.getName();
             LOG.debug( "- property '" + propName + "'" );
-            if ( propName.equals( activeDecl.getName() ) ) {
+            if ( isElementSubstitutableForProperty( propName, activeDecl ) ) {
                 // current property element is equal to active declaration
                 if ( activeDecl.getMaxOccurs() != -1 && propOccurences > activeDecl.getMaxOccurs() ) {
                     String msg = Messages.getMessage( "ERROR_PROPERTY_TOO_MANY_OCCURENCES", propName,
@@ -151,7 +166,7 @@ public class GMLFeatureParser extends XMLAdapter {
                 }
             } else {
                 // current property element is not equal to active declaration
-                while ( declIter.hasNext() && !propName.equals( activeDecl.getName() ) ) {
+                while ( declIter.hasNext() && !isElementSubstitutableForProperty( propName, activeDecl ) ) {
                     if ( propOccurences < activeDecl.getMinOccurs() ) {
                         String msg = null;
                         if ( activeDecl.getMinOccurs() == 1 ) {
@@ -165,7 +180,7 @@ public class GMLFeatureParser extends XMLAdapter {
                     activeDecl = declIter.next();
                     propOccurences = 0;
                 }
-                if ( !propName.equals( activeDecl.getName() ) ) {
+                if ( !isElementSubstitutableForProperty( propName, activeDecl ) ) {
                     String msg = Messages.getMessage( "ERROR_PROPERTY_UNEXPECTED", propName, ft.getName() );
                     throw new XMLParsingException( xmlStream, msg );
                 }
@@ -199,6 +214,39 @@ public class GMLFeatureParser extends XMLAdapter {
         return feature;
     }
 
+    private boolean isElementSubstitutableForProperty( QName elemName, PropertyType pt ) {
+        LOG.debug( "Checking if '" + elemName + "' is a valid substitution for '" + pt.getName() + "'" );
+        QName ptName = pt.getName();
+        if ( elemName.equals( ptName ) ) {
+            LOG.debug( "Yep. Names match." );
+            return true;
+        }
+
+        // TODO is this only possible for top-level element declarations (I think so...)
+        XSElementDeclaration elementDecl = xsModel.getElementDeclaration( elemName.getLocalPart(),
+                                                                          elemName.getNamespaceURI() );
+        if ( elementDecl == null ) {
+            LOG.debug( "Not defined as a top level element." );
+            return false;
+        }
+
+        XSElementDeclaration substitutionGroup = elementDecl.getSubstitutionGroupAffiliation();
+        while ( substitutionGroup != null ) {
+            QName substGroupName = new QName( substitutionGroup.getNamespace(), substitutionGroup.getName() );
+            if ( substGroupName.equals( ptName ) ) {
+                LOG.debug( "Yep. In substitution group." );
+                return true;
+            }
+
+            XSElementDeclaration substitutionGroup2 = elementDecl.getSubstitutionGroupAffiliation();
+            if ( substitutionGroup2 == substitutionGroup ) {
+                substitutionGroup = null;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Returns the object representation for the given property element.
      * 
@@ -227,19 +275,33 @@ public class GMLFeatureParser extends XMLAdapter {
         if ( propDecl instanceof SimplePropertyType ) {
             property = new GenericProperty<String>( propDecl, xmlStream.getElementText().trim() );
         } else if ( propDecl instanceof CustomComplexPropertyType ) {
-            LOG.debug( "- skipping parsing of '" + xmlStream.getName()
-                       + "' -- custom complex property parsing is not implemented yet" );
-
-            xmlStream.skipElement();
-            property = new GenericProperty<String>( propDecl, xmlStream.getName().toString() );
+            Object value = null;
+            if ( propDecl instanceof EnvelopePropertyType ) {
+                xmlStream.nextTag();
+                // TODO don't create a new instance every time
+                GML311GeometryParser geometryParser = new GML311GeometryParser( geomFac, xmlStream );
+                value = geometryParser.parseEnvelope( srsName );
+                xmlStream.nextTag();
+            } else if ( propDecl instanceof CodePropertyType ) {
+                String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
+                String code = xmlStream.getElementText().trim();
+                value = new CodeType(code, codeSpace);
+            } else if ( propDecl instanceof MeasurePropertyType ) {
+                String uom = xmlStream.getAttributeValue( null, "uom" );
+                double number = xmlStream.getElementTextAsDouble();
+                value = new Measure(number, uom);
+            } else {
+                LOG.warn( "- skipping property '" + xmlStream.getName() + "' -- property parsing for type '"
+                          + propDecl.getXSDValueType() + "' is not implemented yet" );
+                xmlStream.skipElement();
+            }
+            property = new GenericProperty<Object>( propDecl, value );
         } else if ( propDecl instanceof GeometryPropertyType ) {
             xmlStream.nextTag();
             // TODO don't create a new instance every time
-            GML311GeometryParser geometryParser = new GML311GeometryParser(
-                                                                            GeometryFactoryCreator.getInstance().getGeometryFactory(),
-                                                                            xmlStream );            
+            GML311GeometryParser geometryParser = new GML311GeometryParser( geomFac, xmlStream );
             Geometry geometry = geometryParser.parseGeometry( srsName );
-            property = new GenericProperty<Geometry>(propDecl, geometry);
+            property = new GenericProperty<Geometry>( propDecl, geometry );
             xmlStream.nextTag();
         } else if ( propDecl instanceof FeaturePropertyType ) {
             String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );

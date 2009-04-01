@@ -61,15 +61,17 @@ import org.apache.xerces.xs.XSSimpleTypeDefinition;
 import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.model.feature.types.ApplicationSchema;
-import org.deegree.model.feature.types.CustomComplexPropertyType;
-import org.deegree.model.feature.types.FeaturePropertyType;
 import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.feature.types.GenericFeatureCollectionType;
 import org.deegree.model.feature.types.GenericFeatureType;
-import org.deegree.model.feature.types.GeometryPropertyType;
-import org.deegree.model.feature.types.PropertyType;
-import org.deegree.model.feature.types.SimplePropertyType;
-import org.deegree.model.generic.xsd.ApplicationSchemaXSDAdapter;
+import org.deegree.model.feature.types.property.CodePropertyType;
+import org.deegree.model.feature.types.property.CustomComplexPropertyType;
+import org.deegree.model.feature.types.property.EnvelopePropertyType;
+import org.deegree.model.feature.types.property.FeaturePropertyType;
+import org.deegree.model.feature.types.property.GeometryPropertyType;
+import org.deegree.model.feature.types.property.MeasurePropertyType;
+import org.deegree.model.feature.types.property.PropertyType;
+import org.deegree.model.feature.types.property.SimplePropertyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,18 +85,18 @@ import org.slf4j.LoggerFactory;
  */
 public class GMLApplicationSchemaXSDAdapter {
 
-    private Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDAdapter.class );
+    private Logger LOG = LoggerFactory.getLogger( GMLApplicationSchemaXSDAdapter.class );
 
     private XSModelGMLAnalyzer analyzer;
 
     private Map<QName, XSElementDeclaration> ftNameToftElement = new HashMap<QName, XSElementDeclaration>();
-    
+
     private Map<QName, XSElementDeclaration> geometryNameToGeometryElement = new HashMap<QName, XSElementDeclaration>();
 
     private Map<QName, FeatureType> ftNameToft = new HashMap<QName, FeatureType>();
 
     // key: name of ft A, value: name of ft B (A is in substitionGroup B)
-    private Map<QName,QName> ftSubstitutionGroupRelation = new HashMap<QName, QName>();
+    private Map<QName, QName> ftSubstitutionGroupRelation = new HashMap<QName, QName>();
 
     // stores all feature property types, so the reference to the contained FeatureType can be resolved,
     // after all FeatureTypes have been created
@@ -109,20 +111,21 @@ public class GMLApplicationSchemaXSDAdapter {
             ftNameToftElement.put( ftName, elementDecl );
             XSElementDeclaration substitutionElement = elementDecl.getSubstitutionGroupAffiliation();
             if ( substitutionElement != null ) {
-                QName substitutionElementName = new QName (substitutionElement.getNamespace(), substitutionElement.getName());
+                QName substitutionElementName = new QName( substitutionElement.getNamespace(),
+                                                           substitutionElement.getName() );
                 ftSubstitutionGroupRelation.put( ftName, substitutionElementName );
-            }            
+            }
         }
         List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations( null, false );
         for ( XSElementDeclaration elementDecl : geometryElementDecls ) {
             QName ftName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
             geometryNameToGeometryElement.put( ftName, elementDecl );
-        }        
+        }
     }
 
     private void resolveFtReferences() {
         for ( FeaturePropertyType pt : featurePropertyTypes ) {
-            LOG.debug( "Resolving reference to feature type: '" + pt.getFTName () + "'"  );
+            LOG.debug( "Resolving reference to feature type: '" + pt.getFTName() + "'" );
             pt.resolve( ftNameToft.get( pt.getFTName() ) );
         }
     }
@@ -134,14 +137,14 @@ public class GMLApplicationSchemaXSDAdapter {
             ftNameToft.put( ftName, ft );
         }
         resolveFtReferences();
-        
-        FeatureType [] fts = ftNameToft.values().toArray( new FeatureType[ftNameToft.size()] );
-        Map<FeatureType,FeatureType> ftSubstitution = new HashMap<FeatureType,FeatureType>();
+
+        FeatureType[] fts = ftNameToft.values().toArray( new FeatureType[ftNameToft.size()] );
+        Map<FeatureType, FeatureType> ftSubstitution = new HashMap<FeatureType, FeatureType>();
         for ( QName ftName : ftSubstitutionGroupRelation.keySet() ) {
             QName substitutionFtName = ftSubstitutionGroupRelation.get( ftName );
-            ftSubstitution.put( ftNameToft.get( ftName ), ftNameToft.get( substitutionFtName ));
+            ftSubstitution.put( ftNameToft.get( ftName ), ftNameToft.get( substitutionFtName ) );
         }
-        return new ApplicationSchema(fts, ftSubstitution);
+        return new ApplicationSchema( fts, ftSubstitution, analyzer.getXSModel() );
     }
 
     private FeatureType buildFeatureType( XSElementDeclaration featureElementDecl ) {
@@ -239,9 +242,9 @@ public class GMLApplicationSchemaXSDAdapter {
             assert false;
         }
         }
-        
+
         List<XSElementDeclaration> fcDecls = analyzer.getFeatureCollectionElementDeclarations( null, false );
-        if (fcDecls.contains( featureElementDecl )) {
+        if ( fcDecls.contains( featureElementDecl ) ) {
             return new GenericFeatureCollectionType( ftName, pts, featureElementDecl.getAbstract() );
         }
 
@@ -249,7 +252,7 @@ public class GMLApplicationSchemaXSDAdapter {
     }
 
     private void addPropertyTypes( List<PropertyType> pts, XSModelGroup modelGroup ) {
-        LOG.info( " - processing model group..." );
+        LOG.debug( " - processing model group..." );
         switch ( modelGroup.getCompositor() ) {
         case XSModelGroup.COMPOSITOR_ALL: {
             LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
@@ -317,13 +320,24 @@ public class GMLApplicationSchemaXSDAdapter {
         LOG.debug( "- Property definition '" + ptName + "' uses a complex type for content definition." );
         pt = buildFeaturePropertyType( elementDecl, typeDef, minOccurs, maxOccurs );
         if ( pt == null ) {
-            LOG.debug ("A");
-            pt = buildGeometryPropertyType(elementDecl, typeDef, minOccurs, maxOccurs);
-            if (pt == null) {
-                LOG.debug ("B");
-                pt = new CustomComplexPropertyType( ptName, minOccurs, maxOccurs, new QName( typeDef.getNamespace(),
-                      typeDef.getName() ) );  
-            }            
+            pt = buildGeometryPropertyType( elementDecl, typeDef, minOccurs, maxOccurs );
+            if ( pt == null ) {
+                // TODO improve detection of property types
+                QName typeName = new QName( typeDef.getNamespace(), typeDef.getName() );
+                if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}CodeType" ) ) ) {
+                    LOG.debug ("Identified a CodePropertyType.");
+                    pt = new CodePropertyType( ptName, minOccurs, maxOccurs );
+                } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}BoundingShapeType" ) ) ) {
+                    LOG.debug ("Identified a EnvelopePropertyType.");
+                    pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs );                   
+                } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}LengthType" ) ) ) {
+                    LOG.debug ("Identified a LengthPropertyType.");
+                    pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs );
+                    
+                } else {
+                    pt = new CustomComplexPropertyType( ptName, minOccurs, maxOccurs, typeName );                    
+                }
+            }
         }
         return pt;
     }
@@ -427,7 +441,8 @@ public class GMLApplicationSchemaXSDAdapter {
      * @return corresponding {@link GeometryPropertyType} or null, if declaration does not define a geometry property
      */
     private GeometryPropertyType buildGeometryPropertyType( XSElementDeclaration elementDecl,
-                                                          XSComplexTypeDefinition typeDef, int minOccurs, int maxOccurs ) {
+                                                            XSComplexTypeDefinition typeDef, int minOccurs,
+                                                            int maxOccurs ) {
 
         QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
         switch ( typeDef.getContentType() ) {
@@ -463,7 +478,7 @@ public class GMLApplicationSchemaXSDAdapter {
                         QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
                         if ( geometryNameToGeometryElement.get( elementName ) != null ) {
                             LOG.debug( "Identified a geometry property." );
-                            return new GeometryPropertyType (ptName, minOccurs, maxOccurs, elementName);
+                            return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementName );
                         }
                     }
                     case XSConstants.WILDCARD: {
@@ -500,5 +515,5 @@ public class GMLApplicationSchemaXSDAdapter {
         }
         }
         return null;
-    }    
+    }
 }

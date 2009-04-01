@@ -40,6 +40,7 @@ package org.deegree.model.geometry;
 
 import java.util.List;
 
+import org.deegree.commons.types.Length;
 import org.deegree.model.crs.CRSRegistry;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.geometry.composite.CompositeCurve;
@@ -90,7 +91,6 @@ import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.model.geometry.primitive.surfacepatches.Triangle;
 import org.deegree.model.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.model.gml.Angle;
-import org.deegree.model.gml.Length;
 
 /**
  * 

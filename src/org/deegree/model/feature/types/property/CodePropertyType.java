@@ -41,42 +41,13 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature.types;
+package org.deegree.model.feature.types.property;
 
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.impl.dv.XSSimpleType;
+public class CodePropertyType extends CustomComplexPropertyType {
 
-public class SimplePropertyType extends AbstractPropertyType {
-
-    private QName xsdType;
-
-    private XSSimpleType typeDef;
-
-    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, XSSimpleType typeDef ) {
-        super (name, minOccurs, maxOccurs);
-        this.typeDef = typeDef;
-    }
-
-    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, QName xsdType ) {
-        super (name, minOccurs, maxOccurs);
-        this.xsdType = xsdType;
-    }
-
-    @Override
-    public QName getXSDValueType() {
-        return xsdType;
-    }
-
-    @Override
-    public String toString() {
-        String s = "- simple property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
-                   + ", xsdType: ";
-        if (xsdType != null) {
-            s += xsdType;
-        } else {
-            s += typeDef;
-        }
-        return s;
+    public CodePropertyType (QName name, int minOccurs, int maxOccurs) {
+        super (name, minOccurs, maxOccurs, null);
     }
 }

@@ -43,11 +43,11 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.model.geometry.standard.curvesegments;
 
+import org.deegree.commons.types.Length;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.model.geometry.primitive.curvesegments.ArcByCenterPoint;
 import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 import org.deegree.model.gml.Angle;
-import org.deegree.model.gml.Length;
 
 /**
  * Default implementation of {@link ArcByCenterPoint} segments.

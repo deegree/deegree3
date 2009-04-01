@@ -45,7 +45,7 @@ package org.deegree.model.feature;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.model.feature.types.PropertyType;
+import org.deegree.model.feature.types.property.PropertyType;
 
 /**
  * A spatial or non-spatial property of a {@link Feature}.

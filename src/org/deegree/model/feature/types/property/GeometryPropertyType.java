@@ -41,12 +41,14 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.feature.types;
+package org.deegree.model.feature.types.property;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.model.geometry.Geometry;
+
 /**
- * TODO add documentation here
+ * A {@link PropertyType} that defines a property with a {@link Geometry} value.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

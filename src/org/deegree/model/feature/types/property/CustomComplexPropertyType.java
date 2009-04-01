@@ -41,37 +41,28 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.model.geometry.standard.curvesegments;
+package org.deegree.model.feature.types.property;
 
-import org.deegree.commons.types.Length;
-import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.curvesegments.CircleByCenterPoint;
-import org.deegree.model.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
-import org.deegree.model.gml.Angle;
+import javax.xml.namespace.QName;
 
-/**
- * Default implementation of {@link CircleByCenterPoint} segments.
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
- */
-public class DefaultCircleByCenterPoint extends DefaultArcByCenterPoint implements CircleByCenterPoint {
+public class CustomComplexPropertyType extends AbstractPropertyType {
 
-    /**
-     * Creates a new <code>DefaultCircleByCenterPoint</code> instance from the given parameters.
-     * 
-     * @param midPoint
-     * @param radius
-     * @param startAngle
-     */
-    public DefaultCircleByCenterPoint( Point midPoint, Length radius, Angle startAngle ) {
-        super( midPoint, radius, startAngle, startAngle );
+    private QName xsdType;
+
+    public CustomComplexPropertyType (QName name, int minOccurs, int maxOccurs, QName xsdType) {
+        super (name, minOccurs, maxOccurs);
+        this.xsdType = xsdType;
     }
-    
+
     @Override
-    public CurveSegmentType getSegmentType() {
-        return CurveSegmentType.CIRCLE_BY_CENTER_POINT;
-    }    
+    public QName getXSDValueType() {
+        return xsdType;
+    }
+
+    @Override
+    public String toString() {
+        String s = "- custom property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
+                   + ", content xsd type: " + xsdType;
+        return s;
+    }          
 }

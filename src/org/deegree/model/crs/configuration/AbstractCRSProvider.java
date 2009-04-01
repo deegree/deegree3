@@ -171,6 +171,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     public CoordinateSystem getCRSByID( String id )
                             throws CRSConfigurationException {
+        
         if ( resolver == null ) {
             throw new CRSConfigurationException( "No resolver initialized, this may not be." );
         }
@@ -180,8 +181,8 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
             if ( LOG.isDebugEnabled() ) {
                 LOG.debug( cachedIdentifiables.keySet().toString() );
             }
-            if ( cachedIdentifiables.containsKey( id ) ) {
-                CRSIdentifiable r = cachedIdentifiables.get( id );
+            if ( cachedIdentifiables.containsKey( CRSCodeType.valueOf( id ) ) ) {
+                CRSIdentifiable r = cachedIdentifiables.get( CRSCodeType.valueOf( id ) );
                 LOG.debug( "Found CRSIdentifiable: " + r.getCodeAndName() + " from given id: " + id );
                 if ( !( r instanceof CoordinateSystem ) ) {
                     LOG.error( "Found CRSIdentifiable: " + r.getCodeAndName()
@@ -382,7 +383,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         V result = null;
         try {
-            result = (V) cachedIdentifiables.get( id );
+            result = (V) cachedIdentifiables.get( CRSCodeType.valueOf( id ) );
         } catch ( ClassCastException cce ) {
             LOG.error( "Given id is not of type: " + expectedType.getCanonicalName() + " found following error: "
                           + cce.getLocalizedMessage() );
@@ -429,7 +430,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         if ( id == null ) {
             return null;
         }
-        V result = (V) cachedIdentifiables.get( id );
+        V result = (V) cachedIdentifiables.get( CRSCodeType.valueOf( id ) );
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Searched for id: " + id + " resulted in: "
                           + ( ( result == null ) ? "null" : result.getCode() ) );
