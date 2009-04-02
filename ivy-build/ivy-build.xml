@@ -150,11 +150,15 @@
           target: impl-jar              
          ================================= -->
     <target name="build-jar" depends="compile" if="compile.change" description="-> create a jar file in ${classed.dir}/${jar.file}.jar">
+    	<pathconvert property="lib-path" pathsep=" " refid="build.path">
+	        <map from="${build.dir}/" to=""/>
+        </pathconvert>
         <jar destfile="${jar.file}.jar">
             <fileset dir="${classes.dir}" />
             <manifest>
                 <attribute name="Built-By" value="${build.by}" />
                 <attribute name="Build-Version" value="${build.version}" />
+            	<attribute name="Class-Path" value="${lib-path}" />
             </manifest>
         </jar>
     </target>
