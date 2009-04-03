@@ -42,7 +42,6 @@ import static org.deegree.model.crs.projections.ProjectionUtils.EPS11;
 
 import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
-import org.deegree.model.crs.EPSGCode;
 
 /**
  * The <code>PrimeMeridian</code> class saves the longitude to the greenwich meridian.
@@ -68,7 +67,7 @@ public class PrimeMeridian extends CRSIdentifiable {
                                                                      Unit.DEGREE,
                                                                      0,
                                                                      new CRSCodeType[] {
-                                                                                   new EPSGCode( 8901 ),
+                                                                                   new CRSCodeType( "8901", "EPSG" ),
 //                                                                                   "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#8901",
 //                                                                                   "URN:OPENGIS:DEF:CRS:EPSG::8901",
 //                                                                                   "URN:OGC:DEF:CRS:EPSG::8901" 
@@ -197,6 +196,10 @@ public class PrimeMeridian extends CRSIdentifiable {
      */
     public Unit getAngularUnit() {
         return units;
+    }
+    
+    public void setAngularUnit( Unit units ) {
+        this.units = units;
     }
 
     @Override
