@@ -50,7 +50,9 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.Assert;
 
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
@@ -80,7 +82,7 @@ public class GML311SurfacePatchParserTest {
 
     @Test
     public void parsePolygonPatch()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311SurfacePatchParser parser = getParser( "PolygonPatch.gml" );
         PolygonPatch patch = (PolygonPatch) parser.parseSurfacePatch( "EPSG:4326" );
         Assert.assertEquals( 2.0, patch.getExteriorRing().getStartPoint().getX() );
@@ -92,7 +94,7 @@ public class GML311SurfacePatchParserTest {
 
     @Test
     public void parseTriangle()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311SurfacePatchParser parser = getParser( "Triangle.gml" );
         Triangle patch = (Triangle) parser.parseSurfacePatch( "EPSG:4326" );
         Assert.assertEquals( 4, patch.getExteriorRing().getControlPoints().size() );
@@ -100,7 +102,7 @@ public class GML311SurfacePatchParserTest {
 
     @Test
     public void parseRectangle()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311SurfacePatchParser parser = getParser( "Rectangle.gml" );
         Rectangle patch = (Rectangle) parser.parseSurfacePatch( "EPSG:4326" );
         Assert.assertEquals( 5, patch.getExteriorRing().getControlPoints().size() );

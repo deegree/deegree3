@@ -50,7 +50,9 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.Assert;
 
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.curvesegments.Arc;
@@ -92,7 +94,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseArc()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "Arc.gml" );
         Arc arc = (Arc) parser.parseCurveSegment( null );
         Assert.assertEquals( 1, arc.getNumArcs() );
@@ -107,7 +109,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseArcByBulge()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "ArcByBulge.gml" );
         ArcByBulge arc = (ArcByBulge) parser.parseCurveSegment( "EPSG:4326" );
         Assert.assertEquals( 1, arc.getNumArcs() );
@@ -125,7 +127,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseArcByCenterPoint()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "ArcByCenterPoint.gml" );
         ArcByCenterPoint arc = (ArcByCenterPoint) parser.parseCurveSegment( "EPSG:4326" );
         Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
@@ -141,7 +143,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseArcString()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "ArcString.gml" );
         ArcString arc = (ArcString) parser.parseCurveSegment( null );
         Assert.assertEquals( 3, arc.getNumArcs() );
@@ -164,7 +166,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseArcStringByBulge()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "ArcStringByBulge.gml" );
         ArcStringByBulge arc = (ArcStringByBulge) parser.parseCurveSegment( "EPSG:4326" );
         Assert.assertEquals( 3, arc.getNumArcs() );
@@ -181,7 +183,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseBezier()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "Bezier.gml" );
         Bezier arc = (Bezier) parser.parseCurveSegment( "EPSG:4326" );
         Assert.assertEquals( 4, arc.getControlPoints().size() );
@@ -206,7 +208,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseBSpline()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "BSpline.gml" );
         BSpline arc = (BSpline) parser.parseCurveSegment( "EPSG:4326" );
         Assert.assertEquals( 4, arc.getControlPoints().size() );
@@ -231,7 +233,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseCircle()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "Circle.gml" );
         Circle circle = (Circle) parser.parseCurveSegment( null );
         Assert.assertEquals( 1, circle.getNumArcs() );
@@ -246,7 +248,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseCircleByCenterPoint()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "CircleByCenterPoint.gml" );
         ArcByCenterPoint arc = (ArcByCenterPoint) parser.parseCurveSegment( "EPSG:4326" );
         Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
@@ -262,7 +264,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseClothoid()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "Clothoid.gml" );
         Clothoid segment = (Clothoid) parser.parseCurveSegment( "EPSG:4326" );
         Assert.assertEquals( 47.0, segment.getReferenceLocation().getLocation().getX() );
@@ -284,7 +286,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseCubicSpline()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "CubicSpline.gml" );
         CubicSpline segment = (CubicSpline) parser.parseCurveSegment( "EPSG:4326" );
         Assert.assertEquals( 3, segment.getControlPoints().size() );
@@ -302,9 +304,10 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseGeodesic()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "Geodesic.gml" );
-        Geodesic segment = (Geodesic) parser.parseCurveSegment( null );
+        Geodesic segment = (Geodesic) 
+        parser.parseCurveSegment( null );
         Assert.assertEquals( 2, segment.getControlPoints().size() );
         Assert.assertEquals( 2.0, segment.getControlPoints().get( 0 ).getX() );
         Assert.assertEquals( 0.0, segment.getControlPoints().get( 0 ).getY() );
@@ -314,7 +317,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseGeodesicString()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "GeodesicString.gml" );
         GeodesicString segment = (GeodesicString) parser.parseCurveSegment( null );
         Assert.assertEquals( 3, segment.getControlPoints().size() );
@@ -328,7 +331,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseLineStringSegment()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "LineStringSegment.gml" );
         LineStringSegment arc = (LineStringSegment) parser.parseCurveSegment( null );
         Assert.assertEquals( 3, arc.getControlPoints().size() );
@@ -342,7 +345,7 @@ public class GML311CurveSegmentParserTest {
 
     @Test
     public void parseOffsetCurve()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311CurveSegmentParser parser = getParser( "OffsetCurve.gml" );
         OffsetCurve segment = (OffsetCurve) parser.parseCurveSegment( "EPSG:4326" );
         Assert.assertEquals( 1.0, segment.getDistance().getValue() );

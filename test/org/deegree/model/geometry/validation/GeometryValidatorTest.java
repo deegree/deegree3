@@ -46,7 +46,9 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.Assert;
 
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
@@ -74,7 +76,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validateCurve()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "Curve.gml" );
@@ -84,7 +86,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validateInvalidCurve()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Curve_discontinuity.gml" );
@@ -95,7 +97,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validateRing()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "Ring.gml" );
@@ -105,7 +107,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validateInvalidRing()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Ring_not_closed.gml" );
@@ -116,7 +118,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validateInvalidRing2()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Ring_self_intersection.gml" );
@@ -128,7 +130,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validateInvalidRing3()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Ring_not_closed_and_self_intersection.gml" );
@@ -141,7 +143,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validatePolygon()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "Polygon.gml" );
@@ -151,7 +153,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validateInvalidPolygon1()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_exterior_clockwise.gml" );
@@ -162,7 +164,7 @@ public class GeometryValidatorTest {
     
     @Test
     public void validateInvalidPolygon2()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_interiors_counterclockwise.gml" );
@@ -174,7 +176,7 @@ public class GeometryValidatorTest {
     
     @Test
     public void validateInvalidPolygon3()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_exterior_not_closed.gml" );
@@ -185,7 +187,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validateInvalidPolygon4()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_interior_outside_exterior.gml" );
@@ -197,7 +199,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validateInvalidPolygon5()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_interiors_touch.gml" );
@@ -208,7 +210,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validateInvalidPolygon6()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_interiors_intersect.gml" );
@@ -219,7 +221,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validateInvalidPolygon7()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_interior_outside_exterior.gml" );
@@ -230,7 +232,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validateInvalidPolygon8()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_interior_touches_exterior.gml" );
@@ -241,7 +243,7 @@ public class GeometryValidatorTest {
 
     @Test
     public void validateInvalidPolygon9()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         TestValidationEventHandler eventHandler = new TestValidationEventHandler();
         GeometryValidator validator = new GeometryValidator( eventHandler );
         Geometry geom = parseGeometry( "invalid/Polygon_interior_intersects_exterior.gml" );
@@ -251,7 +253,7 @@ public class GeometryValidatorTest {
     }    
     
     private Geometry parseGeometry( String fileName )
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        GML311GeometryParserTest.class.getResource( BASE_DIR
                                                                                                                    + fileName ) );

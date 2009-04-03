@@ -51,6 +51,7 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.Curve;
@@ -76,7 +77,7 @@ public class GML311GeometryValidatorTest {
     @Test
     public void validateCurve()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException {
+                            ClassNotFoundException, InstantiationException, IllegalAccessException, UnknownCRSException {
 
         XMLStreamReaderWrapper xmlReader = getParser( "Curve.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
@@ -87,7 +88,7 @@ public class GML311GeometryValidatorTest {
     @Test
     public void validateInvalidCurve()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException {
+                            ClassNotFoundException, InstantiationException, IllegalAccessException, UnknownCRSException {
 
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Curve_discontinuity.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
@@ -97,7 +98,7 @@ public class GML311GeometryValidatorTest {
 
     @Test
     public void validateInvalidRing()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
 
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Ring_not_closed.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
@@ -107,7 +108,7 @@ public class GML311GeometryValidatorTest {
 
     @Test
     public void validateInvalidPolygon1()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Polygon_exterior_clockwise.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
         GML311GeometryValidator validator = new GML311GeometryValidator( xmlReader, eventHandler );
@@ -116,7 +117,7 @@ public class GML311GeometryValidatorTest {
     
     @Test
     public void validateInvalidPolygon2()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "invalid/Polygon_noexterior.gml" );
         TestGMLValidationEventHandler eventHandler = new TestGMLValidationEventHandler();
         GML311GeometryValidator validator = new GML311GeometryValidator( xmlReader, eventHandler );
@@ -125,7 +126,7 @@ public class GML311GeometryValidatorTest {
 
     @Test
     public void validateBestemmingsplan()
-                            throws XMLStreamException, FactoryConfigurationError, IOException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        new URL(
                                                                                 "file:///home/schneider/wsl_fromogr.gml" ) );
