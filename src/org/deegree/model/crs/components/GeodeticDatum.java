@@ -40,7 +40,6 @@ package org.deegree.model.crs.components;
 
 import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
-import org.deegree.model.crs.EPSGCode;
 import org.deegree.model.crs.transformations.helmert.Helmert;
 
 /**
@@ -59,7 +58,7 @@ public class GeodeticDatum extends Datum {
     /**
      * The default WGS 1984 datum, with primeMeridian set to Greenwich and default (no) wgs84 conversion info.
      */
-    public static final GeodeticDatum WGS84 = new GeodeticDatum( Ellipsoid.WGS84, new EPSGCode( 6326 ), "WGS_1984" );
+    public static final GeodeticDatum WGS84 = new GeodeticDatum( Ellipsoid.WGS84, new CRSCodeType( "6326", "EPSG" ), "WGS_1984" );
 
     private PrimeMeridian primeMeridian;
 
@@ -204,6 +203,13 @@ public class GeodeticDatum extends Datum {
      */
     public final PrimeMeridian getPrimeMeridian() {
         return primeMeridian;
+    }
+    
+    /** 
+     * @param primeMeridian
+     */
+    public final void setPrimeMeridian( PrimeMeridian primeMeridian ) {
+        this.primeMeridian = primeMeridian;
     }
 
     /**
