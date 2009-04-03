@@ -48,5 +48,7 @@
     <dependency org="jaxb" name="jaxb-impl" rev="2.1.10" transitive="false" conf="${module.name}-build" />
     <dependency org="jaxb" name="jaxb-xjc" rev="2.1.10" transitive="false" conf="${module.name}-build" />
 
+    <!-- derby-->
+    <dependency org="derby" name="derby" rev="10.4.2.0" conf="${module.name}-build" />
   </dependencies>
 </ivy-module>
