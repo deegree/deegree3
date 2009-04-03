@@ -72,7 +72,7 @@ import org.deegree.model.i18n.Messages;
  */
 public class ProjFileResource implements CRSResource<Map<String, String>> {
 
-    private Map<String, Map<String, String>> idToParams = new HashMap<String, Map<String, String>>( 4000 );
+    private Map<CRSCodeType, Map<String, String>> idToParams = new HashMap<CRSCodeType, Map<String, String>>( 4000 );
 
     private static Logger LOG = LoggerFactory.getLogger( ProjFileResource.class );
 
@@ -96,10 +96,10 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
                     }
                     kvp.put( "comment", line.substring( 1 ).trim() );
                 } else {
-                    String identifier = parseConfigString( line, Integer.toString( lineNumber ), kvp );
-                    if ( identifier != null && !"".equals( identifier.trim() ) ) {
-                        LOG.debug( "Found identifier: " + identifier + " with following params: " + kvp );
-                        idToParams.put( identifier, kvp );
+                    String code = parseConfigString( line, Integer.toString( lineNumber ), kvp );
+                    if ( code != null && !"".equals( code.trim() ) ) {
+                        LOG.debug( "Found code: " + CRSCodeType.valueOf( code ) + " with following params: " + kvp );
+                        idToParams.put( CRSCodeType.valueOf( code ), kvp );
                     }
                     kvp = new HashMap<String, String>( 15 );
                 }
@@ -158,7 +158,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
     /**
      * @return a set containing all available ids.
      */
-    public Set<String> getAvailableIDs() {
+    public Set<CRSCodeType> getAvailableCodes() {
         return idToParams.keySet();
     }
 

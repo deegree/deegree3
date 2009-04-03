@@ -111,7 +111,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
 
     private static final String OGC_URN = "URN:OGC:DEF:CRS:EPSG::";
 
-    private Map<String, CoordinateSystem> coordinateSystems = new HashMap<String, CoordinateSystem>( 10000 );
+    private Map<CRSCodeType, CoordinateSystem> coordinateSystems = new HashMap<CRSCodeType, CoordinateSystem>( 10000 );
 
     private String version = null;
 
@@ -154,14 +154,14 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
 
     public List<CoordinateSystem> getAvailableCRSs()
                             throws CRSConfigurationException {
-        Set<String> keys = getResolver().getAvailableIDs();
+        Set<CRSCodeType> keys = getResolver().getAvailableCodes();
         if ( LOG.isDebugEnabled() ) {
             LOG.debug( "Found following keys: " + keys );
         }
         List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
-        for ( String key : keys ) {
+        for ( CRSCodeType key : keys ) {
             try {
-                CoordinateSystem result = getCRSByID( key );
+                CoordinateSystem result = getCRSByCode( key );
                 if ( result != null ) {
                     allSystems.add( result );
                 }
@@ -171,7 +171,7 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
         }
         // get all already created crs's
         keys = coordinateSystems.keySet();
-        for ( String key : keys ) {
+        for ( CRSCodeType key : keys ) {
             CoordinateSystem result = coordinateSystems.get( key );
             if ( result != null ) {
                 allSystems.add( result );
@@ -1453,17 +1453,17 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
         return ( d - m / 60 - s / 3600 );
     }
 
-    public List<String> getAvailableCRSIds()
+    public List<CRSCodeType> getAvailableCRSCodes()
                             throws CRSConfigurationException {
-        Set<String> keys = getResolver().getAvailableIDs();
-        List<String> result = new LinkedList<String>();
+        Set<CRSCodeType> keys = getResolver().getAvailableCodes();
+        List<CRSCodeType> result = new LinkedList<CRSCodeType>();
         result.addAll( keys );
         return result;
     }
 
-    public CRSIdentifiable getIdentifiable( String id )
+    public CRSIdentifiable getIdentifiable( CRSCodeType code )
                             throws CRSConfigurationException {
-        CRSIdentifiable result = getCachedIdentifiable( id );
+        CRSIdentifiable result = getCachedIdentifiable( code );
         if ( result == null ) {
             throw new UnsupportedOperationException(
                                                      "The retrieval of an arbitrary CRSIdentifiable Object is currently not supported by the proj 4 provider." );
@@ -1501,10 +1501,4 @@ public class PROJ4CRSProvider extends AbstractCRSProvider<Map<String, String>> {
         return getResolver().getTransformation( sourceCRS, targetCRS );
     }
 
-    @Override
-    public CoordinateSystem getCRSByID( CRSCodeType id )
-                            throws CRSConfigurationException {
-        // TODO
-        return null;
-    }
 }
