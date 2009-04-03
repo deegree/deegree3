@@ -42,7 +42,6 @@ import static org.deegree.model.crs.projections.ProjectionUtils.EPS11;
 
 import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
-import org.deegree.model.crs.EPSGCode;
 
 /**
  * The <code>Ellipsoid</code> class hold all parameters which are necessary to define an Ellipsoid. Every Ellipsoid
@@ -61,7 +60,7 @@ public class Ellipsoid extends CRSIdentifiable {
     /**
      * WGS 1984 ellipsoid. This ellipsoid is used in the GPS system and is the "default" Ellipsoid.
      */
-    public static final Ellipsoid WGS84 = new Ellipsoid( 6378137.0, Unit.METRE, 298.257223563, new EPSGCode( 7030 ),
+    public static final Ellipsoid WGS84 = new Ellipsoid( 6378137.0, Unit.METRE, 298.257223563, new CRSCodeType( "7030", "EPSG" ),
                                                          "WGS84_Ellipsoid" );
 
     /**
@@ -77,7 +76,7 @@ public class Ellipsoid extends CRSIdentifiable {
     /**
      * the units of the axis
      */
-    private final Unit units;
+    private Unit units;
 
     /**
      * Flattening f is dependent on both the semi-major axis a and the semi-minor axis b. f = (a - b) / a
@@ -373,6 +372,14 @@ public class Ellipsoid extends CRSIdentifiable {
      */
     public final Unit getUnits() {
         return units;
+    }
+    
+    /**
+     * 
+     * @param units
+     */
+    public final void setUnits( Unit units ) {
+        this.units = units;
     }
 
     /**
