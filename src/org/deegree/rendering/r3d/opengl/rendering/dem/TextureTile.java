@@ -47,8 +47,8 @@ import org.slf4j.LoggerFactory;
 
 public class TextureTile {
 
-    private static final Logger LOG = LoggerFactory.getLogger( TextureTile.class );    
-    
+    private static final Logger LOG = LoggerFactory.getLogger( TextureTile.class );
+
     private int[] textureID;
 
     private float minX, minY, maxX, maxY;
@@ -58,9 +58,9 @@ public class TextureTile {
     private int pixelsX, pixelsY;
 
     private ByteBuffer imageData;
-    
+
     private static int idsInUse = 0;
-    
+
     // counts the number of references, if 0, data can be unloaded
     private int numReferences;
 
@@ -113,7 +113,7 @@ public class TextureTile {
         return pixelsY;
     }
 
-    public int enable ( GL gl ) {
+    public int enable( GL gl ) {
         loadToGPU( gl );
         return textureID[0];
     }
@@ -135,13 +135,13 @@ public class TextureTile {
         numReferences++;
     }
 
-    public void unloadFromGPU( GL gl ) {
+    public void disable( GL gl ) {
         numReferences--;
-        if (numReferences < 0) {
+        if ( numReferences < 0 ) {
             throw new RuntimeException();
         }
-        if (numReferences == 0 && textureID != null ) {
-            LOG.info ("No more references. Deleting.");
+        if ( numReferences == 0 ) {
+            LOG.info( "No more references. Deleting texture ids." );
             gl.glDeleteTextures( 1, textureID, 0 );
             textureID = null;
             idsInUse--;

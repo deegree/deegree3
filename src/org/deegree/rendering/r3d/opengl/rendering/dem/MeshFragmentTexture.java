@@ -48,8 +48,6 @@ import org.deegree.commons.utils.nio.PooledByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.opengl.util.BufferUtil;
-
 /**
  * Encapsulates a {@link RenderableMeshFragment} and a matching {@link TextureTile}, so the mesh fragment can be
  * rendered with an applied texture.
@@ -75,11 +73,9 @@ public class MeshFragmentTexture {
 
     private final TextureTile texture;
     
-    final PooledByteBuffer buffer;
+    private final PooledByteBuffer buffer;
 
     final FloatBuffer texCoordsBuffer;
-
-    private boolean isLoaded;
     
     private int textureID = -1;
 
@@ -122,7 +118,6 @@ public class MeshFragmentTexture {
         FloatBuffer vertexBuffer = fragment.getData().getVertices();
         vertexBuffer.rewind();
 
-//        FloatBuffer texCoordsBuffer = BufferUtil.newFloatBuffer( vertexBuffer.capacity() / 3 * 2 );
         FloatBuffer texCoordsBuffer = buffer.getBuffer().asFloatBuffer();
         for ( int i = 0; i < vertexBuffer.capacity() / 3; i++ ) {
             float x = vertexBuffer.get();
@@ -145,14 +140,28 @@ public class MeshFragmentTexture {
         return texture.getMetersPerPixel();
     }
 
-    public int getGLTextureId( GL gl ) {
+    int getGLTextureId( GL gl ) {
         if (textureID == -1) {
-            textureID = texture.enable( gl );
+            throw new RuntimeException();
         }
         return textureID;
     }
     
     public void disable (GL gl) {
-        texture.unloadFromGPU( gl );
+        if (textureID != -1) {
+            texture.disable( gl );
+            textureID = -1;
+        }
+    }
+       
+    public void unload () {
+        buffer.free();
+    }
+
+    public void enable( GL gl ) {
+        if (textureID != -1) {
+            throw new RuntimeException();
+        }
+        textureID = texture.enable( gl );
     }
 }
