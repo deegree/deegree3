@@ -42,6 +42,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 
 import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.CRSIdentifiable;
@@ -172,6 +173,10 @@ public class DatabaseCRSProvider implements CRSProvider {
         exporter.setConnection( conn );
         remover = new CRSRemover();
         remover.setConnection( conn );
+    }
+    
+    public DatabaseCRSProvider( Properties properties ) throws CRSConfigurationException, ClassNotFoundException {
+        this(); // currently properties are not needed but the CRSConfiguration instantiation mechanism forces this parameter
     }
 
     public boolean canExport() {
