@@ -15,10 +15,10 @@ import org.deegree.commons.types.Length;
 import org.deegree.commons.types.Measure;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.model.crs.configuration.CRSConfiguration;
-import org.deegree.model.crs.configuration.CRSProvider;
+import org.deegree.model.crs.CRSRegistry;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.model.crs.exceptions.CRSConfigurationException;
+import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.primitive.Point;
 import org.slf4j.Logger;
@@ -36,8 +36,6 @@ class GML311BaseParser {
 
     private static final Logger LOG = LoggerFactory.getLogger( GML311BaseParser.class );
 
-    private static final CRSProvider crsProvider = CRSConfiguration.getCRSConfiguration().getProvider();
-
     private static final QName GML_X = new QName( GMLNS, "X" );
 
     private static final QName GML_Y = new QName( GMLNS, "Y" );
@@ -54,7 +52,7 @@ class GML311BaseParser {
     }
 
     protected Point parseDirectPositionType( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         String srsName = determineCurrentSrsName( defaultSrsName );
 
@@ -78,7 +76,7 @@ class GML311BaseParser {
     }
 
     protected List<Point> parsePosList( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         CoordinateSystem crs = lookupCRS( determineCurrentSrsName( defaultSrsName ) );
         int coordDim = determineCoordDimensions( crs.getDimension() );
@@ -117,7 +115,7 @@ class GML311BaseParser {
     }
 
     protected List<Point> parseCoordinates( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         CoordinateSystem crs = lookupCRS( defaultSrsName );
 
@@ -257,15 +255,15 @@ class GML311BaseParser {
         return new Measure( value, uom );
     }
 
-    protected CoordinateSystem lookupCRS( String srsName ) {
+    protected CoordinateSystem lookupCRS( String srsCode ) throws UnknownCRSException {
         CoordinateSystem crs = null;
         try {
-            crs = crsProvider.getCRSByID( srsName );
+            crs = CRSRegistry.lookup( srsCode );
         } catch ( CRSConfigurationException e ) {
             LOG.error( e.getMessage(), e );
         }
         if ( crs == null ) {
-            String msg = "Unknown coordinate reference system '" + srsName + "'.";
+            String msg = "Unknown coordinate reference system '" + srsCode + "'.";
             throw new XMLParsingException( xmlStream, msg );
         }
         return crs;

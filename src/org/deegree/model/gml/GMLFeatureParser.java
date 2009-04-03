@@ -60,6 +60,7 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.feature.Feature;
 import org.deegree.model.feature.GenericProperty;
 import org.deegree.model.feature.Property;
@@ -132,9 +133,11 @@ public class GMLFeatureParser extends XMLAdapter {
      *            keeps track of object reference via (local) xlinks
      * @return object representation for the given feature element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      */
     public Feature parseFeature( XMLStreamReaderWrapper xmlStream, String srsName, GMLIdContext idContext )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         Feature feature = null;
         String fid = parseFeatureId( xmlStream );
@@ -262,10 +265,11 @@ public class GMLFeatureParser extends XMLAdapter {
      * @return object representation for the given property element.
      * @throws XMLParsingException
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     public Property<?> parseProperty( XMLStreamReaderWrapper xmlStream, PropertyType propDecl, String srsName,
                                       String fid, int occurence, GMLIdContext idContext )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Property<?> property = null;
         QName propertyName = xmlStream.getName();

@@ -59,6 +59,7 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.types.Length;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.Geometry;
 import org.deegree.model.geometry.GeometryFactory;
@@ -238,9 +239,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Geometry" element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     public Geometry parseGeometry( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Geometry geometry = null;
 
@@ -303,9 +305,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid <code>gml:_GeometricPrimitive</code> element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     public GeometricPrimitive parseGeometricPrimitive( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         GeometricPrimitive primitive = null;
 
@@ -362,9 +365,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_GeometricAggregate" element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     public Geometry parseGeometricAggregate( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Geometry geometry = null;
 
@@ -426,9 +430,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Geometry" element with geometric complex semantic
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     public CompositeGeometry<? extends GeometricPrimitive> parseAbstractGeometricComplex( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         CompositeGeometry<? extends GeometricPrimitive> geometry = null;
 
@@ -523,9 +528,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Curve" element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     public Curve parseAbstractCurve( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Curve curve = null;
 
@@ -584,9 +590,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Ring" element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     public Ring parseAbstractRing( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Ring ring = null;
 
@@ -642,9 +649,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Ring" element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     public Surface parseAbstractSurface( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Surface surface = null;
 
@@ -715,9 +723,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Ring" element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     public Solid parseAbstractSolid( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Solid solid = null;
 
@@ -766,9 +775,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid <code>gml:Point</code> element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     public Point parsePoint( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Point point = null;
         String gid = parseGeometryId();
@@ -814,9 +824,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * 
      * @return
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      */
     public Point parsePointProperty( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
         Point point = null;
         if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
             // must be a 'gml:Point' element
@@ -844,9 +856,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid <code>gml:Curve</code> element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      */
     public LineString parseLineString( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -896,10 +910,12 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link Curve} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      * @throws XMLParsingException
      */
     public Curve parseCurve( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -926,10 +942,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link OrientableCurve} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      * @throws XMLParsingException
      */
     public OrientableCurve parseOrientableCurve( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -956,10 +973,12 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link Ring} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      * @throws XMLParsingException
      */
     public LinearRing parseLinearRing( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -982,10 +1001,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link Ring} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      * @throws XMLParsingException
      */
     public Ring parseRing( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1019,10 +1039,12 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            attribute
      * @return corresponding {@link Polygon} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      * @throws XMLParsingException
      */
     public Polygon parsePolygon( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1091,10 +1113,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            attribute
      * @return corresponding {@link Surface} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      * @throws XMLParsingException
      */
     public Surface parseSurface( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1120,10 +1143,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link PolyhedralSurface} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      * @throws XMLParsingException
      */
     public PolyhedralSurface parsePolyhedralSurface( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1149,10 +1173,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link TriangulatedSurface} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      * @throws XMLParsingException
      */
     public TriangulatedSurface parseTriangulatedSurface( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1181,10 +1206,12 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            default srs for the geometry, this is only used if the "gml:Tin" has no <code>srsName</code> attribute
      * @return corresponding {@link Tin} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      * @throws XMLParsingException
      */
     public Tin parseTin( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1273,10 +1300,12 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link OrientableSurface} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      * @throws XMLParsingException
      */
     public OrientableSurface parseOrientableSurface( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1303,10 +1332,12 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            attribute
      * @return corresponding {@link Solid} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      * @throws XMLParsingException
      */
     public Solid parseSolid( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1357,10 +1388,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link CompositeCurve} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      * @throws XMLParsingException
      */
     public CompositeCurve parseCompositeCurve( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1394,10 +1426,12 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link CompositeSurface} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      * @throws XMLParsingException
      */
     public CompositeSurface parseCompositeSurface( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1431,10 +1465,12 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link CompositeSolid} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      * @throws XMLParsingException
      */
     public CompositeSolid parseCompositeSolid( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1468,10 +1504,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link CompositeGeometry} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      * @throws XMLParsingException
      */
     public CompositeGeometry<GeometricPrimitive> parseGeometricComplex( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1505,10 +1542,12 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiPoint} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      * @throws XMLParsingException
      */
     public MultiPoint parseMultiPoint( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1550,10 +1589,12 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiCurve} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      * @throws XMLParsingException
      */
     public MultiCurve parseMultiCurve( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1595,10 +1636,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiLineString} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException  
      * @throws XMLParsingException
      */
     public MultiLineString parseMultiLineString( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1631,10 +1673,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiSurface} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException  
      * @throws XMLParsingException
      */
     public MultiSurface parseMultiSurface( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1676,10 +1719,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiPolygon} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException  
      * @throws XMLParsingException
      */
     public MultiPolygon parseMultiPolygon( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1712,10 +1756,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiSolid} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException  
      * @throws XMLParsingException
      */
     public MultiSolid parseMultiSolid( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1757,10 +1802,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiGeometry} object
      * @throws XMLStreamException
+     * @throws UnknownCRSException  
      * @throws XMLParsingException
      */
     public MultiGeometry<Geometry> parseMultiGeometry( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         String gid = parseGeometryId();
         String srsName = determineCurrentSrsName( defaultSrsName );
@@ -1803,9 +1849,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @return corresponding {@link Envelope} object
      * @throws XMLStreamException
      * @throws XMLParsingException
+     * @throws UnknownCRSException 
      */
     public Envelope parseEnvelope( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         String srsName = determineCurrentSrsName( defaultSrsName );
 

@@ -54,6 +54,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.primitive.LinearRing;
 import org.deegree.model.geometry.primitive.Ring;
@@ -122,9 +123,10 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * @return corresponding {@link SurfacePatch} object
      * @throws XMLParsingException
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     SurfacePatch parseSurfacePatch( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         SurfacePatch patch = null;
 
@@ -180,9 +182,10 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     PolygonPatch parsePolygonPatch( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "planar" );
 
@@ -238,9 +241,11 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      */
     private Rectangle parseRectangle( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
         validateInterpolationAttribute( xmlStream, "planar" );
 
         xmlStream.nextTag();
@@ -280,9 +285,11 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
+     * @throws XMLParsingException 
      */
     Triangle parseTriangle( String defaultSrsName )
-                            throws XMLStreamException {
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "planar" );
 

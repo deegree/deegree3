@@ -57,6 +57,7 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.types.Length;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.geometry.GeometryFactory;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
@@ -162,9 +163,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @return corresponding {@link CurveSegment} object
      * @throws XMLParsingException
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     CurveSegment parseCurveSegment( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         LOG.debug( " - parsing gml:_CurveSegment (begin): " + xmlStream.getCurrentEventInfo() );
 
@@ -232,9 +234,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private Arc parseArc( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc3Points" );
         List<Point> points = parseControlPoints( defaultSrsName );
@@ -262,9 +265,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private ArcByBulge parseArcByBulge( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc2PointWithBulge" );
         List<Point> points = parseControlPoints( defaultSrsName );
@@ -302,9 +306,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private ArcByCenterPoint parseArcByCenterPoint( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArcCenterPointWithRadius" );
         List<Point> points = parseControlPoints( defaultSrsName );
@@ -352,9 +357,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private ArcString parseArcString( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc3Points" );
         List<Point> points = parseControlPoints( defaultSrsName );
@@ -381,9 +387,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private ArcStringByBulge parseArcStringByBulge( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc2PointWithBulge" );
         List<Point> points = parseControlPoints( defaultSrsName );
@@ -431,9 +438,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private Bezier parseBezier( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "polynomialSpline" );
         List<Point> points = parseControlPoints( defaultSrsName );
@@ -484,9 +492,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private BSpline parseBSpline( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Interpolation interpolation = null;
         String interpolationAttrValue = xmlStream.getAttributeValueWDefault( "interpolation", "polynomialSpline" );
@@ -550,9 +559,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private Circle parseCircle( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc3Points" );
         List<Point> points = parseControlPoints( defaultSrsName );
@@ -581,9 +591,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private CircleByCenterPoint parseCircleByCenterPoint( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArcCenterPointWithRadius" );
         List<Point> points = parseControlPoints( defaultSrsName );
@@ -641,9 +652,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if a syntactical (or semantic) error is detected in the element
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private Clothoid parseClothoid( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "refLocation" );
@@ -675,9 +687,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @return corresponding {@link AffinePlacement} object
      * @throws XMLParsingException
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private AffinePlacement parseAffinePlacement( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "location" );
@@ -738,9 +751,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @return corresponding {@link CubicSpline} object
      * @throws XMLParsingException
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private CubicSpline parseCubicSpline( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "cubicSpline" );
         List<Point> points = parseControlPoints( defaultSrsName );
@@ -773,9 +787,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @return corresponding {@link GeodesicString} object
      * @throws XMLParsingException
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private Geodesic parseGeodesic( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "geodesic" );
 
@@ -825,9 +840,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @return corresponding {@link GeodesicString} object
      * @throws XMLParsingException
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private GeodesicString parseGeodesicString( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "geodesic" );
 
@@ -877,9 +893,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @return corresponding {@link LineStringSegment} object
      * @throws XMLParsingException
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     LineStringSegment parseLineStringSegment( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "linear" );
         List<Point> points = parseControlPoints( defaultSrsName );
@@ -905,9 +922,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @return corresponding {@link OffsetCurve} object
      * @throws XMLParsingException
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     private OffsetCurve parseOffsetCurve( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         xmlStream.nextTag();
         xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "offsetBase" );
@@ -959,9 +977,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @return control points of the curve segment, not null, but size may be zero
      * @throws XMLStreamException
      * @throws XMLParsingException
+     * @throws UnknownCRSException 
      */
     List<Point> parseControlPoints( String srsName )
-                            throws XMLParsingException, XMLStreamException {
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         List<Point> controlPoints = null;
 

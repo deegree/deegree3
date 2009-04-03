@@ -56,6 +56,7 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.model.crs.exceptions.UnknownCRSException;
 import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.model.geometry.primitive.Curve;
 import org.deegree.model.geometry.primitive.Point;
@@ -102,9 +103,10 @@ public class GML311GeometryValidator extends XMLAdapter {
 
     /**
      * @throws XMLStreamException
+     * @throws UnknownCRSException 
      */
     public void validateGeometries()
-                            throws XMLStreamException {
+                            throws XMLStreamException, UnknownCRSException {
 
         while ( xmlStream.next() != END_DOCUMENT ) {
             if ( xmlStream.getEventType() == START_ELEMENT ) {
@@ -116,7 +118,7 @@ public class GML311GeometryValidator extends XMLAdapter {
         }
     }
 
-    private void validateGeometryElement() {
+    private void validateGeometryElement() throws UnknownCRSException {
         Location location = xmlStream.getLocation();
         LOG.debug( "Validating GML geometry element ('" + xmlStream.getLocalName() + "') at line: "
                    + location.getLineNumber() + ", column: " + location.getColumnNumber() + "." );
