@@ -80,7 +80,7 @@ public interface CRSProvider {
                             throws CRSConfigurationException;
 
     /**
-     * This method is more general than the {@link #getCRSByID(String)}, because it represents a possibility to return
+     * This method is more general than the {@link #getCRSByCode(String)}, because it represents a possibility to return
      * an arbitrary {@link CRSIdentifiable} Object from the providers backend.
      * 
      * 
@@ -92,7 +92,7 @@ public interface CRSProvider {
      *             exception should not be thrown if the given id wasn't found, in this case <code>null</code> should
      *             be returned.
      */
-    public CRSIdentifiable getIdentifiable( String id )
+    public CRSIdentifiable getIdentifiable( CRSCodeType id )
                             throws CRSConfigurationException;
 
     /**
@@ -104,11 +104,7 @@ public interface CRSProvider {
      *             exception should not be thrown if the given id wasn't found, in this case <code>null</code> should
      *             be returned.
      */
-    public CoordinateSystem getCRSByID( String id )
-                            throws CRSConfigurationException;
-    
-    // TODO add doc and eventually replace the getCRSByID( String )
-    public CoordinateSystem getCRSByID( CRSCodeType id )
+    public CoordinateSystem getCRSByCode( CRSCodeType id )
                             throws CRSConfigurationException;
     
     
@@ -136,7 +132,7 @@ public interface CRSProvider {
      *             exception should not be thrown if no CoordinateSystems were found, in the latter case an empty List (
      *             a list with size == 0 ) should be returned.
      */
-    public List<String> getAvailableCRSIds()
+    public List<CRSCodeType> getAvailableCRSCodes()
                             throws CRSConfigurationException;
 
     /**
