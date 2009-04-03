@@ -39,6 +39,7 @@
 package org.deegree.model.crs.configuration.deegree.xml;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
@@ -323,8 +324,8 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
         return (CRSParser) super.getResolver();
     }
 
-    public List<String> getAvailableCRSIds() {
-        return getResolver().getAvailableCRSIds();
+    public List<CRSCodeType> getAvailableCRSCodes() {
+        return getResolver().getAvailableCRSCodes();
     }
 
     public List<CoordinateSystem> getAvailableCRSs() {
@@ -349,7 +350,7 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
                         createdAlready = ( c !=null && c.hasCode( CRSCodeType.valueOf( id ) ) ) ;
                     }
                     if( !createdAlready ){
-                        allSystems.add( getCRSByID( id ) );
+                        allSystems.add( getCRSByCode( CRSCodeType.valueOf( id ) ) );
                     }
                 }
             }
@@ -482,9 +483,22 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
     }
 
     @Override
-    public CoordinateSystem getCRSByID( CRSCodeType id )
+    public CoordinateSystem getCRSByCode( CRSCodeType id )
                             throws CRSConfigurationException {
-        return getCRSByID( id.getEquivalentString() );
+        CRSParser resolver = getResolver();
+        try {
+            return resolver.parseCoordinateSystem( resolver.getURIAsType( id.getEquivalentString() ) );
+        } catch ( IOException e ) {
+            LOG.error( e.getMessage(), e );
+        }
+        return null;
+    }
+
+    @Override
+    public CRSIdentifiable getIdentifiable( CRSCodeType id )
+                            throws CRSConfigurationException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
