@@ -66,6 +66,11 @@ public final class Unit extends CRSIdentifiable {
      * Unit of angle.
      */
     public static final Unit DEGREE = new Unit( "°", "Degree", DTR, RADIAN );
+    
+    /**
+     * 1 degree minute second hemisphere = 1 degree
+     */
+    public static final Unit DMSH = DEGREE;
 
     /**
      * Unit of angle, which is defined to be 1/3600 of a degree, or PI/(180*3600) Radian.
@@ -101,7 +106,7 @@ public final class Unit extends CRSIdentifiable {
      * Unit of time.
      */
     public static final Unit DAY = new Unit( "day", "day", 24 * 60 * 60, SECOND );
-
+    
     /**
      * The unit's symbol.
      */
@@ -180,7 +185,7 @@ public final class Unit extends CRSIdentifiable {
         this.scale = scale;
         this.baseType = baseType;
     }
-
+    
     /**
      * Will create a unit from the given String. If no appropriate unit was found <code>null<code> will be returned.
      * @param unit to convert to an actual unit.
