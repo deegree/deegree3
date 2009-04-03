@@ -76,9 +76,9 @@ import org.slf4j.LoggerFactory;
 public class CRSRegistry {
 
     private static Logger LOG = LoggerFactory.getLogger( CRSRegistry.class );
-
+    
     private synchronized static CRSProvider getProvider( String providerName ) {
-        CRSConfiguration crsConfig = CRSConfiguration.getCRSConfiguration( providerName );
+        CRSConfiguration crsConfig = CRSConfiguration.getCRSConfiguration( providerName );        
         return crsConfig.getProvider();
     }
 
@@ -99,7 +99,7 @@ public class CRSRegistry {
         CRSProvider crsProvider = getProvider( providerName );
         CoordinateSystem realCRS = null;
         try {
-            realCRS = crsProvider.getCRSByID( name );
+            realCRS = crsProvider.getCRSByCode( CRSCodeType.valueOf( name ) );
         } catch ( CRSConfigurationException e ) {
             LOG.error( e.getMessage(), e );
         }
@@ -115,7 +115,7 @@ public class CRSRegistry {
         CRSProvider crsProvider = getProvider( providerName );
         CoordinateSystem realCRS = null;
         try {
-            realCRS = crsProvider.getCRSByID( name );
+            realCRS = crsProvider.getCRSByCode( name );
         } catch ( CRSConfigurationException e ) {
             LOG.error( e.getMessage(), e );
         }
@@ -137,7 +137,7 @@ public class CRSRegistry {
      */
     public synchronized static Transformation getTransformation( String providerName, String id ) {
         CRSProvider crsProvider = getProvider( providerName );
-        CRSIdentifiable t = crsProvider.getIdentifiable( id );
+        CRSIdentifiable t = crsProvider.getIdentifiable( CRSCodeType.valueOf( id ) );
         if ( t instanceof Transformation ) {
             return (Transformation) t;
         }
@@ -224,4 +224,9 @@ public class CRSRegistry {
                                                  new CRSCodeType[] { CRSCodeType.valueOf( name + "projected_crs" ) } );
 
     }
+    
+//    public static void main( String args[] ) throws UnknownCRSException {
+//        System.out.println( CRSRegistry.lookup( new EPSGCode( 2751 ) ) );
+//    }
+    
 }
