@@ -78,6 +78,10 @@ public class VerticalCRS extends CoordinateSystem {
         return CoordinateSystem.VERTICAL_CRS;
     }
 
+    public VerticalDatum getVerticalDatum() {
+        return (VerticalDatum) super.getDatum();
+    }
+    
     /**
      * @return the axis of this vertical crs.
      */
