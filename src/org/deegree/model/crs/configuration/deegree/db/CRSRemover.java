@@ -486,6 +486,14 @@ public class CRSRemover {
         // nothing necessary yet.
     }
 
+    /**
+     * Command-line tool for removing a CRS given in WKT format, from a file ( provided as 
+     * command-line argument).
+     * @param args
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
     public static void main( String[] args ) throws IOException, ClassNotFoundException, SQLException {
         // get the instantiated CRS from WKT format 
         WKTParser parser = new WKTParser( args[0] );
