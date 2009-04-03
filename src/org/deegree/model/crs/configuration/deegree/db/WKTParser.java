@@ -792,7 +792,7 @@ public class WKTParser {
     }
 
     /** 
-     * For tesing purposes.
+     * For testing purposes.
      * @param args The first argument is the file containing the Coordinate System.
      * @throws IOException
      */
