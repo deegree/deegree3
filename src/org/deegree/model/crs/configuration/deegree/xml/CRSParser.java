@@ -424,7 +424,7 @@ public class CRSParser extends XMLFileResource {
             "The polynomial variables (xParameters and yParameters element) defining the approximation to a given transformation function are required and may not be empty" );
         }
 
-        CoordinateSystem targetCRS = getProvider().getCRSByID( tCRS );
+        CoordinateSystem targetCRS = getProvider().getCRSByCode( CRSCodeType.valueOf( tCRS ) );
 
         PolynomialTransformation result = null;
         String name = usedTransformation.getLocalName().trim();
@@ -570,7 +570,7 @@ public class CRSParser extends XMLFileResource {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_REFERENCE_ID_IS_EMPTY",
                                                                       "usedGeographicCRS", id.getCode() ) );
         }
-        GeographicCRS geoCRS = (GeographicCRS) getProvider().getCRSByID( usedGeographicCRS );
+        GeographicCRS geoCRS = (GeographicCRS) getProvider().getCRSByCode( CRSCodeType.valueOf( usedGeographicCRS ) );
         if ( geoCRS == null || geoCRS.getType() != CoordinateSystem.GEOGRAPHIC_CRS ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_FALSE_CRSREF",
                                                                       id.getCode(), usedGeographicCRS ) );
@@ -663,7 +663,7 @@ public class CRSParser extends XMLFileResource {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_REFERENCE_ID_IS_EMPTY", "usedCRS",
                                                                       id.getCode() ) );
         }
-        CoordinateSystem usedCoordinateSystem = getProvider().getCRSByID( usedCRS );
+        CoordinateSystem usedCoordinateSystem = getProvider().getCRSByCode( CRSCodeType.valueOf( usedCRS ) );
         if ( usedCoordinateSystem == null
                                 || ( usedCoordinateSystem.getType() != CoordinateSystem.GEOGRAPHIC_CRS && usedCoordinateSystem.getType() != CoordinateSystem.PROJECTED_CRS ) ) {
             throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_COMPOUND_FALSE_CRSREF",
@@ -1203,7 +1203,7 @@ public class CRSParser extends XMLFileResource {
                     result = getGeodeticDatumFromID( id );
                 } else if ( localName.equals( "projectedCRS" ) || localName.equals( "geographicCRS" )
                                         || localName.equals( "compoundCRS" ) || localName.equals( "geocentricCRS" ) ) {
-                    result = getProvider().getCRSByID( id );
+                    result = getProvider().getCRSByCode( CRSCodeType.valueOf( id ) );
                 } else if ( localName.equals( "primeMeridian" ) ) {
                     result = getPrimeMeridianFromID( id );
                 } else if ( localName.equals( "wgs84Transformation" ) ) {
@@ -1214,12 +1214,12 @@ public class CRSParser extends XMLFileResource {
         return result;
     }
 
-    public List<String> getAvailableCRSIds() throws CRSConfigurationException {
+    public List<CRSCodeType> getAvailableCRSCodes() throws CRSConfigurationException {
         List<OMElement> allCRSIDs = getAvailableCRSs();
-        List<String> result = new LinkedList<String>();
+        List<CRSCodeType> result = new LinkedList<CRSCodeType>();
         for ( OMElement crs : allCRSIDs ) {
             if ( crs != null ) {
-                result.add( getNodeAsString(crs, new XPath( ".", nsContext), null ) );
+                result.add( CRSCodeType.valueOf( getNodeAsString(crs, new XPath( ".", nsContext), null ) ) );
             }
         }
         return result;
