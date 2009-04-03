@@ -120,7 +120,7 @@ public class Axis extends CRSIdentifiable {
      *            of the positive scale direction, one of Axis.AO*. If an unknown value is supplied AO_OTHER is assumed.
      */
     public Axis( Unit units, String axisName, final int orientation ) {
-        super( new CRSCodeType[] { CRSCodeType.valueOf( "no-id-for-this-axis " + axisName + orientation + units.getName()) } , new String[] { axisName }, new String[] { }, new String[] { }, new String[] { } );
+        super( new CRSCodeType[] { CRSCodeType.getUndefined() } , new String[] { axisName }, new String[] { }, new String[] { }, new String[] { } );
         this.units = units;
         this.axisName = axisName;
         this.orientation = orientation;
@@ -143,7 +143,7 @@ public class Axis extends CRSIdentifiable {
      *            of the axis as a string for example north
      */
     public Axis( Unit units, String axisName, String orientation ) {
-        super( new CRSCodeType[] { CRSCodeType.valueOf( "no-id-for-this-axis " + axisName + orientation + units.getName() ) } , new String[] { axisName }, new String[] { }, new String[] { }, new String[] { } );
+        super( new CRSCodeType[] { CRSCodeType.getUndefined() } , new String[] { axisName }, new String[] { }, new String[] { }, new String[] { } );
         this.units = units;
         this.axisName = axisName;
         this.orientation = AO_OTHER;
