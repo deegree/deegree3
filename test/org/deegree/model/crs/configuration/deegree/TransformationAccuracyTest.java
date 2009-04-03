@@ -513,7 +513,7 @@ public class TransformationAccuracyTest extends TestCase {
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration( "org.deegree.model.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
         
         // Source crs espg:31467
-        ProjectedCRS sourceCRS = (ProjectedCRS) dbProvider.getCRSByCode( new CRSCodeType( "31467", "ESPG" ) );
+        ProjectedCRS sourceCRS = (ProjectedCRS) dbProvider.getCRSByCode( new CRSCodeType( "31467", "EPSG" ) );
 
         // Target crs espg:4258
         GeographicCRS targetCRS = (GeographicCRS) dbProvider.getCRSByCode( new CRSCodeType( "4258", "EPSG" ) );
