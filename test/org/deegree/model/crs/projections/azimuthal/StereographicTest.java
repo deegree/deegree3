@@ -41,7 +41,6 @@ package org.deegree.model.crs.projections.azimuthal;
 import javax.vecmath.Point2d;
 
 import org.deegree.model.crs.CRSCodeType;
-import org.deegree.model.crs.EPSGCode;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -65,7 +64,7 @@ import org.junit.Test;
 public class StereographicTest extends ProjectionTest {
 
     private static final Ellipsoid ellipsoid_7004 = new Ellipsoid( 6377397.155, Unit.METRE, 299.1528128,
-                                                                   new EPSGCode[] { new EPSGCode( 7004 ) } );
+                                                                   new CRSCodeType[] { new CRSCodeType( "7004", "EPSG" ) } );
 
     // the source and target crs are not correct, but what the hack
     private static final Helmert wgs_56 = new Helmert( 565.04, 49.91, 465.84, -0.40941295127179994, 0.3608190255680464,

@@ -58,8 +58,13 @@ import org.deegree.model.crs.configuration.CRSConfiguration;
 import org.deegree.model.crs.configuration.CRSProvider;
 import org.deegree.model.crs.configuration.deegree.db.DatabaseCRSProvider;
 import org.deegree.model.crs.configuration.deegree.xml.DeegreeCRSProvider;
+import org.deegree.model.crs.coordinatesystems.CompoundCRS;
 import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.model.crs.coordinatesystems.GeocentricCRS;
+import org.deegree.model.crs.coordinatesystems.GeographicCRS;
 import org.deegree.model.crs.coordinatesystems.ProjectedCRS;
+import org.deegree.model.crs.coordinatesystems.VerticalCRS;
+import org.deegree.model.crs.projections.Projection;
 import org.deegree.model.crs.transformations.helmert.Helmert;
 import org.junit.Test;
 
@@ -84,46 +89,53 @@ import junit.framework.TestCase;
  * 
  */
 public class EqualityBetweenProvidersTest extends TestCase {
-       
+
     @Test
     public void testEqualityBetweenCRSs() throws SQLException {
         // Load the database provider
         CRSProvider provider1 =  CRSConfiguration.
-                    getCRSConfiguration( "org.deegree.model.crs.configuration.deegree.db.DatabaseCRSProvider" )
-                    .getProvider();
+        getCRSConfiguration( "org.deegree.model.crs.configuration.deegree.db.DatabaseCRSProvider" )
+        .getProvider();
         assertNotNull( provider1 );
         assertTrue( provider1 instanceof DatabaseCRSProvider );
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) provider1;
 
         // Load the degree-xml provider
         CRSProvider provider2 =  CRSConfiguration.
-                    getCRSConfiguration( "org.deegree.model.crs.configuration.deegree.xml.DeegreeCRSProvider" )
-                    .getProvider();
+        getCRSConfiguration( "org.deegree.model.crs.configuration.deegree.xml.DeegreeCRSProvider" )
+        .getProvider();
         assertNotNull( provider2 );
         assertTrue( provider2 instanceof DeegreeCRSProvider );
         DeegreeCRSProvider xmlProvider = (DeegreeCRSProvider) provider2;
 
-        dbProvider.connectToDatabase();
-                
         List<CRSCodeType> dbCodes = dbProvider.getAvailableCRSCodes();
-        
-        List<String> xmlCodes = xmlProvider.getAvailableCRSIds();
-        List<CRSCodeType> newXmlCodes = new ArrayList<CRSCodeType>();
-        for ( int i = 0; i < xmlCodes.size(); i++ )
-            newXmlCodes.add( CRSCodeType.valueOf( xmlCodes.get( i ) ) );        
+        List<CRSCodeType> xmlCodes = xmlProvider.getAvailableCRSCodes();                
         
         for ( int i = 0 ; i < dbCodes.size(); i++) {
-            if (! newXmlCodes.contains( dbCodes.get( i ) ) )
+            if (! xmlCodes.contains( dbCodes.get( i ) ) )
                 System.out.println( "It seems there is a code from the DB backend: " + dbCodes.get( i ) + " that is not in the XML backend." );
+
+            CoordinateSystem dbCRS = dbProvider.getCRSByCode( dbCodes.get( i ) );
+            CoordinateSystem xmlCRS = xmlProvider.getCRSByCode( dbCodes.get( i ) );
+
+            if ( ! dbCRS.equals( xmlCRS ) ) {
+                System.out.println( "CRSs with code " + dbCodes.get( i ) + " are different!" );
+            }
         }                 
 
-        for ( int i = 0 ; i < newXmlCodes.size(); i++) {
-            if (! dbCodes.contains( newXmlCodes.get( i ) ) )
-                System.out.println( "It seems there is a code from the XML backend: " + newXmlCodes.get( i ) + " that is not in the DB backend." );
-        }                 
+        // Takes too long since there are many more codes coming from the xml backend
+//        for ( int i = 0 ; i < xmlCodes.size(); i++) {
+//            if (! dbCodes.contains( xmlCodes.get( i ) ) )
+//                System.out.println( "It seems there is a code from the XML backend: " + xmlCodes.get( i ) + " that is not in the DB backend." );
+//            else {
+//                CoordinateSystem dbCRS = dbProvider.getCRSByCode( xmlCodes.get( i ) );
+//                CoordinateSystem xmlCRS = xmlProvider.getCRSByCode( xmlCodes.get( i ) );
+//                if ( ! dbCRS.equals( xmlCRS ) )
+//                    System.out.println( "CRSs with code " + xmlCodes.get( i ) + " are different!" );
+//            }
+//        }                 
 
-        System.out.println(" In total,  " + dbCodes.size() + " number of DB crs codes and " + newXmlCodes.size() + " number of XML codes");        
-        
-        dbProvider.closeDatabaseConnection();
+        System.out.println(" In total,  " + dbCodes.size() + " number of DB crs codes and " + xmlCodes.size() + " number of XML codes");
+
     }
 }

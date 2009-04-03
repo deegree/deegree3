@@ -42,6 +42,7 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
+import org.deegree.model.crs.CRSCodeType;
 import org.deegree.model.crs.components.Axis;
 import org.deegree.model.crs.components.Ellipsoid;
 import org.deegree.model.crs.components.GeodeticDatum;
@@ -71,8 +72,8 @@ import org.slf4j.LoggerFactory;
  */
 public class GMLCRSProviderTest extends TestCase {
 
-	private static final String CONFIG_FILE = "/home/ionita/workspace/d3_commons/test/org/deegree/model/crs/configuration/gml/gmlDictionary.xml";
-    											//"${user.home}/workspace/adv_registry2/docs/specification/AdV-Registry-P2_130-v02_dictionary_2.xml";
+    private static final String CONFIG_FILE = "/home/ionita/workspace/d3_commons/test/org/deegree/model/crs/configuration/gml/gmlDictionary.xml";
+    //"${user.home}/workspace/adv_registry2/docs/specification/AdV-Registry-P2_130-v02_dictionary_2.xml";
 
     private static Logger LOG = LoggerFactory.getLogger( GMLCRSProviderTest.class );
 
@@ -113,13 +114,13 @@ public class GMLCRSProviderTest extends TestCase {
     public void testCRSByID() {
         try {
             GMLCRSProvider gProvider = getProvider();
-//            for (String id : gProvider.getCRSByID(""))) {
-//            	System.out.println ("id: " + id);
-//            }
+            //            for (String id : gProvider.getCRSByID(""))) {
+            //            	System.out.println ("id: " + id);
+            //            }
             // try loading the gaus krueger zone 3.
-            CoordinateSystem testCRS = gProvider.getCRSByID( "urn:ogc:def:crs:EPSG::31467" );
+            CoordinateSystem testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
             testCRS_31467( testCRS );
-            testCRS = gProvider.getCRSByID( "SOME_DUMMY_CODE" );
+            testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "SOME_DUMMY_CODE" ) );
             assertTrue( testCRS == null );
         } catch ( NullPointerException e ) {
             // nottin.
@@ -192,10 +193,12 @@ public class GMLCRSProviderTest extends TestCase {
         try {
             GMLCRSProvider gProvider = getProvider();
 
-            CoordinateSystem testCRS = gProvider.getCRSByID( "urn:ogc:def:crs:EPSG::31467" );
+            CoordinateSystem testCRS = gProvider.getCRSByCode( 
+                                                              CRSCodeType.valueOf
+                                                              ( "urn:ogc:def:crs:EPSG::31467" ) );
             testCRS_31467( testCRS );
 
-            testCRS = gProvider.getCRSByID( "urn:adv:crs:DE_DHDN_3GK3" );
+            testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:adv:crs:DE_DHDN_3GK3" ) );
             testCRS_31467( testCRS );
         } catch ( NullPointerException e ) {
             // nottin.

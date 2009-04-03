@@ -41,13 +41,7 @@ public class DatabaseCRSProviderTest extends TestCase {
         assertNotNull( provider );
         assertTrue( provider instanceof DatabaseCRSProvider );
         DatabaseCRSProvider dProvider = (DatabaseCRSProvider) provider;
-        assertTrue( dProvider.canExport() );
-        
-        // connecting to the database
-        dProvider.connectToDatabase();
-        
-        // disconnecting
-        dProvider.closeDatabaseConnection();
+        assertTrue( dProvider.canExport() );        
     }
 
     /**
@@ -59,12 +53,9 @@ public class DatabaseCRSProviderTest extends TestCase {
         assertNotNull( provider );
         assertTrue( provider instanceof DatabaseCRSProvider );
         DatabaseCRSProvider dProvider = (DatabaseCRSProvider) provider;
-
-        // connecting to the database
-        dProvider.connectToDatabase();
         
         // try loading the gaus krueger zone 2.
-        CoordinateSystem testCRS = dProvider.getCRSByID( "EPSG:31466" );
+        CoordinateSystem testCRS = dProvider.getCRSByCode( new CRSCodeType( "31466", "EPSG" ) );
         assertNotNull( testCRS );
         assertTrue( testCRS instanceof ProjectedCRS );
         ProjectedCRS realCRS = (ProjectedCRS) testCRS;
@@ -121,13 +112,10 @@ public class DatabaseCRSProviderTest extends TestCase {
         assertEquals( Axis.AO_NORTH, ax[1].getOrientation() );
         assertEquals( Unit.DEGREE, ax[1].getUnits() );
 
-        testCRS = dProvider.getCRSByID( "SOME_DUMMY_CODE" );
+        testCRS = dProvider.getCRSByCode( new CRSCodeType( "SOME_DUMMY_CODE" ) );
         assertTrue( testCRS == null );
         
 //        dProvider.getAvailableCRSs();
         
-        // disconnecting
-        dProvider.closeDatabaseConnection();
-
     }
 }
