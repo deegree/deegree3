@@ -225,8 +225,8 @@ public class CRSRegistry {
 
     }
     
-//    public static void main( String args[] ) throws UnknownCRSException {
-//        System.out.println( CRSRegistry.lookup( new EPSGCode( 2751 ) ) );
-//    }
+    public static void main( String args[] ) throws UnknownCRSException {
+        System.out.println( ( (ProjectedCRS) CRSRegistry.lookup( new EPSGCode( 25832 ) ) ).getProjection() );          
+    }
     
 }

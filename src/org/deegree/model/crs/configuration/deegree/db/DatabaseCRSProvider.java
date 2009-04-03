@@ -79,7 +79,7 @@ public class DatabaseCRSProvider implements CRSProvider {
 
     private CRSQuerier querier;
 
-    private CRSExporter exporter;
+    private CRSDBExporter exporter;
     
     private CRSRemover remover;
 
@@ -169,7 +169,7 @@ public class DatabaseCRSProvider implements CRSProvider {
         
         querier = new CRSQuerier();
         querier.setConnection( conn );
-        exporter = new CRSExporter();
+        exporter = new CRSDBExporter();
         exporter.setConnection( conn );
         remover = new CRSRemover();
         remover.setConnection( conn );

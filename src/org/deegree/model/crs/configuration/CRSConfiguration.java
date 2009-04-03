@@ -344,7 +344,7 @@ public class CRSConfiguration {
 
         try {            
 //            List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
-//            allSystems.add( in.getCRSByCode( new CRSCodeType( "4010", "EPSG") ) );
+//            allSystems.add( in.getCRSByCode( new CRSCodeType( "25832", "EPSG") ) );
             List<CoordinateSystem> allSystems = in.getAvailableCRSs();
 
             if ( remove ) {

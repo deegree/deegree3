@@ -78,7 +78,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>CRSToDBExporter</code> class inserts a CRS object in the database. In order not to 
+ * The <code>CRSDBExporter</code> class inserts a CRS object in the database. In order not to 
  * introduce an object twice, the code ( sometimes - when the code is not provided - the objects's 
  * data) is checked not to exist already in the database.
  * 
@@ -89,9 +89,9 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: $, $Date: $
  * 
  */
-public class CRSExporter {
+public class CRSDBExporter {
 
-    private Logger LOG = LoggerFactory.getLogger( CRSExporter.class );
+    private Logger LOG = LoggerFactory.getLogger( CRSDBExporter.class );
 
     /**
      * For now, the internal database ID is an incrementing variable. 
@@ -100,7 +100,7 @@ public class CRSExporter {
 
     private Connection conn = null;
 
-    public CRSExporter() {
+    public CRSDBExporter() {
         // nothing necessary yet
     }
 
