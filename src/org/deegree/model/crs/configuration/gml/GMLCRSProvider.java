@@ -138,7 +138,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         throw new UnsupportedOperationException( "Exporting to gml is currently not supported." );
     }
 
-    public List<String> getAvailableCRSIds()
+    public List<CRSCodeType> getAvailableCRSCodes()
                             throws CRSConfigurationException {
         throw new UnsupportedOperationException( "Retrieval of all crs id's is currently not supported." );
     }
@@ -1287,17 +1287,6 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         return result;
     }
 
-    public CRSIdentifiable getIdentifiable( String id )
-                            throws CRSConfigurationException {
-        CRSIdentifiable result = getCachedIdentifiable( id );
-        if ( result == null ) {
-            throw new UnsupportedOperationException(
-                                                     "The retrieval of an arbitrary CRSIdentifiable Object is currently not supported by the GML Provider." );
-        }
-        return result;
-
-    }
-
     /**
      * Find an xlink:href attribute and return it's value, if not found, the empty String will be returned.
      * 
@@ -1316,5 +1305,16 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
                             throws CRSConfigurationException {
         return getResolver().getTransformation( sourceCRS, targetCRS );
+    }
+
+    @Override
+    public CRSIdentifiable getIdentifiable( CRSCodeType id )
+                            throws CRSConfigurationException {
+        CRSIdentifiable result = getCachedIdentifiable( id );
+        if ( result == null ) {
+            throw new UnsupportedOperationException(
+                                                     "The retrieval of an arbitrary CRSIdentifiable Object is currently not supported by the GML Provider." );
+        }
+        return result;
     }
 }
