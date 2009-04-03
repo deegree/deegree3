@@ -169,20 +169,20 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
     }
 
-    public CoordinateSystem getCRSByID( String id )
+    public CoordinateSystem getCRSByCode( CRSCodeType id )
                             throws CRSConfigurationException {
         
         if ( resolver == null ) {
             throw new CRSConfigurationException( "No resolver initialized, this may not be." );
         }
         CoordinateSystem result = null;
-        if ( id != null && !"".equals( id.trim() ) ) {
+        if ( id != null ) {
             LOG.debug( "Trying to load crs with id: " + id + " from cache." );
             if ( LOG.isDebugEnabled() ) {
                 LOG.debug( cachedIdentifiables.keySet().toString() );
             }
-            if ( cachedIdentifiables.containsKey( CRSCodeType.valueOf( id ) ) ) {
-                CRSIdentifiable r = cachedIdentifiables.get( CRSCodeType.valueOf( id ) );
+            if ( cachedIdentifiables.containsKey( id ) ) {
+                CRSIdentifiable r = cachedIdentifiables.get( id );
                 LOG.debug( "Found CRSIdentifiable: " + r.getCodeAndName() + " from given id: " + id );
                 if ( !( r instanceof CoordinateSystem ) ) {
                     LOG.error( "Found CRSIdentifiable: " + r.getCodeAndName()
@@ -194,7 +194,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
             if ( result == null ) {
                 LOG.debug( "No crs with id: " + id + " found in cache." );
                 try {
-                    result = parseCoordinateSystem( resolver.getURIAsType( id ) );
+                    result = parseCoordinateSystem( resolver.getURIAsType( id.getEquivalentString() ) );
                 } catch ( IOException e ) {
                     LOG.debug( e.getLocalizedMessage(), e );
                     throw new CRSConfigurationException( e );
@@ -260,12 +260,6 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         return result;
     }
     
-    public CoordinateSystem getCRSByID( CRSCodeType id )
-                            throws CRSConfigurationException {
-       return getCRSByID( id.getCodeSpace() + ":" + id.getCode() ); 
-    }
-
-
     /**
      * Set the resolver to the given resolver.
      * 
