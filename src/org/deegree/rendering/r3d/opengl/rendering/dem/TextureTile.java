@@ -118,6 +118,18 @@ public class TextureTile {
         return textureID[0];
     }
 
+    public void disable( GL gl ) {
+        numReferences--;
+        if ( numReferences < 0 ) {
+            throw new RuntimeException();
+        }
+        if ( numReferences == 0 ) {
+            gl.glDeleteTextures( 1, textureID, 0 );
+            textureID = null;
+            idsInUse--;
+        }
+    }    
+    
     private void loadToGPU( GL gl ) {
         if ( textureID == null ) {
             textureID = new int[1];
@@ -133,19 +145,6 @@ public class TextureTile {
                              imageData );
         }
         numReferences++;
-    }
-
-    public void disable( GL gl ) {
-        numReferences--;
-        if ( numReferences < 0 ) {
-            throw new RuntimeException();
-        }
-        if ( numReferences == 0 ) {
-            LOG.info( "No more references. Deleting texture ids." );
-            gl.glDeleteTextures( 1, textureID, 0 );
-            textureID = null;
-            idsInUse--;
-        }
     }
 
     @Override

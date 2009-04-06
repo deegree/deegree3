@@ -125,6 +125,7 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
      */
     public void setTexture( MeshFragmentTexture texture, GL gl ) {
         if ( this.texture != null && this.texture != texture ) {
+            this.texture.disable( gl );
             this.texture.unload();
             this.textureEnabled = false;
         }
@@ -174,6 +175,7 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
         }
         if (texture != null) {
             texture.unload();
+            texture = null;            
         }
     }
 
@@ -245,6 +247,7 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
         }
         if (texture != null) {
             texture.disable( gl );
+            textureEnabled = false;
         }
     }
 
