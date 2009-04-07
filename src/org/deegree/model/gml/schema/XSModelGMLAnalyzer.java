@@ -50,9 +50,10 @@ import org.apache.xerces.xs.XSElementDeclaration;
 import org.deegree.commons.xml.schema.XSModelAnalyzer;
 
 /**
- * Provides convenient access to "relevant" element declarations of a GML schema.
+ * Provides convenient access to the <i>relevant</i> element declarations of a GML schema.
  * <p>
- * An element declaration is relevant if it defines a class of GML objects. Currently, eight types of GML objects exist:
+ * An element declaration is <i>relevant</i>, if it defines a class of GML objects. In the latest version of GML (3.2.1),
+ * eight types of GML objects exist:
  * <ul>
  * <li>feature</li>
  * <li>geometry</li>
@@ -96,8 +97,8 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
 
     private XSElementDeclaration abstractCoverageElementDecl;
 
-    private XSElementDeclaration abstractStyleElementDecl;   
-    
+    private XSElementDeclaration abstractStyleElementDecl;
+
     public XSModelGMLAnalyzer( String url, GMLVersion mode ) throws ClassCastException, ClassNotFoundException,
                             InstantiationException, IllegalAccessException {
         super( url );
@@ -147,13 +148,15 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
         case VERSION_31: {
             // TODO do this the right way
             fcDecls = new ArrayList<XSElementDeclaration>();
-            if (xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ) != null) {
-                fcDecls.addAll( getSubstitutions( xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ), namespace,
-                                                  onlyConcrete ));                
+            if ( xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ) != null ) {
+                fcDecls.addAll( getSubstitutions(
+                                                  xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ),
+                                                  namespace, onlyConcrete ) );
             }
-            if (xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ) != null) {
-                fcDecls.addAll( getSubstitutions( xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ), namespace,
-                                                  onlyConcrete ));                
+            if ( xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ) != null ) {
+                fcDecls.addAll( getSubstitutions(
+                                                  xmlSchema.getElementDeclaration( "FeatureCollection", GML_PRE_32_NS ),
+                                                  namespace, onlyConcrete ) );
             }
 
             break;
@@ -162,9 +165,9 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
             // GML 3.2 does not have an abstract feature collection element anymore
             // Every gml:AbstractFeature having a property whose content model extends gml:AbstractFeatureMemberType is
             // a feature collection. See OGC 07-061, section 6.5
-            fcDecls = new ArrayList<XSElementDeclaration> ();
-            
-            // TODO            
+            fcDecls = new ArrayList<XSElementDeclaration>();
+
+            // TODO
         }
         return fcDecls;
     }

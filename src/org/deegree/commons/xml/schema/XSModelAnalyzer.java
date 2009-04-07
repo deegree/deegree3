@@ -54,6 +54,7 @@ import org.apache.xerces.xs.XSLoader;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSObjectList;
 import org.deegree.commons.xml.XMLProcessingException;
+import org.deegree.model.gml.schema.XSModelGMLAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMConfiguration;
@@ -62,9 +63,13 @@ import org.w3c.dom.DOMErrorHandler;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 /**
- * Provides convenient methods to access "relevant" element declarations of an XML schema infoset (which is represented
- * as a Xerces {@link XSModel}).
+ * Provides convenient methods to retrieve "relevant" element and type declarations of an XML schema infoset (which is
+ * represented as a Xerces {@link XSModel}).
+ * <p>
+ * This functionality is used to extract higher-level structures defined using XML schema, such as GML feature types.
+ * </p>
  * 
+ * @see XSModelGMLAnalyzer
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
@@ -76,6 +81,16 @@ public class XSModelAnalyzer {
 
     /** Encapsulates the full information of the XML schema infoset. */
     protected final XSModel xmlSchema;
+
+    /**
+     * Creates a new <code>XSModelAnalyzer</code> for a given XML schema infoset.
+     * 
+     * @param xmlSchema
+     *            schema infoset
+     */
+    public XSModelAnalyzer( XSModel xmlSchema ) {
+        this.xmlSchema = xmlSchema;
+    }    
 
     /**
      * Creates a new <code>XSModelAnalyzer</code> that reads a schema document from the given URL.
@@ -98,6 +113,7 @@ public class XSModelAnalyzer {
 
         // create and register DOMErrorHandler
         DOMErrorHandler errorHandler = new DOMErrorHandler() {
+            @SuppressWarnings("synthetic-access")
             public boolean handleError( DOMError domError ) {
                 switch ( domError.getSeverity() ) {
                 case DOMError.SEVERITY_WARNING: {
@@ -155,8 +171,8 @@ public class XSModelAnalyzer {
                 }
             }
         }
-        if (!onlyConcrete || !elementDecl.getAbstract()) {
-            substitutions.add( elementDecl );            
+        if ( !onlyConcrete || !elementDecl.getAbstract() ) {
+            substitutions.add( elementDecl );
         }
         return substitutions;
     }

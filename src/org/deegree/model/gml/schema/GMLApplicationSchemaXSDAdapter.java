@@ -76,7 +76,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides convenient access to the {@link FeatureType} hierarchy} defined in an GML schema infoset.
+ * Provides convenient access to the {@link FeatureType} hierarchy defined in an GML schema infoset.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -322,20 +322,24 @@ public class GMLApplicationSchemaXSDAdapter {
         if ( pt == null ) {
             pt = buildGeometryPropertyType( elementDecl, typeDef, minOccurs, maxOccurs );
             if ( pt == null ) {
-                // TODO improve detection of property types
-                QName typeName = new QName( typeDef.getNamespace(), typeDef.getName() );
-                if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}CodeType" ) ) ) {
-                    LOG.debug ("Identified a CodePropertyType.");
-                    pt = new CodePropertyType( ptName, minOccurs, maxOccurs );
-                } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}BoundingShapeType" ) ) ) {
-                    LOG.debug ("Identified a EnvelopePropertyType.");
-                    pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs );                   
-                } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}LengthType" ) ) ) {
-                    LOG.debug ("Identified a LengthPropertyType.");
-                    pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs );
-                    
+                if (typeDef.getName() != null) {
+                    // TODO improve detection of property types
+                    QName typeName = new QName( typeDef.getNamespace(), typeDef.getName() );
+                    if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}CodeType" ) ) ) {
+                        LOG.debug ("Identified a CodePropertyType.");
+                        pt = new CodePropertyType( ptName, minOccurs, maxOccurs );
+                    } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}BoundingShapeType" ) ) ) {
+                        LOG.debug ("Identified a EnvelopePropertyType.");
+                        pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs );                   
+                    } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}LengthType" ) ) ) {
+                        LOG.debug ("Identified a LengthPropertyType.");
+                        pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs );
+                        
+                    } else {
+                        pt = new CustomComplexPropertyType( ptName, minOccurs, maxOccurs, typeName );                    
+                    }
                 } else {
-                    pt = new CustomComplexPropertyType( ptName, minOccurs, maxOccurs, typeName );                    
+                    pt = new CustomComplexPropertyType( ptName, minOccurs, maxOccurs, null );
                 }
             }
         }
