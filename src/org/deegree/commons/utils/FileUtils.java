@@ -67,6 +67,19 @@ public class FileUtils {
     private static Logger LOG = LoggerFactory.getLogger( FileUtils.class );
 
     /**
+     * Returns the filename, without any extension and path (Eg. /tmp/foo.txt -> foo)
+     * 
+     * @param file
+     * @return the basename
+     */
+    public static String getFilename( File file ) {
+
+        String path = splitFilename( file ).first;
+        String parent = file.getParent();
+        return ( parent != null ) ? ( path.substring( file.getParent().length() + 1 ) ) : path;
+    }
+
+    /**
      * Returns the filename, without any extension. (Eg. /tmp/foo.txt -> /tmp/foo)
      * 
      * @param file

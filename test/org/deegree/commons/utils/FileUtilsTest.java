@@ -42,20 +42,19 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
 import org.junit.Test;
 
 /**
- *
- *
+ * 
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
- * @version $Revision$, $Date$
- *}
+ * 
+ * @version $Revision$, $Date$ }
  */
 public class FileUtilsTest {
 
@@ -83,6 +82,19 @@ public class FileUtilsTest {
         assertEquals( "", FileUtils.getFileExtension( new File( "/tmp/foo" ) ) );
         assertEquals( "", FileUtils.getFileExtension( new File( "/tmp.dir/foo" ) ) );
         assertEquals( "", FileUtils.getFileExtension( new File( "" ) ) );
+    }
+
+    /**
+     * Test method for {@link org.deegree.commons.utils.FileUtils#getFileExtension(java.io.File)}.
+     */
+    @Test
+    public void testGetExclusiveExtension() {
+        assertEquals( "foo", FileUtils.getFilename( new File( "/tmp/foo.txt" ) ) );
+        assertEquals( "foo.bar", FileUtils.getFilename( new File( "/tmp/foo.bar.txt" ) ) );
+        assertEquals( "foo.bar", FileUtils.getFilename( new File( "/tmp/foo.bar." ) ) );
+        assertEquals( "foo", FileUtils.getFilename( new File( "/tmp/foo" ) ) );
+        assertEquals( "foo", FileUtils.getFilename( new File( "/tmp.dir/foo" ) ) );
+        assertEquals( "", FileUtils.getFilename( new File( "" ) ) );
     }
 
 }

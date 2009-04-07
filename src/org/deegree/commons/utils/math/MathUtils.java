@@ -73,4 +73,35 @@ public class MathUtils {
         return abs( v ) < EPSILON;
     }
 
+    /**
+     * This method will return the next power, two must be raised too to give the next power of two, e.g. if value is
+     * 511 it will return 9, if value is 513 it will return 10.
+     * 
+     * @param value
+     *            to use
+     * @return the next power to the base of two the given value has
+     */
+    public static int previousPowerOfTwo( double value ) {
+        int result = 0;
+        int power = 1;
+        while ( power <= value && Math.abs( value - power ) > EPSILON ) {
+            power = power << 1;
+            result++;
+        }
+        return result;
+    }
+
+    /**
+     * This method will return the next power of two for the given value, e.g. if value is 511 it will return 512, if
+     * value is 513 it will return 1024.
+     * 
+     * @param value
+     *            to use
+     * @return the next power of two of the given value
+     */
+    public static int nextPowerOfTwoValue( double value ) {
+        int power = previousPowerOfTwo( value );
+        return 1 << power;
+    }
+
 }
