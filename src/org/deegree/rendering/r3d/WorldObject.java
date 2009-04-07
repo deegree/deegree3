@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.deegree.commons.utils.AllocatedHeapMemory;
+import org.deegree.commons.utils.math.Vectors3d;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.primitive.Point;
 import org.deegree.rendering.r3d.opengl.rendering.managers.Positionable;
@@ -76,6 +77,12 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
 
     private final static Logger LOG = LoggerFactory.getLogger( WorldObject.class );
 
+    private transient String type;
+
+    private transient String name;
+
+    private transient String externalReference;
+
     private transient String id;
 
     private transient String time;
@@ -83,6 +90,12 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
     private transient Envelope bbox;
 
     private transient float[] position;
+
+    private transient float error;
+
+    private transient float groundLevel;
+
+    private transient float height;
 
     /**
      * The quality levels of the this object
@@ -107,8 +120,19 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
         }
         this.bbox = bbox;
         Point p = bbox.getCentroid();
+        double[] min = bbox.getMin().getAsArray();
+        double[] max = bbox.getMax().getAsArray();
         position = new float[] { (float) p.getX(), (float) p.getY(),
                                 (float) ( ( p.getCoordinateDimension() == 3 ) ? p.getZ() : 0 ) };
+        if ( bbox.getMin().getCoordinateDimension() != 3 ) {
+            min = new double[] { min[0], min[1], 0 };
+        }
+        if ( bbox.getMax().getCoordinateDimension() != 3 ) {
+            max = new double[] { max[0], max[1], 0 };
+        }
+        error = (float) Vectors3d.length( Vectors3d.sub( max, min ) );
+        this.height = (float) bbox.getHeight();
+        this.groundLevel = (float) min[2];
         this.qualityLevels = qualityLevels;
     }
 
@@ -122,6 +146,37 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
             return null;
         }
         return qualityLevels[index];
+    }
+
+    /**
+     * @return the number of quality levels this worldobject can hold.
+     */
+    public int getNumberOfQualityLevels() {
+        return ( qualityLevels == null ) ? 0 : qualityLevels.length;
+    }
+
+    /**
+     * @param id
+     *            of this object
+     * @param time
+     *            this object was created in the dbase
+     * @param bbox
+     *            of this object (may not be null)
+     * @param qualityLevels
+     *            this data object may render.
+     * @param name
+     *            of this object
+     * @param type
+     *            of this object
+     * @param externalReference
+     *            of this object
+     */
+    public WorldObject( String id, String time, Envelope bbox, QM[] qualityLevels, String name, String type,
+                        String externalReference ) {
+        this( id, time, bbox, qualityLevels );
+        this.name = name;
+        this.type = type;
+        this.externalReference = externalReference;
     }
 
     /**
@@ -199,8 +254,19 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
         }
         this.bbox = bbox;
         Point p = bbox.getCentroid();
+        double[] min = bbox.getMin().getAsArray();
+        double[] max = bbox.getMax().getAsArray();
         position = new float[] { (float) p.getX(), (float) p.getY(),
                                 (float) ( ( p.getCoordinateDimension() == 3 ) ? p.getZ() : 0 ) };
+        if ( bbox.getMin().getCoordinateDimension() != 3 ) {
+            min = new double[] { min[0], min[1], 0 };
+        }
+        if ( bbox.getMax().getCoordinateDimension() != 3 ) {
+            max = new double[] { max[0], max[1], 0 };
+        }
+        this.error = (float) Vectors3d.length( Vectors3d.sub( max, min ) );
+        this.height = (float) bbox.getHeight();
+        this.groundLevel = (float) min[2];
     }
 
     /**
@@ -253,5 +319,65 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
     @Override
     public float[] getPosition() {
         return position;
+    }
+
+    @Override
+    public float getErrorScalar() {
+        return error;
+    }
+
+    @Override
+    public float getGroundLevel() {
+        return groundLevel;
+    }
+
+    @Override
+    public float getObjectHeight() {
+        return height;
+    }
+
+    /**
+     * @return the type of this object, e.g. building or tv.
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @return the name of this object,
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @return the externalReference
+     */
+    public final String getExternalReference() {
+        return externalReference;
+    }
+
+    /**
+     * @param type
+     *            the type to set
+     */
+    public final void setType( String type ) {
+        this.type = type;
+    }
+
+    /**
+     * @param name
+     *            the name to set
+     */
+    public final void setName( String name ) {
+        this.name = name;
+    }
+
+    /**
+     * @param externalReference
+     *            the externalReference to set
+     */
+    public final void setExternalReference( String externalReference ) {
+        this.externalReference = externalReference;
     }
 }

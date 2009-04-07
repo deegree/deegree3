@@ -126,6 +126,22 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
     }
 
     /**
+     * 
+     * @param vertices
+     * @param openGLType
+     * @param vertexNormals
+     * @param vertexColors
+     * @param texture
+     * @param textureCoordinates
+     */
+    public RenderableTexturedGeometry( float[] vertices, int openGLType, float[] vertexNormals, byte[] vertexColors,
+                                       String texture, float[] textureCoordinates ) {
+        super( vertices, openGLType, vertexNormals, vertexColors );
+        this.texture = texture;
+        loadTextureCoordinates( textureCoordinates );
+    }
+
+    /**
      * Load the float buffers and enable the client state.
      * 
      * @param context

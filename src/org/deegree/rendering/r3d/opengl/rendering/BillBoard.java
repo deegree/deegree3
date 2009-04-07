@@ -84,6 +84,10 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
 
     private transient float height;
 
+    private transient float error;
+
+    private static final float DTR = 57.29577951308232087684f;
+
     private static final FloatBuffer coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
                                                                                                               -.5f,
                                                                                                               0,
@@ -128,6 +132,8 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
         this.width = width;
         this.height = height;
 
+        this.error = (float) Math.sqrt( this.width * this.width + this.height * this.height );
+
         this.textureID = texture;
     }
 
@@ -152,11 +158,11 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
         context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
 
         context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
-//        context.glDisableClientState( GL.GL_NORMAL_ARRAY );
-        
+        // context.glDisableClientState( GL.GL_NORMAL_ARRAY );
+
         context.glDrawArrays( GL.GL_QUADS, 0, 4 );
-        
-//        context.glEnableClientState( GL.GL_NORMAL_ARRAY );
+
+        // context.glEnableClientState( GL.GL_NORMAL_ARRAY );
         context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
         context.glDisableClientState( GL.GL_VERTEX_ARRAY );
         context.glDisable( GL.GL_TEXTURE_2D );
@@ -183,8 +189,7 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
      */
     private void calculateAndSetRotation( GL context, float[] eye ) {
 
-        float[] t = new float[]{location[0]-2568000.0f, location[1]-5606000.0f, location[2]};
-        float[] viewVector = Vectors3f.sub( eye, t );
+        float[] viewVector = Vectors3f.sub( eye, location );
         // projection to the xy plane.
         viewVector[2] = 0;
         Vectors3f.normalizeInPlace( viewVector );
@@ -195,8 +200,8 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
         }
         // negative or positive orientation?
         float[] newUp = Vectors3f.cross( NORMAL, viewVector );
-        context.glNormal3fv( NORMAL, 0 );
-        context.glRotatef( (float) Math.toDegrees( Math.acos( angleCosine ) ), newUp[0], newUp[1], newUp[2] );
+        // context.glNormal3fv( NORMAL, 0 );
+        context.glRotatef( DTR * (float) Math.acos( angleCosine ), newUp[0], newUp[1], newUp[2] );
     }
 
     @Override
@@ -241,6 +246,7 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
         width = in.readFloat();
         height = in.readFloat();
         textureID = in.readUTF();
+	    this.error = (float) Math.sqrt( this.width * this.width + this.height * this.height );
     }
 
     /**
@@ -303,5 +309,34 @@ public class BillBoard extends RenderableQualityModel implements Positionable {
      */
     public final float getHeight() {
         return height;
+    }
+
+    /**
+     * @param context
+     * @param eye
+     * @param i
+     */
+    public void renderPrepared( GL context, float[] eye ) {
+        // the translation
+        context.glTranslatef( location[0], location[1], location[2] );
+        // the rotation
+        calculateAndSetRotation( context, eye );
+        context.glScalef( width, 1, height );
+        context.glDrawArrays( GL.GL_QUADS, 0, 4 );
+    }
+
+    @Override
+    public float getErrorScalar() {
+        return error;
+    }
+
+    @Override
+    public float getObjectHeight() {
+        return location[2] + height;
+    }
+
+    @Override
+    public float getGroundLevel() {
+        return location[2];
     }
 }

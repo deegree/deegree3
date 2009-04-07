@@ -41,11 +41,11 @@ package org.deegree.rendering.r3d.opengl.rendering;
 import java.util.ArrayList;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Point3d;
 
 import org.deegree.rendering.r3d.QualityModel;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.prototype.PrototypePool;
+import org.deegree.rendering.r3d.opengl.rendering.prototype.PrototypeReference;
 
 /**
  * The <code>GeometryQualityModel</code> class TODO add class documentation here.
@@ -90,9 +90,16 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
         super( geometryPatch );
     }
 
+    /**
+     * @param prototypeReference
+     */
+    public RenderableQualityModel( PrototypeReference prototypeReference ) {
+        super( prototypeReference );
+    }
+
     @Override
     public void render( GL context, ViewParams params ) {
-        context.glEnableClientState( GL.GL_VERTEX_ARRAY );
+
         if ( prototype != null ) {
             PrototypePool.render( context, params, prototype );
         } else {
@@ -105,7 +112,7 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
                 }
             }
         }
-        context.glDisableClientState( GL.GL_VERTEX_ARRAY );
+
     }
 
     @Override

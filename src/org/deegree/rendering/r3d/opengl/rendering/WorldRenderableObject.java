@@ -58,6 +58,10 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
                                                                                                           JOGLRenderable {
     private static final long serialVersionUID = 2998719476993351372L;
 
+    private static int counter = 10;
+
+    private static int level = 2;
+
     /**
      * Creates a new WorldRenderableObject with given number of data quality levels (LOD)
      * 
@@ -124,6 +128,13 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
      * @return the level to render.
      */
     protected int calcQualityLevel( ViewParams eye ) {
-        return 0;
+        // if ( counter-- < 0 ) {
+        // counter = 10;
+        // level--;
+        // }
+        // if ( level < 0 ) {
+        // level = 2;
+        // }
+        return level;
     }
 }

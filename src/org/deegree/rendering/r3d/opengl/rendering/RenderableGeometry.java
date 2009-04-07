@@ -194,8 +194,8 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
      */
     public void disableArrays( GL context ) {
         LOG.trace( "Disabling client states: normal and color" );
-        context.glDisableClientState( GL.GL_NORMAL_ARRAY );
-        // context.glDisableClientState( GL.GL_COLOR_ARRAY );
+        // context.glDisableClientState( GL.GL_NORMAL_ARRAY );
+        context.glDisableClientState( GL.GL_COLOR_ARRAY );
     }
 
     /**
@@ -224,7 +224,7 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
         this.hasNormals = ( vertexNormals != null && vertexNormals.length > 0 );
         if ( hasNormals ) {
             if ( vertexNormals.length % 3 != 0 ) {
-                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                   )
+                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                          )
                                                     + ") must be kongruent to 3." );
             } else if ( ( vertexNormals.length / 3 ) != vertexCount ) {
                 throw new IllegalArgumentException( "The number of normals (" + ( vertexNormals.length / 3 )
@@ -250,7 +250,7 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
         this.hasColors = ( vertexColors != null && vertexColors.length > 0 );
         if ( hasColors ) {
             if ( vertexColors.length % 4 != 0 ) {
-                throw new IllegalArgumentException( "The number of vertex colors(" + ( vertexColors.length                                                       )
+                throw new IllegalArgumentException( "The number of vertex colors(" + ( vertexColors.length                                                              )
                                                     + ") must be kongruent to 4." );
             } else if ( ( vertexColors.length / 4 ) != vertexCount ) {
                 throw new IllegalArgumentException( "The number of vertex colors(" + ( vertexColors.length / 4 )
@@ -402,5 +402,19 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
      */
     public final int getVertexCount() {
         return vertexCount;
+    }
+
+    /**
+     * @return the coordBuffer
+     */
+    public final FloatBuffer getCoordBuffer() {
+        return coordBuffer;
+    }
+
+    /**
+     * @return
+     */
+    public FloatBuffer getReadOnlyCoordBuffer() {
+        return coordBuffer.asReadOnlyBuffer();
     }
 }

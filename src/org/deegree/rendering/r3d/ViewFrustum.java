@@ -387,7 +387,7 @@ public class ViewFrustum {
 
     public String toInitString() {
         String s = "Point3d eye = new Point3d( " + eye.x + "," + eye.y + "," + eye.z + ");\n";
-        s += "Vector3d lookingAt = new Vector3d( " + lookingAt.x + "," + lookingAt.y + "," + lookingAt.z + ");\n";
+        s += "Point3d lookingAt = new Point3d( " + lookingAt.x + "," + lookingAt.y + "," + lookingAt.z + ");\n";
         s += "Vector3d viewerUp = new Vector3d( " + up.x + "," + up.y + "," + up.z + ");\n";
         return s;
     }

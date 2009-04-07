@@ -41,6 +41,7 @@ package org.deegree.rendering.r3d;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.deegree.rendering.r3d.opengl.rendering.prototype.PrototypeReference;
@@ -129,6 +130,22 @@ public class QualityModel<T extends QualityModelPart> implements Serializable, M
             }
         }
         return qualityModelParts.add( part );
+    }
+
+    /**
+     * @param parts
+     *            to add to the quality model
+     * @return true (as specified by Collection.add)
+     */
+    public final boolean addQualityModelParts( List<T> parts ) {
+        if ( qualityModelParts == null ) {
+            qualityModelParts = new ArrayList<T>();
+            if ( prototype != null ) {
+                LOG.debug( "Setting prototype reference to null" );
+                prototype = null;
+            }
+        }
+        return qualityModelParts.addAll( parts );
     }
 
     /**
