@@ -49,6 +49,7 @@ import java.util.List;
 
 import org.deegree.commons.utils.GraphvizDot;
 import org.deegree.model.geometry.Envelope;
+import org.deegree.rendering.r3d.ViewParams;
 
 /**
  * The <code>RenderableManager</code> class TODO add class documentation here.
@@ -117,11 +118,36 @@ public class RenderableManager<T extends Positionable> implements Collection<T> 
     }
 
     /**
+     * @param viewParams
+     * @param comparator
+     * @return the list of objects this manager manages.
+     */
+    public List<T> getObjects( ViewParams viewParams, Comparator<T> comparator ) {
+        return root.getObjects( viewParams, comparator );
+    }
+
+    /**
+     * @param viewParams
+     * @param comparator
+     * @return the list of objects this manager manages.
+     */
+    public List<T> getObjects( ViewParams viewParams ) {
+        return getObjects( viewParams, null );
+    }
+
+    /**
      * @param comparator
      * @return All objects this manager manages, sorted by using the given comparator.
      */
     public List<T> getObjects( Comparator<T> comparator ) {
         return root.getObjects( validDomain, comparator );
+    }
+
+    /**
+     * @return All objects this manager manages
+     */
+    public List<T> getObjects() {
+        return getObjects( validDomain, null );
     }
 
     @Override

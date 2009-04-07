@@ -46,9 +46,14 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.vecmath.Point3d;
+
 import org.deegree.commons.utils.GraphvizDot;
+import org.deegree.commons.utils.math.VectorUtils;
+import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.model.geometry.Envelope;
 import org.deegree.model.geometry.primitive.Point;
+import org.deegree.rendering.r3d.ViewParams;
 
 /**
  * The <code>QuadTree</code>
@@ -75,6 +80,11 @@ public class QuadTree<T extends Positionable> {
     private ArrayList<T> objects = null;
 
     private final int numberOfObjects;
+
+    // the most significant error of a node.
+    private float maxError = Float.MIN_VALUE;
+
+    private static final int PIXEL_ERROR = 2;
 
     /**
      * @param validDomain
@@ -193,6 +203,9 @@ public class QuadTree<T extends Positionable> {
                 objects = new ArrayList<T>( size );
                 for ( QuadTree<T> n : children ) {
                     if ( n != null && n.objects != null ) {
+                        maxError = Math.max( maxError, n.maxError );
+                        min[2] = Math.min( n.min[2], min[2] );
+                        max[2] = Math.max( n.max[2], max[2] );
                         objects.addAll( n.objects );
                         n.objects = null;
                         n = null;
@@ -219,6 +232,9 @@ public class QuadTree<T extends Positionable> {
             objects = new ArrayList<T>( numberOfObjects );
         }
         objects.add( object );
+        maxError = Math.max( object.getErrorScalar(), maxError );
+        min[2] = Math.min( object.getGroundLevel(), min[2] );
+        max[2] = Math.max( min[2] + object.getObjectHeight(), max[2] );
         if ( objects.size() > numberOfObjects ) {
             split();
         }
@@ -236,6 +252,7 @@ public class QuadTree<T extends Positionable> {
             getLeafNode( p.getPosition() ).addObject( p );
         }
         objects = null;
+        maxError = Float.MIN_VALUE;
 
     }
 
@@ -373,6 +390,39 @@ public class QuadTree<T extends Positionable> {
         }
     }
 
+    private void getObjects( ViewParams viewParams, float[] eye, List<T> result, Comparator<T> comparator ) {
+        float[][] bbox = new float[][] { min, max };
+        if ( viewParams.getViewFrustum().intersects( bbox ) ) {
+            if ( isLeaf() ) {
+                if ( objects != null ) {
+
+                    double distance = VectorUtils.getDistance( bbox, eye );
+                    double estimatePixel = viewParams.estimatePixelSizeForSpaceUnit( distance );
+                    double estError = estimatePixel * maxError;
+                    if ( estError > PIXEL_ERROR ) {
+                        if ( comparator != null ) {
+                            Collections.sort( objects, comparator );
+                        }
+                        for ( T obj : objects ) {
+                            if ( ( obj.getErrorScalar() * viewParams.estimatePixelSizeForSpaceUnit( Vectors3f.distance(
+                                                                                                                        eye,
+                                                                                                                        obj.getPosition() ) ) ) > PIXEL_ERROR ) {
+                                result.add( obj );
+                            }
+                        }
+                    }
+
+                }
+            } else {
+                for ( QuadTree<T> n : children ) {
+                    if ( n != null ) {
+                        n.getObjects( viewParams, eye, result, comparator );
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * @param env
      *            to get the objects for.
@@ -409,6 +459,22 @@ public class QuadTree<T extends Positionable> {
                                  ( ( dim == 2 ) ? 0 : (float) min.get( 2 ) ) },
                     new float[] { (float) max.get( 0 ), (float) max.get( 1 ),
                                  ( ( dim == 2 ) ? 0 : (float) max.get( 2 ) ) }, result, comparator );
+        return result;
+    }
+
+    /**
+     * @param viewParams
+     *            to get the objects for.
+     * @param comparator
+     *            to be used for sorting the objects in each leaf, not the result as a total. If <code>null</code> no
+     *            sorting of the objects will be done.
+     * @return the objects which intersect with the given view parameters and or it's children, or the empty list.
+     */
+    public List<T> getObjects( ViewParams viewParams, Comparator<T> comparator ) {
+        List<T> result = new LinkedList<T>();
+        Point3d e = viewParams.getViewFrustum().getEyePos();
+        float[] eye = new float[] { (float) e.x, (float) e.y, (float) e.z };
+        getObjects( viewParams, eye, result, comparator );
         return result;
     }
 

@@ -52,4 +52,20 @@ public interface Positionable {
      * @return the position of the implementing class.
      */
     public float[] getPosition();
+
+    /**
+     * @return a scalar which is represents the 'error' of this positionable.
+     */
+    public float getErrorScalar();
+
+    /**
+     * @return a scalar which represents the 'height' of this positionable.
+     */
+    public float getObjectHeight();
+
+    /**
+     * @return a scalar which represents the 'groundlevel' of this positionable.
+     */
+    public float getGroundLevel();
+
 }
