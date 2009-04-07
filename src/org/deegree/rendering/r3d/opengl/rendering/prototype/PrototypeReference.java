@@ -70,6 +70,16 @@ public class PrototypeReference implements Serializable {
 
     private transient GLTransformationMatrix gLTransformationMatrix;
 
+    private transient float angle;
+
+    private transient float width;
+
+    private transient float height;
+
+    private transient float depth;
+
+    private float[] location;
+
     /**
      * Construct a reference to a prototype, by supplying an id and a transformation matrix
      * 
@@ -79,6 +89,25 @@ public class PrototypeReference implements Serializable {
     public PrototypeReference( String prototypeID, GLTransformationMatrix gLTransformationMatrix ) {
         this.prototypeID = prototypeID;
         this.gLTransformationMatrix = gLTransformationMatrix;
+    }
+
+    /**
+     * Construct a reference to a prototype, by supplying an id and the transformations
+     * 
+     * @param prototypeID
+     * @param angle
+     * @param location
+     * @param width
+     * @param height
+     * @param depth
+     */
+    public PrototypeReference( String prototypeID, float angle, float[] location, float width, float height, float depth ) {
+        this.prototypeID = prototypeID;
+        this.angle = angle;
+        this.location = location;
+        this.width = width;
+        this.height = height;
+        this.depth = depth;
     }
 
     /**
@@ -148,12 +177,54 @@ public class PrototypeReference implements Serializable {
         if ( gLTransformationMatrix != null ) {
             // transform matrix
             localSize += AllocatedHeapMemory.instanceAndReferenceSize( true );
-            localSize += 16 * ( AllocatedHeapMemory.FLOAT_SIZE    );
+            localSize += 16 * ( AllocatedHeapMemory.FLOAT_SIZE               );
             localSize += AllocatedHeapMemory.DOUBLE_SIZE;
         }
         localSize = AllocatedHeapMemory.sizeOfString( prototypeID, true, true );
 
         return localSize;
+    }
+
+    /**
+     * @return the gLTransformationMatrix
+     */
+    public final GLTransformationMatrix getGLTransformationMatrix() {
+        return gLTransformationMatrix;
+    }
+
+    /**
+     * @return the angle
+     */
+    public final float getAngle() {
+        return angle;
+    }
+
+    /**
+     * @return the width
+     */
+    public final float getWidth() {
+        return width;
+    }
+
+    /**
+     * @return the height
+     */
+    public final float getHeight() {
+        return height;
+    }
+
+    /**
+     * @return the depth
+     */
+    public final float getDepth() {
+        return depth;
+    }
+
+    /**
+     * @return
+     */
+    public float[] getLocation() {
+        return location;
     }
 
 }

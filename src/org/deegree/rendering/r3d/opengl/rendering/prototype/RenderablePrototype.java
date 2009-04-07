@@ -64,7 +64,7 @@ public class RenderablePrototype extends WorldRenderableObject {
      * @param bbox
      */
     public RenderablePrototype( String id, String time, Envelope bbox ) {
-        super( id, time, bbox, 0 );
+        super( id, time, bbox, 1 );
     }
 
     /**

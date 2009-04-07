@@ -43,8 +43,13 @@ import java.util.Map;
 
 import javax.media.opengl.GL;
 
+import org.deegree.commons.utils.math.Vectors3f;
+import org.deegree.model.geometry.Envelope;
+import org.deegree.model.geometry.GeometryFactoryCreator;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
+import org.deegree.rendering.r3d.opengl.rendering.RenderableGeometry;
+import org.deegree.rendering.r3d.opengl.rendering.RenderableQualityModel;
 
 /**
  * The <code>Prototypes</code> class TODO add class documentation here.
@@ -57,8 +62,13 @@ import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
  * 
  */
 public class PrototypePool {
+    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( PrototypePool.class );
 
     private static final Map<String, RenderablePrototype> prototypes = new HashMap<String, RenderablePrototype>();
+
+    static {
+        prototypes.put( "box", createBoxPrototype() );
+    }
 
     /**
      * @param context
@@ -67,18 +77,38 @@ public class PrototypePool {
      *            of the beholder
      */
     public synchronized static void render( GL context, ViewParams params, PrototypeReference prototype ) {
-        if ( prototype == null || prototype.getTransformationMatrix() == null || prototype.getPrototypeID() == null ) {
+        if ( prototype == null || prototype.getPrototypeID() == null ) {
             return;
         }
         JOGLRenderable model = prototypes.get( prototype.getPrototypeID() );
+        System.out.println( "model: " + prototype.getPrototypeID() );
         if ( model == null ) {
+            LOG.warn( "No model found for prototype: " + prototype.getPrototypeID() );
             return;
         }
         context.glPushMatrix();
-        context.glLoadMatrixf( prototype.getTransformationMatrix().getValues() );
+        // context.glLoadMatrixf( prototype.getTransformationMatrix().getValues() );
+        float[] loc = prototype.getLocation();
+        context.glTranslatef( loc[0], loc[1], loc[2] );
+        System.out.println( "Location: " + Vectors3f.asString( loc ) );
+        context.glRotatef( prototype.getAngle(), 0, 0, 1 );
+
+        context.glScalef( prototype.getWidth(), prototype.getDepth(), prototype.getHeight() );
         // render prototype
         model.render( context, params );
         context.glPopMatrix();
+    }
+
+    /**
+     * @return
+     */
+    private static RenderablePrototype createBoxPrototype() {
+        RenderableQualityModel rqm = new RenderableQualityModel();
+
+        RenderableGeometry rg = new BOXGeometry();
+        rqm.addQualityModelPart( rg );
+        Envelope env = GeometryFactoryCreator.getInstance().getGeometryFactory().createEnvelope( 0, 0, 1, 1, null );
+        return new RenderablePrototype( "box", "yeah", env, rqm );
     }
 
     /**
