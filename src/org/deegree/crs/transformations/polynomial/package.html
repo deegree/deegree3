@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<!--
+   $HeadURL$
+-->
+</head>
+<body bgcolor="white">
+A Transformation can be defined as an mathematical operation which transforms some values into other values using a
+specified function. In geographic terms this means, that some incoming coordinate in a specified crs, must be
+transformed into a coordinate valid for some other crs.
+<p>A polynomial transformations use a polynomial to approximate a function which directly transforms coordinates
+from one crs into another.</p>
+<h2>Automatic loading of transformation classes</h2>
+It is possible to create your own transformation classes, which the default provider {@link
+org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider} will load automatically.
+<p>You can achieve this loading by supplying the <b><code>class</code></b> attribute to a <code>crs:CoordinateSystem/crs:transformation</code>
+element in the 'deegree-crs-configuration.xml'. This attribute must contain the full class name (with package), e.g. <code>&lt;crs:transformation
+class='my.package.and.transformation.Implementation'&gt;</code></p>
+Because the loading is done with reflections your classes must sustain following criteria:
+<ol>
+  <li>It must be a sub class of {@link org.deegree.crs.transformations.polynomial.PolynomialTransformation}</li>
+  <li>A constructor with following signature must be supplied: <br />
+  <code> public MyTransformation( <br />
+  &emsp;&emsp;&emsp;&emsp;java.util.list&lt;Double&gt; aValues,<br />
+  &emsp;&emsp;&emsp;&emsp;java.util.list&lt;Double&gt; bValues,<br />
+  &emsp;&emsp;&emsp;&emsp;{@link org.deegree.crs.coordinatesystems.CoordinateSystem} targetCRS,<br />
+  &emsp;&emsp;&emsp;&emsp;java.util.List&lt;org.w3c.dom.Element&gt; yourTransformationElements<br />
+  );<br />
+  </code>
+  <p>The first three parameters are common to all polynomial values (for an explanation of their meaning take a look
+  at {@link org.deegree.crs.transformations.polynomial.PolynomialTransformation}). Again, the last list, will contain
+  all xml-dom elements you supplied in the deegree configuration (child elements of the
+  crs:transformation/crs:MyTransformation), thus relieving you of the parsing of the deegree-crs-configuration.xml
+  document.</p>
+  </li>
+</ol>
+@author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+@author last edited by: $Author$ 
+@version $Revision$, $Date: 2007-03-20 10:15:15 +0100 (Di, 20 Mrz
+2007)$
+</body>
+</html>

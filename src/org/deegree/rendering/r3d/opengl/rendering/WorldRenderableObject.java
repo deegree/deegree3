@@ -40,7 +40,7 @@ package org.deegree.rendering.r3d.opengl.rendering;
 
 import javax.media.opengl.GL;
 
-import org.deegree.model.geometry.Envelope;
+import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.WorldObject;
 

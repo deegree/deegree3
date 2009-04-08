@@ -191,7 +191,7 @@
             <header>${doc.header}</header>
             <footer>${doc.footer}</footer>
             <bottom>${doc.bottom}</bottom>
-            <group title="deegree Coordinate Reference System (crs)" packages="org.deegree.model.crs*" />
+            <group title="deegree Coordinate Reference System (crs)" packages="org.deegree.crs*" />
             <group title="deegree Commons" packages="org.deegree.commons*" />
             <group title="deegree Model" packages="org.deegree.model*" />
             <group title="deegree Datatypes" packages="org.deegree.model.datatypes*" />

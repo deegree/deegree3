@@ -38,11 +38,11 @@
 
 package org.deegree.rendering.r2d;
 
-import org.deegree.model.geometry.Geometry;
-import org.deegree.model.styling.LineStyling;
-import org.deegree.model.styling.PointStyling;
-import org.deegree.model.styling.PolygonStyling;
-import org.deegree.model.styling.TextStyling;
+import org.deegree.geometry.Geometry;
+import org.deegree.rendering.r2d.styling.LineStyling;
+import org.deegree.rendering.r2d.styling.PointStyling;
+import org.deegree.rendering.r2d.styling.PolygonStyling;
+import org.deegree.rendering.r2d.styling.TextStyling;
 
 /**
  * <code>Renderer</code>

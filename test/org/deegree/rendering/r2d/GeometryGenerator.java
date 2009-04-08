@@ -39,14 +39,14 @@
 package org.deegree.rendering.r2d;
 
 import static java.util.Arrays.asList;
-import static org.deegree.model.geometry.GeometryFactoryCreator.getInstance;
+import static org.deegree.geometry.GeometryFactoryCreator.getInstance;
 
 import java.util.Random;
 
-import org.deegree.model.geometry.GeometryFactory;
-import org.deegree.model.geometry.primitive.Curve;
-import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.Polygon;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Polygon;
 
 /**
  * <code>GeometryGenerator</code>

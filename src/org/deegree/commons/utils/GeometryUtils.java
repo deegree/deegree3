@@ -44,7 +44,7 @@ import static java.awt.geom.PathIterator.SEG_LINETO;
 import static java.awt.geom.PathIterator.SEG_MOVETO;
 import static java.awt.geom.PathIterator.SEG_QUADTO;
 import static java.lang.Math.sqrt;
-import static org.deegree.model.geometry.GeometryFactoryCreator.getInstance;
+import static org.deegree.geometry.GeometryFactoryCreator.getInstance;
 
 import java.awt.Shape;
 import java.awt.geom.FlatteningPathIterator;
@@ -53,15 +53,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.model.geometry.Geometry;
-import org.deegree.model.geometry.GeometryFactory;
-import org.deegree.model.geometry.primitive.Curve;
-import org.deegree.model.geometry.primitive.LinearRing;
-import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.Ring;
-import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
-import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.LinearRing;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
+import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.rendering.r2d.strokes.TextStroke;
 
 /**

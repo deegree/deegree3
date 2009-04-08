@@ -39,7 +39,7 @@ import java.awt.geom.Point2D;
 import java.util.LinkedList;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.model.styling.components.LinePlacement;
+import org.deegree.rendering.r2d.styling.components.LinePlacement;
 import org.slf4j.Logger;
 
 /**

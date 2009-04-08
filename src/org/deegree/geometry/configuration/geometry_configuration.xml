@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deegree:ModelConfiguration xmlns:deegree="http://www.deegree.org/model/geometry"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="D:\java\projekte\deegree3_model\resources\schema\modelconfiguration.xsd">
+    <deegree:GeometryFactories>
+        <deegree:GeometryFactory isDefault="true">
+            <deegree:Name>Standard</deegree:Name>
+            <deegree:ClassName>org.deegree.geometry.standard.DefaultGeometryFactory</deegree:ClassName>
+            <deegree:Description>
+                deegree's own geometry implementation. Supports all types of GML geometries.
+            </deegree:Description>
+            <deegree:Init-Param>
+                <deegree:Name>test</deegree:Name>
+                <deegree:Value>test</deegree:Value>
+            </deegree:Init-Param>
+            <deegree:SupportedGeometries>
+                <deegree:GeometryType>Point</deegree:GeometryType>
+                <deegree:GeometryType>Curve</deegree:GeometryType>
+                <deegree:GeometryType>Surface</deegree:GeometryType>
+                <deegree:GeometryType>MultiPoint</deegree:GeometryType>
+                <deegree:GeometryType>MultiCurve</deegree:GeometryType>
+                <deegree:GeometryType>MultiSurface</deegree:GeometryType>
+                <deegree:GeometryType>MultiGeometry</deegree:GeometryType>
+            </deegree:SupportedGeometries>
+            <deegree:SupportedCurveInterpolation>
+                <deegree:CurveInterpolation>linear</deegree:CurveInterpolation>
+            </deegree:SupportedCurveInterpolation>
+            <deegree:SupportedSurfaceInterpolation>
+                <deegree:SurfaceInterpolation>none</deegree:SurfaceInterpolation>
+            </deegree:SupportedSurfaceInterpolation>
+        </deegree:GeometryFactory>
+        <deegree:GeometryFactory>
+            <deegree:Name>JTS</deegree:Name>
+            <deegree:ClassName>org.deegree.geometry.jtswrapper.JTSWrapperGeometryFactory</deegree:ClassName>
+            <deegree:Description>
+                Creates geometry classes that wrap JTS geometries. Because JTS just offers simple feature geometry
+                implementation support for complex geometries and none linear interpolations is limited
+            </deegree:Description>
+            <deegree:Init-Param>
+                <deegree:Name>test</deegree:Name>
+                <deegree:Value>test</deegree:Value>
+            </deegree:Init-Param>
+            <deegree:SupportedGeometries>
+                <deegree:GeometryType>Point</deegree:GeometryType>
+                <deegree:GeometryType>Curve</deegree:GeometryType>
+                <deegree:GeometryType>Surface</deegree:GeometryType>
+                <deegree:GeometryType>MultiPoint</deegree:GeometryType>
+                <deegree:GeometryType>MultiCurve</deegree:GeometryType>
+                <deegree:GeometryType>MultiSurface</deegree:GeometryType>
+                <deegree:GeometryType>MultiGeometry</deegree:GeometryType>
+            </deegree:SupportedGeometries>
+            <deegree:SupportedCurveInterpolation>
+                <deegree:CurveInterpolation>linear</deegree:CurveInterpolation>
+            </deegree:SupportedCurveInterpolation>
+            <deegree:SupportedSurfaceInterpolation>
+                <deegree:SurfaceInterpolation>none</deegree:SurfaceInterpolation>
+            </deegree:SupportedSurfaceInterpolation>
+        </deegree:GeometryFactory>
+    </deegree:GeometryFactories>
+</deegree:ModelConfiguration>

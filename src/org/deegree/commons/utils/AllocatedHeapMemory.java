@@ -48,9 +48,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.geometry.Envelope;
-import org.deegree.model.geometry.primitive.Point;
+import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.primitive.Point;
 
 /**
  * The <code>AllocatedHeapMemory</code> class provides methods for calculating the heap memory for some primitive objects.

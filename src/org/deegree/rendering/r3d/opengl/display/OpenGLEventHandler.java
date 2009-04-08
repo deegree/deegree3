@@ -50,8 +50,8 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
 import org.deegree.commons.utils.math.Vectors3f;
-import org.deegree.model.geometry.Envelope;
-import org.deegree.model.geometry.GeometryFactoryCreator;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.WorldRenderableObject;

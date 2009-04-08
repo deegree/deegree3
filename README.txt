@@ -41,12 +41,12 @@ License: The Apache Software License, Version 2.0
 Responsible: otonnhofer
 
 === jai ===
-Files: jai_codec.jar, jai_core.jar, mlibwrapper_jar.jar
+Files: jai_codec.jar, jai_core.jar, mlibwrapper_jar.jar, jai_imageio.jar
 URL: https://jai.dev.java.net/
 Version: 1.1.3
 Description: Java Advanced Imaging, high-level imaging API
 Comments: mlibwrapper_jar contains native implementation of parts of jai
-Used for: - org.deegree.model.crs.transformation (polynomial transformation)
+Used for: - org.deegree.crs.transformation (polynomial transformation)
           - org.deegree.dataaccess.jai (image/raster reading and writing)
 Origin of Files: https://jai.dev.java.net/binary-builds.html
 License: Java Distribution License (JDL)
@@ -71,3 +71,16 @@ Used for: binding of configuration schema files
 Origin of Files: jaxb distribution: https://jaxb.dev.java.net/2.1.10/JAXB2_20090206.jar
 Licence: https://jaxb.dev.java.net/
 Responsible: rbezema
+
+=== ehcache ===
+Files: ehcache-1.4.1.jar
+URL: http://ehcache.sourceforge.net/
+Version: 1.4.1
+Description: Ehcache is a widely used java distributed cache for general purpose caching[..].
+             It features memory and disk stores, replicate by copy and invalidate, listeners, 
+             cache loaders, cache extensions, cache exception handlers, a gzip caching servlet
+             filter and much more...
+Comments: 
+Used for: org.deegree.dataaccess.raster (caching of raster tiles)
+License: The Apache Software License, Version 2.0
+Responsible: otonnhofer

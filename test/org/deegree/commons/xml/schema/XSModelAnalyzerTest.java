@@ -48,7 +48,6 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.junit.Test;
 
 /**
  * TODO add documentation here
@@ -60,7 +59,7 @@ import org.junit.Test;
  */
 public class XSModelAnalyzerTest {
 
-    @Test
+    // @Test
     public void testPhilosopher()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {

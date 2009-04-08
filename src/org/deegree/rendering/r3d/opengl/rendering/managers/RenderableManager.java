@@ -48,7 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.deegree.commons.utils.GraphvizDot;
-import org.deegree.model.geometry.Envelope;
+import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
 
 /**

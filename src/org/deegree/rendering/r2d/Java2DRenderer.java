@@ -66,23 +66,23 @@ import java.awt.geom.Path2D.Double;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
-import org.deegree.model.geometry.Envelope;
-import org.deegree.model.geometry.Geometry;
-import org.deegree.model.geometry.primitive.Curve;
-import org.deegree.model.geometry.primitive.Point;
-import org.deegree.model.geometry.primitive.Surface;
-import org.deegree.model.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.model.geometry.primitive.surfacepatches.PolygonPatch;
-import org.deegree.model.geometry.primitive.surfacepatches.SurfacePatch;
-import org.deegree.model.styling.LineStyling;
-import org.deegree.model.styling.PointStyling;
-import org.deegree.model.styling.PolygonStyling;
-import org.deegree.model.styling.TextStyling;
-import org.deegree.model.styling.components.Fill;
-import org.deegree.model.styling.components.Graphic;
-import org.deegree.model.styling.components.Stroke;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
+import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.rendering.r2d.strokes.OffsetStroke;
 import org.deegree.rendering.r2d.strokes.TextStroke;
+import org.deegree.rendering.r2d.styling.LineStyling;
+import org.deegree.rendering.r2d.styling.PointStyling;
+import org.deegree.rendering.r2d.styling.PolygonStyling;
+import org.deegree.rendering.r2d.styling.TextStyling;
+import org.deegree.rendering.r2d.styling.components.Fill;
+import org.deegree.rendering.r2d.styling.components.Graphic;
+import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.slf4j.Logger;
 
 /**

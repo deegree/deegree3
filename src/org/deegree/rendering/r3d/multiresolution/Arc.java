@@ -39,7 +39,7 @@ package org.deegree.rendering.r3d.multiresolution;
 
 import java.nio.ByteBuffer;
 
-import org.deegree.model.geometry.Geometry;
+import org.deegree.geometry.Geometry;
 import org.deegree.rendering.r3d.ViewFrustum;
 
 /**

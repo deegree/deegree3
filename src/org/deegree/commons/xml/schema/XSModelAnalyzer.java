@@ -54,7 +54,7 @@ import org.apache.xerces.xs.XSLoader;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSObjectList;
 import org.deegree.commons.xml.XMLProcessingException;
-import org.deegree.model.gml.schema.XSModelGMLAnalyzer;
+import org.deegree.feature.gml.schema.XSModelGMLAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMConfiguration;

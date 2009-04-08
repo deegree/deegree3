@@ -51,8 +51,8 @@ import javax.vecmath.Point3d;
 import org.deegree.commons.utils.GraphvizDot;
 import org.deegree.commons.utils.math.VectorUtils;
 import org.deegree.commons.utils.math.Vectors3f;
-import org.deegree.model.geometry.Envelope;
-import org.deegree.model.geometry.primitive.Point;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.primitive.Point;
 import org.deegree.rendering.r3d.ViewParams;
 
 /**

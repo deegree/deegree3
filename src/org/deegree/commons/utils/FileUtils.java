@@ -103,8 +103,8 @@ public class FileUtils {
      * A helper method which will try to load the given configuration file (name) from the root directory before trying
      * to load it from the package of the given configuration class. Consider following example:
      * <p>
-     * The org.deegree.model.geometry.GeometryFactory wants to load the File geometry_config.xml located in
-     * org.deegree.model.geometry.configuration (hence the filename will be <i>configuration/geometry_config.xml</i>)<br />.
+     * The org.deegree.geometry.GeometryFactory wants to load the File geometry_config.xml located in
+     * org.deegree.geometry.configuration (hence the filename will be <i>configuration/geometry_config.xml</i>)<br />.
      * This method will first try to read geometry_config.xml (<b>without</b> the 'configuration' directory from the
      * given fileName) from the root directory '/' (e.g. WEB-INF/classes in a serlvet environment)<br />
      * If this was unsuccessful this method will try to load the file from the given packageName with the relative

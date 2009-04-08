@@ -52,7 +52,7 @@ import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.deegree.model.styling.components.Mark;
+import org.deegree.rendering.r2d.styling.components.Mark;
 
 /**
  * <code>RenderHelper</code>

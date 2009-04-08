@@ -47,8 +47,8 @@ import java.io.Serializable;
 
 import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.deegree.commons.utils.math.Vectors3d;
-import org.deegree.model.geometry.Envelope;
-import org.deegree.model.geometry.primitive.Point;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.primitive.Point;
 import org.deegree.rendering.r3d.opengl.rendering.managers.Positionable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -38,14 +38,14 @@
 
 package org.deegree.commons.utils;
 
-import static org.deegree.model.crs.coordinatesystems.GeographicCRS.WGS84;
+import static org.deegree.crs.coordinatesystems.GeographicCRS.WGS84;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import org.deegree.model.crs.components.Unit;
-import org.deegree.model.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.model.crs.exceptions.TransformationException;
-import org.deegree.model.geometry.Envelope;
-import org.deegree.model.geometry.GeometryTransformer;
+import org.deegree.crs.components.Unit;
+import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryTransformer;
 import org.slf4j.Logger;
 
 /**
