@@ -63,13 +63,9 @@ import org.slf4j.LoggerFactory;
  * 
  */
 @RunWith(Suite.class)
-@SuiteClasses( { org.deegree.commons.filter.Filter110XMLAdapterTest.class,
-                org.deegree.commons.utils.ArrayToolsTest.class, org.deegree.commons.utils.CollectionUtilsTest.class,
-                org.deegree.commons.utils.FileUtilsTest.class, org.deegree.commons.utils.StringToolsTest.class,
-                org.deegree.commons.utils.math.MathUtilsTest.class, org.deegree.commons.utils.time.DateUtilsTest.class,
-                org.deegree.commons.xml.XMLAdapterTest.class, org.deegree.commons.xml.schema.XSModelAnalyzerTest.class,
-                org.deegree.coverage.raster.RasterEnvelopeTest.class, org.deegree.crs.components.UnitTest.class,
-                org.deegree.crs.configuration.deegree.DatabaseCRSProviderTest.class,
+@SuiteClasses( { org.deegree.commons.utils.time.DateUtilsTest.class, org.deegree.coverage.raster.GeoTIFFTest.class,
+                org.deegree.coverage.raster.RasterEnvelopeTest.class,
+                org.deegree.coverage.raster.WorldFileAccessTest.class, org.deegree.crs.components.UnitTest.class,
                 org.deegree.crs.configuration.deegree.DeegreeCRSProviderTest.class,
                 org.deegree.crs.configuration.deegree.TransformationAccuracyTest.class,
                 org.deegree.crs.configuration.gml.GMLCRSProviderTest.class,
@@ -79,22 +75,8 @@ import org.slf4j.LoggerFactory;
                 org.deegree.crs.projections.azimuthal.StereographicTest.class,
                 org.deegree.crs.projections.conic.LambertConformalConicTest.class,
                 org.deegree.crs.projections.cylindric.TransverseMercatorTest.class,
-                org.deegree.feature.FilterEvaluationTest.class,
-                org.deegree.feature.generic.DeegreeObjectXMLAdapterTest.class,
-                org.deegree.feature.generic.implementation.schema.DeegreeObjectTypeTest.class,
-                org.deegree.feature.generic.xsd.ApplicationSchemaXSDAdapterTest.class,
-                org.deegree.feature.gml.GML311CurveSegmentParserTest.class,
-                org.deegree.feature.gml.GML311GeometryParserTest.class,
-                org.deegree.feature.gml.GML311SurfacePatchParserTest.class,
-                org.deegree.feature.gml.GMLFeatureParserTest.class,
-                org.deegree.feature.gml.schema.GMLApplicationSchemaXSDAdapterTest.class,
-                org.deegree.feature.gml.validation.GML311GeometryValidatorTest.class,
-                org.deegree.feature.xpath.FeatureXPathTest.class, org.deegree.geometry.GeometryTest.class,
-                org.deegree.geometry.jtswrapper.JTSWrapperEnvelopeTest.class,
-                org.deegree.geometry.jtswrapper.JTSWrapperPointTest.class,
-                org.deegree.geometry.linearization.CurveLinearizerTest.class,
-                org.deegree.geometry.validation.GeometryValidatorTest.class,
-                org.deegree.rendering.r2d.Java2DRenderingTest.class })
+                org.deegree.geometry.GeometryTest.class, org.deegree.geometry.jtswrapper.JTSWrapperEnvelopeTest.class,
+                org.deegree.geometry.jtswrapper.JTSWrapperPointTest.class })
 public class CommonsTestSuite {
 
     private static final int DOT_CLASS_LENGTH = ".class".length();
