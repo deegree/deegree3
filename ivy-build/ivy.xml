@@ -20,7 +20,7 @@
     <dependency org="jai" name="jai_core" rev="" transitive="false" conf="${module.name}-build" />
 
     <!-- Needed for various calculations on points -->
-    <dependency org="java3d" name="vecmath" rev="1.3.1" conf="${module.name}-build" />
+    <dependency org="java3d" name="vecmath" rev="1.5.2" conf="${module.name}-build" />
 
     <!--  The geometry package builds on jts (for now) -->
     <dependency org="jts" name="jts" rev="1.8" conf="${module.name}-build" />
