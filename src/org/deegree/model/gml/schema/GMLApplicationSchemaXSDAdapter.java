@@ -171,11 +171,11 @@ public class GMLApplicationSchemaXSDAdapter {
                 XSModelGroup modelGroup = (XSModelGroup) term;
                 switch ( modelGroup.getCompositor() ) {
                 case XSModelGroup.COMPOSITOR_ALL: {
-                    LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
+                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
+                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_SEQUENCE: {
@@ -191,7 +191,7 @@ public class GMLApplicationSchemaXSDAdapter {
                             pts.add( pt );
                         }
                         case XSConstants.WILDCARD: {
-                            LOG.warn( "Unhandled particle: WILDCARD" );
+                            LOG.debug( "Unhandled particle: WILDCARD" );
                             break;
                         }
                         case XSConstants.MODEL_GROUP: {
@@ -210,11 +210,11 @@ public class GMLApplicationSchemaXSDAdapter {
                 break;
             }
             case XSConstants.WILDCARD: {
-                LOG.warn( "Unhandled particle: WILDCARD" );
+                LOG.debug( "Unhandled particle: WILDCARD" );
                 break;
             }
             case XSConstants.ELEMENT_DECLARATION: {
-                LOG.warn( "Unhandled particle: ELEMENT_DECLARATION" );
+                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
                 break;
             }
             default: {
@@ -225,11 +225,11 @@ public class GMLApplicationSchemaXSDAdapter {
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_EMPTY: {
-            LOG.warn( "Unhandled content type: EMPTY" );
+            LOG.debug( "Unhandled content type: EMPTY" );
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_MIXED: {
-            LOG.warn( "Unhandled content type: MIXED" );
+            LOG.debug( "Unhandled content type: MIXED" );
             break;
         }
         case XSComplexTypeDefinition.CONTENTTYPE_SIMPLE: {
@@ -255,11 +255,11 @@ public class GMLApplicationSchemaXSDAdapter {
         LOG.debug( " - processing model group..." );
         switch ( modelGroup.getCompositor() ) {
         case XSModelGroup.COMPOSITOR_ALL: {
-            LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
+            LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
             break;
         }
         case XSModelGroup.COMPOSITOR_CHOICE: {
-            LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
+            LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
             break;
         }
         case XSModelGroup.COMPOSITOR_SEQUENCE: {
@@ -276,7 +276,7 @@ public class GMLApplicationSchemaXSDAdapter {
                     break;
                 }
                 case XSConstants.WILDCARD: {
-                    LOG.warn( "Unhandled particle: WILDCARD" );
+                    LOG.debug( "Unhandled particle: WILDCARD" );
                     break;
                 }
                 case XSConstants.MODEL_GROUP: {
@@ -322,21 +322,21 @@ public class GMLApplicationSchemaXSDAdapter {
         if ( pt == null ) {
             pt = buildGeometryPropertyType( elementDecl, typeDef, minOccurs, maxOccurs );
             if ( pt == null ) {
-                if (typeDef.getName() != null) {
+                if ( typeDef.getName() != null ) {
                     // TODO improve detection of property types
                     QName typeName = new QName( typeDef.getNamespace(), typeDef.getName() );
                     if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}CodeType" ) ) ) {
-                        LOG.debug ("Identified a CodePropertyType.");
+                        LOG.debug( "Identified a CodePropertyType." );
                         pt = new CodePropertyType( ptName, minOccurs, maxOccurs );
                     } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}BoundingShapeType" ) ) ) {
-                        LOG.debug ("Identified a EnvelopePropertyType.");
-                        pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs );                   
+                        LOG.debug( "Identified a EnvelopePropertyType." );
+                        pt = new EnvelopePropertyType( ptName, minOccurs, maxOccurs );
                     } else if ( typeName.equals( QName.valueOf( "{http://www.opengis.net/gml}LengthType" ) ) ) {
-                        LOG.debug ("Identified a LengthPropertyType.");
+                        LOG.debug( "Identified a LengthPropertyType." );
                         pt = new MeasurePropertyType( ptName, minOccurs, maxOccurs );
-                        
+
                     } else {
-                        pt = new CustomComplexPropertyType( ptName, minOccurs, maxOccurs, typeName );                    
+                        pt = new CustomComplexPropertyType( ptName, minOccurs, maxOccurs, typeName );
                     }
                 } else {
                     pt = new CustomComplexPropertyType( ptName, minOccurs, maxOccurs, null );
@@ -370,11 +370,11 @@ public class GMLApplicationSchemaXSDAdapter {
                 XSModelGroup modelGroup = (XSModelGroup) term;
                 switch ( modelGroup.getCompositor() ) {
                 case XSModelGroup.COMPOSITOR_ALL: {
-                    LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
+                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
+                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_SEQUENCE: {
@@ -399,11 +399,11 @@ public class GMLApplicationSchemaXSDAdapter {
                         }
                     }
                     case XSConstants.WILDCARD: {
-                        LOG.warn( "Unhandled particle: WILDCARD" );
+                        LOG.debug( "Unhandled particle: WILDCARD" );
                         break;
                     }
                     case XSConstants.MODEL_GROUP: {
-                        LOG.warn( "Unhandled particle: MODEL_GROUP" );
+                        LOG.debug( "Unhandled particle: MODEL_GROUP" );
                         break;
                     }
                     }
@@ -416,11 +416,11 @@ public class GMLApplicationSchemaXSDAdapter {
                 break;
             }
             case XSConstants.WILDCARD: {
-                LOG.warn( "Unhandled particle: WILDCARD" );
+                LOG.debug( "Unhandled particle: WILDCARD" );
                 break;
             }
             case XSConstants.ELEMENT_DECLARATION: {
-                LOG.warn( "Unhandled particle: ELEMENT_DECLARATION" );
+                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
                 break;
             }
             default: {
@@ -459,11 +459,11 @@ public class GMLApplicationSchemaXSDAdapter {
                 XSModelGroup modelGroup = (XSModelGroup) term;
                 switch ( modelGroup.getCompositor() ) {
                 case XSModelGroup.COMPOSITOR_ALL: {
-                    LOG.warn( "Unhandled model group: COMPOSITOR_ALL" );
+                    LOG.debug( "Unhandled model group: COMPOSITOR_ALL" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_CHOICE: {
-                    LOG.warn( "Unhandled model group: COMPOSITOR_CHOICE" );
+                    LOG.debug( "Unhandled model group: COMPOSITOR_CHOICE" );
                     break;
                 }
                 case XSModelGroup.COMPOSITOR_SEQUENCE: {
@@ -486,11 +486,11 @@ public class GMLApplicationSchemaXSDAdapter {
                         }
                     }
                     case XSConstants.WILDCARD: {
-                        LOG.warn( "Unhandled particle: WILDCARD" );
+                        LOG.debug( "Unhandled particle: WILDCARD" );
                         break;
                     }
                     case XSConstants.MODEL_GROUP: {
-                        LOG.warn( "Unhandled particle: MODEL_GROUP" );
+                        LOG.debug( "Unhandled particle: MODEL_GROUP" );
                         break;
                     }
                     }
@@ -503,11 +503,11 @@ public class GMLApplicationSchemaXSDAdapter {
                 break;
             }
             case XSConstants.WILDCARD: {
-                LOG.warn( "Unhandled particle: WILDCARD" );
+                LOG.debug( "Unhandled particle: WILDCARD" );
                 break;
             }
             case XSConstants.ELEMENT_DECLARATION: {
-                LOG.warn( "Unhandled particle: ELEMENT_DECLARATION" );
+                LOG.debug( "Unhandled particle: ELEMENT_DECLARATION" );
                 break;
             }
             default: {
