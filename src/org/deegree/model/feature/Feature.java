@@ -50,6 +50,7 @@ import javax.xml.namespace.QName;
 import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.filter.MatchableObject;
 import org.deegree.model.geometry.Envelope;
+import org.deegree.model.geometry.Geometry;
 import org.deegree.model.identifier.Identifiable;
 
 /**
@@ -160,6 +161,13 @@ public interface Feature extends Identifiable<String>, MatchableObject {
      */
     public Property<?> getProperty( QName propName );
 
+    /**
+     * Returns all geometry-valued properties in order.
+     * 
+     * @return all geometry properties
+     */
+    public Property<Geometry>[] getGeometryProperties();    
+    
     /**
      * Returns the envelope of the feature.
      * 

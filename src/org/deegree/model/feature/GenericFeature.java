@@ -51,6 +51,7 @@ import javax.xml.namespace.QName;
 import org.deegree.model.feature.types.FeatureType;
 import org.deegree.model.feature.types.GenericFeatureType;
 import org.deegree.model.feature.types.property.PropertyType;
+import org.deegree.model.geometry.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -183,4 +184,16 @@ public class GenericFeature extends AbstractFeature {
         }
         return propValues.toArray( new Object[propValues.size()] );
     }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public Property<Geometry>[] getGeometryProperties() {
+        List<Property<Geometry>> geoProps = new ArrayList<Property<Geometry>>(props.size());
+        for ( Property<?> property : props ) {
+            if ( property.getValue() instanceof Geometry) {
+                geoProps.add( (Property<Geometry>) property );
+            }
+        }
+        return geoProps.toArray( new Property[geoProps.size()] );
+    }    
 }

@@ -148,4 +148,9 @@ public class GenericSimpleFeature extends AbstractFeature implements SimpleFeatu
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public Property<Geometry>[] getGeometryProperties() {
+        return null;
+    }
 }
