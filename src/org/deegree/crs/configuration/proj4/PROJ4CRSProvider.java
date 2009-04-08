@@ -72,7 +72,7 @@ import org.deegree.crs.transformations.Transformation;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.deegree.model.i18n.Messages;
+import org.deegree.crs.i18n.Messages;
 
 /**
  * The <code>PROJ4CRSProvider</code> class is capable of parsing the nad/epsg file and use it as a backend for crs's.

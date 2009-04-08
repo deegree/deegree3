@@ -47,7 +47,7 @@ import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
-import org.deegree.model.i18n.Messages;
+import org.deegree.crs.i18n.Messages;
 
 /**
  * The <code>GeographicCoordinateSystem</code> (in epsg aka Geodetic CRS) is a two dimensional crs with axis of

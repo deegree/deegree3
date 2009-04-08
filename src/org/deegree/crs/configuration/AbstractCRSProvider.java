@@ -68,7 +68,7 @@ import org.deegree.crs.transformations.helmert.Helmert;
 import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.deegree.model.i18n.Messages;
+import org.deegree.crs.i18n.Messages;
 
 /**
  * add class documentation here.

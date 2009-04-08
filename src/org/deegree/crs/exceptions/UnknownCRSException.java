@@ -42,7 +42,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.crs.exceptions;
 
-import org.deegree.model.i18n.Messages;
+import org.deegree.crs.i18n.Messages;
 
 /**
  * 

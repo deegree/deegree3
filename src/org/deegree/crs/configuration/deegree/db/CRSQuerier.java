@@ -75,7 +75,7 @@ import org.deegree.crs.projections.azimuthal.StereographicAzimuthal;
 import org.deegree.crs.projections.conic.LambertConformalConic;
 import org.deegree.crs.projections.cylindric.TransverseMercator;
 import org.deegree.crs.transformations.helmert.Helmert;
-import org.deegree.model.i18n.Messages;
+import org.deegree.crs.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -41,7 +41,7 @@ package org.deegree.crs;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.deegree.model.i18n.Messages;
+import org.deegree.crs.i18n.Messages;
 
 /**
  * The <code>CRSIdentifiable</code> class can be used to identify any crs, Ellipsoid, Geodetic Datum and Prime Meridian

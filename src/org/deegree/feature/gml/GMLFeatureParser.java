@@ -67,6 +67,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
 import org.deegree.feature.gml.GMLIdContext.XLinkProperty;
+import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -80,7 +81,6 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
-import org.deegree.model.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -57,7 +57,7 @@ import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.CRSConfigurationException;
 import org.deegree.crs.projections.Projection;
 import org.deegree.crs.transformations.Transformation;
-import org.deegree.model.i18n.Messages;
+import org.deegree.crs.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

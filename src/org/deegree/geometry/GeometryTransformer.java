@@ -51,6 +51,7 @@ import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.crs.transformations.Transformation;
+import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiSurface;
@@ -63,7 +64,6 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
-import org.deegree.model.i18n.Messages;
 
 /**
  * class for transforming deegree geometries to new coordinate reference systems.

@@ -47,7 +47,7 @@ import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.transformations.coordinate.ConcatenatedTransform;
-import org.deegree.model.i18n.Messages;
+import org.deegree.crs.i18n.Messages;
 
 /**
  * The <code>Transformation</code> class supplies the most basic method interface for any given transformation.

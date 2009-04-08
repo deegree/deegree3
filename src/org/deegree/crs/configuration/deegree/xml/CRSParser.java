@@ -79,7 +79,7 @@ import org.deegree.crs.transformations.Transformation;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.deegree.crs.transformations.polynomial.LeastSquareApproximation;
 import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
-import org.deegree.model.i18n.Messages;
+import org.deegree.crs.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -54,7 +54,7 @@ import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.EPSGCode;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
-import org.deegree.model.i18n.Messages;
+import org.deegree.crs.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
