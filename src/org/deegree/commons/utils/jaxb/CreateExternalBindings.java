@@ -293,16 +293,6 @@ public class CreateExternalBindings {
                 break;
             }
         }
-        // new CreateExternalBindings().createExternalBindingsFile(
-        // "/home/rutger/workspace/d3_dataaccess/src/org/deegree/dataaccess/configuration/",
-        // "/home/rutger/workspace/d3_dataaccess/resources/schema/dataaccess/0.1.0/bindings/external_datasource_bindings.xjb",
-        // "http://www.deegree.org/datasource",
-        // "../all_datasources.xsd" );
-        // new CreateExternalBindings().createExternalBindingsFile(
-        // "/home/rutger/workspace/d3_services/src/org/deegree/controller/configuration/",
-        // "/home/rutger/workspace/d3_services/resources/schema/webservices/0.1.0/bindings/external_services_bindings.xjb",
-        // "http://www.deegree.org/webservices",
-        // "../services_metadata.xsd" );
     }
 
     /**

@@ -56,6 +56,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
+import org.apache.xerces.xs.XSObjectList;
 import org.deegree.commons.types.Measure;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -233,33 +234,31 @@ public class GMLFeatureParser extends XMLAdapter {
 
     private boolean isElementSubstitutableForProperty( QName elemName, PropertyType pt ) {
         LOG.debug( "Checking if '" + elemName + "' is a valid substitution for '" + pt.getName() + "'" );
+       
         QName ptName = pt.getName();
         if ( elemName.equals( ptName ) ) {
             LOG.debug( "Yep. Names match." );
             return true;
         }
 
-        // TODO is this only possible for top-level element declarations (I think so...)
         XSElementDeclaration elementDecl = xsModel.getElementDeclaration( elemName.getLocalPart(),
-                                                                          elemName.getNamespaceURI() );
-        if ( elementDecl == null ) {
+                                                                          elemName.getNamespaceURI() );        
+        
+        XSElementDeclaration propElementDecl = xsModel.getElementDeclaration( ptName.getLocalPart(),
+                                                                          ptName.getNamespaceURI() );
+       
+        if ( elementDecl == null || propElementDecl == null) {
             LOG.debug( "Not defined as a top level element." );
             return false;
         }
 
-        XSElementDeclaration substitutionGroup = elementDecl.getSubstitutionGroupAffiliation();
-        while ( substitutionGroup != null ) {
-            QName substGroupName = new QName( substitutionGroup.getNamespace(), substitutionGroup.getName() );
-            if ( substGroupName.equals( ptName ) ) {
+        XSObjectList list = xsModel.getSubstitutionGroup( propElementDecl );      
+        for (int i = 0; i < list.getLength(); i++) {
+            if (list.item( i ).equals( elementDecl )) {
                 LOG.debug( "Yep. In substitution group." );
                 return true;
             }
-
-            XSElementDeclaration substitutionGroup2 = elementDecl.getSubstitutionGroupAffiliation();
-            if ( substitutionGroup2 == substitutionGroup ) {
-                substitutionGroup = null;
-            }
-        }
+        }        
 
         return false;
     }
