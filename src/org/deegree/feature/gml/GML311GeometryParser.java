@@ -147,7 +147,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     // local names of all concrete elements substitutable for "gml:_ImplicitGeometry"
     private static final Set<String> implictGeometryElements = new HashSet<String>();
 
-    // local names of all concrete elements substitutable for "gml:_GeometricComplex"
+    // local names of "gml:GeometricComplex", "gml:CompositeCurve", "gml:CompositeSurface" and  "gml:CompositeSolid" 
     private static final Set<String> complexElements = new HashSet<String>();
 
     static {
@@ -432,10 +432,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws UnknownCRSException 
      */
-    public CompositeGeometry<? extends GeometricPrimitive> parseAbstractGeometricComplex( String defaultSrsName )
+    public Geometry parseAbstractGeometricComplex( String defaultSrsName )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
-        CompositeGeometry<? extends GeometricPrimitive> geometry = null;
+        Geometry geometry = null;
 
         if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
             String msg = "Invalid gml:_GeometricComplex element: " + xmlStream.getName()
