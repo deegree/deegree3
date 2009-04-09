@@ -66,4 +66,26 @@
 
        <target name="bind-datasource-configuration" depends="bind-ds, publish" description="Bind the dataaccess configuration files and publish the result." />
 
+    <target name="create-tables" description="run SQL scripts that create tables for the database backend">
+	<sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="jdbc:derby:src/META-INF/deegreeCRS" userid="" password="">
+ 	 <classpath>
+		<pathelement location="lib/derby/derby-10.4.2.0.jar"/>
+	 </classpath>
+	  <transaction  src="scripts/database/1.Transformations.SQL"/>
+	  <transaction  src="scripts/database/2.Datums.SQL"/>
+	  <transaction  src="scripts/database/3.Projections.SQL"/>
+	  <transaction  src="scripts/database/4.CoordinateSystems.SQL"/>
+	  <transaction  src="scripts/database/5.Identifiables.SQL"/>
+	</sql>
+    </target>
+
+    <target name="drop-tables" description="run SQL script that drops all tables in the database backend">
+	<sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="jdbc:derby:src/META-INF/deegreeCRS" userid="" password="">
+	<classpath>
+		<pathelement location="lib/derby/derby-10.4.2.0.jar"/>
+	</classpath>
+	  <transaction  src="scripts/database/0.drop-all-in-order.SQL"/>
+	</sql>
+    </target>
+
 </project>
