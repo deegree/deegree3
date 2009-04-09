@@ -66,6 +66,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
+import org.deegree.feature.generic.GenericCustomPropertyParser;
 import org.deegree.feature.gml.GMLIdContext.XLinkProperty;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.ApplicationSchema;
@@ -311,9 +312,7 @@ public class GMLFeatureParser extends XMLAdapter {
                     double number = xmlStream.getElementTextAsDouble();
                     value = new Measure( number, uom );
                 } else {                    
-                    LOG.debug( "- skipping property '" + xmlStream.getName() + "' -- property parsing for type '"
-                               + propDecl.getXSDValueType() + "' is not implemented yet" );
-                    xmlStream.skipElement();
+                    value = new GenericCustomPropertyParser().parse( xmlStream );
                 }
                 property = new GenericProperty<Object>( propDecl, propName, value );                
             } else if ( propDecl instanceof GeometryPropertyType ) {
@@ -359,7 +358,6 @@ public class GMLFeatureParser extends XMLAdapter {
             property = new GenericProperty<Object>( propDecl, propName, value );
         }
 
-        LOG.debug ("HUHU: " + property.getName());
         LOG.debug( " - parsing property (end): " + xmlStream.getCurrentEventInfo() );
         return property;
     }

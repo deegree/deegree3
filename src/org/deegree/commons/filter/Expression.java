@@ -43,7 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.filter;
 
-import org.deegree.feature.generic.DeegreeObject;
 
 /**
  * TODO add documentation here

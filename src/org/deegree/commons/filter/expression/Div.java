@@ -46,7 +46,6 @@ package org.deegree.commons.filter.expression;
 import org.deegree.commons.filter.Expression;
 import org.deegree.commons.filter.FilterEvaluationException;
 import org.deegree.commons.filter.MatchableObject;
-import org.deegree.feature.generic.DeegreeObject;
 
 /**
  * TODO add documentation here
