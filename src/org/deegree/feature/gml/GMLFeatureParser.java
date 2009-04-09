@@ -285,7 +285,7 @@ public class GMLFeatureParser extends XMLAdapter {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Property<?> property = null;
-        QName propertyName = xmlStream.getName();
+        QName propName = xmlStream.getName();
         LOG.debug( "- parsing property (begin): " + xmlStream.getCurrentEventInfo() );
         LOG.debug( "- property declaration: " + propDecl );
 
@@ -293,7 +293,7 @@ public class GMLFeatureParser extends XMLAdapter {
 
         if ( parser == null ) {
             if ( propDecl instanceof SimplePropertyType ) {
-                property = new GenericProperty<String>( propDecl, xmlStream.getElementText().trim() );
+                property = new GenericProperty<String>( propDecl, propName, xmlStream.getElementText().trim() );
             } else if ( propDecl instanceof CustomComplexPropertyType ) {
                 Object value = null;
                 if ( propDecl instanceof EnvelopePropertyType ) {
@@ -310,18 +310,18 @@ public class GMLFeatureParser extends XMLAdapter {
                     String uom = xmlStream.getAttributeValue( null, "uom" );
                     double number = xmlStream.getElementTextAsDouble();
                     value = new Measure( number, uom );
-                } else {
-                    LOG.trace( "- skipping property '" + xmlStream.getName() + "' -- property parsing for type '"
+                } else {                    
+                    LOG.debug( "- skipping property '" + xmlStream.getName() + "' -- property parsing for type '"
                                + propDecl.getXSDValueType() + "' is not implemented yet" );
                     xmlStream.skipElement();
                 }
-                property = new GenericProperty<Object>( propDecl, value );
+                property = new GenericProperty<Object>( propDecl, propName, value );                
             } else if ( propDecl instanceof GeometryPropertyType ) {
                 xmlStream.nextTag();
                 // TODO don't create a new instance every time
                 GML311GeometryParser geometryParser = new GML311GeometryParser( geomFac, xmlStream );
                 Geometry geometry = geometryParser.parseGeometry( srsName );
-                property = new GenericProperty<Geometry>( propDecl, geometry );
+                property = new GenericProperty<Geometry>( propDecl, propName, geometry );
                 xmlStream.nextTag();
             } else if ( propDecl instanceof FeaturePropertyType ) {
                 String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
@@ -338,27 +338,28 @@ public class GMLFeatureParser extends XMLAdapter {
                 } else {
                     // inline feature
                     if ( xmlStream.nextTag() != START_ELEMENT ) {
-                        String msg = Messages.getMessage( "ERROR_INVALID_FEATURE_PROPERTY", propertyName );
+                        String msg = Messages.getMessage( "ERROR_INVALID_FEATURE_PROPERTY", propName );
                         throw new XMLParsingException( xmlStream, msg );
                     }
                     FeatureType expectedFt = ( (FeaturePropertyType) propDecl ).getValueFt();
                     FeatureType presentFt = lookupFeatureType( xmlStream, xmlStream.getName() );
                     if ( !schema.isValidSubstitution( expectedFt, presentFt ) ) {
                         String msg = Messages.getMessage( "ERROR_PROPERTY_WRONG_FEATURE_TYPE", expectedFt.getName(),
-                                                          propertyName, presentFt.getName() );
+                                                          propName, presentFt.getName() );
                         throw new XMLParsingException( xmlStream, msg );
                     }
                     Feature subFeature = parseFeature( xmlStream, srsName, idContext );
-                    property = new GenericProperty<Feature>( propDecl, subFeature );
+                    property = new GenericProperty<Feature>( propDecl, propName, subFeature );
                     xmlStream.skipElement();
                 }
             }
         } else {
             LOG.trace( "************ Parsing property using custom parser." );
             Object value = parser.parse( xmlStream );
-            property = new GenericProperty<Object>( propDecl, value );
+            property = new GenericProperty<Object>( propDecl, propName, value );
         }
 
+        LOG.debug ("HUHU: " + property.getName());
         LOG.debug( " - parsing property (end): " + xmlStream.getCurrentEventInfo() );
         return property;
     }

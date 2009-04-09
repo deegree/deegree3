@@ -58,9 +58,6 @@ import org.jaxen.JaxenException;
  * <pre>
  * XPath path = new FeatureXPath( &quot;a/b/c&quot; );
  * 
- * List results = path.selectNodes( feature );
- * </pre>
- * 
  * @see BaseXPath
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>

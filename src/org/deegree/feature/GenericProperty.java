@@ -61,20 +61,39 @@ public class GenericProperty<T> implements Property<T> {
 
     private PropertyType declaration;
 
+    private QName name;
+
     private T value;
 
     /**
+     * Creates a new {@link GenericProperty} instance.
+     * 
+     * @param declaration
+     *            type information
+     * @param name
+     *            name of the property (does not necessarily match the name in the type information)
+     * @param value
+     *            property value
+     */
+    public GenericProperty( PropertyType declaration, QName name, T value ) {
+        this.declaration = declaration;
+        this.name = name;
+        this.value = value;
+    }
+
+    /**
+     * Creates a new {@link GenericProperty} instance.
+     * 
      * @param declaration
      * @param value
      */
     public GenericProperty( PropertyType declaration, T value ) {
-        this.declaration = declaration;
-        this.value = value;
+        this( declaration, declaration.getName(), value );
     }
 
     @Override
     public QName getName() {
-        return declaration.getName();
+        return name;
     }
 
     @Override
@@ -91,5 +110,4 @@ public class GenericProperty<T> implements Property<T> {
     public String toString() {
         return value == null ? "null" : value.toString();
     }
-
 }

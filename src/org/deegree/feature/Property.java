@@ -54,8 +54,9 @@ import org.deegree.feature.types.property.PropertyType;
  * 
  * @see Feature
  * 
- * @param <T> The class of the <code>Property</code>'s value. 
- *
+ * @param <T>
+ *            The class of the <code>Property</code>'s value.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
  * 
@@ -66,19 +67,22 @@ public interface Property<T> {
     /**
      * Returns the name of the property.
      * <p>
-     * In a canonical GML representation, this corresponds to the property's element name.
+     * In a canonical GML representation, this corresponds to the property's element name in the declaration. However,
+     * there are some GML application schemas (e.g. CityGML) that define the property using an abstract element and
+     * provide multiple concrete substitutable elements. In these cases, the name of a property is not equal to the name
+     * of the property type.
      * </p>
      * 
      * @return the name of the property
-     */    
+     */
     public QName getName();
 
     /**
      * Returns the type information for this property.
      * 
      * @return the type information
-     */    
-    public PropertyType getType();    
+     */
+    public PropertyType getType();
 
     /**
      * Returns the value of this property.

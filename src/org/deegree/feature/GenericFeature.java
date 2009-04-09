@@ -122,10 +122,11 @@ public class GenericFeature extends AbstractFeature {
         int num = 0;
         for ( int i = 0; i < props.size(); i++ ) {
             Property<?> prop = props.get( i );
+            // TODO this is not sufficient (prop name must not be equal to prop type name)
             if ( prop.getName().equals( propName ) ) {
                 if ( num++ == occurrence ) {
                     PropertyType pt = prop.getType();
-                    props.set( i, new GenericProperty<Object>( pt, value ) );
+                    props.set( i, new GenericProperty<Object>( pt, propName, value ) );
                     LOG.debug( "Yep." );
                     break;
                 }
