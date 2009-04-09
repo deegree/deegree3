@@ -37,7 +37,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.geometry.composite;
 
-import org.deegree.geometry.Geometry;
+import java.util.List;
+
 import org.deegree.geometry.primitive.Curve;
 
 /**
@@ -50,15 +51,7 @@ import org.deegree.geometry.primitive.Curve;
  * 
  * @version. $Revision$, $Date$
  */
-public interface CompositeCurve extends Curve, CompositeGeometry<Curve> {
-
-    /**
-     * Must return {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}.
-     * 
-     * @return {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}
-     */
-    @Override
-    public GeometryType getGeometryType();
+public interface CompositeCurve extends Curve,List<Curve> {
 
     /**
      * Must always return {@link Curve.CurveType#CompositeCurve}.

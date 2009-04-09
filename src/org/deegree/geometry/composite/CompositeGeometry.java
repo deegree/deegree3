@@ -59,11 +59,9 @@ import org.deegree.geometry.primitive.GeometricPrimitive;
 public interface CompositeGeometry<T extends GeometricPrimitive> extends Geometry, List<T> {
 
     /**
-     * Must either return {@link Geometry.GeometryType#COMPOSITE_GEOMETRY} or
-     * {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}.
+     * Returns {@link Geometry.GeometryType#COMPOSITE_GEOMETRY}.
      * 
-     * @return either {@link Geometry.GeometryType#COMPOSITE_GEOMETRY} or
-     *         {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}
+     * @return {@link Geometry.GeometryType#COMPOSITE_GEOMETRY}
      */
     @Override
     public GeometryType getGeometryType();

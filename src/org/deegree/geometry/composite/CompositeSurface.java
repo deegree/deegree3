@@ -37,7 +37,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.geometry.composite;
 
-import org.deegree.geometry.Geometry;
+import java.util.List;
+
 import org.deegree.geometry.primitive.Surface;
 
 /**
@@ -50,16 +51,8 @@ import org.deegree.geometry.primitive.Surface;
  * 
  * @version. $Revision$, $Date$
  */
-public interface CompositeSurface extends Surface, CompositeGeometry<Surface> {
-
-    /**
-     * Must return {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}.
-     * 
-     * @return {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}
-     */
-    @Override
-    public GeometryType getGeometryType();
-    
+public interface CompositeSurface extends Surface, List<Surface> {
+   
     /**
      * Must always return {@link Surface.SurfaceType#CompositeSurface}.
      * 
