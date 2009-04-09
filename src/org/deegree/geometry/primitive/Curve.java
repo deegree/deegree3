@@ -70,6 +70,8 @@ public interface Curve extends GeometricPrimitive {
         OrientableCurve,
         /** Curve composited from multiple base curves. */
         CompositeCurve,
+        /** A Ring consists of a sequence of curves connected in a cycle */
+        Ring
     }
 
     /**

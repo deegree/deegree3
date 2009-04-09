@@ -78,7 +78,7 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
 
     @Override
     public CurveType getCurveType() {
-        return CurveType.LineString;
+        return CurveType.Ring;
     }        
     
     @Override

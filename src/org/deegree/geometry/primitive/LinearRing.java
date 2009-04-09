@@ -52,7 +52,7 @@ package org.deegree.geometry.primitive;
  *
  * @version $Revision:$, $Date:$
  */
-public interface LinearRing extends Ring, LineString {
+public interface LinearRing extends Ring {
 
     /**
      * Must always return {@link GeometricPrimitive.PrimitiveType#Curve}.
@@ -61,4 +61,11 @@ public interface LinearRing extends Ring, LineString {
      */
     @Override
     public PrimitiveType getPrimitiveType();
+    
+    /**
+     * 
+     * @return all coordinated as an array. The array will be constructed an concatenation of the arrays of the
+     *         segments points. For a three dimensional case it looks like: [x0,y0,z0,x1,y1,z1, ... ,xn,yn,zn]
+     */
+    public double[] getAsArray();    
 }

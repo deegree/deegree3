@@ -142,7 +142,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
 
     @Override
     public CurveType getCurveType() {
-        return CurveType.Curve;
+        return CurveType.Ring;
     }
 
     @Override
