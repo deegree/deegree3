@@ -57,14 +57,15 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
+import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Allows the lookup of GML objects by the value of their <code>gml:id</code> attribute.
  * <p>
- * This functionality is essential for resolving local xlink-references at the end of the parsing process of a GML
- * instance document.
+ * This functionality is essential for resolving local xlink-references (to {@link Feature} or {@link Geometry} objects)
+ * at the end of the parsing process of a GML instance document.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -104,7 +105,7 @@ public class GMLIdContext {
     /**
      * @throws XMLProcessingException
      */
-    public void resolveXLinks(ApplicationSchema schema)
+    public void resolveXLinks( ApplicationSchema schema )
                             throws XMLProcessingException {
         for ( XLinkProperty prop : xlinkProperties ) {
             LOG.debug( "Resolving xlink-property with reference to '" + prop.targetId + "'" );

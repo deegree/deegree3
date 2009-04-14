@@ -727,6 +727,18 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326"), envelope.getCoordinateSystem().getWrappedCRS() );
     }
 
+    @Test
+    public void parseXLinkMultiGeometry1()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+        XMLStreamReaderWrapper xmlReader = getParser( "XLinkMultiGeometry1.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
+        MultiGeometry geom = new GML311GeometryParser( geomFac, xmlReader ).parseMultiGeometry( null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326"), geom.getCoordinateSystem().getWrappedCRS() );
+    }    
+    
     private XMLStreamReaderWrapper getParser( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(

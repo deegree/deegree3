@@ -57,6 +57,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.types.Length;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
@@ -830,7 +831,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      */
     public Point parsePointProperty( CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
+
         Point point = null;
+        String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
+        LOG.info( "Found geometry reference: '" + href + "'");
+        
         if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
             // must be a 'gml:Point' element
             if ( !xmlStream.getLocalName().equals( "Point" ) ) {
