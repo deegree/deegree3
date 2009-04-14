@@ -56,6 +56,7 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.gml.GML311GeometryParser;
 import org.deegree.geometry.GeometryFactoryCreator;
@@ -127,7 +128,7 @@ public class GML311GeometryValidator extends XMLAdapter {
         ValidationEventRedirector eventRedirector = new ValidationEventRedirector( gmlErrorHandler, identifier );
         GeometryValidator geometryValidator = new GeometryValidator( eventRedirector );
         try {
-            geometryValidator.validateGeometry( geomParser.parseGeometry( "EPSG:28992" ) );
+            geometryValidator.validateGeometry( geomParser.parseGeometry( new CRS("EPSG:28992") ) );
         } catch ( XMLParsingException e ) {
             gmlErrorHandler.geometryParsingError( identifier, e );
         } catch ( XMLStreamException e ) {

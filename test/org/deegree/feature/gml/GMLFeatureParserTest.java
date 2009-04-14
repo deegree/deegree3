@@ -47,7 +47,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -63,6 +62,7 @@ import junit.framework.Assert;
 import org.deegree.commons.xml.FormattingXMLStreamWriter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -77,6 +77,7 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.geometry.Geometry;
 import org.junit.Test;
 
 /**
@@ -323,7 +324,7 @@ public class GMLFeatureParserTest {
         URL docURL = new URL ("file:///home/schneider/Desktop/Stadt-Ettenheim-LoD3_edited_v1.0.0.gml");
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
-        xmlReader.next();
+        xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
         
         long begin = System.currentTimeMillis();
@@ -331,12 +332,19 @@ public class GMLFeatureParserTest {
                                                                             new XMLStreamReaderWrapper(
                                                                                                         xmlReader,
                                                                                                         docURL.toString() ),
-                                                                            "EPSG:31466", idContext );
+                                                                            new CRS("EPSG:31466"), idContext );
 //        idContext.resolveXLinks();
 
         long elapsed = System.currentTimeMillis() - begin;
         System.out.println ("Parsing: " + elapsed + "[ms]");
         
         System.out.println( fc.size() );
+        Feature first = fc.iterator().next();
+        for (Property prop : first.getProperties()) {
+            System.out.println( prop.getName() + "="  +prop.getValue() );
+            if (prop.getValue() instanceof Geometry) {
+                System.out.println( ((Geometry)prop.getValue()).getCoordinateSystem() );    
+            }
+        }
     }    
 }

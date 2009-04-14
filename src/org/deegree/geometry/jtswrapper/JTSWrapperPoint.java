@@ -37,7 +37,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.geometry.jtswrapper;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.primitive.Point;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -62,7 +62,7 @@ public class JTSWrapperPoint extends JTSWrapperGeometry implements Point {
      * @param crs
      * @param pos
      */
-    public JTSWrapperPoint( String id, double precision, CoordinateSystem crs, double[] pos ) {
+    public JTSWrapperPoint( String id, double precision, CRS crs, double[] pos ) {
         super( id, precision, crs, pos.length );
         this.pos = pos;
         Coordinate coord;

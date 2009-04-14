@@ -51,7 +51,7 @@ import java.util.List;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
@@ -262,7 +262,7 @@ public class CurveLinearizer {
         double radius = Math.sqrt( dx * dx + dy * dy );
 
         double angleStep = createAngleStep( startAngle, endAngle, numPoints, isClockwise( p0, p1, p2 ) );
-        CoordinateSystem crs = p0.getCoordinateSystem();
+        CRS crs = p0.getCoordinateSystem();
         // ensure numerical stability for start point (= use original circle start point)
         interpolationPoints.add( p0 );
 

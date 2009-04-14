@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
 
@@ -533,7 +533,7 @@ public class AllocatedHeapMemory {
      * @param asReference
      * @return 0 or 256 bytes, this method should check all the references and components... not so trivial.
      */
-    public static long sizeOfCRS( CoordinateSystem coordinateSystem, boolean asReference ) {
+    public static long sizeOfCRS( CRS coordinateSystem, boolean asReference ) {
         long localSize = 0;
         if ( coordinateSystem != null ) {
             // Aargh, lots of stuff here:

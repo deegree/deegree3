@@ -44,9 +44,9 @@
 
 package org.deegree.geometry.standard.primitive;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.crs.CRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -55,8 +55,6 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.OrientableCurve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
-import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link OrientableCurve}.
@@ -70,7 +68,7 @@ public class DefaultOrientableCurve implements OrientableCurve {
 
     private String id;
 
-    private CoordinateSystem crs;
+    private CRS crs;
 
     private Curve baseCurve;
 
@@ -88,7 +86,7 @@ public class DefaultOrientableCurve implements OrientableCurve {
      * @param isReversed
      *            set to true, if the order of the base curve shall be reversed
      */
-    public DefaultOrientableCurve( String id, CoordinateSystem crs, Curve baseCurve, boolean isReversed ) {
+    public DefaultOrientableCurve( String id, CRS crs, Curve baseCurve, boolean isReversed ) {
         this.id = id;
         this.crs = crs;
         this.baseCurve = baseCurve;
@@ -101,7 +99,7 @@ public class DefaultOrientableCurve implements OrientableCurve {
     }
 
     @Override
-    public CoordinateSystem getCoordinateSystem() {
+    public CRS getCoordinateSystem() {
         return crs;
     }
 

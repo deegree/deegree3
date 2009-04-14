@@ -15,6 +15,7 @@ import org.deegree.commons.types.Length;
 import org.deegree.commons.types.Measure;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.CRS;
 import org.deegree.crs.CRSRegistry;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.CRSConfigurationException;
@@ -51,10 +52,10 @@ class GML311BaseParser {
         this.xmlStream = xmlStream;
     }
 
-    protected Point parseDirectPositionType( String defaultSrsName )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+    protected Point parseDirectPositionType( CRS defaultCRS )
+                            throws XMLParsingException, XMLStreamException {
 
-        String srsName = determineCurrentSrsName( defaultSrsName );
+        CRS crs = determineActiveCRS( defaultCRS );
 
         String s = xmlStream.getElementText();
         // don't use String.split(regex) here (speed)
@@ -72,14 +73,19 @@ class GML311BaseParser {
                 throw new XMLParsingException( xmlStream, msg );
             }
         }
-        return geomFac.createPoint( null, doubles, lookupCRS( srsName ) );
+        return geomFac.createPoint( null, doubles, crs );
     }
 
-    protected List<Point> parsePosList( String defaultSrsName )
+    protected List<Point> parsePosList( CRS crs )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
-        CoordinateSystem crs = lookupCRS( determineCurrentSrsName( defaultSrsName ) );
-        int coordDim = determineCoordDimensions( crs.getDimension() );
+        int coordDim = determineCoordDimensions( -1 );
+        if (coordDim == -1 && crs != null) {
+            coordDim = crs.getWrappedCRS().getDimension();
+        }
+        if (coordDim == -1 ) {
+            LOG.warn("No coordinate dimension information available. Defaulting to 2.");
+        }
 
         String s = xmlStream.getElementText();
         // don't use String.split(regex) here (speed)
@@ -114,10 +120,8 @@ class GML311BaseParser {
         return points;
     }
 
-    protected List<Point> parseCoordinates( String defaultSrsName )
+    protected List<Point> parseCoordinates( CRS crs )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
-
-        CoordinateSystem crs = lookupCRS( defaultSrsName );
 
         String decimalSeparator = xmlStream.getAttributeValueWDefault( "decimal", "." );
         if ( !".".equals( decimalSeparator ) ) {
@@ -255,34 +259,24 @@ class GML311BaseParser {
         return new Measure( value, uom );
     }
 
-    protected CoordinateSystem lookupCRS( String srsCode ) throws UnknownCRSException {
-        CoordinateSystem crs = null;
-        try {
-            crs = CRSRegistry.lookup( srsCode );
-        } catch ( CRSConfigurationException e ) {
-            LOG.error( e.getMessage(), e );
-        }
-        if ( crs == null ) {
-            String msg = "Unknown coordinate reference system '" + srsCode + "'.";
-            throw new XMLParsingException( xmlStream, msg );
-        }
-        return crs;
-    }
-
     /**
-     * Determines the <code>srsName</code> value for the current geometry element.
+     * Determines the active {@link CRS} using the value of the <code>srsName</code> attribute of the current geometry
+     * element.
      * 
-     * @param defaultSrsName
-     *            default srs for the geometry, this is returned if the geometry element has no <code>srsName</code>
+     * @param defaultCRS
+     *            default CSR for the geometry, this is returned if the geometry element has no <code>srsName</code>
      *            attribute
-     * @return the applicable <code>srsName</code> value, may be null
+     * @return the applicable CRS, may be null
      */
-    protected String determineCurrentSrsName( String defaultSrsName ) {
+    protected CRS determineActiveCRS( CRS defaultCRS ) {
+        CRS activeCRS = defaultCRS;
         String srsName = xmlStream.getAttributeValue( null, "srsName" );
-        if ( srsName == null || srsName.length() == 0 ) {
-            srsName = defaultSrsName;
+        if ( !( srsName == null || srsName.length() == 0 ) ) {
+            if ( defaultCRS == null || !srsName.equals( defaultCRS.getName() ) ) {
+                activeCRS = new CRS( srsName );
+            }
         }
-        return srsName;
+        return activeCRS;
     }
 
     protected double[] parseDoubleList()

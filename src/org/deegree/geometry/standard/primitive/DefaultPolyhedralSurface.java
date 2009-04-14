@@ -45,7 +45,7 @@ package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.PolyhedralSurface;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
@@ -74,7 +74,7 @@ public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements
      * @param patches
      *            patches that constitute the surface
      */
-    public DefaultPolyhedralSurface (String id, CoordinateSystem crs, List<PolygonPatch> patches) {
+    public DefaultPolyhedralSurface (String id, CRS crs, List<PolygonPatch> patches) {
         super (id, crs);
         this.patches = patches;
     }

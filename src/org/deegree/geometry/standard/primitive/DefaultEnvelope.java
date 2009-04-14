@@ -39,7 +39,7 @@ package org.deegree.geometry.standard.primitive;
 
 import java.util.UUID;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -78,7 +78,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
      * @param min
      * @param max
      */
-    public DefaultEnvelope( String id, CoordinateSystem crs, Point min, Point max ) {
+    public DefaultEnvelope( String id, CRS crs, Point min, Point max ) {
         super( id, crs );
         this.min = min;
         this.max = max;
@@ -333,7 +333,6 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
     @Override
     public String toString () {
-        return "min: " + min + ", max: " + max;
-    }
-    
+        return "min: " + min + ", max: " + max + ", crs: " + crs;
+    }    
 }

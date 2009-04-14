@@ -48,7 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiGeometry;
@@ -79,7 +79,7 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
      *            coordinate reference system
      * @param members
      */
-    public DefaultMultiGeometry( String id, CoordinateSystem crs, List<T> members ) {
+    public DefaultMultiGeometry( String id, CRS crs, List<T> members ) {
         super( id, crs );
         this.members = members;
     }

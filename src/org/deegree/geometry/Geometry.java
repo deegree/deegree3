@@ -38,7 +38,7 @@
 package org.deegree.geometry;
 
 import org.deegree.commons.types.identifier.Identifiable;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 
 /**
  * 
@@ -101,7 +101,7 @@ public interface Geometry extends Identifiable<String> {
      * 
      * @return spatial reference system of a geometry
      */
-    public CoordinateSystem getCoordinateSystem();
+    public CRS getCoordinateSystem();
 
     /**
      * The operation "coordinateDimension" shall return the dimension of the coordinates that define this Geometry,

@@ -45,7 +45,7 @@ package org.deegree.geometry.standard.aggregate;
 
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.primitive.LineString;
 
@@ -68,7 +68,7 @@ public class DefaultMultiLineString extends DefaultMultiGeometry<LineString> imp
      *            coordinate reference system
      * @param members
      */
-    public DefaultMultiLineString( String id, CoordinateSystem crs, List<LineString> members ) {
+    public DefaultMultiLineString( String id, CRS crs, List<LineString> members ) {
         super( id, crs, members );
     }
     

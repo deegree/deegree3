@@ -45,7 +45,7 @@ package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
@@ -72,7 +72,7 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
      * @param controlPoints
      *            
      */
-    public DefaultLinearRing( String id, CoordinateSystem crs, List<Point> controlPoints ) {
+    public DefaultLinearRing( String id, CRS crs, List<Point> controlPoints ) {
         super( id, crs, new DefaultLineStringSegment(controlPoints));
     }
 

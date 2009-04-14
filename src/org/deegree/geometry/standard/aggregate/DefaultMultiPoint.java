@@ -45,7 +45,7 @@ package org.deegree.geometry.standard.aggregate;
 
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.primitive.Point;
 
@@ -68,7 +68,7 @@ public class DefaultMultiPoint extends DefaultMultiGeometry<Point> implements Mu
      *            coordinate reference system
      * @param members
      */
-    public DefaultMultiPoint( String id, CoordinateSystem crs, List<Point> members ) {
+    public DefaultMultiPoint( String id, CRS crs, List<Point> members ) {
         super( id, crs, members );
     }
 }

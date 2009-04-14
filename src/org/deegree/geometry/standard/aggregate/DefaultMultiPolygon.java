@@ -45,7 +45,7 @@ package org.deegree.geometry.standard.aggregate;
 
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.primitive.Polygon;
 
@@ -68,7 +68,7 @@ public class DefaultMultiPolygon extends DefaultMultiGeometry<Polygon> implement
      *            coordinate reference system
      * @param members
      */
-    public DefaultMultiPolygon( String id, CoordinateSystem crs, List<Polygon> members ) {
+    public DefaultMultiPolygon( String id, CRS crs, List<Polygon> members ) {
         super( id, crs, members );
     }
 

@@ -41,7 +41,7 @@ package org.deegree.geometry.jtswrapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
@@ -74,7 +74,7 @@ class JTSWrapperLineString extends JTSWrapperGeometry implements org.deegree.geo
      * @param coordinateDimension
      * @param controlPoints
      */
-    public JTSWrapperLineString( String id, double precision, CoordinateSystem crs, int coordinateDimension, List<Point> controlPoints) {
+    public JTSWrapperLineString( String id, double precision, CRS crs, int coordinateDimension, List<Point> controlPoints) {
         super( id, precision, crs, coordinateDimension );
 
         this.pointList = controlPoints;

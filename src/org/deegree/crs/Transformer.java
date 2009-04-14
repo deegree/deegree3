@@ -47,10 +47,10 @@ import java.security.InvalidParameterException;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.crs.i18n.Messages;
 import org.deegree.crs.transformations.Transformation;
 import org.deegree.crs.transformations.TransformationFactory;
 import org.deegree.crs.transformations.coordinate.CRSTransformation;
-import org.deegree.crs.i18n.Messages;
 
 /**
  * Abstract base class for all transformers. Stores a target coordinate system and creates {@link CRSTransformation}

@@ -40,7 +40,7 @@ package org.deegree.geometry.jtswrapper;
 
 import java.util.UUID;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
@@ -77,7 +77,7 @@ class JTSWrapperEnvelope extends JTSWrapperGeometry implements Envelope {
      * @param min
      * @param max
      */
-    JTSWrapperEnvelope( double precision, CoordinateSystem crs, int coordinateDimension, Point min, Point max ) {
+    JTSWrapperEnvelope( double precision, CRS crs, int coordinateDimension, Point min, Point max ) {
         super( null, precision, crs, coordinateDimension );
         this.min = min;
         this.max = max;

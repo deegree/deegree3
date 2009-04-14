@@ -46,7 +46,7 @@ package org.deegree.geometry.standard.primitive;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
@@ -76,7 +76,7 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
      * @param patches
      *            patches that constitute the surface
      */
-    public DefaultSurface( String id, CoordinateSystem crs, List<SurfacePatch> patches ) {
+    public DefaultSurface( String id, CRS crs, List<SurfacePatch> patches ) {
         super( id, crs );
         this.patches = patches;
     }

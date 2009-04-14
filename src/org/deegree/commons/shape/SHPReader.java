@@ -48,6 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.crs.CRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -197,14 +198,14 @@ public class SHPReader {
 
     private final RandomAccessFile in;
 
-    private final CoordinateSystem crs;
+    private final CRS crs;
 
     /**
      * @param in
      * @param crs
      * @throws IOException
      */
-    public SHPReader( RandomAccessFile in, CoordinateSystem crs ) throws IOException {
+    public SHPReader( RandomAccessFile in, CRS crs ) throws IOException {
         this.in = in;
         this.crs = crs;
         if ( in.readInt() != FILETYPE ) {

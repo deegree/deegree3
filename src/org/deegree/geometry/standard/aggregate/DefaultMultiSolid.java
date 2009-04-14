@@ -45,7 +45,7 @@ package org.deegree.geometry.standard.aggregate;
 
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.multi.MultiSolid;
 import org.deegree.geometry.primitive.Solid;
 
@@ -68,7 +68,7 @@ public class DefaultMultiSolid extends DefaultMultiGeometry<Solid> implements Mu
      *            coordinate reference system
      * @param members
      */
-    public DefaultMultiSolid( String id, CoordinateSystem crs, List<Solid> members ) {
+    public DefaultMultiSolid( String id, CRS crs, List<Solid> members ) {
         super( id, crs, members );
     }
 

@@ -41,19 +41,16 @@ package org.deegree.geometry.jtswrapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequenceFactory;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequenceFactory;
 
 /**
  * 
@@ -84,7 +81,7 @@ class JTSWrapperSurface extends JTSWrapperGeometry implements Surface {
      * @param coordinateDimension
      * @param patch
      */
-    public JTSWrapperSurface( String id, double precision, CoordinateSystem crs, int coordinateDimension, SurfacePatch patch ) {
+    public JTSWrapperSurface( String id, double precision, CRS crs, int coordinateDimension, SurfacePatch patch ) {
         super( id, precision, crs, coordinateDimension );
         this.patches.add( patch );
 //

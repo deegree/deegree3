@@ -37,7 +37,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.coverage;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
@@ -56,7 +56,7 @@ public abstract class AbstractCoverage {
 
     private GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
 
-    private CoordinateSystem crs;
+    private CRS crs;
 
     private Envelope envelope;
 
@@ -121,14 +121,14 @@ public abstract class AbstractCoverage {
     /**
      * @return the coordinate system of the raster
      */
-    public CoordinateSystem getCoordinateSystem() {
+    public CRS getCoordinateSystem() {
         return crs;
     }
 
     /**
      * @param crs
      */
-    public void setCoordinateSystem( CoordinateSystem crs ) {
+    public void setCoordinateSystem( CRS crs ) {
         this.crs = crs;
         if ( envelope != null ) {
             // rb: this is not correct, the values of the envelope should be converted to the given crs, shouldn't they.

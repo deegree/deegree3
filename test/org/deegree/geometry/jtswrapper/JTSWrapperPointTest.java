@@ -42,13 +42,14 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.geometry.jtswrapper;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import org.deegree.crs.CRSRegistry;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.jtswrapper.JTSWrapperPoint;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -68,7 +69,7 @@ public class JTSWrapperPointTest {
     static double delta = 0.001;
     static double testDelta = 0.00001;
 
-    static CoordinateSystem crs = CRSRegistry.lookupDummyCRS( "dummy" );
+    static CRS crs = new CRS( "dummy" );
 
     /**
      * @throws java.lang.Exception

@@ -43,8 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.geometry.Geometry.GeometryType;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
@@ -71,7 +70,7 @@ public class JTSWrapperMultiSurface extends JTSWrapperGeometry implements MultiS
      * @param crs
      */
     public JTSWrapperMultiSurface( String id, List<Surface> surfaces, int coordinateDimension, double precision,
-                                   CoordinateSystem crs ) {
+                                   CRS crs ) {
         super( id, precision, crs, coordinateDimension );
         this.surfaces = surfaces;
         Polygon[] mp = new Polygon[surfaces.size()];

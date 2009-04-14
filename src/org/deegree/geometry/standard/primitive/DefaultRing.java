@@ -47,7 +47,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
@@ -83,7 +83,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
      * @param members
      *            the <code>Curve</code>s that compose the <code>Ring</code>
      */
-    public DefaultRing( String id, CoordinateSystem crs, List<Curve> members ) {
+    public DefaultRing( String id, CRS crs, List<Curve> members ) {
         super( id, crs );
         this.members = members;
         for ( Curve curve : members ) {
@@ -101,7 +101,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
      * @param singleCurve
      *            closed line string
      */
-    protected DefaultRing( String id, CoordinateSystem crs, DefaultLineString singleCurve ) {
+    protected DefaultRing( String id, CRS crs, DefaultLineString singleCurve ) {
         super( id, crs );
         members = new ArrayList<Curve>( 1 );
         members.add( singleCurve );
@@ -113,7 +113,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
      * @param crs
      * @param segment
      */
-    public DefaultRing( String id, CoordinateSystem crs, LineStringSegment segment ) {
+    public DefaultRing( String id, CRS crs, LineStringSegment segment ) {
         super( id, crs );
         this.members = new ArrayList<Curve>( 1 );
         this.members.add( new DefaultLineString( null, crs, segment.getControlPoints() ) );

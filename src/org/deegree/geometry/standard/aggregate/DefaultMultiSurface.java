@@ -45,7 +45,7 @@ package org.deegree.geometry.standard.aggregate;
 
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.primitive.Surface;
 
@@ -68,8 +68,8 @@ public class DefaultMultiSurface extends DefaultMultiGeometry<Surface> implement
      *            coordinate reference system
      * @param members
      */
-    public DefaultMultiSurface( String id, CoordinateSystem crs, List<Surface> members ) {
-        super( id, crs, members );
+    public DefaultMultiSurface( String id, CRS crs, List<Surface> members ) {
+        super( id, crs, members);
     }
 
     @Override

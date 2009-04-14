@@ -48,7 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.composite.CompositeSolid;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
@@ -76,7 +76,7 @@ public class DefaultCompositeSolid extends AbstractDefaultGeometry implements Co
      * @param memberSolids
      *            
      */
-    public DefaultCompositeSolid( String id, CoordinateSystem crs, List<Solid> memberSolids ) {
+    public DefaultCompositeSolid( String id, CRS crs, List<Solid> memberSolids ) {
         super( id, crs );
         this.memberSolids = memberSolids;
     }

@@ -50,14 +50,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
-import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
@@ -83,7 +81,7 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
      *            curves that constitute the composited curve, each curve must end at the start point of the subsequent
      *            curve in the list
      */
-    public DefaultCompositeCurve( String id, CoordinateSystem crs, List<Curve> memberCurves ) {
+    public DefaultCompositeCurve( String id, CRS crs, List<Curve> memberCurves ) {
         super( id, crs );
         this.memberCurves = memberCurves;
     }

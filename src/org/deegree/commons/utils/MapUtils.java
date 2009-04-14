@@ -44,6 +44,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryTransformer;
 import org.slf4j.Logger;
@@ -83,7 +84,12 @@ public class MapUtils {
                             throws RuntimeException {
 
         if ( crs == null ) {
-            crs = bbox.getCoordinateSystem();
+            try {
+                crs = bbox.getCoordinateSystem().getWrappedCRS();
+            } catch ( UnknownCRSException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 
         if ( mapWidth == 0 || mapHeight == 0 ) {

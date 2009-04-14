@@ -52,9 +52,8 @@ import junit.framework.Assert;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.feature.gml.GML311GeometryParser;
-import org.deegree.feature.gml.GML311SurfacePatchParser;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
@@ -86,7 +85,7 @@ public class GML311SurfacePatchParserTest {
     public void parsePolygonPatch()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311SurfacePatchParser parser = getParser( "PolygonPatch.gml" );
-        PolygonPatch patch = (PolygonPatch) parser.parseSurfacePatch( "EPSG:4326" );
+        PolygonPatch patch = (PolygonPatch) parser.parseSurfacePatch( new CRS ("EPSG:4326") );
         Assert.assertEquals( 2.0, patch.getExteriorRing().getStartPoint().getX() );
         Assert.assertEquals( 0.0, patch.getExteriorRing().getStartPoint().getY() );
         Assert.assertEquals( 2.0, patch.getExteriorRing().getEndPoint().getX() );
@@ -98,7 +97,7 @@ public class GML311SurfacePatchParserTest {
     public void parseTriangle()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311SurfacePatchParser parser = getParser( "Triangle.gml" );
-        Triangle patch = (Triangle) parser.parseSurfacePatch( "EPSG:4326" );
+        Triangle patch = (Triangle) parser.parseSurfacePatch( new CRS ("EPSG:4326") );
         Assert.assertEquals( 4, patch.getExteriorRing().getControlPoints().size() );
     }
 
@@ -106,7 +105,7 @@ public class GML311SurfacePatchParserTest {
     public void parseRectangle()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         GML311SurfacePatchParser parser = getParser( "Rectangle.gml" );
-        Rectangle patch = (Rectangle) parser.parseSurfacePatch( "EPSG:4326" );
+        Rectangle patch = (Rectangle) parser.parseSurfacePatch( new CRS ("EPSG:4326") );
         Assert.assertEquals( 5, patch.getExteriorRing().getControlPoints().size() );
     }
 

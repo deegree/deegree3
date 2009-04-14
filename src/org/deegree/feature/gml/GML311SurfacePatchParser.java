@@ -54,6 +54,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.LinearRing;
@@ -117,15 +118,15 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * <li><code>Triangle</code></li>
      * </ul>
      * 
-     * @param defaultSrsName
-     *            default srs for the geometry, this is only used if the "gml:_SurfacePatch" has no <code>srsName</code>
+     * @param defaultCRS
+     *            default CRS for the geometry, this is only used if the "gml:_SurfacePatch" has no <code>srsName</code>
      *            attribute
      * @return corresponding {@link SurfacePatch} object
      * @throws XMLParsingException
      * @throws XMLStreamException
      * @throws UnknownCRSException 
      */
-    SurfacePatch parseSurfacePatch( String defaultSrsName )
+    SurfacePatch parseSurfacePatch( CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         SurfacePatch patch = null;
@@ -138,17 +139,17 @@ class GML311SurfacePatchParser extends GML311BaseParser {
 
         String name = xmlStream.getLocalName();
         if ( name.equals( "Cone" ) ) {
-            patch = parseCone( defaultSrsName );
+            patch = parseCone( defaultCRS );
         } else if ( name.equals( "Cylinder" ) ) {
-            patch = parseCylinder( defaultSrsName );
+            patch = parseCylinder( defaultCRS );
         } else if ( name.equals( "PolygonPatch" ) ) {
-            patch = parsePolygonPatch( defaultSrsName );
+            patch = parsePolygonPatch( defaultCRS );
         } else if ( name.equals( "Rectangle" ) ) {
-            patch = parseRectangle( defaultSrsName );
+            patch = parseRectangle( defaultCRS );
         } else if ( name.equals( "Sphere" ) ) {
-            patch = parseCone( defaultSrsName );
+            patch = parseCone( defaultCRS );
         } else if ( name.equals( "Triangle" ) ) {
-            patch = parseTriangle( defaultSrsName );
+            patch = parseTriangle( defaultCRS );
         } else {
             String msg = "Invalid GML geometry: '" + xmlStream.getName()
                          + "' is not a valid substitution for '_SurfacePatch'.";
@@ -157,12 +158,12 @@ class GML311SurfacePatchParser extends GML311BaseParser {
         return patch;
     }
 
-    private SurfacePatch parseCone( String defaultSrsName ) {
+    private SurfacePatch parseCone( CRS defaultCRS ) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    private SurfacePatch parseCylinder( String defaultSrsName ) {
+    private SurfacePatch parseCylinder( CRS defaultCRS ) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -175,8 +176,8 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:PolygonPatch&gt;)</li>
      * </ul>
      * 
-     * @param defaultSrsName
-     *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
+     * @param defaultCRS
+     *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
      * @return corresponding {@link PolygonPatch} object
      * @throws XMLParsingException
@@ -184,7 +185,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws UnknownCRSException 
      */
-    PolygonPatch parsePolygonPatch( String defaultSrsName )
+    PolygonPatch parsePolygonPatch( CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "planar" );
@@ -199,7 +200,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
                     String msg = "Error in 'gml:PolygonPatch' element. Expected a 'gml:_Ring' element.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                exteriorRing = geometryParser.parseAbstractRing( defaultSrsName );
+                exteriorRing = geometryParser.parseAbstractRing( defaultCRS );
                 xmlStream.nextTag();
                 xmlStream.require( END_ELEMENT, GMLNS, "exterior" );
                 xmlStream.nextTag();
@@ -213,7 +214,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
                     String msg = "Error in 'gml:PolygonPatch' element. Expected a 'gml:_Ring' element.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                interiorRings.add( geometryParser.parseAbstractRing( defaultSrsName ) );
+                interiorRings.add( geometryParser.parseAbstractRing( defaultCRS ) );
                 xmlStream.nextTag();
                 xmlStream.require( END_ELEMENT, GMLNS, "interior" );
             } else {
@@ -234,8 +235,8 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Rectangle&gt;)</li>
      * </ul>
      * 
-     * @param defaultSrsName
-     *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
+     * @param defaultCRS
+     *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
      * @return corresponding {@link Rectangle} object
      * @throws XMLParsingException
@@ -244,7 +245,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * @throws UnknownCRSException 
      * @throws XMLParsingException 
      */
-    private Rectangle parseRectangle( String defaultSrsName )
+    private Rectangle parseRectangle( CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
         validateInterpolationAttribute( xmlStream, "planar" );
 
@@ -255,7 +256,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
             throw new XMLParsingException( xmlStream, msg );
         }
 
-        LinearRing exteriorRing = geometryParser.parseLinearRing( defaultSrsName );
+        LinearRing exteriorRing = geometryParser.parseLinearRing( defaultCRS );
         if ( exteriorRing.getControlPoints().size() != 5 ) {
             String msg = "Error in 'gml:Rectangle' element. Exterior ring must contain exactly five points, but contains "
                          + exteriorRing.getControlPoints().size();
@@ -278,7 +279,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Triangle&gt;)</li>
      * </ul>
      * 
-     * @param defaultSrsName
+     * @param defaultCRS
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
      * @return corresponding {@link Triangle} object
@@ -288,7 +289,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * @throws UnknownCRSException 
      * @throws XMLParsingException 
      */
-    Triangle parseTriangle( String defaultSrsName )
+    Triangle parseTriangle( CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "planar" );
@@ -300,7 +301,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
             throw new XMLParsingException( xmlStream, msg );
         }
 
-        LinearRing exteriorRing = geometryParser.parseLinearRing( defaultSrsName );
+        LinearRing exteriorRing = geometryParser.parseLinearRing( defaultCRS );
         if ( exteriorRing.getControlPoints().size() != 4 ) {
             String msg = "Error in 'gml:Triangle' element. Exterior ring must contain exactly four points, but contains "
                          + exteriorRing.getControlPoints().size();

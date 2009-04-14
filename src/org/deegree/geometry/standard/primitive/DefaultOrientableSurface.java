@@ -46,6 +46,7 @@ package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
 
+import org.deegree.crs.CRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -66,7 +67,7 @@ public class DefaultOrientableSurface implements OrientableSurface {
 
     private String id;
 
-    private CoordinateSystem crs;
+    private CRS crs;
 
     private Surface baseSurface;
 
@@ -84,7 +85,7 @@ public class DefaultOrientableSurface implements OrientableSurface {
      * @param isReversed
      *            set to true, if the orientation of the base Surface shall be reversed
      */
-    public DefaultOrientableSurface( String id, CoordinateSystem crs, Surface baseSurface, boolean isReversed ) {
+    public DefaultOrientableSurface( String id, CRS crs, Surface baseSurface, boolean isReversed ) {
         this.id = id;
         this.crs = crs;
         this.baseSurface = baseSurface;
@@ -97,7 +98,7 @@ public class DefaultOrientableSurface implements OrientableSurface {
     }
 
     @Override
-    public CoordinateSystem getCoordinateSystem() {
+    public CRS getCoordinateSystem() {
         return crs;
     }    
 

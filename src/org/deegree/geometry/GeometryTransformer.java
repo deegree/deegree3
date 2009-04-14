@@ -46,6 +46,7 @@ import java.util.List;
 
 import javax.vecmath.Point3d;
 
+import org.deegree.crs.CRS;
 import org.deegree.crs.Transformer;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
@@ -115,13 +116,14 @@ public class GeometryTransformer extends Transformer {
      *             if the transformation between the source and target crs cannot be created.
      * @throws IllegalArgumentException
      *             if the coordinates system of the geometry is <code>null</code>
+     * @throws UnknownCRSException 
      */
     public Geometry transform( Geometry geo )
-                            throws TransformationException, IllegalArgumentException {
+                            throws TransformationException, IllegalArgumentException, UnknownCRSException {
         if ( geo.getCoordinateSystem() == null ) {
             throw new IllegalArgumentException( Messages.getMessage( "CRS_GEOMETRY_HAS_NO_CRS" ) );
         }
-        return transform( geo, createCRSTransformation( geo.getCoordinateSystem() ) );
+        return transform( geo, createCRSTransformation( geo.getCoordinateSystem().getWrappedCRS() ) );
     }
 
     /**
@@ -196,7 +198,7 @@ public class GeometryTransformer extends Transformer {
             }
         } catch ( GeometryException ge ) {
             throw new TransformationException( Messages.getMessage( "CRS_TRANSFORMATION_ERROR",
-                                                                    geo.getCoordinateSystem().getCodes(),
+                                                                    geo.getCoordinateSystem().getName(),
                                                                     getTargetCRS().getCodes(), ge.getMessage() ),
                                                ge );
         }
@@ -277,7 +279,7 @@ public class GeometryTransformer extends Transformer {
             pos = transform( pos, trans );
             curveSegments[i++] = geomFactory.createLineStringSegment( pos );
         }
-        return geomFactory.createCurve( geo.getId(), curveSegments, trans.getTargetCRS() );
+        return geomFactory.createCurve( geo.getId(), curveSegments, new CRS (trans.getTargetCRS()) );
     }
 
     /**
@@ -339,10 +341,10 @@ public class GeometryTransformer extends Transformer {
 
             if ( Double.isNaN( point.getZ() ) ) {
                 result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y },
-                                                     point.getPrecision(), trans.getTargetCRS() ) );
+                                                     point.getPrecision(), new CRS (trans.getTargetCRS()) ) );
             }
             result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y, tmp.z },
-                                                 point.getPrecision(), trans.getTargetCRS() ) );
+                                                 point.getPrecision(), new CRS (trans.getTargetCRS()) ) );
         }
         return result;
     }
@@ -362,10 +364,10 @@ public class GeometryTransformer extends Transformer {
 
         if ( Double.isNaN( geo.getZ() ) ) {
             return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y }, geo.getPrecision(),
-                                            trans.getTargetCRS() );
+                                            new CRS (trans.getTargetCRS()) );
         }
         return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y, result.z }, geo.getPrecision(),
-                                        trans.getTargetCRS() );
+                                        new CRS (trans.getTargetCRS()) );
     }
 
     /**
@@ -402,6 +404,6 @@ public class GeometryTransformer extends Transformer {
                 patches.add( geomFactory.createPolygonPatch( transformedExteriorRing, transformedInteriorRings ) );
             }
         }
-        return geomFactory.createSurface( geo.getId(), patches, trans.getTargetCRS() );
+        return geomFactory.createSurface( geo.getId(), patches, new CRS (trans.getTargetCRS()) );
     }
 }

@@ -41,8 +41,8 @@ package org.deegree.geometry;
 import java.util.List;
 
 import org.deegree.commons.types.Length;
+import org.deegree.crs.CRS;
 import org.deegree.crs.CRSRegistry;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.feature.gml.Angle;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
@@ -217,7 +217,7 @@ public interface GeometryFactory {
      *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
-    public Point createPoint( String id, double x, double y, CoordinateSystem crs );
+    public Point createPoint( String id, double x, double y, CRS crs );
 
     /**
      * Creates a georeferenced point with a default precision.
@@ -235,7 +235,7 @@ public interface GeometryFactory {
      *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
-    public Point createPoint( String id, double x, double y, double z, CoordinateSystem crs );
+    public Point createPoint( String id, double x, double y, double z, CRS crs );
 
     /**
      * creates a georeferenced point
@@ -252,11 +252,11 @@ public interface GeometryFactory {
      *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
-    public Point createPoint( String id, double[] coordinates, double precision, CoordinateSystem crs );
+    public Point createPoint( String id, double[] coordinates, double precision, CRS crs );
 
     /**
      * creates a georeferenced point with a default precision (
-     * {@link #createPoint(String, double[], double, CoordinateSystem)})
+     * {@link #createPoint(String, double[], double, CRS)})
      * 
      * @param id
      *            identifier of the new geometry instance
@@ -267,7 +267,7 @@ public interface GeometryFactory {
      *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Point}
      */
-    public Point createPoint( String id, double[] coordinates, CoordinateSystem crs );
+    public Point createPoint( String id, double[] coordinates, CRS crs );
 
     /**
      * Creates a {@link LineString} geometry.
@@ -280,7 +280,7 @@ public interface GeometryFactory {
      *            list of control points for the line string
      * @return created {@link LineString}
      */
-    public LineString createLineString( String id, CoordinateSystem crs, List<Point> points );
+    public LineString createLineString( String id, CRS crs, List<Point> points );
 
     /**
      * Creates a {@link Curve} from a two dimensional array of coordinates. Each field of the first dimension represents
@@ -295,7 +295,7 @@ public interface GeometryFactory {
      *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Curve}
      */
-    public Curve createCurve( String id, Point[][] coordinates, CoordinateSystem crs );
+    public Curve createCurve( String id, Point[][] coordinates, CRS crs );
 
     /**
      * Creates a segmented {@link Curve} from one or more {@link CurveSegment}s. The last {@link Point} of i'th segment
@@ -310,7 +310,7 @@ public interface GeometryFactory {
      *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Curve}
      */
-    public Curve createCurve( String id, CurveSegment[] segments, CoordinateSystem crs );
+    public Curve createCurve( String id, CurveSegment[] segments, CRS crs );
 
     /**
      * Creates a {@link LineStringSegment} curve segment.
@@ -516,7 +516,7 @@ public interface GeometryFactory {
      *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Surface}
      */
-    public Surface createSurface( String id, List<SurfacePatch> patches, CoordinateSystem crs );
+    public Surface createSurface( String id, List<SurfacePatch> patches, CRS crs );
 
     /**
      * Creates a {@link Polygon} surface.
@@ -532,7 +532,7 @@ public interface GeometryFactory {
      *            list of rings that define the inner boundaries, may be empty or null
      * @return created {@link Polygon}
      */
-    public Polygon createPolygon( String id, CoordinateSystem crs, Ring exteriorRing, List<Ring> interiorRings );
+    public Polygon createPolygon( String id, CRS crs, Ring exteriorRing, List<Ring> interiorRings );
 
     /**
      * Creates a {@link PolygonPatch} surface patch.
@@ -560,7 +560,7 @@ public interface GeometryFactory {
      *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Envelope}
      */
-    public Envelope createEnvelope( double[] min, double[] max, double precision, CoordinateSystem crs );
+    public Envelope createEnvelope( double[] min, double[] max, double precision, CRS crs );
 
     /**
      * creates an {@link Envelope} with default precision
@@ -574,7 +574,7 @@ public interface GeometryFactory {
      *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Envelope}
      */
-    public Envelope createEnvelope( double[] min, double[] max, CoordinateSystem crs );
+    public Envelope createEnvelope( double[] min, double[] max, CRS crs );
 
     /**
      * creates an {@link Envelope} with default precision
@@ -597,7 +597,7 @@ public interface GeometryFactory {
      * @return created {@link Envelope}
      */
     public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, double precision,
-                                    CoordinateSystem crs );
+                                    CRS crs );
 
     /**
      * creates an {@link Envelope} with default precision
@@ -616,7 +616,7 @@ public interface GeometryFactory {
      *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
      * @return created {@link Envelope}
      */
-    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CoordinateSystem crs );
+    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CRS crs );
 
     /**
      * creates an envelope from a SurfacePatch representing a envelope by being constructed by five points: minx,miny
@@ -640,7 +640,7 @@ public interface GeometryFactory {
      *            the <code>Curve</code>s that compose the <code>Ring</code>
      * @return created {@link Ring}
      */
-    public Ring createRing( String id, CoordinateSystem crs, List<Curve> members );
+    public Ring createRing( String id, CRS crs, List<Curve> members );
 
     /**
      * Creates a simple {@link LinearRing} from a list of passed {@link Point}s.
@@ -653,7 +653,7 @@ public interface GeometryFactory {
      *            the control points
      * @return created {@link Ring}
      */
-    public LinearRing createLinearRing( String id, CoordinateSystem crs, List<Point> points );
+    public LinearRing createLinearRing( String id, CRS crs, List<Point> points );
 
     /**
      * Creates an {@link OrientableCurve}.
@@ -668,7 +668,7 @@ public interface GeometryFactory {
      *            set to true, if the orientation of the base curve shall be reversed
      * @return created {@link OrientableCurve}
      */
-    public OrientableCurve createOrientableCurve( String id, CoordinateSystem crs, Curve baseCurve, boolean isReversed );
+    public OrientableCurve createOrientableCurve( String id, CRS crs, Curve baseCurve, boolean isReversed );
 
     /**
      * Creates a {@link Triangle} surface patch.
@@ -701,7 +701,7 @@ public interface GeometryFactory {
      *            set to true, if the orientation of the base surface shall be reversed
      * @return created {@link OrientableCurve}
      */
-    public OrientableSurface createOrientableSurface( String id, CoordinateSystem crs, Surface baseSurface,
+    public OrientableSurface createOrientableSurface( String id, CRS crs, Surface baseSurface,
                                                       boolean isReversed );
 
     /**
@@ -715,7 +715,7 @@ public interface GeometryFactory {
      *            patches that constitute the surface
      * @return created {@link PolyhedralSurface}
      */
-    public PolyhedralSurface createPolyhedralSurface( String id, CoordinateSystem crs, List<PolygonPatch> memberPatches );
+    public PolyhedralSurface createPolyhedralSurface( String id, CRS crs, List<PolygonPatch> memberPatches );
 
     /**
      * Creates a {@link TriangulatedSurface}.
@@ -728,7 +728,7 @@ public interface GeometryFactory {
      *            patches that constitute the surface
      * @return created {@link TriangulatedSurface}
      */
-    public TriangulatedSurface createTriangulatedSurface( String id, CoordinateSystem crs, List<Triangle> memberPatches );
+    public TriangulatedSurface createTriangulatedSurface( String id, CRS crs, List<Triangle> memberPatches );
 
     /**
      * Creates a {@link Tin}.
@@ -743,7 +743,7 @@ public interface GeometryFactory {
      * @param controlPoints
      * @return created {@link Tin}
      */
-    public Tin createTin( String id, CoordinateSystem crs, List<List<LineStringSegment>> stopLines,
+    public Tin createTin( String id, CRS crs, List<List<LineStringSegment>> stopLines,
                           List<List<LineStringSegment>> breakLines, Length maxLength, List<Point> controlPoints );
 
     /**
@@ -760,7 +760,7 @@ public interface GeometryFactory {
      *            the interior surfaces of the solid, may be null or empty
      * @return created {@link Solid}
      */
-    public Solid createSolid( String id, CoordinateSystem crs, Surface exteriorSurface, List<Surface> interiorSurfaces );
+    public Solid createSolid( String id, CRS crs, Surface exteriorSurface, List<Surface> interiorSurfaces );
 
     /**
      * Creates an untyped multi geometry from a list of {@link Geometry}s.
@@ -773,7 +773,7 @@ public interface GeometryFactory {
      * @param geometries
      * @return created {@link MultiGeometry}
      */
-    public MultiGeometry<Geometry> createMultiGeometry( String id, CoordinateSystem crs, List<Geometry> geometries );
+    public MultiGeometry<Geometry> createMultiGeometry( String id, CRS crs, List<Geometry> geometries );
 
     /**
      * Creates a {@link MultiPoint} from a list of passed {@link Point}s.
@@ -787,7 +787,7 @@ public interface GeometryFactory {
      *            points that constitute the collection
      * @return created {@link MultiPoint}
      */
-    public MultiPoint createMultiPoint( String id, CoordinateSystem crs, List<Point> members );
+    public MultiPoint createMultiPoint( String id, CRS crs, List<Point> members );
 
     /**
      * Creates a {@link MultiCurve} from a list of passed {@link Curve}s.
@@ -801,7 +801,7 @@ public interface GeometryFactory {
      *            curves that constitute the collection
      * @return created {@link MultiCurve}
      */
-    public MultiCurve createMultiCurve( String id, CoordinateSystem crs, List<Curve> members );
+    public MultiCurve createMultiCurve( String id, CRS crs, List<Curve> members );
 
     /**
      * Creates a {@link MultiCurve} from a list of passed {@link LineString}s.
@@ -815,7 +815,7 @@ public interface GeometryFactory {
      *            curves that constitute the collection
      * @return created {@link MultiLineString}
      */
-    public MultiLineString createMultiLineString( String id, CoordinateSystem crs, List<LineString> members );
+    public MultiLineString createMultiLineString( String id, CRS crs, List<LineString> members );
 
     /**
      * Creates a {@link MultiSurface} from a list of passed {@link Surface}s.
@@ -829,7 +829,7 @@ public interface GeometryFactory {
      *            surfaces that constitute the collection
      * @return created {@link MultiSurface}
      */
-    public MultiSurface createMultiSurface( String id, CoordinateSystem crs, List<Surface> members );
+    public MultiSurface createMultiSurface( String id, CRS crs, List<Surface> members );
 
     /**
      * Creates a {@link MultiPolygon} from a list of passed {@link Polygon}s.
@@ -843,7 +843,7 @@ public interface GeometryFactory {
      *            polygons that constitute the collection
      * @return created {@link MultiPolygon}
      */
-    public MultiPolygon createMultiPolygon( String id, CoordinateSystem crs, List<Polygon> members );
+    public MultiPolygon createMultiPolygon( String id, CRS crs, List<Polygon> members );
 
     /**
      * Creates a {@link MultiSolid} from a list of passed {@link Solid}s.
@@ -857,7 +857,7 @@ public interface GeometryFactory {
      *            solids that constitute the collection
      * @return created {@link MultiSolid}
      */
-    public MultiSolid createMultiSolid( String id, CoordinateSystem crs, List<Solid> members );
+    public MultiSolid createMultiSolid( String id, CRS crs, List<Solid> members );
 
     /**
      * Creates a {@link CompositeCurve} from a list of passed {@link Curve}s.
@@ -872,7 +872,7 @@ public interface GeometryFactory {
      *            curve in the list
      * @return created {@link CompositeCurve}
      */
-    public CompositeCurve createCompositeCurve( String id, CoordinateSystem crs, List<Curve> members );
+    public CompositeCurve createCompositeCurve( String id, CRS crs, List<Curve> members );
 
     /**
      * Creates a {@link CompositeSurface} from a list of passed {@link Surface}s.
@@ -887,7 +887,7 @@ public interface GeometryFactory {
      *            curves and must, when considered as a whole, form a single surface
      * @return created {@link CompositeSurface}
      */
-    public CompositeSurface createCompositeSurface( String id, CoordinateSystem crs, List<Surface> memberSurfaces );
+    public CompositeSurface createCompositeSurface( String id, CRS crs, List<Surface> memberSurfaces );
 
     /**
      * Creates a {@link CompositeSolid} from a list of passed {@link Solid}s.
@@ -902,7 +902,7 @@ public interface GeometryFactory {
      *            and which, when considered as a whole, form a single solid
      * @return created {@link CompositeSolid}
      */
-    public CompositeSolid createCompositeSolid( String id, CoordinateSystem crs, List<Solid> memberSolids );
+    public CompositeSolid createCompositeSolid( String id, CRS crs, List<Solid> memberSolids );
 
     /**
      * Creates a general {@link CompositeGeometry} from a list of primitive geometries.
@@ -915,7 +915,7 @@ public interface GeometryFactory {
      * @param memberPrimitives
      * @return created {@link CompositeGeometry}
      */
-    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs,
+    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CRS crs,
                                                                           List<GeometricPrimitive> memberPrimitives );
 
     /**
@@ -926,5 +926,5 @@ public interface GeometryFactory {
      * @param crs
      * @return the envelope
      */
-    public Envelope createEnvelope( List<Double> lowerCorner, List<Double> upperCorner, CoordinateSystem crs );
+    public Envelope createEnvelope( List<Double> lowerCorner, List<Double> upperCorner, CRS crs );
 }

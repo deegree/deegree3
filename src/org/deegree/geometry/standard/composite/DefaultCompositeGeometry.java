@@ -48,7 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
@@ -74,7 +74,7 @@ public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements
      *            coordinate reference system
      * @param memberPrimitives
      */
-    public DefaultCompositeGeometry( String id, CoordinateSystem crs, List<GeometricPrimitive> memberPrimitives ) {
+    public DefaultCompositeGeometry( String id, CRS crs, List<GeometricPrimitive> memberPrimitives ) {
         super( id, crs );
         this.memberPrimitives = memberPrimitives;
     }

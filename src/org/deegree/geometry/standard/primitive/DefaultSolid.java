@@ -45,8 +45,8 @@ package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
 
+import org.deegree.crs.CRS;
 import org.deegree.crs.CRSRegistry;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
@@ -78,7 +78,7 @@ public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
      * @param interiorSurfaces
      *            the interior surfaces of the solid, may be null or empty
      */
-    public DefaultSolid (String id, CoordinateSystem crs, Surface exteriorSurface, List<Surface> interiorSurfaces) {
+    public DefaultSolid (String id, CRS crs, Surface exteriorSurface, List<Surface> interiorSurfaces) {
         super (id, crs);
         this.exteriorSurface = exteriorSurface;
         this.interiorSurfaces = interiorSurfaces;

@@ -39,69 +39,87 @@
 package org.deegree.crs;
 
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.feature.Feature;
+import org.deegree.geometry.Geometry;
 
 /**
- * The <code>CRSDeliverable</code> class wraps the CoordinateSystem created and the name with which it was requested.
- * This is necessary since the internal naming of CoordinateSystem's is simplified (and thus is different). 
- * So adding the original requested name assures the same identity for the return object as was the input request.    
+ * Represents the name to a {@link CRS} that is not necessarily resolved or resolvable.
+ * <p>
+ * Their are two aspects that this class takes care of:
+ * <nl>
+ * <li>In applications, coordinate system are usually identified using strings (such as 'EPSG:4326'). However, there are
+ * multiple equivalent ways to encode coordinate system identifications (another one would be
+ * 'urn:ogc:def:crs:EPSG::4326'). By using this class to represent a CRS, the original spelling is maintained.</li>
+ * <li>A coordinate system may be specified which is not known to the {@link CRSRegistry}. However, for some operations
+ * this is not a necessarily a problem, e.g. a GML document may be read and transformed into {@link Feature} and
+ * {@link Geometry} objects.</li>
+ * </nl>
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author: ionita $
  * 
  * @version $Revision: $, $Date: $
- * 
  */
 public class CRS {
-    
+
     /**
-     * The CRS that is wrapped by the CRSDeliverable
+     * The string used to identify the coordinate system.
+     */
+    private String crsName;
+
+    /**
+     * The CoordinateSystem that is identified by the string.
      */
     private CoordinateSystem crs;
-    
+
     /**
-     * The String that may be used to denote the CRS 
+     * Creates a new {@link CRS} instance with a coordinate system name.
+     * 
+     * @param crsName
+     *            name of the crs (identification string) or null
      */
-    private String requestedID;
-     
-    /**
-     * The CRSCodeType that may be used to denote the CRS
-     */
-    private CRSCodeType requestedCode;
-            
-    public CRS( CoordinateSystem crs, String requestedID ) {
-        this.crs = crs;
-        this.setRequestedID( requestedID );
+    public CRS( String crsName ) {
+        this.crsName = crsName;
     }
-    
-    public CRS( CoordinateSystem crs, CRSCodeType requestedCode ) {
-        this.crs = crs;
-        this.setRequestedCode( requestedCode );
+
+    public CRS( CoordinateSystem crs ) {
+        if (crs != null) {
+            crsName = crs.getName();
+            this.crs = crs;
+        }
     }
-    
+
     /**
-     * Returns the Coordinate System encapsulated in the deliverable object
-     * @return
-     *      the Coordinate System
+     * Returns the string that identifies the {@link CRS}.
+     * 
+     * @return the string that identifies the coordinate system
      */
-    public CoordinateSystem getWrappedCRS() {
+    public String getName() {
+        return crsName;
+    }
+
+    /**
+     * Returns the corresponding {@link CRS} object.
+     * 
+     * @return the coordinate system, or null if the name is null
+     * @throws UnknownCRSException
+     */
+    public CoordinateSystem getWrappedCRS()
+                            throws UnknownCRSException {
+        if ( crs == null && crsName != null ) {
+            crs = CRSRegistry.lookup( crsName );
+        }
         return crs;
     }
 
-    public void setRequestedID( String requestedID ) {
-        this.requestedID = requestedID;
+    public boolean equals2( CRS otherCRS ) {
+        // TODO Auto-generated method stub
+        return false;
     }
-
-    public String getRequestedID() {
-        return requestedID;
+    
+    @Override
+    public String toString ()  {
+        return "{name=" + crsName + ", resolved=" + (crs != null) + "}";
     }
-
-    public void setRequestedCode( CRSCodeType requestedCode ) {
-        this.requestedCode = requestedCode;
-    }
-
-    public CRSCodeType getRequestedCode() {
-        return requestedCode;
-    }
-
 }

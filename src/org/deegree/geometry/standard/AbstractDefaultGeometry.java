@@ -43,7 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.geometry.standard;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 
@@ -51,9 +51,9 @@ public abstract class AbstractDefaultGeometry implements Geometry{
 
     protected String id;
     
-    protected CoordinateSystem crs;
+    protected CRS crs;
 
-    public AbstractDefaultGeometry( String id, CoordinateSystem crs ) {
+    public AbstractDefaultGeometry( String id, CRS crs ) {
         this.id = id;
         this.crs = crs;
     }
@@ -62,7 +62,7 @@ public abstract class AbstractDefaultGeometry implements Geometry{
         return id;
     }    
     
-    public CoordinateSystem getCoordinateSystem() {
+    public CRS getCoordinateSystem() {
         return crs;
     }
 

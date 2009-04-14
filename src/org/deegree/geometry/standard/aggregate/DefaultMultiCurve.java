@@ -45,7 +45,7 @@ package org.deegree.geometry.standard.aggregate;
 
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.primitive.Curve;
 
@@ -68,7 +68,7 @@ public class DefaultMultiCurve extends DefaultMultiGeometry<Curve> implements Mu
      *            coordinate reference system
      * @param members
      */
-    public DefaultMultiCurve( String id, CoordinateSystem crs, List<Curve> members ) {
+    public DefaultMultiCurve( String id, CRS crs, List<Curve> members ) {
         super( id, crs, members );
     }
     

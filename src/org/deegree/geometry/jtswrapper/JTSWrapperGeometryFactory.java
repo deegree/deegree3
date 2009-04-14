@@ -41,7 +41,7 @@ package org.deegree.geometry.jtswrapper;
 import java.util.List;
 
 import org.deegree.commons.types.Length;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.feature.gml.Angle;
 import org.deegree.geometry.AbstractGeometryFactory;
 import org.deegree.geometry.Envelope;
@@ -105,27 +105,27 @@ import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
 
     @Override
-    public CompositeCurve createCompositeCurve( String id, CoordinateSystem crs, List<Curve> curves ) {
+    public CompositeCurve createCompositeCurve( String id, CRS crs, List<Curve> curves ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public CompositeSolid createCompositeSolid( String id, CoordinateSystem crs, List<Solid> solids ) {
+    public CompositeSolid createCompositeSolid( String id, CRS crs, List<Solid> solids ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public CompositeSurface createCompositeSurface( String id, CoordinateSystem crs, List<Surface> surfaces ) {
+    public CompositeSurface createCompositeSurface( String id, CRS crs, List<Surface> surfaces ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public Curve createCurve( String id, Point[][] coordinates, CoordinateSystem crs ) {
+    public Curve createCurve( String id, Point[][] coordinates, CRS crs ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public Curve createCurve( String id, CurveSegment[] segments, CoordinateSystem crs ) {
+    public Curve createCurve( String id, CurveSegment[] segments, CRS crs ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
@@ -135,13 +135,13 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs,
+    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CRS crs,
                                                                           List<GeometricPrimitive> memberPrimitives ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public MultiCurve createMultiCurve( String id, CoordinateSystem crs, List<Curve> curves ) {
+    public MultiCurve createMultiCurve( String id, CRS crs, List<Curve> curves ) {
         if ( curves == null || curves.size() == 0 ) {
             return null;
         }
@@ -151,7 +151,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public MultiGeometry<Geometry> createMultiGeometry( String id, CoordinateSystem crs, List<Geometry> geometries ) {
+    public MultiGeometry<Geometry> createMultiGeometry( String id, CRS crs, List<Geometry> geometries ) {
         if ( geometries == null || geometries.size() == 0 ) {
             return null;
         }
@@ -161,7 +161,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public MultiPoint createMultiPoint( String id, CoordinateSystem crs, List<Point> points ) {
+    public MultiPoint createMultiPoint( String id, CRS crs, List<Point> points ) {
         if ( points == null || points.size() == 0 ) {
             return null;
         }
@@ -171,12 +171,12 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public MultiSolid createMultiSolid( String id, CoordinateSystem crs, List<Solid> solids ) {
+    public MultiSolid createMultiSolid( String id, CRS crs, List<Solid> solids ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public MultiSurface createMultiSurface( String id, CoordinateSystem crs, List<Surface> surfaces ) {
+    public MultiSurface createMultiSurface( String id, CRS crs, List<Surface> surfaces ) {
         if ( surfaces == null || surfaces.size() == 0 ) {
             return null;
         }
@@ -186,29 +186,29 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Point createPoint( String id, double x, double y, CoordinateSystem crs ) {
+    public Point createPoint( String id, double x, double y, CRS crs ) {
         return new JTSWrapperPoint( id, 0.00001, crs, new double[] { x, y } );
     }
 
     @Override
-    public Point createPoint( String id, double x, double y, double z, CoordinateSystem crs ) {
+    public Point createPoint( String id, double x, double y, double z, CRS crs ) {
         return new JTSWrapperPoint( id, 0.00001, crs, new double[] { x, y, z } );
     }
 
     @Override
-    public Point createPoint( String id, double[] coordinates, double precision, CoordinateSystem crs ) {
+    public Point createPoint( String id, double[] coordinates, double precision, CRS crs ) {
         return new JTSWrapperPoint( id, precision, crs, coordinates );
     }
 
     @Override
-    public Point createPoint( String id, double[] coordinates, CoordinateSystem crs ) {
+    public Point createPoint( String id, double[] coordinates, CRS crs ) {
         // TODO
         // set useful precision value
         return new JTSWrapperPoint( id, 0.00001, crs, coordinates );
     }
 
     @Override
-    public Surface createSurface( String id, List<SurfacePatch> patches, CoordinateSystem crs ) {
+    public Surface createSurface( String id, List<SurfacePatch> patches, CRS crs ) {
         if ( patches == null || patches.size() == 0 ) {
             return null;
         }
@@ -223,7 +223,7 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Envelope createEnvelope( double[] min, double[] max, double precision, CoordinateSystem crs ) {
+    public Envelope createEnvelope( double[] min, double[] max, double precision, CRS crs ) {
         Point p1 = new JTSWrapperPoint( null, precision, crs, min );
         Point p2 = new JTSWrapperPoint( null, precision, crs, max );
         // JTS envelopes just stores 2-dimensional coordinates
@@ -231,14 +231,14 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Envelope createEnvelope( double[] min, double[] max, CoordinateSystem crs ) {
+    public Envelope createEnvelope( double[] min, double[] max, CRS crs ) {
         // TODO
         // useful value for precision
         return createEnvelope( min, max, 0.00001, crs );
     }
 
     @Override
-    public Envelope createEnvelope( List<Double> lowerCorner, List<Double> upperCorner, CoordinateSystem crs ) {
+    public Envelope createEnvelope( List<Double> lowerCorner, List<Double> upperCorner, CRS crs ) {
         if ( lowerCorner.size() != upperCorner.size() ) {
             throw new IllegalArgumentException( "LowerCorner must be of same dimension as upperCorner." );
         }
@@ -252,13 +252,13 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CoordinateSystem crs ) {
+    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CRS crs ) {
         return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, crs );
     }
 
     @Override
     public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, double precision,
-                                    CoordinateSystem crs ) {
+                                    CRS crs ) {
 
         return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, precision, crs );
     }
@@ -345,28 +345,28 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Ring createRing( String id, CoordinateSystem crs, List<Curve> members ) {
+    public Ring createRing( String id, CRS crs, List<Curve> members ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public LineString createLineString( String id, CoordinateSystem crs, List<Point> points ) {
+    public LineString createLineString( String id, CRS crs, List<Point> points ) {
         return new JTSWrapperLineString( id, points.get( 0 ).getPrecision(), crs,
                                          points.get( 0 ).getCoordinateDimension(), points );
     }
 
     @Override
-    public LinearRing createLinearRing( String id, CoordinateSystem crs, List<Point> points ) {
+    public LinearRing createLinearRing( String id, CRS crs, List<Point> points ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public OrientableCurve createOrientableCurve( String id, CoordinateSystem crs, Curve baseCurve, boolean isReversed ) {
+    public OrientableCurve createOrientableCurve( String id, CRS crs, Curve baseCurve, boolean isReversed ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public Polygon createPolygon( String id, CoordinateSystem crs, Ring exteriorRing, List<Ring> interiorRings ) {
+    public Polygon createPolygon( String id, CRS crs, Ring exteriorRing, List<Ring> interiorRings ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
@@ -386,38 +386,38 @@ public class JTSWrapperGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public OrientableSurface createOrientableSurface( String id, CoordinateSystem crs, Surface baseSurface,
+    public OrientableSurface createOrientableSurface( String id, CRS crs, Surface baseSurface,
                                                       boolean isReversed ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public PolyhedralSurface createPolyhedralSurface( String id, CoordinateSystem crs, List<PolygonPatch> memberPatches ) {
+    public PolyhedralSurface createPolyhedralSurface( String id, CRS crs, List<PolygonPatch> memberPatches ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public TriangulatedSurface createTriangulatedSurface( String id, CoordinateSystem crs, List<Triangle> memberPatches ) {
+    public TriangulatedSurface createTriangulatedSurface( String id, CRS crs, List<Triangle> memberPatches ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public Solid createSolid( String id, CoordinateSystem crs, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
+    public Solid createSolid( String id, CRS crs, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public MultiLineString createMultiLineString( String id, CoordinateSystem crs, List<LineString> members ) {
+    public MultiLineString createMultiLineString( String id, CRS crs, List<LineString> members ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public MultiPolygon createMultiPolygon( String id, CoordinateSystem crs, List<Polygon> members ) {
+    public MultiPolygon createMultiPolygon( String id, CRS crs, List<Polygon> members ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }
 
     @Override
-    public Tin createTin( String id, CoordinateSystem crs, List<List<LineStringSegment>> stopLines,
+    public Tin createTin( String id, CRS crs, List<List<LineStringSegment>> stopLines,
                           List<List<LineStringSegment>> breakLines, Length maxLength, List<Point> controlPoints ) {
         throw new UnsupportedOperationException( "not supported by JTS(Wrapper)" );
     }

@@ -42,6 +42,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.signum;
 
+import org.deegree.crs.CRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -300,7 +301,7 @@ public class RasterEnvelope {
      * 
      * @return the calculated envelope
      */
-    public Envelope getEnvelope( int width, int height, CoordinateSystem crs ) {
+    public Envelope getEnvelope( int width, int height, CRS crs ) {
         return getEnvelope( width, height, crs, RasterEnvelope.Type.OUTER );
     }
 
@@ -318,7 +319,7 @@ public class RasterEnvelope {
      * 
      * @return the calculated envelope
      */
-    public Envelope getEnvelope( int width, int height, CoordinateSystem crs, RasterEnvelope.Type type ) {
+    public Envelope getEnvelope( int width, int height, CRS crs, RasterEnvelope.Type type ) {
         GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
 
         double x0, y0, x1, y1;

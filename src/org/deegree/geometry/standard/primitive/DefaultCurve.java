@@ -46,7 +46,7 @@ package org.deegree.geometry.standard.primitive;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
@@ -77,7 +77,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
      * @param segments
      *            segments that constitute the curve
      */
-    public DefaultCurve( String id, CoordinateSystem crs, List<CurveSegment> segments ) {
+    public DefaultCurve( String id, CRS crs, List<CurveSegment> segments ) {
         super( id, crs );
         this.segments = new ArrayList<CurveSegment>( segments );
     }
@@ -87,7 +87,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
      * @param crs
      * @param segment
      */
-    public DefaultCurve( String id, CoordinateSystem crs, CurveSegment segment ) {
+    public DefaultCurve( String id, CRS crs, CurveSegment segment ) {
         super( id, crs );
         this.segments = new ArrayList<CurveSegment>( 1 );
         this.segments.add( segment );

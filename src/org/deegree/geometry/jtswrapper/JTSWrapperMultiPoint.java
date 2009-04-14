@@ -43,7 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.primitive.Point;
 
@@ -67,7 +67,7 @@ public class JTSWrapperMultiPoint extends JTSWrapperGeometry implements MultiPoi
      * @param precision
      * @param crs
      */
-    public JTSWrapperMultiPoint( String id, List<Point> points, int coordinateDimension, double precision, CoordinateSystem crs ) {
+    public JTSWrapperMultiPoint( String id, List<Point> points, int coordinateDimension, double precision, CRS crs ) {
         super( id, precision, crs, coordinateDimension );
         this.points = points;
         com.vividsolutions.jts.geom.Point[] pts = new com.vividsolutions.jts.geom.Point[points.size()];

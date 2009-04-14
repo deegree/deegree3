@@ -42,6 +42,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.deegree.commons.types.Length;
+import org.deegree.crs.CRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.feature.gml.Angle;
 import org.deegree.geometry.AbstractGeometryFactory;
@@ -164,54 +165,54 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public CompositeCurve createCompositeCurve( String id, CoordinateSystem crs, List<Curve> memberCurves ) {
+    public CompositeCurve createCompositeCurve( String id, CRS crs, List<Curve> memberCurves ) {
         return new DefaultCompositeCurve( id, crs, memberCurves );
     }
 
     @Override
-    public CompositeSolid createCompositeSolid( String id, CoordinateSystem crs, List<Solid> memberSolids ) {
+    public CompositeSolid createCompositeSolid( String id, CRS crs, List<Solid> memberSolids ) {
         return new DefaultCompositeSolid( id, crs, memberSolids );
     }
 
     @Override
-    public CompositeSurface createCompositeSurface( String id, CoordinateSystem crs, List<Surface> memberSurfaces ) {
+    public CompositeSurface createCompositeSurface( String id, CRS crs, List<Surface> memberSurfaces ) {
         return new DefaultCompositeSurface( id, crs, memberSurfaces );
     }
 
     @Override
-    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CoordinateSystem crs,
+    public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CRS crs,
                                                                           List<GeometricPrimitive> memberPrimitives ) {
         return new DefaultCompositeGeometry( id, crs, memberPrimitives );
     }
 
     @Override
-    public Curve createCurve( String id, Point[][] coordinates, CoordinateSystem crs ) {
+    public Curve createCurve( String id, Point[][] coordinates, CRS crs ) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Curve createCurve( String id, CurveSegment[] segments, CoordinateSystem crs ) {
+    public Curve createCurve( String id, CurveSegment[] segments, CRS crs ) {
         return new DefaultCurve( id, crs, Arrays.asList( segments ) );
     }
 
     @Override
-    public Envelope createEnvelope( double[] min, double[] max, double precision, CoordinateSystem crs ) {
+    public Envelope createEnvelope( double[] min, double[] max, double precision, CRS crs ) {
         return new DefaultEnvelope( null, crs, new DefaultPoint( null, crs, min ), new DefaultPoint( null, crs, max ) );
     }
 
     @Override
-    public Envelope createEnvelope( double[] min, double[] max, CoordinateSystem crs ) {
+    public Envelope createEnvelope( double[] min, double[] max, CRS crs ) {
         return new DefaultEnvelope( null, crs, new DefaultPoint( null, crs, min ), new DefaultPoint( null, crs, max ) );
     }
 
     @Override
-    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CoordinateSystem crs ) {
+    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CRS crs ) {
         return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, crs );
     }
 
     @Override
-    public Envelope createEnvelope( List<Double> lowerCorner, List<Double> upperCorner, CoordinateSystem crs ) {
+    public Envelope createEnvelope( List<Double> lowerCorner, List<Double> upperCorner, CRS crs ) {
         if ( lowerCorner.size() != upperCorner.size() ) {
             throw new IllegalArgumentException( "LowerCorner must be of same dimension as upperCorner." );
         }
@@ -226,7 +227,7 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, double precision,
-                                    CoordinateSystem crs ) {
+                                    CRS crs ) {
         return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, precision, crs );
     }
 
@@ -241,27 +242,27 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Point createPoint( String id, double x, double y, CoordinateSystem crs ) {
+    public Point createPoint( String id, double x, double y, CRS crs ) {
         return new DefaultPoint( id, crs, new double[] { x, y } );
     }
 
     @Override
-    public Point createPoint( String id, double x, double y, double z, CoordinateSystem crs ) {
+    public Point createPoint( String id, double x, double y, double z, CRS crs ) {
         return new DefaultPoint( id, crs, new double[] { x, y, z } );
     }
 
     @Override
-    public Point createPoint( String id, double[] coordinates, double precision, CoordinateSystem crs ) {
+    public Point createPoint( String id, double[] coordinates, double precision, CRS crs ) {
         return new DefaultPoint( id, crs, coordinates );
     }
 
     @Override
-    public Point createPoint( String id, double[] coordinates, CoordinateSystem crs ) {
+    public Point createPoint( String id, double[] coordinates, CRS crs ) {
         return new DefaultPoint( id, crs, coordinates );
     }
 
     @Override
-    public Surface createSurface( String id, List<SurfacePatch> patches, CoordinateSystem crs ) {
+    public Surface createSurface( String id, List<SurfacePatch> patches, CRS crs ) {
         return new DefaultSurface( id, crs, patches );
     }
 
@@ -322,27 +323,27 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public Ring createRing( String id, CoordinateSystem crs, List<Curve> members ) {
+    public Ring createRing( String id, CRS crs, List<Curve> members ) {
         return new DefaultRing( id, crs, members );
     }
 
     @Override
-    public LinearRing createLinearRing( String id, CoordinateSystem crs, List<Point> points ) {
+    public LinearRing createLinearRing( String id, CRS crs, List<Point> points ) {
         return new DefaultLinearRing( id, crs, points );
     }
 
     @Override
-    public LineString createLineString( String id, CoordinateSystem crs, List<Point> points ) {
+    public LineString createLineString( String id, CRS crs, List<Point> points ) {
         return new DefaultLineString( id, crs, points );
     }
 
     @Override
-    public OrientableCurve createOrientableCurve( String id, CoordinateSystem crs, Curve baseCurve, boolean isReversed ) {
+    public OrientableCurve createOrientableCurve( String id, CRS crs, Curve baseCurve, boolean isReversed ) {
         return new DefaultOrientableCurve( id, crs, baseCurve, isReversed );
     }
 
     @Override
-    public Polygon createPolygon( String id, CoordinateSystem crs, Ring exteriorRing, List<Ring> interiorRings ) {
+    public Polygon createPolygon( String id, CRS crs, Ring exteriorRing, List<Ring> interiorRings ) {
         return new DefaultPolygon( id, crs, exteriorRing, interiorRings );
     }
 
@@ -362,64 +363,64 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     }
 
     @Override
-    public OrientableSurface createOrientableSurface( String id, CoordinateSystem crs, Surface baseSurface,
+    public OrientableSurface createOrientableSurface( String id, CRS crs, Surface baseSurface,
                                                       boolean isReversed ) {
         return new DefaultOrientableSurface( id, crs, baseSurface, isReversed );
     }
 
     @Override
-    public PolyhedralSurface createPolyhedralSurface( String id, CoordinateSystem crs, List<PolygonPatch> memberPatches ) {
+    public PolyhedralSurface createPolyhedralSurface( String id, CRS crs, List<PolygonPatch> memberPatches ) {
         return new DefaultPolyhedralSurface( id, crs, memberPatches );
     }
 
     @Override
-    public TriangulatedSurface createTriangulatedSurface( String id, CoordinateSystem crs, List<Triangle> memberPatches ) {
+    public TriangulatedSurface createTriangulatedSurface( String id, CRS crs, List<Triangle> memberPatches ) {
         return new DefaultTriangulatedSurface( id, crs, memberPatches );
     }
 
     @Override
-    public Tin createTin( String id, CoordinateSystem crs, List<List<LineStringSegment>> stopLines,
+    public Tin createTin( String id, CRS crs, List<List<LineStringSegment>> stopLines,
                           List<List<LineStringSegment>> breakLines, Length maxLength, List<Point> controlPoints ) {
         return new DefaultTin( id, crs, stopLines, breakLines, maxLength, controlPoints );
     }
 
     @Override
-    public Solid createSolid( String id, CoordinateSystem crs, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
+    public Solid createSolid( String id, CRS crs, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
         return new DefaultSolid( id, crs, exteriorSurface, interiorSurfaces );
     }
 
     @Override
-    public MultiPoint createMultiPoint( String id, CoordinateSystem crs, List<Point> members ) {
+    public MultiPoint createMultiPoint( String id, CRS crs, List<Point> members ) {
         return new DefaultMultiPoint( id, crs, members );
     }
 
     @Override
-    public MultiCurve createMultiCurve( String id, CoordinateSystem crs, List<Curve> members ) {
+    public MultiCurve createMultiCurve( String id, CRS crs, List<Curve> members ) {
         return new DefaultMultiCurve( id, crs, members );
     }
 
     @Override
-    public MultiLineString createMultiLineString( String id, CoordinateSystem crs, List<LineString> members ) {
+    public MultiLineString createMultiLineString( String id, CRS crs, List<LineString> members ) {
         return new DefaultMultiLineString( id, crs, members );
     }
 
     @Override
-    public MultiSurface createMultiSurface( String id, CoordinateSystem crs, List<Surface> members ) {
+    public MultiSurface createMultiSurface( String id, CRS crs, List<Surface> members ) {
         return new DefaultMultiSurface( id, crs, members );
     }
 
     @Override
-    public MultiPolygon createMultiPolygon( String id, CoordinateSystem crs, List<Polygon> members ) {
+    public MultiPolygon createMultiPolygon( String id, CRS crs, List<Polygon> members ) {
         return new DefaultMultiPolygon( id, crs, members );
     }
 
     @Override
-    public MultiSolid createMultiSolid( String id, CoordinateSystem crs, List<Solid> members ) {
+    public MultiSolid createMultiSolid( String id, CRS crs, List<Solid> members ) {
         return new DefaultMultiSolid( id, crs, members );
     }
 
     @Override
-    public MultiGeometry<Geometry> createMultiGeometry( String id, CoordinateSystem crs, List<Geometry> members ) {
+    public MultiGeometry<Geometry> createMultiGeometry( String id, CRS crs, List<Geometry> members ) {
         return new DefaultMultiGeometry<Geometry>( id, crs, members );
     }
 

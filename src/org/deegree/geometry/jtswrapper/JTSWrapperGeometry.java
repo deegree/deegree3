@@ -40,7 +40,7 @@ package org.deegree.geometry.jtswrapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryException;
@@ -84,7 +84,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      */
     protected int coordinateDimension;
 
-    private CoordinateSystem crs;
+    private CRS crs;
 
     /**
      * the wrapped geometry
@@ -119,7 +119,7 @@ abstract class JTSWrapperGeometry implements Geometry {
      * @param crs
      * @param coordinateDimension
      */
-    JTSWrapperGeometry( String id, double precision, CoordinateSystem crs, int coordinateDimension ) {
+    JTSWrapperGeometry( String id, double precision, CRS crs, int coordinateDimension ) {
         this.crs = crs;
         this.precision = precision;
         this.coordinateDimension = coordinateDimension;
@@ -608,7 +608,7 @@ abstract class JTSWrapperGeometry implements Geometry {
         return coordinateDimension;
     }
 
-    public CoordinateSystem getCoordinateSystem() {
+    public CRS getCoordinateSystem() {
         return crs;
     }
 

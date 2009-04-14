@@ -52,8 +52,7 @@ import java.net.URL;
 import org.deegree.coverage.raster.geom.RasterEnvelope;
 import org.deegree.coverage.raster.geom.RasterEnvelope.Type;
 import org.deegree.coverage.raster.io.RasterFactory;
-import org.deegree.crs.CRSRegistry;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
@@ -92,11 +91,11 @@ public class GeoTIFFTest {
 
     /**
      * test the coordinate system of a GeoTIFF
+     * @throws UnknownCRSException 
      */
     @Test
-    public void geoTIFFCRS() {
-        assertTrue( raster.getEnvelope().getCoordinateSystem().getCode().getEquivalentString().equalsIgnoreCase(
-                                                                                                                 "EPSG:4326" ) );
+    public void geoTIFFCRS() throws UnknownCRSException {
+        assertTrue( raster.getEnvelope().getCoordinateSystem().getWrappedCRS().getEPSGCode().getCodeNo() == 4326);
     }
 
     /**
@@ -108,7 +107,7 @@ public class GeoTIFFTest {
     public void geoTIFFEnvelope()
                             throws UnknownCRSException {
         double precision = raster.getRasterEnvelope().getDelta();
-        CoordinateSystem crs = CRSRegistry.lookup( "EPSG:4326" );
+        CRS crs = new CRS( "EPSG:4326" );
 
         Envelope env = geomFactory.createEnvelope( new double[] { -113.69474315, 39.10223806 },
                                                    new double[] { -110.35882409, 41.54129761 }, precision, crs );

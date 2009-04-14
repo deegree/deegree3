@@ -138,13 +138,14 @@ public class RasterTransformer extends Transformer {
      *            the type of the interpolation
      * @return the transformed raster
      * @throws TransformationException
+     * @throws UnknownCRSException 
      */
     public SimpleRaster transform( AbstractRaster sourceRaster, Envelope dstEnvelope, int dstWidth, int dstHeight,
                                    InterpolationType interpolationType )
-                            throws TransformationException {
+                            throws TransformationException, UnknownCRSException {
         this.dstWidth = dstWidth;
         this.dstHeight = dstHeight;
-        this.srcCRS = sourceRaster.getCoordinateSystem();
+        this.srcCRS = sourceRaster.getCoordinateSystem().getWrappedCRS();
 
         AbstractRaster source = createSourceRaster( sourceRaster, dstEnvelope );
         RasterData srcRaster = source.getAsSimpleRaster().getReadOnlyRasterData();
@@ -265,11 +266,12 @@ public class RasterTransformer extends Transformer {
      * @return the transformed raster
      * @throws IllegalArgumentException
      * @throws TransformationException
+     * @throws UnknownCRSException 
      */
     public SimpleRaster transform( AbstractRaster sourceRaster, InterpolationType interpolationType )
-                            throws IllegalArgumentException, TransformationException {
+                            throws IllegalArgumentException, TransformationException, UnknownCRSException {
         GeometryTransformer gt = new GeometryTransformer( getTargetCRS() );
-        Envelope dstEnvelope = gt.transform( sourceRaster.getEnvelope(), sourceRaster.getCoordinateSystem() ).getEnvelope();
+        Envelope dstEnvelope = gt.transform( sourceRaster.getEnvelope(), sourceRaster.getCoordinateSystem().getWrappedCRS() ).getEnvelope();
 
         int srcWidth = sourceRaster.getColumns();
         int srcHeight = sourceRaster.getRows();

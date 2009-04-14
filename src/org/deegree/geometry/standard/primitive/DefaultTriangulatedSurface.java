@@ -45,7 +45,7 @@ package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.TriangulatedSurface;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
@@ -74,7 +74,7 @@ public class DefaultTriangulatedSurface extends AbstractDefaultGeometry implemen
      * @param patches
      *            patches that constitute the surface
      */
-    public DefaultTriangulatedSurface (String id, CoordinateSystem crs, List<Triangle> patches) {
+    public DefaultTriangulatedSurface (String id, CRS crs, List<Triangle> patches) {
         super (id, crs);
         this.patches = patches;
     }

@@ -46,8 +46,8 @@ package org.deegree.geometry.standard.primitive;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.crs.CRS;
 import org.deegree.crs.CRSRegistry;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
@@ -88,7 +88,7 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
      * @param interiorRings
      *            list of rings that define the inner boundaries, may be empty or null
      */
-    public DefaultPolygon( String id, CoordinateSystem crs, Ring exteriorRing, List<Ring> interiorRings ) {
+    public DefaultPolygon( String id, CRS crs, Ring exteriorRing, List<Ring> interiorRings ) {
         super( id, crs, createPatchList( exteriorRing, interiorRings ) );
         this.exteriorRing = exteriorRing;
         this.interiorRings = interiorRings;

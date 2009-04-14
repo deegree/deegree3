@@ -43,7 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.primitive.Point;
@@ -68,7 +68,7 @@ public class JTSWrapperGeometryCollection extends JTSWrapperGeometry implements 
      * @param coordinateDimension
      * @param geometries
      */
-    public JTSWrapperGeometryCollection( String id, double precision, CoordinateSystem crs, int coordinateDimension,
+    public JTSWrapperGeometryCollection( String id, double precision, CRS crs, int coordinateDimension,
                                          List<Geometry> geometries ) {
         super( id, precision, crs, coordinateDimension );
         this.geometries = geometries;

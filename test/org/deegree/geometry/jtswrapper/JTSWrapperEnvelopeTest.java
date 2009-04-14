@@ -48,12 +48,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import org.deegree.crs.CRSRegistry;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.jtswrapper.JTSWrapperEnvelope;
-import org.deegree.geometry.jtswrapper.JTSWrapperPoint;
 import org.deegree.geometry.primitive.Point;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,7 +70,7 @@ public class JTSWrapperEnvelopeTest {
 
     Point min1, max1, min2, max2, min3, max3, between;
 
-    static CoordinateSystem crs = CRSRegistry.lookupDummyCRS( "dummy" );
+    static CRS crs = new CRS ("dummy");
 
     static double delta = 0.0001;
 

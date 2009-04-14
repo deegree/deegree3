@@ -49,7 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.composite.CompositeSurface;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
@@ -79,7 +79,7 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
      *            surfaces that constitute the composited surface, the surfaces must join in pairs on common boundary
      *            curves and must, when considered as
      */
-    public DefaultCompositeSurface( String id, CoordinateSystem crs, List<Surface> memberSurfaces ) {
+    public DefaultCompositeSurface( String id, CRS crs, List<Surface> memberSurfaces ) {
         super( id, crs );
         this.memberSurfaces = memberSurfaces;
     }

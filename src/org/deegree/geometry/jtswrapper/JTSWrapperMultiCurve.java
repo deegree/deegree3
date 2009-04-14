@@ -44,7 +44,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
@@ -73,7 +73,7 @@ public class JTSWrapperMultiCurve extends JTSWrapperGeometry implements MultiCur
      * @param precision
      * @param crs
      */
-    public JTSWrapperMultiCurve( String id, List<Curve> curves, int coordinateDimension, double precision, CoordinateSystem crs ) {
+    public JTSWrapperMultiCurve( String id, List<Curve> curves, int coordinateDimension, double precision, CRS crs ) {
         super( id, precision, crs, coordinateDimension );
         this.curves = curves;        
         LineString[] ls = new LinearRing[curves.size()];

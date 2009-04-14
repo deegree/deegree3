@@ -101,8 +101,8 @@ public abstract class AbstractFeature implements Feature {
     }
 
     /**
-     * Helper method for calculating the envelope of a feature, respects multiple geometry properties, subfeatures and
-     * cycles in the feature structure.
+     * Helper method for calculating the envelope of a feature (or feature collection), respects multiple geometry
+     * properties, subfeatures and cycles in the feature structure.
      * 
      * TODO use caching to prevent permanent recalculation of bbox
      * 

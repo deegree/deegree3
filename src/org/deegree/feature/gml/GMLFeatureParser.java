@@ -63,6 +63,7 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;
@@ -80,6 +81,7 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
@@ -113,8 +115,8 @@ public class GMLFeatureParser extends XMLAdapter {
     private Map<PropertyType, CustomPropertyParser<?>> ptToParser = new HashMap<PropertyType, CustomPropertyParser<?>>();
 
     /**
-     * Creates a new <code>FeatureGMLAdapter</code> instance instance that is configured for building features with
-     * the specified feature types.
+     * Creates a new <code>FeatureGMLAdapter</code> instance instance that is configured for building features with the
+     * specified feature types.
      * 
      * @param schema
      *            schema
@@ -140,10 +142,10 @@ public class GMLFeatureParser extends XMLAdapter {
      * <code>XMLStreamReader</code> points at.
      * 
      * @param xmlStream
-     *            cursor must point at the <code>START_ELEMENT</code> event of the feature element, afterwards points
-     *            at the next event after the <code>END_ELEMENT</code> event of the feature element
-     * @param srsName
-     *            default SRS for all descendant geometry properties
+     *            cursor must point at the <code>START_ELEMENT</code> event of the feature element, afterwards points at
+     *            the next event after the <code>END_ELEMENT</code> event of the feature element
+     * @param crs
+     *            default CRS for all descendant geometry properties
      * @param idContext
      *            keeps track of object reference via (local) xlinks
      * @return object representation for the given feature element
@@ -151,7 +153,7 @@ public class GMLFeatureParser extends XMLAdapter {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Feature parseFeature( XMLStreamReaderWrapper xmlStream, String srsName, GMLIdContext idContext )
+    public Feature parseFeature( XMLStreamReaderWrapper xmlStream, CRS crs, GMLIdContext idContext )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         Feature feature = null;
@@ -171,6 +173,7 @@ public class GMLFeatureParser extends XMLAdapter {
         PropertyType activeDecl = declIter.next();
         int propOccurences = 0;
 
+        CRS activeCRS = crs;
         List<Property<?>> propertyList = new ArrayList<Property<?>>();
         while ( xmlStream.nextTag() == START_ELEMENT ) {
             QName propName = xmlStream.getName();
@@ -204,9 +207,14 @@ public class GMLFeatureParser extends XMLAdapter {
                 }
             }
 
-            Property<?> property = parseProperty( xmlStream, activeDecl, srsName, fid, propOccurences, idContext );
+            Property<?> property = parseProperty( xmlStream, activeDecl, activeCRS, fid, propOccurences, idContext );
             if ( property != null ) {
                 propertyList.add( property );
+                // if the property is 'gml:boundedBy', its srsName value sets the default CRS for the following
+                // properties of the feature
+                if ( QName.valueOf( "{http://www.opengis.net/gml}boundedBy" ).equals( propName ) ) {
+                    activeCRS = ( (Envelope) property.getValue() ).getCoordinateSystem();
+                }
             }
             propOccurences++;
         }
@@ -234,7 +242,7 @@ public class GMLFeatureParser extends XMLAdapter {
 
     private boolean isElementSubstitutableForProperty( QName elemName, PropertyType pt ) {
         LOG.debug( "Checking if '" + elemName + "' is a valid substitution for '" + pt.getName() + "'" );
-       
+
         QName ptName = pt.getName();
         if ( elemName.equals( ptName ) ) {
             LOG.debug( "Yep. Names match." );
@@ -242,23 +250,23 @@ public class GMLFeatureParser extends XMLAdapter {
         }
 
         XSElementDeclaration elementDecl = xsModel.getElementDeclaration( elemName.getLocalPart(),
-                                                                          elemName.getNamespaceURI() );        
-        
+                                                                          elemName.getNamespaceURI() );
+
         XSElementDeclaration propElementDecl = xsModel.getElementDeclaration( ptName.getLocalPart(),
-                                                                          ptName.getNamespaceURI() );
-       
-        if ( elementDecl == null || propElementDecl == null) {
+                                                                              ptName.getNamespaceURI() );
+
+        if ( elementDecl == null || propElementDecl == null ) {
             LOG.debug( "Not defined as a top level element." );
             return false;
         }
 
-        XSObjectList list = xsModel.getSubstitutionGroup( propElementDecl );      
-        for (int i = 0; i < list.getLength(); i++) {
-            if (list.item( i ).equals( elementDecl )) {
+        XSObjectList list = xsModel.getSubstitutionGroup( propElementDecl );
+        for ( int i = 0; i < list.getLength(); i++ ) {
+            if ( list.item( i ).equals( elementDecl ) ) {
                 LOG.debug( "Yep. In substitution group." );
                 return true;
             }
-        }        
+        }
 
         return false;
     }
@@ -280,8 +288,8 @@ public class GMLFeatureParser extends XMLAdapter {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Property<?> parseProperty( XMLStreamReaderWrapper xmlStream, PropertyType propDecl, String srsName,
-                                      String fid, int occurence, GMLIdContext idContext )
+    public Property<?> parseProperty( XMLStreamReaderWrapper xmlStream, PropertyType propDecl, CRS crs, String fid,
+                                      int occurence, GMLIdContext idContext )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Property<?> property = null;
@@ -300,7 +308,7 @@ public class GMLFeatureParser extends XMLAdapter {
                     xmlStream.nextTag();
                     // TODO don't create a new instance every time
                     GML311GeometryParser geometryParser = new GML311GeometryParser( geomFac, xmlStream );
-                    value = geometryParser.parseEnvelope( srsName );
+                    value = geometryParser.parseEnvelope( crs );
                     xmlStream.nextTag();
                 } else if ( propDecl instanceof CodePropertyType ) {
                     String codeSpace = xmlStream.getAttributeValue( null, "codeSpace" );
@@ -310,15 +318,15 @@ public class GMLFeatureParser extends XMLAdapter {
                     String uom = xmlStream.getAttributeValue( null, "uom" );
                     double number = xmlStream.getElementTextAsDouble();
                     value = new Measure( number, uom );
-                } else {                    
+                } else {
                     value = new GenericCustomPropertyParser().parse( xmlStream );
                 }
-                property = new GenericProperty<Object>( propDecl, propName, value );                
+                property = new GenericProperty<Object>( propDecl, propName, value );
             } else if ( propDecl instanceof GeometryPropertyType ) {
                 xmlStream.nextTag();
                 // TODO don't create a new instance every time
                 GML311GeometryParser geometryParser = new GML311GeometryParser( geomFac, xmlStream );
-                Geometry geometry = geometryParser.parseGeometry( srsName );
+                Geometry geometry = geometryParser.parseGeometry( crs );
                 property = new GenericProperty<Geometry>( propDecl, propName, geometry );
                 xmlStream.nextTag();
             } else if ( propDecl instanceof FeaturePropertyType ) {
@@ -346,7 +354,7 @@ public class GMLFeatureParser extends XMLAdapter {
                                                           propName, presentFt.getName() );
                         throw new XMLParsingException( xmlStream, msg );
                     }
-                    Feature subFeature = parseFeature( xmlStream, srsName, idContext );
+                    Feature subFeature = parseFeature( xmlStream, crs, idContext );
                     property = new GenericProperty<Feature>( propDecl, propName, subFeature );
                     xmlStream.skipElement();
                 }

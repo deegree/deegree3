@@ -54,7 +54,7 @@ import org.deegree.commons.filter.OperatorFilter;
 import org.deegree.commons.filter.logical.And;
 import org.deegree.commons.filter.spatial.BBOX;
 import org.deegree.commons.utils.Pair;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.CRS;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
@@ -89,7 +89,7 @@ public class ShapeDatastore {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public ShapeDatastore( String name, CoordinateSystem crs, Charset encoding ) throws FileNotFoundException,
+    public ShapeDatastore( String name, CRS crs, Charset encoding ) throws FileNotFoundException,
                             IOException {
         if ( name.toLowerCase().endsWith( ".shp" ) ) {
             name = name.substring( 0, name.length() - 4 );

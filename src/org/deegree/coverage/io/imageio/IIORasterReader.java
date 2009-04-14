@@ -62,6 +62,7 @@ import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterIOProvider;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.coverage.raster.io.RasterWriter;
+import org.deegree.crs.CRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
@@ -143,10 +144,9 @@ public class IIORasterReader implements RasterIOProvider, RasterReader {
         int height = reader.getHeight();
 
         RasterEnvelope rasterEnvelope;
-        CoordinateSystem crs = null;
 
         MetaDataReader metaDataReader = new MetaDataReader( reader.getMetaData() );
-        crs = metaDataReader.getCRS();
+        CoordinateSystem crs = metaDataReader.getCRS();
         rasterEnvelope = metaDataReader.getRasterEnvelope();
 
         if ( rasterEnvelope == null ) {
@@ -168,7 +168,7 @@ public class IIORasterReader implements RasterIOProvider, RasterReader {
 
         reader.close();
 
-        Envelope envelope = rasterEnvelope.getEnvelope( width, height, crs );
+        Envelope envelope = rasterEnvelope.getEnvelope( width, height, new CRS (crs) );
 
         // RasterDataContainer source = RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
         RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy() );

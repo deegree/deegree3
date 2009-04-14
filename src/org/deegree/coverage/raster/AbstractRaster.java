@@ -237,7 +237,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
     protected String envelopeString() {
         String epsg = "";
         if ( getEnvelope().getCoordinateSystem() != null ) {
-            epsg = getEnvelope().getCoordinateSystem().getCode().toString(); // added .toString() since the code retrieved was a CRSCodeType
+            epsg = getEnvelope().getCoordinateSystem().getName(); // added .toString() since the code retrieved was a CRSCodeType
         }
         return epsg + " " + getEnvelope().getMin().getX() + " " + getEnvelope().getMin().getY() + " "
                + getEnvelope().getMax().getX() + " " + getEnvelope().getMax().getY();
