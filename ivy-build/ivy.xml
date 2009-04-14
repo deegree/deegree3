@@ -6,9 +6,9 @@
 <ivy-module version="1.0">
   <info organisation="${module.organisation}" module="${module.name}" />
   <configurations>
-    <conf name="${module.name}-build" description="dependencies to build the entire common framework" />
-    <conf name="${module.name}-src" description="provide the source of the common framework" visibility="private" />
-    <conf name="${module.name}-release" description="dependencies to build the entire common framework and release all it's sources" />
+    <conf name="${module.name}-build" description="Dependencies needed to build the commons jar" />
+    <conf name="${module.name}-src" description="The source" visibility="private" />
+    <conf name="${module.name}-release" description="Dependencies to build the commons jar and release it's sources" />
   </configurations>
 
   <publications defaultconf="${module.name}-build">
@@ -22,11 +22,10 @@
     <!-- Needed for various calculations on points -->
     <dependency org="java3d" name="vecmath" rev="1.5.2" conf="${module.name}-build" />
 
-    <!--  The geometry package builds on jts (for now) -->
+    <!--  The geometry package depends on jts -->
     <dependency org="jts" name="jts" rev="1.8" conf="${module.name}-build" />
 
     <!-- Needed for the api -->
-    <!--<dependency org="org.slf4j" name="slf4j-api" rev="1.5.2" transitive="false" conf="commons-build->default"/>-->
     <dependency org="logging" name="slf4j-api" rev="1.5.2" conf="${module.name}-build" />
     <dependency org="logging" name="slf4j-log4j12" rev="1.5.2" conf="${module.name}-build" />
     <dependency org="logging" name="jcl-over-slf4j" rev="1.5.2" conf="${module.name}-build" />

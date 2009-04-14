@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -65,6 +66,7 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.Property;
 import org.deegree.feature.gml.schema.GMLApplicationSchemaXSDAdapter;
 import org.deegree.feature.gml.schema.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
@@ -307,4 +309,34 @@ public class GMLFeatureParserTest {
         }
 
     }
+    
+    @Test
+    public void testParsingCityGML()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException {
+        String schemaURL = "file:///home/schneider/workspace/schemas/citygml/profiles/base/1.0/CityGML.xsd";
+        GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
+                                                                                        GMLVersion.VERSION_31 );
+        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
+
+        URL docURL = new URL ("file:///home/schneider/Desktop/Stadt-Ettenheim-LoD3_edited_v1.0.0.gml");
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.next();
+        GMLIdContext idContext = new GMLIdContext();
+        
+        long begin = System.currentTimeMillis();
+        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature(
+                                                                            new XMLStreamReaderWrapper(
+                                                                                                        xmlReader,
+                                                                                                        docURL.toString() ),
+                                                                            "EPSG:31466", idContext );
+//        idContext.resolveXLinks();
+
+        long elapsed = System.currentTimeMillis() - begin;
+        System.out.println ("Parsing: " + elapsed + "[ms]");
+        
+        System.out.println( fc.size() );
+    }    
 }
