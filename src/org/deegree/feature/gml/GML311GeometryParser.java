@@ -100,6 +100,7 @@ import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
+import org.deegree.geometry.refs.PointReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,7 +150,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     // local names of all concrete elements substitutable for "gml:_ImplicitGeometry"
     private static final Set<String> implictGeometryElements = new HashSet<String>();
 
-    // local names of "gml:GeometricComplex", "gml:CompositeCurve", "gml:CompositeSurface" and  "gml:CompositeSolid" 
+    // local names of "gml:GeometricComplex", "gml:CompositeCurve", "gml:CompositeSurface" and "gml:CompositeSolid"
     private static final Set<String> complexElements = new HashSet<String>();
 
     static {
@@ -241,7 +242,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Geometry" element
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     public Geometry parseGeometry( CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
@@ -307,7 +308,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid <code>gml:_GeometricPrimitive</code> element
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     public GeometricPrimitive parseGeometricPrimitive( CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
@@ -367,7 +368,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_GeometricAggregate" element
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     public Geometry parseGeometricAggregate( CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
@@ -432,7 +433,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Geometry" element with geometric complex semantic
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     public Geometry parseAbstractGeometricComplex( CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
@@ -530,7 +531,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Curve" element
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     public Curve parseAbstractCurve( CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
@@ -592,7 +593,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Ring" element
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     public Ring parseAbstractRing( CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
@@ -651,7 +652,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Ring" element
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     public Surface parseAbstractSurface( CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
@@ -725,7 +726,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Ring" element
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     public Solid parseAbstractSolid( CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
@@ -777,7 +778,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid <code>gml:Point</code> element
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     public Point parsePoint( CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
@@ -826,17 +827,19 @@ public class GML311GeometryParser extends GML311BaseParser {
      * 
      * @return
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws XMLParsingException 
+     * @throws UnknownCRSException
+     * @throws XMLParsingException
      */
     public Point parsePointProperty( CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         Point point = null;
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
-        LOG.info( "Found geometry reference: '" + href + "'");
-        
-        if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
+        if ( href != null && href.length() > 0 ) {
+            LOG.info( "Found geometry reference: '" + href + "'" );
+            point = new PointReference( href );
+            // TODO check if href + Point element are present
+        } else if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
             // must be a 'gml:Point' element
             if ( !xmlStream.getLocalName().equals( "Point" ) ) {
                 String msg = "Error in 'gml:pointProperty' element. Expected a 'gml:Point' element.";
@@ -844,7 +847,7 @@ public class GML311GeometryParser extends GML311BaseParser {
             }
             point = parsePoint( defaultCRS );
         } else {
-            String msg = "Error in 'gml:pointProperty' element. Expected a 'gml:Point' element.";
+            String msg = "Error in 'gml:pointProperty' element. Expected a 'gml:Point' element or an 'xlink:href' attribute.";
             throw new XMLParsingException( xmlStream, msg );
         }
         xmlStream.nextTag();
@@ -862,8 +865,8 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      *             if the element is not a valid <code>gml:Curve</code> element
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws XMLParsingException 
+     * @throws UnknownCRSException
+     * @throws XMLParsingException
      */
     public LineString parseLineString( CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
@@ -885,7 +888,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 do {
                     if ( "pos".equals( name ) ) {
                         double[] coords = parseDoubleList();
-                        points.add( geomFac.createPoint( gid, coords, crs ));
+                        points.add( geomFac.createPoint( gid, coords, crs ) );
                     } else if ( "pointProperty".equals( name ) || "pointRep".equals( name ) ) {
                         points.add( parsePointProperty( crs ) );
                     } else if ( "coord".equals( name ) ) {
@@ -916,8 +919,8 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link Curve} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws XMLParsingException 
+     * @throws UnknownCRSException
+     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public Curve parseCurve( CRS defaultCRS )
@@ -948,7 +951,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link OrientableCurve} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      * @throws XMLParsingException
      */
     public OrientableCurve parseOrientableCurve( CRS defaultCRS )
@@ -979,8 +982,8 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link Ring} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws XMLParsingException 
+     * @throws UnknownCRSException
+     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public LinearRing parseLinearRing( CRS defaultCRS )
@@ -1007,7 +1010,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link Ring} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      * @throws XMLParsingException
      */
     public Ring parseRing( CRS defaultCRS )
@@ -1045,8 +1048,8 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            attribute
      * @return corresponding {@link Polygon} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws XMLParsingException 
+     * @throws UnknownCRSException
+     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public Polygon parsePolygon( CRS defaultCRS )
@@ -1119,7 +1122,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            attribute
      * @return corresponding {@link Surface} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      * @throws XMLParsingException
      */
     public Surface parseSurface( CRS defaultCRS )
@@ -1149,7 +1152,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link PolyhedralSurface} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      * @throws XMLParsingException
      */
     public PolyhedralSurface parsePolyhedralSurface( CRS defaultCRS )
@@ -1179,7 +1182,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link TriangulatedSurface} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      * @throws XMLParsingException
      */
     public TriangulatedSurface parseTriangulatedSurface( CRS defaultCRS )
@@ -1197,7 +1200,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         xmlStream.require( END_ELEMENT, GMLNS, "trianglePatches" );
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "TriangulatedSurface" );
-        return geomFac.createTriangulatedSurface( gid,  crs, memberPatches );
+        return geomFac.createTriangulatedSurface( gid, crs, memberPatches );
     }
 
     /**
@@ -1212,8 +1215,8 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            default CRS for the geometry, this is only used if the "gml:Tin" has no <code>srsName</code> attribute
      * @return corresponding {@link Tin} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws XMLParsingException 
+     * @throws UnknownCRSException
+     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public Tin parseTin( CRS defaultCRS )
@@ -1306,8 +1309,8 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link OrientableSurface} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws XMLParsingException 
+     * @throws UnknownCRSException
+     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public OrientableSurface parseOrientableSurface( CRS defaultCRS )
@@ -1338,8 +1341,8 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            attribute
      * @return corresponding {@link Solid} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws XMLParsingException 
+     * @throws UnknownCRSException
+     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public Solid parseSolid( CRS defaultCRS )
@@ -1394,7 +1397,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link CompositeCurve} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      * @throws XMLParsingException
      */
     public CompositeCurve parseCompositeCurve( CRS defaultCRS )
@@ -1432,8 +1435,8 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link CompositeSurface} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws XMLParsingException 
+     * @throws UnknownCRSException
+     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public CompositeSurface parseCompositeSurface( CRS defaultCRS )
@@ -1471,8 +1474,8 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link CompositeSolid} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws XMLParsingException 
+     * @throws UnknownCRSException
+     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public CompositeSolid parseCompositeSolid( CRS defaultCRS )
@@ -1510,7 +1513,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link CompositeGeometry} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      * @throws XMLParsingException
      */
     public CompositeGeometry<GeometricPrimitive> parseGeometricComplex( CRS defaultCRS )
@@ -1548,8 +1551,8 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiPoint} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws XMLParsingException 
+     * @throws UnknownCRSException
+     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public MultiPoint parseMultiPoint( CRS defaultCRS )
@@ -1595,8 +1598,8 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiCurve} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException 
-     * @throws XMLParsingException 
+     * @throws UnknownCRSException
+     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public MultiCurve parseMultiCurve( CRS defaultCRS )
@@ -1642,7 +1645,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiLineString} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException  
+     * @throws UnknownCRSException
      * @throws XMLParsingException
      */
     public MultiLineString parseMultiLineString( CRS defaultCRS )
@@ -1679,7 +1682,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiSurface} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException  
+     * @throws UnknownCRSException
      * @throws XMLParsingException
      */
     public MultiSurface parseMultiSurface( CRS defaultCRS )
@@ -1725,7 +1728,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiPolygon} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException  
+     * @throws UnknownCRSException
      * @throws XMLParsingException
      */
     public MultiPolygon parseMultiPolygon( CRS defaultCRS )
@@ -1762,7 +1765,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiSolid} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException  
+     * @throws UnknownCRSException
      * @throws XMLParsingException
      */
     public MultiSolid parseMultiSolid( CRS defaultCRS )
@@ -1808,7 +1811,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiGeometry} object
      * @throws XMLStreamException
-     * @throws UnknownCRSException  
+     * @throws UnknownCRSException
      * @throws XMLParsingException
      */
     public MultiGeometry<Geometry> parseMultiGeometry( CRS defaultCRS )
@@ -1855,7 +1858,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @return corresponding {@link Envelope} object
      * @throws XMLStreamException
      * @throws XMLParsingException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     public Envelope parseEnvelope( CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {

@@ -69,8 +69,8 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
 import org.deegree.feature.generic.GenericCustomPropertyParser;
-import org.deegree.feature.gml.GMLIdContext.XLinkProperty;
 import org.deegree.feature.i18n.Messages;
+import org.deegree.feature.refs.FeatureReference;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -223,12 +223,6 @@ public class GMLFeatureParser extends XMLAdapter {
 
         feature = ft.newFeature( fid, propertyList );
 
-        for ( Property<?> property : propertyList ) {
-            if ( property instanceof XLinkProperty ) {
-                ( (XLinkProperty) property ).setFeature( feature );
-            }
-        }
-
         if ( fid != null && !"".equals( fid ) ) {
             if ( idContext.getFeature( fid ) != null ) {
                 String msg = Messages.getMessage( "ERROR_FEATURE_ID_NOT_UNIQUE", fid );
@@ -332,14 +326,14 @@ public class GMLFeatureParser extends XMLAdapter {
             } else if ( propDecl instanceof FeaturePropertyType ) {
                 String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
                 if ( href != null ) {
-                    // remote feature (xlinked content)
-                    if ( !href.startsWith( "#" ) ) {
-                        String msg = Messages.getMessage( "ERROR_EXTERNAL_XLINK_NOT_SUPPORTED", href );
-                        throw new XMLParsingException( xmlStream, msg );
+                    FeatureReference refFeature = new FeatureReference(href, ( (FeaturePropertyType) propDecl ).getValueFt());
+
+                    // local feature reference?
+                    if ( href.startsWith( "#" ) ) {
+                        idContext.addFeatureReference (refFeature);
                     }
-                    String targetId = href.substring( 1 );
-                    property = idContext.addXLinkProperty( fid, propDecl, occurence, targetId );
-                    LOG.debug( "Added remote property..." );
+
+                    property = new GenericProperty<Feature> (propDecl, propName, refFeature);
                     xmlStream.nextTag();
                 } else {
                     // inline feature

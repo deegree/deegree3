@@ -48,24 +48,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.feature.Feature;
-import org.deegree.feature.Property;
+import org.deegree.feature.refs.FeatureReference;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.FeaturePropertyType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.refs.GeometryReference;
+import org.deegree.geometry.refs.PointReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Allows the lookup of GML objects by the value of their <code>gml:id</code> attribute.
+ * Keeps track of GML objects (currently features and geometries), their ids and local xlink references during the
+ * parsing of GML documents.
  * <p>
- * This functionality is essential for resolving local xlink-references (to {@link Feature} or {@link Geometry} objects)
- * at the end of the parsing process of a GML instance document.
+ * Essential for resolving local xlink-references (to {@link Feature} or {@link Geometry} objects) at the end of the
+ * parsing process of a GML instance document.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -78,109 +78,62 @@ public class GMLIdContext {
 
     private Map<String, Feature> idToFeature = new HashMap<String, Feature>();
 
-    private List<XLinkProperty> xlinkProperties = new ArrayList<XLinkProperty>();
+    private Map<String, Geometry> idToGeometry = new HashMap<String, Geometry>();
+
+    private List<FeatureReference> featureReferences = new ArrayList<FeatureReference>();
+
+    private List<GeometryReference> geometryReferences = new ArrayList<GeometryReference>();
 
     public void addFeature( Feature feature ) {
-        idToFeature.put( feature.getId(), feature );
+        String id = feature.getId();
+        if ( id != null && id.length() > 0 ) {
+            idToFeature.put( feature.getId(), feature );
+        }
+    }
+
+    public void addGeometry( Geometry geometry ) {
+        String id = geometry.getId();
+        if ( id != null && id.length() > 0 ) {
+            idToGeometry.put( geometry.getId(), geometry );
+        }
+    }
+
+    public void addFeatureReference( FeatureReference refFeature ) {
+        featureReferences.add (refFeature);
+    }
+
+    public PointReference addPointReference( String targetId ) {
+        PointReference ref = new PointReference( targetId );
+        geometryReferences.add( ref );
+        return ref;
     }
 
     public Feature getFeature( String fid ) {
         return idToFeature.get( fid );
-    }
-
-    public Property addXLinkProperty( String featureId, PropertyType pt, int occurence, String targetId ) {
-        XLinkProperty prop = new XLinkProperty( featureId, pt, occurence, targetId );
-        xlinkProperties.add( prop );
-        return prop;
-    }
-
-    public String toString() {
-        String s = "";
-        for ( XLinkProperty remoteProperty : xlinkProperties ) {
-            s += ( remoteProperty.targetId ) + "\n";
-        }
-        return s;
-    }
-
+    }    
+    
     /**
      * @throws XMLProcessingException
      */
     public void resolveXLinks( ApplicationSchema schema )
                             throws XMLProcessingException {
-        for ( XLinkProperty prop : xlinkProperties ) {
-            LOG.debug( "Resolving xlink-property with reference to '" + prop.targetId + "'" );
-            Object targetObject = idToFeature.get( prop.targetId );
+        for ( FeatureReference ref : featureReferences ) {
+            LOG.info( "Resolving feature reference to feature '" + ref.getId() + "'" );
+            Feature targetObject = idToFeature.get( ref.getId() );
             if ( targetObject == null ) {
-                String msg = "Cannot resolve reference to object with id '" + prop.targetId
-                             + "'. There is no such object in the document.";
+                String msg = "Cannot resolve reference to feature with id '" + ref.getId()
+                             + "'. There is no feature with this id in the document.";
                 throw new XMLProcessingException( msg );
             }
 
-            if ( prop.getType() instanceof FeaturePropertyType ) {
-                FeatureType requiredFt = ( (FeaturePropertyType) prop.getType() ).getValueFt();
-                if ( !( targetObject instanceof Feature ) ) {
-                    String msg = "Cannot resolve reference to object with id '" + prop.targetId
-                                 + "'. Property requires a feature property.";
-                    throw new XMLProcessingException( msg );
-                }
-                FeatureType presentFt = ( (Feature) targetObject ).getType();
-                if ( !schema.isValidSubstitution( requiredFt, presentFt ) ) {
-                    String msg = "Cannot resolve reference to object with id '" + prop.targetId
-                                 + "'. Property requires a feature of type '" + requiredFt.getName()
-                                 + "', but referenced object is of type '" + presentFt.getName() + "'.";
-                    throw new XMLProcessingException( msg );
-                }
+            FeatureType presentFt = targetObject.getType();
+            if ( !schema.isValidSubstitution( ref.getType(), presentFt ) ) {
+                String msg = "Cannot resolve reference to feature with id '" + ref.getId()
+                             + "'. Property requires a feature of type '" + ref.getType().getName()
+                             + "', but referenced object is of type '" + presentFt.getName() + "'.";
+                throw new XMLProcessingException( msg );
             }
-
-            prop.feature.setPropertyValue( prop.getName(), prop.occurence, targetObject );
-        }
-    }
-
-    /**
-     * Used to identify a (certain occurrence of a) {@link Property} of a {@link Feature}.
-     * 
-     * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
-     * @author last edited by: $Author:$
-     * 
-     * @version $Revision:$, $Date:$
-     */
-    class XLinkProperty implements Property<Object> {
-
-        String featureId;
-
-        Feature feature;
-
-        PropertyType pt;
-
-        int occurence;
-
-        String targetId;
-
-        private XLinkProperty( String featureId, PropertyType pt, int occurence, String targetId ) {
-            this.featureId = featureId;
-            this.pt = pt;
-            this.occurence = occurence;
-            this.targetId = targetId;
-        }
-
-        void setFeature( Feature feature ) {
-            this.feature = feature;
-        }
-
-        @Override
-        public QName getName() {
-            return pt.getName();
-        }
-
-        @Override
-        public PropertyType getType() {
-            return pt;
-        }
-
-        @Override
-        public Object getValue() {
-            // TODO Auto-generated method stub
-            return null;
+            ref.resolve( targetObject );
         }
     }
 }
