@@ -960,6 +960,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      *   &lt;/choice&gt;
      *   &lt;element ref=&quot;gml:posList&quot;/&gt;
      *   &lt;element ref=&quot;gml:coordinates&quot;/&gt;
+     *   &lt;element ref=&quot;gml:coord&quot;/&gt;
      * &lt;/choice&gt;
      * </pre>
      * 
@@ -990,6 +991,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
                 controlPoints = parsePosList( xmlStream, crs );
                 xmlStream.nextTag();
             } else if ( "coordinates".equals( name ) ) {
+                // deprecated since GML 3.1.0, only included for backward compatibility
                 controlPoints = parseCoordinates( xmlStream, crs );
                 xmlStream.nextTag();
             } else {
@@ -999,7 +1001,13 @@ class GML311CurveSegmentParser extends GML311BaseParser {
                     if ( "pos".equals( name ) ) {
                         controlPoints.add( parseDirectPositionType( xmlStream, crs ) );
                     } else if ( "pointProperty".equals( name ) || "pointRep".equals( name ) ) {
+                        // pointRep has been deprecated since GML 3.1.0, only included for backward compatibility
                         controlPoints.add( geometryParser.parsePointProperty( xmlStream, crs ) );
+                    } else if ( "coord".equals( name ) ) {
+                        // deprecated since GML 3.0, only included for backward compatibility
+                        double[] coords = parseCoordType( xmlStream );
+                        // anonymous point (no registering necessary)
+                        controlPoints.add( geomFac.createPoint( null, coords, crs ) );
                     } else {
                         break;
                     }
