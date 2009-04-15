@@ -59,6 +59,7 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.gml.GML311GeometryParser;
+import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
@@ -98,7 +99,7 @@ public class GML311GeometryValidator extends XMLAdapter {
      */
     public GML311GeometryValidator( XMLStreamReaderWrapper xmlStream, GMLValidationEventHandler gmlErrorHandler ) {
         this.xmlStream = xmlStream;
-        geomParser = new GML311GeometryParser( GeometryFactoryCreator.getInstance().getGeometryFactory(), xmlStream );
+        geomParser = new GML311GeometryParser( GeometryFactoryCreator.getInstance().getGeometryFactory(), new GMLIdContext() );
         this.gmlErrorHandler = gmlErrorHandler;
     }
 
@@ -128,7 +129,7 @@ public class GML311GeometryValidator extends XMLAdapter {
         ValidationEventRedirector eventRedirector = new ValidationEventRedirector( gmlErrorHandler, identifier );
         GeometryValidator geometryValidator = new GeometryValidator( eventRedirector );
         try {
-            geometryValidator.validateGeometry( geomParser.parseGeometry( new CRS("EPSG:28992") ) );
+            geometryValidator.validateGeometry( geomParser.parseGeometry(xmlStream, new CRS("EPSG:28992") ) );
         } catch ( XMLParsingException e ) {
             gmlErrorHandler.geometryParsingError( identifier, e );
         } catch ( XMLStreamException e ) {

@@ -16,9 +16,6 @@ import org.deegree.commons.types.Measure;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
-import org.deegree.crs.CRSRegistry;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.crs.exceptions.CRSConfigurationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
@@ -45,17 +42,17 @@ class GML311BaseParser {
 
     protected final GeometryFactory geomFac;
 
-    protected final XMLStreamReaderWrapper xmlStream;
+    protected final GMLIdContext idContext;
 
-    protected GML311BaseParser( GeometryFactory geomFac, XMLStreamReaderWrapper xmlStream ) {
+    protected GML311BaseParser( GeometryFactory geomFac, GMLIdContext idContext ) {
         this.geomFac = geomFac;
-        this.xmlStream = xmlStream;
+        this.idContext = idContext;
     }
 
-    protected Point parseDirectPositionType( CRS defaultCRS )
+    protected Point parseDirectPositionType( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException {
 
-        CRS crs = determineActiveCRS( defaultCRS );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         String s = xmlStream.getElementText();
         // don't use String.split(regex) here (speed)
@@ -76,15 +73,16 @@ class GML311BaseParser {
         return geomFac.createPoint( null, doubles, crs );
     }
 
-    protected List<Point> parsePosList( CRS crs )
+    protected List<Point> parsePosList( XMLStreamReaderWrapper xmlStream, CRS crs )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
-        int coordDim = determineCoordDimensions( -1 );
-        if (coordDim == -1 && crs != null) {
+        int coordDim = determineCoordDimensions( xmlStream, -1 );
+        if ( coordDim == -1 && crs != null ) {
             coordDim = crs.getWrappedCRS().getDimension();
         }
-        if (coordDim == -1 ) {
-            LOG.warn("No coordinate dimension information available. Defaulting to 2.");
+        if ( coordDim == -1 ) {
+            LOG.warn( "No coordinate dimension information available. Defaulting to 2." );
+            coordDim =2;
         }
 
         String s = xmlStream.getElementText();
@@ -120,7 +118,7 @@ class GML311BaseParser {
         return points;
     }
 
-    protected List<Point> parseCoordinates( CRS crs )
+    protected List<Point> parseCoordinates( XMLStreamReaderWrapper xmlStream, CRS crs )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         String decimalSeparator = xmlStream.getAttributeValueWDefault( "decimal", "." );
@@ -161,7 +159,7 @@ class GML311BaseParser {
         return points;
     }
 
-    protected double[] parseCoordType()
+    protected double[] parseCoordType( XMLStreamReaderWrapper xmlStream )
                             throws XMLStreamException {
 
         int event = xmlStream.nextTag();
@@ -202,7 +200,7 @@ class GML311BaseParser {
         return new double[] { x, y, z };
     }
 
-    protected Length parseLengthType()
+    protected Length parseLengthType( XMLStreamReaderWrapper xmlStream )
                             throws XMLStreamException {
         String uom = xmlStream.getAttributeValue( null, "uom" );
         if ( uom == null ) {
@@ -221,7 +219,7 @@ class GML311BaseParser {
         return new Length( value, uom );
     }
 
-    protected Angle parseAngleType()
+    protected Angle parseAngleType( XMLStreamReaderWrapper xmlStream )
                             throws XMLStreamException {
         String uom = xmlStream.getAttributeValue( null, "uom" );
         if ( uom == null ) {
@@ -240,7 +238,7 @@ class GML311BaseParser {
         return new Angle( value, uom );
     }
 
-    protected Measure parseMeasureType()
+    protected Measure parseMeasureType( XMLStreamReaderWrapper xmlStream )
                             throws XMLStreamException {
         String uom = xmlStream.getAttributeValue( null, "uom" );
         if ( uom == null ) {
@@ -268,7 +266,7 @@ class GML311BaseParser {
      *            attribute
      * @return the applicable CRS, may be null
      */
-    protected CRS determineActiveCRS( CRS defaultCRS ) {
+    protected CRS determineActiveCRS( XMLStreamReaderWrapper xmlStream, CRS defaultCRS ) {
         CRS activeCRS = defaultCRS;
         String srsName = xmlStream.getAttributeValue( null, "srsName" );
         if ( !( srsName == null || srsName.length() == 0 ) ) {
@@ -279,7 +277,7 @@ class GML311BaseParser {
         return activeCRS;
     }
 
-    protected double[] parseDoubleList()
+    protected double[] parseDoubleList( XMLStreamReaderWrapper xmlStream )
                             throws XMLParsingException, XMLStreamException {
         String s = xmlStream.getElementText();
         // don't use String.split(regex) here (speed)
@@ -306,7 +304,7 @@ class GML311BaseParser {
      * 
      * @return true, if the <code>orientation</attribute> is '+' or not present, false if the attribute is '-'
      */
-    protected boolean parseOrientation() {
+    protected boolean parseOrientation( XMLStreamReaderWrapper xmlStream ) {
 
         String orientation = xmlStream.getAttributeValueWDefault( "orientation", "-" );
         if ( "-".equals( orientation ) ) {
@@ -326,7 +324,7 @@ class GML311BaseParser {
      *            attribute
      * @return coordinate dimensionality
      */
-    protected int determineCoordDimensions( int defaultCoordDimensions ) {
+    protected int determineCoordDimensions( XMLStreamReaderWrapper xmlStream, int defaultCoordDimensions ) {
 
         String srsDimension = xmlStream.getAttributeValueWDefault( "srsDimension", "" + defaultCoordDimensions );
         int coordDimensions = 0;

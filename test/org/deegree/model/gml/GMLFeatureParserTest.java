@@ -93,7 +93,8 @@ public class GMLFeatureParserTest {
 
     @Test
     public void testGenericFeatureParsing()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
 
         // manually set up a simple "app:Country" feature type
         List<PropertyType> propDecls = new ArrayList<PropertyType>();
@@ -112,9 +113,7 @@ public class GMLFeatureParserTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        GMLIdContext idContext = new GMLIdContext();
-        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
-                                                idContext );
+        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
         xmlReader.close();
 
         Assert.assertEquals( new QName( "http://www.deegree.org/app", "Country" ), feature.getName() );
@@ -129,7 +128,8 @@ public class GMLFeatureParserTest {
 
     @Test
     public void testGenericFeatureParsingNoNS()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
 
         // manually set up a simple "app:Country" feature type
         List<PropertyType> propDecls = new ArrayList<PropertyType>();
@@ -148,8 +148,7 @@ public class GMLFeatureParserTest {
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
-                                                idContext );
+        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
         xmlReader.close();
 
         Assert.assertEquals( new QName( "Country" ), feature.getName() );
@@ -169,7 +168,8 @@ public class GMLFeatureParserTest {
 
     @Test
     public void testGenericFeatureCollectionParsing()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
 
         FeatureType[] fts = new FeatureType[2];
 
@@ -195,8 +195,7 @@ public class GMLFeatureParserTest {
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
-                                                idContext );
+        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
         xmlReader.close();
 
         // Assert.assertEquals( new QName( "http://www.deegree.org/app", "Country" ), feature.getName() );
@@ -208,62 +207,64 @@ public class GMLFeatureParserTest {
     @Test
     public void testParsingIMRO2008FeatureCollection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException, XMLParsingException, UnknownCRSException {
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException {
 
         String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2008/IMRO2008-with-xlinks.xsd";
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema );
+
+        GMLIdContext idContext = new GMLIdContext();
+        GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema, idContext );
 
         URL docURL = new URL(
                               "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.0964.000matrixplan2-0003.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
-        GMLIdContext idContext = new GMLIdContext();
-        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
-                                                   idContext );
-        System.out.println ("A");
-        idContext.resolveXLinks(schema);
-        System.out.println ("B");
+        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
+        System.out.println( "A" );
+        idContext.resolveXLinks( schema );
+        System.out.println( "B" );
         xmlReader.close();
     }
 
     @Test
     public void testParsingIMRO2006FeatureCollection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException, XMLParsingException, UnknownCRSException {
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException {
 
         String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2006/IMRO2006-adapted.xsd";
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
         FeatureType ft = schema.getFeatureType( QName.valueOf( "{http://www.ravi.nl/imro2006}Bestemmingsplangebied" ) );
-        System.out.println (ft);
-        
-        
-//        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
-//
-//        URL docURL = new URL(
-//                              "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.02020000705-.gml" );
-//        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
-//                                                                                         docURL.openStream() );
-//        xmlReader.nextTag();
-//        GMLIdContext idContext = new GMLIdContext();
-//        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
-//                                                   idContext );
-//        System.out.println (idContext);
-//
-////        idContext.resolveXLinks();
-//
-//        xmlReader.close();
+        System.out.println( ft );
+
+        // GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
+        //
+        // URL docURL = new URL(
+        // "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.02020000705-.gml" );
+        // XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+        // docURL.openStream() );
+        // xmlReader.nextTag();
+        // GMLIdContext idContext = new GMLIdContext();
+        // Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
+        // idContext );
+        // System.out.println (idContext);
+        //
+        // // idContext.resolveXLinks();
+        //
+        // xmlReader.close();
     }
 
     @Test
     public void testParsingXPlanGMLFeatureCollection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException, XMLParsingException, UnknownCRSException {
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException {
 
         String schemaURL = "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
@@ -275,16 +276,16 @@ public class GMLFeatureParserTest {
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
-                                                   idContext );
-//        idContext.resolveXLinks();
+        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
+        // idContext.resolveXLinks();
         xmlReader.close();
     }
 
     @Test
     public void testParsingPhilosopherFeatureCollection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException, XMLParsingException, UnknownCRSException {
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException {
         String schemaURL = this.getClass().getResource( "schema/Philosopher_typesafe.xsd" ).toString();
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
@@ -299,12 +300,12 @@ public class GMLFeatureParserTest {
                                                                             new XMLStreamReaderWrapper(
                                                                                                         xmlReader,
                                                                                                         docURL.toString() ),
-                                                                            null, idContext );       
-//        idContext.resolveXLinks();
+                                                                            null );
+        // idContext.resolveXLinks();
 
-        for (Feature member: fc) {
-            System.out.println (member.getId());
+        for ( Feature member : fc ) {
+            System.out.println( member.getId() );
         }
-        
+
     }
 }

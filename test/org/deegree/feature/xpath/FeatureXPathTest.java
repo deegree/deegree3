@@ -93,15 +93,15 @@ public class FeatureXPathTest {
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema );
+        GMLIdContext idContext = new GMLIdContext();
+        GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema, idContext );
 
         URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        GMLIdContext idContext = new GMLIdContext();
         fc = (FeatureCollection) gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ),
-                                                          null, idContext );
+                                                          null);
         idContext.resolveXLinks( schema );
 
         for ( Feature member : fc ) {

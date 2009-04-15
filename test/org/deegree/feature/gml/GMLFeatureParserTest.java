@@ -114,9 +114,7 @@ public class GMLFeatureParserTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        GMLIdContext idContext = new GMLIdContext();
-        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
-                                                idContext );
+        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
         xmlReader.close();
 
         Assert.assertEquals( new QName( "http://www.deegree.org/app", "Country" ), feature.getName() );
@@ -151,8 +149,7 @@ public class GMLFeatureParserTest {
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
-                                                idContext );
+        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
         xmlReader.close();
 
         Assert.assertEquals( new QName( "Country" ), feature.getName() );
@@ -199,8 +196,7 @@ public class GMLFeatureParserTest {
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
-                                                idContext );
+        Feature feature = adapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
         xmlReader.close();
 
         // Assert.assertEquals( new QName( "http://www.deegree.org/app", "Country" ), feature.getName() );
@@ -219,7 +215,6 @@ public class GMLFeatureParserTest {
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema );
 
         URL docURL = new URL(
                               "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.0964.000matrixplan2-0003.gml" );
@@ -227,8 +222,8 @@ public class GMLFeatureParserTest {
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
-                                                   idContext );
+        GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema, idContext );
+        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
         System.out.println( "A" );
         idContext.resolveXLinks( schema );
         System.out.println( "B" );
@@ -244,7 +239,6 @@ public class GMLFeatureParserTest {
         String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2006/IMRO2006-adapted.xsd";
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
 
         URL docURL = new URL(
                               "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.02020000705-.gml" );
@@ -252,8 +246,9 @@ public class GMLFeatureParserTest {
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
-        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
-                                                   idContext );
+        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema(), idContext );
+        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
+
         System.out.println( idContext );
 
         // idContext.resolveXLinks();
@@ -276,10 +271,7 @@ public class GMLFeatureParserTest {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
-        GMLIdContext idContext = new GMLIdContext();
-        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null,
-                                                   idContext );
-        // idContext.resolveXLinks();
+        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
         xmlReader.close();
     }
 
@@ -291,26 +283,27 @@ public class GMLFeatureParserTest {
         String schemaURL = this.getClass().getResource( "schema/Philosopher_typesafe.xsd" ).toString();
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
+        ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
+        GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema, idContext );
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature(
                                                                             new XMLStreamReaderWrapper(
                                                                                                         xmlReader,
                                                                                                         docURL.toString() ),
-                                                                            null, idContext );
-        // idContext.resolveXLinks();
+                                                                            null );
+        idContext.resolveXLinks( schema );
 
         for ( Feature member : fc ) {
             System.out.println( member.getId() );
         }
 
     }
-    
+
     @Test
     public void testParsingCityGML()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
@@ -319,32 +312,31 @@ public class GMLFeatureParserTest {
         String schemaURL = "file:///home/schneider/workspace/schemas/citygml/profiles/base/1.0/CityGML.xsd";
         GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.VERSION_31 );
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
 
-        URL docURL = new URL ("file:///home/schneider/Desktop/Stadt-Ettenheim-LoD3_edited_v1.0.0.gml");
+        URL docURL = new URL( "file:///home/schneider/Desktop/Stadt-Ettenheim-LoD3_edited_v1.0.0.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
-        
+        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema(), idContext );
         long begin = System.currentTimeMillis();
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature(
                                                                             new XMLStreamReaderWrapper(
                                                                                                         xmlReader,
                                                                                                         docURL.toString() ),
-                                                                            new CRS("EPSG:31466"), idContext );
-//        idContext.resolveXLinks();
+                                                                            new CRS( "EPSG:31466" ) );
+        // idContext.resolveXLinks();
 
         long elapsed = System.currentTimeMillis() - begin;
-        System.out.println ("Parsing: " + elapsed + "[ms]");
-        
+        System.out.println( "Parsing: " + elapsed + "[ms]" );
+
         System.out.println( fc.size() );
         Feature first = fc.iterator().next();
-        for (Property prop : first.getProperties()) {
-            System.out.println( prop.getName() + "="  +prop.getValue() );
-            if (prop.getValue() instanceof Geometry) {
-                System.out.println( ((Geometry)prop.getValue()).getCoordinateSystem() );    
+        for ( Property prop : first.getProperties() ) {
+            System.out.println( prop.getName() + "=" + prop.getValue() );
+            if ( prop.getValue() instanceof Geometry ) {
+                System.out.println( ( (Geometry) prop.getValue() ).getCoordinateSystem() );
             }
         }
-    }    
+    }
 }

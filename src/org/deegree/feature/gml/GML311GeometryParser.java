@@ -66,6 +66,7 @@ import org.deegree.feature.i18n.Messages;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
@@ -207,11 +208,15 @@ public class GML311GeometryParser extends GML311BaseParser {
         complexElements.add( "GeometricComplex" );
     }
 
-    public GML311GeometryParser( GeometryFactory geomFac, XMLStreamReaderWrapper xmlStream ) {
-        super( geomFac, xmlStream );
-        curveSegmentParser = new GML311CurveSegmentParser( this, geomFac, xmlStream );
-        surfacePatchParser = new GML311SurfacePatchParser( this, geomFac, xmlStream );
+    public GML311GeometryParser( GeometryFactory geomFac, GMLIdContext idContext ) {
+        super( geomFac, idContext );
+        curveSegmentParser = new GML311CurveSegmentParser( this, geomFac, idContext );
+        surfacePatchParser = new GML311SurfacePatchParser( this, geomFac, idContext );
     }
+
+    public GML311GeometryParser() {
+        this (GeometryFactoryCreator.getInstance().getGeometryFactory(), new GMLIdContext());
+    }    
 
     /**
      * Returns the object representation for the given <code>gml:_Geometry</code> element event that the cursor of the
@@ -244,7 +249,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Geometry parseGeometry( CRS defaultCRS )
+    public Geometry parseGeometry( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Geometry geometry = null;
@@ -257,15 +262,15 @@ public class GML311GeometryParser extends GML311BaseParser {
 
         String name = xmlStream.getLocalName();
         if ( primitiveElements.contains( name ) ) {
-            geometry = parseGeometricPrimitive( defaultCRS );
+            geometry = parseGeometricPrimitive( xmlStream, defaultCRS );
         } else if ( ringElements.contains( name ) ) {
-            geometry = parseAbstractRing( defaultCRS );
+            geometry = parseAbstractRing( xmlStream, defaultCRS );
         } else if ( aggregateElements.contains( name ) ) {
-            geometry = parseGeometricAggregate( defaultCRS );
+            geometry = parseGeometricAggregate( xmlStream, defaultCRS );
         } else if ( complexElements.contains( name ) ) {
-            geometry = parseAbstractGeometricComplex( defaultCRS );
+            geometry = parseAbstractGeometricComplex( xmlStream, defaultCRS );
         } else if ( implictGeometryElements.contains( name ) ) {
-            geometry = parseImplicitGeometry( defaultCRS );
+            geometry = parseImplicitGeometry( xmlStream, defaultCRS );
         } else {
             String msg = "Invalid GML geometry: '" + xmlStream.getName() + "' is not a GML geometry element.";
             throw new XMLParsingException( xmlStream, msg );
@@ -310,7 +315,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public GeometricPrimitive parseGeometricPrimitive( CRS defaultCRS )
+    public GeometricPrimitive parseGeometricPrimitive( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         GeometricPrimitive primitive = null;
@@ -323,15 +328,15 @@ public class GML311GeometryParser extends GML311BaseParser {
 
         String name = xmlStream.getLocalName();
         if ( name.equals( "Point" ) ) {
-            primitive = parsePoint( defaultCRS );
+            primitive = parsePoint( xmlStream, defaultCRS );
         } else if ( curveElements.contains( name ) ) {
-            primitive = parseAbstractCurve( defaultCRS );
+            primitive = parseAbstractCurve( xmlStream, defaultCRS );
         } else if ( ringElements.contains( name ) ) {
-            primitive = parseAbstractRing( defaultCRS );
+            primitive = parseAbstractRing( xmlStream, defaultCRS );
         } else if ( surfaceElements.contains( name ) ) {
-            primitive = parseAbstractSurface( defaultCRS );
+            primitive = parseAbstractSurface( xmlStream, defaultCRS );
         } else if ( solidElements.contains( name ) ) {
-            primitive = parseAbstractSolid( defaultCRS );
+            primitive = parseAbstractSolid( xmlStream, defaultCRS );
         } else {
             String msg = "Invalid GML geometry: '" + xmlStream.getName()
                          + "' is not a GML primitive geometry element (gml:_GeometricPrimitive).";
@@ -370,7 +375,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Geometry parseGeometricAggregate( CRS defaultCRS )
+    public Geometry parseGeometricAggregate( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Geometry geometry = null;
@@ -383,19 +388,19 @@ public class GML311GeometryParser extends GML311BaseParser {
 
         String name = xmlStream.getLocalName();
         if ( name.equals( "MultiCurve" ) ) {
-            geometry = parseMultiCurve( defaultCRS );
+            geometry = parseMultiCurve( xmlStream, defaultCRS );
         } else if ( name.equals( "MultiGeometry" ) ) {
-            geometry = parseMultiGeometry( defaultCRS );
+            geometry = parseMultiGeometry( xmlStream, defaultCRS );
         } else if ( name.equals( "MultiLineString" ) ) {
-            geometry = parseMultiLineString( defaultCRS );
+            geometry = parseMultiLineString( xmlStream, defaultCRS );
         } else if ( name.equals( "MultiPoint" ) ) {
-            geometry = parseMultiPoint( defaultCRS );
+            geometry = parseMultiPoint( xmlStream, defaultCRS );
         } else if ( name.equals( "MultiPolygon" ) ) {
-            geometry = parseMultiPolygon( defaultCRS );
+            geometry = parseMultiPolygon( xmlStream, defaultCRS );
         } else if ( name.equals( "MultiSolid" ) ) {
-            geometry = parseMultiSolid( defaultCRS );
+            geometry = parseMultiSolid( xmlStream, defaultCRS );
         } else if ( name.equals( "MultiSurface" ) ) {
-            geometry = parseMultiSurface( defaultCRS );
+            geometry = parseMultiSurface( xmlStream, defaultCRS );
         } else {
             String msg = "Invalid GML geometry: '" + xmlStream.getName()
                          + "' is not a GML aggregate geometry element (gml:_GeometricAggregate).";
@@ -435,7 +440,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Geometry parseAbstractGeometricComplex( CRS defaultCRS )
+    public Geometry parseAbstractGeometricComplex( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Geometry geometry = null;
@@ -448,13 +453,13 @@ public class GML311GeometryParser extends GML311BaseParser {
 
         String name = xmlStream.getLocalName();
         if ( name.equals( "CompositeCurve" ) ) {
-            geometry = parseCompositeCurve( defaultCRS );
+            geometry = parseCompositeCurve( xmlStream, defaultCRS );
         } else if ( name.equals( "CompositeSolid" ) ) {
-            geometry = parseCompositeSolid( defaultCRS );
+            geometry = parseCompositeSolid( xmlStream, defaultCRS );
         } else if ( name.equals( "CompositeSurface" ) ) {
-            geometry = parseCompositeSurface( defaultCRS );
+            geometry = parseCompositeSurface( xmlStream, defaultCRS );
         } else if ( name.equals( "GeometricComplex" ) ) {
-            geometry = parseGeometricComplex( defaultCRS );
+            geometry = parseGeometricComplex( xmlStream, defaultCRS );
         } else {
             String msg = "Invalid GML geometry: '" + xmlStream.getName()
                          + "' is not a (supported) GML geometry element.";
@@ -487,7 +492,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      *             if the element is not a valid "gml:_ImplicitGeometry" element
      * @throws XMLStreamException
      */
-    public Geometry parseImplicitGeometry( CRS defaultCRS )
+    public Geometry parseImplicitGeometry( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException {
 
         Geometry geometry = null;
@@ -533,7 +538,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Curve parseAbstractCurve( CRS defaultCRS )
+    public Curve parseAbstractCurve( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Curve curve = null;
@@ -555,19 +560,19 @@ public class GML311GeometryParser extends GML311BaseParser {
 
         switch ( type ) {
         case Curve: {
-            curve = parseCurve( defaultCRS );
+            curve = parseCurve( xmlStream, defaultCRS );
             break;
         }
         case LineString: {
-            curve = parseLineString( defaultCRS );
+            curve = parseLineString( xmlStream, defaultCRS );
             break;
         }
         case CompositeCurve: {
-            curve = parseCompositeCurve( defaultCRS );
+            curve = parseCompositeCurve( xmlStream, defaultCRS );
             break;
         }
         case OrientableCurve: {
-            curve = parseOrientableCurve( defaultCRS );
+            curve = parseOrientableCurve( xmlStream, defaultCRS );
             break;
         }
         default:
@@ -595,7 +600,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Ring parseAbstractRing( CRS defaultCRS )
+    public Ring parseAbstractRing( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Ring ring = null;
@@ -617,11 +622,11 @@ public class GML311GeometryParser extends GML311BaseParser {
 
         switch ( type ) {
         case LinearRing: {
-            ring = parseLinearRing( defaultCRS );
+            ring = parseLinearRing( xmlStream, defaultCRS );
             break;
         }
         case Ring: {
-            ring = parseRing( defaultCRS );
+            ring = parseRing( xmlStream, defaultCRS );
             break;
         }
         default:
@@ -654,7 +659,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Surface parseAbstractSurface( CRS defaultCRS )
+    public Surface parseAbstractSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Surface surface = null;
@@ -676,31 +681,31 @@ public class GML311GeometryParser extends GML311BaseParser {
 
         switch ( type ) {
         case CompositeSurface: {
-            surface = parseCompositeSurface( defaultCRS );
+            surface = parseCompositeSurface( xmlStream, defaultCRS );
             break;
         }
         case OrientableSurface: {
-            surface = parseOrientableSurface( defaultCRS );
+            surface = parseOrientableSurface( xmlStream, defaultCRS );
             break;
         }
         case Polygon: {
-            surface = parsePolygon( defaultCRS );
+            surface = parsePolygon( xmlStream, defaultCRS );
             break;
         }
         case PolyhedralSurface: {
-            surface = parsePolyhedralSurface( defaultCRS );
+            surface = parsePolyhedralSurface( xmlStream, defaultCRS );
             break;
         }
         case Surface: {
-            surface = parseSurface( defaultCRS );
+            surface = parseSurface( xmlStream, defaultCRS );
             break;
         }
         case TriangulatedSurface: {
-            surface = parseTriangulatedSurface( defaultCRS );
+            surface = parseTriangulatedSurface( xmlStream, defaultCRS );
             break;
         }
         case Tin: {
-            surface = parseTin( defaultCRS );
+            surface = parseTin( xmlStream, defaultCRS );
             break;
         }
         default:
@@ -728,7 +733,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Solid parseAbstractSolid( CRS defaultCRS )
+    public Solid parseAbstractSolid( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Solid solid = null;
@@ -750,11 +755,11 @@ public class GML311GeometryParser extends GML311BaseParser {
 
         switch ( type ) {
         case Solid: {
-            solid = parseSolid( defaultCRS );
+            solid = parseSolid( xmlStream, defaultCRS );
             break;
         }
         case CompositeSolid: {
-            solid = parseCompositeSolid( defaultCRS );
+            solid = parseCompositeSolid( xmlStream, defaultCRS );
             break;
         }
         default: {
@@ -780,21 +785,21 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Point parsePoint( CRS defaultCRS )
+    public Point parsePoint( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Point point = null;
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         // must contain one of the following child elements: "gml:pos", "gml:coordinates" or "gml:coord"
         if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
             String name = xmlStream.getLocalName();
             if ( "pos".equals( name ) ) {
-                double[] coords = parseDoubleList();
+                double[] coords = parseDoubleList( xmlStream );
                 point = geomFac.createPoint( gid, coords, crs );
             } else if ( "coordinates".equals( name ) ) {
-                List<Point> points = parseCoordinates( crs );
+                List<Point> points = parseCoordinates( xmlStream, crs );
                 if ( points.size() != 1 ) {
                     String msg = "A gml:Point element must contain exactly one tuple of coordinates.";
                     throw new XMLParsingException( xmlStream, msg );
@@ -802,7 +807,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 point = points.get( 0 );
             } else if ( "coord".equals( name ) ) {
                 // deprecated since GML 3.0, only included for backward compatibility
-                double[] coords = parseCoordType();
+                double[] coords = parseCoordType( xmlStream );
                 point = geomFac.createPoint( gid, coords, crs );
 
             } else {
@@ -830,7 +835,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Point parsePointProperty( CRS defaultCRS )
+    public Point parsePointProperty( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
         Point point = null;
@@ -845,7 +850,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 String msg = "Error in 'gml:pointProperty' element. Expected a 'gml:Point' element.";
                 throw new XMLParsingException( xmlStream, msg );
             }
-            point = parsePoint( defaultCRS );
+            point = parsePoint( xmlStream, defaultCRS );
         } else {
             String msg = "Error in 'gml:pointProperty' element. Expected a 'gml:Point' element or an 'xlink:href' attribute.";
             throw new XMLParsingException( xmlStream, msg );
@@ -868,32 +873,32 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public LineString parseLineString( CRS defaultCRS )
+    public LineString parseLineString( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<Point> points = null;
         if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
             String name = xmlStream.getLocalName();
             if ( "posList".equals( name ) ) {
-                points = parsePosList( crs );
+                points = parsePosList( xmlStream, crs );
                 xmlStream.nextTag();
             } else if ( "coordinates".equals( name ) ) {
-                points = parseCoordinates( crs );
+                points = parseCoordinates( xmlStream, crs );
                 xmlStream.nextTag();
             } else {
                 points = new LinkedList<Point>();
                 do {
                     if ( "pos".equals( name ) ) {
-                        double[] coords = parseDoubleList();
+                        double[] coords = parseDoubleList( xmlStream );
                         points.add( geomFac.createPoint( gid, coords, crs ) );
                     } else if ( "pointProperty".equals( name ) || "pointRep".equals( name ) ) {
-                        points.add( parsePointProperty( crs ) );
+                        points.add( parsePointProperty( xmlStream, crs ) );
                     } else if ( "coord".equals( name ) ) {
                         // deprecated since GML 3.0, only included for backward compatibility
-                        double[] coords = parseCoordType();
+                        double[] coords = parseCoordType( xmlStream );
                         points.add( geomFac.createPoint( gid, coords, crs ) );
                     } else {
                         String msg = "Error in 'gml:LineString' element.";
@@ -923,18 +928,18 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      * @throws XMLParsingException
      */
-    public Curve parseCurve( CRS defaultCRS )
+    public Curve parseCurve( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         xmlStream.nextTag();
         xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "segments" );
         List<CurveSegment> segments = new LinkedList<CurveSegment>();
 
         while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
-            segments.add( curveSegmentParser.parseCurveSegment( crs ) );
+            segments.add( curveSegmentParser.parseCurveSegment( xmlStream, crs ) );
         }
 
         xmlStream.nextTag();
@@ -954,17 +959,17 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public OrientableCurve parseOrientableCurve( CRS defaultCRS )
+    public OrientableCurve parseOrientableCurve( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
-        boolean isReversed = !parseOrientation();
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        boolean isReversed = !parseOrientation( xmlStream );
 
         xmlStream.nextTag();
         xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "baseCurve" );
         xmlStream.nextTag();
-        Curve baseCurve = parseAbstractCurve( crs );
+        Curve baseCurve = parseAbstractCurve( xmlStream, crs );
         xmlStream.nextTag();
         xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "baseCurve" );
         xmlStream.nextTag();
@@ -986,13 +991,13 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      * @throws XMLParsingException
      */
-    public LinearRing parseLinearRing( CRS defaultCRS )
+    public LinearRing parseLinearRing( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
-        List<Point> points = curveSegmentParser.parseControlPoints( crs );
+        List<Point> points = curveSegmentParser.parseControlPoints( xmlStream, crs );
         if ( points.size() < 4 ) {
             String msg = "Error in 'gml:LinearRing' element. Must specify at least four points.";
             throw new XMLParsingException( xmlStream, msg );
@@ -1013,11 +1018,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Ring parseRing( CRS defaultCRS )
+    public Ring parseRing( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<Curve> memberCurves = new LinkedList<Curve>();
 
@@ -1031,7 +1036,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 String msg = "Error in 'gml:Ring' element. Expected a 'gml:_Curve' element.";
                 throw new XMLParsingException( xmlStream, msg );
             }
-            memberCurves.add( parseAbstractCurve( crs ) );
+            memberCurves.add( parseAbstractCurve( xmlStream, crs ) );
             xmlStream.nextTag();
             xmlStream.require( END_ELEMENT, GMLNS, "curveMember" );
         }
@@ -1052,11 +1057,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      * @throws XMLParsingException
      */
-    public Polygon parsePolygon( CRS defaultCRS )
+    public Polygon parsePolygon( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         Ring exteriorRing = null;
         List<Ring> interiorRings = new LinkedList<Ring>();
@@ -1068,7 +1073,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                     String msg = "Error in 'gml:Polygon' element. Expected a 'gml:_Ring' element.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                exteriorRing = parseAbstractRing( crs );
+                exteriorRing = parseAbstractRing( xmlStream, crs );
                 xmlStream.nextTag();
                 xmlStream.require( END_ELEMENT, GMLNS, "exterior" );
                 xmlStream.nextTag();
@@ -1077,7 +1082,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                     String msg = "Error in 'gml:Polygon' element. Expected a 'gml:LinearRing' element.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                exteriorRing = parseLinearRing( crs );
+                exteriorRing = parseLinearRing( xmlStream, crs );
                 xmlStream.nextTag();
                 xmlStream.require( END_ELEMENT, GMLNS, "outerBoundaryIs" );
                 xmlStream.nextTag();
@@ -1091,7 +1096,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                     String msg = "Error in 'gml:Polygon' element. Expected a 'gml:_Ring' element.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                interiorRings.add( parseAbstractRing( crs ) );
+                interiorRings.add( parseAbstractRing( xmlStream, crs ) );
                 xmlStream.nextTag();
                 xmlStream.require( END_ELEMENT, GMLNS, "interior" );
             } else if ( xmlStream.getLocalName().equals( "innerBoundaryIs" ) ) {
@@ -1099,7 +1104,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                     String msg = "Error in 'gml:Polygon' element. Expected a 'gml:LinearRing' element.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                interiorRings.add( parseLinearRing( crs ) );
+                interiorRings.add( parseLinearRing( xmlStream, crs ) );
                 xmlStream.nextTag();
                 xmlStream.require( END_ELEMENT, GMLNS, "innerBoundaryIs" );
             } else {
@@ -1125,17 +1130,17 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public Surface parseSurface( CRS defaultCRS )
+    public Surface parseSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<SurfacePatch> memberPatches = new LinkedList<SurfacePatch>();
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "patches" );
         while ( xmlStream.nextTag() == START_ELEMENT ) {
-            memberPatches.add( surfacePatchParser.parseSurfacePatch( crs ) );
+            memberPatches.add( surfacePatchParser.parseSurfacePatch( xmlStream, crs ) );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "patches" );
         xmlStream.nextTag();
@@ -1155,17 +1160,17 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public PolyhedralSurface parsePolyhedralSurface( CRS defaultCRS )
+    public PolyhedralSurface parsePolyhedralSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<PolygonPatch> memberPatches = new LinkedList<PolygonPatch>();
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "polygonPatches" );
         while ( xmlStream.nextTag() == START_ELEMENT ) {
-            memberPatches.add( surfacePatchParser.parsePolygonPatch( crs ) );
+            memberPatches.add( surfacePatchParser.parsePolygonPatch( xmlStream, crs ) );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "polygonPatches" );
         xmlStream.nextTag();
@@ -1185,17 +1190,17 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public TriangulatedSurface parseTriangulatedSurface( CRS defaultCRS )
+    public TriangulatedSurface parseTriangulatedSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<Triangle> memberPatches = new LinkedList<Triangle>();
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "trianglePatches" );
         while ( xmlStream.nextTag() == START_ELEMENT ) {
-            memberPatches.add( surfacePatchParser.parseTriangle( crs ) );
+            memberPatches.add( surfacePatchParser.parseTriangle( xmlStream, crs ) );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "trianglePatches" );
         xmlStream.nextTag();
@@ -1219,17 +1224,17 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      * @throws XMLParsingException
      */
-    public Tin parseTin( CRS defaultCRS )
+    public Tin parseTin( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "trianglePatches" );
         while ( xmlStream.nextTag() == START_ELEMENT ) {
             // validate syntactically, but ignore the content for instantiating the geometry
-            surfacePatchParser.parseTriangle( crs );
+            surfacePatchParser.parseTriangle( xmlStream, crs );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "trianglePatches" );
 
@@ -1239,7 +1244,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 List<LineStringSegment> segments = new LinkedList<LineStringSegment>();
                 while ( xmlStream.nextTag() == START_ELEMENT ) {
                     xmlStream.require( START_ELEMENT, GMLNS, "LineStringSegment" );
-                    segments.add( curveSegmentParser.parseLineStringSegment( crs ) );
+                    segments.add( curveSegmentParser.parseLineStringSegment( xmlStream, crs ) );
                     xmlStream.require( END_ELEMENT, GMLNS, "LineStringSegment" );
                 }
                 xmlStream.require( END_ELEMENT, GMLNS, "stopLines" );
@@ -1254,7 +1259,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 List<LineStringSegment> segments = new LinkedList<LineStringSegment>();
                 while ( xmlStream.nextTag() == START_ELEMENT ) {
                     xmlStream.require( START_ELEMENT, GMLNS, "LineStringSegment" );
-                    segments.add( curveSegmentParser.parseLineStringSegment( crs ) );
+                    segments.add( curveSegmentParser.parseLineStringSegment( xmlStream, crs ) );
                     xmlStream.require( END_ELEMENT, GMLNS, "LineStringSegment" );
                 }
                 xmlStream.require( END_ELEMENT, GMLNS, "breakLines" );
@@ -1264,7 +1269,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
 
         xmlStream.require( START_ELEMENT, GMLNS, "maxLength" );
-        Length maxLength = parseLengthType();
+        Length maxLength = parseLengthType( xmlStream );
         xmlStream.nextTag();
 
         List<Point> controlPoints = null;
@@ -1272,16 +1277,16 @@ public class GML311GeometryParser extends GML311BaseParser {
         if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
             String name = xmlStream.getLocalName();
             if ( "posList".equals( name ) ) {
-                controlPoints = parsePosList( crs );
+                controlPoints = parsePosList( xmlStream, crs );
                 xmlStream.nextTag();
             } else {
                 controlPoints = new LinkedList<Point>();
                 do {
                     if ( "pos".equals( name ) ) {
-                        double[] coords = parseDoubleList();
+                        double[] coords = parseDoubleList( xmlStream );
                         controlPoints.add( geomFac.createPoint( gid, coords, crs ) );
                     } else if ( "pointProperty".equals( name ) ) {
-                        controlPoints.add( parsePointProperty( crs ) );
+                        controlPoints.add( parsePointProperty( xmlStream, crs ) );
                     } else {
                         String msg = "Error in 'gml:Tin' element.";
                         throw new XMLParsingException( xmlStream, msg );
@@ -1313,17 +1318,17 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      * @throws XMLParsingException
      */
-    public OrientableSurface parseOrientableSurface( CRS defaultCRS )
+    public OrientableSurface parseOrientableSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
-        boolean isReversed = !parseOrientation();
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        boolean isReversed = !parseOrientation( xmlStream );
 
         xmlStream.nextTag();
         xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "baseSurface" );
         xmlStream.nextTag();
-        Surface baseSurface = parseAbstractSurface( crs );
+        Surface baseSurface = parseAbstractSurface( xmlStream, crs );
         xmlStream.nextTag();
         xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "baseSurface" );
         xmlStream.nextTag();
@@ -1345,11 +1350,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      * @throws XMLParsingException
      */
-    public Solid parseSolid( CRS defaultCRS )
+    public Solid parseSolid( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         Surface exteriorSurface = null;
         List<Surface> interiorSurfaces = new LinkedList<Surface>();
@@ -1361,7 +1366,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                     String msg = "Error in 'gml:Solid' element. Expected a 'gml:_Surface' element.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                exteriorSurface = parseAbstractSurface( crs );
+                exteriorSurface = parseAbstractSurface( xmlStream, crs );
                 xmlStream.nextTag();
                 xmlStream.require( END_ELEMENT, GMLNS, "exterior" );
             }
@@ -1375,7 +1380,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                     String msg = "Error in 'gml:Solid' element. Expected a 'gml:_Surface' element.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                interiorSurfaces.add( parseAbstractSurface( crs ) );
+                interiorSurfaces.add( parseAbstractSurface( xmlStream, crs ) );
                 xmlStream.nextTag();
                 xmlStream.require( END_ELEMENT, GMLNS, "interior" );
             } else {
@@ -1400,11 +1405,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public CompositeCurve parseCompositeCurve( CRS defaultCRS )
+    public CompositeCurve parseCompositeCurve( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<Curve> memberCurves = new LinkedList<Curve>();
 
@@ -1418,7 +1423,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 String msg = "Error in 'gml:CompositeCurve' element. Expected a 'gml:_Curve' element.";
                 throw new XMLParsingException( xmlStream, msg );
             }
-            memberCurves.add( parseAbstractCurve( crs ) );
+            memberCurves.add( parseAbstractCurve( xmlStream, crs ) );
             xmlStream.nextTag();
             xmlStream.require( END_ELEMENT, GMLNS, "curveMember" );
         }
@@ -1439,11 +1444,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      * @throws XMLParsingException
      */
-    public CompositeSurface parseCompositeSurface( CRS defaultCRS )
+    public CompositeSurface parseCompositeSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<Surface> memberSurfaces = new LinkedList<Surface>();
 
@@ -1457,7 +1462,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 String msg = "Error in 'gml:CompositeSurface' element. Expected a 'gml:_Surface' element.";
                 throw new XMLParsingException( xmlStream, msg );
             }
-            memberSurfaces.add( parseAbstractSurface( crs ) );
+            memberSurfaces.add( parseAbstractSurface( xmlStream, crs ) );
             xmlStream.nextTag();
             xmlStream.require( END_ELEMENT, GMLNS, "surfaceMember" );
         }
@@ -1478,11 +1483,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      * @throws XMLParsingException
      */
-    public CompositeSolid parseCompositeSolid( CRS defaultCRS )
+    public CompositeSolid parseCompositeSolid( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<Solid> memberSolids = new LinkedList<Solid>();
 
@@ -1496,7 +1501,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 String msg = "Error in 'gml:CompositeSolid' element. Expected a 'gml:_Solid' element.";
                 throw new XMLParsingException( xmlStream, msg );
             }
-            memberSolids.add( parseAbstractSolid( crs ) );
+            memberSolids.add( parseAbstractSolid( xmlStream, crs ) );
             xmlStream.nextTag();
             xmlStream.require( END_ELEMENT, GMLNS, "solidMember" );
         }
@@ -1516,11 +1521,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public CompositeGeometry<GeometricPrimitive> parseGeometricComplex( CRS defaultCRS )
+    public CompositeGeometry<GeometricPrimitive> parseGeometricComplex( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<GeometricPrimitive> memberSolids = new LinkedList<GeometricPrimitive>();
 
@@ -1534,7 +1539,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 String msg = "Error in 'gml:GeometricComplex' element. Expected a 'gml:element' element.";
                 throw new XMLParsingException( xmlStream, msg );
             }
-            memberSolids.add( parseGeometricPrimitive( crs ) );
+            memberSolids.add( parseGeometricPrimitive( xmlStream, crs ) );
             xmlStream.nextTag();
             xmlStream.require( END_ELEMENT, GMLNS, "element" );
         }
@@ -1555,11 +1560,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      * @throws XMLParsingException
      */
-    public MultiPoint parseMultiPoint( CRS defaultCRS )
+    public MultiPoint parseMultiPoint( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<Point> members = new LinkedList<Point>();
 
@@ -1568,13 +1573,13 @@ public class GML311GeometryParser extends GML311BaseParser {
             if ( localName.equals( "pointMember" ) ) {
                 xmlStream.nextTag();
                 xmlStream.require( START_ELEMENT, GMLNS, "Point" );
-                members.add( parsePoint( crs ) );
+                members.add( parsePoint( xmlStream, crs ) );
                 xmlStream.require( END_ELEMENT, GMLNS, "Point" );
                 xmlStream.nextTag();
             } else if ( localName.equals( "pointMembers" ) ) {
                 while ( xmlStream.nextTag() == START_ELEMENT ) {
                     xmlStream.require( START_ELEMENT, GMLNS, "Point" );
-                    members.add( parsePoint( crs ) );
+                    members.add( parsePoint( xmlStream, crs ) );
                 }
                 // pointMembers may only occur once (and behind all pointMember) elements
                 xmlStream.nextTag();
@@ -1602,11 +1607,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      * @throws XMLParsingException
      */
-    public MultiCurve parseMultiCurve( CRS defaultCRS )
+    public MultiCurve parseMultiCurve( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<Curve> members = new LinkedList<Curve>();
 
@@ -1617,11 +1622,11 @@ public class GML311GeometryParser extends GML311BaseParser {
                     String msg = "Invalid 'gml:MultiCurve' element: expected a 'gml:_Curve' element.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                members.add( parseAbstractCurve( crs ) );
+                members.add( parseAbstractCurve( xmlStream, crs ) );
                 xmlStream.nextTag();
             } else if ( localName.equals( "curveMembers" ) ) {
                 while ( xmlStream.nextTag() == START_ELEMENT ) {
-                    members.add( parseAbstractCurve( crs ) );
+                    members.add( parseAbstractCurve( xmlStream, crs ) );
                 }
                 // curveMembers may only occur once (and behind all curveMember) elements
                 xmlStream.nextTag();
@@ -1648,11 +1653,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiLineString parseMultiLineString( CRS defaultCRS )
+    public MultiLineString parseMultiLineString( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<LineString> members = new LinkedList<LineString>();
 
@@ -1661,7 +1666,7 @@ public class GML311GeometryParser extends GML311BaseParser {
             if ( localName.equals( "lineStringMember" ) ) {
                 xmlStream.nextTag();
                 xmlStream.require( START_ELEMENT, GMLNS, "LineString" );
-                members.add( parseLineString( crs ) );
+                members.add( parseLineString( xmlStream, crs ) );
                 xmlStream.nextTag();
             } else {
                 String msg = "Invalid 'gml:MultiLineString' element: unexpected element '" + localName
@@ -1685,11 +1690,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiSurface parseMultiSurface( CRS defaultCRS )
+    public MultiSurface parseMultiSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<Surface> members = new LinkedList<Surface>();
 
@@ -1700,11 +1705,11 @@ public class GML311GeometryParser extends GML311BaseParser {
                     String msg = "Invalid 'gml:MultiSurface' element: expected a 'gml:_Surface' element.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                members.add( parseAbstractSurface( crs ) );
+                members.add( parseAbstractSurface( xmlStream, crs ) );
                 xmlStream.nextTag();
             } else if ( localName.equals( "surfaceMembers" ) ) {
                 while ( xmlStream.nextTag() == START_ELEMENT ) {
-                    members.add( parseAbstractSurface( crs ) );
+                    members.add( parseAbstractSurface( xmlStream, crs ) );
                 }
                 // surfaceMembers may only occur once (and behind all surfaceMember) elements
                 xmlStream.nextTag();
@@ -1731,11 +1736,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiPolygon parseMultiPolygon( CRS defaultCRS )
+    public MultiPolygon parseMultiPolygon( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<Polygon> members = new LinkedList<Polygon>();
 
@@ -1744,7 +1749,7 @@ public class GML311GeometryParser extends GML311BaseParser {
             if ( localName.equals( "polygonMember" ) ) {
                 xmlStream.nextTag();
                 xmlStream.require( START_ELEMENT, GMLNS, "Polygon" );
-                members.add( parsePolygon( crs ) );
+                members.add( parsePolygon( xmlStream, crs ) );
                 xmlStream.nextTag();
             } else {
                 String msg = "Invalid 'gml:MultiPolygon' element: unexpected element '" + localName
@@ -1768,11 +1773,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiSolid parseMultiSolid( CRS defaultCRS )
+    public MultiSolid parseMultiSolid( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<Solid> members = new LinkedList<Solid>();
 
@@ -1783,11 +1788,11 @@ public class GML311GeometryParser extends GML311BaseParser {
                     String msg = "Invalid 'gml:MultiSolid' element: expected a 'gml:_Solid' element.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                members.add( parseAbstractSolid( crs ) );
+                members.add( parseAbstractSolid( xmlStream, crs ) );
                 xmlStream.nextTag();
             } else if ( localName.equals( "solidMembers" ) ) {
                 while ( xmlStream.nextTag() == START_ELEMENT ) {
-                    members.add( parseAbstractSolid( crs ) );
+                    members.add( parseAbstractSolid( xmlStream, crs ) );
                 }
                 // solidMembers may only occur once (and behind all surfaceMember) elements
                 xmlStream.nextTag();
@@ -1814,11 +1819,11 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws UnknownCRSException
      * @throws XMLParsingException
      */
-    public MultiGeometry<Geometry> parseMultiGeometry( CRS defaultCRS )
+    public MultiGeometry<Geometry> parseMultiGeometry( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        String gid = parseGeometryId();
-        CRS crs = determineActiveCRS( defaultCRS );
+        String gid = parseGeometryId( xmlStream );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         List<Geometry> members = new LinkedList<Geometry>();
 
@@ -1829,11 +1834,11 @@ public class GML311GeometryParser extends GML311BaseParser {
                     String msg = "Invalid 'gml:MultiGeometry' element: expected a 'gml:_Geometry' element.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                members.add( parseGeometry( crs ) );
+                members.add( parseGeometry( xmlStream, crs ) );
                 xmlStream.nextTag();
             } else if ( localName.equals( "geometryMembers" ) ) {
                 while ( xmlStream.nextTag() == START_ELEMENT ) {
-                    members.add( parseGeometry( crs ) );
+                    members.add( parseGeometry( xmlStream, crs ) );
                 }
                 // geometryMembers may only occur once (and behind all surfaceMember) elements
                 xmlStream.nextTag();
@@ -1860,10 +1865,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLParsingException
      * @throws UnknownCRSException
      */
-    public Envelope parseEnvelope( CRS defaultCRS )
+    public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
-        CRS crs = determineActiveCRS( defaultCRS );
+        CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
         double[] lowerCorner = null;
         double[] upperCorner = null;
@@ -1873,28 +1878,28 @@ public class GML311GeometryParser extends GML311BaseParser {
         if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
             String name = xmlStream.getLocalName();
             if ( "lowerCorner".equals( name ) ) {
-                lowerCorner = parseDoubleList();
+                lowerCorner = parseDoubleList( xmlStream );
                 xmlStream.require( END_ELEMENT, GMLNS, "lowerCorner" );
                 xmlStream.nextTag();
                 xmlStream.require( START_ELEMENT, GMLNS, "upperCorner" );
-                upperCorner = parseDoubleList();
+                upperCorner = parseDoubleList( xmlStream );
                 xmlStream.require( END_ELEMENT, GMLNS, "upperCorner" );
             } else if ( "coord".equals( name ) ) {
-                lowerCorner = parseCoordType();
+                lowerCorner = parseCoordType( xmlStream );
                 xmlStream.require( END_ELEMENT, GMLNS, "coord" );
                 xmlStream.nextTag();
                 xmlStream.require( START_ELEMENT, GMLNS, "coord" );
-                upperCorner = parseCoordType();
+                upperCorner = parseCoordType( xmlStream );
                 xmlStream.require( END_ELEMENT, GMLNS, "coord" );
             } else if ( "pos".equals( name ) ) {
-                lowerCorner = parseDoubleList();
+                lowerCorner = parseDoubleList( xmlStream );
                 xmlStream.require( END_ELEMENT, GMLNS, "pos" );
                 xmlStream.nextTag();
                 xmlStream.require( START_ELEMENT, GMLNS, "pos" );
-                upperCorner = parseDoubleList();
+                upperCorner = parseDoubleList( xmlStream );
                 xmlStream.require( END_ELEMENT, GMLNS, "pos" );
             } else if ( "coordinates".equals( name ) ) {
-                List<Point> coords = parseCoordinates( crs );
+                List<Point> coords = parseCoordinates( xmlStream, crs );
                 if ( coords.size() != 2 ) {
                     String msg = "Error in 'gml:Envelope' element, if 'gml:coordinates' is used, it must specify the coordinates of two points.";
                     throw new XMLParsingException( xmlStream, msg );
@@ -1924,7 +1929,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * 
      * @return the geometry id, or "" (empty string) if neither a 'gml:id' nor a 'gid' attribute is present
      */
-    private String parseGeometryId() {
+    private String parseGeometryId( XMLStreamReaderWrapper xmlStream ) {
 
         String gid = xmlStream.getAttributeValue( GMLNS, GMLID );
         if ( gid == null ) {

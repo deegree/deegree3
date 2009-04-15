@@ -51,6 +51,7 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.gml.GML311GeometryParser;
 import org.deegree.feature.gml.GML311GeometryParserTest;
+import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
@@ -58,8 +59,6 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
-import org.deegree.geometry.validation.GeometryValidationEventHandler;
-import org.deegree.geometry.validation.GeometryValidator;
 import org.junit.Test;
 
 /**
@@ -260,7 +259,7 @@ public class GeometryValidatorTest {
                                                                        GML311GeometryParserTest.class.getResource( BASE_DIR
                                                                                                                    + fileName ) );
         xmlReader.nextTag();
-        return new GML311GeometryParser( geomFac, xmlReader ).parseGeometry( null );
+        return new GML311GeometryParser( geomFac, new GMLIdContext() ).parseGeometry( xmlReader, null );
     }
 }
 
