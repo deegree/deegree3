@@ -322,7 +322,7 @@ public class GMLFeatureParser extends XMLAdapter {
                 property = new GenericProperty<Object>( propDecl, propName, value );
             } else if ( propDecl instanceof GeometryPropertyType ) {
                 xmlStream.nextTag();
-                Geometry geometry = geomParser.parseGeometry( xmlStream, crs );
+                Geometry geometry = geomParser.parseAbstractGeometry( xmlStream, crs );
                 property = new GenericProperty<Geometry>( propDecl, propName, geometry );
                 xmlStream.nextTag();
             } else if ( propDecl instanceof FeaturePropertyType ) {

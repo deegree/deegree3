@@ -113,7 +113,7 @@ public class GML311GeometryValidator extends XMLAdapter {
         while ( xmlStream.next() != END_DOCUMENT ) {
             if ( xmlStream.getEventType() == START_ELEMENT ) {
                 QName elName = xmlStream.getName();
-                if ( geomParser.isGeometry( elName ) ) {
+                if ( geomParser.isGeometryElement( elName ) ) {
                     validateGeometryElement();
                 }
             }
@@ -129,7 +129,7 @@ public class GML311GeometryValidator extends XMLAdapter {
         ValidationEventRedirector eventRedirector = new ValidationEventRedirector( gmlErrorHandler, identifier );
         GeometryValidator geometryValidator = new GeometryValidator( eventRedirector );
         try {
-            geometryValidator.validateGeometry( geomParser.parseGeometry(xmlStream, new CRS("EPSG:28992") ) );
+            geometryValidator.validateGeometry( geomParser.parseAbstractGeometry(xmlStream, new CRS("EPSG:28992") ) );
         } catch ( XMLParsingException e ) {
             gmlErrorHandler.geometryParsingError( identifier, e );
         } catch ( XMLStreamException e ) {

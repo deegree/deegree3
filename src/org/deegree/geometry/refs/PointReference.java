@@ -53,113 +53,111 @@ import org.deegree.geometry.primitive.Point;
  */
 public class PointReference extends GeometryReference implements Point {
 
-    private Point point;
-
+    protected Point geometry;    
+    
     public PointReference (String href) {
         super (href);
     }
     
-    public void resolve (Point point) {
-        if (this.point != null) {
+    @Override
+    public void resolve (Geometry geometry) {
+        if (this.geometry != null) {
             String msg = "Internal error: Geometry reference (" + href + ") has already been resolved.";
             throw new RuntimeException(msg);
         }
-        this.point = point;
-    }    
+        this.geometry = (Point) geometry;
+    }     
     
     public boolean contains( Geometry geometry ) {
-        return point.contains( geometry );
+        return geometry.contains( geometry );
     }
 
     public Geometry difference( Geometry geometry ) {
-        return point.difference( geometry );
+        return geometry.difference( geometry );
     }
 
     public double distance( Geometry geometry ) {
-        return point.distance( geometry );
+        return geometry.distance( geometry );
     }
 
     public boolean equals( Geometry geometry ) {
-        return point.equals( geometry );
+        return geometry.equals( geometry );
     }
 
     public double get( int dimension ) {
-        return point.get( dimension );
+        return geometry.get( dimension );
     }
 
     public double[] getAsArray() {
-        return point.getAsArray();
+        return geometry.getAsArray();
     }
 
     public Geometry getBuffer( double distance ) {
-        return point.getBuffer( distance );
+        return geometry.getBuffer( distance );
     }
 
     public Geometry getConvexHull() {
-        return point.getConvexHull();
+        return geometry.getConvexHull();
     }
 
     public int getCoordinateDimension() {
-        return point.getCoordinateDimension();
+        return geometry.getCoordinateDimension();
     }
 
     public CRS getCoordinateSystem() {
-        return point.getCoordinateSystem();
+        return geometry.getCoordinateSystem();
     }
 
     public Envelope getEnvelope() {
-        return point.getEnvelope();
+        return geometry.getEnvelope();
     }
 
     public GeometryType getGeometryType() {
-        return point.getGeometryType();
-    }
-
-    public String getId() {
-        return point.getId();
+        return geometry.getGeometryType();
     }
 
     public double getPrecision() {
-        return point.getPrecision();
+        return geometry.getPrecision();
     }
 
     public PrimitiveType getPrimitiveType() {
-        return point.getPrimitiveType();
+        return geometry.getPrimitiveType();
     }
 
     public double getX() {
-        return point.getX();
+        System.out.println ("Point: " + this);
+        return geometry.getX();
     }
 
     public double getY() {
-        return point.getY();
+        return geometry.getY();
     }
 
     public double getZ() {
-        return point.getZ();
+        return geometry.getZ();
     }
 
     public Geometry intersection( Geometry geometry ) {
-        return point.intersection( geometry );
+        return geometry.intersection( geometry );
     }
 
     public boolean intersects( Geometry geometry ) {
-        return point.intersects( geometry );
+        return geometry.intersects( geometry );
     }
 
     public boolean isBeyond( Geometry geometry, double distance ) {
-        return point.isBeyond( geometry, distance );
+        return geometry.isBeyond( geometry, distance );
     }
 
     public boolean isWithin( Geometry geometry ) {
-        return point.isWithin( geometry );
+        return geometry.isWithin( geometry );
     }
 
     public boolean isWithinDistance( Geometry geometry, double distance ) {
-        return point.isWithinDistance( geometry, distance );
+        return geometry.isWithinDistance( geometry, distance );
     }
 
     public Geometry union( Geometry geometry ) {
-        return point.union( geometry );
+        return geometry.union( geometry );
     }
 }

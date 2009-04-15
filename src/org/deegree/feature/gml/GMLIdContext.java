@@ -55,7 +55,6 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.refs.GeometryReference;
-import org.deegree.geometry.refs.PointReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,14 +97,12 @@ public class GMLIdContext {
         }
     }
 
-    public void addFeatureReference( FeatureReference refFeature ) {
-        featureReferences.add (refFeature);
+    public void addFeatureReference( FeatureReference ref ) {
+        featureReferences.add (ref);
     }
 
-    public PointReference addPointReference( String targetId ) {
-        PointReference ref = new PointReference( targetId );
+    public void addGeometryReference( GeometryReference ref ) {
         geometryReferences.add( ref );
-        return ref;
     }
 
     public Feature getFeature( String fid ) {
@@ -117,8 +114,9 @@ public class GMLIdContext {
      */
     public void resolveXLinks( ApplicationSchema schema )
                             throws XMLProcessingException {
+
         for ( FeatureReference ref : featureReferences ) {
-            LOG.info( "Resolving feature reference to feature '" + ref.getId() + "'" );
+            LOG.info( "Resolving reference to feature '" + ref.getId() + "'" );
             Feature targetObject = idToFeature.get( ref.getId() );
             if ( targetObject == null ) {
                 String msg = "Cannot resolve reference to feature with id '" + ref.getId()
@@ -135,5 +133,19 @@ public class GMLIdContext {
             }
             ref.resolve( targetObject );
         }
+        
+        for ( GeometryReference ref : geometryReferences ) {
+            LOG.info( "Resolving reference to geometry '" + ref.getId() + "'" );
+            Geometry targetObject = idToGeometry.get( ref.getId() );
+            if ( targetObject == null ) {
+                String msg = "Cannot resolve reference to geometry with id '" + ref.getId()
+                             + "'. There is no geometry with this id in the document.";
+                throw new XMLProcessingException( msg );
+            }
+
+            // TODO check geometry type
+            System.out.println ("Resolving " + ref);
+            ref.resolve( targetObject );
+        }        
     }
 }

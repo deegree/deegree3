@@ -101,6 +101,7 @@ import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
+import org.deegree.geometry.refs.GeometryReference;
 import org.deegree.geometry.refs.PointReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,7 +152,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     // local names of all concrete elements substitutable for "gml:_ImplicitGeometry"
     private static final Set<String> implictGeometryElements = new HashSet<String>();
 
-    // local names of "gml:GeometricComplex", "gml:CompositeCurve", "gml:CompositeSurface" and "gml:CompositeSolid"
+    // local name of "gml:GeometricComplex"
     private static final Set<String> complexElements = new HashSet<String>();
 
     static {
@@ -199,12 +200,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         aggregateElements.add( "Grid" );
         aggregateElements.add( "RectifiedGrid" );
 
-        // GeometricComplex elements
-        // Note: only for technical reasons (XML Schema does not support multiple inheritance), there is no substitution
-        // group "gml:_GeometricComplex"
-        complexElements.add( "CompositeCurve" );
-        complexElements.add( "CompositeSolid" );
-        complexElements.add( "CompositeSurface" );
+        // "gml:GeometricComplex"
         complexElements.add( "GeometricComplex" );
     }
 
@@ -215,8 +211,26 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     public GML311GeometryParser() {
-        this (GeometryFactoryCreator.getInstance().getGeometryFactory(), new GMLIdContext());
-    }    
+        this( GeometryFactoryCreator.getInstance().getGeometryFactory(), new GMLIdContext() );
+    }
+
+    /**
+     * Returns whether the given element name denotes a GML 3.1.1 geometry element (a concrete element substitutable for
+     * "gml:_Geometry").
+     * 
+     * @param elName
+     *            qualified element name to check
+     * @return true, if the element is a GML 3.1.1 geometry element, false otherwise
+     */
+    public boolean isGeometryElement( QName elName ) {
+        if ( !GMLNS.equals( elName.getNamespaceURI() ) ) {
+            return false;
+        }
+        String localName = elName.getLocalPart();
+        return primitiveElements.contains( localName ) || ringElements.contains( localName )
+               || aggregateElements.contains( localName ) || complexElements.contains( localName )
+               || implictGeometryElements.contains( localName );
+    }
 
     /**
      * Returns the object representation for the given <code>gml:_Geometry</code> element event that the cursor of the
@@ -226,20 +240,18 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt;)</li>
      * </ul>
      * <p>
-     * GML 3.1.1 specifies the following abstract elements to be <b>directly</b> substitutable for
-     * <code>gml:_Geometry</code>:
+     * GML 3.1.1 specifies the following elements to be <b>directly</b> substitutable for <code>gml:_Geometry</code>:
      * <ul>
      * <li><code>_GeometricPrimitive</code></li>
      * <li><code>_Ring</code></li>
      * <li><code>_GeometricAggregate</code></li>
-     * <li><code>_GeometricComplex</code></li>
+     * <li><code>GeometricComplex</code></li>
      * <li><code>_ImplicitGeometry</code></li>
      * </ul>
-     * <p>
-     * Note: for technical reasons (XML Schema cannot express multiple inheritance) the abstract substitution group
-     * <code>gml:_GeometricComplex</code> is not strictly defined in the GML schemas, but it is described in the
-     * comments.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Geometry&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the geometry element has no own
      *            <code>srsName</code> attribute
@@ -249,7 +261,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Geometry parseGeometry( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Geometry parseAbstractGeometry( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Geometry geometry = null;
@@ -262,30 +274,21 @@ public class GML311GeometryParser extends GML311BaseParser {
 
         String name = xmlStream.getLocalName();
         if ( primitiveElements.contains( name ) ) {
-            geometry = parseGeometricPrimitive( xmlStream, defaultCRS );
+            geometry = parseAbstractGeometricPrimitive( xmlStream, defaultCRS );
         } else if ( ringElements.contains( name ) ) {
             geometry = parseAbstractRing( xmlStream, defaultCRS );
         } else if ( aggregateElements.contains( name ) ) {
-            geometry = parseGeometricAggregate( xmlStream, defaultCRS );
-        } else if ( complexElements.contains( name ) ) {
-            geometry = parseAbstractGeometricComplex( xmlStream, defaultCRS );
+            geometry = parseAbstractGeometricAggregate( xmlStream, defaultCRS );
+        } else if ( "GeometricComplex".equals( name ) ) {
+            geometry = parseGeometricComplex( xmlStream, defaultCRS );
         } else if ( implictGeometryElements.contains( name ) ) {
-            geometry = parseImplicitGeometry( xmlStream, defaultCRS );
+            geometry = parseAbstractImplicitGeometry( xmlStream, defaultCRS );
         } else {
-            String msg = "Invalid GML geometry: '" + xmlStream.getName() + "' is not a GML geometry element.";
+            String msg = "Invalid GML geometry: '" + xmlStream.getName()
+                         + "' does not denote a GML 3.1.1 geometry element.";
             throw new XMLParsingException( xmlStream, msg );
         }
         return geometry;
-    }
-
-    public boolean isGeometry( QName elName ) {
-        if ( !GMLNS.equals( elName.getNamespaceURI() ) ) {
-            return false;
-        }
-        String localName = elName.getLocalPart();
-        return primitiveElements.contains( localName ) || ringElements.contains( localName )
-               || aggregateElements.contains( localName ) || complexElements.contains( localName )
-               || implictGeometryElements.contains( localName );
     }
 
     /**
@@ -306,22 +309,25 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>_Solid</code></li>
      * </ul>
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_GeometricPrimitive&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_GeometricPrimitive&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the geometry element has no own
      *            <code>srsName</code> attribute
-     * @return corresponding {@link Geometry} object
+     * @return corresponding {@link GeometricPrimitive} object
      * @throws XMLParsingException
      *             if the element is not a valid <code>gml:_GeometricPrimitive</code> element
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public GeometricPrimitive parseGeometricPrimitive( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public GeometricPrimitive parseAbstractGeometricPrimitive( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         GeometricPrimitive primitive = null;
 
         if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
-            String msg = "Invalid gml:_Geometry element: " + xmlStream.getName()
+            String msg = "Invalid gml:_GeometricPrimitive element: " + xmlStream.getName()
                          + "' is not a GML geometry element. Not in the gml namespace.";
             throw new XMLParsingException( xmlStream, msg );
         }
@@ -339,7 +345,7 @@ public class GML311GeometryParser extends GML311BaseParser {
             primitive = parseAbstractSolid( xmlStream, defaultCRS );
         } else {
             String msg = "Invalid GML geometry: '" + xmlStream.getName()
-                         + "' is not a GML primitive geometry element (gml:_GeometricPrimitive).";
+                         + "' is not a GML 3.1.1 primitive geometry element (gml:_GeometricPrimitive).";
             throw new XMLParsingException( xmlStream, msg );
         }
 
@@ -366,19 +372,23 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>MultiSurface</code></li>
      * </ul>
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_GeometricAggregate&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_GeometricAggregate&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the geometry element has no own
      *            <code>srsName</code> attribute
-     * @return corresponding {@link Geometry} object
+     * @return corresponding {@link MultiGeometry} object
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_GeometricAggregate" element
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Geometry parseGeometricAggregate( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public MultiGeometry<? extends Geometry> parseAbstractGeometricAggregate( XMLStreamReaderWrapper xmlStream,
+                                                                              CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
-        Geometry geometry = null;
+        MultiGeometry<? extends Geometry> geometry = null;
 
         if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
             String msg = "Invalid gml:_GeometricAggregate element: " + xmlStream.getName()
@@ -403,7 +413,7 @@ public class GML311GeometryParser extends GML311BaseParser {
             geometry = parseMultiSurface( xmlStream, defaultCRS );
         } else {
             String msg = "Invalid GML geometry: '" + xmlStream.getName()
-                         + "' is not a GML aggregate geometry element (gml:_GeometricAggregate).";
+                         + "' is not a GML 3.1.1 aggregate geometry element (gml:_GeometricAggregate).";
             throw new XMLParsingException( xmlStream, msg );
         }
         return geometry;
@@ -431,6 +441,9 @@ public class GML311GeometryParser extends GML311BaseParser {
      * NOTE: For technical reasons (XML Schema does not support multiple inheritance), there is no substitution group
      * <code>gml:_GeometricComplex</code> defined in the GML schemas. However, it is described in the comments.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
+     *            <code>END_ELEMENT</code> event afterwards
      * @param defaultCRS
      *            default crs for the geometry, this is only used if the geometry element has no own
      *            <code>srsName</code> attribute
@@ -484,6 +497,9 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>RectifiedGrid</code></li>
      * </ul>
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_ImplicitGeometry&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_ImplicitGeometry&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the geometry element has no own
      *            <code>srsName</code> attribute
@@ -492,10 +508,10 @@ public class GML311GeometryParser extends GML311BaseParser {
      *             if the element is not a valid "gml:_ImplicitGeometry" element
      * @throws XMLStreamException
      */
-    public Geometry parseImplicitGeometry( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Geometry parseAbstractImplicitGeometry( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException {
 
-        Geometry geometry = null;
+        // Geometry geometry = null;
 
         if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
             String msg = "Invalid gml:_ImplicitGeometry element: " + xmlStream.getName()
@@ -529,10 +545,13 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>OrientableCurve</code></li>
      * </ul>
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Curve&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Curve&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the geometry element has no own
      *            <code>srsName</code> attribute
-     * @return corresponding {@link Geometry} object
+     * @return corresponding {@link Curve} object
      * @throws XMLParsingException
      *             if the element is not a valid "gml:_Curve" element
      * @throws XMLStreamException
@@ -591,6 +610,9 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>Ring</code></li>
      * </ul>
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Ring&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Ring&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the geometry element has no own
      *            <code>srsName</code> attribute
@@ -650,12 +672,15 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>TriangulatedSurface</code></li>
      * </ul>
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Surface&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Surface&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the geometry element has no own
      *            <code>srsName</code> attribute
-     * @return corresponding {@link Geometry} object
+     * @return corresponding {@link Surface} object
      * @throws XMLParsingException
-     *             if the element is not a valid "gml:_Ring" element
+     *             if the element is not a valid "gml:_Surface" element
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
@@ -724,12 +749,15 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>Solid</code></li>
      * </ul>
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Solid&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Solid&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the geometry element has no own
      *            <code>srsName</code> attribute
-     * @return corresponding {@link Geometry} object
+     * @return corresponding {@link Solid} object
      * @throws XMLParsingException
-     *             if the element is not a valid "gml:_Ring" element
+     *             if the element is not a valid "gml:_Solid" element
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
@@ -777,6 +805,9 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li>Postcondition: cursor points at the next event after the <code>END_ELEMENT</code> (&lt;/gml:Point&gt;)</li>
      * </ul>
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Point&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Point&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is used if the "gml:Point" has no <code>srsName</code> attribute
      * @return corresponding {@link Point} object
@@ -822,15 +853,27 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Point" );
+        idContext.addGeometry( point );
         return point;
     }
 
     /**
-     * TODO handled xlinked content ("xlink:href")
+     * Returns the object representation of an element with type <code>gml:PointPropertyType</code> (such as
+     * <code>gml:pointProperty</code> or <code>gml:pointRep</code>). Consumes all corresponding events from the given
+     * <code>XMLStream</code>.
+     * <p>
+     * The point value may be specified using an inline <code>gml:Point</code> element or using an
+     * <code>xlink:href</code> attribute. In the latter case, a {@link PointReference} object is returned.
+     * </p>
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
+     *            <code>END_ELEMENT</code> event afterwards
      * @param defaultCRS
-     * 
-     * @return
+     *            default CRS for the geometry, this is used if the contained "gml:Point" has no <code>srsName</code>
+     *            attribute
+     * @return corresponding {@link Point} object, this is a {@link PointReference} if the content is specified using
+     *         xlink
      * @throws XMLStreamException
      * @throws UnknownCRSException
      * @throws XMLParsingException
@@ -841,9 +884,18 @@ public class GML311GeometryParser extends GML311BaseParser {
         Point point = null;
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
-            LOG.info( "Found geometry reference: '" + href + "'" );
+            LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
             point = new PointReference( href );
-            // TODO check if href + Point element are present
+
+            // local geometry reference?
+            if ( href.startsWith( "#" ) ) {
+                idContext.addGeometryReference( (GeometryReference) point );
+            }
+            if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
+                String msg = "Unexpected element '" + xmlStream.getName()
+                             + "'. Point value has already been specified using xlink.";
+                throw new XMLParsingException( xmlStream, msg );
+            }
         } else if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
             // must be a 'gml:Point' element
             if ( !xmlStream.getLocalName().equals( "Point" ) ) {
@@ -851,11 +903,11 @@ public class GML311GeometryParser extends GML311BaseParser {
                 throw new XMLParsingException( xmlStream, msg );
             }
             point = parsePoint( xmlStream, defaultCRS );
+            xmlStream.nextTag();
         } else {
             String msg = "Error in 'gml:pointProperty' element. Expected a 'gml:Point' element or an 'xlink:href' attribute.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        xmlStream.nextTag();
         return point;
     }
 
@@ -863,12 +915,15 @@ public class GML311GeometryParser extends GML311BaseParser {
      * Returns the object representation of a <code>gml:LineString</code> element. Consumes all corresponding events
      * from the given <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:LineString&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:LineString&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:LineString</code> has no
      *            <code>srsName</code> attribute
-     * @return corresponding {@link Curve} object
+     * @return corresponding {@link LineString} object
      * @throws XMLParsingException
-     *             if the element is not a valid <code>gml:Curve</code> element
+     *             if the element is not a valid <code>gml:LineString</code> element
      * @throws XMLStreamException
      * @throws UnknownCRSException
      * @throws XMLParsingException
@@ -886,6 +941,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                 points = parsePosList( xmlStream, crs );
                 xmlStream.nextTag();
             } else if ( "coordinates".equals( name ) ) {
+                // deprecated since GML 3.1.0, only included for backward compatibility
                 points = parseCoordinates( xmlStream, crs );
                 xmlStream.nextTag();
             } else {
@@ -895,6 +951,7 @@ public class GML311GeometryParser extends GML311BaseParser {
                         double[] coords = parseDoubleList( xmlStream );
                         points.add( geomFac.createPoint( gid, coords, crs ) );
                     } else if ( "pointProperty".equals( name ) || "pointRep".equals( name ) ) {
+                        // pointRep has been deprecated since GML 3.1.0, only included for backward compatibility
                         points.add( parsePointProperty( xmlStream, crs ) );
                     } else if ( "coord".equals( name ) ) {
                         // deprecated since GML 3.0, only included for backward compatibility
@@ -912,20 +969,24 @@ public class GML311GeometryParser extends GML311BaseParser {
             String msg = "Error in 'gml:LineString' element. Must consist of two points at least.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        return geomFac.createLineString( gid, crs, points );
+        LineString lineString = geomFac.createLineString( gid, crs, points );
+        idContext.addGeometry( lineString );
+        return lineString;
     }
 
     /**
      * Returns the object representation of a <code>gml:Curve</code> element. Consumes all corresponding events from the
      * associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Curve&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Curve&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:Curve</code> has no
      *            <code>srsName</code> attribute
      * @return corresponding {@link Curve} object
      * @throws XMLStreamException
      * @throws UnknownCRSException
-     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public Curve parseCurve( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
@@ -944,13 +1005,18 @@ public class GML311GeometryParser extends GML311BaseParser {
 
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Curve" );
-        return geomFac.createCurve( gid, segments.toArray( new CurveSegment[segments.size()] ), crs );
+        Curve curve = geomFac.createCurve( gid, segments.toArray( new CurveSegment[segments.size()] ), crs );
+        idContext.addGeometry( curve );
+        return curve;
     }
 
     /**
      * Returns the object representation of a <code>gml:OrientableCurve</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:OrientableCurve&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:OrientableCurve&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:OrientableCurve</code> has no
      *            <code>srsName</code> attribute
@@ -975,13 +1041,18 @@ public class GML311GeometryParser extends GML311BaseParser {
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "OrientableCurve" );
 
-        return geomFac.createOrientableCurve( gid, crs, baseCurve, isReversed );
+        OrientableCurve orientableCurve = geomFac.createOrientableCurve( gid, crs, baseCurve, isReversed );
+        idContext.addGeometry( orientableCurve );
+        return orientableCurve;
     }
 
     /**
      * Returns the object representation of a <code>gml:LinearRing</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:LinearRing&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:LinearRing&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:LinearRing</code> element has no
      *            <code>srsName</code> attribute
@@ -1003,13 +1074,18 @@ public class GML311GeometryParser extends GML311BaseParser {
             throw new XMLParsingException( xmlStream, msg );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "LinearRing" );
-        return geomFac.createLinearRing( gid, crs, points );
+        LinearRing linearRing = geomFac.createLinearRing( gid, crs, points );
+        idContext.addGeometry( linearRing );
+        return linearRing;
     }
 
     /**
      * Returns the object representation of a <code>gml:Ring</code> element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Ring&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Ring&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:Ring</code> element has no
      *            <code>srsName</code> attribute
@@ -1041,13 +1117,18 @@ public class GML311GeometryParser extends GML311BaseParser {
             xmlStream.require( END_ELEMENT, GMLNS, "curveMember" );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "Ring" );
-        return geomFac.createRing( gid, crs, memberCurves );
+        Ring ring = geomFac.createRing( gid, crs, memberCurves );
+        idContext.addGeometry( ring );
+        return ring;
     }
 
     /**
      * Returns the object representation of a (&lt;gml:Polygon&gt;) element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Polygon&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Polygon&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the "gml:Polygon" has no <code>srsName</code>
      *            attribute
@@ -1115,13 +1196,18 @@ public class GML311GeometryParser extends GML311BaseParser {
             xmlStream.nextTag();
         }
         xmlStream.require( END_ELEMENT, GMLNS, "Polygon" );
-        return geomFac.createPolygon( gid, crs, exteriorRing, interiorRings );
+        Polygon polygon = geomFac.createPolygon( gid, crs, exteriorRing, interiorRings );
+        idContext.addGeometry( polygon );
+        return polygon;
     }
 
     /**
      * Returns the object representation of a (&lt;gml:Surface&gt;) element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Surface&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Surface&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the "gml:Surface" has no <code>srsName</code>
      *            attribute
@@ -1145,13 +1231,18 @@ public class GML311GeometryParser extends GML311BaseParser {
         xmlStream.require( END_ELEMENT, GMLNS, "patches" );
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Surface" );
-        return geomFac.createSurface( gid, memberPatches, crs );
+        Surface surface = geomFac.createSurface( gid, memberPatches, crs );
+        idContext.addGeometry( surface );
+        return surface;
     }
 
     /**
      * Returns the object representation of a (&lt;gml:PolyhedralSurface&gt;) element. Consumes all corresponding events
      * from the given <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:PolyhedralSurface&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:PolyhedralSurface&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the "gml:PolyhedralSurface" has no
      *            <code>srsName</code> attribute
@@ -1175,13 +1266,18 @@ public class GML311GeometryParser extends GML311BaseParser {
         xmlStream.require( END_ELEMENT, GMLNS, "polygonPatches" );
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "PolyhedralSurface" );
-        return geomFac.createPolyhedralSurface( gid, crs, memberPatches );
+        PolyhedralSurface polyhedralSurface = geomFac.createPolyhedralSurface( gid, crs, memberPatches );
+        idContext.addGeometry( polyhedralSurface );
+        return polyhedralSurface;
     }
 
     /**
-     * Returns the object representation of a (&lt;TriangulatedSurface&gt;) element. Consumes all corresponding events
-     * from the given <code>XMLStream</code>.
+     * Returns the object representation of a (&lt;gml:TriangulatedSurface&gt;) element. Consumes all corresponding
+     * events from the given <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:TriangulatedSurface&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:TriangulatedSurface&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the "gml:TriangulatedSurface" has no
      *            <code>srsName</code> attribute
@@ -1205,23 +1301,27 @@ public class GML311GeometryParser extends GML311BaseParser {
         xmlStream.require( END_ELEMENT, GMLNS, "trianglePatches" );
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "TriangulatedSurface" );
-        return geomFac.createTriangulatedSurface( gid, crs, memberPatches );
+        TriangulatedSurface triangulatedSurface = geomFac.createTriangulatedSurface( gid, crs, memberPatches );
+        idContext.addGeometry( triangulatedSurface );
+        return triangulatedSurface;
     }
 
     /**
-     * Returns the object representation of a (&lt;Tin&gt;) element. Consumes all corresponding events from the given
-     * <code>XMLStream</code>.
+     * Returns the object representation of a (&lt;gml:Tin&gt;) element. Consumes all corresponding events from the
+     * given <code>XMLStream</code>.
      * <p>
      * Note: GML 3.1.1 specifies both "gml:trianglePatches" and "gml:controlPoint" properties for "gml:Tin". This is
      * apparently redundant, and consequently (?) GML 3.2.1 only allows the controlPoint property here. This method
      * copes with this by only using the controlPoints for building the {@link Tin} object.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Tin&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Tin&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the "gml:Tin" has no <code>srsName</code> attribute
      * @return corresponding {@link Tin} object
      * @throws XMLStreamException
      * @throws UnknownCRSException
-     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public Tin parseTin( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
@@ -1302,20 +1402,24 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
 
         xmlStream.require( END_ELEMENT, GMLNS, "Tin" );
-        return geomFac.createTin( gid, crs, stopLines, breakLines, maxLength, controlPoints );
+        Tin tin = geomFac.createTin( gid, crs, stopLines, breakLines, maxLength, controlPoints );
+        idContext.addGeometry( tin );
+        return tin;
     }
 
     /**
      * Returns the object representation of a <code>gml:OrientableSurface</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:OrientableSurface&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:OrientableSurface&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:OrientableSurface</code> has no
      *            <code>srsName</code> attribute
      * @return corresponding {@link OrientableSurface} object
      * @throws XMLStreamException
      * @throws UnknownCRSException
-     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public OrientableSurface parseOrientableSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
@@ -1334,13 +1438,18 @@ public class GML311GeometryParser extends GML311BaseParser {
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "OrientableSurface" );
 
-        return geomFac.createOrientableSurface( gid, crs, baseSurface, isReversed );
+        OrientableSurface orientableSurface = geomFac.createOrientableSurface( gid, crs, baseSurface, isReversed );
+        idContext.addGeometry( orientableSurface );
+        return orientableSurface;
     }
 
     /**
      * Returns the object representation of a (&lt;gml:Solid&gt;) element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Solid&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Solid&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the "gml:Solid" has no <code>srsName</code>
      *            attribute
@@ -1390,13 +1499,18 @@ public class GML311GeometryParser extends GML311BaseParser {
             xmlStream.nextTag();
         }
         xmlStream.require( END_ELEMENT, GMLNS, "Solid" );
-        return geomFac.createSolid( gid, crs, exteriorSurface, interiorSurfaces );
+        Solid solid = geomFac.createSolid( gid, crs, exteriorSurface, interiorSurfaces );
+        idContext.addGeometry( solid );
+        return solid;
     }
 
     /**
      * Returns the object representation of a <code>gml:CompositeCurve</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:CompositeCurve&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:CompositeCurve&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:CompositeCurve</code> has no
      *            <code>srsName</code> attribute
@@ -1428,20 +1542,24 @@ public class GML311GeometryParser extends GML311BaseParser {
             xmlStream.require( END_ELEMENT, GMLNS, "curveMember" );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeCurve" );
-        return geomFac.createCompositeCurve( gid, crs, memberCurves );
+        CompositeCurve curve = geomFac.createCompositeCurve( gid, crs, memberCurves );
+        idContext.addGeometry( curve );
+        return curve;
     }
 
     /**
      * Returns the object representation of a <code>gml:CompositeSurface</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:CompositeSurface&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:CompositeSurface&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:CompositeSurface</code> has no
      *            <code>srsName</code> attribute
      * @return corresponding {@link CompositeSurface} object
      * @throws XMLStreamException
      * @throws UnknownCRSException
-     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public CompositeSurface parseCompositeSurface( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
@@ -1467,20 +1585,24 @@ public class GML311GeometryParser extends GML311BaseParser {
             xmlStream.require( END_ELEMENT, GMLNS, "surfaceMember" );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeSurface" );
-        return geomFac.createCompositeSurface( gid, crs, memberSurfaces );
+        CompositeSurface compositeSurface = geomFac.createCompositeSurface( gid, crs, memberSurfaces );
+        idContext.addGeometry( compositeSurface );
+        return compositeSurface;
     }
 
     /**
      * Returns the object representation of a <code>gml:CompositeSolid</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:CompositeSolid&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:CompositeSolid&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:CompositeSolid</code> has no
      *            <code>srsName</code> attribute
      * @return corresponding {@link CompositeSolid} object
      * @throws XMLStreamException
      * @throws UnknownCRSException
-     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public CompositeSolid parseCompositeSolid( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
@@ -1506,15 +1628,20 @@ public class GML311GeometryParser extends GML311BaseParser {
             xmlStream.require( END_ELEMENT, GMLNS, "solidMember" );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeSolid" );
-        return geomFac.createCompositeSolid( gid, crs, memberSolids );
+        CompositeSolid compositeSolid = geomFac.createCompositeSolid( gid, crs, memberSolids );
+        idContext.addGeometry( compositeSolid );
+        return compositeSolid;
     }
 
     /**
-     * Returns the object representation of a <code>gml:CompositeGeometry</code> element. Consumes all corresponding
+     * Returns the object representation of a <code>gml:GeometricComplex</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:GeometricComplex&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:GeometricComplex&gt;) afterwards
      * @param defaultCRS
-     *            default CRS for the geometry, this is only used if the <code>gml:CompositeGeometry</code> has no
+     *            default CRS for the geometry, this is only used if the <code>gml:GeometricComplex</code> has no
      *            <code>srsName</code> attribute
      * @return corresponding {@link CompositeGeometry} object
      * @throws XMLStreamException
@@ -1539,25 +1666,30 @@ public class GML311GeometryParser extends GML311BaseParser {
                 String msg = "Error in 'gml:GeometricComplex' element. Expected a 'gml:element' element.";
                 throw new XMLParsingException( xmlStream, msg );
             }
-            memberSolids.add( parseGeometricPrimitive( xmlStream, crs ) );
+            memberSolids.add( parseAbstractGeometricPrimitive( xmlStream, crs ) );
             xmlStream.nextTag();
             xmlStream.require( END_ELEMENT, GMLNS, "element" );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "GeometricComplex" );
-        return geomFac.createCompositeGeometry( gid, crs, memberSolids );
+        CompositeGeometry<GeometricPrimitive> compositeGeometry = geomFac.createCompositeGeometry( gid, crs,
+                                                                                                   memberSolids );
+        idContext.addGeometry( compositeGeometry );
+        return compositeGeometry;
     }
 
     /**
      * Returns the object representation of a <code>gml:MultiPoint</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiPoint&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiPoint&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:MultiPoint</code> has no
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiPoint} object
      * @throws XMLStreamException
      * @throws UnknownCRSException
-     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public MultiPoint parseMultiPoint( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
@@ -1591,20 +1723,24 @@ public class GML311GeometryParser extends GML311BaseParser {
             }
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiPoint" );
-        return geomFac.createMultiPoint( gid, crs, members );
+        MultiPoint multiPoint = geomFac.createMultiPoint( gid, crs, members );
+        idContext.addGeometry( multiPoint );
+        return multiPoint;
     }
 
     /**
      * Returns the object representation of a <code>gml:MultiCurve</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiCurve&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiCurve&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:MultiCurve</code> has no
      *            <code>srsName</code> attribute
      * @return corresponding {@link MultiCurve} object
      * @throws XMLStreamException
      * @throws UnknownCRSException
-     * @throws XMLParsingException
      * @throws XMLParsingException
      */
     public MultiCurve parseMultiCurve( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
@@ -1638,13 +1774,18 @@ public class GML311GeometryParser extends GML311BaseParser {
             }
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiCurve" );
-        return geomFac.createMultiCurve( gid, crs, members );
+        MultiCurve multiCurve = geomFac.createMultiCurve( gid, crs, members );
+        idContext.addGeometry( multiCurve );
+        return multiCurve;
     }
 
     /**
      * Returns the object representation of a <code>gml:MultiLineString</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiLineString&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiLineString&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:MultiLineString</code> has no
      *            <code>srsName</code> attribute
@@ -1675,13 +1816,18 @@ public class GML311GeometryParser extends GML311BaseParser {
             }
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiLineString" );
-        return geomFac.createMultiLineString( gid, crs, members );
+        MultiLineString multiLineString = geomFac.createMultiLineString( gid, crs, members );
+        idContext.addGeometry( multiLineString );
+        return multiLineString;
     }
 
     /**
      * Returns the object representation of a <code>gml:MultiSurface</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiSurface&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiSurface&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:MultiSurface</code> has no
      *            <code>srsName</code> attribute
@@ -1721,13 +1867,18 @@ public class GML311GeometryParser extends GML311BaseParser {
             }
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiSurface" );
-        return geomFac.createMultiSurface( gid, crs, members );
+        MultiSurface multiSurface = geomFac.createMultiSurface( gid, crs, members );
+        idContext.addGeometry( multiSurface );
+        return multiSurface;
     }
 
     /**
      * Returns the object representation of a <code>gml:MultiPolygon</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiPolygon&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiPolygon&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:MultiPolygon</code> has no
      *            <code>srsName</code> attribute
@@ -1758,13 +1909,18 @@ public class GML311GeometryParser extends GML311BaseParser {
             }
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiPolygon" );
-        return geomFac.createMultiPolygon( gid, crs, members );
+        MultiPolygon multiPolygon = geomFac.createMultiPolygon( gid, crs, members );
+        idContext.addGeometry( multiPolygon );
+        return multiPolygon;
     }
 
     /**
      * Returns the object representation of a <code>gml:MultiSolid</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiSolid&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiSolid&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:MultiSolid</code> has no
      *            <code>srsName</code> attribute
@@ -1804,13 +1960,18 @@ public class GML311GeometryParser extends GML311BaseParser {
             }
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiSolid" );
-        return geomFac.createMultiSolid( gid, crs, members );
+        MultiSolid multiSolid = geomFac.createMultiSolid( gid, crs, members );
+        idContext.addGeometry( multiSolid );
+        return multiSolid;
     }
 
     /**
      * Returns the object representation of a <code>gml:MultiGeometry</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiGeometry&gt;), points at
+     *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiGeometry&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the <code>gml:MultiGeometry</code> has no
      *            <code>srsName</code> attribute
@@ -1834,11 +1995,11 @@ public class GML311GeometryParser extends GML311BaseParser {
                     String msg = "Invalid 'gml:MultiGeometry' element: expected a 'gml:_Geometry' element.";
                     throw new XMLParsingException( xmlStream, msg );
                 }
-                members.add( parseGeometry( xmlStream, crs ) );
+                members.add( parseAbstractGeometry( xmlStream, crs ) );
                 xmlStream.nextTag();
             } else if ( localName.equals( "geometryMembers" ) ) {
                 while ( xmlStream.nextTag() == START_ELEMENT ) {
-                    members.add( parseGeometry( xmlStream, crs ) );
+                    members.add( parseAbstractGeometry( xmlStream, crs ) );
                 }
                 // geometryMembers may only occur once (and behind all surfaceMember) elements
                 xmlStream.nextTag();
@@ -1850,7 +2011,8 @@ public class GML311GeometryParser extends GML311BaseParser {
             }
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiGeometry" );
-        return geomFac.createMultiGeometry( gid, crs, members );
+        MultiGeometry<Geometry> multiGeometry = geomFac.createMultiGeometry( gid, crs, members );
+        return multiGeometry;
     }
 
     /**

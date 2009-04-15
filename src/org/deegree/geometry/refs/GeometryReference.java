@@ -54,10 +54,18 @@ public class GeometryReference implements Geometry {
 
     protected String href;
     
-    private Geometry geometry;
+    private final String gid;    
+    
+    protected Geometry geometry;
    
     public GeometryReference (String href) {
         this.href = href;
+        int pos = href.lastIndexOf( '#' );
+        if (pos < 0) {
+            String msg = "Reference string (='" + href + "') does not contain a '#' character.";
+            throw new IllegalArgumentException(msg);
+        }
+        gid = href.substring( pos + 1 );
     }    
     
     public void resolve (Geometry geometry) {
@@ -109,7 +117,7 @@ public class GeometryReference implements Geometry {
     }
 
     public String getId() {
-        return geometry.getId();
+        return gid;
     }
 
     public double getPrecision() {
