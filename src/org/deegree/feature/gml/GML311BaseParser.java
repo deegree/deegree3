@@ -42,11 +42,8 @@ class GML311BaseParser {
 
     protected final GeometryFactory geomFac;
 
-    protected final GMLIdContext idContext;
-
-    protected GML311BaseParser( GeometryFactory geomFac, GMLIdContext idContext ) {
+    protected GML311BaseParser( GeometryFactory geomFac) {
         this.geomFac = geomFac;
-        this.idContext = idContext;
     }
 
     protected Point parseDirectPositionType( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )

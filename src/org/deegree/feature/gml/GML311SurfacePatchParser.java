@@ -57,7 +57,6 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
@@ -92,8 +91,8 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * @param geometryParser
      * @param geomFac
      */
-    GML311SurfacePatchParser( GML311GeometryParser geometryParser, GeometryFactory geomFac, GMLIdContext idContext ) {
-        super( geomFac, idContext );
+    GML311SurfacePatchParser( GML311GeometryParser geometryParser, GeometryFactory geomFac ) {
+        super( geomFac );
         this.geometryParser = geometryParser;
     }
 

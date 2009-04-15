@@ -83,9 +83,10 @@ public class GML311SurfacePatchParserTest {
 
     @Test
     public void parsePolygonPatch()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "PolygonPatch.gml" );
-        PolygonPatch patch = (PolygonPatch) getPatchParser().parseSurfacePatch( parser, new CRS ("EPSG:4326") );
+        PolygonPatch patch = (PolygonPatch) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 2.0, patch.getExteriorRing().getStartPoint().getX() );
         Assert.assertEquals( 0.0, patch.getExteriorRing().getStartPoint().getY() );
         Assert.assertEquals( 2.0, patch.getExteriorRing().getEndPoint().getX() );
@@ -95,17 +96,19 @@ public class GML311SurfacePatchParserTest {
 
     @Test
     public void parseTriangle()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "Triangle.gml" );
-        Triangle patch = (Triangle) getPatchParser().parseSurfacePatch( parser, new CRS ("EPSG:4326") );
+        Triangle patch = (Triangle) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 4, patch.getExteriorRing().getControlPoints().size() );
     }
 
     @Test
     public void parseRectangle()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "Rectangle.gml" );
-        Rectangle patch = (Rectangle) getPatchParser().parseSurfacePatch(parser, new CRS ("EPSG:4326") );
+        Rectangle patch = (Rectangle) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 5, patch.getExteriorRing().getControlPoints().size() );
     }
 
@@ -114,13 +117,12 @@ public class GML311SurfacePatchParserTest {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                        GML311SurfacePatchParserTest.class.getResource( "testdata/patches/"
                                                                                                                        + fileName ) );
-        xmlReader.nextTag();        
+        xmlReader.nextTag();
         return xmlReader;
     }
-    
-    private GML311SurfacePatchParser getPatchParser () {
-        GMLIdContext idContext = new GMLIdContext();
+
+    private GML311SurfacePatchParser getPatchParser() {
         GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
-        return new GML311SurfacePatchParser(new GML311GeometryParser(geomFac, idContext), geomFac, idContext );
+        return new GML311SurfacePatchParser( new GML311GeometryParser(), geomFac );
     }
 }

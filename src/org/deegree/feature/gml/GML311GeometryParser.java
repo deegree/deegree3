@@ -137,6 +137,8 @@ public class GML311GeometryParser extends GML311BaseParser {
 
     private final GML311SurfacePatchParser surfacePatchParser;
 
+    private final GMLIdContext idContext;
+
     // local names of all concrete elements substitutable for "gml:_Curve"
     private static final Set<String> curveElements = new HashSet<String>();
 
@@ -211,9 +213,10 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     public GML311GeometryParser( GeometryFactory geomFac, GMLIdContext idContext ) {
-        super( geomFac, idContext );
-        curveSegmentParser = new GML311CurveSegmentParser( this, geomFac, idContext );
-        surfacePatchParser = new GML311SurfacePatchParser( this, geomFac, idContext );
+        super( geomFac );
+        this.idContext = idContext;
+        curveSegmentParser = new GML311CurveSegmentParser( this, geomFac );
+        surfacePatchParser = new GML311SurfacePatchParser( this, geomFac );
     }
 
     public GML311GeometryParser() {

@@ -121,10 +121,9 @@ class GML311CurveSegmentParser extends GML311BaseParser {
     /**
      * @param geometryParser
      * @param geomFac
-     * @param xmlStream
      */
-    GML311CurveSegmentParser( GML311GeometryParser geometryParser, GeometryFactory geomFac, GMLIdContext idContext ) {
-        super( geomFac, idContext );
+    GML311CurveSegmentParser( GML311GeometryParser geometryParser, GeometryFactory geomFac ) {
+        super( geomFac );
         this.geometryParser = geometryParser;
     }
 
