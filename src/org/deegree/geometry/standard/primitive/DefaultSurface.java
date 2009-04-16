@@ -82,6 +82,21 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     }
 
     @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
+    }    
+    
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Surface;
+    }
+
+    @Override
+    public SurfaceType getSurfaceType() {
+        return SurfaceType.Surface;
+    }   
+    
+    @Override
     public double getArea() {
         throw new UnsupportedOperationException();
     }
@@ -99,21 +114,6 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     @Override
     public double getPerimeter() {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Surface;
-    }
-
-    @Override
-    public SurfaceType getSurfaceType() {
-        return SurfaceType.Surface;
-    }
-
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
     }
 
     @Override

@@ -47,7 +47,6 @@ package org.deegree.geometry.standard.primitive;
 import java.util.List;
 
 import org.deegree.crs.CRS;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Curve;
@@ -251,5 +250,11 @@ public class DefaultOrientableCurve implements OrientableCurve {
     @Override
     public List<Point> getControlPoints() {
         throw new RuntimeException( "not implemented yet" );
+    }
+
+    @Override
+    public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

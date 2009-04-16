@@ -44,10 +44,14 @@
 package org.deegree.geometry.standard.primitive;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.crs.CRS;
+import org.deegree.geometry.linearization.CurveLinearizer;
+import org.deegree.geometry.linearization.LinearizationCriterion;
+import org.deegree.geometry.linearization.NumPointsCriterion;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
@@ -56,6 +60,9 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.standard.DefaultGeometryFactory;
+
+import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * Default implementation of {@link Ring}.
@@ -92,6 +99,18 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     }
 
     /**
+     * @param id
+     * @param crs
+     * @param segment
+     */
+    public DefaultRing( String id, CRS crs, LineStringSegment segment ) {
+        super( id, crs );
+        this.members = new ArrayList<Curve>( 1 );
+        this.members.add( new DefaultLineString( null, crs, segment.getControlPoints() ) );
+        this.segments.add( segment );
+    }
+
+    /**
      * Creates a new <code>DefaultRing</code> instance from a closed {@link DefaultLineString}.
      * 
      * @param id
@@ -108,16 +127,14 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
         segments.addAll( singleCurve.getCurveSegments() );
     }
 
-    /**
-     * @param id
-     * @param crs
-     * @param segment
-     */
-    public DefaultRing( String id, CRS crs, LineStringSegment segment ) {
-        super( id, crs );
-        this.members = new ArrayList<Curve>( 1 );
-        this.members.add( new DefaultLineString( null, crs, segment.getControlPoints() ) );
-        this.segments.add( segment );
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
+    }
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Curve;
     }
 
     @Override
@@ -163,21 +180,11 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     @Override
     public Point getStartPoint() {
         return segments.get( 0 ).getStartPoint();
-    }    
-    
-    @Override
-    public Point getEndPoint() {
-        return segments.get( segments.size() -1 ).getEndPoint();
-    }
-    
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Curve;
     }
 
     @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
+    public Point getEndPoint() {
+        return segments.get( segments.size() - 1 ).getEndPoint();
     }
 
     @Override
@@ -192,5 +199,27 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
             }
         }
         return controlPoints;
-    }    
+    }
+
+    @Override
+    protected com.vividsolutions.jts.geom.LinearRing buildJTSGeometry() {
+        CurveLinearizer linearizer = new CurveLinearizer( new DefaultGeometryFactory() );
+        // TODO how to determine a feasible linearization criterion?
+        LinearizationCriterion crit = new NumPointsCriterion( 100 );
+        List<Coordinate> coords = new LinkedList<Coordinate>();
+        for ( CurveSegment segment : segments ) {
+            LineStringSegment lsSegment = linearizer.linearize( segment, crit );
+            coords.addAll( getCoordinates( lsSegment ) );
+        }
+        return jtsFactory.createLinearRing( coords.toArray( new Coordinate[coords.size()] ) );
+    }
+
+    private Collection<Coordinate> getCoordinates( LineStringSegment lsSegment ) {
+        List<Point> points = lsSegment.getControlPoints();
+        List<Coordinate> coordinates = new ArrayList<Coordinate>( points.size() );
+        for ( Point point : points ) {
+            coordinates.add( new Coordinate( point.getX(), point.getY(), point.getZ() ) );
+        }
+        return coordinates;
+    }
 }

@@ -301,7 +301,6 @@ public class GMLFeatureParserTest {
         for ( Feature member : fc ) {
             System.out.println( member.getId() );
         }
-
     }
 
     @Test

@@ -227,4 +227,10 @@ public interface Geometry extends Identifiable<String> {
      */
     public double getPrecision();
 
+    /**
+     * Returns an equivalent (or best-fit) JTS geometry object.
+     * 
+     * @return an equivalent (or best-fit) JTS geometry
+     */
+    public com.vividsolutions.jts.geom.Geometry getJTSGeometry();
 }

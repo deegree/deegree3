@@ -147,4 +147,9 @@ public class GeometryReference implements Geometry {
     public Geometry union( Geometry geometry ) {
         return geometry.union( geometry );
     }
+
+    @Override
+    public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
+        return geometry.getJTSGeometry();
+    }
 }

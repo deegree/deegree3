@@ -43,11 +43,13 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
 
@@ -61,24 +63,24 @@ import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
  */
 public class DefaultLineString extends DefaultCurve implements LineString {
 
-    private LineStringSegment singleSegment;    
-    
+    private LineStringSegment singleSegment;
+
     /**
      * 
      * @param id
      * @param crs
      * @param controlPoints
      */
-    public DefaultLineString( String id, CRS crs, List<Point> controlPoints) {
-        super( id, crs, new DefaultLineStringSegment(controlPoints) );
+    public DefaultLineString( String id, CRS crs, List<Point> controlPoints ) {
+        super( id, crs, Collections.singletonList( (CurveSegment) new DefaultLineStringSegment( controlPoints ) ) );
         singleSegment = (LineStringSegment) getCurveSegments().get( 0 );
-    }    
+    }
 
     @Override
     public CurveType getCurveType() {
         return CurveType.LineString;
-    }    
-    
+    }
+
     @Override
     public List<Point> getControlPoints() {
         return singleSegment.getControlPoints();
@@ -88,7 +90,7 @@ public class DefaultLineString extends DefaultCurve implements LineString {
     public double[] getAsArray() {
         throw new UnsupportedOperationException();
     }
-    
+
     @Override
     public LineString getAsLineString() {
         return this;

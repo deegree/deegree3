@@ -331,7 +331,7 @@ public class GML311GeometryParserTest {
         Assert.assertTrue( ring.getMembers().get( 0 ).getCurveSegments().get( 0 ) instanceof Arc );
         Assert.assertTrue( ring.getMembers().get( 0 ).getCurveSegments().get( 1 ) instanceof Arc );
         Assert.assertEquals( 1, ring.getMembers().get( 1 ).getCurveSegments().size() );
-        Assert.assertTrue( ring.getMembers().get( 1 ).getCurveSegments().get( 0 ) instanceof LineStringSegment );
+        Assert.assertTrue( ring.getMembers().get( 1 ).getCurveSegments().get( 0 ) instanceof LineStringSegment );      
     }
 
     @Test

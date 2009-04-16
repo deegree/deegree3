@@ -47,7 +47,6 @@ package org.deegree.geometry.standard.primitive;
 import java.util.List;
 
 import org.deegree.crs.CRS;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.OrientableSurface;
@@ -213,5 +212,11 @@ public class DefaultOrientableSurface implements OrientableSurface {
     @Override
     public List<List<Point>> getInteriorRingsCoordinates() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

@@ -44,9 +44,14 @@
 package org.deegree.geometry.standard.primitive;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.crs.CRS;
+import org.deegree.geometry.linearization.CurveLinearizer;
+import org.deegree.geometry.linearization.LinearizationCriterion;
+import org.deegree.geometry.linearization.NumPointsCriterion;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
@@ -54,6 +59,9 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.standard.DefaultGeometryFactory;
+
+import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * Default implementation of {@link Curve}.
@@ -82,17 +90,6 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
         this.segments = new ArrayList<CurveSegment>( segments );
     }
 
-    /**
-     * @param id
-     * @param crs
-     * @param segment
-     */
-    public DefaultCurve( String id, CRS crs, CurveSegment segment ) {
-        super( id, crs );
-        this.segments = new ArrayList<CurveSegment>( 1 );
-        this.segments.add( segment );
-    }
-
     @Override
     public List<Point> getBoundary() {
         throw new UnsupportedOperationException();
@@ -105,7 +102,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
 
     @Override
     public double getLength() {
-        throw new UnsupportedOperationException();
+        return ( (com.vividsolutions.jts.geom.LineString) getJTSGeometry() ).getLength();
     }
 
     @Override
@@ -160,4 +157,26 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
         }
         return controlPoints;
     }
+
+    @Override
+    protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
+        CurveLinearizer linearizer = new CurveLinearizer( new DefaultGeometryFactory() );
+        // TODO how to determine a feasible linearization criterion?
+        LinearizationCriterion crit = new NumPointsCriterion( 100 );
+        List<Coordinate> coords = new LinkedList<Coordinate>();
+        for ( CurveSegment segment : segments ) {
+            LineStringSegment lsSegment = linearizer.linearize( segment, crit );
+            coords.addAll( getCoordinates( lsSegment ) );
+        }
+        return jtsFactory.createLineString( coords.toArray( new Coordinate[coords.size()] ) );
+    }
+    
+    private Collection<Coordinate> getCoordinates( LineStringSegment lsSegment ) {
+        List<Point> points = lsSegment.getControlPoints();
+        List<Coordinate> coordinates = new ArrayList<Coordinate>( points.size() );
+        for ( Point point : points ) {
+            coordinates.add( new Coordinate( point.getX(), point.getY(), point.getZ() ) );
+        }
+        return coordinates;
+    }    
 }

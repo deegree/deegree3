@@ -700,7 +700,8 @@ abstract class JTSWrapperGeometry implements Geometry {
      * 
      * @return wrapping JTSGeometry
      */
-    com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
+    @Override    
+    public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
         return geometry;
     }
 
@@ -708,5 +709,5 @@ abstract class JTSWrapperGeometry implements Geometry {
     public String toString() {
         // the name of the wrapper + wkt of the geometry
         return this.getClass().getSimpleName() + ": " + geometry.toString();
-    }
+    }    
 }

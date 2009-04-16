@@ -51,6 +51,8 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
+import com.vividsolutions.jts.geom.Coordinate;
+
 /**
  * Default implementation of {@link Point}.
  * 
@@ -79,11 +81,21 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
     }
 
     @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
+    }    
+    
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Point;
+    }  
+    
+    @Override
     public double get( int dimension ) {
         if ( coordinates.length > dimension && dimension >= 0 ) {
             return coordinates[dimension];
         }
-        throw new IndexOutOfBoundsException( "Dimemsion not inside coordinate array." );
+        throw new IndexOutOfBoundsException();
     }
 
     @Override
@@ -110,21 +122,6 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
     }
 
     @Override
-    public boolean contains( Geometry geometry ) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Geometry difference( Geometry geometry ) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public double distance( Geometry geometry ) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean equals( Geometry geometry ) {
         if ( !( geometry instanceof Point ) ) {
             return false;
@@ -142,16 +139,6 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
     }
 
     @Override
-    public Geometry getBuffer( double distance ) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Geometry getConvexHull() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getCoordinateDimension() {
         return coordinates.length;
     }
@@ -162,46 +149,6 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
     }
 
     @Override
-    public Geometry intersection( Geometry geometry ) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean intersects( Geometry geometry ) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isBeyond( Geometry geometry, double distance ) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isWithin( Geometry geometry ) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isWithinDistance( Geometry geometry, double distance ) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Geometry union( Geometry geometry ) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Point;
-    }
-
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
-    }
-
-    @Override
     public String toString() {
         String s = "(" + coordinates[0];
         for ( int i = 1; i < coordinates.length; i++ ) {
@@ -209,5 +156,18 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
         }
         s += ")";
         return s;
+    }
+    
+    @Override
+    protected com.vividsolutions.jts.geom.Point buildJTSGeometry() {
+        Coordinate coords = null;
+        if (coordinates.length == 2) {
+            coords = new Coordinate(coordinates[0], coordinates[1]);
+        } else if (coordinates.length == 3) {
+            coords = new Coordinate(coordinates[0], coordinates[1], coordinates[2]);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        return jtsFactory.createPoint (coords);
     }
 }
