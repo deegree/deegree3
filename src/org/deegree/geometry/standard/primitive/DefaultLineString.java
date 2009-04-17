@@ -87,8 +87,27 @@ public class DefaultLineString extends DefaultCurve implements LineString {
     }
 
     @Override
+    public int getCoordinateDimension() {
+        return singleSegment.getCoordinateDimension();
+    }
+
+    @Override
     public double[] getAsArray() {
-        throw new UnsupportedOperationException();
+        List<Point> points = getControlPoints();
+        double[] result = null;
+        if ( points != null && !points.isEmpty() ) {
+            int dim = getCoordinateDimension();
+            result = new double[points.size() * dim];
+            int i = 0;
+            for ( Point p : points ) {
+                if ( p != null ) {
+                    for ( int d = 0; d < dim; ++d ) {
+                        result[i++] = p.get( d );
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     @Override
