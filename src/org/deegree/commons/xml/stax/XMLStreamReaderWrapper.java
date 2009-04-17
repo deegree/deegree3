@@ -456,21 +456,7 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
     @Override
     public int nextTag()
                             throws XMLStreamException {
-
-        // not delegated to reader.nextTag() to work around problem (bug?) in OM
-        int eventType = next();
-        while ( ( eventType == XMLStreamConstants.CHARACTERS ) // skip whitespace
-                || ( eventType == XMLStreamConstants.CDATA )
-                // skip whitespace
-                || eventType == XMLStreamConstants.SPACE
-                || eventType == XMLStreamConstants.PROCESSING_INSTRUCTION
-                || eventType == XMLStreamConstants.COMMENT ) {
-            eventType = next();
-        }
-        if ( eventType != XMLStreamConstants.START_ELEMENT && eventType != XMLStreamConstants.END_ELEMENT ) {
-            throw new XMLStreamException( "expected start or end tag", getLocation() );
-        }
-        return eventType;
+        return reader.nextTag();
     }
 
     @Override
