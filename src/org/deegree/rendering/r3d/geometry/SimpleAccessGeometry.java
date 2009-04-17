@@ -177,7 +177,7 @@ public class SimpleAccessGeometry extends SimpleGeometryStyle implements Quality
      */
     public float[] getCoordinateForVertex( int vertex ) {
         if ( coordinates == null || vertex < 0 || ( vertex * 3 ) + 2 > coordinates.length ) {
-            throw new IndexOutOfBoundsException( "No such vertex, the given index is out of range" );
+            throw new IndexOutOfBoundsException( "No such vertex: " + vertex + ", the given index is out of range" );
         }
         return new float[] { coordinates[vertex * 3], coordinates[( vertex * 3 ) + 1], coordinates[( vertex * 3 ) + 2] };
     }
