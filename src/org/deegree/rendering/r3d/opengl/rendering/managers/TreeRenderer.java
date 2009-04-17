@@ -148,8 +148,9 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
             }
             context.glEnable( GL.GL_TEXTURE_2D );
             context.glEnable( GL.GL_BLEND ); // enable color and texture blending
+            // context.glBlendColor( 0, 0, 0, 0 );
             context.glBlendFunc( GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA );
-            context.glDepthMask( false );
+            // context.glDepthMask( false );
 
             if ( bufferID == null ) {
                 bufferID = new int[1];
@@ -165,17 +166,19 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
 
             Iterator<BillBoard> it = allBillBoards.iterator();
             BillBoard b = it.next();
-            Texture currentTexture = TexturePool.getTexture( context, /* b.getTextureID() */"18" );
-            currentTexture.bind();
+            Texture currentTexture = TexturePool.getTexture( context, b.getTextureID() );
+            if ( currentTexture != null ) {
+                currentTexture.bind();
+            }
             while ( it.hasNext() ) {
                 context.glPushMatrix();
-                // Texture t = TexturePool.getTexture( context, b.getTextureID() );
-                // if ( t != null ) {
-                // if ( currentTexture == null || t.getTextureObject() != currentTexture.getTextureObject() ) {
-                // t.bind();
-                // currentTexture = t;
-                // }
-                // }
+                Texture t = TexturePool.getTexture( context, b.getTextureID() );
+                if ( t != null ) {
+                    if ( currentTexture == null || t.getTextureObject() != currentTexture.getTextureObject() ) {
+                        t.bind();
+                        currentTexture = t;
+                    }
+                }
                 b.renderPrepared( context, eye2 );
                 context.glPopMatrix();
                 b = it.next();
@@ -185,7 +188,7 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
             context.glBlendFunc( GL.GL_ONE, GL.GL_ZERO );
             context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
             context.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, 0 );
-            context.glDepthMask( true );
+            // context.glDepthMask( true );
         }
         LOG.info( "Rendering trees: " + ( System.currentTimeMillis() - begin ) + " ms" );
 

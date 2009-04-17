@@ -43,12 +43,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.CharBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 
+import org.deegree.commons.utils.AllocatedHeapMemory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -204,15 +206,23 @@ public class BufferIO {
      * </p>
      * 
      * @param in
+     * @param direct
      * @return the floatBuffer of <code>null</code> if no indication of the number of floats to read has been made.
      * @throws IOException
      */
-    public static FloatBuffer readFloatBufferFromStream( ObjectInputStream in )
+    public static FloatBuffer readFloatBufferFromStream( ObjectInputStream in, boolean direct )
                             throws IOException {
         int numberOfValues = in.readInt();
         FloatBuffer result = null;
         if ( numberOfValues != -1 ) {
-            result = BufferUtil.newFloatBuffer( numberOfValues );
+            if ( direct ) {
+                ByteBuffer bb = ByteBuffer.allocateDirect( numberOfValues * AllocatedHeapMemory.FLOAT_SIZE );
+                bb.order( ByteOrder.nativeOrder() );
+                // result = BufferUtil.newFloatBuffer( numberOfValues );
+                result = bb.asFloatBuffer();
+            } else {
+                result = FloatBuffer.allocate( numberOfValues );
+            }
             result.clear();
             for ( int i = 0; i < numberOfValues; ++i ) {
                 try {
@@ -249,15 +259,20 @@ public class BufferIO {
      * </p>
      * 
      * @param in
+     * @param direct
      * @return the floatBuffer of <code>null</code> if no indication of the number of floats to read has been made.
      * @throws IOException
      */
-    public static ByteBuffer readByteBufferFromStream( ObjectInputStream in )
+    public static ByteBuffer readByteBufferFromStream( ObjectInputStream in, boolean direct )
                             throws IOException {
         int numberOfValues = in.readInt();
         ByteBuffer result = null;
         if ( numberOfValues != -1 ) {
-            result = BufferUtil.newByteBuffer( numberOfValues );
+            if ( direct ) {
+                result = BufferUtil.newByteBuffer( numberOfValues );
+            } else {
+                result = ByteBuffer.allocate( numberOfValues );
+            }
             result.clear();
             for ( int i = 0; i < numberOfValues; ++i ) {
                 try {

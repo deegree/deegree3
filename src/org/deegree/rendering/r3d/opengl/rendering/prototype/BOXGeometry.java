@@ -80,7 +80,7 @@ public class BOXGeometry extends RenderableGeometry {
      * @param openGLType
      */
     public BOXGeometry() {
-        super( new float[] { 0, 0, 0 }, GL.GL_QUADS );
+        super( new float[] { 0, 0, 0 }, GL.GL_QUADS, null, true );
     }
 
     /*

@@ -137,4 +137,35 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
         // }
         return level;
     }
+
+    /**
+     * @return the number of ordinates in all qualitylevels, needed for the initalization of the direct buffer.
+     */
+    public int getOrdinateCount() {
+        int result = 0;
+        if ( qualityLevels != null ) {
+            for ( RenderableQualityModel model : qualityLevels ) {
+                if ( model != null ) {
+                    result += model.getOrdinateCount();
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return the number of ordinates in all qualitylevels, needed for the initalization of the direct buffer.
+     */
+    public int getTextureOrdinateCount() {
+        int result = 0;
+        if ( qualityLevels != null ) {
+            for ( RenderableQualityModel model : qualityLevels ) {
+                if ( model != null ) {
+                    result += model.getTextureOrdinateCount();
+                }
+            }
+        }
+        return result;
+    }
+
 }

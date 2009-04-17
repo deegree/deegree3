@@ -50,6 +50,16 @@ import org.deegree.rendering.r3d.QualityModelPart;
  */
 public interface RenderableQualityModelPart extends QualityModelPart, JOGLRenderable {
 
+    /**
+     * @return the number of ordinates in the implementation.
+     */
+    public int getOrdinateCount();
+
     // marker interface
+
+    /**
+     * @return the number of texture ordinates in this quality model part
+     */
+    public int getTextureOrdinateCount();
 
 }

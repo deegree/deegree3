@@ -133,4 +133,35 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
         }
         return sb.toString();
     }
+
+    /**
+     * @return the number of ordinates in each quality model part.
+     */
+    public int getOrdinateCount() {
+        int result = 0;
+        if ( qualityModelParts != null && !qualityModelParts.isEmpty() ) {
+            for ( RenderableQualityModelPart rqmp : qualityModelParts ) {
+                if ( rqmp != null ) {
+                    result += rqmp.getOrdinateCount();
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return the number of texture ordinates in each quality model part.
+     */
+    public int getTextureOrdinateCount() {
+        int result = 0;
+        if ( qualityModelParts != null && !qualityModelParts.isEmpty() ) {
+            for ( RenderableQualityModelPart rqmp : qualityModelParts ) {
+                if ( rqmp != null ) {
+                    result += rqmp.getTextureOrdinateCount();
+                }
+            }
+        }
+        return result;
+    }
+
 }
