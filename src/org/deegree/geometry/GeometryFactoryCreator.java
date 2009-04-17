@@ -148,7 +148,6 @@ public class GeometryFactoryCreator {
         try {
             clzz = Class.forName( gf.getClassName() );
         } catch (ClassNotFoundException e) {
-            System.out.println ("MENNO: '" + gf.getClassName() + "'");
             throw e;
         }
         GeometryFactory factory = (GeometryFactory) clzz.newInstance();
@@ -210,11 +209,9 @@ public class GeometryFactoryCreator {
      * @param supportedSurfaceInterpolation
      * @return list of {@link GeometryFactory} supporting the passed requirements
      */
-    @SuppressWarnings("unused")
     public List<GeometryFactory> findGeometryFactory( List<Class<?>> supportedGeometries,
                                                       List<CurveSegment.Interpolation> supportedCurveInterpolation,
                                                       List<SurfacePatch.Interpolation> supportedSurfaceInterpolation ) {
         throw new UnsupportedOperationException( "Not supported yet" );
     }
-
 }

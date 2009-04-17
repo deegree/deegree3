@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * A <code>Ring</code> is a composition of {@link Curve}s that forms a closed loop.
  * <p>
- * Please note that it extends {@link Curve} as well, because it has an inherent curve semantic.
+ * Please note that it extends {@link Curve}, because it has an inherent curve semantic.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -65,6 +65,14 @@ public interface Ring extends Curve {
     }
 
     /**
+     * Must always return {@link Curve.CurveType#Ring}.
+     * 
+     * @return {@link Curve.CurveType#Ring}
+     */
+    @Override
+    public CurveType getCurveType();
+
+    /**
      * Returns the type of ring.
      * 
      * @return the type of ring
@@ -72,17 +80,9 @@ public interface Ring extends Curve {
     public RingType getRingType();
 
     /**
-     * Must always return {@link GeometricPrimitive.PrimitiveType#Curve}.
-     * 
-     * @return {@link GeometricPrimitive.PrimitiveType#Curve}
-     */
-    @Override
-    public PrimitiveType getPrimitiveType();    
-    
-    /**
      * Returns the {@link Curve}s that constitute this {@link Ring}.
      * 
      * @return the constituting curves
      */
-    public List<Curve> getMembers ();
+    public List<Curve> getMembers();
 }

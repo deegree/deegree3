@@ -43,7 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
-
 /**
  * TODO add documentation here
  *
@@ -55,12 +54,12 @@ package org.deegree.geometry.primitive;
 public interface LinearRing extends Ring {
 
     /**
-     * Must always return {@link GeometricPrimitive.PrimitiveType#Curve}.
+     * Must always return {@link Ring.RingType#LinearRing}.
      * 
-     * @return {@link GeometricPrimitive.PrimitiveType#Curve}
+     * @return {@link Ring.RingType#LinearRing}
      */
     @Override
-    public PrimitiveType getPrimitiveType();
+    public RingType getRingType();
     
     /**
      * 

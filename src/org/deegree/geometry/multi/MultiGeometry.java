@@ -40,9 +40,7 @@ package org.deegree.geometry.multi;
 import java.util.List;
 
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.Geometry.GeometryType;
 import org.deegree.geometry.composite.CompositeGeometry;
-import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.Point;
 
 /**
@@ -63,7 +61,7 @@ import org.deegree.geometry.primitive.Point;
 public interface MultiGeometry<T extends Geometry> extends Geometry, List<T> {
 
     public enum MultiGeometryType {
-        MultiGeometry,        
+        MultiGeometry,
         MultiPoint,        
         MultiCurve,
         MultiLineString,

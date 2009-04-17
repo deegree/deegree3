@@ -58,12 +58,12 @@ package org.deegree.geometry.primitive;
 public interface OrientableCurve extends Curve {
 
     /**
-     * Must always return {@link GeometricPrimitive.PrimitiveType#Curve}.
+     * Must always return {@link Curve.CurveType#OrientableCurve}.
      * 
-     * @return {@link GeometricPrimitive.PrimitiveType#Curve}
+     * @return {@link Curve.CurveType#OrientableCurve}
      */
     @Override
-    public PrimitiveType getPrimitiveType();    
+    public CurveType getCurveType();
     
     /**
      * Returns whether the orientation of this curve is reversed compared to the base curve.

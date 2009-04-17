@@ -43,6 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
+
 /**
  * An <code>OrientableSurface</code> consists of a wrapped base {@link Surface} and an additional orientation.
  * <p>
@@ -58,12 +59,12 @@ package org.deegree.geometry.primitive;
 public interface OrientableSurface extends Surface {
 
     /**
-     * Must always return {@link GeometricPrimitive.PrimitiveType#Surface}.
+     * Must always return {@link Surface.SurfaceType#OrientableSurface}.
      * 
-     * @return {@link GeometricPrimitive.PrimitiveType#Surface}
+     * @return {@link Surface.SurfaceType#OrientableSurface}
      */
     @Override
-    public PrimitiveType getPrimitiveType();
+    public SurfaceType getSurfaceType();
 
     /**
      * Returns whether the orientation of this surface is reversed compared to the base surface.

@@ -46,7 +46,7 @@ package org.deegree.geometry.primitive;
 import java.util.List;
 
 /**
- * The most common case of a {@link Curve}: consist just of one curve segment with linear interpolation between the
+ * The most common case of a {@link Curve}: consist of just one curve segment with linear interpolation between the
  * control points.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -57,12 +57,12 @@ import java.util.List;
 public interface LineString extends Curve {
 
     /**
-     * Must always return {@link GeometricPrimitive.PrimitiveType#Curve}.
+     * Must always return {@link Curve.CurveType#LineString}.
      * 
-     * @return {@link GeometricPrimitive.PrimitiveType#Curve}
+     * @return {@link Curve.CurveType#LineString}
      */
     @Override
-    public PrimitiveType getPrimitiveType();
+    public CurveType getCurveType();
     
     /**
      * 

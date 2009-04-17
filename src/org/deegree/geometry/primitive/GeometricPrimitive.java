@@ -44,13 +44,9 @@
 package org.deegree.geometry.primitive;
 
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.composite.CompositeCurve;
-import org.deegree.geometry.composite.CompositeGeometry;
-import org.deegree.geometry.composite.CompositeSolid;
-import org.deegree.geometry.composite.CompositeSurface;
 
 /**
- * A {@link GeometricPrimitive} is a contigous geometries with single dimensionality.
+ * A {@link GeometricPrimitive} is a contigous geometry with single dimensionality.
  * <p>
  * For every dimensionality, a specialized interface exists:
  * <ul>
@@ -60,17 +56,6 @@ import org.deegree.geometry.composite.CompositeSurface;
  * <li>3D: {@link Solid}</li>
  * </ul>
  * </p>
- * Please note that the specializations of {@link CompositeGeometry} extend this interface as well:
- * <ul>
- * <li>1D: {@link CompositeCurve}</li>
- * <li>2D: {@link CompositeSurface}</li>
- * <li>3D: {@link CompositeSolid}</li>
- * </ul>
- * This is due to the fact that these types imply a primitive semantic, e.g. a {@link CompositeCurve} is* a
- * {@link Curve}, because it defines a sequence of curve segments.
- * <p>
- * However, the generic {@link CompositeGeometry} is *not* a primitive, because it allows the composition of primitives
- * with different dimensionality.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -94,19 +79,17 @@ public interface GeometricPrimitive extends Geometry {
     }
 
     /**
+     * Must always return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY}.
+     * 
+     * @return must always return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY}
+     */
+    @Override
+    public GeometryType getGeometryType();
+
+    /**
      * Returns the type of primitive.
      * 
      * @return the type of primitive
      */
     public PrimitiveType getPrimitiveType();
-
-    /**
-     * Must either return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY} or
-     * {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}.
-     * 
-     * @return either {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY} or
-     *         {@link Geometry.GeometryType#COMPOSITE_PRIMITIVE}
-     */
-    @Override
-    public GeometryType getGeometryType();     
 }

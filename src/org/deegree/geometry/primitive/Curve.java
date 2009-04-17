@@ -50,6 +50,7 @@ import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
  * @see CompositeCurve
  * @see LineString
  * @see OrientableCurve
+ * @see Ring
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
@@ -75,19 +76,19 @@ public interface Curve extends GeometricPrimitive {
     }
 
     /**
-     * Returns the type of curve.
-     * 
-     * @return the type of curve
-     */
-    public CurveType getCurveType();
-
-    /**
      * Must always return {@link GeometricPrimitive.PrimitiveType#Curve}.
      * 
      * @return {@link GeometricPrimitive.PrimitiveType#Curve}
      */
     @Override
     public PrimitiveType getPrimitiveType();
+    
+    /**
+     * Returns the type of curve.
+     * 
+     * @return the type of curve
+     */
+    public CurveType getCurveType();
 
     /**
      * Returns whether the curve forms a closed loop.

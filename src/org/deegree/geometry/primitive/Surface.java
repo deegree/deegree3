@@ -74,19 +74,19 @@ public interface Surface extends GeometricPrimitive {
     }
 
     /**
-     * Returns the type of surface.
-     * 
-     * @return the type of surface
-     */
-    public SurfaceType getSurfaceType();
-
-    /**
      * Must always return {@link GeometricPrimitive.PrimitiveType#Surface}.
      * 
      * @return {@link GeometricPrimitive.PrimitiveType#Surface}
      */
     @Override
-    public PrimitiveType getPrimitiveType();
+    public PrimitiveType getPrimitiveType();    
+    
+    /**
+     * Returns the type of surface.
+     * 
+     * @return the type of surface
+     */
+    public SurfaceType getSurfaceType();
 
     /**
      * 

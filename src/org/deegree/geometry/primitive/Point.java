@@ -37,8 +37,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
-import org.deegree.geometry.Geometry;
-
 /**
  * 0-dimensional primitive.
  * 
@@ -56,14 +54,6 @@ public interface Point extends GeometricPrimitive {
      */
     @Override
     public PrimitiveType getPrimitiveType();
-
-    /**
-     * Must either return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY}.
-     * 
-     * @return {@link Geometry.GeometryType#PRIMITIVE_GEOMETRY}
-     */
-    @Override
-    public GeometryType getGeometryType();
 
     /**
      * 

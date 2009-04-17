@@ -50,9 +50,9 @@ import org.deegree.geometry.primitive.surfacepatches.Triangle;
 public interface TriangulatedSurface extends Surface {
 
     /**
-     * Must always return {@link SurfaceType.SurfaceType#TriangulatedSurface}.
+     * Must always return {@link Surface.SurfaceType#TriangulatedSurface}.
      * 
-     * @return {@link SurfaceType.SurfaceType#TriangulatedSurface}
+     * @return {@link Surface.SurfaceType#TriangulatedSurface}
      */
     @Override
     public SurfaceType getSurfaceType();      

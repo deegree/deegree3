@@ -63,19 +63,19 @@ public interface Solid extends GeometricPrimitive {
     }
 
     /**
-     * Returns the type of solid.
-     * 
-     * @return the type of solid
-     */
-    public SolidType getSolidType();
-
-    /**
      * Must always return {@link GeometricPrimitive.PrimitiveType#Solid}.
      * 
      * @return {@link GeometricPrimitive.PrimitiveType#Solid}
      */
     @Override
-    public PrimitiveType getPrimitiveType();
+    public PrimitiveType getPrimitiveType();    
+    
+    /**
+     * Returns the type of solid.
+     * 
+     * @return the type of solid
+     */
+    public SolidType getSolidType();
 
     /**
      * 

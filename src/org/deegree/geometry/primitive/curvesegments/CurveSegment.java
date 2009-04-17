@@ -41,7 +41,7 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * A <code>CurveSegment</code> is a portion of a {@link Curve} in which a single interpolation method is used.
+ * A <code>CurveSegment</code> is a portion of a {@link Curve} which uses a single interpolation method.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$

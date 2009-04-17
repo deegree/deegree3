@@ -79,8 +79,6 @@ public class GeometryTransformer extends Transformer {
 
     private static final GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
 
-    // private static Log LOG = LogFactory.getLog( GeometryTransformer.class );
-
     /**
      * Creates a new GeometryTransformer object.
      * 
