@@ -82,18 +82,18 @@ public class DefaultCompositeSolid extends AbstractDefaultGeometry implements Co
     }
 
     @Override
-    public SolidType getSolidType() {
-        return SolidType.CompositeSolid;
-    }
-
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
+    }    
+    
     @Override
     public PrimitiveType getPrimitiveType() {
         return PrimitiveType.Solid;
-    }
-
+    }    
+    
     @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.COMPOSITE_PRIMITIVE;
+    public SolidType getSolidType() {
+        return SolidType.CompositeSolid;
     }
 
     @Override

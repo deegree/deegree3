@@ -174,10 +174,6 @@ public class GeometryValidator {
             isValid = validate( (CompositeGeometry<?>) geom, affectedGeometryParticles );
             break;
         }
-        case COMPOSITE_PRIMITIVE: {
-            isValid = validate( (CompositeGeometry<?>) geom, affectedGeometryParticles );
-            break;
-        }
         case ENVELOPE: {
             String msg = "Internal error: envelope 'geometries' should not occur here.";
             throw new IllegalArgumentException( msg );

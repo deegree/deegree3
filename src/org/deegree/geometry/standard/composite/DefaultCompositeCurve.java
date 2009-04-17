@@ -85,11 +85,21 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
         super( id, crs );
         this.memberCurves = memberCurves;
     }
+
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
+    }    
+
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Curve;
+    }    
     
     @Override
     public CurveType getCurveType() {
         return CurveType.CompositeCurve;
-    }
+    }      
 
     @Override
     public List<Point> getBoundary() {
@@ -229,16 +239,6 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
     public LineString getAsLineString() {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Curve;
-    }
-
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.COMPOSITE_PRIMITIVE;
     }
 
     @Override

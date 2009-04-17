@@ -94,7 +94,7 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     @Override
     public SurfaceType getSurfaceType() {
         return SurfaceType.Surface;
-    }   
+    }
     
     @Override
     public double getArea() {

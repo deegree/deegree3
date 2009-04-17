@@ -53,6 +53,8 @@ import org.deegree.crs.CRS;
 import org.deegree.geometry.composite.CompositeSurface;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.primitive.GeometricPrimitive.PrimitiveType;
+import org.deegree.geometry.primitive.Surface.SurfaceType;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
@@ -84,11 +86,16 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
         this.memberSurfaces = memberSurfaces;
     }
 
-    /**
-     * Returns always {@link Surface.SurfaceType#CompositeSurface}.
-     * 
-     * @return {@link Surface.SurfaceType#CompositeSurface}
-     */
+    @Override
+    public GeometryType getGeometryType() {
+        return GeometryType.PRIMITIVE_GEOMETRY;
+    }
+    
+    @Override
+    public PrimitiveType getPrimitiveType() {
+        return PrimitiveType.Surface;
+    } 
+    
     @Override
     public SurfaceType getSurfaceType() {
         return SurfaceType.CompositeSurface;
@@ -220,21 +227,12 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
     }
 
     @Override
-    public PrimitiveType getPrimitiveType() {
-        return PrimitiveType.Surface;
-    }
-
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.COMPOSITE_PRIMITIVE;
-    }
-
-    @Override
     public List<Point> getExteriorRingCoordinates() {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public List<List<Point>> getInteriorRingsCoordinates() {
-        throw new UnsupportedOperationException();    }     
+        throw new UnsupportedOperationException();
+    }   
 }

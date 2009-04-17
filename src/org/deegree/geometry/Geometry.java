@@ -61,9 +61,7 @@ public interface Geometry extends Identifiable<String> {
         PRIMITIVE_GEOMETRY,
         /** Composited geometry */
         COMPOSITE_GEOMETRY,
-        /** Composited primitive (geometry type has both a primitive and a composite semantic) */
-        COMPOSITE_PRIMITIVE,
-        /** Multi geometry */
+        /** Multi (aggregate) geometry */
         MULTI_GEOMETRY,
     }
 
