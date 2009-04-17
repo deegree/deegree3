@@ -44,24 +44,31 @@
 package org.deegree.feature.xpath;
 
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
 import org.jaxen.BaseXPath;
 import org.jaxen.JaxenException;
 
 /**
- * An XPath implementation for deegree {@link Feature} objects.
+ * <a href="http://jaxen.codehaus.org/">Jaxen</a> XPath implementation for {@link Feature} objects.
  * <p>
- * This is the main entry point for matching an XPath against a {@link Feature}. You create a compiled XPath object,
- * then match it against one or more context nodes using the {@link #selectNodes(Object)} method, as in the following
- * example:
+ * This is the main entry point for matching an XPath expression against a {@link Feature}. Let <code>fc</code> be a
+ * {@link Feature} (or a {@link FeatureCollection} object) that you want to match against. Create a compiled XPath
+ * object, then match it against one or more context nodes using the {@link #selectNodes(Object)} method, as in the
+ * following example:
  * </p>
  * 
  * <pre>
- * XPath path = new FeatureXPath( &quot;a/b/c&quot; );
+ * XPath xpath = new FeatureXPath( &quot;gml:featureMember/app:Philosopher/app:friend/app:Philosopher//app:name&quot; );
+ * xpath.setNamespaceContext( nsContext );
+ * List&lt;Node&gt; selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+ * </pre>
  * 
- * @see BaseXPath
+ * @see FeatureNode
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @version $Revision:$
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author:$
+ * 
+ * @version $Revision:$, $Date:$
  */
 public class FeatureXPath extends BaseXPath {
 

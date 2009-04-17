@@ -44,7 +44,9 @@
 package org.deegree.feature.xpath;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
@@ -110,6 +112,7 @@ public class FeatureXPathTest {
 
         nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
+        nsContext.addNamespace( "app", "http://www.deegree.org/app" );
     }
 
     @SuppressWarnings("unchecked")
@@ -127,7 +130,7 @@ public class FeatureXPathTest {
     @Test
     public void testXPath2()
                             throws JaxenException {
-        XPath xpath = new FeatureXPath( "featureMember" );
+        XPath xpath = new FeatureXPath( "gml:featureMember" );
         xpath.setNamespaceContext( nsContext );
         List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
         Assert.assertEquals( 7, selectedNodes.size() );
@@ -192,7 +195,7 @@ public class FeatureXPathTest {
         Assert.assertEquals( 1, selectedNodes.size() );
         PropertyNode propNode = (PropertyNode) selectedNodes.get( 0 );
         Property prop = propNode.getProperty();
-        System.out.println( prop.getValue() );
+        Assert.assertEquals( "Mondovi", prop.getValue() );
     }
 
     @SuppressWarnings("unchecked")
@@ -223,9 +226,13 @@ public class FeatureXPathTest {
         XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher[app:id < 3]/app:name" );
         xpath.setNamespaceContext( nsContext );
         List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+        Set<String> names = new HashSet<String>();
         for ( Node node : selectedNodes ) {
-            System.out.println( ( (PropertyNode) node ).getProperty().getValue() );
+            names.add ((String) ((PropertyNode) node ).getProperty().getValue() );
         }
+        Assert.assertEquals (2, names.size());
+        Assert.assertTrue( names.contains( "Friedrich Engels" ) );
+        Assert.assertTrue( names.contains( "Karl Marx" ) );
     }
 
     @SuppressWarnings("unchecked")

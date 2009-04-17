@@ -317,14 +317,15 @@ public class GMLFeatureParserTest {
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema(), idContext );
+        ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
+        GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema, idContext );
         long begin = System.currentTimeMillis();
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature(
                                                                             new XMLStreamReaderWrapper(
                                                                                                         xmlReader,
                                                                                                         docURL.toString() ),
                                                                             new CRS( "EPSG:31466" ) );
-        // idContext.resolveXLinks();
+        idContext.resolveXLinks(schema);
 
         long elapsed = System.currentTimeMillis() - begin;
         System.out.println( "Parsing: " + elapsed + "[ms]" );

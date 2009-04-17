@@ -43,7 +43,6 @@ import java.util.List;
 
 import org.deegree.commons.types.Length;
 import org.deegree.crs.CRS;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.feature.gml.Angle;
 import org.deegree.geometry.AbstractGeometryFactory;
 import org.deegree.geometry.Envelope;
