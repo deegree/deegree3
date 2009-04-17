@@ -69,11 +69,17 @@ public class Tesselator {
 
     private GLU glu;
 
+    private boolean useDirectBuffers;
+
     /**
      * Create a tesselator which triangulates all {@link SimpleAccessGeometry} of a {@link GeometryQualityModel}.
+     * 
+     * @param useDirectBuffers
+     *            to use direct buffers instead of heap buffers.
      */
-    public Tesselator() {
+    public Tesselator( boolean useDirectBuffers ) {
         glu = new GLU();
+        this.useDirectBuffers = useDirectBuffers;
     }
 
     /**
@@ -189,7 +195,7 @@ public class Tesselator {
                     // we've got innerrings, eclipse doesn't seem to understand, that the innerrings can not be null
                     // (hasrings), so lets suppress warnings.
                     if ( currentRing < innerRings.length ) {
-                        ringEnd = innerRings[currentRing++];
+                        ringEnd = innerRings[currentRing++] / 3;
                     } else {
                         ringEnd = numberOfVertices;
                     }
@@ -205,7 +211,7 @@ public class Tesselator {
             glu.gluTessEndContour( tess );
         }
         glu.gluTessEndPolygon( tess );
-        return callBack.createRenderableGeometry();
+        return callBack.createRenderableGeometry( useDirectBuffers );
     }
 
     /**

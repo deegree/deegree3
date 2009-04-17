@@ -59,8 +59,6 @@ public class Vertex {
 
     private float[] normalizedNormal = null;
 
-    byte[] color;
-
     /**
      * Create a vertex from the given coordinates and the surrounding vertices.
      * 
@@ -98,24 +96,16 @@ public class Vertex {
                     this.normal[1] += w * v.normal[1];
                     this.normal[2] += w * v.normal[2];
                 }
-                if ( v.color != null ) {
-                    if ( color == null ) {
-                        color = new byte[4];
-                    }
-                    color[0] += v.color[0] * w;
-                    color[1] += v.color[1] * w;
-                    color[2] += v.color[2] * w;
-                    color[3] += v.color[3] * w;
-                }
+
             }
         }
     }
 
     Vertex( float[] coordinates ) {
-        this( coordinates, null, new byte[] { Byte.MIN_VALUE, Byte.MAX_VALUE, Byte.MAX_VALUE, Byte.MAX_VALUE } );
+        this( coordinates, null );
     }
 
-    Vertex( float[] coordinates, float[] normal, byte[] vertexColor ) {
+    Vertex( float[] coordinates, float[] normal ) {
         if ( coordinates == null || coordinates.length != 3 ) {
             throw new IllegalArgumentException( "Only 3d coordinates are supported." );
         }
@@ -124,7 +114,6 @@ public class Vertex {
         y = coordinates[1];
         z = coordinates[2];
         this.normal = normal;
-        color = vertexColor;
     }
 
     /**
@@ -171,13 +160,6 @@ public class Vertex {
         return normal != null;
     }
 
-    /**
-     * @return the color in ARGB byte values e.g 0x00 FF FF FF for white opaque
-     */
-    public byte[] getColor() {
-        return color;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -189,13 +171,7 @@ public class Vertex {
             sb.append( "\nnormal:\t" );
             sb.append( normal[0] ).append( "," ).append( normal[1] ).append( "," ).append( normal[2] );
         }
-        if ( color == null ) {
-            sb.append( "\nno color" );
-        } else {
-            sb.append( "\ncolor(argb):\t" );
-            sb.append( color[0] ).append( "," ).append( color[1] ).append( "," ).append( color[2] ).append( "," ).append(
-                                                                                                                          color[3] );
-        }
+
         return sb.toString();
     }
 }

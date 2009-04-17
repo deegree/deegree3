@@ -115,7 +115,10 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 
     @Override
     public void errorData( int arg0, Object originalVertex ) {
-        LOG.error( glu.gluErrorString( arg0 ) );
+        super.errorData( arg0, originalVertex );
+        throw new IllegalArgumentException( "Error while tesselating: " + originalVertex + " cause: "
+                                            + glu.gluErrorString( arg0 ) );
+        // LOG.error( );
     }
 
     @Override
@@ -176,21 +179,23 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
      */
     public Vertex createNewVertex( int currentVertexLocation ) {
         float[] coords = geom.getCoordinateForVertex( currentVertexLocation );
-        int ac = getGeometry().getAmbientColor();
-        byte[] color = new byte[] { (byte) ( ac >> 24 ), (byte) ( ac >> 16 ), (byte) ( ac >> 8 ), (byte) ( ac ) };
-        return new Vertex( coords, null, color );
+        return new Vertex( coords, null );
     }
 
     /**
      * Calculate the normals for the tesselated geometry and return a renderable geometry created from the given
      * {@link SimpleAccessGeometry}
      * 
+     * @param useDirectBuffers
+     *            to use direct buffers instead of heap buffers.
+     * 
      * @return the tesselated {@link SimpleAccessGeometry} as a {@link RenderableGeometry}
      */
-    public RenderableGeometry createRenderableGeometry() {
+    public RenderableGeometry createRenderableGeometry( boolean useDirectBuffers ) {
         return new RenderableGeometry( getTesselatedCoordinates(), getOpenGLType(), calculateNormals(),
-                                       getTesselatedVertexColors(), geom.getSpecularColor(), geom.getAmbientColor(),
-                                       geom.getDiffuseColor(), geom.getEmmisiveColor(), geom.getShininess() );
+                                       geom.getSpecularColor(), geom.getAmbientColor(), geom.getDiffuseColor(),
+                                       geom.getEmmisiveColor(), geom.getShininess(), useDirectBuffers );
+
     }
 
     /**
@@ -205,22 +210,6 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
             coords[( vertex * 3 ) + 2] = v.z;
         }
         return coords;
-    }
-
-    /**
-     * @return the vertex colors of the vertices created by the tesselation process.
-     */
-    protected byte[] getTesselatedVertexColors() {
-        byte[] colors = new byte[tesselatedVertices.size() * 4];
-        for ( int vertex = 0; vertex < tesselatedVertices.size(); ++vertex ) {
-            Vertex v = tesselatedVertices.get( vertex );
-            byte[] color = v.getColor();
-            colors[vertex] = color[0];
-            colors[vertex + 1] = color[1];
-            colors[vertex + 2] = color[2];
-            colors[vertex + 3] = color[3];
-        }
-        return colors;
     }
 
     /**
@@ -393,4 +382,5 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
     public final int getOpenGLType() {
         return openGLType;
     }
+
 }

@@ -38,7 +38,6 @@
 
 package org.deegree.rendering.r3d.opengl.tesselation;
 
-import org.deegree.rendering.r3d.geometry.SimpleAccessGeometry;
 import org.deegree.rendering.r3d.geometry.TexturedGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.RenderableGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.RenderableTexturedGeometry;
@@ -91,26 +90,18 @@ public class TexturedGeometryCallBack extends GeometryCallBack {
     @Override
     public Vertex createNewVertex( int currentVertexLocation ) {
         float[] coords = getGeometry().getCoordinateForVertex( currentVertexLocation );
-        int ac = getGeometry().getAmbientColor();
-        byte[] color = new byte[] { (byte) ( ac >> 24 ), (byte) ( ac >> 16 ), (byte) ( ac >> 8 ), (byte) ( ac ) };
         float[] texCoords = ( (TexturedGeometry) getGeometry() ).getTextureCoordinateForVertex( currentVertexLocation );
-        return new TexturedVertex( coords, null, color, texCoords );
+        return new TexturedVertex( coords, null, texCoords );
     }
 
-    /**
-     * Calculate the normals for the tesselated geometry and return a renderable geometry created from the given
-     * {@link SimpleAccessGeometry}
-     * 
-     * @return the tesselated {@link SimpleAccessGeometry} as a {@link RenderableGeometry}
-     */
     @Override
-    public RenderableGeometry createRenderableGeometry() {
+    public RenderableGeometry createRenderableGeometry( boolean useDirectBuffers ) {
         return new RenderableTexturedGeometry( getTesselatedCoordinates(), getOpenGLType(), calculateNormals(),
-                                               getTesselatedVertexColors(), getGeometry().getSpecularColor(),
-                                               getGeometry().getAmbientColor(), getGeometry().getDiffuseColor(),
-                                               getGeometry().getEmmisiveColor(), getGeometry().getShininess(),
+                                               getGeometry().getSpecularColor(), getGeometry().getAmbientColor(),
+                                               getGeometry().getDiffuseColor(), getGeometry().getEmmisiveColor(),
+                                               getGeometry().getShininess(),
                                                ( (TexturedGeometry) getGeometry() ).getTexture(),
-                                               getTesselatedTextureCoordinates() );
+                                               getTesselatedTextureCoordinates(), useDirectBuffers );
     }
 
     /**

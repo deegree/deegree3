@@ -76,7 +76,7 @@ public class TexturedVertex extends Vertex {
      *            adding up to 1
      */
     private void calcTexCoords( TexturedVertex[] otherVertices, float[] weights ) {
-        // aufaddieren mit gewichtung
+        // add with weights
         tex_u = 0;
         tex_v = 0;
         for ( int i = 0; i < otherVertices.length; ++i ) {
@@ -98,8 +98,7 @@ public class TexturedVertex extends Vertex {
      *            of the vertex may not be <code>null</code> and must have a length of 2
      */
     TexturedVertex( float[] coordinates, float[] textureCoordinates ) {
-        this( coordinates, new float[] { 1, 0, 0 }, new byte[] { Byte.MIN_VALUE, Byte.MAX_VALUE, Byte.MAX_VALUE,
-                                                                Byte.MAX_VALUE }, textureCoordinates );
+        this( coordinates, new float[] { 1, 0, 0 }, textureCoordinates );
     }
 
     /**
@@ -109,13 +108,11 @@ public class TexturedVertex extends Vertex {
      *            of the vertex may not be <code>null</code> and must have a length of 3
      * @param normal
      *            if <code>null</code> 1,0,0 will be used.
-     * @param vertexColor
-     *            ARGB e.g. 0x00 FF FF FF
      * @param textureCoordinates
      *            of the vertex may not be <code>null</code> and must have a length of 2
      */
-    public TexturedVertex( float[] coordinates, float[] normal, byte[] vertexColor, float[] textureCoordinates ) {
-        super( coordinates, normal, vertexColor );
+    public TexturedVertex( float[] coordinates, float[] normal, float[] textureCoordinates ) {
+        super( coordinates, normal );
         if ( textureCoordinates == null || textureCoordinates.length != 2 ) {
             throw new IllegalArgumentException( "Only 2d texture coordinates are supported." );
         }
