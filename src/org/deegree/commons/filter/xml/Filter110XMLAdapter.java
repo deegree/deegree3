@@ -55,6 +55,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
@@ -85,6 +86,7 @@ import org.deegree.commons.filter.logical.And;
 import org.deegree.commons.filter.logical.LogicalOperator;
 import org.deegree.commons.filter.logical.Not;
 import org.deegree.commons.filter.logical.Or;
+import org.deegree.commons.filter.spatial.Intersects;
 import org.deegree.commons.filter.spatial.SpatialOperator;
 import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.utils.ArrayUtils;
@@ -93,6 +95,10 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.XPath;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.feature.gml.GML311GeometryParser;
+import org.deegree.geometry.Geometry;
 import org.jaxen.SimpleNamespaceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,17 +116,17 @@ public class Filter110XMLAdapter extends XMLAdapter {
     private static final Logger LOG = LoggerFactory.getLogger( Filter110XMLAdapter.class );
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
-    
+
     private static final String GML_NS = "http://www.opengis.net/gml";
 
     private static final QName NAME_ATTR = new QName( "name" );
 
     private static final QName FEATURE_ID_ELEMENT = new QName( OGC_NS, "FeatureId" );
-    
-    private static final QName FID_ATTR_NAME = new QName ("fid");
-    
+
+    private static final QName FID_ATTR_NAME = new QName( "fid" );
+
     private static final QName GML_OBJECT_ID_ELEMENT = new QName( OGC_NS, "GmlObjectId" );
-    
+
     private static final QName GML_ID_ATTR_NAME = new QName( GML_NS, "id" );
 
     private static final Map<Expression.Type, QName> expressionTypeToElementName = new HashMap<Expression.Type, QName>();
@@ -264,17 +270,19 @@ public class Filter110XMLAdapter extends XMLAdapter {
             QName childElementName = childElement.getQName();
             if ( GML_OBJECT_ID_ELEMENT.equals( childElementName ) ) {
                 String id = childElement.getAttributeValue( GML_ID_ATTR_NAME );
-                if (id == null || id.length() == 0) {
-                    String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", GML_OBJECT_ID_ELEMENT, GML_ID_ATTR_NAME );
+                if ( id == null || id.length() == 0 ) {
+                    String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", GML_OBJECT_ID_ELEMENT,
+                                                      GML_ID_ATTR_NAME );
                     throw new XMLParsingException( this, childElement, msg );
                 }
                 matchedIds.add( id );
             } else if ( FEATURE_ID_ELEMENT.equals( childElementName ) ) {
                 String id = childElement.getAttributeValue( FID_ATTR_NAME );
-                if (id == null || id.length() == 0) {
-                    String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", FEATURE_ID_ELEMENT, FID_ATTR_NAME );
+                if ( id == null || id.length() == 0 ) {
+                    String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", FEATURE_ID_ELEMENT,
+                                                      FID_ATTR_NAME );
                     throw new XMLParsingException( this, childElement, msg );
-                }                
+                }
                 matchedIds.add( id );
             } else {
                 String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_UNEXPECTED_ELEMENT", childElementName,
@@ -324,7 +332,6 @@ public class Filter110XMLAdapter extends XMLAdapter {
             break;
         }
         case SUB: {
-
             FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
             Expression param1 = parseExpression( childElementIter.next() );
             Expression param2 = parseExpression( childElementIter.next() );
@@ -346,10 +353,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
             break;
         }
         case PROPERTY_NAME: {
-            // TODO build nsContext
-            SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
-            nsContext.addNamespace( "app", "http://www.deegree.org/app" );
-            expression = new PropertyName( element.getText(), nsContext );
+            expression = parsePropertyName( element );
             break;
         }
         case LITERAL: {
@@ -374,13 +378,27 @@ public class Filter110XMLAdapter extends XMLAdapter {
     }
 
     /**
+     * Parses the given {http://www.opengis.net/ogc}PropertyName element as a {@link PropertyName}.
+     * 
+     * @param element
+     *            element to be parsed
+     * @return propertyName object
+     */
+    private PropertyName parsePropertyName( OMElement element ) {
+        // TODO build correct nsContext
+        SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
+        nsContext.addNamespace( "app", "http://www.deegree.org/app" );
+        return new PropertyName( element.getText(), nsContext );
+    }
+
+    /**
      * Parses the given element as an {@link Operator}.
      * <p>
      * The element must be one of the following types:
      * <ul>
-     * <li> {@link LogicalOperator}</li>
-     * <li> {@link SpatialOperator}</li>
-     * <li> {@link ComparisonOperator}</li>
+     * <li>{@link LogicalOperator}</li>
+     * <li>{@link SpatialOperator}</li>
+     * <li>{@link ComparisonOperator}</li>
      * </ul>
      * 
      * @param element
@@ -412,7 +430,14 @@ public class Filter110XMLAdapter extends XMLAdapter {
             break;
         case SPATIAL:
             LOG.debug( "Building spatial operator" );
-            operator = parseSpatialOperator( element );
+            try {
+                operator = parseSpatialOperator( element );
+            } catch ( XMLStreamException e ) {
+                e.printStackTrace();
+                throw new XMLParsingException(e.getMessage());
+            } catch ( UnknownCRSException e ) {
+                throw new XMLParsingException(e.getMessage());
+            }
             break;
         }
         return operator;
@@ -439,10 +464,54 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * @param element
      *            element to be parsed
      * @return logical operator object
+     * @throws UnknownCRSException
+     * @throws XMLStreamException
+     * @throws XMLParsingException
      */
-    private SpatialOperator parseSpatialOperator( OMElement element ) {
-        // TODO Auto-generated method stub
-        return null;
+    private SpatialOperator parseSpatialOperator( OMElement element )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+
+        SpatialOperator spatialOperator = null;
+
+        // check if element name is a valid spatial operator element name
+        SpatialOperator.SubType type = elementNameToSpatialOperatorType.get( element.getQName() );
+
+        if ( type == null ) {
+            String msg = "Error while parsing ogc:spatialOps. Expected one of "
+                         + elemNames( SpatialOperator.SubType.class, spatialOperatorTypeToElementName ) + ".";
+            throw new XMLParsingException( this, element, msg );
+        }
+
+        switch ( type ) {
+        case INTERSECTS:
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+            PropertyName parameter1 = parsePropertyName( childElementIter.next() );
+            GML311GeometryParser geomParser = new GML311GeometryParser();
+            
+            OMElement geometryElement = childElementIter.next();
+            XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
+           
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
+                                                                           reader,
+                                                                           getSystemId() );
+            xmlReader.nextTag();
+            
+            Geometry parameter2 = geomParser.parseAbstractGeometry( xmlReader, null );
+            spatialOperator = new Intersects(parameter1, parameter2);
+            break;
+        case BBOX:
+        case BEYOND:
+        case CONTAINS:
+        case CROSSES:
+        case DISJOINT:
+        case DWITHIN:
+        case EQUALS:
+        case OVERLAPS:
+        case TOUCHES:
+        case WITHIN:
+            throw new UnsupportedOperationException();
+        }
+        return spatialOperator;
     }
 
     /**

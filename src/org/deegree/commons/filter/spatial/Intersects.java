@@ -45,6 +45,8 @@ package org.deegree.commons.filter.spatial;
 
 import org.deegree.commons.filter.FilterEvaluationException;
 import org.deegree.commons.filter.MatchableObject;
+import org.deegree.commons.filter.expression.PropertyName;
+import org.deegree.geometry.Geometry;
 
 /**
  * TODO add documentation here
@@ -56,14 +58,24 @@ import org.deegree.commons.filter.MatchableObject;
  */
 public class Intersects extends SpatialOperator {
 
+    private final PropertyName param1;
+    
+    private final Geometry param2;
+    
+    public Intersects( PropertyName param1, Geometry param2 ) {
+        this.param1 = param1;
+        this.param2 = param2;
+    }
+
     public SubType getSubType() {
         return SubType.INTERSECTS;
     }
 
+    @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()
-                                             + "' operator is not implemented yet." );
+        Geometry param1Value = checkGeometryOrNull( param1.evaluate( object ));
+        return param2.intersects( param1Value );
     }
 
     public String toString( String indent ) {

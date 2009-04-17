@@ -52,6 +52,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
@@ -228,10 +229,10 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
             reader.require( type, namespaceURI, localName );
         } catch ( XMLStreamException e ) {
             String msg = "Expected {" + namespaceURI + "}" + localName + ", but found: " + getCurrentEventInfo();
-            throw new XMLParsingException( this, msg);
+            throw new XMLParsingException( this, msg );
         }
-    }    
-    
+    }
+
     // -----------------------------------------------------------------------
     // wrapped standard methods of XMLStreamReader
     // -----------------------------------------------------------------------
@@ -455,7 +456,21 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
     @Override
     public int nextTag()
                             throws XMLStreamException {
-        return reader.nextTag();
+
+        // not delegated to reader.nextTag() to work around problem (bug?) in OM
+        int eventType = next();
+        while ( ( eventType == XMLStreamConstants.CHARACTERS ) // skip whitespace
+                || ( eventType == XMLStreamConstants.CDATA )
+                // skip whitespace
+                || eventType == XMLStreamConstants.SPACE
+                || eventType == XMLStreamConstants.PROCESSING_INSTRUCTION
+                || eventType == XMLStreamConstants.COMMENT ) {
+            eventType = next();
+        }
+        if ( eventType != XMLStreamConstants.START_ELEMENT && eventType != XMLStreamConstants.END_ELEMENT ) {
+            throw new XMLStreamException( "expected start or end tag", getLocation() );
+        }
+        return eventType;
     }
 
     @Override

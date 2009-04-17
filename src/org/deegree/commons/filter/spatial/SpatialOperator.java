@@ -43,26 +43,74 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.filter.spatial;
 
+import org.deegree.commons.filter.FilterEvaluationException;
 import org.deegree.commons.filter.Operator;
+import org.deegree.geometry.Geometry;
 
 /**
- * TODO add documentation here
- *
+ * Defines a topological predicate that can be evaluated on {@link Geometry} objects.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public abstract class SpatialOperator implements Operator {
 
+    /**
+     * Convenience enum type for discriminating the different {@link SpatialOperator} types.
+     */
     public enum SubType {
-        EQUALS, DISJOINT, TOUCHES, WITHIN, OVERLAPS, CROSSES, INTERSECTS, CONTAINS, DWITHIN,         
-        BEYOND, BBOX
-    }    
-    
-    public Type getType () {
+        /** True iff the two operands are identical. The {@link SpatialOperator} is an instance of {@link Equals}. */
+        EQUALS,
+        /** True iff the two operands are disjoint. The {@link SpatialOperator} is an instance of {@link Disjoint}. */
+        DISJOINT,
+        /** True iff the two operands touch. The {@link SpatialOperator} is an instance of {@link Touches}. */
+        TOUCHES,
+        /**
+         * True iff the first operand is completely inside the second. The {@link SpatialOperator} is an instance of
+         * {@link Within}.
+         */
+        WITHIN,
+        /** True iff ... The {@link SpatialOperator} is an instance of {@link Overlaps}. */
+        OVERLAPS,
+        /** True iff ... The {@link SpatialOperator} is an instance of {@link Crosses}. */
+        CROSSES,
+        /** True iff ... The {@link SpatialOperator} is an instance of {@link Intersects}. */
+        INTERSECTS,
+        /** True iff ... The {@link SpatialOperator} is an instance of {@link Contains}. */
+        CONTAINS,
+        /** True iff ... The {@link SpatialOperator} is an instance of {@link DWithin}. */
+        DWITHIN,
+        /** True iff ... The {@link SpatialOperator} is an instance of {@link Beyond}. */
+        BEYOND,
+        /** True iff ... The {@link SpatialOperator} is an instance of {@link BBOX}. */
+        BBOX
+    }
+
+    /**
+     * Always returns {@link Operator.Type#SPATIAL} (for {@link SpatialOperator} instances).
+     * 
+     * @return {@link Operator.Type#SPATIAL}
+     */
+    public Type getType() {
         return Type.SPATIAL;
     }
 
-    public abstract SubType getSubType ();    
+    /**
+     * Returns the type of spatial operator. Use this to safely determine the subtype of {@link SpatialOperator}.
+     * 
+     * @return type of spatial operator
+     */
+    public abstract SubType getSubType();
+
+    protected Geometry checkGeometryOrNull( Object value )
+                            throws FilterEvaluationException {
+        if ( value != null && !( value instanceof Geometry ) ) {
+            String msg = "Cannot evaluate operator '" + getType().name() + "'. Parameter '" + value
+                         + "' is not geometric.";
+            throw new FilterEvaluationException( msg );
+        }
+        return (Geometry) value;
+    }
 }

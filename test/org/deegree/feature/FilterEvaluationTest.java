@@ -103,4 +103,18 @@ public class FilterEvaluationTest {
         Assert.assertTrue (ids.contains( "PHILOSOPHER_5" ));
         Assert.assertTrue (ids.contains( "PHILOSOPHER_6" ));
     }
+    
+    @Test
+    public void filterCollection4()
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
+        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testfilter4.xml" ) );
+        Filter filter = adapter.parse();
+        Assert.assertNotNull( filter );
+
+        FeatureCollection filteredCollection = fc.getMembers( filter );
+        for ( Feature feature : filteredCollection ) {
+            System.out.println (feature.getId());
+        }
+    }    
 }

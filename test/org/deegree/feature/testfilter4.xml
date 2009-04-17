@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/filter.xsd">
+  <ogc:Intersects>
+    <ogc:PropertyName>app:placeOfBirth/app:Place/app:country/app:Country/app:geom</ogc:PropertyName>
+    <gml:Point>
+      <gml:coord>
+        <gml:X>8</gml:X>
+        <gml:Y>47</gml:Y>
+      </gml:coord>
+    </gml:Point>
+  </ogc:Intersects>
+</ogc:Filter>

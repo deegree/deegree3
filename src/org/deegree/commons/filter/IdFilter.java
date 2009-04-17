@@ -68,7 +68,7 @@ public class IdFilter implements Filter {
     }
 
     /**
-     * Returns {@link Filter.Type#ID_FILTER}
+     * Always returns {@link Filter.Type#ID_FILTER} (for {@link IdFilter} instances).
      * 
      * @return {@link Filter.Type#ID_FILTER}
      */

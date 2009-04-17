@@ -43,10 +43,14 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.filter;
 
-import org.deegree.feature.Feature;
+import org.deegree.commons.filter.comparison.ComparisonOperator;
+import org.deegree.commons.filter.logical.LogicalOperator;
+import org.deegree.commons.filter.spatial.SpatialOperator;
 
 /**
- * TODO add documentation here
+ * {@link Operator} instances are the building blocks of {@link OperatorFilter}s. They may be nested recursively -- an
+ * argument of an {@link Operator} can be another {@link Operator} so they form a tree structure that can be evaluated
+ * by traversing it.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -55,19 +59,30 @@ import org.deegree.feature.Feature;
  */
 public interface Operator {
 
+    /**
+     * Convenience enum type for discriminating the different operator types.
+     */
     public enum Type {
+        /** Spatial operator. The {@link Operator} is an instance of {@link SpatialOperator}. */
         SPATIAL,
+        /** Logical operator. The {@link Operator} is an instance of {@link LogicalOperator}. */
         LOGICAL,
+        /** Comparison operator. The {@link Operator} is an instance of {@link ComparisonOperator}. */
         COMPARISON;
-    }    
-    
+    }
+
+    /**
+     * Returns the type of operator. Use this to safely determine the subtype of {@link Operator}.
+     * 
+     * @return type of operator
+     */
     public Type getType();
-       
+
     /**
      * Determines the value of the boolean operator.
      * 
      * @param object
-     *            <code>PropertyValueProvider</code> to be tested
+     *            {@link MatchableObject} to evaluate the operator against
      * @return true, if the operator evaluates to true, false otherwise
      * @throws FilterEvaluationException
      *             if the evaluation fails

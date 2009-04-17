@@ -43,43 +43,55 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.filter;
 
-import org.deegree.feature.Feature;
-
 /**
- * TODO add documentation here
- *
+ * {@link Filter} that matches objects which test positively against an expression built from operators.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class OperatorFilter implements Filter {
 
     private Operator rootOperator;
-    
+
     /**
+     * Creates a new {@link OperatorFilter}.
      * 
      * @param rootOperator
+     *            root operator that defines the test expression
      */
     public OperatorFilter( Operator rootOperator ) {
         this.rootOperator = rootOperator;
     }
 
+    /**
+     * Always returns {@link Filter.Type#OPERATOR_FILTER} (for {@link OperatorFilter} instances).
+     * 
+     * @return {@link Filter.Type#OPERATOR_FILTER}
+     */
+    @Override
     public Type getType() {
         return Type.OPERATOR_FILTER;
-    }    
+    }
 
+    /**
+     * Returns the root {@link Operator} of the test expression.
+     * 
+     * @return the root operator
+     */
     public Operator getOperator() {
         return rootOperator;
-    }    
-    
+    }
+
+    @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         return rootOperator.evaluate( object );
     }
-    
+
     @Override
-    public String toString () {
-        return rootOperator.toString("");
+    public String toString() {
+        return rootOperator.toString( "" );
     }
 }

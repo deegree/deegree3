@@ -44,7 +44,11 @@
 package org.deegree.commons.filter;
 
 /**
- * A <code>Filter</code> is a boolean expression that can be tested against {@link MatchableObject}s.
+ * A <code>Filter</code> is a boolean expression (often with spatial conditions) that can be tested against
+ * {@link MatchableObject}s.
+ * 
+ * @see IdFilter
+ * @see OperatorFilter
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -54,17 +58,20 @@ package org.deegree.commons.filter;
 public interface Filter {
 
     /**
-     * Convenience enum type for discriminating the different filter variants.
+     * Convenience enum type for discriminating the different filter types.
      */
     public enum Type {
-        /** Filter that selects objects with certain ids. */
+        /** Filter that matches objects with certain ids. The object is an instance of {@link IdFilter}. */
         ID_FILTER,
-        /** Filter that selects objects that match a certain expression. */
+        /**
+         * Filter that matches objects that match a certain expression. The object is an instance of
+         * {@link OperatorFilter}.
+         */
         OPERATOR_FILTER;
     }
 
     /**
-     * Returns the type of filter.
+     * Returns the type of filter. Use this to safely determine the subtype of {@link Filter}.
      * 
      * @return type of filter (id or expression based)
      */
@@ -74,7 +81,7 @@ public interface Filter {
      * Determines if the given {@link MatchableObject} matches this <code>Filter</code>.
      * 
      * @param object
-     *            <code>PropertyValueProvider</code> to be tested
+     *            {@link MatchableObject} to be tested
      * @return true, if the <code>Filter</code> evaluates to true, else false
      * @throws FilterEvaluationException
      *             if the evaluation fails
