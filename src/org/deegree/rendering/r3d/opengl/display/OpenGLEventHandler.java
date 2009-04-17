@@ -144,7 +144,7 @@ public class OpenGLEventHandler implements GLEventListener {
         centroid = new float[] { (float) bbox.getCentroid().getX(), (float) bbox.getCentroid().getY(),
                                 (float) bbox.getCentroid().getZ() };
         lookAt = new float[] { centroid[0], centroid[1], centroid[2] };
-        farClippingPlane = 2 * (float) Math.max( bbox.getWidth(), bbox.getHeight() );
+        farClippingPlane = 20 * (float) Math.max( bbox.getWidth(), bbox.getHeight() );
         eye = new float[] { centroid[0], centroid[1] + ( farClippingPlane * .5f ),
                            centroid[2] + ( farClippingPlane * .5f ) };
         trackBall.reset();
@@ -200,13 +200,13 @@ public class OpenGLEventHandler implements GLEventListener {
     public void addDataObjectToScene( WorldRenderableObject b ) {
         if ( b != null ) {
             Envelope env = b.getBbox();
-            // if ( env != null ) {
-            // if ( isDefaultBBox() ) {
-            bbox = env;
-            // } else {
-            // bbox.merge( env );
-            // }
-            // }
+            if ( env != null ) {
+                if ( isDefaultBBox() ) {
+                    bbox = env;
+                } else {
+                    bbox.merge( env );
+                }
+            }
             calcViewParameters();
             worldRenderableObjects.add( b );
         }
@@ -354,7 +354,7 @@ public class OpenGLEventHandler implements GLEventListener {
         GL gl = d.getGL();
         gl.glMatrixMode( GL.GL_PROJECTION );
         gl.glLoadIdentity();
-        glu.gluPerspective( 60.0, (float) width / height, 0.5, farClippingPlane );
+        glu.gluPerspective( 60.0, (float) width / height, farClippingPlane * 0.01, farClippingPlane );
         gl.glMatrixMode( GL.GL_MODELVIEW );
 
     }
