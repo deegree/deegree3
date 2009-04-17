@@ -144,7 +144,13 @@ public class GeometryFactoryCreator {
     private void createGeometryFactory( GeometryFactoryType gf )
                             throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         // create a factory instance from its classname
-        Class<?> clzz = Class.forName( gf.getClassName() );
+        Class<?> clzz = null;
+        try {
+            clzz = Class.forName( gf.getClassName() );
+        } catch (ClassNotFoundException e) {
+            System.out.println ("MENNO: '" + gf.getClassName() + "'");
+            throw e;
+        }
         GeometryFactory factory = (GeometryFactory) clzz.newInstance();
 
         // set name and description
