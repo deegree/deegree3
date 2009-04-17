@@ -76,4 +76,9 @@ public class DefaultMultiSurface extends DefaultMultiGeometry<Surface> implement
     public double getArea() {
         throw new UnsupportedOperationException();
     }
+    
+    @Override
+    public MultiGeometryType getMultiGeometryType() {
+        return MultiGeometryType.MULTI_SURFACE;
+    }
 }

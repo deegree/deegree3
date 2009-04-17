@@ -75,5 +75,10 @@ public class DefaultMultiLineString extends DefaultMultiGeometry<LineString> imp
     @Override
     public double getLength() {
         throw new UnsupportedOperationException();
-    }    
+    }
+    
+    @Override
+    public MultiGeometryType getMultiGeometryType() {
+        return MultiGeometryType.MULTI_LINE_STRING; 
+    }
 }

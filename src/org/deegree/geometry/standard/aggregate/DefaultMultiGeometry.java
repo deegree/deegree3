@@ -200,4 +200,9 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
         }
         return result;
     }
+    
+    @Override
+    public MultiGeometryType getMultiGeometryType() {
+        return MultiGeometryType.MULTI_GEOMETRY;
+    }
 }

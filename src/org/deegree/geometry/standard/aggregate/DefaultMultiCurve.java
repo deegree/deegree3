@@ -75,5 +75,10 @@ public class DefaultMultiCurve extends DefaultMultiGeometry<Curve> implements Mu
     @Override
     public double getLength() {
         throw new UnsupportedOperationException();
-    }    
+    }
+    
+    @Override
+    public MultiGeometryType getMultiGeometryType() {
+        return MultiGeometryType.MULTI_CURVE; 
+    }
 }

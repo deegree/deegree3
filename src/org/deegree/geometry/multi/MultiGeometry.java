@@ -61,13 +61,13 @@ import org.deegree.geometry.primitive.Point;
 public interface MultiGeometry<T extends Geometry> extends Geometry, List<T> {
 
     public enum MultiGeometryType {
-        MultiGeometry,
-        MultiPoint,        
-        MultiCurve,
-        MultiLineString,
-        MultiSurface,
-        MultiPolygon,
-        MultiSolid
+        MULTI_GEOMETRY,
+        MULTI_POINT,        
+        MULTI_CURVE,
+        MULTI_LINE_STRING,
+        MULTI_SURFACE,
+        MULTI_POLYGON,
+        MULTI_SOLID
     }    
 
     /**
@@ -77,6 +77,11 @@ public interface MultiGeometry<T extends Geometry> extends Geometry, List<T> {
      */
     @Override
     public GeometryType getGeometryType();
+        
+    /**
+     * @return the type of MultiGeometry, see {@link MultiGeometryType}
+     */
+    public MultiGeometryType getMultiGeometryType();
     
     /**
      * Returns the centroid of the contained geometries.
@@ -84,4 +89,5 @@ public interface MultiGeometry<T extends Geometry> extends Geometry, List<T> {
      * @return the centroid
      */
     public Point getCentroid();
+    
 }

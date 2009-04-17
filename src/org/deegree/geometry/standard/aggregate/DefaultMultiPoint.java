@@ -71,4 +71,9 @@ public class DefaultMultiPoint extends DefaultMultiGeometry<Point> implements Mu
     public DefaultMultiPoint( String id, CRS crs, List<Point> members ) {
         super( id, crs, members );
     }
+    
+    @Override
+    public MultiGeometryType getMultiGeometryType() {
+        return MultiGeometryType.MULTI_POINT;
+    }
 }

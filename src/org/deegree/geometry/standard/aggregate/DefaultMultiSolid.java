@@ -76,4 +76,9 @@ public class DefaultMultiSolid extends DefaultMultiGeometry<Solid> implements Mu
     public double getVolume() {
         throw new UnsupportedOperationException();
     }
+    
+    @Override
+    public MultiGeometryType getMultiGeometryType() {
+        return MultiGeometryType.MULTI_SOLID;
+    }
 }

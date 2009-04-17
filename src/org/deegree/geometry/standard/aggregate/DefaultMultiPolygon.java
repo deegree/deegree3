@@ -76,4 +76,9 @@ public class DefaultMultiPolygon extends DefaultMultiGeometry<Polygon> implement
     public double getArea() {
         throw new UnsupportedOperationException();
     }
+    
+    @Override
+    public MultiGeometryType getMultiGeometryType() {
+        return MultiGeometryType.MULTI_POLYGON; 
+    }
 }
