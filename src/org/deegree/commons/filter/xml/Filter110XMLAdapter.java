@@ -41,7 +41,7 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.commons.filter;
+package org.deegree.commons.filter.xml;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +58,11 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.filter.Expression;
+import org.deegree.commons.filter.Filter;
+import org.deegree.commons.filter.IdFilter;
+import org.deegree.commons.filter.Operator;
+import org.deegree.commons.filter.OperatorFilter;
 import org.deegree.commons.filter.comparison.BinaryComparisonOperator;
 import org.deegree.commons.filter.comparison.ComparisonOperator;
 import org.deegree.commons.filter.comparison.PropertyIsBetween;
@@ -105,12 +110,18 @@ public class Filter110XMLAdapter extends XMLAdapter {
     private static final Logger LOG = LoggerFactory.getLogger( Filter110XMLAdapter.class );
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
+    
+    private static final String GML_NS = "http://www.opengis.net/gml";
 
     private static final QName NAME_ATTR = new QName( "name" );
 
     private static final QName FEATURE_ID_ELEMENT = new QName( OGC_NS, "FeatureId" );
-
+    
+    private static final QName FID_ATTR_NAME = new QName ("fid");
+    
     private static final QName GML_OBJECT_ID_ELEMENT = new QName( OGC_NS, "GmlObjectId" );
+    
+    private static final QName GML_ID_ATTR_NAME = new QName( GML_NS, "id" );
 
     private static final Map<Expression.Type, QName> expressionTypeToElementName = new HashMap<Expression.Type, QName>();
 
@@ -251,13 +262,24 @@ public class Filter110XMLAdapter extends XMLAdapter {
         while ( childElementIter.hasNext() ) {
             OMElement childElement = (OMElement) childElementIter.next();
             QName childElementName = childElement.getQName();
-            if ( GML_OBJECT_ID_ELEMENT.equals( childElementName ) || FEATURE_ID_ELEMENT.equals( childElementName ) ) {
-                String id = childElement.getText();
+            if ( GML_OBJECT_ID_ELEMENT.equals( childElementName ) ) {
+                String id = childElement.getAttributeValue( GML_ID_ATTR_NAME );
+                if (id == null || id.length() == 0) {
+                    String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", GML_OBJECT_ID_ELEMENT, GML_ID_ATTR_NAME );
+                    throw new XMLParsingException( this, childElement, msg );
+                }
+                matchedIds.add( id );
+            } else if ( FEATURE_ID_ELEMENT.equals( childElementName ) ) {
+                String id = childElement.getAttributeValue( FID_ATTR_NAME );
+                if (id == null || id.length() == 0) {
+                    String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", FEATURE_ID_ELEMENT, FID_ATTR_NAME );
+                    throw new XMLParsingException( this, childElement, msg );
+                }                
                 matchedIds.add( id );
             } else {
-                String msg = Messages.getMessage( "FILTER_PARSING_ID_FILTER", childElementName, GML_OBJECT_ID_ELEMENT,
-                                                  FEATURE_ID_ELEMENT );
-                throw new XMLParsingException (this, childElement, msg);
+                String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_UNEXPECTED_ELEMENT", childElementName,
+                                                  GML_OBJECT_ID_ELEMENT, FEATURE_ID_ELEMENT );
+                throw new XMLParsingException( this, childElement, msg );
             }
         }
         return new IdFilter( matchedIds );
@@ -327,7 +349,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
             // TODO build nsContext
             SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
             nsContext.addNamespace( "app", "http://www.deegree.org/app" );
-            expression = new PropertyName( element.getText(), nsContext);
+            expression = new PropertyName( element.getText(), nsContext );
             break;
         }
         case LITERAL: {
@@ -449,7 +471,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
         // check if element name is a valid comparison operator element
         ComparisonOperator.SubType type = elementNameToComparisonOperatorType.get( element.getQName() );
-        
+
         if ( type == null ) {
             String msg = "Error while parsing ogc:comparsionOps. Expected one of "
                          + elemNames( ComparisonOperator.SubType.class, comparisonOperatorTypeToElementName ) + ".";
@@ -513,7 +535,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
                                                             childElementIter.next() );
         return new PropertyIsBetween( expression, lowerBoundary, upperBoundary );
     }
-    
+
     private ComparisonOperator parsePropertyIsLikeOperator( OMElement element ) {
         FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
         PropertyName propName = parseTypedExpression( PropertyName.class, childElementIter.next() );
@@ -523,7 +545,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
         String escapeChar = getRequiredNodeAsString( element, new XPath( "@escapeChar", nsContext ) );
         return new PropertyIsLike( propName, literal, wildCard, singleChar, escapeChar );
     }
-    
+
     @SuppressWarnings("unchecked")
     private <T extends Expression> T parseTypedExpression( Class<T> type, OMElement element ) {
         Expression expression = parseExpression( element );
@@ -651,7 +673,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
         writer.writeStartElement( OGC_NS, "Filter" );
         switch ( filter.getType() ) {
         case ID_FILTER:
-            Collection<String> ids = ( (IdFilter) filter ).getIds();
+            Collection<String> ids = ( (IdFilter) filter ).getMatchingIds();
             for ( String id : ids ) {
                 writer.writeStartElement( OGC_NS, "GmlObjectId" );
                 writer.writeCharacters( id );

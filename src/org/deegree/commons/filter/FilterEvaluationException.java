@@ -39,15 +39,17 @@
  Germany
  E-Mail: greve@giub.uni-bonn.de
 
- 
+
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.filter;
 
 /**
- * This exception is thrown when the evaluation of a {@link Filter} expression (or subexpression) fails.
+ * Thrown when the evaluation of a {@link Filter} expression fails.
  * 
- * @author <a href="mailto:mschneider@lat-lon.de">Markus Schneider</a>
- * @version $Revision: 9343 $ $Date: 2007-12-27 13:30:32 +0000 (Do, 27 Dez 2007) $
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author:$
+ * 
+ * @version $Revision:$, $Date:$
  */
 public class FilterEvaluationException extends Exception {
 

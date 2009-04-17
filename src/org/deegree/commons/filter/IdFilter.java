@@ -46,7 +46,7 @@ package org.deegree.commons.filter;
 import java.util.Set;
 
 /**
- * TODO add documentation here
+ * {@link Filter} that matches objects with certain ids.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -55,23 +55,44 @@ import java.util.Set;
  */
 public class IdFilter implements Filter {
 
-    private Set<String> ids;
+    private Set<String> matchingIds;
 
-    public IdFilter( Set<String> ids ) {
-        this.ids = ids;
+    /**
+     * Creates a new {@link IdFilter} that matches the objects with the given ids.
+     * 
+     * @param matchingIds
+     *            ids of the objects that the filter will match
+     */
+    public IdFilter( Set<String> matchingIds ) {
+        this.matchingIds = matchingIds;
     }
 
+    /**
+     * Returns {@link Filter.Type#ID_FILTER}
+     * 
+     * @return {@link Filter.Type#ID_FILTER}
+     */
+    @Override
     public Type getType() {
         return Type.ID_FILTER;
     }
 
-    public Set<String> getIds() {
-        return ids;
+    /**
+     * Returns the ids of the objects that this filter matches.
+     * 
+     * @return the ids of the objects that this filter matches
+     */
+    public Set<String> getMatchingIds() {
+        return matchingIds;
     }
 
+    @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        // TODO Auto-generated method stub
+        String id = object.getId();
+        if ( id != null ) {
+            return matchingIds.contains( id );
+        }
         return false;
     }
 }

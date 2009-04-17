@@ -38,7 +38,7 @@
  53115 Bonn
  Germany
  E-Mail: greve@giub.uni-bonn.de
- 
+
  ---------------------------------------------------------------------------*/
 
 package org.deegree.commons.filter;
@@ -53,12 +53,23 @@ package org.deegree.commons.filter;
  */
 public interface Filter {
 
+    /**
+     * Convenience enum type for discriminating the different filter variants.
+     */
     public enum Type {
-        ID_FILTER, OPERATOR_FILTER;
+        /** Filter that selects objects with certain ids. */
+        ID_FILTER,
+        /** Filter that selects objects that match a certain expression. */
+        OPERATOR_FILTER;
     }
-    
-    public Type getType ();
-    
+
+    /**
+     * Returns the type of filter.
+     * 
+     * @return type of filter (id or expression based)
+     */
+    public Type getType();
+
     /**
      * Determines if the given {@link MatchableObject} matches this <code>Filter</code>.
      * 

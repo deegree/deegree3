@@ -45,6 +45,7 @@ package org.deegree.commons.filter;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.filter.xml.Filter110XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;

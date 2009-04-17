@@ -43,7 +43,6 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.filter;
 
-
 /**
  * TODO add documentation here
  *
