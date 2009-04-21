@@ -50,7 +50,7 @@ import org.deegree.crs.CRS;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.primitive.surfacepatches.Triangle;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
@@ -103,8 +103,8 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
     }
 
     @Override
-    public List<SurfacePatch> getPatches() {
-        throw new UnsupportedOperationException();
+    public List<Triangle> getPatches() {
+        throw new UnsupportedOperationException(); 
     }
 
     @Override

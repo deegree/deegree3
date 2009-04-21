@@ -113,4 +113,9 @@ public class DefaultPolygonPatch implements PolygonPatch {
     public List<Ring> getBoundaryRings() {
         return allBoundaries;
     }
+    
+    @Override
+    public SurfacePatchType getSurfacePatchType() {
+        return SurfacePatchType.POLYGON_PATCH;
+    }
 }

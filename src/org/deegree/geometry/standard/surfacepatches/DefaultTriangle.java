@@ -50,6 +50,7 @@ import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
+import org.deegree.geometry.primitive.surfacepatches.SurfacePatch.SurfacePatchType;
 
 /**
  * Default implementation of {@link Triangle}.
@@ -116,4 +117,9 @@ public class DefaultTriangle implements Triangle {
     public List<LinearRing> getBoundaryRings() {
         return Collections.singletonList( exterior );
     }    
+    
+    @Override
+    public SurfacePatchType getSurfacePatchType() {
+        return SurfacePatchType.TRIANGLE;
+    }
 }

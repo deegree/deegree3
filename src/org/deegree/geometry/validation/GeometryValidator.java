@@ -294,7 +294,7 @@ public class GeometryValidator {
         List<Object> affectedGeometryParticles2 = new ArrayList<Object>(affectedGeometryParticles);
         affectedGeometryParticles2.add (surface);
 
-        List<SurfacePatch> patches = surface.getPatches();
+        List<? extends SurfacePatch> patches = surface.getPatches();
         if ( patches.size() > 1 ) {
             LOG.warn( "Surface consists of multiple patches, but validation of inter-patch topology is not available yet." );
         }

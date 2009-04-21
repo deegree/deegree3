@@ -46,7 +46,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -137,7 +137,7 @@ public class PolygonReference extends GeometryReference implements Polygon {
         return geometry.getInteriorRingsCoordinates();
     }
 
-    public List<SurfacePatch> getPatches() {
+    public List<PolygonPatch> getPatches() {
         return geometry.getPatches();
     }
 

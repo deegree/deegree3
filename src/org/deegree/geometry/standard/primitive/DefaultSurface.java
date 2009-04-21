@@ -64,7 +64,7 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
  */
 public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
 
-    private List<SurfacePatch> patches;
+    protected List<? extends SurfacePatch> patches;
 
     /**
      * Creates a new {@link DefaultSurface} instance from the given parameters.
@@ -76,7 +76,7 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
      * @param patches
      *            patches that constitute the surface
      */
-    public DefaultSurface( String id, CRS crs, List<SurfacePatch> patches ) {
+    public DefaultSurface( String id, CRS crs, List<? extends SurfacePatch> patches ) {
         super( id, crs );
         this.patches = patches;
     }
@@ -107,7 +107,7 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     }
 
     @Override
-    public List<SurfacePatch> getPatches() {
+    public List<? extends SurfacePatch> getPatches() {
         return patches;
     }
 

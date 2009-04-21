@@ -57,7 +57,7 @@ import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
  * 
  * @version. $Revision: 14412 $, $Date: 2008-10-23 19:29:57 +0200 (Do, 23 Okt 2008) $
  */
-public interface Tin extends Surface {
+public interface Tin extends TriangulatedSurface {
 
     /**
      * Must always return {@link Surface.SurfaceType#Tin}.

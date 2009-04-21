@@ -62,7 +62,7 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
  */
 public class DefaultTriangulatedSurface extends AbstractDefaultGeometry implements TriangulatedSurface {
 
-    private List<?> patches;
+    private List<Triangle> patches;
 
     /**
      * Creates a new {@link DefaultTriangulatedSurface} instance from the given parameters.
@@ -89,10 +89,9 @@ public class DefaultTriangulatedSurface extends AbstractDefaultGeometry implemen
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public List<SurfacePatch> getPatches() {        
-        return (List<SurfacePatch>) patches;
+    public List<Triangle> getPatches() {        
+        return patches;
     }
 
     @Override

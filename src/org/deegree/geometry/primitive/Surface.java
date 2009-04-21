@@ -111,7 +111,7 @@ public interface Surface extends GeometricPrimitive {
      * 
      * @return the patches that constitute this surface
      */
-    public List<SurfacePatch> getPatches();
+    public List<? extends SurfacePatch> getPatches();
 
     /**
      * Convenience method for accessing the control points of the exterior ring of a simple polygon surface.

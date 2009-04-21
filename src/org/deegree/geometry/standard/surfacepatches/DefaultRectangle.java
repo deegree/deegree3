@@ -50,6 +50,7 @@ import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.surfacepatches.Rectangle;
+import org.deegree.geometry.primitive.surfacepatches.SurfacePatch.SurfacePatchType;
 
 /**
  * Default implementation of {@link Rectangle}.
@@ -120,5 +121,10 @@ public class DefaultRectangle implements Rectangle {
     @Override
     public List<LinearRing> getBoundaryRings() {
         return Collections.singletonList( exterior);
+    }
+    
+    @Override
+    public SurfacePatchType getSurfacePatchType() {
+        return SurfacePatchType.RECTANGLE;
     }
 }

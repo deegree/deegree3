@@ -128,7 +128,7 @@ public class SurfaceReference extends GeometryReference implements Surface {
         return geometry.getInteriorRingsCoordinates();
     }
 
-    public List<SurfacePatch> getPatches() {
+    public List<? extends SurfacePatch> getPatches() {
         return geometry.getPatches();
     }
 

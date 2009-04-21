@@ -83,4 +83,7 @@ public interface Polygon extends Surface {
      * @return the interior rings (holes) of the polygon, list may be empty (but not null)
      */
     public List<Ring> getInteriorRings();
+    
+    @Override
+    public List<PolygonPatch> getPatches();    
 }

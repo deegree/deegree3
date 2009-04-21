@@ -50,6 +50,17 @@ import org.deegree.geometry.primitive.Surface;
  */
 public interface SurfacePatch {
 
+    public enum SurfacePatchType {
+        //TODO no class for it currently
+        GRIDDED_SURFACE_PATCH,
+        
+        POLYGON_PATCH,
+        
+        RECTANGLE,
+        
+        TRIANGLE
+    }
+    
     /**
      * valid surface patch interpolations.
      */
@@ -115,4 +126,10 @@ public interface SurfacePatch {
      * @return dimension of a surfaces coordinates (2 for flat surfaces; 3 for surfaces in a 3D space)
      */
     public int getCoordinateDimension();
+    
+    /**
+     * @return the kind of SurfacePatch the object represents, an element of {@link SurfacePatchType}
+     */
+    public SurfacePatchType getSurfacePatchType();
+    
 }

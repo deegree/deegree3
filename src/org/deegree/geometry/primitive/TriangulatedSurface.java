@@ -37,6 +37,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
+import java.util.List;
+
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
 
 /**
@@ -55,6 +57,14 @@ public interface TriangulatedSurface extends Surface {
      * @return {@link Surface.SurfaceType#TriangulatedSurface}
      */
     @Override
-    public SurfaceType getSurfaceType();      
+    public SurfaceType getSurfaceType();
+    
+    /**
+     * Returns the patches that constitute this surface.
+     * 
+     * @return the patches that constitute this surface
+     */
+    @Override
+    public List<Triangle> getPatches();    
     
 }

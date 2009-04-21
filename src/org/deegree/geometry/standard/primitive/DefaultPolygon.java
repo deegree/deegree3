@@ -54,7 +54,7 @@ import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.standard.surfacepatches.DefaultPolygonPatch;
 
 /**
@@ -94,8 +94,8 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
         this.interiorRings = interiorRings;
     }
 
-    private static List<SurfacePatch> createPatchList( Ring exteriorRing, List<Ring> interiorRings ) {
-        List<SurfacePatch> patches = new ArrayList<SurfacePatch>( 1 );
+    private static List<PolygonPatch> createPatchList( Ring exteriorRing, List<Ring> interiorRings ) {
+        List<PolygonPatch> patches = new ArrayList<PolygonPatch>( 1 );
         patches.add( new DefaultPolygonPatch( exteriorRing, interiorRings ) );
         return patches;
     }
@@ -146,7 +146,11 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
             envelope = gf.createEnvelope( min, max, getCoordinateSystem() );
         }
         return envelope;
-
     }
 
+    @Override
+    public List<PolygonPatch> getPatches() {
+        return (List<PolygonPatch>) patches;
+    }    
+    
 }

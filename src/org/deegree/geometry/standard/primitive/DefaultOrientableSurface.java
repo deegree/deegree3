@@ -164,7 +164,7 @@ public class DefaultOrientableSurface implements OrientableSurface {
         return baseSurface.getGeometryType();
     }
 
-    public List<SurfacePatch> getPatches() {
+    public List<? extends SurfacePatch> getPatches() {
         return baseSurface.getPatches();
     }
 

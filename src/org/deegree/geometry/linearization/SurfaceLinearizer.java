@@ -108,7 +108,7 @@ public class SurfaceLinearizer {
             break;
         }
         default: {
-            List<SurfacePatch> patches = surface.getPatches();
+            List<? extends SurfacePatch> patches = surface.getPatches();
             List<PolygonPatch> linearizedPatches = new ArrayList<PolygonPatch>( patches.size() );
             for ( SurfacePatch patch : surface.getPatches() ) {
                 if ( !( patch instanceof PolygonPatch ) ) {
