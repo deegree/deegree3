@@ -91,6 +91,7 @@
     </xs:annotation>
     <xs:attribute name="min" type="xs:double" use="required" />
     <xs:attribute name="max" type="xs:double" use="required" />
+    <xs:attribute name="native" type="xs:double" use="optional" />
   </xs:complexType>
   <!-- ========================================================== -->
   <xs:element name="Keywords" type="cm:KeywordsType" />

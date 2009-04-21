@@ -51,7 +51,7 @@ import org.deegree.geometry.primitive.Point;
 /**
  * This class represents a tiled AbstractRaster.
  * 
- * A TiledRaster contains multiple non-overlapping AbstractRasters.
+ * A TiledRaster contains multiple non-overlapping (TODO verify this) AbstractRasters
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$

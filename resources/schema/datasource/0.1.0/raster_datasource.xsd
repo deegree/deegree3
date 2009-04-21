@@ -61,7 +61,7 @@
                 <sequence>
                   <element ref="ds:RasterDataSource" />
                 </sequence>
-                <attribute name="res" />
+                <attribute name="res" type="double"/>
               </complexType>
             </element>
           </sequence>

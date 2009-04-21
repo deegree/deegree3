@@ -272,6 +272,7 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
             gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
 
             gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[3] );
+            //gl.glEnable( GL.GL_TEXTURE_UNIT_0 );
             gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
         } else {
             gl.glDisable( GL.GL_TEXTURE_2D );

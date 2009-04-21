@@ -168,11 +168,6 @@ public class XMLAdapter {
      */
     public XMLAdapter( URL url ) throws XMLProcessingException {
         load( url );
-        // try {
-        systemId = DEFAULT_URL;
-        // } catch ( MalformedURLException e ) {
-        // // but it's not malformed
-        // }
     }
 
     /**
