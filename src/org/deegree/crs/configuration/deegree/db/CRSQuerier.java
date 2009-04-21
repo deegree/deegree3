@@ -68,6 +68,7 @@ import org.deegree.crs.coordinatesystems.GeocentricCRS;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.coordinatesystems.VerticalCRS;
+import org.deegree.crs.exceptions.CRSConfigurationException;
 import org.deegree.crs.projections.Projection;
 import org.deegree.crs.projections.azimuthal.LambertAzimuthalEqualArea;
 import org.deegree.crs.projections.azimuthal.StereographicAlternative;
@@ -474,10 +475,15 @@ public class CRSQuerier {
             GeodeticDatum gd = null; 
             PreparedStatement prepSt = conn.prepareStatement( "SELECT ellipsoid_id, prime_meridian_id, helmert_id FROM geodetic_datum WHERE id = " + datumId );
             ResultSet rs = prepSt.executeQuery();
-            rs.next();
-
+            if ( !rs.next() )
+                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "geodeticDatum",
+                                                                          datumId ) );
             CRSIdentifiable identifiable = getIdentifiableAttributes( datumId );
-            gd = new GeodeticDatum ( getEllipsoid( rs.getInt( 1 )), getPrimeMeridian( rs.getInt( 2 )), getHelmertTransformation( rs.getInt( 3 )),
+            Ellipsoid ellipsoid = getEllipsoid( rs.getInt( 1 ));
+            if ( ellipsoid == null )
+                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_DATUM_HAS_NO_ELLIPSOID",
+                                                                          datumId ) );
+            gd = new GeodeticDatum ( ellipsoid, getPrimeMeridian( rs.getInt( 2 )), getHelmertTransformation( rs.getInt( 3 )),
                                      identifiable );
             loadedDatumsMap.put( datumId, gd );
 
@@ -498,10 +504,19 @@ public class CRSQuerier {
             return loadedHelmertsMap.get( helmertId );
         else {
             Helmert h = null;
-            PreparedStatement prepSt = conn.prepareStatement( "SELECT source_crs_id, x_axis_translation, y_axis_translation, z_axis_translation, x_axis_rotation, y_axis_rotation, z_axis_rotation, scale_difference FROM helmert_transformation WHERE id = " + helmertId );
+            PreparedStatement prepSt = conn.prepareStatement( "SELECT source_crs_id, " +
+                                                              "x_axis_translation, " +
+                                                              "y_axis_translation, " +
+                                                              "z_axis_translation, " +
+                                                              "x_axis_rotation, " +
+                                                              "y_axis_rotation, " +
+                                                              "z_axis_rotation, " +
+                                                              "scale_difference " +
+                                                              "FROM helmert_transformation WHERE id = " + helmertId );
             ResultSet rs = prepSt.executeQuery();
-            rs.next();
-
+            if ( ! rs.next() )
+                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "wgs84transformation",
+                                                                          helmertId ) );
             CRSIdentifiable identifiable = getIdentifiableAttributes( helmertId );
             h = new Helmert( rs.getDouble( 2 ), rs.getDouble( 3 ), rs.getDouble( 4 ), rs.getDouble( 5 ), rs.getDouble( 6 ), rs.getDouble( 7 ), rs.getDouble( 8 ), 
                              null, GeographicCRS.WGS84,
@@ -529,8 +544,9 @@ public class CRSQuerier {
             PrimeMeridian pm = null;
             PreparedStatement prepSt = conn.prepareStatement( "SELECT unit, longitude FROM prime_meridian WHERE id = " + pmId );
             ResultSet rs = prepSt.executeQuery();
-            rs.next();
-
+            if ( ! rs.next() )
+                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "primeMeridian",
+                                                                          pmId ) );
             Unit units = Unit.createUnitFromString( rs.getString( 1 ) );
             CRSIdentifiable identifiable = getIdentifiableAttributes( pmId );
             pm = new PrimeMeridian( units, rs.getDouble( 2 ), identifiable );
@@ -560,8 +576,10 @@ public class CRSQuerier {
                                                               "unit " +
                                                               "FROM ellipsoid WHERE id = " + ellipsoidId );
             ResultSet rs = prepSt.executeQuery();
-            rs.next();
-
+            if ( ! rs.next() )
+                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "ellipsoid",
+                                                                          ellipsoidId ) );
+                
             Unit units = Unit.createUnitFromString( rs.getString( 5 ) );
 
             double semiMajorAxis = rs.getDouble( 1 );
@@ -578,7 +596,10 @@ public class CRSQuerier {
                                    identifiable );
             else if ( ! Double.isNaN( semiMinorAxis ) )
                 e = new Ellipsoid( units, semiMajorAxis, semiMinorAxis,  
-                                   identifiable );                    
+                                   identifiable );
+            else 
+                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_ELLIPSOID_MISSES_PARAM",
+                                                                          ellipsoidId ) );
             loadedEllipsoidsMap.put( ellipsoidId, e );
             return e;
         }
@@ -817,6 +838,13 @@ public class CRSQuerier {
             rs.next();
 
             CRSIdentifiable identifiable = getIdentifiableAttributes( projectedId );
+            if ( getProjection( rs.getInt( 3 ) ) == null || 
+                                    getProjection( rs.getInt( 3 ) ).getGeographicCRS() == null  ||
+                    getProjection( rs.getInt( 3 ) ).getGeographicCRS().getType() != CoordinateSystem.GEOGRAPHIC_CRS)
+                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_PROJECTEDCRS_FALSE_CRSREF",
+                                                                         identifiable.getCode().getEquivalentString(), 
+                                                                getProjection( rs.getInt( 3 ) ).getGeographicCRS() ) );
+            
             proj_crs = new ProjectedCRS( getProjection( rs.getInt( 3 ) ), 
                                          new Axis[] { getAxis( rs.getInt( 1 ) ), getAxis( rs.getInt( 2 ) ) }, 
                                          identifiable );
@@ -959,9 +987,11 @@ public class CRSQuerier {
             else if ( crsType.getString( 1 ).equalsIgnoreCase( "custom_projection" ) )
                 return getStereographicAlternative( crsType.getInt( 2 ) );
             else if ( crsType.getString( 1 ).equalsIgnoreCase( "helmert_transformation" ) )
-                return getStereographicAlternative( crsType.getInt( 2 ) );           
+                return getStereographicAlternative( crsType.getInt( 2 ) );
+            else
+                throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ID", 
+                                                                          code.getEquivalentString() ) );                                                                           
         }
-        return null;
     }
 
     /**
