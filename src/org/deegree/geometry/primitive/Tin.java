@@ -41,18 +41,20 @@ import java.util.List;
 
 import org.deegree.commons.types.Length;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.geometry.primitive.surfacepatches.Triangle;
 
 /**
  * A {@link Tin} is a {@link TriangulatedSurface} that uses the Delauny algorithm or a similar algorithm complemented
  * with consideration of breaklines, stoplines, and maximum length of triangle sides. These networks satisfy the
- * Delauny's criterion away from the modifications: Foreeach triangle in the network, the circle passing through its
+ * Delauny's criterion away from the modifications: For each triangle in the network, the circle passing through its
  * vertices does not contain, in its interior, the vertex of any other triangle.
  * <p>
- * NOTE: In GML 3.1.1, <code>gml:TinType</code> extends <code>gml:TriangulatedSurface</code>. This means that a
- * <code>gml:Tin</code> element contains both trianglePatches and controlPoint properties!? This is apparently
- * redundant, and consequently (?) GML 3.2.1 only allows the controlPoint property...
+ * One can notice that the useful information provided for the Tin element is solely the trianglePatches, since 
+ * the stopLines and breakLines (along with maxLength and ControlPoints) are only needed to obtain this 
+ * triangulation.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author: mschneider $
  * 
  * @version. $Revision: 14412 $, $Date: 2008-10-23 19:29:57 +0200 (Do, 23 Okt 2008) $
@@ -74,4 +76,5 @@ public interface Tin extends TriangulatedSurface {
     public Length getMaxLength();
 
     public List<Point> getControlPoints();
+        
 }

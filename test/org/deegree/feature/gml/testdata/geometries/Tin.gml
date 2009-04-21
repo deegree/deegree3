@@ -7,13 +7,11 @@
 		redundant, and consequently (?) GML 3.2.1 only allows the controlPoint property.
 	-->
 	<trianglePatches>
-		<!--
 			<Triangle> <exterior> <LinearRing> <posList>0 0 1 0 0 1 0 0</posList>
 			</LinearRing> </exterior> </Triangle> <Triangle> <exterior>
 			<LinearRing> <posList>0 0 1 0 0 1 0 0</posList> </LinearRing>
 			</exterior> </Triangle> <Triangle> <exterior> <LinearRing> <posList>0
 			0 1 0 0 1 0 0</posList> </LinearRing> </exterior> </Triangle>
-		-->
 	</trianglePatches>
 	<stopLines>
 		<LineStringSegment interpolation="linear">

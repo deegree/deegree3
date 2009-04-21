@@ -744,7 +744,8 @@ public interface GeometryFactory {
      * @return created {@link Tin}
      */
     public Tin createTin( String id, CRS crs, List<List<LineStringSegment>> stopLines,
-                          List<List<LineStringSegment>> breakLines, Length maxLength, List<Point> controlPoints );
+                          List<List<LineStringSegment>> breakLines, Length maxLength, List<Point> controlPoints,
+                          List<Triangle> patches );
 
     /**
      * Creates a {@link Solid}.

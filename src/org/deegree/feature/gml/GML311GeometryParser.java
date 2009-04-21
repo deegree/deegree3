@@ -1278,11 +1278,12 @@ public class GML311GeometryParser extends GML311BaseParser {
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
+        List<Triangle> memberPatches = new LinkedList<Triangle>();
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "trianglePatches" );
         while ( xmlStream.nextTag() == START_ELEMENT ) {
             // validate syntactically, but ignore the content for instantiating the geometry
-            surfacePatchParser.parseTriangle( xmlStream, crs );
+            memberPatches.add( surfacePatchParser.parseTriangle( xmlStream, crs ) );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "trianglePatches" );
 
@@ -1350,7 +1351,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
 
         xmlStream.require( END_ELEMENT, GMLNS, "Tin" );
-        Tin tin = geomFac.createTin( gid, crs, stopLines, breakLines, maxLength, controlPoints );
+        Tin tin = geomFac.createTin( gid, crs, stopLines, breakLines, maxLength, controlPoints, memberPatches );
         idContext.addGeometry( tin );
         return tin;
     }

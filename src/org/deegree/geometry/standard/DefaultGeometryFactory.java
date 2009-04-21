@@ -379,8 +379,9 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
 
     @Override
     public Tin createTin( String id, CRS crs, List<List<LineStringSegment>> stopLines,
-                          List<List<LineStringSegment>> breakLines, Length maxLength, List<Point> controlPoints ) {
-        return new DefaultTin( id, crs, stopLines, breakLines, maxLength, controlPoints );
+                          List<List<LineStringSegment>> breakLines, Length maxLength, List<Point> controlPoints,
+                          List<Triangle> patches ) {
+        return new DefaultTin( id, crs, stopLines, breakLines, maxLength, controlPoints, patches );
     }
 
     @Override

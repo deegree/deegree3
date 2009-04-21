@@ -63,6 +63,8 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
  */
 public class DefaultTin extends AbstractDefaultGeometry implements Tin {
 
+    private List<Triangle> patches;
+    
     private List<List<LineStringSegment>> stopLines;
 
     private List<List<LineStringSegment>> breakLines;
@@ -70,7 +72,21 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
     private Length maxLength;
 
     private List<Point> controlPoints;
-
+    
+    /**
+     * Creates a new {@link DefaultTin} instance from the given parameters.
+     * 
+     * @param id
+     *            identifier of the created geometry object
+     * @param crs
+     *            coordinate reference system
+     * @param patches
+     *            the triangle that constitute the result of the triangulation            
+    */
+    public DefaultTin( String id, CRS crs, List<Triangle> patches ) {
+        super( id, crs );
+        this.patches = patches;
+    }
     /**
      * Creates a new {@link DefaultTin} instance from the given parameters.
      * 
@@ -81,15 +97,18 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
      * @param stopLines 
      * @param breakLines 
      * @param maxLength 
-     * @param controlPoints 
+     * @param controlPoints
+     * @param patches
+     *              the triangle that constitute the result of the triangulation 
      */
     public DefaultTin( String id, CRS crs, List<List<LineStringSegment>> stopLines, List<List<LineStringSegment>> breakLines,
-                       Length maxLength, List<Point> controlPoints ) {
+                       Length maxLength, List<Point> controlPoints, List<Triangle> patches ) {
         super( id, crs );
         this.stopLines = stopLines;
         this.breakLines = breakLines;
         this.maxLength = maxLength;
         this.controlPoints = controlPoints;
+        this.patches = patches;
     }
 
     @Override
@@ -104,7 +123,9 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
 
     @Override
     public List<Triangle> getPatches() {
-        throw new UnsupportedOperationException(); 
+        if ( patches == null )
+            throw new UnsupportedOperationException();
+        return patches; 
     }
 
     @Override
