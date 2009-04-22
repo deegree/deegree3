@@ -50,13 +50,17 @@ import static org.deegree.protocol.wms.client.WMSClient111.Requests.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
@@ -64,9 +68,14 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.coverage.io.imageio.IIORasterDataReader;
+import org.deegree.coverage.raster.SimpleRaster;
+import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
+import org.deegree.coverage.raster.geom.RasterEnvelope;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
 import org.slf4j.Logger;
 
@@ -83,6 +92,10 @@ public class WMSClient111 {
     private static final NamespaceContext nsContext = getNamespaceContext();
 
     private static final Logger LOG = getLogger( WMSClient111.class );
+
+    private int maxMapWidth = -1;
+
+    private int maxMapHeight = -1;
 
     /**
      * <code>Requests</code>
@@ -123,6 +136,20 @@ public class WMSClient111 {
     public WMSClient111( XMLAdapter capabilities ) {
         checkCapabilities( capabilities );
         this.capabilities = capabilities;
+    }
+
+    /**
+     * Sets the maximum map size that the server will process. If a larger map is requested, it will be broken down into
+     * multiple GetMap requests.
+     * 
+     * @param maxWidth
+     *            maximum number of pixels in x-direction, or -1 for unrestricted width
+     * @param maxHeight
+     *            maximum number of pixels in y-direction, or -1 for unrestricted height
+     */
+    public void setMaxMapDimensions( int maxWidth, int maxHeight ) {
+        maxMapWidth = maxWidth;
+        maxMapHeight = maxHeight;
     }
 
     private void checkCapabilities( XMLAdapter capabilities ) {
@@ -352,10 +379,11 @@ public class WMSClient111 {
      * @throws IOException
      */
     public Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox, CRS srs,
-                                               String format, boolean transparent, boolean validate, List<String> validationErrors )
+                                               String format, boolean transparent, boolean validate,
+                                               List<String> validationErrors )
                             throws IOException {
-        try {
 
+        try {
             if ( validate ) {
                 LinkedList<String> formats = getFormats( GetMap );
                 if ( !formats.contains( format ) ) {
@@ -375,7 +403,8 @@ public class WMSClient111 {
             }
             url += "request=GetMap&version=1.1.1&service=WMS&layers=" + join( ",", layers ) + "&styles=&width=" + width
                    + "&height=" + height + "&bbox=" + bbox.getMin().getX() + "," + bbox.getMin().getY() + ","
-                   + bbox.getMax().getX() + "," + bbox.getMax().getY() + "&srs=" + srs.getName() + "&format=" + format + "&transparent=" + transparent;
+                   + bbox.getMax().getX() + "," + bbox.getMax().getY() + "&srs=" + srs.getName() + "&format=" + format
+                   + "&transparent=" + transparent;
 
             Pair<BufferedImage, String> res = new Pair<BufferedImage, String>();
             URL theUrl = new URL( url );
@@ -402,6 +431,87 @@ public class WMSClient111 {
         } catch ( MalformedURLException e ) {
             LOG.debug( "GetMap URL malformed?", e );
             return null;
+        }
+    }
+
+    private Pair<BufferedImage, String> getLargeMap( List<String> layers, int width, int height, Envelope bbox,
+                                                     CRS srs, String format, boolean transparent, boolean validate,
+                                                     List<String> validationErrors )
+                            throws IOException {
+
+        Pair<BufferedImage, String> response = new Pair<BufferedImage, String>();
+        BufferedImage compositedImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+        
+        if (maxMapWidth != -1) {
+            int xMin = 0;
+            while (xMin < width) {
+                xMin += maxMapWidth;
+                
+            }
+        }
+        
+        return response;
+    }
+
+    /**
+     * @param layers
+     * @param width
+     * @param height
+     * @param bbox
+     * @param srs
+     * @param format
+     * @param transparent
+     * @param validate
+     *            whether to validate the values against the capabilities. Example: a format is requested that the
+     *            server does not advertise. So the first advertised format will be used, and an entry will be put in
+     *            the validationErrors list that says just that.
+     * @param validationErrors
+     *            a list of validation actions
+     * @return an image from the server, or an error message from the service exception
+     * @throws IOException
+     */
+    public Pair<SimpleRaster, String> getMapAsSimpleRaster( List<String> layers, int width, int height, Envelope bbox,
+                                                            CRS srs, String format, boolean transparent,
+                                                            boolean validate, List<String> validationErrors )
+                            throws IOException {
+
+        Pair<BufferedImage, String> imageResponse = getMap( layers, width, height, bbox, srs, format, transparent,
+                                                            validate, validationErrors );
+        Pair<SimpleRaster, String> response = new Pair<SimpleRaster, String>();
+        if ( imageResponse.first != null ) {
+            BufferedImage img = imageResponse.first;
+            // TODO don't use raster API internal classes
+            PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) IIORasterDataReader.rasterDataFromImage( img );
+            RasterEnvelope rasterEnv = new RasterEnvelope( bbox, img.getWidth(), img.getHeight() );
+            SimpleRaster raster = new SimpleRaster( rasterData, bbox, rasterEnv );
+            response.first = raster;
+        } else {
+            response.second = imageResponse.second;
+        }
+        return response;
+    }
+
+    public static void main( String[] args )
+                            throws IOException {
+        WMSClient111 client = new WMSClient111(
+                                                new URL(
+                                                         "http://stadtplan.bonn.de/Deegree2wms/services?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1" ) );
+
+        GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
+
+        List<String> layers = Collections.singletonList( "deegree_bplan_recht" );
+        int width = 2000;
+        int height = 2000;
+        Envelope bbox = geomFac.createEnvelope( 2568000.0, 5616000.0, 2578000.0, 5626000.0, new CRS( "EPSG:31466" ) );
+
+        Pair<BufferedImage, String> response = client.getMap( layers, width, height, bbox, new CRS( "EPSG:31466" ),
+                                                              "image/png", true, false, new ArrayList<String>() );
+
+        if ( response.first != null ) {
+            ImageIO.write( response.first, "png", new File( "/tmp/out.png" ) );
+            System.out.println( "Wrote file." );
+        } else {
+            System.out.println( response.second );
         }
     }
 }
