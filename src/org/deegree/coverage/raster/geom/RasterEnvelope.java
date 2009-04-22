@@ -43,13 +43,22 @@ import static java.lang.Math.min;
 import static java.lang.Math.signum;
 
 import org.deegree.crs.CRS;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
 
 /**
- * This class maps a 2-D raster to another cartesian coordinate system.
+ * This class maps a 2D raster to another cartesian world coordinate system.
+ * <p>
+ * Please note that there are two different ways to associate the corner points of the raster envelope with the raster
+ * points in use:
+ * <ul>
+ * <li>CENTER: The envelope corner points coincide with the center position of the raster corner points. This
+ * interpretation is used by the WCS specification.</li>
+ * <li>OUTER: The envelope corner points coincide with the outer boundary of the "area" that the raster corner points
+ * cover. This interpretation is image-oriented and used by the WMS specification.</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -240,7 +249,7 @@ public class RasterEnvelope {
     }
 
     /**
-     * Converts world coordinates to raster coordinates
+     * Converts world coordinates to raster coordinates.
      * 
      * @param x
      *            x coordinate
