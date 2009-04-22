@@ -71,7 +71,7 @@ import org.deegree.geometry.GeometryFactoryCreator;
 import org.slf4j.Logger;
 
 /**
- * <code>WMSClient111</code>
+ * Allows for easy performing of requests again WMS 1.1.1 compliant map services.
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -128,7 +128,7 @@ public class WMSClient111 {
     private void checkCapabilities( XMLAdapter capabilities ) {
         OMElement root = capabilities.getRootElement();
         String version = root.getAttributeValue( new QName( "version" ) );
-        if ( !version.equals( "1.1.1" ) ) {
+        if ( !"1.1.1".equals( version ) ) {
             throw new IllegalArgumentException( get( "WMSCLIENT.WRONG_VERSION_CAPABILITIES", version, "1.1.1" ) );
         }
         if ( !root.getLocalName().equals( "WMT_MS_Capabilities" ) ) {
@@ -249,7 +249,8 @@ public class WMSClient111 {
                     min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
                     max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
                     max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
-                    return GeometryFactoryCreator.getInstance().getGeometryFactory().createEnvelope( min, max, new CRS(WGS84) );
+                    return GeometryFactoryCreator.getInstance().getGeometryFactory().createEnvelope( min, max,
+                                                                                                     new CRS( WGS84 ) );
                 } catch ( NumberFormatException nfe ) {
                     LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
                 }
@@ -340,6 +341,7 @@ public class WMSClient111 {
      * @param bbox
      * @param srs
      * @param format
+     * @param transparent
      * @param validate
      *            whether to validate the values against the capabilities. Example: a format is requested that the
      *            server does not advertise. So the first advertised format will be used, and an entry will be put in
@@ -349,9 +351,8 @@ public class WMSClient111 {
      * @return an image from the server, or an error message from the service exception
      * @throws IOException
      */
-    public Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox,
-                                               CRS srs, String format, boolean validate,
-                                               List<String> validationErrors )
+    public Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox, CRS srs,
+                                               String format, boolean transparent, boolean validate, List<String> validationErrors )
                             throws IOException {
         try {
 
@@ -374,8 +375,7 @@ public class WMSClient111 {
             }
             url += "request=GetMap&version=1.1.1&service=WMS&layers=" + join( ",", layers ) + "&styles=&width=" + width
                    + "&height=" + height + "&bbox=" + bbox.getMin().getX() + "," + bbox.getMin().getY() + ","
-                   + bbox.getMax().getX() + "," + bbox.getMax().getY() + "&srs=" + srs.getName() + "&format="
-                   + format;
+                   + bbox.getMax().getX() + "," + bbox.getMax().getY() + "&srs=" + srs.getName() + "&format=" + format + "&transparent=" + transparent;
 
             Pair<BufferedImage, String> res = new Pair<BufferedImage, String>();
             URL theUrl = new URL( url );
@@ -404,5 +404,4 @@ public class WMSClient111 {
             return null;
         }
     }
-
 }
