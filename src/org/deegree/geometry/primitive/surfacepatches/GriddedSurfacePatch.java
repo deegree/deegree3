@@ -63,6 +63,9 @@ public interface GriddedSurfacePatch extends SurfacePatch {
      * Discriminates the different types of gridded surface patches.
      */
     public enum GriddedSurfaceType {
+        /** A presumably custom type of GriddedSurfaceType */
+        GRIDDED_SURFACE_PATCH,
+        
         /** A gridded surface given as a family of conic sections whose control points vary linearly. */
         CONE,
         /**
