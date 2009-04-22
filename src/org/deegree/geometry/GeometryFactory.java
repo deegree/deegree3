@@ -86,8 +86,11 @@ import org.deegree.geometry.primitive.curvesegments.GeodesicString;
 import org.deegree.geometry.primitive.curvesegments.Knot;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.curvesegments.OffsetCurve;
+import org.deegree.geometry.primitive.surfacepatches.Cone;
+import org.deegree.geometry.primitive.surfacepatches.Cylinder;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.Rectangle;
+import org.deegree.geometry.primitive.surfacepatches.Sphere;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
@@ -441,7 +444,7 @@ public interface GeometryFactory {
     public CircleByCenterPoint createCircleByCenterPoint( Point midPoint, Length radius, Angle startAngle );
 
     /**
-     * Creates an {@link Clothoid} curve segment.
+     * Creates a {@link Clothoid} curve segment.
      * 
      * @param referenceLocation
      *            the affine mapping that places the curve defined by the Fresnel Integrals into the coordinate
@@ -456,6 +459,33 @@ public interface GeometryFactory {
      */
     public Clothoid createClothoid( AffinePlacement referenceLocation, double scaleFactor, double startParameter,
                                     double endParameter );
+        
+    /**
+     * Creates a {@link Cone} surface patch.
+     * 
+     * @param grid
+     *             the grid of control points that defines the Cone 
+     * @return created {@link Cone} 
+     */
+    public Cone createCone( List<List<Point>> grid );
+    
+    /**
+     * Creates a {@link Cylidner} surface patch.
+     * 
+     * @param grid
+     *              the grid of control points that defines the Cylinder
+     * @return created {@link Cylinder}
+     */
+    public Cylinder createCylinder( List<List<Point>> grid );
+    
+    /**
+     * Creates a {@link Sphere} surface patch.
+     * 
+     * @param grid
+     *              the grid of control points that defines the Sphere
+     * @return created {@link Sphere}
+     */
+    public Sphere createSphere( List<List<Point>> grid );
 
     /**
      * Creates a {@link Clothoid} curve segment.

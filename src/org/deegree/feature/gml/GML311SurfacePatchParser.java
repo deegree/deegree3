@@ -47,6 +47,7 @@ import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,9 +59,13 @@ import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.LinearRing;
+import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.primitive.surfacepatches.Cone;
+import org.deegree.geometry.primitive.surfacepatches.Cylinder;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.Rectangle;
+import org.deegree.geometry.primitive.surfacepatches.Sphere;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
 
@@ -125,13 +130,13 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * @throws UnknownCRSException
      */
     SurfacePatch parseSurfacePatch( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+    throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         SurfacePatch patch = null;
 
         if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
             String msg = "Invalid gml:_SurfacePatch element: " + xmlStream.getName()
-                         + "' is not a GML geometry element. Not in the gml namespace.";
+            + "' is not a GML geometry element. Not in the gml namespace.";
             throw new XMLParsingException( xmlStream, msg );
         }
 
@@ -145,25 +150,201 @@ class GML311SurfacePatchParser extends GML311BaseParser {
         } else if ( name.equals( "Rectangle" ) ) {
             patch = parseRectangle( xmlStream, defaultCRS );
         } else if ( name.equals( "Sphere" ) ) {
-            patch = parseCone( xmlStream, defaultCRS );
+            patch = parseSphere( xmlStream, defaultCRS );
         } else if ( name.equals( "Triangle" ) ) {
             patch = parseTriangle( xmlStream, defaultCRS );
         } else {
             String msg = "Invalid GML geometry: '" + xmlStream.getName()
-                         + "' is not a valid substitution for '_SurfacePatch'.";
+            + "' is not a valid substitution for '_SurfacePatch'.";
             throw new XMLParsingException( xmlStream, msg );
         }
         return patch;
     }
 
-    private SurfacePatch parseCone( XMLStreamReaderWrapper xmlStream, CRS defaultCRS ) {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * Returns the object representation for a <code>gml:Cone</code> element.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Cone&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Cone&gt;)
+     * </li>
+     * </ul>
+     * <p>
+     * @param xmlStream
+     * @param defaultCRS
+     *              default CRS for the geometry, this is only used if the "gml:Cone" has no <code>srsName</code>
+     *              attribute
+     * @return corresponding {@link Cone} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     */
+    private Cone parseCone( XMLStreamReaderWrapper xmlStream, CRS defaultCRS ) throws XMLStreamException, XMLParsingException, UnknownCRSException {
+        validateAttribute( xmlStream, "horizontalCurveType", "circularArc3Points" );
+        validateAttribute( xmlStream, "verticalCurveType", "linear" );
+
+        xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, GMLNS, "row" );
+
+        List<List<Point>> grid = new ArrayList<List<Point>>(); 
+        while ( xmlStream.getLocalName().equals( "row" ) ) {
+            xmlStream.nextTag();
+            List<Point> currentRow = new LinkedList<Point>();
+            if ( xmlStream.getLocalName().equals( "posList" ) ) {
+                currentRow = geometryParser.parsePosList( xmlStream, defaultCRS );                
+                xmlStream.nextTag();
+            } else {
+                while ( xmlStream.getLocalName().equals( "pos" ) || 
+                                        xmlStream.getLocalName().equals( "pointProperty" ) ) {
+                    if ( xmlStream.getLocalName().equals( "pos" ) ) {
+                        Point point = geometryParser.parsePoint( xmlStream, defaultCRS );
+                        currentRow.add( point );
+                    } else {
+                        Point point = geometryParser.parsePointProperty( xmlStream, defaultCRS );
+                        currentRow.add( point );
+                    }
+                    xmlStream.nextTag();
+                }
+            }
+            grid.add( currentRow );
+            xmlStream.require( END_ELEMENT, GMLNS, "row" );
+            xmlStream.nextTag();
+        }
+        
+        xmlStream.require( START_ELEMENT, GMLNS, "rows" );        
+        int rows = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid 
+        xmlStream.require( END_ELEMENT, GMLNS, "rows" );
+        xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, GMLNS, "columns" );        
+        int columns = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid 
+        xmlStream.require( END_ELEMENT, GMLNS, "columns" );
+        xmlStream.nextTag();
+        xmlStream.require( END_ELEMENT, GMLNS, "Cone" );
+        
+        return geomFac.createCone( grid );
     }
 
-    private SurfacePatch parseCylinder( XMLStreamReaderWrapper xmlStream, CRS defaultCRS ) {
-        // TODO Auto-generated method stub
-        return null;
+    /**
+     * Returns the object representation for a <code>gml:Cylinder</code> element.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Cylidner&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Cylinder&gt;)
+     * </li>
+     * </ul>
+     * <p>
+     * @param xmlStream
+     * @param defaultCRS
+     *              default CRS for the geometry, this is only used if the "gml:Cylinder" has no <code>srsName</code>
+     *              attribute
+     * @return corresponding {@link Cylinder} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     */
+    private Cylinder parseCylinder( XMLStreamReaderWrapper xmlStream, CRS defaultCRS ) throws XMLStreamException, XMLParsingException, UnknownCRSException {
+        validateAttribute( xmlStream, "horizontalCurveType", "circularArc3Points" );
+        validateAttribute( xmlStream, "verticalCurveType", "linear" );
+        
+        xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, GMLNS, "row" );
+
+        List<List<Point>> grid = new ArrayList<List<Point>>(); 
+        while ( xmlStream.getLocalName().equals( "row" ) ) {
+            xmlStream.nextTag();
+            List<Point> currentRow = new LinkedList<Point>();
+            if ( xmlStream.getLocalName().equals( "posList" ) ) {
+                currentRow = geometryParser.parsePosList( xmlStream, defaultCRS );
+                xmlStream.nextTag();
+            } else {
+                while ( xmlStream.getLocalName().equals( "pos" ) || 
+                                        xmlStream.getLocalName().equals( "pointProperty" ) ) {
+                    if ( xmlStream.getLocalName().equals( "pos" ) ) {
+                        Point point = geometryParser.parsePoint( xmlStream, defaultCRS );
+                        currentRow.add( point );
+                    } else {
+                        Point point = geometryParser.parsePointProperty( xmlStream, defaultCRS );
+                        currentRow.add( point );
+                    }
+                    xmlStream.nextTag();
+                }
+            }
+            grid.add( currentRow );
+            xmlStream.require( END_ELEMENT, GMLNS, "row" );
+            xmlStream.nextTag();
+        }
+        
+        xmlStream.require( START_ELEMENT, GMLNS, "rows" );        
+        int rows = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid 
+        xmlStream.require( END_ELEMENT, GMLNS, "rows" );
+        xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, GMLNS, "columns" );        
+        int columns = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid 
+        xmlStream.require( END_ELEMENT, GMLNS, "columns" );
+        xmlStream.nextTag();
+        xmlStream.require( END_ELEMENT, GMLNS, "Cylinder" );
+        
+        return geomFac.createCylinder( grid );       
+    }
+
+    /**
+     * Returns the object representation for a <code>gml:Sphere</code> element.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Sphere&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Sphere&gt;)
+     * </li>
+     * </ul>
+     * <p>
+     * @param xmlStream
+     * @param defaultCRS
+     *              default CRS for the geometry, this is only used if the "gml:Sphere" has no <code>srsName</code>
+     *              attribute
+     * @return corresponding {@link Sphere} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     */
+    private Sphere parseSphere( XMLStreamReaderWrapper xmlStream, CRS defaultCRS ) throws XMLStreamException, XMLParsingException, UnknownCRSException {
+        validateAttribute( xmlStream, "horizontalCurveType", "circularArc3Points" );
+        validateAttribute( xmlStream, "verticalCurveType", "circularArc3Points" );
+
+        xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, GMLNS, "row" );
+
+        List<List<Point>> grid = new ArrayList<List<Point>>(); 
+        while ( xmlStream.getLocalName().equals( "row" ) ) {
+            xmlStream.nextTag();
+            List<Point> currentRow = new LinkedList<Point>();
+            if ( xmlStream.getLocalName().equals( "posList" ) ) {
+                currentRow = geometryParser.parsePosList( xmlStream, defaultCRS );
+                xmlStream.nextTag();
+            } else {
+                while ( xmlStream.getLocalName().equals( "pos" ) || 
+                                        xmlStream.getLocalName().equals( "pointProperty" ) ) {
+                    if ( xmlStream.getLocalName().equals( "pos" ) ) {
+                        Point point = geometryParser.parsePoint( xmlStream, defaultCRS );
+                        currentRow.add( point );
+                    } else {
+                        Point point = geometryParser.parsePointProperty( xmlStream, defaultCRS );
+                        currentRow.add( point );
+                    }
+                    xmlStream.nextTag();
+                }
+            }
+            grid.add( currentRow );
+            xmlStream.require( END_ELEMENT, GMLNS, "row" );
+            xmlStream.nextTag();
+        }
+        
+        xmlStream.require( START_ELEMENT, GMLNS, "rows" );        
+        int rows = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid 
+        xmlStream.require( END_ELEMENT, GMLNS, "rows" );
+        xmlStream.nextTag();
+        xmlStream.require( START_ELEMENT, GMLNS, "columns" );        
+        int columns = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid 
+        xmlStream.require( END_ELEMENT, GMLNS, "columns" );
+        xmlStream.nextTag();
+        xmlStream.require( END_ELEMENT, GMLNS, "Sphere" );
+        
+        return geomFac.createSphere( grid );               
     }
 
     /**
@@ -184,9 +365,9 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * @throws UnknownCRSException
      */
     PolygonPatch parsePolygonPatch( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
-                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+    throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
-        validateInterpolationAttribute( xmlStream, "planar" );
+        validateAttribute( xmlStream, "interpolation", "planar" );
 
         Ring exteriorRing = null;
         List<Ring> interiorRings = new LinkedList<Ring>();
@@ -244,8 +425,8 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * @throws XMLParsingException
      */
     private Rectangle parseRectangle( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
-                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
-        validateInterpolationAttribute( xmlStream, "planar" );
+    throws XMLStreamException, XMLParsingException, UnknownCRSException {
+        validateAttribute( xmlStream, "interpolation", "planar" );
 
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "exterior" );
@@ -257,7 +438,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
         LinearRing exteriorRing = geometryParser.parseLinearRing( xmlStream, defaultCRS );
         if ( exteriorRing.getControlPoints().size() != 5 ) {
             String msg = "Error in 'gml:Rectangle' element. Exterior ring must contain exactly five points, but contains "
-                         + exteriorRing.getControlPoints().size();
+                + exteriorRing.getControlPoints().size();
             throw new XMLParsingException( xmlStream, msg );
         }
 
@@ -288,9 +469,9 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * @throws XMLParsingException
      */
     Triangle parseTriangle( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
-                            throws XMLStreamException, XMLParsingException, UnknownCRSException {
+    throws XMLStreamException, XMLParsingException, UnknownCRSException {
 
-        validateInterpolationAttribute( xmlStream, "planar" );
+        validateAttribute( xmlStream, "interpolation", "planar" );
 
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "exterior" );
@@ -302,7 +483,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
         LinearRing exteriorRing = geometryParser.parseLinearRing( xmlStream, defaultCRS );
         if ( exteriorRing.getControlPoints().size() != 4 ) {
             String msg = "Error in 'gml:Triangle' element. Exterior ring must contain exactly four points, but contains "
-                         + exteriorRing.getControlPoints().size();
+                + exteriorRing.getControlPoints().size();
             throw new XMLParsingException( xmlStream, msg );
         }
 
@@ -314,12 +495,11 @@ class GML311SurfacePatchParser extends GML311BaseParser {
         return geomFac.createTriangle( exteriorRing );
     }
 
-    private void validateInterpolationAttribute( XMLStreamReaderWrapper xmlStream, String expected )
-                            throws XMLParsingException {
-        String actual = xmlStream.getAttributeValue( null, "interpolation" );
+    private void validateAttribute( XMLStreamReaderWrapper xmlStream, String attributeName, String expected ) {
+        String actual = xmlStream.getAttributeValue( null, attributeName );
         if ( actual != null && !expected.equals( actual ) ) {
-            String msg = "Invalid value (='" + actual + "') for interpolation attribute in element '"
-                         + xmlStream.getName() + "'. Must be '" + expected + "'.";
+            String msg = "Invalid value (='" + actual + "') for " + attributeName + " attribute in element '"
+            + xmlStream.getName() + "'. Must be '" + expected + "'.";
             throw new XMLParsingException( xmlStream, msg );
         }
     }

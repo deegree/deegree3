@@ -89,8 +89,14 @@ import org.deegree.geometry.primitive.curvesegments.GeodesicString;
 import org.deegree.geometry.primitive.curvesegments.Knot;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.curvesegments.OffsetCurve;
+import org.deegree.geometry.primitive.surfacepatches.Cone;
+import org.deegree.geometry.primitive.surfacepatches.Cylinder;
+import org.deegree.geometry.primitive.surfacepatches.DefaultCone;
+import org.deegree.geometry.primitive.surfacepatches.DefaultCylinder;
+import org.deegree.geometry.primitive.surfacepatches.DefaultSphere;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.Rectangle;
+import org.deegree.geometry.primitive.surfacepatches.Sphere;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
 import org.deegree.geometry.standard.aggregate.DefaultMultiCurve;
@@ -288,6 +294,21 @@ public class DefaultGeometryFactory extends AbstractGeometryFactory {
     @Override
     public Circle createCircle( Point p1, Point p2, Point p3 ) {
         return new DefaultCircle( p1, p2, p3 );
+    }
+    
+    @Override
+    public Cone createCone( List<List<Point>> grid ) {
+        return new DefaultCone( grid );
+    }
+    
+    @Override
+    public Cylinder createCylinder( List<List<Point>> grid ) {
+        return new DefaultCylinder( grid );
+    }
+    
+    @Override
+    public Sphere createSphere( List<List<Point>> grid ) {
+        return new DefaultSphere( grid );
     }
 
     @Override

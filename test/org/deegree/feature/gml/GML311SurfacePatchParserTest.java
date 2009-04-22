@@ -56,8 +56,11 @@ import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
+import org.deegree.geometry.primitive.surfacepatches.Cone;
+import org.deegree.geometry.primitive.surfacepatches.Cylinder;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.Rectangle;
+import org.deegree.geometry.primitive.surfacepatches.Sphere;
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
 import org.junit.Before;
 import org.junit.Test;
@@ -110,6 +113,30 @@ public class GML311SurfacePatchParserTest {
         XMLStreamReaderWrapper parser = getParser( "Rectangle.gml" );
         Rectangle patch = (Rectangle) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 5, patch.getExteriorRing().getControlPoints().size() );
+    }
+    
+    @Test
+    public void parseCone() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+        XMLStreamReaderWrapper parser = getParser( "Cone.gml" );
+        Cone patch = (Cone) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326") );
+        Assert.assertEquals( 3, patch.getNumColumns() );
+        Assert.assertEquals( 2, patch.getNumRows() );        
+    }
+    
+    @Test
+    public void parseCylinder() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+        XMLStreamReaderWrapper parser = getParser( "Cylinder.gml" );
+        Cylinder patch = (Cylinder) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326") );
+        Assert.assertEquals( 3, patch.getNumColumns() );
+        Assert.assertEquals( 2, patch.getNumRows() );        
+    }
+    
+    @Test
+    public void parseSphere() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+        XMLStreamReaderWrapper parser = getParser( "Sphere.gml" );
+        Sphere patch = (Sphere) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326") );
+        Assert.assertEquals( 3, patch.getNumColumns() );
+        Assert.assertEquals( 2, patch.getNumRows() );        
     }
 
     private XMLStreamReaderWrapper getParser( String fileName )
