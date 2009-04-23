@@ -79,7 +79,7 @@ public class DefaultGeodesicString implements GeodesicString {
 
     @Override
     public Interpolation getInterpolation() {
-        return Interpolation.linear;
+        return Interpolation.geodesic;
     }
 
     @Override

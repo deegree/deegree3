@@ -91,7 +91,7 @@ public class DefaultGeodesic implements Geodesic {
 
     @Override
     public Interpolation getInterpolation() {
-        return Interpolation.circularArc3Points;
+        return Interpolation.geodesic;
     }
 
     @Override

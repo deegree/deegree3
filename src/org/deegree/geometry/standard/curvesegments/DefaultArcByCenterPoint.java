@@ -104,12 +104,12 @@ public class DefaultArcByCenterPoint implements ArcByCenterPoint {
 
     @Override
     public int getCoordinateDimension() {
-        throw new UnsupportedOperationException();
+        return 2; // even if the point has 3 coordinates, there isn't any plane defined in which the arcByCenterPoint is drawn 
     }
 
     @Override
     public Interpolation getInterpolation() {
-        throw new UnsupportedOperationException();
+        return Interpolation.circularArcCenterPointWithRadius;
     }
 
     @Override
