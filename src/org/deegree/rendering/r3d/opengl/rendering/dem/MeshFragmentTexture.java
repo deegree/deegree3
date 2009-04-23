@@ -49,8 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Encapsulates a {@link RenderableMeshFragment} and a matching {@link TextureTile}, so the mesh fragment can be
- * rendered with an applied texture.
+ * A {@link TextureTile} applied to a {@link RenderableMeshFragment}, also wraps OpenGL resources (texture coordinates).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -59,25 +58,24 @@ import org.slf4j.LoggerFactory;
  */
 public class MeshFragmentTexture {
 
-    // TODO not static
-    private static final DirectByteBufferPool bufferPool = new DirectByteBufferPool(20 * 1024 * 1024, 200);    
-    
-    // TODO remove this constants
-    private static final double AREA_MIN_X = 2568000;
-
-    private static final double AREA_MIN_Y = 5606000;
-
     private static final Logger LOG = LoggerFactory.getLogger( MeshFragmentTexture.class );
+
+    // TODO not static
+    private static final DirectByteBufferPool bufferPool = new DirectByteBufferPool( 100 * 1024 * 1024, 500 );
 
     private final RenderableMeshFragment fragment;
 
     private final TextureTile texture;
-    
+
     private final PooledByteBuffer buffer;
 
-    final FloatBuffer texCoordsBuffer;
-    
+    // just wrapped around buffer
+    private final FloatBuffer texCoordsBuffer;
+
     private int textureID = -1;
+
+    // 0: texture coordinates buffer
+    private int[] glBufferObjectIds;
 
     /**
      * Creates a new {@link MeshFragmentTexture} from the
@@ -85,15 +83,18 @@ public class MeshFragmentTexture {
      * @param geometry
      * @param texture
      */
-    public MeshFragmentTexture( RenderableMeshFragment geometry, TextureTile texture ) {
+    public MeshFragmentTexture( RenderableMeshFragment geometry, TextureTile texture, double xOffset, double yOffset ) {
         this.fragment = geometry;
         this.texture = texture;
         this.buffer = bufferPool.allocate( geometry.getData().getVertices().capacity() / 3 * 2 * 4 );
         buffer.getBuffer().order( ByteOrder.nativeOrder() );
-        this.texCoordsBuffer = generateTexCoordsBuffer();
+        this.texCoordsBuffer = generateTexCoordsBuffer( xOffset, yOffset );
     }
 
-    private FloatBuffer generateTexCoordsBuffer() {
+    private FloatBuffer generateTexCoordsBuffer( double xOffset, double yOffset ) {
+
+        double minX = -xOffset;
+        double minY = -yOffset;
 
         float[][] bbox = fragment.getBBox();
         float patchXMin = bbox[0][0];
@@ -101,10 +102,10 @@ public class MeshFragmentTexture {
         float patchXMax = bbox[1][0];
         float patchYMax = bbox[1][1];
 
-        float tileXMin = texture.getMinX() - (float) AREA_MIN_X;
-        float tileYMin = texture.getMinY() - (float) AREA_MIN_Y;
-        float tileXMax = texture.getMaxX() - (float) AREA_MIN_X;
-        float tileYMax = texture.getMaxY() - (float) AREA_MIN_Y;
+        float tileXMin = texture.getMinX() - (float) minX;
+        float tileYMin = texture.getMinY() - (float) minY;
+        float tileXMax = texture.getMaxX() - (float) minX;
+        float tileYMax = texture.getMaxY() - (float) minY;
 
         if ( tileXMin > patchXMin || tileYMin > patchYMin || tileXMax < patchXMax || tileYMax < patchYMax ) {
             String msg = "Internal error. Returned texture tile is not suitable for the MeshFragment.";
@@ -132,36 +133,59 @@ public class MeshFragmentTexture {
     }
 
     /**
-     * Returns the resolution of the applied texture (meters per pixel).
+     * Returns the resolution of the texture (world units per pixel).
      * 
-     * @return the resolution of the applied texture
+     * @return the resolution of the texture
      */
     public float getTextureResolution() {
         return texture.getMetersPerPixel();
     }
 
+    public TextureTile getTextureTile() {
+        return texture;
+    }
+
     int getGLTextureId( GL gl ) {
-        if (textureID == -1) {
+        if ( textureID == -1 ) {
             throw new RuntimeException();
         }
         return textureID;
     }
-    
-    public void disable (GL gl) {
-        if (textureID != -1) {
-            texture.disable( gl );
-            textureID = -1;
-        }
-    }
-       
-    public void unload () {
-        buffer.free();
+
+    int getGLVertexCoordBufferId() {
+        return glBufferObjectIds[0];
     }
 
     public void enable( GL gl ) {
-        if (textureID != -1) {
+        if ( textureID != -1 ) {
             throw new RuntimeException();
         }
         textureID = texture.enable( gl );
+
+        if ( glBufferObjectIds == null ) {
+            glBufferObjectIds = new int[1];
+            gl.glGenBuffersARB( 1, glBufferObjectIds, 0 );
+
+            // bind vertex buffer object (vertex coordinates)
+            gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[0] );
+            gl.glBufferDataARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, texCoordsBuffer.capacity() * 4, texCoordsBuffer,
+                                GL.GL_STATIC_DRAW_ARB );
+        }
+    }
+
+    public void disable( GL gl ) {
+        if ( textureID != -1 ) {
+            texture.disable( gl );
+            textureID = -1;
+        }
+        if ( glBufferObjectIds != null ) {
+            int[] bufferObjectIds = this.glBufferObjectIds;
+            this.glBufferObjectIds = null;
+            gl.glDeleteBuffersARB( bufferObjectIds.length, bufferObjectIds, 0 );
+        }
+    }
+
+    public void unload() {
+        buffer.free();
     }
 }

@@ -66,7 +66,7 @@ public class MeshFragmentDataReader {
     private static final Logger LOG = LoggerFactory.getLogger( MeshFragmentDataReader.class );
 
     // TODO not static
-    private static final DirectByteBufferPool bufferPool = new DirectByteBufferPool(100 * 1024 * 1024, 200);
+    private static final DirectByteBufferPool bufferPool = new DirectByteBufferPool(300 * 1024 * 1024, 500);
     
     private final FileChannel channel;
 

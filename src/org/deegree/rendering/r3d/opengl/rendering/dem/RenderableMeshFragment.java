@@ -40,6 +40,7 @@ package org.deegree.rendering.r3d.opengl.rendering.dem;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.util.List;
 
 import javax.media.opengl.GL;
 
@@ -54,17 +55,14 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The geometry data of a {@link RenderableMeshFragment} has one of the following states:
  * <ul>
- * <li>Data is not loaded</li>
- * <li>Data loaded to main memory (i.e. buffer objects are created and filled)</li>
- * <li>Data loaded to GPU (i.e. OpenGL VBOs created and loaded to the GPU)</li>
- * <li>Data loaded to main memory and GPU</li>
+ * <li>Not loaded</li>
+ * <li>Loaded to main memory (i.e. buffer objects are created and filled)</li>
+ * <li>Loaded to GPU (i.e. OpenGL VBOs created and loaded to the GPU)</li>
+ * <li>Loaded to main memory and GPU</li>
  * </ul>
  * </p>
- * <p>
- * A {@link RenderableMeshFragment} can be associated with a {@link MeshFragmentTexture}. In this case, it is rendered
- * with an applied texture.
- * </p>
  * 
+ * @see MeshFragmentTexture
  * @see MultiresolutionMesh
  * @see MeshFragment
  * 
@@ -81,16 +79,10 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
 
     private MeshFragmentData data;
 
-    private MeshFragmentTexture texture;
-
     // 0: vertex (coordinates) buffer
     // 1: normal buffer
     // 2: triangle buffer
-    // 3: texture coordinates buffer
     private int[] glBufferObjectIds;
-
-    // indicates that glBufferObjectsIds[3] matches the texture
-    private boolean textureEnabled;
 
     public RenderableMeshFragment( MeshFragment fragment ) {
         this.fragment = fragment;
@@ -106,42 +98,6 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
 
     public MeshFragmentData getData() {
         return data;
-    }
-
-    /**
-     * Returns the currently applied texture.
-     * 
-     * @return the currently applied texture
-     */
-    public MeshFragmentTexture getTexture() {
-        return texture;
-    }
-
-    /**
-     * Applies the given texture. If another texture has been applied before, it will be disabled first.
-     * 
-     * @param texture
-     * @param gl
-     */
-    public void setTexture( MeshFragmentTexture texture, GL gl ) {
-        if ( this.texture != null && this.texture != texture ) {
-            this.texture.disable( gl );
-            this.texture.unload();
-            this.textureEnabled = false;
-        }
-        this.texture = texture;
-    }
-
-    /**
-     * Returns the resolution of the applied texture (meters per pixel).
-     * 
-     * @return the resolution of the applied texture, or -1 if no texture is applied
-     */
-    public float getTextureResolution() {
-        if ( texture != null ) {
-            return texture.getTextureResolution();
-        }
-        return -1.0f;
     }
 
     /**
@@ -173,10 +129,6 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
             data.freeBuffers();
             data = null;
         }
-        if (texture != null) {
-            texture.unload();
-            texture = null;            
-        }
     }
 
     /**
@@ -185,7 +137,7 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
      * @return true, if the fragment is ready to be rendered
      */
     public boolean isEnabled() {
-        return glBufferObjectIds != null && (textureEnabled || texture == null);
+        return glBufferObjectIds != null;
     }
 
     /**
@@ -201,8 +153,8 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
             load();
         }
         if ( glBufferObjectIds == null ) {
-            glBufferObjectIds = new int[4];
-            gl.glGenBuffersARB( 4, glBufferObjectIds, 0 );
+            glBufferObjectIds = new int[3];
+            gl.glGenBuffersARB( 3, glBufferObjectIds, 0 );
 
             FloatBuffer vertexBuffer = data.getVertices();
             ShortBuffer indexBuffer = (ShortBuffer) data.getTriangles();
@@ -223,15 +175,6 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
             gl.glBufferDataARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, indexBuffer.capacity() * 2, indexBuffer,
                                 GL.GL_STATIC_DRAW_ARB );
         }
-        if ( texture != null && !textureEnabled ) {
-
-            // bind vertex buffer object (vertex coordinates)
-            gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[3] );
-            gl.glBufferDataARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, texture.texCoordsBuffer.capacity() * 4,
-                                texture.texCoordsBuffer, GL.GL_STATIC_DRAW_ARB );
-            texture.enable (gl);
-            textureEnabled = true;
-        }
     }
 
     /**
@@ -245,34 +188,31 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
             this.glBufferObjectIds = null;
             gl.glDeleteBuffersARB( bufferObjectIds.length, bufferObjectIds, 0 );
         }
-        if (texture != null) {
-            texture.disable( gl );
-            textureEnabled = false;
-        }
     }
 
     /**
-     * Renders this fragment to the given OpenGL context.
+     * Renders this fragment to the given OpenGL context with optional textures.
      * 
      * @param gl
+     * @param textures 
      * @throws RuntimeException
      *             if the geometry data is currently not bound to VBOs
      */
-    public void render( GL gl ) {
+    public void render( GL gl, List<MeshFragmentTexture> textures) {
 
         if ( !isEnabled() ) {
             throw new RuntimeException( "Cannot render mesh fragment, not enabled." );
         }
 
         // render with or without texture
-        if ( textureEnabled ) {
-            // texture has been enabled and texture coordinate buffer has been prepared
+        if ( textures != null && textures.size() > 0) {
+            // TODO use other textures
+            MeshFragmentTexture texture = textures.get( 0 );
             gl.glEnable( GL.GL_TEXTURE_2D );
             gl.glBindTexture( GL.GL_TEXTURE_2D, texture.getGLTextureId( gl ) );
             gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
 
-            gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[3] );
-            //gl.glEnable( GL.GL_TEXTURE_UNIT_0 );
+            gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, texture.getGLVertexCoordBufferId() );
             gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
         } else {
             gl.glDisable( GL.GL_TEXTURE_2D );
@@ -286,11 +226,15 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
         gl.glNormalPointer( GL.GL_FLOAT, 0, 0 );
 
         gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[2] );
-        gl.glDrawElements( GL.GL_TRIANGLES, data.getNumTriangles() * 3, GL.GL_UNSIGNED_SHORT, 0 );
+        gl.glDrawElements( GL.GL_TRIANGLES, data.getNumTriangles() * 3, GL.GL_UNSIGNED_SHORT, 0 );        
     }
 
     @Override
     public int compareTo( RenderableMeshFragment o ) {
         return this.fragment.compareTo( o.fragment );
+    }
+
+    public int getId() {
+        return fragment.id;
     }
 }
