@@ -50,17 +50,13 @@ import static org.deegree.protocol.wms.client.WMSClient111.Requests.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
@@ -75,7 +71,6 @@ import org.deegree.coverage.raster.geom.RasterEnvelope;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
 import org.slf4j.Logger;
 
@@ -383,6 +378,10 @@ public class WMSClient111 {
                                                List<String> validationErrors )
                             throws IOException {
 
+        if ( ( maxMapWidth != -1 && width > maxMapWidth ) || ( maxMapHeight != -1 && height > maxMapHeight ) ) {
+            return getTiledMap( layers, width, height, bbox, srs, format, transparent, validate, validationErrors );
+        }
+
         try {
             if ( validate ) {
                 LinkedList<String> formats = getFormats( GetMap );
@@ -434,23 +433,85 @@ public class WMSClient111 {
         }
     }
 
-    private Pair<BufferedImage, String> getLargeMap( List<String> layers, int width, int height, Envelope bbox,
+    // TODO correctly cope with axis direction and order????
+    private Pair<BufferedImage, String> getTiledMap( List<String> layers, int width, int height, Envelope bbox,
                                                      CRS srs, String format, boolean transparent, boolean validate,
                                                      List<String> validationErrors )
                             throws IOException {
 
         Pair<BufferedImage, String> response = new Pair<BufferedImage, String>();
-        BufferedImage compositedImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-        
-        if (maxMapWidth != -1) {
+        BufferedImage compositedImage = null;
+        if ( transparent ) {
+            compositedImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+        } else {
+            compositedImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
+        }
+
+        response.first = compositedImage;
+
+
+        RasterEnvelope rasterEnv = new RasterEnvelope( bbox, width, height );
+
+        if ( maxMapWidth != -1 ) {
             int xMin = 0;
-            while (xMin < width) {
-                xMin += maxMapWidth;
-                
+            while ( xMin <= width - 1 ) {
+                int xMax = xMin + maxMapWidth - 1;
+                if ( xMax > width - 1 ) {
+                    xMax = width - 1;
+                }
+                if ( maxMapHeight != -1 ) {
+                    int yMin = 0;
+                    while ( yMin <= height - 1 ) {
+                        int yMax = yMin + maxMapHeight - 1;
+                        if ( yMax > height - 1 ) {
+                            yMax = height - 1;
+                        }
+                        System.out.println( "xMin: " + xMin + ", xMax: " + xMax + ", yMin: " + yMin + ", yMax: " + yMax );
+                        getAndSetSubImage( compositedImage, layers, xMin, ( xMax - xMin ) + 1, yMin,
+                                           ( yMax - yMin ) + 1, rasterEnv, srs, format, transparent );
+                        yMin = yMax + 1;
+                    }
+                }
+                xMin = xMax + 1;
+            }
+        } else {
+            if ( maxMapHeight != -1 ) {
+                int yMin = 0;
+                while ( yMin <= height - 1 ) {
+                    int yMax = yMin + maxMapHeight - 1;
+                    if ( yMax > height - 1 ) {
+                        yMax = height - 1;
+                    }
+                    int xMin = 0;
+                    int xMax = width - 1;
+                    System.out.println( "xMin: " + xMin + ", xMax: " + xMax + ", yMin: " + yMin + ", yMax: " + yMax );
+                    getAndSetSubImage( compositedImage, layers, xMin, ( xMax - xMin ) + 1, yMin, ( yMax - yMin ) + 1,
+                                       rasterEnv, srs, format, transparent );
+                    yMin = yMax + 1;
+                }
             }
         }
-        
         return response;
+    }
+
+    private void getAndSetSubImage( BufferedImage targetImage, List<String> layers, int xMin, int width, int yMin,
+                                    int height, RasterEnvelope rasterEnv, CRS crs, String format, boolean transparent )
+                            throws IOException {
+
+        double[] min = rasterEnv.convertToCRS( xMin, yMin + height );
+        double[] max = rasterEnv.convertToCRS( xMin + width, yMin );
+
+        System.out.println( "min: " + min[0] + "," + min[1] );
+        System.out.println( "max: " + max[0] + "," + max[1] );
+        System.out.println( "width: " + width );
+        System.out.println( "height: " + height );
+        Envelope env = GeometryFactoryCreator.getInstance().getGeometryFactory().createEnvelope( min, max, crs );
+        Pair<BufferedImage, String> response = getMap( layers, width, height, env, crs, format, transparent, false,
+                                                       null );
+        if ( response.second != null ) {
+            throw new IOException( response.second );
+        }
+        targetImage.getGraphics().drawImage( response.first, xMin, yMin, null );
     }
 
     /**
@@ -489,29 +550,5 @@ public class WMSClient111 {
             response.second = imageResponse.second;
         }
         return response;
-    }
-
-    public static void main( String[] args )
-                            throws IOException {
-        WMSClient111 client = new WMSClient111(
-                                                new URL(
-                                                         "http://stadtplan.bonn.de/Deegree2wms/services?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1" ) );
-
-        GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
-
-        List<String> layers = Collections.singletonList( "deegree_bplan_recht" );
-        int width = 2000;
-        int height = 2000;
-        Envelope bbox = geomFac.createEnvelope( 2568000.0, 5616000.0, 2578000.0, 5626000.0, new CRS( "EPSG:31466" ) );
-
-        Pair<BufferedImage, String> response = client.getMap( layers, width, height, bbox, new CRS( "EPSG:31466" ),
-                                                              "image/png", true, false, new ArrayList<String>() );
-
-        if ( response.first != null ) {
-            ImageIO.write( response.first, "png", new File( "/tmp/out.png" ) );
-            System.out.println( "Wrote file." );
-        } else {
-            System.out.println( response.second );
-        }
     }
 }
