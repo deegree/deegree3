@@ -52,72 +52,153 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.types.Length;
+import org.deegree.commons.types.Measure;
+import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
+import org.deegree.feature.types.LengthPropertyType;
+import org.deegree.feature.types.property.CodePropertyType;
+import org.deegree.feature.types.property.EnvelopePropertyType;
+import org.deegree.feature.types.property.FeaturePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType;
+import org.deegree.feature.types.property.MeasurePropertyType;
+import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * Exporter class for Features and Properties, that delegates exporting tasks to the 
+ * <code>GML311GeometryExporter</code>.  
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+ * @author last edited by: $Author:$
+ * 
+ * @version $Revision:$, $Date:$
+ */
 public class GMLFeatureExporter {
 
-    public static void export( XMLStreamWriter writer, Feature feature )
-                            throws XMLStreamException {
-        export( writer, feature, new HashSet<Feature>() );
+    private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureExporter.class );
+
+    private Set<String> exportedIds = new HashSet<String>();
+
+    private XMLStreamWriterWrapper writer;
+    
+    private GML311GeometryExporter geometryExporter;
+
+    public GMLFeatureExporter( XMLStreamWriterWrapper writer ) {
+        this.writer = writer;
+        geometryExporter = new GML311GeometryExporter( writer, exportedIds );
     }
 
-    public static void export( XMLStreamWriter writer, Feature feature, Set<Feature> exportedFeatures )
-                            throws XMLStreamException {
+    //    public void export( FeatureCollection featureCol ) throws XMLStreamException {        
+    //        QName fcName = featureCol.getName();
+    //        LOG.debug( "Exporting FeatureCollection " + fcName );
+    //        writeStartElementWithNS( fcName.getNamespaceURI(), fcName.getLocalPart() );
+    //        if ( firstElement ) {
+    //            writer.writeAttribute( schemaAttributeName, schemaAttributeValue ); //set schema 
+    //            firstElement = false;
+    //        }                
+    //        Iterator<Feature> iterator = featureCol.iterator();        
+    //        while ( iterator.hasNext() ) {
+    //            Feature f = iterator.next();
+    //            writer.writeStartElement( GMLNS, "featureMember" );             
+    //            export( ( Property<?> ) f );
+    //            writer.writeEndElement();
+    //        }
+    //        writer.writeEndElement();
+    //    }
 
+    public void export( Feature feature ) throws XMLStreamException {
         QName featureName = feature.getName();
-        if ( featureName.getNamespaceURI() == null || featureName.getNamespaceURI().length() == 0 ) {
-            writer.writeStartElement( featureName.getLocalPart() );
-        } else {
-            writer.writeStartElement( featureName.getNamespaceURI(), featureName.getLocalPart() );
-        }
-        if ( feature.getId() != null ) {
+        LOG.debug( "Exporting Feature " + featureName + " with ID " + feature.getId() );
+        writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
+        if ( feature.getId() != null )
             writer.writeAttribute( GMLNS, "id", feature.getId() );
-        }
-        exportedFeatures.add( feature );
-        for ( Property<?> prop : feature.getProperties() ) {
-            export( writer, prop, exportedFeatures );
-        }
+        for ( Property<?> prop : feature.getProperties() )
+            export( prop );
         writer.writeEndElement();
     }
 
-    private static void export( XMLStreamWriter writer, Property<?> property, Set<Feature> exportedFeatures )
-                            throws XMLStreamException {
-
+    private void export( Property<?> property ) throws XMLStreamException {
         QName propName = property.getName();
-
-        // TODO respect property type properly
-        Object value = property.getValue();
-
-        if ( value instanceof Feature ) {
-            // check if feature has already been exported (avoid cycles)
-            if ( exportedFeatures.contains( value ) ) {
-                if ( propName.getNamespaceURI() == null || propName.getNamespaceURI().length() == 0 ) {
-                    writer.writeEmptyElement( propName.getLocalPart() );
-                } else {
-                    writer.writeEmptyElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                }
-                writer.writeAttribute( XLNNS, "href", "#" + ( (Feature) value ).getId() );
+        PropertyType propertyType = property.getType();
+        Object value = property.getValue();        
+        if ( propertyType instanceof FeaturePropertyType ) {            
+            Feature fValue = (Feature) value;
+            if ( fValue.getId() != null && exportedIds.contains( fValue.getId() ) ) {
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeAttribute( XLNNS, "href", "#" + fValue.getId() );
             } else {
-                if ( propName.getNamespaceURI() == null || propName.getNamespaceURI().length() == 0 ) {
-                    writer.writeStartElement( propName.getLocalPart() );
-                } else {
-                    writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
-                }
-                export( writer, (Feature) value, exportedFeatures );
-                writer.writeEndElement();
-            }
-        } else {
-            if ( propName.getNamespaceURI() == null || propName.getNamespaceURI().length() == 0 ) {
-                writer.writeStartElement( propName.getLocalPart() );
-            } else {
-                writer.writeStartElement( propName.getNamespaceURI(), propName.getLocalPart() );
-            }
+                exportedIds.add( fValue.getId() );
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                export( fValue );
+                writer.writeEndElement();                
+            }            
+        } else if ( propertyType instanceof SimplePropertyType ){
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             writer.writeCharacters( value.toString() );
+            writer.writeEndElement();
+
+        } else if ( propertyType instanceof GeometryPropertyType ) {
+            Geometry gValue = ( Geometry ) value;
+            if ( gValue.getId() != null && exportedIds.contains( gValue.getId() ) ) {
+                writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeAttribute( XLNNS, "href", "#" + gValue.getId() );
+            } else {
+                exportedIds.add( gValue.getId() );
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                geometryExporter.export( (Geometry) value);
+                writer.writeEndElement();                
+            }
+
+        } else if ( propertyType instanceof CodePropertyType ) {
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            CodeType codeType = ( CodeType ) value ;
+            if ( codeType.getCodeSpace() != null && codeType.getCodeSpace().length() > 0 )
+                writer.writeAttribute( "codeSpace", codeType.getCodeSpace() );
+            writer.writeCharacters( codeType.getCode() );
+            writer.writeEndElement();
+
+        } else if ( propertyType instanceof EnvelopePropertyType ) {
+            geometryExporter.export( ( Envelope ) value);
+
+        } else if ( propertyType instanceof LengthPropertyType ) {
+            Length length = ( Length ) value;
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            writer.writeAttribute( "uom", length.getUomUri() );
+            writer.writeCharacters( String.valueOf( length.getValue() ) );
+            writer.writeEndElement();
+
+        } else if ( propertyType instanceof MeasurePropertyType ) {
+            Measure measure = ( Measure ) value;
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            writer.writeAttribute( "uom", measure.getUomUri() );
+            writer.writeCharacters( String.valueOf( measure.getValue() ) );
             writer.writeEndElement();
         }
     }
+        
+    void writeStartElementWithNS( String namespaceURI, String localname ) 
+    throws XMLStreamException {
+        if ( namespaceURI == null || namespaceURI.length() == 0 )
+            writer.writeStartElement( localname );
+        else
+            writer.writeStartElement( namespaceURI, localname );
+    }
+
+    void writeEmptyElementWithNS( String namespaceURI, String localname ) 
+    throws XMLStreamException {
+        if ( namespaceURI == null || namespaceURI.length() == 0 )
+            writer.writeEmptyElement( localname );
+        else
+            writer.writeEmptyElement( namespaceURI, localname );
+    }
+    
 }
