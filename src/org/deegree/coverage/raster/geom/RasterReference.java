@@ -42,10 +42,17 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.Math.signum;
 
+import org.deegree.coverage.io.jai.JAIRasterReader;
 import org.deegree.crs.CRS;
+import org.deegree.crs.CRSRegistry;
+import org.deegree.crs.components.Axis;
+import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class maps a 2D raster to another cartesian world coordinate system.
@@ -66,6 +73,8 @@ import org.deegree.geometry.GeometryFactoryCreator;
  * @version $Revision$, $Date$
  */
 public class RasterReference {
+    
+    private static Logger LOG = LoggerFactory.getLogger( RasterReference.class );
 
     private double x0;
 
@@ -74,6 +83,8 @@ public class RasterReference {
     private double xRes;
 
     private double yRes;
+        
+    private boolean axisSwitched; //TODO see if the axisSwitching signaling (when getEnvelope() should be placed here) 
 
     private double delta;
 
@@ -148,6 +159,8 @@ public class RasterReference {
     public RasterReference( Envelope env, int width, int height ) {
         this.x0 = env.getMin().getX();
         this.y0 = env.getMax().getY();
+        
+        
 
         this.xRes = env.getWidth() / width;
         this.yRes = -1 * env.getHeight() / height;
@@ -309,6 +322,7 @@ public class RasterReference {
      *            the coordinate system for the envelope
      * 
      * @return the calculated envelope
+     * @throws UnknownCRSException 
      */
     public Envelope getEnvelope( int width, int height, CRS crs ) {
         return getEnvelope( width, height, crs, RasterReference.Type.OUTER );
@@ -350,6 +364,24 @@ public class RasterReference {
         double ymin = min( y0, y1 );
         double ymax = max( y0, y1 );
 
+        Axis[] axes = null;
+        try {
+            if ( crs != null )
+                axes = crs.getWrappedCRS().getAxis();
+        } catch ( UnknownCRSException e ) {
+            LOG.error( e.getMessage() );
+        }
+        if ( axes != null && axes[0].getOrientation() == Axis.AO_NORTH && axes[1].getOrientation() == Axis.AO_EAST ) {
+            // if they latitude and longitude are switched in the CRS then switch the coordinates just calculated
+            double aux = xmin;
+            xmin = ymin;
+            ymin = aux;
+            
+            aux = xmax;
+            xmax = ymax;
+            ymax = aux;
+        }        
+        
         Envelope envelope = geomFactory.createEnvelope( new double[] { xmin, ymin }, new double[] { xmax, ymax },
                                                         delta, crs );
         return envelope;
@@ -474,6 +506,5 @@ public class RasterReference {
         result.delta = min( rasterEnv.delta, this.delta );
 
         return result;
-    }
-
+    }    
 }
