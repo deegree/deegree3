@@ -52,7 +52,7 @@ import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.WorldFileAccess;
 import org.deegree.coverage.raster.data.DataType;
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterWriter;
 import org.slf4j.Logger;
@@ -79,7 +79,7 @@ public class IIORasterWriter implements RasterWriter {
 
         IIORasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(), file, format );
 
-        RasterEnvelope rasterEnv = raster.getRasterEnvelope();
+        RasterReference rasterEnv = raster.getRasterReference();
         WorldFileAccess.writeWorldFile( rasterEnv, file );
     }
     

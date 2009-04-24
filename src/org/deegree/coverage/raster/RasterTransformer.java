@@ -51,7 +51,7 @@ import javax.media.jai.WarpPolynomial;
 import javax.vecmath.Point3d;
 
 import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.interpolation.Interpolation;
 import org.deegree.coverage.raster.interpolation.InterpolationFactory;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
@@ -151,8 +151,8 @@ public class RasterTransformer extends Transformer {
         RasterData srcRaster = source.getAsSimpleRaster().getReadOnlyRasterData();
 
         RasterData dstRaster = srcRaster.createCompatibleRasterData( dstWidth, dstHeight );
-        RasterEnvelope srcREnv = source.getRasterEnvelope();
-        RasterEnvelope dstREnv = new RasterEnvelope( dstEnvelope, dstWidth, dstHeight );
+        RasterReference srcREnv = source.getRasterReference();
+        RasterReference dstREnv = new RasterReference( dstEnvelope, dstWidth, dstHeight );
 
         WarpPolynomial warp = createWarp( srcREnv, dstREnv );
 
@@ -211,7 +211,7 @@ public class RasterTransformer extends Transformer {
         return source;
     }
 
-    private WarpPolynomial createWarp( RasterEnvelope srcREnv, RasterEnvelope dstREnv )
+    private WarpPolynomial createWarp( RasterReference srcREnv, RasterReference dstREnv )
                             throws TransformationException {
         int k = 0;
         // create/calculate reference points

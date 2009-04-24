@@ -57,7 +57,7 @@ import org.deegree.coverage.raster.data.DataType;
 import org.deegree.coverage.raster.data.InterleaveType;
 import org.deegree.coverage.raster.data.RasterDataFactory;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,7 +152,7 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
         double resy = worldFileValues[3];
         double xmin = worldFileValues[4];
         double ymax = worldFileValues[5];
-        RasterEnvelope renv = new RasterEnvelope( xmin, ymax, resx, resy );
+        RasterReference renv = new RasterReference( xmin, ymax, resx, resy );
 
         // read grid info
         int rows = Integer.parseInt( br.readLine() );
@@ -174,7 +174,7 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
         if ( tile == null ) {
             long begin = System.currentTimeMillis();
             Envelope tileEnvelope = getTileEnvelope( rowId, columnId );
-            RasterEnvelope tileRasterEnvelope = new RasterEnvelope( tileEnvelope, tileSamplesX, tileSamplesY );
+            RasterReference tileRasterReference = new RasterReference( tileEnvelope, tileSamplesX, tileSamplesY );
 
             ByteBufferRasterData tileData = RasterDataFactory.createRasterData( tileSamplesX, tileSamplesY,
                                                                                 new BandType[] { BandType.RED,
@@ -203,7 +203,7 @@ public class GriddedBlobTileContainer extends GriddedTileContainer {
             long elapsed = System.currentTimeMillis() - begin;
             LOG.debug( "Loading of tile (" + tileSamplesX + "x" + tileSamplesY + ") in " + elapsed + " ms." );
 
-            tile = new SimpleRaster( tileData, tileEnvelope, tileRasterEnvelope );
+            tile = new SimpleRaster( tileData, tileEnvelope, tileRasterReference );
             // cache.put( tileId, tile );
         }
         return tile;

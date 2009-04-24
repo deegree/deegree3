@@ -48,7 +48,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileWriter;
 
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -88,12 +88,12 @@ public class WorldFileAccessTest {
     @Test
     public void testReadWorldFile() {
         try {
-            RasterEnvelope renv = WorldFileAccess.readWorldFile( wld, WorldFileAccess.TYPE.CENTER );
+            RasterReference renv = WorldFileAccess.readWorldFile( wld, WorldFileAccess.TYPE.CENTER );
 
-            assertEquals( 419996.000, renv.getX0( RasterEnvelope.Type.OUTER ), delta );
-            assertEquals( 4520003.000, renv.getY0( RasterEnvelope.Type.OUTER ), delta );
-            assertEquals( 420000.000, renv.getX0( RasterEnvelope.Type.CENTER ), delta );
-            assertEquals( 4519999.000, renv.getY0( RasterEnvelope.Type.CENTER ), delta );
+            assertEquals( 419996.000, renv.getX0( RasterReference.Type.OUTER ), delta );
+            assertEquals( 4520003.000, renv.getY0( RasterReference.Type.OUTER ), delta );
+            assertEquals( 420000.000, renv.getX0( RasterReference.Type.CENTER ), delta );
+            assertEquals( 4519999.000, renv.getY0( RasterReference.Type.CENTER ), delta );
 
             assertEquals( 8.0, renv.getXRes(), delta );
             assertEquals( -8.0, renv.getYRes(), delta );

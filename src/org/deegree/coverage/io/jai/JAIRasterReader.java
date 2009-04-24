@@ -51,7 +51,7 @@ import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.WorldFileAccess;
 import org.deegree.coverage.raster.data.container.RasterDataContainer;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
 import org.deegree.geometry.Envelope;
@@ -93,16 +93,16 @@ public class JAIRasterReader implements RasterReader {
 
         reader.close();
 
-        RasterEnvelope rasterEnvelope = new RasterEnvelope( 0.5, height - 0.5, 1.0, -1.0 );
+        RasterReference rasterReference = new RasterReference( 0.5, height - 0.5, 1.0, -1.0 );
 
         if ( options.hasEnvelope() ) {
-            rasterEnvelope = options.getEnvelope();
+            rasterReference = options.getEnvelope();
         } else {
-            rasterEnvelope = new RasterEnvelope( 0.5, height - 0.5, 1.0, -1.0 );
+            rasterReference = new RasterReference( 0.5, height - 0.5, 1.0, -1.0 );
             if ( options.readWorldFile() ) {
                 try {
                     if ( file != null ) {
-                        rasterEnvelope = WorldFileAccess.readWorldFile( file, WorldFileAccess.TYPE.CENTER );
+                        rasterReference = WorldFileAccess.readWorldFile( file, WorldFileAccess.TYPE.CENTER );
                     }
                 } catch ( IOException e ) {
                     // 
@@ -110,10 +110,10 @@ public class JAIRasterReader implements RasterReader {
             }
         }
 
-        Envelope envelope = rasterEnvelope.getEnvelope( width, height );
+        Envelope envelope = rasterReference.getEnvelope( width, height );
         // RasterDataContainer source = RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
         RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy() );
-        return new SimpleRaster( source, envelope, rasterEnvelope );
+        return new SimpleRaster( source, envelope, rasterReference );
     }
 
     @Override

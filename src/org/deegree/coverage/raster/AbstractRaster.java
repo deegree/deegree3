@@ -38,7 +38,7 @@
 package org.deegree.coverage.raster;
 
 import org.deegree.coverage.AbstractCoverage;
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -51,7 +51,7 @@ import org.deegree.geometry.Envelope;
  */
 public abstract class AbstractRaster extends AbstractCoverage {
 
-    private RasterEnvelope rasterEnv = null;
+    private RasterReference rasterEnv = null;
 
     /**
      * Instantiate an AbstractRaster with no envelope.
@@ -78,7 +78,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
      * @param rasterEnv
      *            The raster envelope of the raster.
      */
-    protected AbstractRaster( Envelope envelope, RasterEnvelope rasterEnv ) {
+    protected AbstractRaster( Envelope envelope, RasterReference rasterEnv ) {
         super( envelope );
         this.rasterEnv = rasterEnv;
     }
@@ -89,7 +89,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
      * @return width in pixel
      */
     public int getColumns() {
-        return getRasterEnvelope().getSize( getEnvelope() )[0];
+        return getRasterReference().getSize( getEnvelope() )[0];
     }
 
     /**
@@ -98,16 +98,16 @@ public abstract class AbstractRaster extends AbstractCoverage {
      * @return height in pixel
      */
     public int getRows() {
-        return getRasterEnvelope().getSize( getEnvelope() )[1];
+        return getRasterReference().getSize( getEnvelope() )[1];
     }
 
     /**
-     * Extends current RasterEnvelope with rasterEnv. Useful for extending the raster, e.g. adding a tile.
+     * Extends current RasterReference with rasterEnv. Useful for extending the raster, e.g. adding a tile.
      * 
      * @param rasterEnv
      *            The raster envelope to add to the current.
      */
-    protected void extendRasterEnvelope( RasterEnvelope rasterEnv ) {
+    protected void extendRasterReference( RasterReference rasterEnv ) {
         if ( this.rasterEnv == null ) {
             this.rasterEnv = rasterEnv;
         } else {
@@ -163,7 +163,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
      */
     public AbstractRaster getSubRaster( double x, double y, double x2, double y2 ) {
         Envelope env = getGeometryFactory().createEnvelope( new double[] { x, y }, new double[] { x2, y2 },
-                                                            getRasterEnvelope().getDelta(), null );
+                                                            getRasterReference().getDelta(), null );
         return getSubRaster( env );
     }
 
@@ -246,7 +246,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
     /**
      * @return The raster envelope of the raster.
      */
-    public RasterEnvelope getRasterEnvelope() {
+    public RasterReference getRasterReference() {
         return rasterEnv;
     }
 

@@ -40,7 +40,7 @@ package org.deegree.coverage.raster.container;
 import java.util.List;
 
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;
 
 /**
@@ -73,10 +73,10 @@ public interface TileContainer {
     public Envelope getEnvelope();
 
     /**
-     * Returns the RasterEnvelope of all tiles in this container.
+     * Returns the RasterReference of all tiles in this container.
      * 
      * @return The raster envelope of the tiles.
      */
-    public RasterEnvelope getRasterEnvelope();
+    public RasterReference getRasterReference();
 
 }

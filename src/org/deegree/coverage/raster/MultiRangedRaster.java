@@ -80,7 +80,7 @@ public class MultiRangedRaster extends AbstractRaster {
      */
     public void addRaster( AbstractRaster raster ) {
         extendEnvelope( raster.getEnvelope() );
-        extendRasterEnvelope( raster.getRasterEnvelope() );
+        extendRasterReference( raster.getRasterReference() );
         multiRange.add( raster );
     }
 
@@ -123,7 +123,7 @@ public class MultiRangedRaster extends AbstractRaster {
     @Override
     public MultiRangedRaster getSubRaster( double x, double y, double x2, double y2 ) {
         Envelope env = getGeometryFactory().createEnvelope( new double[] { x, y }, new double[] { x2, y2 },
-                                                            getRasterEnvelope().getDelta(), null );
+                                                            getRasterReference().getDelta(), null );
         return getSubRaster( env );
     }
 
@@ -203,14 +203,14 @@ public class MultiRangedRaster extends AbstractRaster {
     @Override
     public void setSubRaster( Envelope env, AbstractRaster source ) {
         AbstractRaster subset = source.getSubRaster( env );
-        double[] pos = subset.getRasterEnvelope().convertToCRS( 0, 0 );
+        double[] pos = subset.getRasterReference().convertToCRS( 0, 0 );
         setSubRaster( pos[0], pos[1], source );
     }
 
     @Override
     public void setSubRaster( Envelope env, int dstBand, AbstractRaster source ) {
         AbstractRaster subset = source.getSubRaster( env );
-        double[] pos = subset.getRasterEnvelope().convertToCRS( 0, 0 );
+        double[] pos = subset.getRasterReference().convertToCRS( 0, 0 );
         setSubRaster( pos[0], pos[1], dstBand, source );
     }
 

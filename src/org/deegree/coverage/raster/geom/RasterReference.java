@@ -65,7 +65,7 @@ import org.deegree.geometry.GeometryFactoryCreator;
  * 
  * @version $Revision$, $Date$
  */
-public class RasterEnvelope {
+public class RasterReference {
 
     private double x0;
 
@@ -81,7 +81,7 @@ public class RasterEnvelope {
 
     private static final double INV_DELTA_SCALE = 10e6;
 
-    private RasterEnvelope() {
+    private RasterReference() {
         this( 0.0, 0.0, 1.0, -1.0 );
     }
 
@@ -96,7 +96,7 @@ public class RasterEnvelope {
     }
 
     /**
-     * Creates a new RasterEnvelope with origin and resolution
+     * Creates a new RasterReference with origin and resolution
      * 
      * @param x0
      *            x world coordinate of the upper-left pixel (center)
@@ -107,12 +107,12 @@ public class RasterEnvelope {
      * @param yRes
      *            height of a pixel in world coordinates
      */
-    public RasterEnvelope( double x0, double y0, double xRes, double yRes ) {
+    public RasterReference( double x0, double y0, double xRes, double yRes ) {
         this( Type.CENTER, x0, y0, xRes, yRes );
     }
 
     /**
-     * Creates a new RasterEnvelope with origin and resolution
+     * Creates a new RasterReference with origin and resolution
      * 
      * @param type
      *            type where the x, y coordinates lies
@@ -125,7 +125,7 @@ public class RasterEnvelope {
      * @param yRes
      *            height of a pixel in world coordinates
      */
-    public RasterEnvelope( Type type, double x0, double y0, double xRes, double yRes ) {
+    public RasterReference( Type type, double x0, double y0, double xRes, double yRes ) {
         if ( type == Type.CENTER ) {
             this.x0 = x0 - xRes / 2;
             this.y0 = y0 - yRes / 2;
@@ -139,13 +139,13 @@ public class RasterEnvelope {
     }
 
     /**
-     * Creates a new RasterEnvelope for given Envelope and size (yRes is negative)
+     * Creates a new RasterReference for given Envelope and size (yRes is negative)
      * 
      * @param env
      * @param width
      * @param height
      */
-    public RasterEnvelope( Envelope env, int width, int height ) {
+    public RasterReference( Envelope env, int width, int height ) {
         this.x0 = env.getMin().getX();
         this.y0 = env.getMax().getY();
 
@@ -155,18 +155,18 @@ public class RasterEnvelope {
     }
 
     /**
-     * Returns a new RasterEnvelope with new raster size (resolution)
+     * Returns a new RasterReference with new raster size (resolution)
      * 
      * @param env
-     *            envelope for the RasterEnvelope (origin and world size)
+     *            envelope for the RasterReference (origin and world size)
      * @param width
      *            raster width in pixel
      * @param height
      *            raster height in pixel
-     * @return new resized RasterEnvelope
+     * @return new resized RasterReference
      */
-    public RasterEnvelope createResizedEnvelope( Envelope env, int width, int height ) {
-        RasterEnvelope result = new RasterEnvelope();
+    public RasterReference createResizedEnvelope( Envelope env, int width, int height ) {
+        RasterReference result = new RasterReference();
         result.xRes = env.getWidth() / width * signum( this.xRes );
         result.yRes = env.getHeight() / height * signum( this.yRes );
         // move origin to scaled center
@@ -177,34 +177,34 @@ public class RasterEnvelope {
     }
 
     /**
-     * Returns a new scaled RasterEnvelope.
+     * Returns a new scaled RasterReference.
      * 
      * @param env
-     *            new Envelope for the RasterEnvelope (origin)
+     *            new Envelope for the RasterReference (origin)
      * @param xRes
      *            x resolution
      * @param yRes
      *            y resolution
-     * @return new RasterEnvelope
+     * @return new RasterReference
      */
-    public RasterEnvelope createScaledEnvelope( Envelope env, double xRes, double yRes ) {
+    public RasterReference createScaledEnvelope( Envelope env, double xRes, double yRes ) {
         double[] origin = calculateNewOrigin( env );
-        return new RasterEnvelope( Type.OUTER, origin[0], origin[1], xRes, yRes );
+        return new RasterReference( Type.OUTER, origin[0], origin[1], xRes, yRes );
     }
 
     /**
-     * Returns new RasterEnvelope for calculations within envelope.
+     * Returns new RasterReference for calculations within envelope.
      * 
      * @param envelope
-     * @return new RasterEnvelope
+     * @return new RasterReference
      */
-    public RasterEnvelope createSubEnvelope( Envelope envelope ) {
+    public RasterReference createSubEnvelope( Envelope envelope ) {
         double[] origin = calculateNewOrigin( envelope );
-        return new RasterEnvelope( Type.OUTER, origin[0], origin[1], this.xRes, this.yRes );
+        return new RasterReference( Type.OUTER, origin[0], origin[1], this.xRes, this.yRes );
     }
 
     /**
-     * Returns the new origin of a RasterEnvelope with given Envelope.
+     * Returns the new origin of a RasterReference with given Envelope.
      * 
      * @param envelope
      * @return array with origin (x0, y0)
@@ -311,7 +311,7 @@ public class RasterEnvelope {
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height, CRS crs ) {
-        return getEnvelope( width, height, crs, RasterEnvelope.Type.OUTER );
+        return getEnvelope( width, height, crs, RasterReference.Type.OUTER );
     }
 
     /**
@@ -328,12 +328,12 @@ public class RasterEnvelope {
      * 
      * @return the calculated envelope
      */
-    public Envelope getEnvelope( int width, int height, CRS crs, RasterEnvelope.Type type ) {
+    public Envelope getEnvelope( int width, int height, CRS crs, RasterReference.Type type ) {
         GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
 
         double x0, y0, x1, y1;
 
-        if ( type == RasterEnvelope.Type.OUTER ) {
+        if ( type == RasterReference.Type.OUTER ) {
             x0 = this.x0;
             y0 = this.y0;
             x1 = x0 + width * xRes;
@@ -447,16 +447,16 @@ public class RasterEnvelope {
     }
 
     /**
-     * Merge two RasterEnvelopes. Returns a new RasterEnvelope where the upper-left corner is set to the values of the
+     * Merge two RasterEnvelopes. Returns a new RasterReference where the upper-left corner is set to the values of the
      * furthest upper and furthest left corner. The resolution is set to the minimum value (i.e. the highest resolution
      * [unit/pixel])
      * 
      * @param rasterEnv
-     *            RasterEnvelope to merge
-     * @return new RasterEnvelope
+     *            RasterReference to merge
+     * @return new RasterReference
      */
-    public RasterEnvelope merger( RasterEnvelope rasterEnv ) {
-        RasterEnvelope result = new RasterEnvelope();
+    public RasterReference merger( RasterReference rasterEnv ) {
+        RasterReference result = new RasterReference();
         // set upper left pixel position
         if ( this.xRes > 0 ) {
             result.x0 = min( this.x0, rasterEnv.x0 );

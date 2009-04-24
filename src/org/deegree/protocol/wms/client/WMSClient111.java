@@ -67,7 +67,7 @@ import org.deegree.commons.xml.XPath;
 import org.deegree.coverage.io.imageio.IIORasterDataReader;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
@@ -450,7 +450,7 @@ public class WMSClient111 {
         response.first = compositedImage;
 
 
-        RasterEnvelope rasterEnv = new RasterEnvelope( bbox, width, height );
+        RasterReference rasterEnv = new RasterReference( bbox, width, height );
 
         if ( maxMapWidth != -1 ) {
             int xMin = 0;
@@ -495,7 +495,7 @@ public class WMSClient111 {
     }
 
     private void getAndSetSubImage( BufferedImage targetImage, List<String> layers, int xMin, int width, int yMin,
-                                    int height, RasterEnvelope rasterEnv, CRS crs, String format, boolean transparent )
+                                    int height, RasterReference rasterEnv, CRS crs, String format, boolean transparent )
                             throws IOException {
 
         double[] min = rasterEnv.convertToCRS( xMin, yMin + height );
@@ -543,7 +543,7 @@ public class WMSClient111 {
             BufferedImage img = imageResponse.first;
             // TODO don't use raster API internal classes
             PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) IIORasterDataReader.rasterDataFromImage( img );
-            RasterEnvelope rasterEnv = new RasterEnvelope( bbox, img.getWidth(), img.getHeight() );
+            RasterReference rasterEnv = new RasterReference( bbox, img.getWidth(), img.getHeight() );
             SimpleRaster raster = new SimpleRaster( rasterData, bbox, rasterEnv );
             response.first = raster;
         } else {

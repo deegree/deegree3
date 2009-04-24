@@ -49,7 +49,7 @@ import java.util.Map;
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,12 +83,12 @@ public class RasterIOOptions {
 
     private final Map<String, String> options = new HashMap<String, String>();
 
-    private RasterEnvelope envelope;
+    private RasterReference envelope;
 
     public RasterIOOptions() {
     }
 
-    public RasterIOOptions( RasterEnvelope envelope ) {
+    public RasterIOOptions( RasterReference envelope ) {
         this.envelope = envelope;
     }
 
@@ -133,13 +133,13 @@ public class RasterIOOptions {
 
     /**
      * Return a RasterIOOption object with the format set according to the given file with an optional
-     * {@link RasterEnvelope}.
+     * {@link RasterReference}.
      * 
      * @param file
      * @param envelope
      * @return RasterIOOption proper format.
      */
-    public static RasterIOOptions forFile( File file, RasterEnvelope envelope ) {
+    public static RasterIOOptions forFile( File file, RasterReference envelope ) {
         RasterIOOptions result = new RasterIOOptions( envelope );
         String ext = FileUtils.getFileExtension( file );
         result.add( OPT_FORMAT, ext );
@@ -177,7 +177,7 @@ public class RasterIOOptions {
         return envelope != null;
     }
 
-    public RasterEnvelope getEnvelope() {
+    public RasterReference getEnvelope() {
         return envelope;
     }
 }

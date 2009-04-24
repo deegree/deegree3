@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
@@ -68,7 +68,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     private final double envelopeHeight;
 
-    private final RasterEnvelope rasterEnvelope;
+    private final RasterReference rasterReference;
 
     private final int rows;
 
@@ -110,10 +110,10 @@ public abstract class GriddedTileContainer implements TileContainer {
         this.tileSamplesY = tileSamplesY;
         this.tileWidth = envelopeWidth / columns;
         this.tileHeight = envelopeHeight / rows;
-        this.rasterEnvelope = new RasterEnvelope( envelope, tileSamplesX * columns, tileSamplesY * rows );
+        this.rasterReference = new RasterReference( envelope, tileSamplesX * columns, tileSamplesY * rows );
         geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
         LOG.debug( "envelope: " + envelope );
-        LOG.debug( "raster envelope: " + rasterEnvelope );
+        LOG.debug( "raster envelope: " + rasterReference );
     }
 
     /**
@@ -153,8 +153,8 @@ public abstract class GriddedTileContainer implements TileContainer {
     }
 
     @Override
-    public RasterEnvelope getRasterEnvelope() {
-        return rasterEnvelope;
+    public RasterReference getRasterReference() {
+        return rasterReference;
     }
 
     /**

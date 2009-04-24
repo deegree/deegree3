@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.deegree.commons.utils.FileUtils;
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,10 +115,10 @@ public class WorldFileAccess {
      * @param filename
      *            the image/raster file (including path and file extension)
      * @param type
-     * @return a RasterEnvelope
+     * @return a RasterReference
      * @throws IOException
      */
-    public static RasterEnvelope readWorldFile( File filename, TYPE type )
+    public static RasterReference readWorldFile( File filename, TYPE type )
                             throws IOException {
 
         File worldFile = getWorldFile( filename );
@@ -163,11 +163,11 @@ public class WorldFileAccess {
             ymax = ymax + resy / 2.0;
         }
 
-        return new RasterEnvelope( xmin, ymax, resx, resy );
+        return new RasterReference( xmin, ymax, resx, resy );
     }
 
     /**
-     * writes a RasterEnvelope into a world file (with .wld extension).
+     * writes a RasterReference into a world file (with .wld extension).
      * 
      * @param renv
      *            the envelope
@@ -175,13 +175,13 @@ public class WorldFileAccess {
      *            the raster file
      * @throws IOException
      */
-    public static void writeWorldFile( RasterEnvelope renv, File file )
+    public static void writeWorldFile( RasterReference renv, File file )
                             throws IOException {
         writeWorldFile( renv, file, "wld" );
     }
 
     /**
-     * writes a RasterEnvelope into a world file.
+     * writes a RasterReference into a world file.
      * 
      * @param renv
      *            the envelope
@@ -191,15 +191,15 @@ public class WorldFileAccess {
      *            the file extension for the world file (eg. 'wld', 'tfw', etc)
      * @throws IOException
      */
-    public static void writeWorldFile( RasterEnvelope renv, File file, String extension )
+    public static void writeWorldFile( RasterReference renv, File file, String extension )
                             throws IOException {
 
         StringBuffer sb = new StringBuffer();
 
         sb.append( renv.getXRes() ).append( "\n" ).append( 0.0 ).append( "\n" );
         sb.append( 0.0 ).append( "\n" ).append( renv.getYRes() ).append( "\n" );
-        sb.append( renv.getX0( RasterEnvelope.Type.CENTER ) ).append( "\n" );
-        sb.append( renv.getY0( RasterEnvelope.Type.CENTER ) ).append( "\n" );
+        sb.append( renv.getX0( RasterReference.Type.CENTER ) ).append( "\n" );
+        sb.append( renv.getY0( RasterReference.Type.CENTER ) ).append( "\n" );
 
         File f = new File( FileUtils.getBasename( file ) + "." + extension );
 

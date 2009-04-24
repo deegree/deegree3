@@ -51,7 +51,7 @@ import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.DataType;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.RasterDataFactory;
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,7 +192,7 @@ public class XYZTextReader {
                                       gridExtension.minx, gridExtension.miny ) );
         }
 
-        RasterEnvelope renv = new RasterEnvelope( gridExtension.minx, gridExtension.maxy, res, -res );
+        RasterReference renv = new RasterReference( gridExtension.minx, gridExtension.maxy, res, -res );
 
         RasterData data = RasterDataFactory.createRasterData( width, height, DataType.FLOAT );
 

@@ -42,7 +42,7 @@ import java.util.List;
 import org.deegree.coverage.raster.container.MemoryTileContainer;
 import org.deegree.coverage.raster.container.TileContainer;
 import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Curve;
@@ -89,8 +89,8 @@ public class TiledRaster extends AbstractRaster {
     }
 
     @Override
-    public RasterEnvelope getRasterEnvelope() {
-        return tileContainer.getRasterEnvelope();
+    public RasterReference getRasterReference() {
+        return tileContainer.getRasterReference();
     }
 
     // TODO: convert to TileContainer
@@ -133,7 +133,7 @@ public class TiledRaster extends AbstractRaster {
                 // TODO remove after touches-bug is fixed
             }
         }
-        if ( resultTC.getRasterEnvelope() == null ) {
+        if ( resultTC.getRasterReference() == null ) {
             throw new IndexOutOfBoundsException( "no intersection between TiledRaster and requested subset" );
         }
 
@@ -155,8 +155,8 @@ public class TiledRaster extends AbstractRaster {
 
     @Override
     public void setSubRaster( double x, double y, AbstractRaster source ) {
-        RasterEnvelope srcREnv = source.getRasterEnvelope();
-        RasterEnvelope dstREnv = new RasterEnvelope( x, y, srcREnv.getXRes(), srcREnv.getYRes() );
+        RasterReference srcREnv = source.getRasterReference();
+        RasterReference dstREnv = new RasterReference( x, y, srcREnv.getXRes(), srcREnv.getYRes() );
         Envelope dstEnv = dstREnv.getEnvelope( source.getColumns(), source.getRows() );
         RasterData srcData = source.getAsSimpleRaster().getRasterData();
         SimpleRaster movedRaster = new SimpleRaster( srcData, dstEnv, dstREnv );
@@ -183,7 +183,7 @@ public class TiledRaster extends AbstractRaster {
         if ( tiles == null || tiles.isEmpty() ) {
             throw new NullPointerException( "The given tile container does not contain any tiles. " );
         }
-        SimpleRaster result = tiles.get( 0 ).getAsSimpleRaster().createCompatibleSimpleRaster( getRasterEnvelope(), env );
+        SimpleRaster result = tiles.get( 0 ).getAsSimpleRaster().createCompatibleSimpleRaster( getRasterReference(), env );
 
         for ( AbstractRaster r : tiles ) {
             Geometry intersec = r.getEnvelope().intersection( env );

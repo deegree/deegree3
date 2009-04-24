@@ -44,7 +44,7 @@ package org.deegree.coverage.io.imageio;
 
 import javax.imageio.metadata.IIOMetadata;
 
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.crs.CRSRegistry;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -66,7 +66,7 @@ public class MetaDataReader {
 
     private IIOMetadata metaData;
 
-    private RasterEnvelope rasterEnvelope = null;
+    private RasterReference rasterReference = null;
 
     private CoordinateSystem crs = null;
 
@@ -86,8 +86,8 @@ public class MetaDataReader {
     /**
      * @return the raster envelope or <code>null</code>, if the metadata contains no georeference
      */
-    public RasterEnvelope getRasterEnvelope() {
-        return rasterEnvelope;
+    public RasterReference getRasterReference() {
+        return rasterReference;
     }
 
     /**
@@ -132,10 +132,10 @@ public class MetaDataReader {
             double[] scale = geoTIFFMetaData.getModelPixelScales();
             if ( tiePoints != null && scale != null ) {
                 if ( Math.abs( scale[0] - 0.5 ) < 0.001 ) { // when first pixel tie point is 0.5 -> center type
-                    rasterEnvelope = new RasterEnvelope( RasterEnvelope.Type.CENTER, tiePoints[3], tiePoints[4],
+                    rasterReference = new RasterReference( RasterReference.Type.CENTER, tiePoints[3], tiePoints[4],
                                                          scale[0], -scale[1] );
                 } else {
-                    rasterEnvelope = new RasterEnvelope( RasterEnvelope.Type.OUTER, tiePoints[3], tiePoints[4],
+                    rasterReference = new RasterReference( RasterReference.Type.OUTER, tiePoints[3], tiePoints[4],
                                                          scale[0], -scale[1] );
                 }
 

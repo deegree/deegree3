@@ -39,16 +39,16 @@ package org.deegree.coverage.raster;
 
 import static org.junit.Assert.*;
 
-import org.deegree.coverage.raster.geom.RasterEnvelope;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.geom.RasterRect;
-import org.deegree.coverage.raster.geom.RasterEnvelope.Type;
+import org.deegree.coverage.raster.geom.RasterReference.Type;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
 import org.junit.Test;
 
 /**
- * Test the RasterEnvelope implementation. Test calculations between raster(int) and world(double) coordinates,
+ * Test the RasterReference implementation. Test calculations between raster(int) and world(double) coordinates,
  * calculation of raster sizes from envelopes and sub envelopes.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
@@ -68,7 +68,7 @@ public class RasterEnvelopeTest {
      */
     @Test
     public void testSimple() {
-        RasterEnvelope r = new RasterEnvelope( Type.OUTER, 0.0, 0.0, 1.0, 1.0 );
+        RasterReference r = new RasterReference( Type.OUTER, 0.0, 0.0, 1.0, 1.0 );
         double[] result_d;
         result_d = r.convertToCRS( 10, 5 );
         assertEquals( 10.0, result_d[0], DELTA );
@@ -79,7 +79,7 @@ public class RasterEnvelopeTest {
         assertEquals( 1, result_i[0] );
         assertEquals( 0, result_i[1] );
 
-        r = new RasterEnvelope( 50.5, 30.5, 1.0, 1.0 );
+        r = new RasterReference( 50.5, 30.5, 1.0, 1.0 );
         result_i = r.convertToRasterCRS( 50, 30 );
         assertEquals( 0, result_i[0] );
         assertEquals( 0, result_i[1] );
@@ -91,7 +91,7 @@ public class RasterEnvelopeTest {
      */
     @Test
     public void testOffCenter() {
-        RasterEnvelope r = new RasterEnvelope( Type.OUTER, 10.0, -5.0, 1.0, 1.0 );
+        RasterReference r = new RasterReference( Type.OUTER, 10.0, -5.0, 1.0, 1.0 );
         double[] result_d;
         result_d = r.convertToCRS( 10, 5 );
         assertEquals( 20.0, result_d[0], DELTA );
@@ -109,7 +109,7 @@ public class RasterEnvelopeTest {
      */
     @Test
     public void testConvertToRasterCRS() {
-        RasterEnvelope r = new RasterEnvelope( Type.OUTER, 0.0, 0.0, 1.0, 1.0 );
+        RasterReference r = new RasterReference( Type.OUTER, 0.0, 0.0, 1.0, 1.0 );
         int[] result_i;
         result_i = r.convertToRasterCRS( 0.0, 0.0 );
         assertEquals( 0, result_i[0] );
@@ -130,7 +130,7 @@ public class RasterEnvelopeTest {
      */
     @Test
     public void testNegResolution() {
-        RasterEnvelope r = new RasterEnvelope( 10.5, 25.5, 1.0, -1.0 );
+        RasterReference r = new RasterReference( 10.5, 25.5, 1.0, -1.0 );
         double[] result_d;
         result_d = r.convertToCRS( 10, 5 );
         assertEquals( 20.0, result_d[0], DELTA );
@@ -156,7 +156,7 @@ public class RasterEnvelopeTest {
      */
     @Test
     public void testEnvelope() {
-        RasterEnvelope r = new RasterEnvelope( Type.CENTER, 1.0, 19.0, 2.0, -2.0 );
+        RasterReference r = new RasterReference( Type.CENTER, 1.0, 19.0, 2.0, -2.0 );
         Envelope envelope = geomFactory.createEnvelope( new double[] { 0.0, 10.00 }, new double[] { 20.00, 20.00 },
                                                         0.001, null );
         RasterRect rEnv = r.convertEnvelopeToRasterCRS( envelope );
@@ -165,7 +165,7 @@ public class RasterEnvelopeTest {
         assertEquals( 10, rEnv.width );
         assertEquals( 5, rEnv.height );
 
-        r = new RasterEnvelope( Type.CENTER, 11.0, 29.0, 2.0, -2.0 );
+        r = new RasterReference( Type.CENTER, 11.0, 29.0, 2.0, -2.0 );
         envelope = geomFactory.createEnvelope( new double[] { 20.00, 10.00 }, new double[] { 30.00, 20.00 }, 0.001,
                                                null );
         rEnv = r.convertEnvelopeToRasterCRS( envelope );
@@ -188,20 +188,20 @@ public class RasterEnvelopeTest {
      */
     @Test
     public void testCreateSubEnvelope() {
-        RasterEnvelope r = new RasterEnvelope( Type.CENTER, 100.5, 109.5, 1.0, -1.0 );
+        RasterReference r = new RasterReference( Type.CENTER, 100.5, 109.5, 1.0, -1.0 );
         Envelope envelope = geomFactory.createEnvelope( new double[] { 102.0, 106.0 }, new double[] { 104.0, 108.0 },
                                                         0.001, null );
 
         assertTrue( r.getX0( Type.OUTER ) >= 100.0 );
         assertTrue( r.getY0( Type.OUTER ) <= 110.0 );
 
-        RasterEnvelope subEnv = r.createSubEnvelope( envelope );
+        RasterReference subEnv = r.createSubEnvelope( envelope );
         assertEquals( 102.0, subEnv.getX0( Type.OUTER ), DELTA );
         assertEquals( 108.0, subEnv.getY0( Type.OUTER ), DELTA );
         assertEquals( 1.0, subEnv.getXRes() );
         assertEquals( -1.0, subEnv.getYRes() );
 
-        r = new RasterEnvelope( Type.CENTER, 101.0, 109.0, 2.0, -2.0 );
+        r = new RasterReference( Type.CENTER, 101.0, 109.0, 2.0, -2.0 );
         envelope = geomFactory.createEnvelope( new double[] { 115.0, 100.0 }, new double[] { 120.0, 110.0 }, 0.001,
                                                null );
 
@@ -229,10 +229,10 @@ public class RasterEnvelopeTest {
      */
     @Test
     public void testCreateScaledEnvelope() {
-        RasterEnvelope r = new RasterEnvelope( Type.OUTER, 10.0, 210.0, 1.0, -1.0 );
+        RasterReference r = new RasterReference( Type.OUTER, 10.0, 210.0, 1.0, -1.0 );
         Envelope envelope = geomFactory.createEnvelope( new double[] { 10.0, 10.0 }, new double[] { 110.0, 210.0 },
                                                         0.001, null );
-        RasterEnvelope scaled = r.createResizedEnvelope( envelope, 50, 25 );
+        RasterReference scaled = r.createResizedEnvelope( envelope, 50, 25 );
         assertEquals( 10.0, scaled.getX0( Type.OUTER ) );
         assertEquals( 210.0, scaled.getY0( Type.OUTER ) );
         assertEquals( 2.0, scaled.getXRes(), DELTA );
@@ -252,10 +252,10 @@ public class RasterEnvelopeTest {
     @Test
     public void testTiling() {
         Envelope envelope;
-        RasterEnvelope subEnv;
+        RasterReference subEnv;
         RasterRect rect;
 
-        RasterEnvelope r = new RasterEnvelope( Type.OUTER, 10.0, 210.0, 1.0, -1.0 );
+        RasterReference r = new RasterReference( Type.OUTER, 10.0, 210.0, 1.0, -1.0 );
         envelope = geomFactory.createEnvelope( new double[] { 20.0, 160.01 }, new double[] { 110.0, 210.0 }, 0.001,
                                                null );
         subEnv = r.createSubEnvelope( envelope );
@@ -304,7 +304,7 @@ public class RasterEnvelopeTest {
      */
     @Test
     public void testGetSize() {
-        RasterEnvelope r = new RasterEnvelope( 10.5, 209.5, 2.0, -1.0 );
+        RasterReference r = new RasterReference( 10.5, 209.5, 2.0, -1.0 );
         Envelope envelope = geomFactory.createEnvelope( new double[] { 10.0, 10.0 }, new double[] { 110.0, 210.0 },
                                                         0.001, null );
         int[] size = r.getSize( envelope );

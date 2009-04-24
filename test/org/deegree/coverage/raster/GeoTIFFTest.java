@@ -49,8 +49,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.deegree.coverage.raster.geom.RasterEnvelope;
-import org.deegree.coverage.raster.geom.RasterEnvelope.Type;
+import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.geom.RasterReference.Type;
 import org.deegree.coverage.raster.io.RasterFactory;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -106,7 +106,7 @@ public class GeoTIFFTest {
     @Test
     public void geoTIFFEnvelope()
                             throws UnknownCRSException {
-        double precision = raster.getRasterEnvelope().getDelta();
+        double precision = raster.getRasterReference().getDelta();
         CRS crs = new CRS( "EPSG:4326" );
 
         Envelope env = geomFactory.createEnvelope( new double[] { -113.69474315, 39.10223806 },
@@ -129,8 +129,8 @@ public class GeoTIFFTest {
     @Test
     public void geoTIFFRasterEnvelope() {
         double delta = 0.0000000001;
-        RasterEnvelope renv = raster.getRasterEnvelope();
-        Type outer = RasterEnvelope.Type.OUTER;
+        RasterReference renv = raster.getRasterReference();
+        Type outer = RasterReference.Type.OUTER;
         // actual values by gdalinfo
         assertEquals( -113.6947431831, renv.getX0( outer ), delta );
         assertEquals( 41.5412977608, renv.getY0( outer ), delta );
