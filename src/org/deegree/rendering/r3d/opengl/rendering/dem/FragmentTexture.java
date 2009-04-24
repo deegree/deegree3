@@ -43,27 +43,23 @@ import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
 
-import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A {@link TextureTile} applied to a {@link RenderableMeshFragment}, also wraps OpenGL resources (texture coordinates).
+ * A {@link TextureTile} applied to a {@link RenderMeshFragment}, also wraps OpenGL resources (texture coordinates).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class MeshFragmentTexture {
+public class FragmentTexture {
 
-    private static final Logger LOG = LoggerFactory.getLogger( MeshFragmentTexture.class );
+    private static final Logger LOG = LoggerFactory.getLogger( FragmentTexture.class );
 
-    // TODO not static
-    private static final DirectByteBufferPool bufferPool = new DirectByteBufferPool( 100 * 1024 * 1024, 500 );
-
-    private final RenderableMeshFragment fragment;
+    private final RenderMeshFragment fragment;
 
     private final TextureTile texture;
 
@@ -77,18 +73,24 @@ public class MeshFragmentTexture {
     // 0: texture coordinates buffer
     private int[] glBufferObjectIds;
 
+    private double xOffset;
+
+    private double yOffset;
+
     /**
-     * Creates a new {@link MeshFragmentTexture} from the
+     * Creates a new {@link FragmentTexture} from the
      * 
      * @param geometry
      * @param texture
      */
-    public MeshFragmentTexture( RenderableMeshFragment geometry, TextureTile texture, double xOffset, double yOffset ) {
+    public FragmentTexture( RenderMeshFragment geometry, TextureTile texture, double xOffset, double yOffset, PooledByteBuffer buffer ) {
         this.fragment = geometry;
         this.texture = texture;
-        this.buffer = bufferPool.allocate( geometry.getData().getVertices().capacity() / 3 * 2 * 4 );
+        this.buffer = buffer;
         buffer.getBuffer().order( ByteOrder.nativeOrder() );
         this.texCoordsBuffer = generateTexCoordsBuffer( xOffset, yOffset );
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
     }
 
     private FloatBuffer generateTexCoordsBuffer( double xOffset, double yOffset ) {
@@ -145,7 +147,7 @@ public class MeshFragmentTexture {
         return texture;
     }
 
-    int getGLTextureId( GL gl ) {
+    int getGLTextureId() {
         if ( textureID == -1 ) {
             throw new RuntimeException();
         }
@@ -157,12 +159,12 @@ public class MeshFragmentTexture {
     }
 
     public void enable( GL gl ) {
-        if ( textureID != -1 ) {
-            throw new RuntimeException();
+        if ( textureID == -1 ) {
+            textureID = texture.enable( gl );
         }
-        textureID = texture.enable( gl );
 
         if ( glBufferObjectIds == null ) {
+            generateTexCoordsBuffer( xOffset, yOffset );
             glBufferObjectIds = new int[1];
             gl.glGenBuffersARB( 1, glBufferObjectIds, 0 );
 
@@ -187,5 +189,10 @@ public class MeshFragmentTexture {
 
     public void unload() {
         buffer.free();
+    }
+
+    public boolean isEnabled() {
+        // TODO Auto-generated method stub
+        return glBufferObjectIds != null && textureID != -1;
     }
 }

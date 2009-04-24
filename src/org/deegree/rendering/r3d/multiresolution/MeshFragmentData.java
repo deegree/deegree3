@@ -41,7 +41,6 @@ package org.deegree.rendering.r3d.multiresolution;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 
-import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
 
 /**

@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Encapsulates a {@link MeshFragment} of a {@link MultiresolutionMesh} that can be rendered via JOGL.
  * <p>
- * The geometry data of a {@link RenderableMeshFragment} has one of the following states:
+ * The geometry data of a {@link RenderMeshFragment} has one of the following states:
  * <ul>
  * <li>Not loaded</li>
  * <li>Loaded to main memory (i.e. buffer objects are created and filled)</li>
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  * </p>
  * 
- * @see MeshFragmentTexture
+ * @see FragmentTexture
  * @see MultiresolutionMesh
  * @see MeshFragment
  * 
@@ -71,9 +71,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$
  */
-public class RenderableMeshFragment implements Comparable<RenderableMeshFragment> {
+public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( RenderableMeshFragment.class );
+    private static final Logger LOG = LoggerFactory.getLogger( RenderMeshFragment.class );
 
     private final MeshFragment fragment;
 
@@ -84,7 +84,7 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
     // 2: triangle buffer
     private int[] glBufferObjectIds;
 
-    public RenderableMeshFragment( MeshFragment fragment ) {
+    public RenderMeshFragment( MeshFragment fragment ) {
         this.fragment = fragment;
     }
 
@@ -198,7 +198,7 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
      * @throws RuntimeException
      *             if the geometry data is currently not bound to VBOs
      */
-    public void render( GL gl, List<MeshFragmentTexture> textures) {
+    public void render( GL gl, List<FragmentTexture> textures) {
 
         if ( !isEnabled() ) {
             throw new RuntimeException( "Cannot render mesh fragment, not enabled." );
@@ -207,13 +207,32 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
         // render with or without texture
         if ( textures != null && textures.size() > 0) {
             // TODO use other textures
-            MeshFragmentTexture texture = textures.get( 0 );
-            gl.glEnable( GL.GL_TEXTURE_2D );
-            gl.glBindTexture( GL.GL_TEXTURE_2D, texture.getGLTextureId( gl ) );
             gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+            
+            
+            gl.glActiveTexture( GL.GL_TEXTURE0);
+            gl.glClientActiveTexture( GL.GL_TEXTURE0);
+            gl.glEnable( GL.GL_TEXTURE_2D );
 
+            FragmentTexture texture = textures.get( 0 );
             gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, texture.getGLVertexCoordBufferId() );
             gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
+
+            gl.glEnable( GL.GL_TEXTURE0 );
+            gl.glBindTexture( GL.GL_TEXTURE_2D, texture.getGLTextureId() );
+            gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
+            
+            gl.glActiveTexture( GL.GL_TEXTURE1);
+            gl.glClientActiveTexture( GL.GL_TEXTURE1);
+            gl.glEnable( GL.GL_TEXTURE_2D );
+
+            texture = textures.get( 1 );
+            gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, texture.getGLVertexCoordBufferId() );
+            gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
+
+            gl.glEnable( GL.GL_TEXTURE1 );
+            gl.glBindTexture( GL.GL_TEXTURE_2D, texture.getGLTextureId() );
+            gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_DECAL);            
         } else {
             gl.glDisable( GL.GL_TEXTURE_2D );
             gl.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
@@ -230,7 +249,7 @@ public class RenderableMeshFragment implements Comparable<RenderableMeshFragment
     }
 
     @Override
-    public int compareTo( RenderableMeshFragment o ) {
+    public int compareTo( RenderMeshFragment o ) {
         return this.fragment.compareTo( o.fragment );
     }
 

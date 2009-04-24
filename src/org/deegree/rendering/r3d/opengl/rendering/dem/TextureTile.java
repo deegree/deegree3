@@ -64,7 +64,10 @@ public class TextureTile {
     // counts the number of references, if 0, data can be unloaded
     private int numReferences;
 
-    public TextureTile( float minX, float minY, float maxX, float maxY, int pixelsX, int pixelsY, ByteBuffer imageData ) {
+    private boolean hasAlpha;
+
+    public TextureTile( float minX, float minY, float maxX, float maxY, int pixelsX, int pixelsY, ByteBuffer imageData,
+                        boolean hasAlpha ) {
         this.minX = minX;
         this.minY = minY;
         this.maxX = maxX;
@@ -79,6 +82,7 @@ public class TextureTile {
         this.pixelsX = pixelsX;
         this.pixelsY = pixelsY;
         this.imageData = imageData;
+        this.hasAlpha = hasAlpha;
     }
 
     public ByteBuffer getImageData() {
@@ -114,6 +118,7 @@ public class TextureTile {
     }
 
     public int enable( GL gl ) {
+        numReferences++;
         loadToGPU( gl );
         return textureID[0];
     }
@@ -128,8 +133,8 @@ public class TextureTile {
             textureID = null;
             idsInUse--;
         }
-    }    
-    
+    }
+
     private void loadToGPU( GL gl ) {
         if ( textureID == null ) {
             textureID = new int[1];
@@ -141,10 +146,15 @@ public class TextureTile {
             gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR );
             gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR );
             imageData.rewind();
-            gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGB, pixelsX, pixelsY, 0, GL.GL_RGB, GL.GL_UNSIGNED_BYTE,
-                             imageData );
+
+            if (hasAlpha) {
+                gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, pixelsX, pixelsY, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE,
+                                 imageData );
+            } else {                
+                gl.glTexImage2D( GL.GL_TEXTURE_2D, 0, GL.GL_RGB, pixelsX, pixelsY, 0, GL.GL_RGB, GL.GL_UNSIGNED_BYTE,
+                                 imageData );
+            }
         }
-        numReferences++;
     }
 
     @Override
@@ -152,5 +162,9 @@ public class TextureTile {
         String s = "{minX=" + minX + ",minY=" + minY + ",maxX=" + maxX + ",maxY=" + maxY + ",meters/pixel="
                    + metersPerPixel + "}";
         return s;
+    }
+
+    public int getId() {
+        return textureID[0];
     }
 }
