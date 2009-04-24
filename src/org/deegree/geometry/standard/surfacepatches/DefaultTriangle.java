@@ -104,8 +104,8 @@ public class DefaultTriangle implements Triangle {
     }
 
     @Override
-    public int getCoordinateDimension() {
-        return getPoint1().getCoordinateDimension();
+    public boolean is3D() {
+        return getPoint1().is3D();
     }
 
     @Override

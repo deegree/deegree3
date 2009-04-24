@@ -62,6 +62,8 @@ import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
  */
 public class DefaultLinearRing extends DefaultRing implements LinearRing {
 
+    private List<Point> controlPoints;
+    
     /**
      * Creates a new <code>DefaultRing</code> instance from the given parameters.
      * 
@@ -74,6 +76,12 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
      */
     public DefaultLinearRing( String id, CRS crs, List<Point> controlPoints ) {
         super( id, crs, new DefaultLineStringSegment(controlPoints));
+        this.controlPoints = controlPoints;
+    }
+    
+    @Override
+    public boolean is3D(){
+        return controlPoints.get( 0 ).is3D();
     }
 
     @Override

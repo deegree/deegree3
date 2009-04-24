@@ -75,7 +75,7 @@ public class DefaultLineString extends DefaultCurve implements LineString {
         super( id, crs, Collections.singletonList( (CurveSegment) new DefaultLineStringSegment( controlPoints ) ) );
         singleSegment = (LineStringSegment) getCurveSegments().get( 0 );
     }
-
+    
     @Override
     public CurveType getCurveType() {
         return CurveType.LineString;
@@ -87,8 +87,8 @@ public class DefaultLineString extends DefaultCurve implements LineString {
     }
 
     @Override
-    public int getCoordinateDimension() {
-        return singleSegment.getCoordinateDimension();
+    public boolean is3D() {
+        return singleSegment.is3D();
     }
 
     @Override
@@ -96,7 +96,7 @@ public class DefaultLineString extends DefaultCurve implements LineString {
         List<Point> points = getControlPoints();
         double[] result = null;
         if ( points != null && !points.isEmpty() ) {
-            int dim = getCoordinateDimension();
+            int dim = ( is3D() ? 3 : 2 );
             result = new double[points.size() * dim];
             int i = 0;
             for ( Point p : points ) {

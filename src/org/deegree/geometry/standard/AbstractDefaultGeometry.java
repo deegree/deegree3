@@ -77,7 +77,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     protected String id;
 
     protected CRS crs;
-
+    
     /**
      * @param id
      * @param crs
@@ -160,11 +160,6 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     @Override
     public Geometry getConvexHull() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int getCoordinateDimension() {
         throw new UnsupportedOperationException();
     }
 

@@ -83,6 +83,11 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
         super( id, crs );
         this.members = members;
     }
+    
+    @Override
+    public boolean is3D(){
+        return members.get( 0 ).is3D();
+    }
 
     @Override
     public Point getCentroid() {

@@ -89,6 +89,11 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
         super( id, crs );
         this.segments = new ArrayList<CurveSegment>( segments );
     }
+    
+    @Override
+    public boolean is3D(){
+        return segments.get( 0 ).is3D();
+    }
 
     @Override
     public List<Point> getBoundary() {

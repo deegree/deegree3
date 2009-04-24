@@ -80,6 +80,11 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
         super( id, crs );
         this.patches = patches;
     }
+    
+    @Override
+    public boolean is3D() {
+        return patches.get( 0 ).is3D();
+    }
 
     @Override
     public GeometryType getGeometryType() {

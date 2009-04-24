@@ -90,8 +90,8 @@ public class DefaultPolygonPatch implements PolygonPatch {
     }
 
     @Override
-    public int getCoordinateDimension() {
-        throw new UnsupportedOperationException();
+    public boolean is3D() {
+        return exteriorRing.is3D();
     }    
     
     @Override

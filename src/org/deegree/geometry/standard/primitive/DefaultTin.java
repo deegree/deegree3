@@ -110,6 +110,11 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
         this.controlPoints = controlPoints;
         this.patches = patches;
     }
+    
+    @Override
+    public boolean is3D() {
+        return patches.get( 0 ).is3D();
+    }
 
     @Override
     public double getArea() {

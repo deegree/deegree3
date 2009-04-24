@@ -433,7 +433,7 @@ public class QuadTree<T extends Positionable> {
 
         Point min = env.getMin();
         Point max = env.getMax();
-        int dim = min.getCoordinateDimension();
+        int dim =  ( min.is3D() ? 3 : 2 );
         getObjects( new float[] { (float) min.get( 0 ), (float) min.get( 1 ),
                                  ( ( dim == 2 ) ? 0 : (float) min.get( 2 ) ) },
                     new float[] { (float) max.get( 0 ), (float) max.get( 1 ),
@@ -454,7 +454,7 @@ public class QuadTree<T extends Positionable> {
 
         Point min = env.getMin();
         Point max = env.getMax();
-        int dim = min.getCoordinateDimension();
+        int dim = ( min.is3D() ? 3 : 2 );
         getObjects( new float[] { (float) min.get( 0 ), (float) min.get( 1 ),
                                  ( ( dim == 2 ) ? 0 : (float) min.get( 2 ) ) },
                     new float[] { (float) max.get( 0 ), (float) max.get( 1 ),

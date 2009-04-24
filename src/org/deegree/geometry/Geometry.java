@@ -102,13 +102,10 @@ public interface Geometry extends Identifiable<String> {
     public CRS getCoordinateSystem();
 
     /**
-     * The operation "coordinateDimension" shall return the dimension of the coordinates that define this Geometry,
-     * which must be the same as the coordinate dimension of the coordinate reference system for this Geometry.
-     * 
-     * @return coordinate dimension (usually 2 or 3)
+     * The predicate indicates whether the underlying points of this Geometry have 3 coordinates or 2 coordinates
      */
-    public int getCoordinateDimension();
-
+    public boolean is3D();
+    
     /**
      * The operation "buffer" shall return a Geometry containing all points whose distance from this Geometry is less
      * than or equal to the "distance" passed as a parameter. The Geometry returned is in the same reference system as

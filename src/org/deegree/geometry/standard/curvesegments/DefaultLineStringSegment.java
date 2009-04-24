@@ -73,8 +73,8 @@ public class DefaultLineStringSegment implements LineStringSegment {
     }
 
     @Override
-    public int getCoordinateDimension() {
-        return points.get( 0 ).getCoordinateDimension();
+    public boolean is3D() {
+        return points.get( 0 ).is3D();
     }
 
     @Override

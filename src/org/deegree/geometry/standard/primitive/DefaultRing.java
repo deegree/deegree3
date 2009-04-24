@@ -126,6 +126,11 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
         members.add( singleCurve );
         segments.addAll( singleCurve.getCurveSegments() );
     }
+    
+    @Override
+    public boolean is3D() {
+        return members.get( 0 ).is3D();
+    }
 
     @Override
     public GeometryType getGeometryType() {

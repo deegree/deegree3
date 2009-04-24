@@ -80,6 +80,11 @@ public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements
     }
     
     @Override
+    public boolean is3D(){
+        return ( (SurfacePatch) patches.get( 0 ) ).is3D();
+    }
+    
+    @Override
     public double getArea() {
         throw new UnsupportedOperationException();
     }

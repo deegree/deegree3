@@ -119,7 +119,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
         Assert.assertEquals( 7.12, point.getX(), DELTA );
         Assert.assertEquals( 50.72, point.getY(), DELTA );
-        Assert.assertEquals( 2, point.getCoordinateDimension() );
+        Assert.assertFalse( point.is3D() );
         Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), point.getCoordinateSystem().getWrappedCRS() );
     }
 
@@ -134,7 +134,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
         Assert.assertEquals( 7.12, point.getX(), DELTA );
         Assert.assertEquals( 50.72, point.getY(), DELTA );
-        Assert.assertEquals( 2, point.getCoordinateDimension() );
+        Assert.assertFalse( point.is3D() );
         Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), point.getCoordinateSystem().getWrappedCRS() );
     }
 
@@ -149,7 +149,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
         Assert.assertEquals( 7.12, point.getX(), DELTA );
         Assert.assertEquals( 50.72, point.getY(), DELTA );
-        Assert.assertEquals( 2, point.getCoordinateDimension() );
+        Assert.assertFalse( point.is3D() );
         Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), point.getCoordinateSystem().getWrappedCRS() );
     }
 

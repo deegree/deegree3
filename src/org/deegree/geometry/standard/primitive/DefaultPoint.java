@@ -64,7 +64,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 public class DefaultPoint extends AbstractDefaultGeometry implements Point {
 
     private double[] coordinates;
-
+    
     /**
      * Creates a new <code>DefaultPoint</code> instance from the given parameters.
      * 
@@ -139,8 +139,8 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
     }
 
     @Override
-    public int getCoordinateDimension() {
-        return coordinates.length;
+    public boolean is3D() {
+        return (coordinates.length == 3) ? true : false ;
     }
 
     @Override

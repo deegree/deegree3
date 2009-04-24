@@ -92,8 +92,8 @@ public class GeometricPrimitiveReference extends GeometryReference implements Ge
         return geometry.getConvexHull();
     }
 
-    public int getCoordinateDimension() {
-        return geometry.getCoordinateDimension();
+    public boolean is3D() {
+        return geometry.is3D();
     }
 
     public CRS getCoordinateSystem() {

@@ -123,11 +123,11 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
         double[] min = bbox.getMin().getAsArray();
         double[] max = bbox.getMax().getAsArray();
         position = new float[] { (float) p.getX(), (float) p.getY(),
-                                (float) ( ( p.getCoordinateDimension() == 3 ) ? p.getZ() : 0 ) };
-        if ( bbox.getMin().getCoordinateDimension() != 3 ) {
+                                (float) ( ( p.is3D() ) ? p.getZ() : 0 ) };
+        if ( ! bbox.getMin().is3D() ) {
             min = new double[] { min[0], min[1], 0 };
         }
-        if ( bbox.getMax().getCoordinateDimension() != 3 ) {
+        if ( ! bbox.getMax().is3D() ) {
             max = new double[] { max[0], max[1], 0 };
         }
         error = (float) Vectors3d.length( Vectors3d.sub( max, min ) );
@@ -257,11 +257,11 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
         double[] min = bbox.getMin().getAsArray();
         double[] max = bbox.getMax().getAsArray();
         position = new float[] { (float) p.getX(), (float) p.getY(),
-                                (float) ( ( p.getCoordinateDimension() == 3 ) ? p.getZ() : 0 ) };
-        if ( bbox.getMin().getCoordinateDimension() != 3 ) {
+                                (float) ( ( p.is3D() ) ? p.getZ() : 0 ) };
+        if ( ! bbox.getMin().is3D() ) {
             min = new double[] { min[0], min[1], 0 };
         }
-        if ( bbox.getMax().getCoordinateDimension() != 3 ) {
+        if ( ! bbox.getMax().is3D() ) {
             max = new double[] { max[0], max[1], 0 };
         }
         this.error = (float) Vectors3d.length( Vectors3d.sub( max, min ) );

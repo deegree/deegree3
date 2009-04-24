@@ -78,6 +78,11 @@ public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements
         super( id, crs );
         this.memberPrimitives = memberPrimitives;
     }
+    
+    @Override
+    public boolean is3D(){
+        return memberPrimitives.get( 0 ).is3D();
+    }
 
     public boolean add( GeometricPrimitive e ) {
         return memberPrimitives.add( e );

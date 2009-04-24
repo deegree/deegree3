@@ -138,6 +138,11 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
     public boolean isClosed() {
         return getStartPoint().equals( getEndPoint() );
     }
+    
+    @Override
+    public boolean is3D() {
+        return memberCurves.get( 0 ).is3D();
+    }
 
     // -----------------------------------------------------------------------
     // delegate methods for List<Curve>

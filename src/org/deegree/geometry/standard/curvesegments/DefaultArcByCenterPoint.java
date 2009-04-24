@@ -103,8 +103,8 @@ public class DefaultArcByCenterPoint implements ArcByCenterPoint {
     }
 
     @Override
-    public int getCoordinateDimension() {
-        return 2; // even if the point has 3 coordinates, there isn't any plane defined in which the arcByCenterPoint is drawn 
+    public boolean is3D() {
+        return false; // even if the point has 3 coordinates, there isn't any plane defined in which the arcByCenterPoint is drawn 
     }
 
     @Override

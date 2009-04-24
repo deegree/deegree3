@@ -83,6 +83,11 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
         this.min = min;
         this.max = max;
     }
+    
+    @Override
+    public boolean is3D(){
+        return min.is3D();
+    }
 
     @Override
     public GeometryType getGeometryType() {
@@ -289,7 +294,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
     @Override
     public Envelope merge( Envelope other ) {
-        int coordinateDimension = max.getCoordinateDimension();
+        int coordinateDimension = ( max.is3D() ? 3 : 2 );
         double[] min = new double[coordinateDimension];
         double[] max = new double[coordinateDimension];
         for ( int i = 0; i < coordinateDimension; i++ ) {

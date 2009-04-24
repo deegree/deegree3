@@ -123,9 +123,9 @@ public interface SurfacePatch {
 
     /**
      * 
-     * @return dimension of a surfaces coordinates (2 for flat surfaces; 3 for surfaces in a 3D space)
+     * @return whether the dimension of the surface's coordinates is 3 or 2 (2 for flat surfaces; 3 for surfaces in a 3D space)
      */
-    public int getCoordinateDimension();
+    public boolean is3D();
     
     /**
      * @return the kind of SurfacePatch the object represents, an element of {@link SurfacePatchType}

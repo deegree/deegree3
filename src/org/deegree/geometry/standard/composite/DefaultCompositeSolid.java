@@ -80,6 +80,11 @@ public class DefaultCompositeSolid extends AbstractDefaultGeometry implements Co
         super( id, crs );
         this.memberSolids = memberSolids;
     }
+    
+    @Override
+    public boolean is3D(){
+        return memberSolids.get( 0 ).is3D();
+    }
 
     @Override
     public GeometryType getGeometryType() {

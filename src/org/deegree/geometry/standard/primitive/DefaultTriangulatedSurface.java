@@ -76,7 +76,12 @@ public class DefaultTriangulatedSurface extends AbstractDefaultGeometry implemen
      */
     public DefaultTriangulatedSurface (String id, CRS crs, List<Triangle> patches) {
         super (id, crs);
-        this.patches = patches;
+        this.patches = patches;    
+    }
+    
+    @Override
+    public boolean is3D() {
+        return patches.get( 0 ).is3D();
     }
     
     @Override

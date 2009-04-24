@@ -123,7 +123,7 @@ public class GML311CurveSegmentParserTest {
         Assert.assertEquals( 1, arc.getBulges().length );
         Assert.assertEquals( 2.0, arc.getBulge() );
         Assert.assertEquals( 1, arc.getNormals().size() );
-        Assert.assertEquals( 1, arc.getNormal().getCoordinateDimension() );
+//        Assert.assertEquals( 1, arc.getNormal().getCoordinateDimension() ); TODO Since every point we're working with has 2 or 3 coords, find a way around this gml:vectortype
         Assert.assertEquals( -1.0, arc.getNormal().getX() );
     }
 
@@ -133,7 +133,7 @@ public class GML311CurveSegmentParserTest {
                             UnknownCRSException {
         ArcByCenterPoint arc = (ArcByCenterPoint) getParser().parseCurveSegment( getReader( "ArcByCenterPoint.gml" ),
                                                                                  new CRS( "EPSG:4326" ) );
-        Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
+        Assert.assertFalse( arc.getMidPoint().is3D() );
         Assert.assertEquals( 47.0, arc.getMidPoint().getX() );
         Assert.assertEquals( 11.0, arc.getMidPoint().getY() );
         Assert.assertEquals( 1.0, arc.getRadius().getValue() );
@@ -257,7 +257,7 @@ public class GML311CurveSegmentParserTest {
         ArcByCenterPoint arc = (ArcByCenterPoint) getParser().parseCurveSegment(
                                                                                  getReader( "CircleByCenterPoint.gml" ),
                                                                                  new CRS( "EPSG:4326" ) );
-        Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
+        Assert.assertFalse( arc.getMidPoint().is3D() );
         Assert.assertEquals( 47.0, arc.getMidPoint().getX() );
         Assert.assertEquals( 11.0, arc.getMidPoint().getY() );
         Assert.assertEquals( 1.0, arc.getRadius().getValue() );

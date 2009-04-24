@@ -109,9 +109,9 @@ public interface CurveSegment {
 
     /**
      * 
-     * @return dimension of a curve segment coordinates (2 for flat surfaces; 3 for surfaces in a 3D space)
+     * @return whether the curve segment has 3 or 2 coordinates (2 for flat surfaces; 3 for surfaces in a 3D space)
      */
-    public int getCoordinateDimension();
+    public boolean is3D();
 
     /**
      * 

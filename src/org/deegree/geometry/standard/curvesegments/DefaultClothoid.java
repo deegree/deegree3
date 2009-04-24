@@ -64,8 +64,8 @@ public class DefaultClothoid implements Clothoid {
     }
 
     @Override
-    public int getCoordinateDimension() {
-        return referenceLocation.getOutDimension();
+    public boolean is3D() {
+        return ( referenceLocation.getOutDimension() == 3 ) ? true : false;
     }
 
     @Override

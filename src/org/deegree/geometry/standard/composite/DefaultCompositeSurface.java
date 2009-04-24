@@ -87,6 +87,11 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
     }
 
     @Override
+    public boolean is3D(){
+        return memberSurfaces.get( 0 ).is3D();
+    }
+    
+    @Override
     public GeometryType getGeometryType() {
         return GeometryType.PRIMITIVE_GEOMETRY;
     }
