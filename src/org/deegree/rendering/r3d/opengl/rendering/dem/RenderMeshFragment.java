@@ -44,6 +44,7 @@ import java.util.List;
 
 import javax.media.opengl.GL;
 
+import org.deegree.rendering.i18n.Messages;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
 import org.deegree.rendering.r3d.multiresolution.MeshFragmentData;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
@@ -84,8 +85,50 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
     // 2: triangle buffer
     private int[] glBufferObjectIds;
 
+    private static final int[] glTextureUnitIds = new int[32];
+
+    static {
+        int i = 0;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE0;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE1;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE2;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE3;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE4;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE5;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE6;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE7;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE8;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE9;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE10;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE11;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE12;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE13;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE14;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE15;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE16;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE17;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE18;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE19;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE20;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE21;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE22;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE23;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE24;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE25;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE26;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE27;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE28;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE29;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE30;
+        glTextureUnitIds[i++] = GL.GL_TEXTURE31;
+    }
+
     public RenderMeshFragment( MeshFragment fragment ) {
         this.fragment = fragment;
+    }
+
+    public int getId() {
+        return fragment.id;
     }
 
     public float[][] getBBox() {
@@ -194,48 +237,49 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
      * Renders this fragment to the given OpenGL context with optional textures.
      * 
      * @param gl
-     * @param textures 
+     * @param textures
      * @throws RuntimeException
      *             if the geometry data is currently not bound to VBOs
      */
-    public void render( GL gl, List<FragmentTexture> textures) {
+    public void render( GL gl, List<FragmentTexture> textures ) {
 
         if ( !isEnabled() ) {
             throw new RuntimeException( "Cannot render mesh fragment, not enabled." );
         }
 
         // render with or without texture
-        if ( textures != null && textures.size() > 0) {
-            // TODO use other textures
+        if ( textures != null && textures.size() > 0 ) {
             gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-            
-            
-            gl.glActiveTexture( GL.GL_TEXTURE0);
-            gl.glClientActiveTexture( GL.GL_TEXTURE0);
-            gl.glEnable( GL.GL_TEXTURE_2D );
 
-            FragmentTexture texture = textures.get( 0 );
-            gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, texture.getGLVertexCoordBufferId() );
-            gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
-
+            // first texture (uses always-available texture unit 0)
+            gl.glActiveTexture( GL.GL_TEXTURE0 );
+            gl.glClientActiveTexture( GL.GL_TEXTURE0 );
             gl.glEnable( GL.GL_TEXTURE0 );
-            gl.glBindTexture( GL.GL_TEXTURE_2D, texture.getGLTextureId() );
-            gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
-            
-            gl.glActiveTexture( GL.GL_TEXTURE1);
-            gl.glClientActiveTexture( GL.GL_TEXTURE1);
             gl.glEnable( GL.GL_TEXTURE_2D );
 
-            texture = textures.get( 1 );
-            gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, texture.getGLVertexCoordBufferId() );
+            gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, textures.get( 0 ).getGLVertexCoordBufferId() );
             gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
 
-            gl.glEnable( GL.GL_TEXTURE1 );
-            gl.glBindTexture( GL.GL_TEXTURE_2D, texture.getGLTextureId() );
-            gl.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_DECAL);            
+            gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( 0 ).getGLTextureId() );
+            gl.glTexEnvf( GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE );
+
+            // second to last texture
+            for ( int i = 1; i < textures.size(); i++ ) {
+                int textureUnitId = getTextureUnitId( i );
+                gl.glActiveTexture( textureUnitId );
+                gl.glClientActiveTexture( textureUnitId );
+                gl.glEnable( textureUnitId );
+                gl.glEnable( GL.GL_TEXTURE_2D );
+
+                gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, textures.get( i ).getGLVertexCoordBufferId() );
+                gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
+
+                gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( i ).getGLTextureId() );
+                gl.glTexEnvf( GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE );
+//                gl.glTexEnvf( GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_DECAL);                
+            }
         } else {
             gl.glDisable( GL.GL_TEXTURE_2D );
-            gl.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
         }
 
         gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[0] );
@@ -245,7 +289,18 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
         gl.glNormalPointer( GL.GL_FLOAT, 0, 0 );
 
         gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[2] );
-        gl.glDrawElements( GL.GL_TRIANGLES, data.getNumTriangles() * 3, GL.GL_UNSIGNED_SHORT, 0 );        
+        gl.glDrawElements( GL.GL_TRIANGLES, data.getNumTriangles() * 3, GL.GL_UNSIGNED_SHORT, 0 );
+
+        // reset non-standard OpenGL states
+        if ( textures != null && textures.size() > 0 ) {
+            gl.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+            for ( int i = 1; i < textures.size(); i++ ) {
+                int textureUnitId = getTextureUnitId( i );
+                gl.glActiveTexture( textureUnitId );
+                gl.glDisable( GL.GL_TEXTURE_2D );
+            }
+            gl.glActiveTexture( GL.GL_TEXTURE0 );
+        }
     }
 
     @Override
@@ -253,7 +308,10 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
         return this.fragment.compareTo( o.fragment );
     }
 
-    public int getId() {
-        return fragment.id;
+    private int getTextureUnitId( int i ) {
+        if ( i >= 0 && i <= glTextureUnitIds.length - 1 ) {
+            return glTextureUnitIds[i];
+        }
+        throw new IllegalArgumentException( Messages.getMessage( "JOGL_INVALID_TEXTURE_UNIT", i ) );
     }
 }
