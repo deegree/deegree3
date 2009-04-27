@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision: 15598 $, $Date: 2009-01-12 15:03:49 +0100 (Mo, 12 Jan 2009) $
  * 
  */
-public class SimpleAccessGeometry extends SimpleGeometryStyle implements QualityModelPart {
+public class SimpleAccessGeometry implements QualityModelPart {
 
     /**
      * 
@@ -76,18 +76,15 @@ public class SimpleAccessGeometry extends SimpleGeometryStyle implements Quality
 
     transient int vertexCount;
 
+    private transient SimpleGeometryStyle style;
+
     /**
      * @param coordinates
      * @param innerRings
-     * @param specularColor
-     * @param ambientColor
-     * @param diffuseColor
-     * @param emmisiveColor
-     * @param shininess
+     * @param style
      */
-    public SimpleAccessGeometry( float[] coordinates, int[] innerRings, int specularColor, int ambientColor,
-                                 int diffuseColor, int emmisiveColor, float shininess ) {
-        super( specularColor, ambientColor, diffuseColor, emmisiveColor, shininess );
+    public SimpleAccessGeometry( float[] coordinates, int[] innerRings, SimpleGeometryStyle style ) {
+        this.style = style;
         this.coordinates = coordinates;
         this.innerRings = innerRings;
         vertexCount = ( coordinates == null ) ? 0 : ( coordinates.length / 3 );
@@ -95,15 +92,10 @@ public class SimpleAccessGeometry extends SimpleGeometryStyle implements Quality
 
     /**
      * @param coordinates
-     * @param specularColor
-     * @param ambientColor
-     * @param diffuseColor
-     * @param emmisiveColor
-     * @param shininess
+     * @param style
      */
-    public SimpleAccessGeometry( float[] coordinates, int specularColor, int ambientColor, int diffuseColor,
-                                 int emmisiveColor, float shininess ) {
-        this( coordinates, null, specularColor, ambientColor, diffuseColor, emmisiveColor, shininess );
+    public SimpleAccessGeometry( float[] coordinates, SimpleGeometryStyle style ) {
+        this( coordinates, null, style );
     }
 
     /**
@@ -112,14 +104,14 @@ public class SimpleAccessGeometry extends SimpleGeometryStyle implements Quality
      *            containing indizes to the vertex, not the array offset.
      */
     public SimpleAccessGeometry( float[] coordinates, int[] innerRings ) {
-        this( coordinates, innerRings, 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 1 );
+        this( coordinates, innerRings, new SimpleGeometryStyle( 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 1 ) );
     }
 
     /**
      * @param coordinates
      */
     public SimpleAccessGeometry( float[] coordinates ) {
-        this( coordinates, null, 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 1 );
+        this( coordinates, null, new SimpleGeometryStyle( 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 1 ) );
     }
 
     /**
@@ -253,10 +245,17 @@ public class SimpleAccessGeometry extends SimpleGeometryStyle implements Quality
 
     @Override
     public long sizeOf() {
-        long localSize = super.sizeOf();
+        long localSize = style.sizeOf();
         localSize += AllocatedHeapMemory.sizeOfFloatArray( coordinates, true );
         localSize += AllocatedHeapMemory.sizeOfIntArray( innerRings, true );
         localSize += AllocatedHeapMemory.INT_SIZE;
         return localSize;
+    }
+
+    /**
+     * @return the style information of this geometry
+     */
+    public SimpleGeometryStyle getStyle() {
+        return style;
     }
 }

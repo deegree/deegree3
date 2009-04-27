@@ -69,19 +69,14 @@ public class TexturedGeometry extends SimpleAccessGeometry {
 
     /**
      * @param geometry
-     * @param specularColor
-     * @param ambientColor
-     * @param diffuseColor
-     * @param emmisiveColor
-     * @param shininess
+     * @param style
      * @param texture
      *            to use
      * @param textureCoordinates
      *            of this data
      */
-    public TexturedGeometry( float[] geometry, int specularColor, int ambientColor, int diffuseColor,
-                             int emmisiveColor, float shininess, String texture, float[] textureCoordinates ) {
-        super( geometry, specularColor, ambientColor, diffuseColor, emmisiveColor, shininess );
+    public TexturedGeometry( float[] geometry, SimpleGeometryStyle style, String texture, float[] textureCoordinates ) {
+        super( geometry, style );
         this.texture = texture;
         this.textureCoordinates = textureCoordinates;
     }
