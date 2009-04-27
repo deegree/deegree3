@@ -59,7 +59,7 @@
             <element name="Resolution" maxOccurs="unbounded">
               <complexType>
                 <sequence>
-                  <element ref="ds:RasterDataSource" />
+                  <element ref="ds:AbstractGeospatialDataSource" />
                 </sequence>
                 <attribute name="res" type="double"/>
               </complexType>
