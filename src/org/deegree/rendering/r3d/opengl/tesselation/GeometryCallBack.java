@@ -193,8 +193,7 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
      */
     public RenderableGeometry createRenderableGeometry( boolean useDirectBuffers ) {
         return new RenderableGeometry( getTesselatedCoordinates(), getOpenGLType(), calculateNormals(),
-                                       geom.getSpecularColor(), geom.getAmbientColor(), geom.getDiffuseColor(),
-                                       geom.getEmmisiveColor(), geom.getShininess(), useDirectBuffers );
+                                       geom.getStyle(), useDirectBuffers );
 
     }
 

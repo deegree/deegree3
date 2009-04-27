@@ -38,9 +38,9 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.utils;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -77,7 +77,7 @@ public class BufferIO {
      * @param out
      * @throws IOException
      */
-    public static void writeBufferToStream( Buffer buffer, ObjectOutputStream out )
+    public static void writeBufferToStream( Buffer buffer, DataOutputStream out )
                             throws IOException {
         if ( out == null ) {
             LOG.info( "Given ObjectOutputStream is null, this is not allowed." );
@@ -113,11 +113,11 @@ public class BufferIO {
     }
 
     /**
-     * @param buffer
+     * @param byteBuffer
      * @param out
      * @throws IOException
      */
-    private static void writeBuffer( DoubleBuffer buffer, ObjectOutputStream out )
+    private static void writeBuffer( DoubleBuffer buffer, DataOutputStream out )
                             throws IOException {
         for ( int i = 0; i < buffer.capacity(); ++i ) {
             out.writeDouble( buffer.get( i ) );
@@ -129,7 +129,7 @@ public class BufferIO {
      * @param out
      * @throws IOException
      */
-    private static void writeBuffer( IntBuffer buffer, ObjectOutputStream out )
+    private static void writeBuffer( IntBuffer buffer, DataOutputStream out )
                             throws IOException {
         for ( int i = 0; i < buffer.capacity(); ++i ) {
             out.writeInt( buffer.get( i ) );
@@ -141,7 +141,7 @@ public class BufferIO {
      * @param out
      * @throws IOException
      */
-    private static void writeBuffer( LongBuffer buffer, ObjectOutputStream out )
+    private static void writeBuffer( LongBuffer buffer, DataOutputStream out )
                             throws IOException {
         for ( int i = 0; i < buffer.capacity(); ++i ) {
             out.writeLong( buffer.get( i ) );
@@ -153,7 +153,7 @@ public class BufferIO {
      * @param out
      * @throws IOException
      */
-    private static void writeBuffer( CharBuffer buffer, ObjectOutputStream out )
+    private static void writeBuffer( CharBuffer buffer, DataOutputStream out )
                             throws IOException {
         for ( int i = 0; i < buffer.capacity(); ++i ) {
             out.writeChar( buffer.get( i ) );
@@ -165,7 +165,7 @@ public class BufferIO {
      * @param out
      * @throws IOException
      */
-    private static void writeBuffer( FloatBuffer buffer, ObjectOutputStream out )
+    private static void writeBuffer( FloatBuffer buffer, DataOutputStream out )
                             throws IOException {
         for ( int i = 0; i < buffer.capacity(); ++i ) {
             out.writeFloat( buffer.get( i ) );
@@ -177,7 +177,7 @@ public class BufferIO {
      * @param out
      * @throws IOException
      */
-    private static void writeBuffer( ByteBuffer buffer, ObjectOutputStream out )
+    private static void writeBuffer( ByteBuffer buffer, DataOutputStream out )
                             throws IOException {
         for ( int i = 0; i < buffer.capacity(); ++i ) {
             out.writeByte( buffer.get( i ) );
@@ -210,7 +210,7 @@ public class BufferIO {
      * @return the floatBuffer of <code>null</code> if no indication of the number of floats to read has been made.
      * @throws IOException
      */
-    public static FloatBuffer readFloatBufferFromStream( ObjectInputStream in, boolean direct )
+    public static FloatBuffer readFloatBufferFromStream( DataInputStream in, boolean direct )
                             throws IOException {
         int numberOfValues = in.readInt();
         FloatBuffer result = null;
@@ -263,7 +263,7 @@ public class BufferIO {
      * @return the floatBuffer of <code>null</code> if no indication of the number of floats to read has been made.
      * @throws IOException
      */
-    public static ByteBuffer readByteBufferFromStream( ObjectInputStream in, boolean direct )
+    public static ByteBuffer readByteBufferFromStream( DataInputStream in, boolean direct )
                             throws IOException {
         int numberOfValues = in.readInt();
         ByteBuffer result = null;

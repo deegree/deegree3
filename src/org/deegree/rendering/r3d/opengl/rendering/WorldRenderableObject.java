@@ -95,8 +95,9 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
      * @param context
      * @param params
      * @param level
+     * @param geomBuffer
      */
-    private void render( GL context, ViewParams params, int level ) {
+    private void render( GL context, ViewParams params, int level, DirectGeometryBuffer geomBuffer ) {
         if ( qualityLevels != null ) {
             if ( level >= 0 && qualityLevels.length > level ) {
                 RenderableQualityModel model = qualityLevels[level];
@@ -112,7 +113,7 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
                     }
                 }
                 if ( model != null ) {
-                    model.render( context, params );
+                    model.renderPrepared( context, params, geomBuffer );
                 }
             }
         }
@@ -120,7 +121,19 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
 
     @Override
     public void render( GL context, ViewParams params ) {
-        render( context, params, calcQualityLevel( params ) );
+        render( context, params, calcQualityLevel( params ), null );
+    }
+
+    /**
+     * This method assumes the coordinates and normals are located in the given {@link DirectGeometryBuffer}.
+     * 
+     * @param context
+     *            to render to
+     * @param geomBuffer
+     *            to be get the coordinates from.
+     */
+    public void renderPrepared( GL context, ViewParams params, DirectGeometryBuffer geomBuffer ) {
+        render( context, params, calcQualityLevel( params ), geomBuffer );
     }
 
     /**

@@ -38,6 +38,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.managers;
 
+import java.nio.FloatBuffer;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -49,11 +50,12 @@ import javax.vecmath.Point3d;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
+import org.deegree.rendering.r3d.opengl.rendering.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
 import org.deegree.rendering.r3d.opengl.rendering.WorldRenderableObject;
 
 /**
- * The <code>TreeManager</code> will hold the bill board references.
+ * The <code>BuildingRenderer</code> organizes buildings in a scene by using a quadtree.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -64,33 +66,42 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
 
     private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( BuildingRenderer.class );
 
+    private final DirectGeometryBuffer geometryBuffer;
+
     /**
      * @param validDomain
      * @param numberOfObjectsInLeaf
+     * @param geometryBuffer
+     *            wrapper holding all geometries in a single direct {@link FloatBuffer}
      */
-    public BuildingRenderer( Envelope validDomain, int numberOfObjectsInLeaf ) {
+    public BuildingRenderer( Envelope validDomain, int numberOfObjectsInLeaf, DirectGeometryBuffer geometryBuffer ) {
         super( validDomain, numberOfObjectsInLeaf );
+        this.geometryBuffer = geometryBuffer;
     }
 
     /**
      * 
-     * @param eye
+     * @param params
+     *            to be used for view frustum culling.
      * @return an ordered List of trees.
      */
     public List<WorldRenderableObject> getBuildingsForViewParameters( ViewParams params ) {
-        BuildingComparator a = new BuildingComparator( params.getViewFrustum().getEyePos() );
-        return getObjects( params, a );
+        // BuildingComparator a = new BuildingComparator( params.getViewFrustum().getEyePos() );
+        return getObjects( params, null );
     }
 
     @Override
     public void render( GL context, ViewParams params ) {
         long begin = System.currentTimeMillis();
         Point3d eye = params.getViewFrustum().getEyePos();
-        float[] eye2 = new float[] { (float) eye.x, (float) eye.y, (float) eye.z };
         List<WorldRenderableObject> allBillBoards = getBuildingsForViewParameters( params );
         if ( !allBillBoards.isEmpty() ) {
             // back to front
+            begin = System.currentTimeMillis();
             Collections.sort( allBillBoards, new DistComparator( eye ) );
+            LOG.info( "Sorting of " + allBillBoards.size() + " buildings took: "
+                      + ( System.currentTimeMillis() - begin ) + " ms" );
+
             if ( LOG.isDebugEnabled() ) {
                 LOG.debug( "Number of buildings from viewparams: " + allBillBoards.size() );
                 LOG.debug( "Total number of buildings : " + size() );
@@ -99,43 +110,23 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
             while ( it.hasNext() ) {
                 WorldRenderableObject b = it.next();
                 context.glPushMatrix();
-                // Texture t = TexturePool.getTexture( context, b.getTextureID() );
-                // if ( t != null ) {
-                // if ( currentTexture == null || t.getTextureObject() != currentTexture.getTextureObject() ) {
-                // t.bind();
-                // currentTexture = t;
-                // }
-                // }
-                b.render( context, params );
+                b.renderPrepared( context, params, geometryBuffer );
                 context.glPopMatrix();
             }
-            // context.glDisable( GL.GL_TEXTURE_2D );
-            // context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
         }
 
     }
 
-    private class BuildingComparator implements Comparator<WorldRenderableObject> {
-        private float[] eye;
-
-        /**
-         * @param eye
-         *            to compare this billboard to.
-         * 
-         */
-        public BuildingComparator( Point3d eye ) {
-            this.eye = new float[] { (float) eye.x, (float) eye.y, (float) eye.z };
-        }
-
-        @Override
-        public int compare( WorldRenderableObject o1, WorldRenderableObject o2 ) {
-            float distA = Vectors3f.distance( eye, o1.getPosition() );
-            float distB = Vectors3f.distance( eye, o2.getPosition() );
-            return Float.compare( distA, distB );
-        }
-
-    }
-
+    /**
+     * 
+     * The <code>DistComparator</code> class compares two renderable objects' positions and sorts them to their
+     * negative distance to the given viewer location.
+     * 
+     * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+     * @author last edited by: $Author$
+     * @version $Revision$, $Date$
+     * 
+     */
     private class DistComparator implements Comparator<WorldRenderableObject> {
         private float[] eye;
 
@@ -152,18 +143,15 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
         public int compare( WorldRenderableObject o1, WorldRenderableObject o2 ) {
             float distA = Vectors3f.distance( eye, o1.getPosition() );
             float distB = Vectors3f.distance( eye, o2.getPosition() );
-            // /**
-            // * Trees that are near to each other might have the same texture.
-            // */
-            // if ( Math.abs( distA - distB ) < 35 ) {
-            // int res = o1.getTextureID().compareTo( o2.getTextureID() );
-            // if ( res == 0 ) {
-            // res = -Float.compare( distA, distB );
-            // }
-            // return res;
-            // }
             return -Float.compare( distA, distB );
         }
 
+    }
+
+    /**
+     * @return
+     */
+    public DirectGeometryBuffer getGeometryBuffer() {
+        return geometryBuffer;
     }
 }

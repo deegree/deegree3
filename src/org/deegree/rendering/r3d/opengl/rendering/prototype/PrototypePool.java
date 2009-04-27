@@ -47,6 +47,7 @@ import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.rendering.r3d.ViewParams;
+import org.deegree.rendering.r3d.opengl.rendering.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
 import org.deegree.rendering.r3d.opengl.rendering.RenderableGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.RenderableQualityModel;
@@ -114,8 +115,10 @@ public class PrototypePool {
     /**
      * @param id
      * @param model
+     * @param geometryBuffer
      */
-    public static synchronized void addPrototype( String id, RenderablePrototype model ) {
+    public static synchronized void addPrototype( String id, RenderablePrototype model,
+                                                  DirectGeometryBuffer geometryBuffer ) {
         if ( id == null || "".equals( id ) || model == null || prototypes.containsKey( id ) ) {
             return;
         }

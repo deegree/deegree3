@@ -52,7 +52,8 @@ import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
 
 /**
- * The <code>RenderableManager</code> class TODO add class documentation here.
+ * The <code>RenderableManager</code> is a collection based on a quadtree which can hold {@link Positionable} objects
+ * and cull them according to a given {@link ViewParams} view frustum.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -128,7 +129,6 @@ public class RenderableManager<T extends Positionable> implements Collection<T> 
 
     /**
      * @param viewParams
-     * @param comparator
      * @return the list of objects this manager manages.
      */
     public List<T> getObjects( ViewParams viewParams ) {

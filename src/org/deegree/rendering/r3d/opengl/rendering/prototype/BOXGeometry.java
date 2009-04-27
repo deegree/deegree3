@@ -41,6 +41,7 @@ package org.deegree.rendering.r3d.opengl.rendering.prototype;
 import javax.media.opengl.GL;
 
 import org.deegree.rendering.r3d.ViewParams;
+import org.deegree.rendering.r3d.opengl.rendering.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.RenderableGeometry;
 
 /**
@@ -71,7 +72,7 @@ public class BOXGeometry extends RenderableGeometry {
     }
 
     @Override
-    protected void enableArrays( GL context ) {
+    protected void enableArrays( GL context, DirectGeometryBuffer geomBuffer ) {
         super.disableArrays( context );
     }
 

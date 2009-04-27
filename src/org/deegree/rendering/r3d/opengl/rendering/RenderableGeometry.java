@@ -38,9 +38,6 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
-import static org.deegree.rendering.r3d.opengl.rendering.utils.BufferIO.writeBufferToStream;
-
-import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
@@ -71,7 +68,7 @@ import com.sun.opengl.util.BufferUtil;
  * @version $Revision$, $Date$
  * 
  */
-public class RenderableGeometry extends SimpleGeometryStyle implements RenderableQualityModelPart {
+public class RenderableGeometry implements RenderableQualityModelPart {
 
     /**
      * 
@@ -108,26 +105,24 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
 
     private transient float[] emmisiveColor;
 
+    private transient SimpleGeometryStyle style;
+
     /**
      * @param vertices
      * @param openGLType
      * @param vertexNormals
-     * @param specularColor
-     * @param ambientColor
-     * @param diffuseColor
-     * @param emmisiveColor
-     * @param shininess
+     * @param style
      * @param useDirectBuffers
      *            to use direct buffers instead of heap buffers.
      */
-    public RenderableGeometry( float[] vertices, int openGLType, float[] vertexNormals, int specularColor,
-                               int ambientColor, int diffuseColor, int emmisiveColor, float shininess,
+    public RenderableGeometry( float[] vertices, int openGLType, float[] vertexNormals, SimpleGeometryStyle style,
                                boolean useDirectBuffers ) {
-        super( specularColor, ambientColor, diffuseColor, emmisiveColor, shininess );
+        this.style = style;
         this.direct = useDirectBuffers;
         this.vertexCount = loadVertexBuffer( vertices );
         this.openGLType = openGLType;
         switch ( openGLType ) {
+        case GL.GL_LINE_STRIP:
         case GL.GL_TRIANGLE_FAN:
         case GL.GL_TRIANGLES:
         case GL.GL_TRIANGLE_STRIP:
@@ -151,17 +146,18 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
      *            to use direct buffers instead of heap buffers.
      */
     public RenderableGeometry( float[] vertices, int openGLType, float[] vertexNormals, boolean useDirectBuffers ) {
-        this( vertices, openGLType, vertexNormals, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0, 1, useDirectBuffers );
+        this( vertices, openGLType, vertexNormals, new SimpleGeometryStyle( 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0, 1 ),
+              useDirectBuffers );
     }
 
     /**
      * Create float arrays of the int colors.
      */
     private void createColors() {
-        ambientColor = getAsFloats( getAmbientColor() );
-        emmisiveColor = getAsFloats( getEmmisiveColor() );
-        specularColor = getAsFloats( getSpecularColor() );
-        diffuseColor = getAsFloats( getDiffuseColor() );
+        ambientColor = getAsFloats( style.getAmbientColor() );
+        emmisiveColor = getAsFloats( style.getEmmisiveColor() );
+        specularColor = getAsFloats( style.getSpecularColor() );
+        diffuseColor = getAsFloats( style.getDiffuseColor() );
     }
 
     /**
@@ -177,15 +173,19 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
 
     @Override
     public void render( GL context, ViewParams params ) {
-        enableArrays( context );
+        this.renderPrepared( context, params, null );
+    }
+
+    public void renderPrepared( GL context, ViewParams params, DirectGeometryBuffer geomBuffer ) {
+        enableArrays( context, geomBuffer );
         context.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
-        context.glMaterialfv( GL.GL_FRONT, GL.GL_AMBIENT, ambientColor, 0 );
         context.glMaterialfv( GL.GL_FRONT, GL.GL_DIFFUSE, diffuseColor, 0 );
         context.glMaterialfv( GL.GL_FRONT, GL.GL_SPECULAR, specularColor, 0 );
         context.glMaterialfv( GL.GL_FRONT, GL.GL_EMISSION, emmisiveColor, 0 );
-        context.glMaterialf( GL.GL_FRONT, GL.GL_SHININESS, getShininess() );
+        context.glMaterialf( GL.GL_FRONT, GL.GL_SHININESS, style.getShininess() );
         context.glDrawArrays( openGLType, 0, vertexCount );
         context.glPopAttrib();
+
         disableArrays( context );
     }
 
@@ -193,13 +193,15 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
      * Load the float buffers and enable the client state.
      * 
      * @param context
+     * @param geomBuffer
+     *            for which the coord/normal Positions are valid for.
      */
-    protected void enableArrays( GL context ) {
+    protected void enableArrays( GL context, DirectGeometryBuffer geomBuffer ) {
 
         LOG.trace( "Loading coordbuffer" );
 
-        if ( coordPosition >= 0 ) {
-            coordBuffer = MainBuffer.getCoords( coordPosition, numberOfOrdinates );
+        if ( coordPosition >= 0 && geomBuffer != null ) {
+            coordBuffer = geomBuffer.getCoords( coordPosition, numberOfOrdinates );
             if ( coordBuffer != null ) {
                 coordPosition = -1;
             }
@@ -211,8 +213,8 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
             context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
             if ( hasNormals ) {
                 LOG.trace( "Loading normal buffer" );
-                if ( normalPosition >= 0 && ( normalBuffer == null ) ) {
-                    normalBuffer = MainBuffer.getNormals( normalPosition, numberOfOrdinates );
+                if ( normalPosition >= 0 && ( normalBuffer == null ) && ( geomBuffer != null ) ) {
+                    normalBuffer = geomBuffer.getNormals( normalPosition, numberOfOrdinates );
                     hasNormals = ( normalBuffer != null );
                 }
                 if ( normalBuffer != null ) {
@@ -227,8 +229,7 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
      * @param context
      */
     public void disableArrays( GL context ) {
-        LOG.trace( "Disabling client states: normal and color" );
-        context.glDisableClientState( GL.GL_COLOR_ARRAY );
+        // nothing.
     }
 
     /**
@@ -257,7 +258,7 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
         this.hasNormals = ( vertexNormals != null && vertexNormals.length > 0 );
         if ( hasNormals ) {
             if ( vertexNormals.length % 3 != 0 ) {
-                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                                                                                                                                                                                                                                                       )
+                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                                                                                                                                                                                                                                                                                                           )
                                                     + ") must be kongruent to 3." );
             } else if ( ( vertexNormals.length / 3 ) != vertexCount ) {
                 throw new IllegalArgumentException( "The number of normals (" + ( vertexNormals.length / 3 )
@@ -340,56 +341,60 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
         return sb.toString();
     }
 
-    /**
-     * Method called while serializing this object
-     * 
-     * @param out
-     *            to write to.
-     * @throws IOException
-     */
-    private void writeObject( java.io.ObjectOutputStream out )
-                            throws IOException {
-        LOG.trace( "Serializing to object stream" );
-        out.writeBoolean( direct );
-        out.writeInt( vertexCount );
-        out.writeInt( openGLType );
-        if ( coordBuffer != null ) {
-            writeBufferToStream( coordBuffer, out );
-            writeBufferToStream( normalBuffer, out );
-        } else {
-            writeBufferToStream( MainBuffer.getCoords( coordPosition, numberOfOrdinates ), out );
-            writeBufferToStream( MainBuffer.getNormals( normalPosition, numberOfOrdinates ), out );
-        }
-    }
+    // /**
+    // * Method called while serializing this object
+    // *
+    // * @param out
+    // * to write to.
+    // * @throws IOException
+    // */
+    // private void writeObject( java.io.ObjectOutputStream out )
+    // throws IOException {
+    // LOG.trace( "Serializing to object stream" );
+    // out.writeBoolean( direct );
+    // out.writeInt( vertexCount );
+    // out.writeInt( openGLType );
+    // if ( coordBuffer != null ) {
+    // writeBufferToStream( coordBuffer, out );
+    // writeBufferToStream( normalBuffer, out );
+    // }
+    // // else {
+    // // writeBufferToStream( DirectGeometryBuffer.getCoords( coordPosition, numberOfOrdinates ), out );
+    // // writeBufferToStream( DirectGeometryBuffer.getNormals( normalPosition, numberOfOrdinates ), out );
+    // // }
+    // }
 
-    /**
-     * Method called while de-serializing (instancing) this object.
-     * 
-     * @param in
-     *            to create the methods from.
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private void readObject( java.io.ObjectInputStream in )
-                            throws IOException {
-        LOG.trace( "Deserializing from object stream" );
-        direct = in.readBoolean();
-        vertexCount = in.readInt();
-        numberOfOrdinates = vertexCount * 3;
-        openGLType = in.readInt();
-
-        coordPosition = MainBuffer.readCoordsFromStream( in );
-        normalPosition = MainBuffer.readNormalsFromStream( in );
-
-        hasNormals = ( normalPosition >= 0 );
-    }
+    // /**
+    // * Method called while de-serializing (instancing) this object.
+    // *
+    // * @param in
+    // * to create the methods from.
+    // * @throws IOException
+    // * @throws ClassNotFoundException
+    // */
+    // private void readObject( java.io.ObjectInputStream in )
+    // throws IOException {
+    // LOG.trace( "Deserializing from object stream" );
+    // direct = in.readBoolean();
+    // vertexCount = in.readInt();
+    // numberOfOrdinates = vertexCount * 3;
+    // openGLType = in.readInt();
+    // coordBuffer = BufferIO.readFloatBufferFromStream( in, false );
+    // normalBuffer = BufferIO.readFloatBufferFromStream( in, false );
+    // // coordPosition = DirectGeometryBuffer.readCoordsFromStream( in );
+    // // normalPosition = DirectGeometryBuffer.readNormalsFromStream( in );
+    // coordPosition = -1;
+    // normalPosition = -1;
+    //
+    // hasNormals = ( normalPosition >= 0 );
+    // }
 
     /**
      * @return the bytes this geometry occupies
      */
     @Override
     public long sizeOf() {
-        long localSize = super.sizeOf();
+        long localSize = style.sizeOf();
         // coordbuffer
         localSize += AllocatedHeapMemory.sizeOfBuffer( coordBuffer, true );
         // normal buffer
@@ -403,6 +408,13 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
         // vertexCount
         localSize += AllocatedHeapMemory.INT_SIZE;
         return localSize;
+    }
+
+    /**
+     * @return the style
+     */
+    public final SimpleGeometryStyle getStyle() {
+        return style;
     }
 
     /**
@@ -434,7 +446,7 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
     }
 
     /**
-     * @return
+     * @return a floatbuffer containing the normals or <code>null</code> if normals are not loaded.
      */
     public FloatBuffer getNormalBuffer() {
         return normalBuffer;
@@ -463,5 +475,19 @@ public class RenderableGeometry extends SimpleGeometryStyle implements Renderabl
     @Override
     public int getTextureOrdinateCount() {
         return 0;
+    }
+
+    /**
+     * @return the coordPosition
+     */
+    public final int getCoordPosition() {
+        return coordPosition;
+    }
+
+    /**
+     * @return the normalPosition
+     */
+    public final int getNormalPosition() {
+        return normalPosition;
     }
 }

@@ -146,6 +146,9 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
                 LOG.debug( "Number of trees from viewparams: " + allBillBoards.size() );
                 LOG.debug( "Total number of trees : " + size() );
             }
+            context.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
+            context.glMaterialfv( GL.GL_FRONT, GL.GL_DIFFUSE, new float[] { 1, 1, 1, 1 }, 0 );
+            context.glMaterialfv( GL.GL_FRONT, GL.GL_SPECULAR, new float[] { 0.3f, 0.3f, 0.3f, 1 }, 0 );
             context.glEnable( GL.GL_TEXTURE_2D );
             context.glEnable( GL.GL_BLEND ); // enable color and texture blending
             // context.glBlendColor( 0, 0, 0, 0 );
@@ -188,6 +191,7 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
             context.glBlendFunc( GL.GL_ONE, GL.GL_ZERO );
             context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
             context.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, 0 );
+            context.glPopAttrib();
             // context.glDepthMask( true );
         }
         LOG.info( "Rendering trees: " + ( System.currentTimeMillis() - begin ) + " ms" );

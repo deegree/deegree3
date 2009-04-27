@@ -97,9 +97,7 @@ public class TexturedGeometryCallBack extends GeometryCallBack {
     @Override
     public RenderableGeometry createRenderableGeometry( boolean useDirectBuffers ) {
         return new RenderableTexturedGeometry( getTesselatedCoordinates(), getOpenGLType(), calculateNormals(),
-                                               getGeometry().getSpecularColor(), getGeometry().getAmbientColor(),
-                                               getGeometry().getDiffuseColor(), getGeometry().getEmmisiveColor(),
-                                               getGeometry().getShininess(),
+                                               getGeometry().getStyle(),
                                                ( (TexturedGeometry) getGeometry() ).getTexture(),
                                                getTesselatedTextureCoordinates(), useDirectBuffers );
     }

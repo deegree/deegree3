@@ -99,20 +99,7 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
 
     @Override
     public void render( GL context, ViewParams params ) {
-
-        if ( prototype != null ) {
-            PrototypePool.render( context, params, prototype );
-        } else {
-            // no prototype to render, trying geometries
-            if ( qualityModelParts != null && qualityModelParts.size() > 0 ) {
-                for ( RenderableQualityModelPart data : qualityModelParts ) {
-                    if ( data != null ) {
-                        data.render( context, params );
-                    }
-                }
-            }
-        }
-
+        this.renderPrepared( context, params, null );
     }
 
     @Override
@@ -162,6 +149,26 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
             }
         }
         return result;
+    }
+
+    /**
+     * @param context
+     * @param params
+     * @param geomBuffer
+     */
+    public void renderPrepared( GL context, ViewParams params, DirectGeometryBuffer geomBuffer ) {
+        if ( prototype != null ) {
+            PrototypePool.render( context, params, prototype );
+        } else {
+            // no prototype to render, trying geometries
+            if ( qualityModelParts != null && qualityModelParts.size() > 0 ) {
+                for ( RenderableQualityModelPart data : qualityModelParts ) {
+                    if ( data != null ) {
+                        data.renderPrepared( context, params, geomBuffer );
+                    }
+                }
+            }
+        }
     }
 
 }

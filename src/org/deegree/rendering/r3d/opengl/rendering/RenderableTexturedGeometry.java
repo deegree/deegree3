@@ -38,14 +38,12 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
-import static org.deegree.rendering.r3d.opengl.rendering.utils.BufferIO.writeBufferToStream;
-
-import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
 
 import org.deegree.commons.utils.AllocatedHeapMemory;
+import org.deegree.rendering.r3d.geometry.SimpleGeometryStyle;
 import org.deegree.rendering.r3d.opengl.rendering.texture.TexturePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,12 +81,7 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
      * @param vertices
      * @param openGLType
      * @param vertexNormals
-     * @param vertexColors
-     * @param specularColor
-     * @param ambientColor
-     * @param diffuseColor
-     * @param emmisiveColor
-     * @param shininess
+     * @param style
      * @param texture
      *            to use
      * @param textureCoordinates
@@ -96,11 +89,10 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
      * @param useDirectBuffers
      *            to use direct buffers instead of heap buffers.
      */
-    public RenderableTexturedGeometry( float[] vertices, int openGLType, float[] vertexNormals, int specularColor,
-                                       int ambientColor, int diffuseColor, int emmisiveColor, float shininess,
-                                       String texture, float[] textureCoordinates, boolean useDirectBuffers ) {
-        super( vertices, openGLType, vertexNormals, specularColor, ambientColor, diffuseColor, emmisiveColor,
-               shininess, useDirectBuffers );
+    public RenderableTexturedGeometry( float[] vertices, int openGLType, float[] vertexNormals,
+                                       SimpleGeometryStyle style, String texture, float[] textureCoordinates,
+                                       boolean useDirectBuffers ) {
+        super( vertices, openGLType, vertexNormals, style, useDirectBuffers );
         this.texture = texture;
         loadTextureCoordinates( textureCoordinates );
     }
@@ -128,19 +120,19 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
      * @param context
      */
     @Override
-    protected void enableArrays( GL context ) {
-        super.enableArrays( context );
-        LOG.trace( "Enabling array state and texture 2d" );
-        context.glEnable( GL.GL_TEXTURE_2D );
-        TexturePool.loadTexture( context, texture );
-        context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-        if ( texturePosition >= 0 && textureBuffer == null ) {
-            textureBuffer = MainBuffer.getTextureCoordinates( texturePosition, textureOrdinatesCount );
+    protected void enableArrays( GL context, DirectGeometryBuffer geomBuffer ) {
+        super.enableArrays( context, geomBuffer );
+
+        if ( texturePosition >= 0 && textureBuffer == null && geomBuffer != null ) {
+            textureBuffer = geomBuffer.getTextureCoordinates( texturePosition, textureOrdinatesCount );
             if ( textureBuffer == null ) {
                 texturePosition = -1;
             }
         }
         if ( textureBuffer != null ) {
+            context.glEnable( GL.GL_TEXTURE_2D );
+            TexturePool.loadTexture( context, texture );
+            context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
             context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
         }
 
@@ -200,42 +192,45 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
         return sb.toString();
     }
 
-    /**
-     * Method called while serializing this object
-     * 
-     * @param out
-     *            to write to.
-     * @throws IOException
-     */
-    private void writeObject( java.io.ObjectOutputStream out )
-                            throws IOException {
-        LOG.trace( "Serializing to object stream" );
-        out.writeUTF( texture );
-        out.writeInt( textureOrdinatesCount );
-        if ( textureBuffer != null ) {
-            writeBufferToStream( textureBuffer, out );
-        } else {
-            writeBufferToStream( MainBuffer.getTextureCoordinates( texturePosition, textureOrdinatesCount ), out );
-        }
+    //
+    // /**
+    // * Method called while serializing this object
+    // *
+    // * @param out
+    // * to write to.
+    // * @throws IOException
+    // */
+    // private void writeObject( java.io.ObjectOutputStream out )
+    // throws IOException {
+    // LOG.trace( "Serializing to object stream" );
+    // out.writeUTF( texture );
+    // out.writeInt( textureOrdinatesCount );
+    // if ( textureBuffer != null ) {
+    // writeBufferToStream( textureBuffer, out );
+    // }
+    // // else {
+    // // writeBufferToStream( DirectGeometryBuffer.getTextureCoordinates( texturePosition, textureOrdinatesCount ),
+    // // out );
+    // // }
+    //
+    // }
 
-    }
-
-    /**
-     * Method called while de-serializing (instancing) this object.
-     * 
-     * @param in
-     *            to create the methods from.
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    private void readObject( java.io.ObjectInputStream in )
-                            throws IOException {
-        LOG.trace( "Deserializing from object stream" );
-        texture = in.readUTF();
-        textureOrdinatesCount = in.readInt();
-        // textureBuffer = readFloatBufferFromStream( in, useDirectBuffers() );
-        texturePosition = MainBuffer.readTexCoordsFromStream( in );
-    }
+    // /**
+    // * Method called while de-serializing (instancing) this object.
+    // *
+    // * @param in
+    // * to create the methods from.
+    // * @throws IOException
+    // * @throws ClassNotFoundException
+    // */
+    // private void readObject( java.io.ObjectInputStream in )
+    // throws IOException {
+    // LOG.trace( "Deserializing from object stream" );
+    // texture = in.readUTF();
+    // textureOrdinatesCount = in.readInt();
+    // textureBuffer = readFloatBufferFromStream( in, false );
+    // texturePosition = -1;// DirectGeometryBuffer.readTexCoordsFromStream( in );
+    // }
 
     private void loadTextureCoordinates( float[] textureCoordinates ) {
         if ( textureCoordinates == null || textureCoordinates.length == 0 ) {
@@ -269,5 +264,12 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
     @Override
     public int getTextureOrdinateCount() {
         return textureOrdinatesCount;
+    }
+
+    /**
+     * @return the texturePosition
+     */
+    public final int getTexturePosition() {
+        return texturePosition;
     }
 }

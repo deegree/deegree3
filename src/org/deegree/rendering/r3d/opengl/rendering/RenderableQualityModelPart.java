@@ -38,7 +38,10 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
+import javax.media.opengl.GL;
+
 import org.deegree.rendering.r3d.QualityModelPart;
+import org.deegree.rendering.r3d.ViewParams;
 
 /**
  * The <code>RenderableQualityModelPart</code> class TODO add class documentation here.
@@ -61,5 +64,17 @@ public interface RenderableQualityModelPart extends QualityModelPart, JOGLRender
      * @return the number of texture ordinates in this quality model part
      */
     public int getTextureOrdinateCount();
+
+    /**
+     * This method is a more specific render method than the {@link JOGLRenderable#render(GL, ViewParams)}, it defines
+     * a contract that the geometryBuffer holds the geometry for the implementation and the implementation holds indizes
+     * which are valid for the given buffer.
+     * 
+     * @param context
+     * @param params
+     * @param geometryBuffer
+     *            holding the vertices, normals and texture coordinates for an instance of an implementation.
+     */
+    public void renderPrepared( GL context, ViewParams params, DirectGeometryBuffer geometryBuffer );
 
 }
