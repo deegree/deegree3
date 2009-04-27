@@ -56,6 +56,11 @@ public class MathUtils {
     public static final double EPSILON = 1E-10;
 
     /**
+     * The value of sqrt(2)
+     */
+    public static final double SQRT2 = Math.sqrt( 2 );
+
+    /**
      * Helper to round a double value to an int without the need to cast.
      * 
      * @param v
