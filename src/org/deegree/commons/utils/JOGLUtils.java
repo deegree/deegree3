@@ -38,6 +38,9 @@
 
 package org.deegree.commons.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+
 import javax.media.opengl.GL;
 
 import org.deegree.commons.i18n.Messages;
@@ -91,6 +94,23 @@ public class JOGLUtils {
     }
 
     /**
+     * Returns the number of texture image units that can be used in fragment shaders.
+     * <p>
+     * NOTE: This method evaluates the value of <code>GL_MAX_TEXTURE_IMAGE_UNITS</code>. The number is usually not
+     * identical to <code>GL_MAX_TEXTURE_UNITS</code> which denotes the maximum number of texture units in fixed shader
+     * functions.
+     * </p>
+     * 
+     * @param gl
+     * @return
+     */
+    public static int getNumTextureImageUnits( GL gl ) {
+        int[] valueBuffer = new int[1];
+        gl.glGetIntegerv( GL.GL_MAX_TEXTURE_IMAGE_UNITS, valueBuffer, 0 );
+        return valueBuffer[0];
+    }
+
+    /**
      * Returns the value of the symbolic constant TEXTURE0...TEXTURE31 for a certain texture unit id.
      * 
      * @param textureId
@@ -104,4 +124,19 @@ public class JOGLUtils {
         throw new IllegalArgumentException( Messages.getMessage( "JOGL_INVALID_TEXTURE_UNIT", textureId ) );
     }
 
+    public static int compileFragmentShader( GL gl, BufferedReader glslReader ) throws IOException {
+
+        int shaderId = gl.glCreateShader( GL.GL_FRAGMENT_SHADER );
+
+        String line;
+        String src = "";
+        while ( ( line = glslReader.readLine() ) != null ) {
+            src += line + "\n";
+        }
+
+        gl.glShaderSource( shaderId, 1, new String[] { src }, (int[]) null, 0 );
+        gl.glCompileShader( shaderId );
+
+        return shaderId;
+    }
 }

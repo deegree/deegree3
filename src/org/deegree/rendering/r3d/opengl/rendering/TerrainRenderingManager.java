@@ -91,6 +91,8 @@ public class TerrainRenderingManager {
 
     private long numTexels = 0;
 
+    private int shaderId;
+
     public TerrainRenderingManager( RenderFragmentManager fragmentManager ) {
         this.fragmentManager = fragmentManager;
     }
@@ -205,7 +207,7 @@ public class TerrainRenderingManager {
 //            gl.glEnable( GL.GL_TEXTURE_2D );
 //            gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
 //        }
-
+       
         try {
             fragmentManager.requireOnGPU( activeLOD, gl );
         } catch ( IOException e ) {
@@ -219,7 +221,7 @@ public class TerrainRenderingManager {
             // normalize normal vectors
             gl.glEnable( GL.GL_NORMALIZE );
         }
-
+               
         for ( RenderMeshFragment fragment : activeLOD ) {
             List<FragmentTexture> textures = fragmentToTextures.get( fragment );
             if ( textures != null ) {
@@ -227,11 +229,11 @@ public class TerrainRenderingManager {
                 for ( FragmentTexture texture : textures ) {
                     textureManagers[i++].enable( Collections.singletonList( texture ), gl );
                 }
-                fragment.render( gl, textures );
+                fragment.render( gl, textures, shaderId );
             } else {
-                fragment.render( gl, null );
+                fragment.render( gl, null, shaderId );
             }
-        }
+        }        
 
         // reset z-scale
         if ( zScale != 1.0f ) {
@@ -299,5 +301,9 @@ public class TerrainRenderingManager {
         gl.glWindowPos2d( x, 88 );
         glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "geometry error: " + geometryMaxPixelError );
         gl.glColor3f( 1.0f, 1.0f, 1.0f );
+    }
+
+    public void setShader( int shaderId ) {
+        this.shaderId = shaderId;
     }
 }
