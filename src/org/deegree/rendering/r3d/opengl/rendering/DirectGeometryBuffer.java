@@ -38,6 +38,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.nio.FloatBuffer;
@@ -189,6 +190,72 @@ public class DirectGeometryBuffer {
             oldPosition = -1;
         }
         return oldPosition;
+    }
+
+    /**
+     * Read the floats from the given {@link DataInputStream} to the direct coordinates buffer, if the direct coordinate
+     * buffer does not have the capacity this method will return -1,-1;
+     * 
+     * @param in
+     *            the stream to add to the coordinates from.
+     * @return the position [0] of the copy in the coordinate buffer and the number of ordinates [1] inserted. Both will
+     *         have -1 if the given ordinates could not be copied in the direct buffer.
+     * @throws IOException
+     */
+    public synchronized int[] readCoordinates( DataInputStream in )
+                            throws IOException {
+        return readFromStreamBuffer( this.coordBuffer, in );
+    }
+
+    /**
+     * Read the floats from the given {@link DataInputStream} to the direct normal buffer, if the direct normal buffer
+     * does not have the capacity this method will return -1,-1;
+     * 
+     * @param in
+     *            the stream to add to the coordinates from.
+     * @return the position [0] of the copy in the normal buffer and the number of ordinates [1] inserted. Both will
+     *         have -1 if the given ordinates could not be copied in the direct buffer.
+     * @throws IOException
+     */
+    public synchronized int[] readNormals( DataInputStream in )
+                            throws IOException {
+        return readFromStreamBuffer( this.normalBuffer, in );
+    }
+
+    /**
+     * Read the floats from the given {@link DataInputStream} to the direct texture buffer, if the direct texture buffer
+     * does not have the capacity this method will return -1,-1;
+     * 
+     * @param in
+     *            the stream to add to the coordinates from.
+     * @return the position [0] of the copy in the texture buffer and the number of ordinates [1] inserted. Both will
+     *         have -1 if the given ordinates could not be copied in the direct buffer.
+     * @throws IOException
+     */
+    public synchronized int[] readTextureOrdinates( DataInputStream in )
+                            throws IOException {
+        return readFromStreamBuffer( this.textureBuffer, in );
+    }
+
+    /**
+     * @param coordBuffer2
+     * @param in
+     * @return
+     * @throws IOException
+     */
+    private int[] readFromStreamBuffer( FloatBuffer directBuffer, DataInputStream in )
+                            throws IOException {
+        int numberOfValues = in.readInt();
+        int position = -1;
+        if ( numberOfValues != -1 ) {
+            position = directBuffer.position();
+            if ( ( directBuffer.capacity() - position ) >= numberOfValues ) {
+                for ( int i = 0; i < numberOfValues; ++i ) {
+                    directBuffer.put( in.readFloat() );
+                }
+            }
+        }
+        return new int[] { position, numberOfValues };
     }
 
     /**

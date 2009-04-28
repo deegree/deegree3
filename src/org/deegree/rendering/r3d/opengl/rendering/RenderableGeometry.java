@@ -107,19 +107,9 @@ public class RenderableGeometry implements RenderableQualityModelPart {
 
     private transient SimpleGeometryStyle style;
 
-    /**
-     * @param vertices
-     * @param openGLType
-     * @param vertexNormals
-     * @param style
-     * @param useDirectBuffers
-     *            to use direct buffers instead of heap buffers.
-     */
-    public RenderableGeometry( float[] vertices, int openGLType, float[] vertexNormals, SimpleGeometryStyle style,
-                               boolean useDirectBuffers ) {
+    private RenderableGeometry( int openGLType, SimpleGeometryStyle style, boolean useDirectBuffers ) {
         this.style = style;
         this.direct = useDirectBuffers;
-        this.vertexCount = loadVertexBuffer( vertices );
         this.openGLType = openGLType;
         switch ( openGLType ) {
         case GL.GL_LINE_STRIP:
@@ -131,6 +121,20 @@ public class RenderableGeometry implements RenderableQualityModelPart {
         default:
             throw new UnsupportedOperationException( "Unknown opengl type: " + openGLType );
         }
+    }
+
+    /**
+     * @param vertices
+     * @param openGLType
+     * @param vertexNormals
+     * @param style
+     * @param useDirectBuffers
+     *            to use direct buffers instead of heap buffers.
+     */
+    public RenderableGeometry( float[] vertices, int openGLType, float[] vertexNormals, SimpleGeometryStyle style,
+                               boolean useDirectBuffers ) {
+        this( openGLType, style, useDirectBuffers );
+        this.vertexCount = loadVertexBuffer( vertices );
         vertices = null;
         setVertexNormals( vertexNormals );
 
@@ -148,6 +152,41 @@ public class RenderableGeometry implements RenderableQualityModelPart {
     public RenderableGeometry( float[] vertices, int openGLType, float[] vertexNormals, boolean useDirectBuffers ) {
         this( vertices, openGLType, vertexNormals, new SimpleGeometryStyle( 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0, 1 ),
               useDirectBuffers );
+    }
+
+    /**
+     * @param vertices
+     * @param openGLType
+     * @param vertexNormals
+     * @param style
+     */
+    public RenderableGeometry( FloatBuffer vertices, int openGLType, FloatBuffer vertexNormals,
+                               SimpleGeometryStyle style ) {
+        this( openGLType, style, vertices.isDirect() );
+        this.vertexCount = vertices.capacity() / 3;
+        this.numberOfOrdinates = vertices.capacity();
+        this.coordBuffer = vertices;
+        this.normalBuffer = vertexNormals;
+        hasNormals = ( vertexNormals != null );
+        coordPosition = -1;
+        normalPosition = -1;
+    }
+
+    /**
+     * @param coordPosition
+     * @param vertexCount
+     * @param openGLType
+     * @param normalPosition
+     * @param style
+     */
+    public RenderableGeometry( int coordPosition, int vertexCount, int openGLType, int normalPosition,
+                               SimpleGeometryStyle style ) {
+        this( openGLType, style, true );
+        this.coordPosition = coordPosition;
+        this.normalPosition = normalPosition;
+        hasNormals = ( this.normalPosition > -1 );
+        this.vertexCount = vertexCount;
+        this.numberOfOrdinates = vertexCount * 3;
     }
 
     /**
@@ -258,7 +297,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
         this.hasNormals = ( vertexNormals != null && vertexNormals.length > 0 );
         if ( hasNormals ) {
             if ( vertexNormals.length % 3 != 0 ) {
-                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                                                                                                                                                                                                                                                                                                           )
+                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                                                                                                                                                                                                                                                                                                                                           )
                                                     + ") must be kongruent to 3." );
             } else if ( ( vertexNormals.length / 3 ) != vertexCount ) {
                 throw new IllegalArgumentException( "The number of normals (" + ( vertexNormals.length / 3 )

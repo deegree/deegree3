@@ -98,6 +98,25 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
     }
 
     /**
+     * @param vertices
+     * @param openGLType
+     * @param vertexNormals
+     * @param style
+     * @param texture
+     *            to use
+     * @param textureCoordinates
+     *            of this data
+     */
+    public RenderableTexturedGeometry( FloatBuffer vertices, int openGLType, FloatBuffer vertexNormals,
+                                       SimpleGeometryStyle style, String texture, FloatBuffer textureCoordinates ) {
+        super( vertices, openGLType, vertexNormals, style );
+        this.texture = texture;
+        this.textureBuffer = textureCoordinates;
+        textureOrdinatesCount = textureCoordinates.capacity();
+        texturePosition = -1;
+    }
+
+    /**
      * 
      * @param vertices
      * @param openGLType
@@ -112,6 +131,23 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
         super( vertices, openGLType, vertexNormals, useDirectBuffers );
         this.texture = texture;
         loadTextureCoordinates( textureCoordinates );
+
+    }
+
+    /**
+     * @param coordPosition
+     * @param glType
+     * @param normalPosition
+     * @param style
+     * @param textureID
+     * @param texturePosition2
+     */
+    public RenderableTexturedGeometry( int coordPosition, int vertexCount, int openGLType, int normalPosition,
+                                       SimpleGeometryStyle style, String textureID, int texturePosition ) {
+        super( coordPosition, vertexCount, openGLType, normalPosition, style );
+        this.texture = textureID;
+        this.texturePosition = texturePosition;
+        this.textureOrdinatesCount = vertexCount * 2;
     }
 
     /**
