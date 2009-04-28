@@ -90,47 +90,47 @@ public class Arc {
      * Creates a new {@link Arc} instance.
      * 
      * @param mt
-     *                {@link MultiresolutionMesh} instance that the arc is part of
+     *            {@link MultiresolutionMesh} instance that the arc is part of
      * @param id
-     *                id of the arc
+     *            id of the arc
      * @param buffer
-     *                buffer that contains the binary representation of the arc
+     *            buffer that contains the binary representation of the arc
      * @param baseOffset
-     *                offset in the buffer
+     *            offset in the buffer
      */
-    Arc(MultiresolutionMesh mt, int id, ByteBuffer buffer, int baseOffset) {
+    Arc( MultiresolutionMesh mt, int id, ByteBuffer buffer, int baseOffset ) {
         this.mt = mt;
         this.id = id;
-        sourceNode = buffer.getInt(baseOffset + SOURCE_NODE_OFFSET);
-        destinationNode = buffer.getInt(baseOffset + DESTINATION_NODE_OFFSET);
-        lowestPatch = buffer.getInt(baseOffset + LOWEST_PATCH_OFFSET);
-        highestPatch = buffer.getInt(baseOffset + HIGHEST_PATCH_OFFSET);
-        nextArcWithSameDestination = buffer.getInt(baseOffset + NEXT_ARC_SAME_DESTINATION_OFFSET);
+        sourceNode = buffer.getInt( baseOffset + SOURCE_NODE_OFFSET );
+        destinationNode = buffer.getInt( baseOffset + DESTINATION_NODE_OFFSET );
+        lowestPatch = buffer.getInt( baseOffset + LOWEST_PATCH_OFFSET );
+        highestPatch = buffer.getInt( baseOffset + HIGHEST_PATCH_OFFSET );
+        nextArcWithSameDestination = buffer.getInt( baseOffset + NEXT_ARC_SAME_DESTINATION_OFFSET );
     }
 
     /**
      * Stores the information of an {@link Arc} in the given <code>ByteBuffer</code>.
      * 
      * @param target
-     *                buffer where the binary representation is written to
+     *            buffer where the binary representation is written to
      * @param sourceNode
-     *                id of the source node of the arc
+     *            id of the source node of the arc
      * @param destinationNode
-     *                id of the destination node of the arc
+     *            id of the destination node of the arc
      * @param lowestPatch
-     *                lowest patch id in the label of the arc
+     *            lowest patch id in the label of the arc
      * @param highestPatch
-     *                highest patch id in the label of the arc
+     *            highest patch id in the label of the arc
      * @param nextArcWithSameDestination
-     *                id of the next arc with the same destination node (-1 if there is none)
+     *            id of the next arc with the same destination node (-1 if there is none)
      */
-    public static void store(ByteBuffer target, int sourceNode, int destinationNode,
-            int lowestPatch, int highestPatch, int nextArcWithSameDestination) {
-        target.putInt(sourceNode);
-        target.putInt(destinationNode);
-        target.putInt(lowestPatch);
-        target.putInt(highestPatch);
-        target.putInt(nextArcWithSameDestination);
+    public static void store( ByteBuffer target, int sourceNode, int destinationNode, int lowestPatch,
+                              int highestPatch, int nextArcWithSameDestination ) {
+        target.putInt( sourceNode );
+        target.putInt( destinationNode );
+        target.putInt( lowestPatch );
+        target.putInt( highestPatch );
+        target.putInt( nextArcWithSameDestination );
     }
 
     /**
@@ -146,11 +146,16 @@ public class Arc {
      * Determines if this arc interferes with the given {@link Geometry}.
      * 
      * @param roi
-     *                geometry that is tested for interference
+     *            geometry that is tested for interference
+     * @param zScale
+     *            scaling factor applied to z values of the mesh geometry (and bounding boxes)
      * @return true, if the arc interferes with the geometry, false otherwise
      */
-    public boolean interferes(ViewFrustum roi) {
-        return roi.intersects(getBBox());
+    public boolean interferes( ViewFrustum roi, float zScale ) {
+        float[][] nodeBBox = getBBox();
+        nodeBBox[0][2] *= zScale;
+        nodeBBox[1][2] *= zScale;
+        return roi.intersects( nodeBBox );
     }
 
     /**
@@ -166,8 +171,8 @@ public class Arc {
         bbox[1][0] = mt.fragments[lowestPatch].bbox[1][0];
         bbox[1][1] = mt.fragments[lowestPatch].bbox[1][1];
         bbox[1][2] = mt.fragments[lowestPatch].bbox[1][2];
-        for (int patchId = lowestPatch + 1; patchId <= highestPatch; patchId++) {
-            enlargeBBox(bbox, mt.fragments[patchId].bbox);
+        for ( int patchId = lowestPatch + 1; patchId <= highestPatch; patchId++ ) {
+            enlargeBBox( bbox, mt.fragments[patchId].bbox );
         }
         return bbox;
     }
@@ -178,23 +183,23 @@ public class Arc {
      * @param bbox
      * @param bboxToInclude
      */
-    private void enlargeBBox(float[][] bbox, float[][] bboxToInclude) {
-        if (bbox[0][0] > bboxToInclude[0][0]) {
+    private void enlargeBBox( float[][] bbox, float[][] bboxToInclude ) {
+        if ( bbox[0][0] > bboxToInclude[0][0] ) {
             bbox[0][0] = bboxToInclude[0][0];
         }
-        if (bbox[0][1] > bboxToInclude[0][1]) {
+        if ( bbox[0][1] > bboxToInclude[0][1] ) {
             bbox[0][1] = bboxToInclude[0][1];
         }
-        if (bbox[0][2] > bboxToInclude[0][2]) {
+        if ( bbox[0][2] > bboxToInclude[0][2] ) {
             bbox[0][2] = bboxToInclude[0][2];
         }
-        if (bbox[1][0] < bboxToInclude[1][0]) {
+        if ( bbox[1][0] < bboxToInclude[1][0] ) {
             bbox[1][0] = bboxToInclude[1][0];
         }
-        if (bbox[1][1] < bboxToInclude[1][1]) {
+        if ( bbox[1][1] < bboxToInclude[1][1] ) {
             bbox[1][1] = bboxToInclude[1][1];
         }
-        if (bbox[1][2] < bboxToInclude[1][2]) {
+        if ( bbox[1][2] < bboxToInclude[1][2] ) {
             bbox[1][2] = bboxToInclude[1][2];
         }
     }

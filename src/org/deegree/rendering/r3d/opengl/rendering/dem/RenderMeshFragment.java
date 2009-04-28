@@ -286,6 +286,8 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
         gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[1] );
         gl.glNormalPointer( GL.GL_FLOAT, 0, 0 );
+//        gl.glDisableClientState( GL.GL_NORMAL_ARRAY );
+//        gl.glNormal3f( 0, 0, 1 );
 
         gl.glBindBufferARB( GL.GL_ELEMENT_ARRAY_BUFFER_ARB, glBufferObjectIds[2] );
         gl.glDrawElements( GL.GL_TRIANGLES, data.getNumTriangles() * 3, GL.GL_UNSIGNED_SHORT, 0 );

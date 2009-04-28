@@ -69,10 +69,12 @@ public class MaxError implements LODCriterion {
      * 
      * @param arc
      *            arc to be checked
+     * @param zScale
+     *            scaling factor applied to z values of the mesh geometry (and bounding boxes)
      * @return true, iff the arc's geometric error is greater than the maximum tolerable error
      */
     @Override
-    public boolean needsRefinement( Arc arc ) {
+    public boolean needsRefinement( Arc arc, float zScale ) {
         return arc.getGeometricError() > c;
     }
 }

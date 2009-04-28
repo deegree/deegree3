@@ -172,7 +172,7 @@ public class MultiresolutionMesh {
      * @return smallest LOD that satisfies the given LOD criterion
      */
     public List<MeshFragment> extractLOD( LODCriterion crit ) {
-        return new SelectiveRefinement( this, crit ).determineLOD();
+        return new SelectiveRefinement( this, crit, 1.0f ).determineLOD();
     }
 
     /**

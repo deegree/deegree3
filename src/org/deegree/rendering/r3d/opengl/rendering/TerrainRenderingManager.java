@@ -39,8 +39,6 @@
 package org.deegree.rendering.r3d.opengl.rendering;
 
 import java.awt.BorderLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,7 +65,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.opengl.util.GLUT;
 
-public class TerrainRenderingManager implements KeyListener {
+public class TerrainRenderingManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( TerrainRenderingManager.class );
 
@@ -83,12 +81,6 @@ public class TerrainRenderingManager implements KeyListener {
 
     // contains the mesh fragments that make up the current LOD
     private Set<RenderMeshFragment> activeLOD = new HashSet<RenderMeshFragment>();
-
-    private float scale = 1.0f;
-
-    private boolean autoAdapt = true;
-
-    private boolean texturize;
 
     private boolean showStructure;
 
@@ -108,28 +100,36 @@ public class TerrainRenderingManager implements KeyListener {
      * 
      * @param gl
      * @param params
-     * @param scale
+     * @param disableElevationModel
+     * @param zScale
+     *            scale factor for terrain height values
      * @param textureManagers
      */
-    public void render( GL gl, ViewParams params, float scale, TextureManager[] textureManagers ) {
+    public void render( GL gl, ViewParams params, boolean disableElevationModel, float zScale,
+                        TextureManager[] textureManagers ) {
+        
+        System.out.println ("num textures: " + textureManagers.length);
 
-        if ( autoAdapt ) {
-            updateLOD( gl, params );
+        if ( disableElevationModel || zScale < 0.001f) {
+            // ensure correct zScale (zScale = 0 does not work as expected)
+            zScale = 0.001f;
         }
 
-        Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures = Collections.EMPTY_MAP;
-        if ( texturize ) {
-            fragmentToTextures = getTextures( params, activeLOD, textureManagers );
-        }
+        // adapt geometry LOD (fragments)
+        updateLOD( gl, params, zScale );
 
-        render( gl, fragmentToTextures, textureManagers );
+        // determine textures for each fragment
+        Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures = getTextures( params, activeLOD, textureManagers, zScale );
+
+        // render fragments with textures
+        render( gl, fragmentToTextures, textureManagers, zScale );
 
         displayStats( gl, params );
     }
 
-    private void updateLOD( GL gl, ViewParams params ) {
+    private void updateLOD( GL gl, ViewParams params, float scale ) {
 
-        Set<RenderMeshFragment> nextLOD = getNewLOD( params );
+        Set<RenderMeshFragment> nextLOD = getNewLOD( params, scale );
 
         // determine fragments that can be released for the next frame
         Set<RenderMeshFragment> unloadFragments = new HashSet<RenderMeshFragment>( activeLOD );
@@ -163,13 +163,12 @@ public class TerrainRenderingManager implements KeyListener {
 
     private Map<RenderMeshFragment, List<FragmentTexture>> getTextures( ViewParams params,
                                                                         Set<RenderMeshFragment> fragments,
-                                                                        TextureManager[] textureManagers ) {
+                                                                        TextureManager[] textureManagers, float zScale ) {
 
         LOG.info( "Texturizing " + fragments.size() + " fragments, managers: " + textureManagers.length );
         Map<RenderMeshFragment, List<FragmentTexture>> meshFragmentToTexture = new HashMap<RenderMeshFragment, List<FragmentTexture>>();
         for ( TextureManager manager : textureManagers ) {
-
-            Map<RenderMeshFragment, FragmentTexture> fragmentToTexture = manager.getTextures( params, fragments );
+            Map<RenderMeshFragment, FragmentTexture> fragmentToTexture = manager.getTextures( params, fragments, zScale );
             for ( RenderMeshFragment fragment : fragmentToTexture.keySet() ) {
                 FragmentTexture texture = fragmentToTexture.get( fragment );
                 List<FragmentTexture> textures = meshFragmentToTexture.get( fragment );
@@ -184,7 +183,7 @@ public class TerrainRenderingManager implements KeyListener {
     }
 
     private void render( GL gl, Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures,
-                         TextureManager[] textureManagers ) {
+                         TextureManager[] textureManagers, float zScale ) {
 
         long begin = System.currentTimeMillis();
 
@@ -195,11 +194,14 @@ public class TerrainRenderingManager implements KeyListener {
         }
 
         // set z-scale
-        gl.glPushMatrix();
-        gl.glScalef( 1.0f, 1.0f, scale );
+        if ( zScale != 1.0f ) {
+            gl.glPushMatrix();
+            gl.glScalef( 1.0f, 1.0f, zScale );
+            // normalize normal vectors
+            gl.glEnable( GL.GL_NORMALIZE );
+        }
 
         for ( RenderMeshFragment fragment : activeLOD ) {
-
             List<FragmentTexture> textures = fragmentToTextures.get( fragment );
             if ( textures != null ) {
                 int i = 0;
@@ -215,17 +217,21 @@ public class TerrainRenderingManager implements KeyListener {
         gl.glFinish();
 
         // reset z-scale
-        gl.glPopMatrix();
+        if ( zScale != 1.0f ) {
+            gl.glPopMatrix();
+            gl.glDisable( GL.GL_NORMALIZE );
+        }
 
         long elapsed = System.currentTimeMillis() - begin;
         LOG.info( "Rendering of " + activeLOD.size() + ": " + elapsed + " milliseconds." );
     }
 
-    private Set<RenderMeshFragment> getNewLOD( ViewParams params ) {
+    private Set<RenderMeshFragment> getNewLOD( ViewParams params, float zScale ) {
 
         ViewFrustum frustum = params.getViewFrustum();
         ViewFrustumCrit crit = new ViewFrustumCrit( params, geometryMaxPixelError );
-        SpatialSelection lodAdaptor = new SpatialSelection( fragmentManager.getMultiresolutionMesh(), crit, frustum );
+        SpatialSelection lodAdaptor = new SpatialSelection( fragmentManager.getMultiresolutionMesh(), crit, frustum,
+                                                            zScale );
 
         List<MeshFragment> fragments = lodAdaptor.determineLODFragment();
         Set<RenderMeshFragment> fragmentIds = new HashSet<RenderMeshFragment>( fragments.size() );
@@ -234,75 +240,6 @@ public class TerrainRenderingManager implements KeyListener {
         }
 
         return fragmentIds;
-    }
-
-    /**
-     * @see java.awt.event.KeyListener#keyPressed(java.awt.event.KeyEvent)
-     */
-    public void keyPressed( KeyEvent ev ) {
-
-        int k = ev.getKeyCode();
-        ev.getModifiers();
-
-        switch ( k ) {
-        case KeyEvent.VK_F9: {
-            texturize = !texturize;
-            break;
-        }
-        case KeyEvent.VK_F10: {
-            autoAdapt = !autoAdapt;
-            break;
-        }
-        case KeyEvent.VK_F11: {
-            showStructure = !showStructure;
-            break;
-        }
-            // case KeyEvent.VK_F11: {
-            // asyncFetching = asyncFetching;
-            // break;
-            // }
-        case KeyEvent.VK_7: {
-            geometryMaxPixelError -= 1;
-            if ( geometryMaxPixelError <= 1 ) {
-                geometryMaxPixelError = 1;
-            }
-            geometryMaxPixelError += 1;
-            break;
-        }
-        case KeyEvent.VK_9: {
-            textureMaxPixelError -= 1;
-            if ( textureMaxPixelError <= 1 ) {
-                textureMaxPixelError = 1;
-            }
-            break;
-        }
-        case KeyEvent.VK_0: {
-            textureMaxPixelError += 1;
-            break;
-        }
-        case KeyEvent.VK_PAGE_DOWN: {
-            scale /= 1.01f;
-            break;
-        }
-        case KeyEvent.VK_PAGE_UP: {
-            scale *= 1.01f;
-            break;
-        }
-        }
-    }
-
-    /**
-     * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
-     */
-    public void keyTyped( KeyEvent e ) {
-        // nothing to do
-    }
-
-    /**
-     * @see java.awt.event.KeyListener#keyReleased(java.awt.event.KeyEvent)
-     */
-    public void keyReleased( KeyEvent e ) {
-        // nothing to do
     }
 
     private void displayStats( GL gl, ViewParams vp ) {
@@ -324,7 +261,7 @@ public class TerrainRenderingManager implements KeyListener {
         gl.glDisable( GL.GL_TEXTURE_2D );
         gl.glColor3f( 1.0f, 1.0f, 1.0f );
         gl.glWindowPos2d( x, 20 );
-        glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "auto adapt: " + ( autoAdapt ? "on" : "off" ) );
+//        glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "auto adapt: " + ( autoAdapt ? "on" : "off" ) );
         gl.glWindowPos2d( x, 34 );
         glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "texels: " + numTexels / 1000000 + " M" );
         gl.glWindowPos2d( x, 48 );

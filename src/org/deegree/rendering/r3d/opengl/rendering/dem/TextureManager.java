@@ -106,20 +106,22 @@ public class TextureManager {
      * 
      * @param params
      * @param fragments
-     * 
+     * @param zScale
+     *            scaling factor applied to z values of the fragments (and their bounding boxes) 
      * @return view-optimized textures, not necessarily enabled
      */
-    public Map<RenderMeshFragment, FragmentTexture> getTextures( ViewParams params, Set<RenderMeshFragment> fragments ) {
+    public Map<RenderMeshFragment, FragmentTexture> getTextures( ViewParams params, Set<RenderMeshFragment> fragments,
+                                                                 float zScale ) {
 
         LOG.info( "Texturizing " + fragments.size() + " fragments" );
         Map<RenderMeshFragment, FragmentTexture> meshFragmentToTexture = new HashMap<RenderMeshFragment, FragmentTexture>();
 
         // create texture requests for each fragment
-        List<TextureRequest> requests = createTextureRequests( params, fragments );
+        List<TextureRequest> requests = createTextureRequests( params, fragments, zScale );
 
         // check which texture requests can be fullfilled from cache
         List<TextureRequest> fromCache = new ArrayList<TextureRequest>();
-        for ( TextureRequest request: requests ) {
+        for ( TextureRequest request : requests ) {
             FragmentTexture texture = memCache.get( request );
             if ( texture != null ) {
                 meshFragmentToTexture.put( request.getFragment(), texture );
@@ -129,7 +131,7 @@ public class TextureManager {
         LOG.info( "From cache: " + meshFragmentToTexture.size() );
 
         // determine remaining texture requests
-        requests.removeAll(fromCache);
+        requests.removeAll( fromCache );
         LOG.info( "To be processed: " + requests.size() );
 
         // produce tile requests (multiple fragments may share a tile)
@@ -169,7 +171,7 @@ public class TextureManager {
         }
     }
 
-    private List<TextureRequest> createTextureRequests( ViewParams params, Set<RenderMeshFragment> fragments ) {
+    private List<TextureRequest> createTextureRequests( ViewParams params, Set<RenderMeshFragment> fragments, float zScale ) {
 
         List<TextureRequest> requests = new ArrayList<TextureRequest>();
 
@@ -179,7 +181,15 @@ public class TextureManager {
 
         for ( RenderMeshFragment fragment : fragments ) {
             float[][] fragmentBBox = fragment.getBBox();
-            double dist = VectorUtils.getDistance( fragmentBBox, eyePos );
+            float[][] scaledBBox = new float [2][3];
+            scaledBBox[0][0]= fragmentBBox[0][0];
+            scaledBBox[0][1]= fragmentBBox[0][1];
+            scaledBBox[0][2]= fragmentBBox[0][2] * zScale;
+            scaledBBox[1][0]= fragmentBBox[1][0];
+            scaledBBox[1][1]= fragmentBBox[1][1];
+            scaledBBox[1][2]= fragmentBBox[1][2] * zScale;            
+            
+            double dist = VectorUtils.getDistance( scaledBBox, eyePos );
             double pixelSize = params.estimatePixelSizeForSpaceUnit( dist );
 
             double metersPerPixel = maxPixelError / pixelSize;
@@ -241,7 +251,7 @@ public class TextureManager {
                 minimizedRequests.add( request );
             }
         }
-        LOG.info ("Tile requests: " + requests.size() + ", minimized: " + minimizedRequests.size());
+        LOG.info( "Tile requests: " + requests.size() + ", minimized: " + minimizedRequests.size() );
         return minimizedRequests;
     }
 

@@ -80,6 +80,24 @@ public class SpatialSelection {
     // bitfield to mark which nodes are above the current cut
     private boolean[] applied;
 
+    private final float zScale;
+
+    /**
+     * Creates a new <code>SpatialSelection</code> instance for the given {@link MultiresolutionMesh},
+     * {@link LODCriterion} and region of interest.
+     * 
+     * @param mt
+     * @param crit
+     * @param roi
+     * @param zScale
+     */
+    public SpatialSelection( MultiresolutionMesh mt, LODCriterion crit, ViewFrustum roi, float zScale ) {
+        this.mt = mt;
+        this.crit = crit;
+        this.roi = roi;
+        this.zScale = zScale;
+    }    
+    
     /**
      * Creates a new <code>SpatialSelection</code> instance for the given {@link MultiresolutionMesh},
      * {@link LODCriterion} and region of interest.
@@ -92,6 +110,7 @@ public class SpatialSelection {
         this.mt = mt;
         this.crit = crit;
         this.roi = roi;
+        this.zScale = 1.0f;
     }
 
     /**
@@ -135,7 +154,7 @@ public class SpatialSelection {
 
             // only process arc if it points to a node below the cut
             if ( !applied[modification.id] ) {
-                if ( crit.needsRefinement( region ) ) {
+                if ( crit.needsRefinement( region, zScale ) ) {
                     int incomingArc = modification.lowestIncomingArc;
                     while ( incomingArc != -1 ) {
                         if ( applied[mt.arcs[incomingArc].sourceNode] ) {
@@ -149,7 +168,7 @@ public class SpatialSelection {
                     if ( modification.lowestOutgoingArc > 0 ) {
                         for ( int arcId = modification.lowestOutgoingArc; arcId <= modification.highestOutgoingArc; arcId++ ) {
                             Arc arc = mt.arcs[arcId];
-                            if ( arc.interferes( roi ) ) {
+                            if ( arc.interferes( roi, zScale ) ) {
                                 lod.add( arc );
                                 toDo.add( arc );
                             }
@@ -161,7 +180,7 @@ public class SpatialSelection {
         }
 
         long elapsed = System.currentTimeMillis() - begin;
-        LOG.debug( "Selective refinement (top-down): " + elapsed + " ms" );
+        LOG.debug( "Spatial selection (top-down): " + elapsed + " ms" );
     }
 
     /**
@@ -175,7 +194,7 @@ public class SpatialSelection {
         int[] outgoingArcs = new int[root.highestOutgoingArc - root.lowestOutgoingArc + 1];
         for ( int i = 0; i < outgoingArcs.length; i++ ) {
             Arc arc = mt.arcs[i + root.lowestOutgoingArc];
-            if ( arc.interferes( roi ) ) {
+            if ( arc.interferes( roi, zScale ) ) {
                 lod.add( arc );
             }
         }
@@ -199,7 +218,7 @@ public class SpatialSelection {
         for ( int arcId = modification.lowestOutgoingArc; arcId <= modification.highestOutgoingArc; arcId++ ) {
             if ( arcId != region.id ) {
                 Arc arc2 = mt.arcs[arcId];
-                if ( arc2.interferes( roi ) ) {
+                if ( arc2.interferes( roi, zScale ) ) {
                     lod.add( arc2 );
                     toDo.add( arc2 );
                 }

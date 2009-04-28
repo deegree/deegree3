@@ -105,14 +105,18 @@ public class ViewFrustumCrit implements LODCriterion {
      * 
      * @param arc
      *            arc to be checked
+     * @param zScale
+     *            scaling factor applied to z values of the mesh geometry (and bounding boxes)
      * @return true, iff the arc's region is inside the view frustum and the estimated screen projection error is
      *         greater than the maximum tolerable error
      */
     @Override
-    public boolean needsRefinement( Arc arc ) {
+    public boolean needsRefinement( Arc arc, float zScale ) {
 
         // step 1: only refine a region if it's inside the view volume
         float[][] nodeBBox = arc.getBBox();
+        nodeBBox[0][2] *= zScale;
+        nodeBBox[1][2] *= zScale;
         if ( !viewRegion.intersects( arc.getBBox() ) ) {
             return false;
         }

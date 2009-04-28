@@ -80,6 +80,8 @@ public class SelectiveRefinement {
     // bitfield to mark which nodes are above the current cut
     private boolean[] applied;
 
+    private final float zScale;
+
     /**
      * Creates a new <code>SelectiveRefinement</code> instance for the given {@link MultiresolutionMesh} and
      * {@link LODCriterion}.
@@ -87,9 +89,10 @@ public class SelectiveRefinement {
      * @param mt
      * @param crit
      */
-    public SelectiveRefinement( MultiresolutionMesh mt, LODCriterion crit ) {
+    public SelectiveRefinement( MultiresolutionMesh mt, LODCriterion crit, float zScale ) {
         this.mt = mt;
         this.crit = crit;
+        this.zScale = zScale;
     }
 
     /**
@@ -133,7 +136,7 @@ public class SelectiveRefinement {
 
             // only process arc if it points to a node below the cut
             if ( !applied[modification.id] ) {
-                if ( crit.needsRefinement( region ) ) {
+                if ( crit.needsRefinement( region, zScale ) ) {
                     int incomingArc = modification.lowestIncomingArc;
                     while ( incomingArc != -1 ) {
                         if ( applied[mt.arcs[incomingArc].sourceNode] ) {
