@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.opengl.util.GLUT;
 
-public class TerrainRenderingManager implements JOGLRenderable, KeyListener {
+public class TerrainRenderingManager implements KeyListener {
 
     private static final Logger LOG = LoggerFactory.getLogger( TerrainRenderingManager.class );
 
@@ -78,10 +78,6 @@ public class TerrainRenderingManager implements JOGLRenderable, KeyListener {
     private float textureMaxPixelError = 1.0f;
 
     private float geometryMaxPixelError = 5.0f;
-
-//    private final double[] translationToLocalCRS;
-
-//    private MultiresolutionMesh mrModel;
 
     private RenderFragmentManager fragmentManager;
 
@@ -102,25 +98,20 @@ public class TerrainRenderingManager implements JOGLRenderable, KeyListener {
 
     private long numTexels = 0;
 
-    private final TextureManager[] textureManagers;
-
-    // private final Map<String, TextureTileManager> datasetNameToManager = new HashMap<String, TextureTileManager>();
-    //
-    // // active texture datasets, applied in list order
-    // private final List<TextureTileManager> activeTextures = new ArrayList<TextureTileManager>();
-
-    public TerrainRenderingManager(RenderFragmentManager fragmentManager, TextureManager[] textureManagers) {
+    public TerrainRenderingManager( RenderFragmentManager fragmentManager ) {
         this.fragmentManager = fragmentManager;
-        this.textureManagers = textureManagers;
-    }   
+    }
 
-    public void render( GL gl, ViewParams params ) {
-
-        int[] intBuffer = new int[1];
-        gl.glGetIntegerv( GL.GL_MAX_TEXTURE_SIZE, intBuffer, 0 );
-        System.out.println( "max texture size: " + intBuffer[0] );
-        gl.glGetIntegerv( GL.GL_MAX_TEXTURE_UNITS, intBuffer, 0 );
-        System.out.println( "max texture units: " + intBuffer[0] );
+    /**
+     * Renders a view-optimized representation of the terrain geometry using the given scale and textures to the
+     * specified GL context.
+     * 
+     * @param gl
+     * @param params
+     * @param scale
+     * @param textureManagers
+     */
+    public void render( GL gl, ViewParams params, float scale, TextureManager[] textureManagers ) {
 
         if ( autoAdapt ) {
             updateLOD( gl, params );
@@ -128,14 +119,12 @@ public class TerrainRenderingManager implements JOGLRenderable, KeyListener {
 
         Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures = Collections.EMPTY_MAP;
         if ( texturize ) {
-            fragmentToTextures = getTextures( params, activeLOD );
+            fragmentToTextures = getTextures( params, activeLOD, textureManagers );
         }
 
-        render( gl, fragmentToTextures );
+        render( gl, fragmentToTextures, textureManagers );
 
         displayStats( gl, params );
-
-        System.out.println( textureManagers[0] );
     }
 
     private void updateLOD( GL gl, ViewParams params ) {
@@ -173,12 +162,13 @@ public class TerrainRenderingManager implements JOGLRenderable, KeyListener {
     }
 
     private Map<RenderMeshFragment, List<FragmentTexture>> getTextures( ViewParams params,
-                                                                        Set<RenderMeshFragment> fragments ) {
+                                                                        Set<RenderMeshFragment> fragments,
+                                                                        TextureManager[] textureManagers ) {
 
         LOG.info( "Texturizing " + fragments.size() + " fragments, managers: " + textureManagers.length );
         Map<RenderMeshFragment, List<FragmentTexture>> meshFragmentToTexture = new HashMap<RenderMeshFragment, List<FragmentTexture>>();
         for ( TextureManager manager : textureManagers ) {
-            
+
             Map<RenderMeshFragment, FragmentTexture> fragmentToTexture = manager.getTextures( params, fragments );
             for ( RenderMeshFragment fragment : fragmentToTexture.keySet() ) {
                 FragmentTexture texture = fragmentToTexture.get( fragment );
@@ -193,7 +183,8 @@ public class TerrainRenderingManager implements JOGLRenderable, KeyListener {
         return meshFragmentToTexture;
     }
 
-    private void render( GL gl, Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures ) {
+    private void render( GL gl, Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures,
+                         TextureManager[] textureManagers ) {
 
         long begin = System.currentTimeMillis();
 
