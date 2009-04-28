@@ -51,6 +51,7 @@ import java.util.Set;
 import javax.media.opengl.GL;
 import javax.swing.JFrame;
 
+import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
@@ -107,10 +108,10 @@ public class TerrainRenderingManager {
      */
     public void render( GL gl, ViewParams params, boolean disableElevationModel, float zScale,
                         TextureManager[] textureManagers ) {
-        
-        System.out.println ("num textures: " + textureManagers.length);
 
-        if ( disableElevationModel || zScale < 0.001f) {
+        System.out.println( "num textures: " + textureManagers.length );
+
+        if ( disableElevationModel || zScale < 0.001f ) {
             // ensure correct zScale (zScale = 0 does not work as expected)
             zScale = 0.001f;
         }
@@ -119,7 +120,8 @@ public class TerrainRenderingManager {
         updateLOD( gl, params, zScale );
 
         // determine textures for each fragment
-        Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures = getTextures( params, activeLOD, textureManagers, zScale );
+        Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures = getTextures( params, activeLOD,
+                                                                                         textureManagers, zScale );
 
         // render fragments with textures
         render( gl, fragmentToTextures, textureManagers, zScale );
@@ -187,6 +189,23 @@ public class TerrainRenderingManager {
 
         long begin = System.currentTimeMillis();
 
+//        // enable the needed number of texture units
+//        int maxTextureCount = 0;
+//        for ( List<FragmentTexture> textures : fragmentToTextures.values() ) {
+//            if ( textures.size() > maxTextureCount ) {
+//                maxTextureCount = textures.size();
+//            }
+//        }
+//        LOG.info ("Enabling " + maxTextureCount + " texture units.");
+//        for ( int i = 0; i < maxTextureCount; i++ ) {
+//            int glTextureId = JOGLUtils.getTextureUnitConst( i );
+//            gl.glEnable( glTextureId );
+//            gl.glClientActiveTexture( glTextureId );
+//            gl.glActiveTexture( glTextureId );
+//            gl.glEnable( GL.GL_TEXTURE_2D );
+//            gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+//        }
+
         try {
             fragmentManager.requireOnGPU( activeLOD, gl );
         } catch ( IOException e ) {
@@ -213,8 +232,6 @@ public class TerrainRenderingManager {
                 fragment.render( gl, null );
             }
         }
-        gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, 0 );
-        gl.glFinish();
 
         // reset z-scale
         if ( zScale != 1.0f ) {
@@ -222,8 +239,17 @@ public class TerrainRenderingManager {
             gl.glDisable( GL.GL_NORMALIZE );
         }
 
+//        // disable all activated texture units
+//        for ( int i = 0; i < maxTextureCount; i++ ) {
+//            int glTextureId = JOGLUtils.getTextureUnitConst( i );
+//            gl.glActiveTexture( glTextureId );
+//            gl.glDisable( GL.GL_TEXTURE_2D );
+//            gl.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+//            gl.glDisable( glTextureId );
+//        }
+
         long elapsed = System.currentTimeMillis() - begin;
-        LOG.info( "Rendering of " + activeLOD.size() + ": " + elapsed + " milliseconds." );
+        LOG.debug( "Rendering of " + activeLOD.size() + ": " + elapsed + " milliseconds." );
     }
 
     private Set<RenderMeshFragment> getNewLOD( ViewParams params, float zScale ) {
@@ -261,7 +287,7 @@ public class TerrainRenderingManager {
         gl.glDisable( GL.GL_TEXTURE_2D );
         gl.glColor3f( 1.0f, 1.0f, 1.0f );
         gl.glWindowPos2d( x, 20 );
-//        glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "auto adapt: " + ( autoAdapt ? "on" : "off" ) );
+        // glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "auto adapt: " + ( autoAdapt ? "on" : "off" ) );
         gl.glWindowPos2d( x, 34 );
         glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "texels: " + numTexels / 1000000 + " M" );
         gl.glWindowPos2d( x, 48 );
