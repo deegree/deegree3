@@ -380,17 +380,20 @@ public class XMLAdapter {
      */
     public void load( InputStream istream, String systemId )
                             throws XMLProcessingException {
+        if ( istream != null ) {
+            PushbackInputStream pbis = new PushbackInputStream( istream, 1024 );
+            String encoding = determineEncoding( pbis );
 
-        PushbackInputStream pbis = new PushbackInputStream( istream, 1024 );
-        String encoding = determineEncoding( pbis );
-
-        InputStreamReader isr;
-        try {
-            isr = new InputStreamReader( pbis, encoding );
-        } catch ( UnsupportedEncodingException e ) {
-            throw new XMLProcessingException( e.getMessage(), e );
+            InputStreamReader isr;
+            try {
+                isr = new InputStreamReader( pbis, encoding );
+            } catch ( UnsupportedEncodingException e ) {
+                throw new XMLProcessingException( e.getMessage(), e );
+            }
+            load( isr, systemId );
+        } else {
+            throw new NullPointerException( "The stream may not be null." );
         }
-        load( isr, systemId );
     }
 
     /**
@@ -419,22 +422,25 @@ public class XMLAdapter {
         try {
             byte[] b = new byte[80];
             int rd = pbis.read( b );
-            String s = new String( b ).toLowerCase();
 
             // TODO think about this
             String encoding = "UTF-8";
-            if ( s.indexOf( "?>" ) > -1 ) {
-                int p = s.indexOf( "encoding=" );
-                if ( p > -1 ) {
-                    StringBuffer sb = new StringBuffer();
-                    int k = p + 1 + "encoding=".length();
-                    while ( s.charAt( k ) != '"' && s.charAt( k ) != '\'' ) {
-                        sb.append( s.charAt( k++ ) );
+            if ( rd > 0 ) {
+                String s = new String( b ).toLowerCase();
+
+                if ( s.indexOf( "?>" ) > -1 ) {
+                    int p = s.indexOf( "encoding=" );
+                    if ( p > -1 ) {
+                        StringBuffer sb = new StringBuffer();
+                        int k = p + 1 + "encoding=".length();
+                        while ( s.charAt( k ) != '"' && s.charAt( k ) != '\'' ) {
+                            sb.append( s.charAt( k++ ) );
+                        }
+                        encoding = sb.toString();
                     }
-                    encoding = sb.toString();
                 }
+                pbis.unread( b, 0, rd );
             }
-            pbis.unread( b, 0, rd );
             return encoding;
         } catch ( IOException e ) {
             throw new XMLProcessingException( e.getMessage(), e );
@@ -469,6 +475,7 @@ public class XMLAdapter {
             setSystemId( systemId );
 
             XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader( pbr );
+            // parser.nextTag();
             StAXOMBuilder builder = new StAXOMBuilder( parser );
             rootElement = builder.getDocumentElement();
         } catch ( IOException e ) {
