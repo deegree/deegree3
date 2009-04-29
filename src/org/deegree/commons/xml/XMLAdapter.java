@@ -51,11 +51,8 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PushbackInputStream;
-import java.io.PushbackReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -381,16 +378,32 @@ public class XMLAdapter {
     public void load( InputStream istream, String systemId )
                             throws XMLProcessingException {
         if ( istream != null ) {
-            PushbackInputStream pbis = new PushbackInputStream( istream, 1024 );
-            String encoding = determineEncoding( pbis );
 
-            InputStreamReader isr;
+        // TODO evaluate correct encoding handling
+            
+//            PushbackInputStream pbis = new PushbackInputStream( istream, 1024 );
+//            String encoding = determineEncoding( pbis );
+//
+//            InputStreamReader isr;
+//            try {
+//                isr = new InputStreamReader( pbis, encoding );
+//            } catch ( UnsupportedEncodingException e ) {
+//                throw new XMLProcessingException( e.getMessage(), e );
+//            }
+//            
+            setSystemId( systemId );
+
+            // TODO the code below is used, because constructing from Reader causes an error if the
+            // document contains a DOCTYPE definition
+            
             try {
-                isr = new InputStreamReader( pbis, encoding );
-            } catch ( UnsupportedEncodingException e ) {
+                StAXOMBuilder builder = new StAXOMBuilder( istream );
+                rootElement = builder.getDocumentElement();
+            } catch ( XMLStreamException e ) {
                 throw new XMLProcessingException( e.getMessage(), e );
             }
-            load( isr, systemId );
+
+//            load( isr, systemId );            
         } else {
             throw new NullPointerException( "The stream may not be null." );
         }
@@ -462,24 +475,21 @@ public class XMLAdapter {
     public void load( Reader reader, String systemId )
                             throws XMLProcessingException {
         try {
-            PushbackReader pbr = new PushbackReader( reader, 1024 );
-            int c = pbr.read();
-            if ( c != 65279 && c != 65534 ) {
-                // no BOM (byte order mark)! push char back into reader
-                pbr.unread( c );
-            }
+//            PushbackReader pbr = new PushbackReader( reader, 1024 );
+//            int c = pbr.read();
+//            if ( c != 65279 && c != 65534 ) {
+//                // no BOM (byte order mark)! push char back into reader
+//                pbr.unread( c );
+//            }
 
             if ( systemId == null ) {
                 throw new NullPointerException( "'systemId' must not be null!" );
             }
             setSystemId( systemId );
 
-            XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader( pbr );
-            // parser.nextTag();
+            XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader( reader );
             StAXOMBuilder builder = new StAXOMBuilder( parser );
             rootElement = builder.getDocumentElement();
-        } catch ( IOException e ) {
-            throw new XMLProcessingException( e.getMessage(), e );
         } catch ( XMLStreamException e ) {
             throw new XMLProcessingException( e.getMessage(), e );
         } catch ( OMException e ) {
@@ -490,8 +500,8 @@ public class XMLAdapter {
     }
 
     /**
-     * Initializes this <code>XMLAdapter</code> with the content from the given <code>InputStream</code> and sets
-     * the system id to the {@link #DEFAULT_URL}
+     * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code> and sets the
+     * system id to the {@link #DEFAULT_URL}
      * 
      * @param reader
      *            to load the xml from.
