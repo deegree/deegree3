@@ -82,7 +82,7 @@ public class TerrainRenderingManager {
     // contains the mesh fragments that make up the current LOD
     private Set<RenderMeshFragment> activeLOD = new HashSet<RenderMeshFragment>();
 
-    private boolean showStructure;
+    public boolean showStructure;
 
     private LODAnalyzer analyzer;
 

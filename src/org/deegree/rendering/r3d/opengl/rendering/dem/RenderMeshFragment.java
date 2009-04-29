@@ -223,7 +223,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
             gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
 
             gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( 0 ).getGLTextureId() );
-            // gl.glTexEnvf( GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE );
+            gl.glTexEnvf( GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_DECAL );
 
             // second to last texture
             for ( int i = 1; i < textures.size(); i++ ) {
