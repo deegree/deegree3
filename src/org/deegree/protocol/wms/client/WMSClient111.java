@@ -122,7 +122,14 @@ public class WMSClient111 {
      * @param url
      */
     public WMSClient111( URL url ) {
-        this( new XMLAdapter( url ) );
+        try {
+            this.capabilities = new XMLAdapter( url );
+        } catch ( Exception e ) {
+            LOG.error( e.getLocalizedMessage(), e );
+            throw new NullPointerException( "Could not read from URL: " + url + " error was: "
+                                            + e.getLocalizedMessage() );
+        }
+        checkCapabilities( this.capabilities );
     }
 
     /**
@@ -448,7 +455,6 @@ public class WMSClient111 {
         }
 
         response.first = compositedImage;
-
 
         RasterReference rasterEnv = new RasterReference( bbox, width, height );
 
