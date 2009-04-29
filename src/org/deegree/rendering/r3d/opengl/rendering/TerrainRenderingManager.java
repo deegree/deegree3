@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GLAutoDrawable;
 import javax.swing.JFrame;
 
 import org.deegree.rendering.r3d.ViewFrustum;
@@ -56,6 +57,7 @@ import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
 import org.deegree.rendering.r3d.multiresolution.SpatialSelection;
 import org.deegree.rendering.r3d.multiresolution.crit.ViewFrustumCrit;
+import org.deegree.rendering.r3d.opengl.rendering.dem.CompositingShader;
 import org.deegree.rendering.r3d.opengl.rendering.dem.FragmentTexture;
 import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
 import org.deegree.rendering.r3d.opengl.rendering.dem.TextureManager;
@@ -90,12 +92,65 @@ public class TerrainRenderingManager {
 
     private long numTexels = 0;
 
-    private int shaderId;
+    // shaderProgramIds [i]: id of GL shader program for compositing i texture layers
+    private int [] shaderProgramIds;
 
     public TerrainRenderingManager( RenderFragmentManager fragmentManager ) {
         this.fragmentManager = fragmentManager;
     }
 
+    public void init( GLAutoDrawable drawable ) {
+        LOG.trace( "init( GLAutoDrawable ) called" );
+
+        GL gl = drawable.getGL();
+        
+        int numTextureUnits = 8;
+        LOG.info( "building " + numTextureUnits + " shader programs");
+        shaderProgramIds = new int [numTextureUnits];
+        for (int i = 1; i <= numTextureUnits; i++) {
+            LOG.info( "Building fragment shader for compositing " + i + " textures.");
+            
+            // generate and compile shader 
+            int shaderId = gl.glCreateShader( GL.GL_FRAGMENT_SHADER );
+            gl.glShaderSource( shaderId, 1, new String[] { CompositingShader.getGLSLCode( i ) }, (int[]) null, 0 );
+            gl.glCompileShader( shaderId );
+            
+            // create program and attach shader
+            int shaderProgramId = gl.glCreateProgram();
+            gl.glAttachShader( shaderProgramId, shaderId );
+
+            // link program
+            gl.glLinkProgram( shaderProgramId );
+            int[] linkStatus = new int[1];
+            gl.glGetProgramiv( shaderProgramId, GL.GL_LINK_STATUS, linkStatus, 0 );
+            if ( linkStatus[0] == GL.GL_FALSE ) {
+                int[] length = new int[1];
+                gl.glGetProgramiv( shaderProgramId, GL.GL_INFO_LOG_LENGTH, length, 0 );
+                byte[] infoLog = new byte[length[0]];
+                gl.glGetProgramInfoLog( shaderProgramId, length[0], length, 0, infoLog, 0 );
+                String msg = new String( infoLog );
+                LOG.error( "shader source: " + CompositingShader.getGLSLCode( i ) );
+                LOG.error( msg );
+                throw new RuntimeException( msg );
+            }
+
+            // validate program
+            gl.glValidateProgram( shaderProgramId );
+            int[] validateStatus = new int[1];
+            gl.glGetProgramiv( shaderProgramId, GL.GL_VALIDATE_STATUS, validateStatus, 0 );
+            if ( validateStatus[0] == GL.GL_FALSE ) {
+                int[] length = new int[1];
+                gl.glGetProgramiv( shaderProgramId, GL.GL_INFO_LOG_LENGTH, length, 0 );
+                byte[] infoLog = new byte[length[0]];
+                gl.glGetProgramInfoLog( shaderProgramId, length[0], length, 0, infoLog, 0 );
+                String msg = new String( infoLog );
+                LOG.error( msg );
+                throw new RuntimeException( msg );
+            }
+            shaderProgramIds[i - 1] = shaderProgramId;
+        }
+    }    
+    
     /**
      * Renders a view-optimized representation of the terrain geometry using the given scale and textures to the
      * specified GL context.
@@ -221,14 +276,14 @@ public class TerrainRenderingManager {
 
         for ( RenderMeshFragment fragment : activeLOD ) {
             List<FragmentTexture> textures = fragmentToTextures.get( fragment );
-            if ( textures != null ) {
+            if ( textures != null && textures.size() > 0) {
                 int i = 0;
                 for ( FragmentTexture texture : textures ) {
                     textureManagers[i++].enable( Collections.singletonList( texture ), gl );
-                }
-                fragment.render( gl, textures, shaderId );
+                }                
+                fragment.render( gl, textures, shaderProgramIds [textures.size() - 1] );
             } else {
-                fragment.render( gl, null, shaderId );
+                fragment.render( gl, null, 0 );
             }
         }
 
@@ -298,9 +353,5 @@ public class TerrainRenderingManager {
         gl.glWindowPos2d( x, 88 );
         glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "geometry error: " + geometryMaxPixelError );
         gl.glColor3f( 1.0f, 1.0f, 1.0f );
-    }
-
-    public void setShader( int shaderId ) {
-        this.shaderId = shaderId;
     }
 }

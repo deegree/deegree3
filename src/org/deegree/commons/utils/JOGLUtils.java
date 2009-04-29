@@ -124,23 +124,6 @@ public class JOGLUtils {
         throw new IllegalArgumentException( Messages.getMessage( "JOGL_INVALID_TEXTURE_UNIT", textureId ) );
     }
 
-    public static int compileFragmentShader( GL gl, BufferedReader glslReader )
-                            throws IOException {
-
-        int shaderId = gl.glCreateShader( GL.GL_FRAGMENT_SHADER );
-
-        String line;
-        String src = "";
-        while ( ( line = glslReader.readLine() ) != null ) {
-            src += line + "\n";
-        }
-
-        gl.glShaderSource( shaderId, 1, new String[] { src }, (int[]) null, 0 );
-        gl.glCompileShader( shaderId );
-
-        return shaderId;
-    }
-
     /**
      * output the current modelview matrix of the given context.
      * 

@@ -200,11 +200,11 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
      * 
      * @param gl
      * @param textures
-     * @param shaderId
+     * @param shaderProgramId 
      * @throws RuntimeException
      *             if the geometry data is currently not bound to VBOs
      */
-    public void render( GL gl, List<FragmentTexture> textures, int shaderId ) {
+    public void render( GL gl, List<FragmentTexture> textures, int shaderProgramId ) {
 
         if ( !isEnabled() ) {
             throw new RuntimeException( "Cannot render mesh fragment, not enabled." );
@@ -212,7 +212,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
         // render with or without texture
         if ( textures != null && textures.size() > 0 ) {
-
+            
             // first texture (uses always-available texture unit 0)
             gl.glClientActiveTexture( GL.GL_TEXTURE0 );
             gl.glActiveTexture( GL.GL_TEXTURE0 );
@@ -222,9 +222,8 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
             gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, textures.get( 0 ).getGLVertexCoordBufferId() );
             gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
 
-            gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( 0 ).getGLTextureId() );
-            gl.glTexEnvf( GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_DECAL );
-
+            gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( 0 ).getGLTextureId() );          
+            
             // second to last texture
             for ( int i = 1; i < textures.size(); i++ ) {
                 int textureUnitId = JOGLUtils.getTextureUnitConst( i );
@@ -237,22 +236,14 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
                 gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
 
                 gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( i ).getGLTextureId() );
-                // gl.glTexEnvf( GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_DECAL );
             }
 
-            gl.glUseProgram( shaderId );
-            int texSampler = gl.glGetUniformLocation( shaderId, "tex0" );
-            gl.glUniform1i( texSampler, 0 );
-            texSampler = gl.glGetUniformLocation( shaderId, "tex1" );
-            gl.glUniform1i( texSampler, 1 );
-            texSampler = gl.glGetUniformLocation( shaderId, "tex2" );
-            gl.glUniform1i( texSampler, 2 );
-            texSampler = gl.glGetUniformLocation( shaderId, "tex3" );
-            gl.glUniform1i( texSampler, 3 );
-            texSampler = gl.glGetUniformLocation( shaderId, "tex4" );
-            gl.glUniform1i( texSampler, 4 );
-            texSampler = gl.glGetUniformLocation( shaderId, "tex5" );
-            gl.glUniform1i( texSampler, 5 );
+            // activate shader and set texSamplers
+            gl.glUseProgram( shaderProgramId );   
+            for (int i = 0; i < textures.size(); i++) {
+                int texSampler = gl.glGetUniformLocation( shaderProgramId, "tex" + i );
+                gl.glUniform1i( texSampler, i );
+            }
         }
 
         gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[0] );

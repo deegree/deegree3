@@ -49,17 +49,26 @@ public class CompositingShader {
             sb.append( ",tex" );
             sb.append( i );
         }
-        sb.append (';');
-        
+        sb.append( ';' );
+
         // begin main method
-        sb.append ("\n\nvoid main()\n{\n");
+        sb.append( "\n\nvoid main()\n{\n" );
+        sb.append( "    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n" );
+
+        // add a GL_DECAL-like function for each texture unit
+        for ( int i = 0; i < numTextures; i++ ) {
+            sb.append( "\n    vec4 tex" + i + "Color = texture2D(tex" + i + ", gl_TexCoord[" + i + "].st);\n" );
+            sb.append( "    gl_FragColor = (1.0 - tex" + i + "Color.a) * gl_FragColor + tex" + i + "Color.a * tex" + i
+                       + "Color;\n" );
+        }
 
         // end main method
-        sb.append ("}\n");
+        sb.append( "\n   gl_FragColor = gl_FragColor * gl_Color;\n" );
+        sb.append( "}\n" );
         return sb.toString();
     }
 
     public static void main( String[] args ) {
-        System.out.println (getGLSLCode( 32 ));
+        System.out.println( getGLSLCode( 6 ) );
     }
 }
