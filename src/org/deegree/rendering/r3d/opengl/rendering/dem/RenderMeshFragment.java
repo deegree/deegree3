@@ -200,7 +200,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
      * 
      * @param gl
      * @param textures
-     * @param shaderId 
+     * @param shaderId
      * @throws RuntimeException
      *             if the geometry data is currently not bound to VBOs
      */
@@ -223,8 +223,8 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
             gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
 
             gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( 0 ).getGLTextureId() );
-//            gl.glTexEnvf( GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE );          
-            
+            // gl.glTexEnvf( GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE );
+
             // second to last texture
             for ( int i = 1; i < textures.size(); i++ ) {
                 int textureUnitId = JOGLUtils.getTextureUnitConst( i );
@@ -237,10 +237,10 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
                 gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
 
                 gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( i ).getGLTextureId() );
-//                gl.glTexEnvf( GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_DECAL );
+                // gl.glTexEnvf( GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_DECAL );
             }
-            
-            gl.glUseProgram( shaderId );            
+
+            gl.glUseProgram( shaderId );
             int texSampler = gl.glGetUniformLocation( shaderId, "tex0" );
             gl.glUniform1i( texSampler, 0 );
             texSampler = gl.glGetUniformLocation( shaderId, "tex1" );
@@ -252,7 +252,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
             texSampler = gl.glGetUniformLocation( shaderId, "tex4" );
             gl.glUniform1i( texSampler, 4 );
             texSampler = gl.glGetUniformLocation( shaderId, "tex5" );
-            gl.glUniform1i( texSampler, 5 );            
+            gl.glUniform1i( texSampler, 5 );
         }
 
         gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, glBufferObjectIds[0] );
@@ -268,7 +268,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
         if ( textures != null && textures.size() > 0 ) {
             for ( int i = 0; i < textures.size(); i++ ) {
                 int textureUnitId = JOGLUtils.getTextureUnitConst( i );
-                gl.glClientActiveTexture( textureUnitId );                
+                gl.glClientActiveTexture( textureUnitId );
                 gl.glActiveTexture( textureUnitId );
                 gl.glDisable( GL.GL_TEXTURE_2D );
                 gl.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
@@ -276,8 +276,9 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
             gl.glActiveTexture( GL.GL_TEXTURE0 );
             gl.glClientActiveTexture( GL.GL_TEXTURE0 );
         }
-        
-        gl.glUseProgram( 0 );        
+
+        gl.glUseProgram( 0 );
+        gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, 0 );
     }
 
     @Override
