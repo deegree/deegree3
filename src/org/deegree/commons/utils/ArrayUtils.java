@@ -43,6 +43,7 @@
 package org.deegree.commons.utils;
 
 import static java.lang.Double.parseDouble;
+import static java.lang.Float.parseFloat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -290,6 +291,23 @@ public class ArrayUtils {
             ds[i] = parseDouble( ss[i] );
         }
         return ds;
+    }
+
+    /**
+     * @param str
+     * @param delim
+     * @return str.split(delim) values parsed as floats
+     * @throws NumberFormatException
+     *             if one of the values could not be read.
+     */
+    public static float[] splitAsFloats( String str, String delim )
+                            throws NumberFormatException {
+        String[] ss = str.split( delim );
+        float[] fs = new float[ss.length];
+        for ( int i = 0; i < ss.length; ++i ) {
+            fs[i] = parseFloat( ss[i] );
+        }
+        return fs;
     }
 
 }

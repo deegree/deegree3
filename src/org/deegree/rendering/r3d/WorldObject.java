@@ -122,12 +122,11 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
         Point p = bbox.getCentroid();
         double[] min = bbox.getMin().getAsArray();
         double[] max = bbox.getMax().getAsArray();
-        position = new float[] { (float) p.getX(), (float) p.getY(),
-                                (float) ( ( p.is3D() ) ? p.getZ() : 0 ) };
-        if ( ! bbox.getMin().is3D() ) {
+        position = new float[] { (float) p.getX(), (float) p.getY(), (float) ( ( p.is3D() ) ? p.getZ() : 0 ) };
+        if ( !bbox.getMin().is3D() ) {
             min = new double[] { min[0], min[1], 0 };
         }
-        if ( ! bbox.getMax().is3D() ) {
+        if ( !bbox.getMax().is3D() ) {
             max = new double[] { max[0], max[1], 0 };
         }
         error = (float) Vectors3d.length( Vectors3d.sub( max, min ) );
@@ -146,6 +145,13 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
             return null;
         }
         return qualityLevels[index];
+    }
+
+    /**
+     * @return the quality models array
+     */
+    public QM[] getQualityLevels() {
+        return qualityLevels;
     }
 
     /**
@@ -189,8 +195,8 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
      *            to place
      */
     public void setQualityLevel( int index, QM model ) {
-        if ( qualityLevels != null && model != null ) {
-            if ( index > 0 || index < qualityLevels.length ) {
+        if ( qualityLevels != null ) {
+            if ( index >= 0 || index < qualityLevels.length ) {
                 qualityLevels[index] = model;
             }
         }
@@ -256,12 +262,11 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
         Point p = bbox.getCentroid();
         double[] min = bbox.getMin().getAsArray();
         double[] max = bbox.getMax().getAsArray();
-        position = new float[] { (float) p.getX(), (float) p.getY(),
-                                (float) ( ( p.is3D() ) ? p.getZ() : 0 ) };
-        if ( ! bbox.getMin().is3D() ) {
+        position = new float[] { (float) p.getX(), (float) p.getY(), (float) ( ( p.is3D() ) ? p.getZ() : 0 ) };
+        if ( !bbox.getMin().is3D() ) {
             min = new double[] { min[0], min[1], 0 };
         }
-        if ( ! bbox.getMax().is3D() ) {
+        if ( !bbox.getMax().is3D() ) {
             max = new double[] { max[0], max[1], 0 };
         }
         this.error = (float) Vectors3d.length( Vectors3d.sub( max, min ) );

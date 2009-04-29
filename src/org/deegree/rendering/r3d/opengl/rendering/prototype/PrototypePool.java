@@ -43,12 +43,10 @@ import java.util.Map;
 
 import javax.media.opengl.GL;
 
-import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.DirectGeometryBuffer;
-import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
 import org.deegree.rendering.r3d.opengl.rendering.RenderableGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.RenderableQualityModel;
 
@@ -73,30 +71,35 @@ public class PrototypePool {
 
     /**
      * @param context
+     * @param params
+     *            to be rendered with.
      * @param prototype
-     * @param eye
-     *            of the beholder
+     * @param buffer
+     *            to be used for rendering.
      */
-    public synchronized static void render( GL context, ViewParams params, PrototypeReference prototype ) {
+    public synchronized static void render( GL context, ViewParams params, PrototypeReference prototype,
+                                            DirectGeometryBuffer buffer ) {
         if ( prototype == null || prototype.getPrototypeID() == null ) {
             return;
         }
-        JOGLRenderable model = prototypes.get( prototype.getPrototypeID() );
-        System.out.println( "model: " + prototype.getPrototypeID() );
+        RenderablePrototype model = prototypes.get( prototype.getPrototypeID() );
+
         if ( model == null ) {
             LOG.warn( "No model found for prototype: " + prototype.getPrototypeID() );
             return;
         }
+
         context.glPushMatrix();
-        // context.glLoadMatrixf( prototype.getTransformationMatrix().getValues() );
+
         float[] loc = prototype.getLocation();
         context.glTranslatef( loc[0], loc[1], loc[2] );
-        System.out.println( "Location: " + Vectors3f.asString( loc ) );
         context.glRotatef( prototype.getAngle(), 0, 0, 1 );
-
         context.glScalef( prototype.getWidth(), prototype.getDepth(), prototype.getHeight() );
-        // render prototype
-        model.render( context, params );
+        if ( buffer == null ) {
+            model.render( context, params );
+        } else {
+            model.renderPrepared( context, params, buffer );
+        }
         context.glPopMatrix();
     }
 
@@ -115,20 +118,13 @@ public class PrototypePool {
     /**
      * @param id
      * @param model
-     * @param geometryBuffer
      */
-    public static synchronized void addPrototype( String id, RenderablePrototype model,
-                                                  DirectGeometryBuffer geometryBuffer ) {
+    public static synchronized void addPrototype( String id, RenderablePrototype model ) {
         if ( id == null || "".equals( id ) || model == null || prototypes.containsKey( id ) ) {
+            LOG.info( "Ignoring prototype because no id/model was given." );
             return;
         }
         prototypes.put( id, model );
     }
 
-    /**
-     * @return the reference to the prototype map (not a copy), changes to the map will reflect the pool.
-     */
-    public static final Map<String, RenderablePrototype> getPrototypes() {
-        return prototypes;
-    }
 }

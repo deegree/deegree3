@@ -261,6 +261,9 @@ public class RenderableGeometry implements RenderableQualityModelPart {
                 }
 
             }
+            // else {
+            // context.glDisableClientState( GL.GL_NORMAL_ARRAY );
+            // }
         }
     }
 
@@ -268,7 +271,9 @@ public class RenderableGeometry implements RenderableQualityModelPart {
      * @param context
      */
     public void disableArrays( GL context ) {
-        // nothing.
+        // if ( !hasNormals ) {
+        // context.glEnableClientState( GL.GL_NORMAL_ARRAY );
+        // }
     }
 
     /**
@@ -297,7 +302,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
         this.hasNormals = ( vertexNormals != null && vertexNormals.length > 0 );
         if ( hasNormals ) {
             if ( vertexNormals.length % 3 != 0 ) {
-                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                                                                                                                                                                                                                                                                                                                                           )
+                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                                                                                                                                                                                                                                                                                                                                                 )
                                                     + ") must be kongruent to 3." );
             } else if ( ( vertexNormals.length / 3 ) != vertexCount ) {
                 throw new IllegalArgumentException( "The number of normals (" + ( vertexNormals.length / 3 )

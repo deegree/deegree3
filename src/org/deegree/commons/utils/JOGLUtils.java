@@ -97,8 +97,8 @@ public class JOGLUtils {
      * Returns the number of texture image units that can be used in fragment shaders.
      * <p>
      * NOTE: This method evaluates the value of <code>GL_MAX_TEXTURE_IMAGE_UNITS</code>. The number is usually not
-     * identical to <code>GL_MAX_TEXTURE_UNITS</code> which denotes the maximum number of texture units in fixed shader
-     * functions.
+     * identical to <code>GL_MAX_TEXTURE_UNITS</code> which denotes the maximum number of texture units in fixed
+     * shader functions.
      * </p>
      * 
      * @param gl
@@ -124,7 +124,8 @@ public class JOGLUtils {
         throw new IllegalArgumentException( Messages.getMessage( "JOGL_INVALID_TEXTURE_UNIT", textureId ) );
     }
 
-    public static int compileFragmentShader( GL gl, BufferedReader glslReader ) throws IOException {
+    public static int compileFragmentShader( GL gl, BufferedReader glslReader )
+                            throws IOException {
 
         int shaderId = gl.glCreateShader( GL.GL_FRAGMENT_SHADER );
 
@@ -138,5 +139,30 @@ public class JOGLUtils {
         gl.glCompileShader( shaderId );
 
         return shaderId;
+    }
+
+    /**
+     * output the current modelview matrix of the given context.
+     * 
+     * @param gl
+     */
+    public static void outputMV( GL gl ) {
+        float[] mv = new float[16];
+        gl.glGetFloatv( GL.GL_MODELVIEW_MATRIX, mv, 0 );
+        StringBuilder sb = new StringBuilder();
+        sb.append( mv[0] ).append( ",\t" ).append( mv[4] ).append( ",\t" ).append( mv[8] ).append( ",\t" ).append(
+                                                                                                                   mv[12] );
+        sb.append( "\n" );
+        sb.append( mv[1] ).append( ",\t" ).append( mv[5] ).append( ",\t" ).append( mv[9] ).append( ",\t" ).append(
+                                                                                                                   mv[13] );
+        sb.append( "\n" );
+        sb.append( mv[2] ).append( ",\t" ).append( mv[6] ).append( ",\t" ).append( mv[10] ).append( ",\t" ).append(
+                                                                                                                    mv[14] );
+        sb.append( "\n" );
+        sb.append( mv[3] ).append( ",\t\t" ).append( mv[7] ).append( ",\t\t" ).append( mv[11] ).append( ",\t\t" ).append(
+                                                                                                                          mv[15] );
+        sb.append( "\n" );
+        System.out.println( sb.toString() );
+
     }
 }

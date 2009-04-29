@@ -51,7 +51,6 @@ import java.util.Set;
 import javax.media.opengl.GL;
 import javax.swing.JFrame;
 
-import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
@@ -110,8 +109,6 @@ public class TerrainRenderingManager {
      */
     public void render( GL gl, ViewParams params, boolean disableElevationModel, float zScale,
                         TextureManager[] textureManagers ) {
-
-        System.out.println( "num textures: " + textureManagers.length );
 
         if ( disableElevationModel || zScale < 0.001f ) {
             // ensure correct zScale (zScale = 0 does not work as expected)
@@ -191,23 +188,23 @@ public class TerrainRenderingManager {
 
         long begin = System.currentTimeMillis();
 
-//        // enable the needed number of texture units
-//        int maxTextureCount = 0;
-//        for ( List<FragmentTexture> textures : fragmentToTextures.values() ) {
-//            if ( textures.size() > maxTextureCount ) {
-//                maxTextureCount = textures.size();
-//            }
-//        }
-//        LOG.info ("Enabling " + maxTextureCount + " texture units.");
-//        for ( int i = 0; i < maxTextureCount; i++ ) {
-//            int glTextureId = JOGLUtils.getTextureUnitConst( i );
-//            gl.glEnable( glTextureId );
-//            gl.glClientActiveTexture( glTextureId );
-//            gl.glActiveTexture( glTextureId );
-//            gl.glEnable( GL.GL_TEXTURE_2D );
-//            gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-//        }
-       
+        // // enable the needed number of texture units
+        // int maxTextureCount = 0;
+        // for ( List<FragmentTexture> textures : fragmentToTextures.values() ) {
+        // if ( textures.size() > maxTextureCount ) {
+        // maxTextureCount = textures.size();
+        // }
+        // }
+        // LOG.info ("Enabling " + maxTextureCount + " texture units.");
+        // for ( int i = 0; i < maxTextureCount; i++ ) {
+        // int glTextureId = JOGLUtils.getTextureUnitConst( i );
+        // gl.glEnable( glTextureId );
+        // gl.glClientActiveTexture( glTextureId );
+        // gl.glActiveTexture( glTextureId );
+        // gl.glEnable( GL.GL_TEXTURE_2D );
+        // gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+        // }
+
         try {
             fragmentManager.requireOnGPU( activeLOD, gl );
         } catch ( IOException e ) {
@@ -221,7 +218,7 @@ public class TerrainRenderingManager {
             // normalize normal vectors
             gl.glEnable( GL.GL_NORMALIZE );
         }
-               
+
         for ( RenderMeshFragment fragment : activeLOD ) {
             List<FragmentTexture> textures = fragmentToTextures.get( fragment );
             if ( textures != null ) {
@@ -233,7 +230,7 @@ public class TerrainRenderingManager {
             } else {
                 fragment.render( gl, null, shaderId );
             }
-        }        
+        }
 
         // reset z-scale
         if ( zScale != 1.0f ) {
@@ -241,14 +238,14 @@ public class TerrainRenderingManager {
             gl.glDisable( GL.GL_NORMALIZE );
         }
 
-//        // disable all activated texture units
-//        for ( int i = 0; i < maxTextureCount; i++ ) {
-//            int glTextureId = JOGLUtils.getTextureUnitConst( i );
-//            gl.glActiveTexture( glTextureId );
-//            gl.glDisable( GL.GL_TEXTURE_2D );
-//            gl.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-//            gl.glDisable( glTextureId );
-//        }
+        // // disable all activated texture units
+        // for ( int i = 0; i < maxTextureCount; i++ ) {
+        // int glTextureId = JOGLUtils.getTextureUnitConst( i );
+        // gl.glActiveTexture( glTextureId );
+        // gl.glDisable( GL.GL_TEXTURE_2D );
+        // gl.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+        // gl.glDisable( glTextureId );
+        // }
 
         long elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Rendering of " + activeLOD.size() + ": " + elapsed + " milliseconds." );
