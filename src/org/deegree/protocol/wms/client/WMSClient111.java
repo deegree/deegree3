@@ -101,18 +101,10 @@ public class WMSClient111 {
      * @version $Revision$, $Date$
      */
     public enum Requests {
-        /**
-         * 
-         */
-        GetMap, /**
-         * 
-         */
-        GetCapabilities, /**
-         * 
-         */
-        GetFeatureInfo, /**
-         * 
-         */
+        /** * */
+        GetMap, /** * */
+        GetCapabilities, /** * */
+        GetFeatureInfo, /** * */
         GetLegendGraphic
     }
 
