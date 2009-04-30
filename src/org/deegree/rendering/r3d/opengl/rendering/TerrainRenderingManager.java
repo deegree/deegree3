@@ -75,10 +75,6 @@ public class TerrainRenderingManager {
 
     private static final long serialVersionUID = 1854116460506116944L;
 
-    private float textureMaxPixelError = 1.0f;
-
-    private float geometryMaxPixelError = 5.0f;
-
     private RenderFragmentManager fragmentManager;
 
     // contains the mesh fragments that make up the current LOD
@@ -93,28 +89,35 @@ public class TerrainRenderingManager {
     private long numTexels = 0;
 
     // shaderProgramIds [i]: id of GL shader program for compositing i texture layers
-    private int [] shaderProgramIds;
+    private int[] shaderProgramIds;
 
-    public TerrainRenderingManager( RenderFragmentManager fragmentManager ) {
+    private double maxPixelError;
+
+    private double maxProjectedTexelSize;
+
+    public TerrainRenderingManager( RenderFragmentManager fragmentManager, double maxPixelError,
+                                    double maxProjectedTexelSize ) {
         this.fragmentManager = fragmentManager;
+        this.maxPixelError = maxPixelError;
+        this.maxProjectedTexelSize = maxProjectedTexelSize;
     }
 
     public void init( GLAutoDrawable drawable ) {
         LOG.trace( "init( GLAutoDrawable ) called" );
 
         GL gl = drawable.getGL();
-        
+
         int numTextureUnits = 8;
-        LOG.info( "building " + numTextureUnits + " shader programs");
-        shaderProgramIds = new int [numTextureUnits];
-        for (int i = 1; i <= numTextureUnits; i++) {
-            LOG.info( "Building fragment shader for compositing " + i + " textures.");
-            
-            // generate and compile shader 
+        LOG.info( "building " + numTextureUnits + " shader programs" );
+        shaderProgramIds = new int[numTextureUnits];
+        for ( int i = 1; i <= numTextureUnits; i++ ) {
+            LOG.info( "Building fragment shader for compositing " + i + " textures." );
+
+            // generate and compile shader
             int shaderId = gl.glCreateShader( GL.GL_FRAGMENT_SHADER );
             gl.glShaderSource( shaderId, 1, new String[] { CompositingShader.getGLSLCode( i ) }, (int[]) null, 0 );
             gl.glCompileShader( shaderId );
-            
+
             // create program and attach shader
             int shaderProgramId = gl.glCreateProgram();
             gl.glAttachShader( shaderProgramId, shaderId );
@@ -149,8 +152,8 @@ public class TerrainRenderingManager {
             }
             shaderProgramIds[i - 1] = shaderProgramId;
         }
-    }    
-    
+    }
+
     /**
      * Renders a view-optimized representation of the terrain geometry using the given scale and textures to the
      * specified GL context.
@@ -224,7 +227,10 @@ public class TerrainRenderingManager {
         LOG.info( "Texturizing " + fragments.size() + " fragments, managers: " + textureManagers.length );
         Map<RenderMeshFragment, List<FragmentTexture>> meshFragmentToTexture = new HashMap<RenderMeshFragment, List<FragmentTexture>>();
         for ( TextureManager manager : textureManagers ) {
-            Map<RenderMeshFragment, FragmentTexture> fragmentToTexture = manager.getTextures( params, fragments, zScale );
+            Map<RenderMeshFragment, FragmentTexture> fragmentToTexture = manager.getTextures(
+                                                                                              params,
+                                                                                              (float) maxProjectedTexelSize,
+                                                                                              fragments, zScale );
             for ( RenderMeshFragment fragment : fragmentToTexture.keySet() ) {
                 FragmentTexture texture = fragmentToTexture.get( fragment );
                 List<FragmentTexture> textures = meshFragmentToTexture.get( fragment );
@@ -276,12 +282,12 @@ public class TerrainRenderingManager {
 
         for ( RenderMeshFragment fragment : activeLOD ) {
             List<FragmentTexture> textures = fragmentToTextures.get( fragment );
-            if ( textures != null && textures.size() > 0) {
+            if ( textures != null && textures.size() > 0 ) {
                 int i = 0;
                 for ( FragmentTexture texture : textures ) {
                     textureManagers[i++].enable( Collections.singletonList( texture ), gl );
-                }                
-                fragment.render( gl, textures, shaderProgramIds [textures.size() - 1] );
+                }
+                fragment.render( gl, textures, shaderProgramIds[textures.size() - 1] );
             } else {
                 fragment.render( gl, null, 0 );
             }
@@ -309,7 +315,7 @@ public class TerrainRenderingManager {
     private Set<RenderMeshFragment> getNewLOD( ViewParams params, float zScale ) {
 
         ViewFrustum frustum = params.getViewFrustum();
-        ViewFrustumCrit crit = new ViewFrustumCrit( params, geometryMaxPixelError );
+        ViewFrustumCrit crit = new ViewFrustumCrit( params, (float) maxPixelError );
         SpatialSelection lodAdaptor = new SpatialSelection( fragmentManager.getMultiresolutionMesh(), crit, frustum,
                                                             zScale );
 
@@ -349,9 +355,9 @@ public class TerrainRenderingManager {
         gl.glWindowPos2d( x, 62 );
         glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "mesh fragments: " + activeLOD.size() );
         gl.glWindowPos2d( x, 74 );
-        glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "texture error: " + textureMaxPixelError );
-        gl.glWindowPos2d( x, 88 );
-        glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "geometry error: " + geometryMaxPixelError );
+        // glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "texture error: " + textureMaxPixelError );
+        // gl.glWindowPos2d( x, 88 );
+        // glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "geometry error: " + geometryMaxPixelError );
         gl.glColor3f( 1.0f, 1.0f, 1.0f );
     }
 }

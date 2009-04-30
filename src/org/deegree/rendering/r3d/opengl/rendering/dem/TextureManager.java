@@ -54,9 +54,6 @@ import org.deegree.commons.utils.nio.DirectByteBufferPool;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
-import org.deegree.rendering.r3d.opengl.rendering.dem.FragmentTexture;
-import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
-import org.deegree.rendering.r3d.opengl.rendering.dem.TextureTile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,8 +76,6 @@ public class TextureManager {
 
     private final int maxTextureSize;
 
-    private double maxPixelError = 1;
-
     private final double[] translationToLocalCRS;
 
     private int inMemory, inGPU;
@@ -93,7 +88,6 @@ public class TextureManager {
 
     public TextureManager( TextureTileManager tileManager, double[] translationToLocalCRS, int maxTextureSize,
                            int maxInMemory ) {
-        // TODO: why +1???
         bufferPool = new DirectByteBufferPool( 100 * 1024 * 1024, 400 );
         memCache = new MemoryCache( maxInMemory );
         this.tileManager = tileManager;
@@ -105,19 +99,20 @@ public class TextureManager {
      * Retrieves view-optimized textures for the {@link RenderMeshFragment}s.
      * 
      * @param params
+     * @param maxProjectedTexelSize 
      * @param fragments
      * @param zScale
      *            scaling factor applied to z values of the fragments (and their bounding boxes) 
      * @return view-optimized textures, not necessarily enabled
      */
-    public Map<RenderMeshFragment, FragmentTexture> getTextures( ViewParams params, Set<RenderMeshFragment> fragments,
+    public Map<RenderMeshFragment, FragmentTexture> getTextures( ViewParams params, float maxProjectedTexelSize, Set<RenderMeshFragment> fragments,
                                                                  float zScale ) {
 
         LOG.info( "Texturizing " + fragments.size() + " fragments" );
         Map<RenderMeshFragment, FragmentTexture> meshFragmentToTexture = new HashMap<RenderMeshFragment, FragmentTexture>();
 
         // create texture requests for each fragment
-        List<TextureRequest> requests = createTextureRequests( params, fragments, zScale );
+        List<TextureRequest> requests = createTextureRequests( params, maxProjectedTexelSize, fragments, zScale );
 
         // check which texture requests can be fullfilled from cache
         List<TextureRequest> fromCache = new ArrayList<TextureRequest>();
@@ -171,7 +166,7 @@ public class TextureManager {
         }
     }
 
-    private List<TextureRequest> createTextureRequests( ViewParams params, Set<RenderMeshFragment> fragments, float zScale ) {
+    private List<TextureRequest> createTextureRequests( ViewParams params, float maxProjectedTexelSize, Set<RenderMeshFragment> fragments, float zScale ) {
 
         List<TextureRequest> requests = new ArrayList<TextureRequest>();
 
@@ -192,7 +187,7 @@ public class TextureManager {
             double dist = VectorUtils.getDistance( scaledBBox, eyePos );
             double pixelSize = params.estimatePixelSizeForSpaceUnit( dist );
 
-            double metersPerPixel = maxPixelError / pixelSize;
+            double metersPerPixel = maxProjectedTexelSize / pixelSize;
             metersPerPixel = tileManager.getMatchingResolution( metersPerPixel );
 
             // check if the texture gets too large with respect to the maximum texture size
