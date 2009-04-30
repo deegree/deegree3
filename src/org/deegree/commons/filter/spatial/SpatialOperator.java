@@ -102,7 +102,9 @@ public abstract class SpatialOperator implements Operator {
      * 
      * @return type of spatial operator
      */
-    public abstract SubType getSubType();
+    public SubType getSubType() {
+        return SubType.valueOf( getClass().getSimpleName().toUpperCase() );
+    }
 
     protected Geometry checkGeometryOrNull( Object value )
                             throws FilterEvaluationException {

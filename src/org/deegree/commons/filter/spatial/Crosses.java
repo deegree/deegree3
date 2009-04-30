@@ -48,23 +48,19 @@ import org.deegree.commons.filter.MatchableObject;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Crosses extends SpatialOperator {
 
-    public SubType getSubType() {
-        return SubType.CROSSES;
-    }    
-    
     public boolean evaluate( MatchableObject object )
-    throws FilterEvaluationException {
-throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()
-                     + "' operator is not implemented yet." );
-}
+                            throws FilterEvaluationException {
+        throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()
+                                             + "' operator is not implemented yet." );
+    }
 
     public String toString( String indent ) {
         // TODO Auto-generated method stub

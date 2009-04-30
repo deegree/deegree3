@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.commons.shape;
+package org.deegree.commons.dataaccess.shape;
 
 import static org.deegree.commons.utils.ByteUtils.readLEDouble;
 import static org.deegree.commons.utils.ByteUtils.readLEInt;
@@ -49,7 +49,6 @@ import java.util.List;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -855,23 +854,6 @@ public class SHPReader {
         }
 
         return res;
-    }
-
-    /**
-     * @param args
-     * @throws IOException
-     */
-    public static void main( String[] args )
-                            throws IOException {
-        for ( String s : args ) {
-            System.out.println( s );
-            System.out.println( new SHPReader( new RandomAccessFile( s, "r" ), null ).query( fac.createEnvelope(
-                                                                                                                       -100000000,
-                                                                                                                       -100000000,
-                                                                                                                       100000000,
-                                                                                                                       100000000,
-                                                                                                                       null ) ) );
-        }
     }
 
 }

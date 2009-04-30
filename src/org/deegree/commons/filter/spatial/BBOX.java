@@ -45,7 +45,10 @@ package org.deegree.commons.filter.spatial;
 
 import org.deegree.commons.filter.FilterEvaluationException;
 import org.deegree.commons.filter.MatchableObject;
+import org.deegree.commons.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
+import org.deegree.geometry.Geometry;
+import org.jaxen.JaxenException;
 
 /**
  * TODO add documentation here
@@ -57,22 +60,36 @@ import org.deegree.geometry.Envelope;
  */
 public class BBOX extends SpatialOperator {
 
-    public SubType getSubType() {
-        return SubType.BBOX;
+    private Envelope bbox;
+
+    /**
+     * @param bbox
+     */
+    public BBOX( Envelope bbox ) {
+        this.bbox = bbox;
     }
 
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
+        try {
+            Object o = object.getPropertyValue( new PropertyName( "geometry", null ) );
+            return o != null && o instanceof Geometry && bbox.intersects( (Geometry) o );
+        } catch ( JaxenException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()
                                              + "' operator is not implemented yet." );
     }
 
-    public Envelope getBoundingBox(){
-        return null;
+    /**
+     * @return the envelope
+     */
+    public Envelope getBoundingBox() {
+        return bbox;
     }
-    
+
     public String toString( String indent ) {
-        // TODO Auto-generated method stub
-        return null;
+        return indent + bbox.toString();
     }
 }

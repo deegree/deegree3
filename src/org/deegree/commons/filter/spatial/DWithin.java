@@ -56,10 +56,6 @@ import org.deegree.commons.filter.MatchableObject;
  */
 public class DWithin extends SpatialOperator {
 
-    public SubType getSubType() {
-        return SubType.DWITHIN;
-    }
-
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()

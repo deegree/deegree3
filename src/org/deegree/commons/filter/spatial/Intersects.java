@@ -59,22 +59,22 @@ import org.deegree.geometry.Geometry;
 public class Intersects extends SpatialOperator {
 
     private final PropertyName param1;
-    
+
     private final Geometry param2;
-    
+
+    /**
+     * @param param1
+     * @param param2
+     */
     public Intersects( PropertyName param1, Geometry param2 ) {
         this.param1 = param1;
         this.param2 = param2;
     }
 
-    public SubType getSubType() {
-        return SubType.INTERSECTS;
-    }
-
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        Geometry param1Value = checkGeometryOrNull( param1.evaluate( object ));
+        Geometry param1Value = checkGeometryOrNull( param1.evaluate( object ) );
         return param2.intersects( param1Value );
     }
 

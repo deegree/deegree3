@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.commons.shape;
+package org.deegree.commons.dataaccess.shape;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
