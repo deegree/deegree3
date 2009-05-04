@@ -42,6 +42,7 @@ import static org.junit.Assert.*;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterReference.Type;
+import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
@@ -310,6 +311,16 @@ public class RasterReferenceTest {
         int[] size = r.getSize( envelope );
         assertEquals( 50, size[0] );
         assertEquals( 200, size[1] );
+    }
+    
+    @Test
+    public void testAxesOrientation() {
+        RasterReference rr = new RasterReference( Type.OUTER, 0.0, 0.0, 1.0, 1.0 );
+        Envelope env = rr.getEnvelope( 50, 30, new CRS( "EPSG:4326" ), Type.CENTER );
+        assertEquals( env.getMin().getX(), 0.5, DELTA );
+        assertEquals( env.getMin().getY(), 0.5, DELTA );
+        assertEquals( env.getMax().getX(), 49.5, DELTA );
+        assertEquals( env.getMax().getY(), 29.5, DELTA );
     }
 
 }
