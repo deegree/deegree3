@@ -85,17 +85,31 @@ public class WMSTextureTileProvider implements TextureTileProvider {
 
     private TextureTile tile;
 
-    private double res;    
-    
-    public WMSTextureTileProvider(String capabilitiesURL, String[] requestedLayers, double res) throws MalformedURLException {
+    private double res;
+
+    /**
+     * @param capabilitiesURL
+     * @param requestedLayers
+     * @param res
+     * @param maxWidth
+     *            maximum map width (in pixels) that the WMS allows or -1 if unconstrained
+     * @param maxHeight
+     *            maximum map height (in pixels) that the WMS allows or -1 if unconstrained
+     * @param requestTimeout
+     *            maximum number of seconds to wait for a WMS response
+     * @throws MalformedURLException
+     */
+    public WMSTextureTileProvider( String capabilitiesURL, String[] requestedLayers, double res, int maxWidth,
+                                   int maxHeight, int requestTimeout ) throws MalformedURLException {
         client = new WMSClient111( new URL( capabilitiesURL ) );
+        client.setMaxMapDimensions( maxWidth, maxHeight );
         layers = Arrays.asList( requestedLayers );
         srs = new CRS( SRS_NAME );
         this.res = res;
     }
 
     @Override
-    public TextureTile getTextureTile( float minX, float minY, float maxX, float maxY) {
+    public TextureTile getTextureTile( float minX, float minY, float maxX, float maxY ) {
 
         int width = (int) ( ( maxX - minX ) / res );
         int height = (int) ( ( maxY - minY ) / res );
@@ -105,19 +119,20 @@ public class WMSTextureTileProvider implements TextureTileProvider {
         Envelope bbox = fac.createEnvelope( minX, minY, maxX, maxY, srs );
         Pair<SimpleRaster, String> wmsResponse;
         try {
-            wmsResponse = client.getMapAsSimpleRaster( layers, width, height, bbox, srs, FORMAT,
-                                                                                  true, false, new ArrayList<String>() );
+            wmsResponse = client.getMapAsSimpleRaster( layers, width, height, bbox, srs, FORMAT, true, false,
+                                                       new ArrayList<String>() );
         } catch ( IOException e ) {
-            throw new RuntimeException( e.getMessage());
+            throw new RuntimeException( e.getMessage() );
         }
         if ( wmsResponse.second != null ) {
             throw new RuntimeException( wmsResponse.second );
         }
         PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) wmsResponse.first.getRasterData();
-        for (BandType type : rasterData.getBandTypes()) {
-            System.out.println (type);
+        for ( BandType type : rasterData.getBandTypes() ) {
+            System.out.println( type );
         }
-        return new TextureTile( minX, minY, maxX, maxY, rasterData.getWidth(), rasterData.getHeight(), rasterData.getByteBuffer(), true );
+        return new TextureTile( minX, minY, maxX, maxY, rasterData.getWidth(), rasterData.getHeight(),
+                                rasterData.getByteBuffer(), true );
     }
 
     public BufferedImage getTileImage( float minX, float minY, float maxX, float maxY, int width, int height )

@@ -26,8 +26,8 @@
                 </extension>
               </simpleContent>
             </complexType>
-
           </element>
+          <element name="RequestTimeout" type="integer" minOccurs="0" default="60"/>
           <element name="MaxMapDimensions" minOccurs="0">
             <complexType>
               <attribute name="width" type="integer" />

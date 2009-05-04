@@ -83,9 +83,9 @@ public class TextureManager {
     private final GPUCache gpuCache;
 
     /**
-     * Number of bytes to be allocated, ordinatesPerVertex * (Normals+Vertices) * numberOfBytePerFloat
+     * Number of bytes to be allocated, (Normals+Vertices) * numberOfBytePerFloat
      */
-    private static final int NUMBER_OF_BYTES = 3 * 2 * 4;
+    private static final int NUMBER_OF_BYTES = 2 * 4;
 
     /**
      * @param directByteBufferPool
@@ -163,7 +163,7 @@ public class TextureManager {
 
             TextureTile tile = tileManager.getMachingTile( tileRequest );
             PooledByteBuffer buffer = bufferPool.allocate( request.getFragment().getData().getVertices().capacity()
-                                                           / NUMBER_OF_BYTES );
+                                                           * NUMBER_OF_BYTES / 3 );
             FragmentTexture texture = new FragmentTexture( request.getFragment(), tile, translationToLocalCRS[0],
                                                            translationToLocalCRS[1], buffer );
 
