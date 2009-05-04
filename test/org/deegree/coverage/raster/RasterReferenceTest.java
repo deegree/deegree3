@@ -57,7 +57,7 @@ import org.junit.Test;
  * @version $Revision$, $Date$
  * 
  */
-public class RasterEnvelopeTest {
+public class RasterReferenceTest {
 
     static final double DELTA = 0.001;
 
@@ -198,8 +198,8 @@ public class RasterEnvelopeTest {
         RasterReference subEnv = r.createSubEnvelope( envelope );
         assertEquals( 102.0, subEnv.getX0( Type.OUTER ), DELTA );
         assertEquals( 108.0, subEnv.getY0( Type.OUTER ), DELTA );
-        assertEquals( 1.0, subEnv.getXRes() );
-        assertEquals( -1.0, subEnv.getYRes() );
+        assertEquals( 1.0, subEnv.getXRes(), DELTA );
+        assertEquals( -1.0, subEnv.getYRes(), DELTA );
 
         r = new RasterReference( Type.CENTER, 101.0, 109.0, 2.0, -2.0 );
         envelope = geomFactory.createEnvelope( new double[] { 115.0, 100.0 }, new double[] { 120.0, 110.0 }, 0.001,
@@ -214,8 +214,8 @@ public class RasterEnvelopeTest {
         assertEquals( 110.0, subEnv.getY0( Type.OUTER ), DELTA );
         assertEquals( 115.0, subEnv.getX0( Type.CENTER ), DELTA );
         assertEquals( 109.0, subEnv.getY0( Type.CENTER ), DELTA );
-        assertEquals( 2.0, subEnv.getXRes() );
-        assertEquals( -2.0, subEnv.getYRes() );
+        assertEquals( 2.0, subEnv.getXRes(), DELTA );
+        assertEquals( -2.0, subEnv.getYRes(), DELTA );
         RasterRect rec = subEnv.convertEnvelopeToRasterCRS( envelope );
         assertEquals( 0, rec.x );
         assertEquals( 0, rec.y );
@@ -233,8 +233,8 @@ public class RasterEnvelopeTest {
         Envelope envelope = geomFactory.createEnvelope( new double[] { 10.0, 10.0 }, new double[] { 110.0, 210.0 },
                                                         0.001, null );
         RasterReference scaled = r.createResizedEnvelope( envelope, 50, 25 );
-        assertEquals( 10.0, scaled.getX0( Type.OUTER ) );
-        assertEquals( 210.0, scaled.getY0( Type.OUTER ) );
+        assertEquals( 10.0, scaled.getX0( Type.OUTER ), DELTA );
+        assertEquals( 210.0, scaled.getY0( Type.OUTER ), DELTA );
         assertEquals( 2.0, scaled.getXRes(), DELTA );
         assertEquals( -8.0, scaled.getYRes(), DELTA );
         envelope = scaled.getEnvelope( 50, 25 );
@@ -259,8 +259,8 @@ public class RasterEnvelopeTest {
         envelope = geomFactory.createEnvelope( new double[] { 20.0, 160.01 }, new double[] { 110.0, 210.0 }, 0.001,
                                                null );
         subEnv = r.createSubEnvelope( envelope );
-        assertEquals( 20.0, subEnv.getX0( Type.OUTER ) );
-        assertEquals( 210.0, subEnv.getY0( Type.OUTER ) );
+        assertEquals( 20.0, subEnv.getX0( Type.OUTER ), DELTA );
+        assertEquals( 210.0, subEnv.getY0( Type.OUTER ), DELTA );
         rect = r.convertEnvelopeToRasterCRS( envelope );
         assertEquals( 10, rect.x );
         assertEquals( 0, rect.y );
@@ -269,8 +269,8 @@ public class RasterEnvelopeTest {
 
         envelope = geomFactory.createEnvelope( new double[] { 10.0, 110.0 }, new double[] { 20.0, 160.01 }, 0.001, null );
         subEnv = r.createSubEnvelope( envelope );
-        assertEquals( 10.0, subEnv.getX0( Type.OUTER ) );
-        assertEquals( 161.0, subEnv.getY0( Type.OUTER ) );
+        assertEquals( 10.0, subEnv.getX0( Type.OUTER ), DELTA );
+        assertEquals( 161.0, subEnv.getY0( Type.OUTER ), DELTA );
         rect = r.convertEnvelopeToRasterCRS( envelope );
         assertEquals( 0, rect.x );
         assertEquals( 49, rect.y );
@@ -280,8 +280,8 @@ public class RasterEnvelopeTest {
         envelope = geomFactory.createEnvelope( new double[] { 20.0, 110.0 }, new double[] { 110.0, 160.01 }, 0.001,
                                                null );
         subEnv = r.createSubEnvelope( envelope );
-        assertEquals( 20.0, subEnv.getX0( Type.OUTER ) );
-        assertEquals( 161.0, subEnv.getY0( Type.OUTER ) );
+        assertEquals( 20.0, subEnv.getX0( Type.OUTER ), DELTA );
+        assertEquals( 161.0, subEnv.getY0( Type.OUTER ), DELTA );
         rect = r.convertEnvelopeToRasterCRS( envelope );
         assertEquals( 10, rect.x );
         assertEquals( 49, rect.y );
@@ -290,8 +290,8 @@ public class RasterEnvelopeTest {
 
         envelope = geomFactory.createEnvelope( new double[] { 10.0, 160.01 }, new double[] { 20.0, 210.0 }, 0.001, null );
         subEnv = r.createSubEnvelope( envelope );
-        assertEquals( 10.0, subEnv.getX0( Type.OUTER ) );
-        assertEquals( 210.0, subEnv.getY0( Type.OUTER ) );
+        assertEquals( 10.0, subEnv.getX0( Type.OUTER ), DELTA );
+        assertEquals( 210.0, subEnv.getY0( Type.OUTER ), DELTA );
         rect = r.convertEnvelopeToRasterCRS( envelope );
         assertEquals( 0, rect.x );
         assertEquals( 0, rect.y );
