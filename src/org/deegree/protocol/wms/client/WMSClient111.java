@@ -45,10 +45,10 @@ import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 import static org.deegree.crs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.geometry.GeometryFactoryCreator.getInstance;
 import static org.deegree.protocol.i18n.Messages.get;
-import static org.deegree.protocol.wms.client.WMSClient111.Requests.GetCapabilities;
-import static org.deegree.protocol.wms.client.WMSClient111.Requests.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -72,6 +72,7 @@ import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactoryCreator;
+import org.deegree.protocol.wms.WMSRequestType;
 import org.slf4j.Logger;
 
 /**
@@ -91,22 +92,6 @@ public class WMSClient111 {
     private int maxMapWidth = -1;
 
     private int maxMapHeight = -1;
-
-    /**
-     * <code>Requests</code>
-     * 
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author$
-     * 
-     * @version $Revision$, $Date$
-     */
-    public enum Requests {
-        /** * */
-        GetMap, /** * */
-        GetCapabilities, /** * */
-        GetFeatureInfo, /** * */
-        GetLegendGraphic
-    }
 
     private XMLAdapter capabilities;
 
@@ -162,7 +147,7 @@ public class WMSClient111 {
      * TODO implement updateSequence handling to improve network performance
      */
     public void refreshCapabilities() {
-        String url = getAddress( GetCapabilities, true );
+        String url = getAddress( WMSRequestType.GetCapabilities, true );
         if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) ) {
             url += url.indexOf( "?" ) == -1 ? "?" : "&";
         }
@@ -180,7 +165,7 @@ public class WMSClient111 {
      * @param request
      * @return true, if an according section was found in the capabilities
      */
-    public boolean isOperationSupported( Requests request ) {
+    public boolean isOperationSupported( WMSRequestType request ) {
         XPath xp = new XPath( "//" + request.name(), null );
         return capabilities.getElement( capabilities.getRootElement(), xp ) != null;
     }
@@ -189,7 +174,7 @@ public class WMSClient111 {
      * @param request
      * @return the image formats defined for the request, or null, if request is not supported
      */
-    public LinkedList<String> getFormats( Requests request ) {
+    public LinkedList<String> getFormats( WMSRequestType request ) {
         if ( !isOperationSupported( request ) ) {
             return null;
         }
@@ -210,7 +195,7 @@ public class WMSClient111 {
      *            true means HTTP GET, false means HTTP POST
      * @return the address, or null, if not defined or request unavailable
      */
-    public String getAddress( Requests request, boolean get ) {
+    public String getAddress( WMSRequestType request, boolean get ) {
         if ( !isOperationSupported( request ) ) {
             return null;
         }
@@ -363,6 +348,11 @@ public class WMSClient111 {
      * @param srs
      * @param format
      * @param transparent
+     * @param errorsInImage
+     *            if true, no exceptions are thrown or validation errors are returned. The returned pair allows contains
+     *            an image of the expected size.
+     * @param timeout
+     *            number of seconds to wait for a response from the WMS, use -1 for no constraints
      * @param validate
      *            whether to validate the values against the capabilities. Example: a format is requested that the
      *            server does not advertise. So the first advertised format will be used, and an entry will be put in
@@ -373,17 +363,20 @@ public class WMSClient111 {
      * @throws IOException
      */
     public Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox, CRS srs,
-                                               String format, boolean transparent, boolean validate,
-                                               List<String> validationErrors )
+                                               String format, boolean transparent, boolean errorsInImage, int timeout,
+                                               boolean validate, List<String> validationErrors )
                             throws IOException {
 
         if ( ( maxMapWidth != -1 && width > maxMapWidth ) || ( maxMapHeight != -1 && height > maxMapHeight ) ) {
-            return getTiledMap( layers, width, height, bbox, srs, format, transparent, validate, validationErrors );
+            return getTiledMap( layers, width, height, bbox, srs, format, transparent, errorsInImage, timeout,
+                                validate, validationErrors );
         }
+
+        Pair<BufferedImage, String> res = new Pair<BufferedImage, String>();
 
         try {
             if ( validate ) {
-                LinkedList<String> formats = getFormats( GetMap );
+                LinkedList<String> formats = getFormats( WMSRequestType.GetMap );
                 if ( !formats.contains( format ) ) {
                     format = formats.get( 0 );
                     validationErrors.add( "Using format " + format + " instead." );
@@ -391,7 +384,7 @@ public class WMSClient111 {
                 // TODO validate srs, width, height, rest, etc
             }
 
-            String url = getAddress( GetMap, true );
+            String url = getAddress( WMSRequestType.GetMap, true );
             if ( url == null ) {
                 LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capabilities );
                 return null;
@@ -404,9 +397,15 @@ public class WMSClient111 {
                    + bbox.getMax().getX() + "," + bbox.getMax().getY() + "&srs=" + srs.getName() + "&format=" + format
                    + "&transparent=" + transparent;
 
-            Pair<BufferedImage, String> res = new Pair<BufferedImage, String>();
             URL theUrl = new URL( url );
             URLConnection conn = theUrl.openConnection();
+
+            if ( timeout != -1 ) {
+                conn.setConnectTimeout( timeout * 1000 );
+                // TODO use timeout - actual connect time here
+                conn.setReadTimeout( timeout * 1000 );
+            }
+
             conn.connect();
             if ( LOG.isTraceEnabled() ) {
                 LOG.trace( "Requesting from " + theUrl );
@@ -424,26 +423,47 @@ public class WMSClient111 {
                     res.second = XML.work( conn.getInputStream() ).toString();
                 }
             }
-
-            return res;
-        } catch ( MalformedURLException e ) {
-            LOG.debug( "GetMap URL malformed?", e );
-            return null;
+        } catch ( Exception e ) {
+            LOG.info( "Error performing GetMap request: " + e.getMessage(), e );
+            res.second = e.getMessage();
         }
+
+        if ( errorsInImage && res.first == null ) {
+
+            if ( transparent ) {
+                // TODO create image of type RGBA
+                res.first = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
+            } else {
+                // TODO create image of type RGB
+                res.first = new BufferedImage( width, height, BufferedImage.TYPE_3BYTE_BGR );
+            }
+            Graphics2D g = (Graphics2D) res.first.getGraphics();
+            // TODO use optimized coordinates and font size
+            g.setColor( Color.BLACK );
+            g.fillRect( 0, 0, width - 1, height - 1 );
+            g.setColor( Color.WHITE );;
+            g.drawString( "Error: " + res.second, 0, 12 );
+            res.second = null;
+        }
+
+        return res;
     }
 
-    // TODO correctly cope with axis direction and order????
+    // TODO handle axis direction and order correctly, depends on srs
     private Pair<BufferedImage, String> getTiledMap( List<String> layers, int width, int height, Envelope bbox,
-                                                     CRS srs, String format, boolean transparent, boolean validate,
+                                                     CRS srs, String format, boolean transparent,
+                                                     boolean errorsInImage, int timeout, boolean validate,
                                                      List<String> validationErrors )
                             throws IOException {
 
         Pair<BufferedImage, String> response = new Pair<BufferedImage, String>();
         BufferedImage compositedImage = null;
         if ( transparent ) {
-            compositedImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+            // TODO create image of type RGBA
+            compositedImage = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
         } else {
-            compositedImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
+            // TODO create image of type RGB
+            compositedImage = new BufferedImage( width, height, BufferedImage.TYPE_3BYTE_BGR );
         }
 
         response.first = compositedImage;
@@ -464,9 +484,9 @@ public class WMSClient111 {
                         if ( yMax > height - 1 ) {
                             yMax = height - 1;
                         }
-                        System.out.println( "xMin: " + xMin + ", xMax: " + xMax + ", yMin: " + yMin + ", yMax: " + yMax );
                         getAndSetSubImage( compositedImage, layers, xMin, ( xMax - xMin ) + 1, yMin,
-                                           ( yMax - yMin ) + 1, rasterEnv, srs, format, transparent );
+                                           ( yMax - yMin ) + 1, rasterEnv, srs, format, transparent, errorsInImage,
+                                           timeout );
                         yMin = yMax + 1;
                     }
                 }
@@ -482,9 +502,8 @@ public class WMSClient111 {
                     }
                     int xMin = 0;
                     int xMax = width - 1;
-                    System.out.println( "xMin: " + xMin + ", xMax: " + xMax + ", yMin: " + yMin + ", yMax: " + yMax );
                     getAndSetSubImage( compositedImage, layers, xMin, ( xMax - xMin ) + 1, yMin, ( yMax - yMin ) + 1,
-                                       rasterEnv, srs, format, transparent );
+                                       rasterEnv, srs, format, transparent, errorsInImage, timeout );
                     yMin = yMax + 1;
                 }
             }
@@ -493,19 +512,16 @@ public class WMSClient111 {
     }
 
     private void getAndSetSubImage( BufferedImage targetImage, List<String> layers, int xMin, int width, int yMin,
-                                    int height, RasterReference rasterEnv, CRS crs, String format, boolean transparent )
+                                    int height, RasterReference rasterEnv, CRS crs, String format, boolean transparent,
+                                    boolean errorsInImage, int timeout )
                             throws IOException {
 
         double[] min = rasterEnv.convertToCRS( xMin, yMin + height );
         double[] max = rasterEnv.convertToCRS( xMin + width, yMin );
 
-        System.out.println( "min: " + min[0] + "," + min[1] );
-        System.out.println( "max: " + max[0] + "," + max[1] );
-        System.out.println( "width: " + width );
-        System.out.println( "height: " + height );
         Envelope env = GeometryFactoryCreator.getInstance().getGeometryFactory().createEnvelope( min, max, crs );
-        Pair<BufferedImage, String> response = getMap( layers, width, height, env, crs, format, transparent, false,
-                                                       null );
+        Pair<BufferedImage, String> response = getMap( layers, width, height, env, crs, format, transparent,
+                                                       errorsInImage, timeout, false, null );
         if ( response.second != null ) {
             throw new IOException( response.second );
         }
@@ -520,22 +536,29 @@ public class WMSClient111 {
      * @param srs
      * @param format
      * @param transparent
+     * @param errorsInImage
+     *            if true, no exceptions are thrown or validation errors are returned. The returned pair allows contains
+     *            an image of the expected size.
+     * @param timeout
+     *            number of seconds to wait for a response from the WMS, use -1 for no constraints
      * @param validate
      *            whether to validate the values against the capabilities. Example: a format is requested that the
      *            server does not advertise. So the first advertised format will be used, and an entry will be put in
      *            the validationErrors list that says just that.
      * @param validationErrors
      *            a list of validation actions
-     * @return an image from the server, or an error message from the service exception
+     * @return an image from the server (using RGB or RGB color model, encoded as {@link PixelInterleavedRasterData}),
+     *         or an error message from the service exception
      * @throws IOException
      */
     public Pair<SimpleRaster, String> getMapAsSimpleRaster( List<String> layers, int width, int height, Envelope bbox,
                                                             CRS srs, String format, boolean transparent,
-                                                            boolean validate, List<String> validationErrors )
+                                                            boolean errorsInImage, int timeout, boolean validate,
+                                                            List<String> validationErrors )
                             throws IOException {
 
         Pair<BufferedImage, String> imageResponse = getMap( layers, width, height, bbox, srs, format, transparent,
-                                                            validate, validationErrors );
+                                                            errorsInImage, timeout, validate, validationErrors );
         Pair<SimpleRaster, String> response = new Pair<SimpleRaster, String>();
         if ( imageResponse.first != null ) {
             BufferedImage img = imageResponse.first;

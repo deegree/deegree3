@@ -38,9 +38,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.dem;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,19 +46,15 @@ import java.util.List;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.data.BandType;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.protocol.wms.client.WMSClient111;
-import org.deegree.rendering.r3d.opengl.rendering.dem.TextureTile;
-
-import com.sun.opengl.util.texture.Texture;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * {@link TextureTileProvider} that delegates tile requests to a WMS.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -69,43 +63,51 @@ import com.sun.opengl.util.texture.Texture;
  */
 public class WMSTextureTileProvider implements TextureTileProvider {
 
-    private static final String SRS_NAME = "EPSG:31466";
-
-    private static final String FORMAT = "image/png";
-
     private static GeometryFactory fac = GeometryFactoryCreator.getInstance().getGeometryFactory();
 
-    private static Texture tex;
+    private final WMSClient111 client;
 
-    private WMSClient111 client;
+    private final List<String> layers;
 
-    private List<String> layers;
+    private final String requestedFormat;
 
-    private CRS srs;
+    private final CRS requestedCRS;
 
-    private TextureTile tile;
+    private final double res;
 
-    private double res;
+    private final int requestTimeout;
 
     /**
+     * Creates a new {@link WMSTextureTileProvider} instance.
+     * 
      * @param capabilitiesURL
+     *            URL of the capabilities document (usually a GetCapabilities request)
      * @param requestedLayers
+     *            name of the requested layers
+     * @param requestCRS
+     *            crs for the GetMap requests
+     * @param requestFormat
+     *            image format, e.g. 'image/png'
+     * @param transparent
+     *            true, if the image should be requested using "transparent=true", false otherwise
      * @param res
+     *            resolution (world units per pixel)
      * @param maxWidth
      *            maximum map width (in pixels) that the WMS allows or -1 if unconstrained
      * @param maxHeight
      *            maximum map height (in pixels) that the WMS allows or -1 if unconstrained
      * @param requestTimeout
-     *            maximum number of seconds to wait for a WMS response
-     * @throws MalformedURLException
+     *            maximum number of seconds to wait for a WMS response or -1 if unconstrained
      */
-    public WMSTextureTileProvider( String capabilitiesURL, String[] requestedLayers, double res, int maxWidth,
-                                   int maxHeight, int requestTimeout ) throws MalformedURLException {
-        client = new WMSClient111( new URL( capabilitiesURL ) );
-        client.setMaxMapDimensions( maxWidth, maxHeight );
-        layers = Arrays.asList( requestedLayers );
-        srs = new CRS( SRS_NAME );
+    public WMSTextureTileProvider( URL capabilitiesURL, String[] requestedLayers, CRS requestCRS, String requestFormat,
+                                   boolean transparent, double res, int maxWidth, int maxHeight, int requestTimeout ) {
+        this.client = new WMSClient111( capabilitiesURL );
+        this.client.setMaxMapDimensions( maxWidth, maxHeight );
+        this.layers = Arrays.asList( requestedLayers );
+        this.requestedFormat = requestFormat;
+        this.requestedCRS = requestCRS;
         this.res = res;
+        this.requestTimeout = requestTimeout;
     }
 
     @Override
@@ -114,35 +116,18 @@ public class WMSTextureTileProvider implements TextureTileProvider {
         int width = (int) ( ( maxX - minX ) / res );
         int height = (int) ( ( maxY - minY ) / res );
 
-        System.out.println( "width: " + width );
-
-        Envelope bbox = fac.createEnvelope( minX, minY, maxX, maxY, srs );
-        Pair<SimpleRaster, String> wmsResponse;
+        Envelope bbox = fac.createEnvelope( minX, minY, maxX, maxY, requestedCRS );
+        SimpleRaster raster = null;
         try {
-            wmsResponse = client.getMapAsSimpleRaster( layers, width, height, bbox, srs, FORMAT, true, false,
-                                                       new ArrayList<String>() );
+            raster = client.getMapAsSimpleRaster( layers, width, height, bbox, requestedCRS, requestedFormat, true,
+                                                  true, requestTimeout, false, new ArrayList<String>() ).first;
         } catch ( IOException e ) {
+            // this must never happen, cause the above request uses errorsInImage=true
             throw new RuntimeException( e.getMessage() );
         }
-        if ( wmsResponse.second != null ) {
-            throw new RuntimeException( wmsResponse.second );
-        }
-        PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) wmsResponse.first.getRasterData();
-        for ( BandType type : rasterData.getBandTypes() ) {
-            System.out.println( type );
-        }
+        PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) raster.getRasterData();
         return new TextureTile( minX, minY, maxX, maxY, rasterData.getWidth(), rasterData.getHeight(),
                                 rasterData.getByteBuffer(), true );
-    }
-
-    public BufferedImage getTileImage( float minX, float minY, float maxX, float maxY, int width, int height )
-                            throws IOException {
-
-        Envelope bbox = fac.createEnvelope( minX, minY, maxX, maxY, srs );
-
-        Pair<BufferedImage, String> mapResponse = client.getMap( layers, width, height, bbox, srs, FORMAT, false,
-                                                                 false, new ArrayList<String>() );
-        return ( mapResponse.first );
     }
 
     @Override
