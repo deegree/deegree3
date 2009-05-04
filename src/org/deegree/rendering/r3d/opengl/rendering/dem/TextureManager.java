@@ -78,35 +78,51 @@ public class TextureManager {
 
     private final double[] translationToLocalCRS;
 
-    private int inMemory, inGPU;
-
-    private int maxInMemory, maxInGPU;
-
     private final MemoryCache memCache;
 
-    private final GPUCache gpuCache = new GPUCache( 200 );
+    private final GPUCache gpuCache;
 
-    public TextureManager( TextureTileManager tileManager, double[] translationToLocalCRS, int maxTextureSize,
-                           int maxInMemory ) {
-        bufferPool = new DirectByteBufferPool( 100 * 1024 * 1024, 400 );
-        memCache = new MemoryCache( maxInMemory );
+    /**
+     * Number of bytes to be allocated, ordinatesPerVertex * (Normals+Vertices) * numberOfBytePerFloat
+     */
+    private static final int NUMBER_OF_BYTES = 3 * 2 * 4;
+
+    /**
+     * @param directByteBufferPool
+     *            to be used for the textures
+     * @param tileManager
+     *            managing all tiles
+     * @param translationToLocalCRS
+     *            the translation vector
+     * @param maxTextureSize
+     *            the maximum width /heigth of a texture
+     * @param maxFragmentTexturesInMemory
+     *            the number of texturetiles
+     * @param maxFragmentTexturesInGPUMemory
+     */
+    public TextureManager( DirectByteBufferPool directByteBufferPool, TextureTileManager tileManager,
+                           double[] translationToLocalCRS, int maxTextureSize, int maxFragmentTexturesInMemory,
+                           int maxFragmentTexturesInGPUMemory ) {
+        bufferPool = directByteBufferPool;
+        memCache = new MemoryCache( maxFragmentTexturesInMemory );
         this.tileManager = tileManager;
         this.translationToLocalCRS = translationToLocalCRS;
         this.maxTextureSize = maxTextureSize;
+        this.gpuCache = new GPUCache( maxFragmentTexturesInGPUMemory );
     }
 
     /**
      * Retrieves view-optimized textures for the {@link RenderMeshFragment}s.
      * 
      * @param params
-     * @param maxProjectedTexelSize 
+     * @param maxProjectedTexelSize
      * @param fragments
      * @param zScale
-     *            scaling factor applied to z values of the fragments (and their bounding boxes) 
+     *            scaling factor applied to z values of the fragments (and their bounding boxes)
      * @return view-optimized textures, not necessarily enabled
      */
-    public Map<RenderMeshFragment, FragmentTexture> getTextures( ViewParams params, float maxProjectedTexelSize, Set<RenderMeshFragment> fragments,
-                                                                 float zScale ) {
+    public Map<RenderMeshFragment, FragmentTexture> getTextures( ViewParams params, float maxProjectedTexelSize,
+                                                                 Set<RenderMeshFragment> fragments, float zScale ) {
 
         LOG.info( "Texturizing " + fragments.size() + " fragments" );
         Map<RenderMeshFragment, FragmentTexture> meshFragmentToTexture = new HashMap<RenderMeshFragment, FragmentTexture>();
@@ -146,14 +162,14 @@ public class TextureManager {
             }
 
             TextureTile tile = tileManager.getMachingTile( tileRequest );
-            PooledByteBuffer buffer = bufferPool.allocate( request.getFragment().getData().getVertices().capacity() / 3 * 2 * 4 );
+            PooledByteBuffer buffer = bufferPool.allocate( request.getFragment().getData().getVertices().capacity()
+                                                           / NUMBER_OF_BYTES );
             FragmentTexture texture = new FragmentTexture( request.getFragment(), tile, translationToLocalCRS[0],
                                                            translationToLocalCRS[1], buffer );
 
             memCache.put( request, texture );
             // TODO needed?
             memCache.get( request );
-            inMemory++;
 
             meshFragmentToTexture.put( request.getFragment(), texture );
         }
@@ -166,7 +182,8 @@ public class TextureManager {
         }
     }
 
-    private List<TextureRequest> createTextureRequests( ViewParams params, float maxProjectedTexelSize, Set<RenderMeshFragment> fragments, float zScale ) {
+    private List<TextureRequest> createTextureRequests( ViewParams params, float maxProjectedTexelSize,
+                                                        Set<RenderMeshFragment> fragments, float zScale ) {
 
         List<TextureRequest> requests = new ArrayList<TextureRequest>();
 
@@ -176,14 +193,14 @@ public class TextureManager {
 
         for ( RenderMeshFragment fragment : fragments ) {
             float[][] fragmentBBox = fragment.getBBox();
-            float[][] scaledBBox = new float [2][3];
-            scaledBBox[0][0]= fragmentBBox[0][0];
-            scaledBBox[0][1]= fragmentBBox[0][1];
-            scaledBBox[0][2]= fragmentBBox[0][2] * zScale;
-            scaledBBox[1][0]= fragmentBBox[1][0];
-            scaledBBox[1][1]= fragmentBBox[1][1];
-            scaledBBox[1][2]= fragmentBBox[1][2] * zScale;            
-            
+            float[][] scaledBBox = new float[2][3];
+            scaledBBox[0][0] = fragmentBBox[0][0];
+            scaledBBox[0][1] = fragmentBBox[0][1];
+            scaledBBox[0][2] = fragmentBBox[0][2] * zScale;
+            scaledBBox[1][0] = fragmentBBox[1][0];
+            scaledBBox[1][1] = fragmentBBox[1][1];
+            scaledBBox[1][2] = fragmentBBox[1][2] * zScale;
+
             double dist = VectorUtils.getDistance( scaledBBox, eyePos );
             double pixelSize = params.estimatePixelSizeForSpaceUnit( dist );
 
@@ -285,13 +302,11 @@ public class TextureManager {
             this.put( fragmentTexture, fragmentTexture );
             if ( !fragmentTexture.isEnabled() ) {
                 fragmentTexture.enable( gl );
-                inGPU++;
             }
         }
 
         protected boolean removeEldestEntry( Map.Entry<FragmentTexture, FragmentTexture> eldest ) {
             if ( size() > maxEntries ) {
-                inGPU--;
                 eldest.getValue().disable( gl );
                 return true;
             }
@@ -301,6 +316,6 @@ public class TextureManager {
 
     @Override
     public String toString() {
-        return "in memory: " + inMemory + ", in GPU: " + inGPU;
+        return "in memory: " + memCache.size() + ", in GPU: " + gpuCache.size();
     }
 }
