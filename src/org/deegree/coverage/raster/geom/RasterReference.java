@@ -284,7 +284,7 @@ public class RasterReference {
      * @return RasterRect
      */
     public RasterRect convertEnvelopeToRasterCRS( Envelope envelope ) {
-      //TODO take in account the envelope's CRS axes orientation & order
+        //TODO take in account the envelope's CRS axes orientation & order
         RasterRect result = new RasterRect();
 
         int[] min = convertToRasterCRS( envelope.getMin().getX() + delta, envelope.getMax().getY() - delta );
@@ -411,10 +411,10 @@ public class RasterReference {
         }
         
         if ( type == RasterReference.Type.CENTER ) {
-            xmin = xmin + Math.abs( xRes / 2 );
-            ymin = ymin + Math.abs( yRes / 2 );
-            xmax = xmax - Math.abs( xRes / 2 );
-            ymax = ymax - Math.abs( yRes / 2 );
+            xmin = xmin + ( xRes / 2 );
+            ymin = ymin + ( yRes / 2 );
+            xmax = xmax - ( xRes / 2 );
+            ymax = ymax - ( yRes / 2 );
         }
         
         return geomFactory.createEnvelope( new double[] { xmin, ymin }, new double[] { xmax, ymax },
