@@ -177,7 +177,8 @@ public class WPVSClient {
         url += "&YAW=" + yaw;
         url += "&PITCH=" + pitch;
         url += "&DISTANCE=" + distance;  
-
+        System.out.println( "Generated GetView request: " + url );
+        
         Pair<BufferedImage, String> res = new Pair<BufferedImage, String>();
         URL theUrl;
         try {
