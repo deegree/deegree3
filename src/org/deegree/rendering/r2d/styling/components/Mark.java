@@ -41,6 +41,8 @@ package org.deegree.rendering.r2d.styling.components;
 import static java.awt.Color.BLACK;
 import static org.deegree.rendering.r2d.styling.components.Mark.SimpleMark.SQUARE;
 
+import org.deegree.rendering.r2d.styling.Copyable;
+
 /**
  * <code>Mark</code>
  * 
@@ -49,7 +51,7 @@ import static org.deegree.rendering.r2d.styling.components.Mark.SimpleMark.SQUAR
  * 
  * @version $Revision$, $Date$
  */
-public class Mark {
+public class Mark implements Copyable<Mark> {
 
     /**
      * Default is SQUARE.
@@ -73,6 +75,14 @@ public class Mark {
         stroke.color = BLACK;
     }
 
+    public Mark copy() {
+        Mark copy = new Mark();
+        copy.wellKnown = wellKnown;
+        copy.fill = fill.copy();
+        copy.stroke = stroke.copy();
+        return copy;
+    }
+
     /**
      * <code>SimpleMark</code>
      * 
@@ -82,29 +92,12 @@ public class Mark {
      * @version $Revision$, $Date$
      */
     public static enum SimpleMark {
-        /**
-         * 
-         */
-        SQUARE,
-        /**
-         * 
-         */
-        CIRCLE,
-        /**
-         * 
-         */
-        TRIANGLE,
-        /**
-         * 
-         */
-        STAR,
-        /**
-         * 
-         */
-        CROSS,
-        /**
-         * 
-         */
+        /** * */
+        SQUARE, /** * */
+        CIRCLE, /** * */
+        TRIANGLE, /** * */
+        STAR, /** * */
+        CROSS, /** * */
         X
     }
 

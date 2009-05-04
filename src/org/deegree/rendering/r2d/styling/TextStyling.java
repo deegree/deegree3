@@ -53,7 +53,7 @@ import org.deegree.rendering.r2d.styling.components.LinePlacement;
  * 
  * @version $Revision$, $Date$
  */
-public class TextStyling {
+public class TextStyling implements Copyable<TextStyling> {
 
     /**
      * Default is a font with default settings.
@@ -106,6 +106,20 @@ public class TextStyling {
     public TextStyling() {
         fill = new Fill();
         fill.color = BLACK;
+    }
+
+    public TextStyling copy() {
+        TextStyling copy = new TextStyling();
+        copy.font = font.copy();
+        copy.fill = fill == null ? null : fill.copy();
+        copy.rotation = rotation;
+        copy.displacementX = displacementX;
+        copy.displacementY = displacementY;
+        copy.anchorPointX = anchorPointX;
+        copy.anchorPointY = anchorPointY;
+        copy.linePlacement = linePlacement == null ? null : linePlacement.copy();
+        copy.halo = halo == null ? null : halo.copy();
+        return copy;
     }
 
 }

@@ -38,6 +38,8 @@
 
 package org.deegree.rendering.r2d.styling.components;
 
+import org.deegree.rendering.r2d.styling.Copyable;
+
 /**
  * <code>LinePlacement</code>
  * 
@@ -46,7 +48,7 @@ package org.deegree.rendering.r2d.styling.components;
  * 
  * @version $Revision$, $Date$
  */
-public class LinePlacement {
+public class LinePlacement implements Copyable<LinePlacement> {
 
     /**
      * Default is 0.
@@ -77,5 +79,16 @@ public class LinePlacement {
      * Default is false.
      */
     public boolean generalizeLine;
+
+    public LinePlacement copy() {
+        LinePlacement copy = new LinePlacement();
+        copy.perpendicularOffset = perpendicularOffset;
+        copy.repeat = repeat;
+        copy.initialGap = initialGap;
+        copy.gap = gap;
+        copy.isAligned = isAligned;
+        copy.generalizeLine = generalizeLine;
+        return copy;
+    }
 
 }

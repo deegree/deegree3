@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2008 by:
  Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -36,45 +36,52 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering.r2d.styling.components;
+package org.deegree.rendering.r2d.se.unevaluated;
 
-import static java.awt.Color.WHITE;
-
-import org.deegree.rendering.r2d.styling.Copyable;
+import org.deegree.feature.Feature;
 
 /**
- * <code>Halo</code>
+ * <code>Continuation</code> is not a real continuation...
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * @param <T>
  */
-public class Halo implements Copyable<Halo> {
+public abstract class Continuation<T> {
 
-    /**
-     * Default is a white fill.
-     */
-    public Fill fill;
-
-    /**
-     * Default is 1.
-     */
-    public double radius = 1;
+    private Continuation<T> next;
 
     /**
      * 
      */
-    public Halo() {
-        fill = new Fill();
-        fill.color = WHITE;
+    public Continuation() {
+        // enable next to be null
     }
 
-    public Halo copy() {
-        Halo copy = new Halo();
-        copy.fill = fill == null ? null : fill.copy();
-        copy.radius = radius;
-        return copy;
+    /**
+     * @param next
+     */
+    public Continuation( Continuation<T> next ) {
+        this.next = next;
+    }
+
+    /**
+     * @param base
+     * @param f
+     */
+    public abstract void updateStep( T base, Feature f );
+
+    /**
+     * @param base
+     * @param f
+     */
+    public void evaluate( T base, Feature f ) {
+        updateStep( base, f );
+        if ( next != null ) {
+            evaluate( base, f );
+        }
     }
 
 }

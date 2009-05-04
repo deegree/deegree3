@@ -48,18 +48,17 @@ import org.deegree.rendering.r2d.styling.components.Graphic;
  * 
  * @version $Revision$, $Date$
  */
-public class PointStyling {
+public class PointStyling implements Copyable<PointStyling> {
 
     /**
      * Default is a SQUARE mark graphic.
      */
-    public Graphic graphic;
+    public Graphic graphic = new Graphic();
 
-    /**
-     * 
-     */
-    public PointStyling() {
-        graphic = new Graphic();
+    public PointStyling copy() {
+        PointStyling other = new PointStyling();
+        other.graphic = graphic.copy();
+        return other;
     }
 
 }

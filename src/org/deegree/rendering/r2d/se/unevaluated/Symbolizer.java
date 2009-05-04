@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2008 by:
  Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -36,45 +36,82 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering.r2d.styling.components;
+package org.deegree.rendering.r2d.se.unevaluated;
 
-import static java.awt.Color.WHITE;
+import static org.slf4j.LoggerFactory.getLogger;
 
+import java.util.HashMap;
+
+import org.deegree.feature.Feature;
 import org.deegree.rendering.r2d.styling.Copyable;
+import org.slf4j.Logger;
 
 /**
- * <code>Halo</code>
+ * <code>Symbolizer</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * @param <T>
  */
-public class Halo implements Copyable<Halo> {
+public class Symbolizer<T extends Copyable<T>> {
+
+    private static final Logger LOG = getLogger( Symbolizer.class );
+
+    private T evaluated;
+
+    private T base;
+
+    // TODO improve the caching, eg. implement a real cache with a limit etc.
+    private HashMap<String, T> cache = new HashMap<String, T>();
+
+    private Continuation<T> next;
 
     /**
-     * Default is a white fill.
+     * @param evaluated
      */
-    public Fill fill;
-
-    /**
-     * Default is 1.
-     */
-    public double radius = 1;
-
-    /**
-     * 
-     */
-    public Halo() {
-        fill = new Fill();
-        fill.color = WHITE;
+    public Symbolizer( T evaluated ) {
+        this.evaluated = evaluated;
     }
 
-    public Halo copy() {
-        Halo copy = new Halo();
-        copy.fill = fill == null ? null : fill.copy();
-        copy.radius = radius;
-        return copy;
+    /**
+     * @param base
+     * @param next
+     */
+    public Symbolizer( T base, Continuation<T> next ) {
+        this.base = base;
+        this.next = next;
+    }
+
+    /**
+     * @param f
+     * @return an appropriate PointStyling
+     */
+    public T evaluate( Feature f ) {
+        if ( evaluated != null ) {
+            return evaluated;
+        }
+
+        if ( f == null ) {
+            return base.copy();
+        }
+
+        String id = f.getId();
+        if ( cache.containsKey( id ) ) {
+            return cache.get( id );
+        }
+
+        T evald = base.copy();
+        if ( next == null ) {
+            LOG.warn( "Something wrong with SE/SLD parsing. No continuation found, and no evaluated style." );
+            return evald;
+        }
+
+        next.evaluate( evald, f );
+        cache.put( id, evald );
+
+        return evald;
     }
 
 }

@@ -40,6 +40,8 @@ package org.deegree.rendering.r2d.styling.components;
 
 import java.awt.Color;
 
+import org.deegree.rendering.r2d.styling.Copyable;
+
 /**
  * <code>Fill</code>
  * 
@@ -48,7 +50,7 @@ import java.awt.Color;
  * 
  * @version $Revision$, $Date$
  */
-public class Fill {
+public class Fill implements Copyable<Fill> {
 
     /**
      * Default is gray (#808080).
@@ -59,5 +61,12 @@ public class Fill {
      * Default is no graphic fill.
      */
     public Graphic graphic;
+
+    public Fill copy() {
+        Fill copy = new Fill();
+        copy.color = color;
+        copy.graphic = graphic == null ? null : graphic.copy();
+        return copy;
+    }
 
 }

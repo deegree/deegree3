@@ -41,6 +41,8 @@ package org.deegree.rendering.r2d.styling.components;
 import java.awt.Color;
 import java.util.Arrays;
 
+import org.deegree.rendering.r2d.styling.Copyable;
+
 /**
  * <code>Stroke</code>
  * 
@@ -49,7 +51,7 @@ import java.util.Arrays;
  * 
  * @version $Revision$, $Date$
  */
-public class Stroke {
+public class Stroke implements Copyable<Stroke> {
 
     /**
      * Default is gray (#808080).
@@ -110,17 +112,9 @@ public class Stroke {
      * @version $Revision$, $Date$
      */
     public static enum LineJoin {
-        /**
-         * 
-         */
-        MITRE,
-        /**
-         * 
-         */
-        ROUND,
-        /**
-         * 
-         */
+        /** * */
+        MITRE, /** * */
+        ROUND, /** * */
         BEVEL
     }
 
@@ -133,18 +127,25 @@ public class Stroke {
      * @version $Revision$, $Date$
      */
     public static enum LineCap {
-        /**
-         * 
-         */
-        BUTT,
-        /**
-         * 
-         */
-        ROUND,
-        /**
-         * 
-         */
+        /** * */
+        BUTT, /** * */
+        ROUND, /** * */
         SQUARE
+    }
+
+    public Stroke copy() {
+        Stroke copy = new Stroke();
+        copy.color = color;
+        copy.width = width;
+        copy.linejoin = linejoin;
+        copy.linecap = linecap;
+        copy.dasharray = dasharray;
+        copy.dashoffset = dashoffset;
+        copy.stroke = stroke == null ? null : stroke.copy();
+        copy.strokeGap = strokeGap;
+        copy.strokeInitialGap = strokeInitialGap;
+        copy.fill = fill == null ? null : fill.copy();
+        return copy;
     }
 
     @Override

@@ -43,6 +43,8 @@ import static org.deegree.rendering.r2d.styling.components.Font.Style.NORMAL;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.rendering.r2d.styling.Copyable;
+
 /**
  * <code>Font</code>
  * 
@@ -51,7 +53,7 @@ import java.util.List;
  * 
  * @version $Revision$, $Date$
  */
-public class Font {
+public class Font implements Copyable<Font> {
 
     /**
      * Default is empty list.
@@ -82,20 +84,19 @@ public class Font {
      * @version $Revision$, $Date$
      */
     public static enum Style {
-        /**
-         * 
-         */
-        OBLIQUE,
-
-        /**
-         * 
-         */
-        ITALIC,
-
-        /**
-         * 
-         */
+        /** * */
+        OBLIQUE, /** * */
+        ITALIC, /** * */
         NORMAL
+    }
+
+    public Font copy() {
+        Font copy = new Font();
+        copy.fontFamily.addAll( fontFamily );
+        copy.fontStyle = fontStyle;
+        copy.bold = bold;
+        copy.fontSize = fontSize;
+        return copy;
     }
 
 }

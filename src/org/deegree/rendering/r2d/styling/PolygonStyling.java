@@ -49,7 +49,7 @@ import org.deegree.rendering.r2d.styling.components.Stroke;
  * 
  * @version $Revision$, $Date$
  */
-public class PolygonStyling {
+public class PolygonStyling implements Copyable<PolygonStyling> {
 
     /**
      * Default is null.
@@ -75,5 +75,15 @@ public class PolygonStyling {
      * Default is 0.
      */
     public double perpendicularOffset;
+
+    public PolygonStyling copy() {
+        PolygonStyling copy = new PolygonStyling();
+        copy.fill = fill == null ? null : fill.copy();
+        copy.stroke = stroke == null ? null : stroke.copy();
+        copy.displacementX = displacementX;
+        copy.displacementY = displacementY;
+        copy.perpendicularOffset = perpendicularOffset;
+        return copy;
+    }
 
 }

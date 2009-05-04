@@ -50,7 +50,7 @@ import org.deegree.rendering.r2d.styling.components.Stroke;
  * 
  * @version $Revision$, $Date$
  */
-public class LineStyling {
+public class LineStyling implements Copyable<LineStyling> {
 
     /**
      * Default is standard gray.
@@ -66,6 +66,13 @@ public class LineStyling {
     public String toString() {
         return "LineStyling [" + stroke
                + ( isZero( perpendicularOffset ) ? "" : ( ", Perpendicular offset: " + perpendicularOffset ) ) + "]";
+    }
+
+    public LineStyling copy() {
+        LineStyling copy = new LineStyling();
+        copy.stroke = stroke.copy();
+        copy.perpendicularOffset = perpendicularOffset;
+        return copy;
     }
 
 }

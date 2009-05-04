@@ -40,6 +40,8 @@ package org.deegree.rendering.r2d.styling.components;
 
 import java.awt.image.BufferedImage;
 
+import org.deegree.rendering.r2d.styling.Copyable;
+
 /**
  * <code>Graphic</code>
  * 
@@ -48,7 +50,7 @@ import java.awt.image.BufferedImage;
  * 
  * @version $Revision$, $Date$
  */
-public class Graphic {
+public class Graphic implements Copyable<Graphic> {
 
     /**
      * Default is 1.
@@ -94,5 +96,19 @@ public class Graphic {
      * Default is null.
      */
     public Mark mark = new Mark();
+
+    public Graphic copy() {
+        Graphic other = new Graphic();
+        other.opacity = opacity;
+        other.size = size;
+        other.rotation = rotation;
+        other.anchorPointX = anchorPointX;
+        other.anchorPointY = anchorPointY;
+        other.displacementX = displacementX;
+        other.displacementY = displacementY;
+        other.image = image;
+        other.mark = mark.copy();
+        return other;
+    }
 
 }

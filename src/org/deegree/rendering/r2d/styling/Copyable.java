@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------    FILE HEADER  ------------------------------------------
  This file is part of deegree.
- Copyright (C) 2001-2009 by:
+ Copyright (C) 2001-2008 by:
  Department of Geography, University of Bonn
  http://www.giub.uni-bonn.de/deegree/
  lat/lon GmbH
@@ -36,45 +36,22 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering.r2d.styling.components;
-
-import static java.awt.Color.WHITE;
-
-import org.deegree.rendering.r2d.styling.Copyable;
+package org.deegree.rendering.r2d.styling;
 
 /**
- * <code>Halo</code>
+ * <code>Copyable</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * @param <T>
  */
-public class Halo implements Copyable<Halo> {
+public interface Copyable<T> {
 
     /**
-     * Default is a white fill.
+     * @return the copied object
      */
-    public Fill fill;
-
-    /**
-     * Default is 1.
-     */
-    public double radius = 1;
-
-    /**
-     * 
-     */
-    public Halo() {
-        fill = new Fill();
-        fill.color = WHITE;
-    }
-
-    public Halo copy() {
-        Halo copy = new Halo();
-        copy.fill = fill == null ? null : fill.copy();
-        copy.radius = radius;
-        return copy;
-    }
+    T copy();
 
 }
