@@ -49,6 +49,7 @@ import javax.media.opengl.glu.GLU;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactoryCreator;
@@ -163,22 +164,14 @@ public class OpenGLEventHandler implements GLEventListener {
         LOG.trace( "lookAt:" + lookAt[0] + "," + lookAt[1] + "," + lookAt[2] );
         LOG.trace( "eye:" + eye[0] + "," + eye[1] + "," + eye[2] );
 
-        float[] originalModelView = new float[16];
-        gl.glGetFloatv( GL.GL_MODELVIEW_MATRIX, originalModelView, 0 );
-
-        float[] newEye = new float[3];
-        float[] t = new float[] { -originalModelView[12], -originalModelView[13], -originalModelView[14] };
-        newEye[0] = originalModelView[0] * t[0] + originalModelView[1] * t[1] + originalModelView[2] * t[2];
-        newEye[1] = originalModelView[4] * t[0] + originalModelView[5] * t[1] + originalModelView[6] * t[2];
-        newEye[2] = originalModelView[8] * t[0] + originalModelView[9] * t[1] + originalModelView[10] * t[2];
-
+        float[] newEye = JOGLUtils.getEyeFromModelView( gl );
         LOG.trace( "Eye in model space: " + Vectors3f.asString( newEye ) );
 
         Point3d newEyeP = new Point3d( newEye[0], newEye[1], newEye[2] );
         Point3d center = new Point3d( lookAt[0], lookAt[1], lookAt[2] );
         Vector3d up = new Vector3d( 0, 0, 1 );
         ViewFrustum vf = new ViewFrustum( newEyeP, center, up, 60.0, (double) width / height, 0.5, farClippingPlane );
-        ViewParams params = new ViewParams( vf, width, height );
+        ViewParams params = new ViewParams( vf, width, height, 1 );
 
         for ( WorldRenderableObject dObj : worldRenderableObjects ) {
             dObj.render( gl, params );
