@@ -161,17 +161,13 @@ public class TerrainRenderingManager {
      * @param gl
      * @param params
      * @param disableElevationModel
-     * @param zScale
-     *            scale factor for terrain height values
      * @param textureManagers
      */
-    public void render( GL gl, ViewParams params, boolean disableElevationModel, float zScale,
-                        TextureManager[] textureManagers ) {
+    public void render( GL gl, ViewParams params, boolean disableElevationModel, TextureManager[] textureManagers ) {
 
-        if ( disableElevationModel || zScale < 0.001f ) {
-            // ensure correct zScale (zScale = 0 does not work as expected)
-            zScale = 0.001f;
-        }
+        // ensure correct zScale (zScale = 0 does not work as expected)
+        float zScale = ( disableElevationModel || params.getTerrainScale() < 0.001f ) ? 0.001f
+                                                                                     : params.getTerrainScale();
 
         // adapt geometry LOD (fragments)
         updateLOD( gl, params, zScale );
