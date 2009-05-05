@@ -12,20 +12,24 @@ function pretty(o,doc){
       unks.push(x)
     }
 
-  print("\nFunctions:")
+  if(funs.length > 0)
+    print("\nFunctions:")
   for(x in funs){
     if(doc)
       print(o[funs[x]])
     else
       print(funs[x] + " (" + (typeof o[funs[x]]) + ")")
   }
-  print("\nObjects:")
+  if(objs.length > 0)
+    print("\nObjects:")
   for(x in objs)
     print(objs[x] + " (" + (typeof o[objs[x]]) + ")")
-  print("\nOther properties:")
+  if(oths.length > 0)
+    print("\nOther properties:")
   for(x in oths)
     print(oths[x] + " (" + (typeof o[oths[x]]) + ")")
-  print("\nUnknown properties:")
+  if(unks.length > 0)
+    print("\nUnknown properties:")
   for(x in oths)
     print(oths[x] + " (unknown)")
 }

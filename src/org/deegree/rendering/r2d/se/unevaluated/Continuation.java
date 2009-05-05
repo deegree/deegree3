@@ -84,4 +84,21 @@ public abstract class Continuation<T> {
         }
     }
 
+    /**
+     * <code>Updater</code>
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     * @param <T>
+     */
+    public static interface Updater<T> {
+        /**
+         * @param obj
+         * @param val
+         */
+        void update( T obj, String val );
+    }
+
 }

@@ -18,7 +18,7 @@
       <extension base="ds:AbstractWebBasedDataSourceType">
         <sequence>
           <element name="RequestedLayers" type="string" />
-          <element name="RequestedFormat">
+          <element name="RequestedFormat" minOccurs="0">
             <complexType>
               <simpleContent>
                 <extension base="string">

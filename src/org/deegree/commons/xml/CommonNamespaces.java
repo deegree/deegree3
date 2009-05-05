@@ -137,6 +137,11 @@ public class CommonNamespaces {
      */
     public static final String CRSNS = "http://www.deegree.org/crs";
 
+    /**
+     * The SE namespace --used for the 2d rendering-- is currently bound to: "http://www.opengis.net/se"
+     */
+    public static final String SENS = "http://www.opengis.net/se";
+
     // prefixes
     /**
      * The GML3_2 prefix is currently assigned to: "gml3_2"
@@ -218,6 +223,11 @@ public class CommonNamespaces {
      */
     public static final String CRS_PREFIX = "crs";
 
+    /**
+     * The SE_PREFIX is currently assigned to: "se"
+     */
+    public static final String SE_PREFIX = "se";
+
     private static NamespaceContext nsContext = null;
 
     /**
@@ -243,6 +253,7 @@ public class CommonNamespaces {
             nsContext.addNamespace( ISOAP10GCO_PREFIX, ISOAP10GCONS );
             nsContext.addNamespace( APISO_PREFIX, APISO );
             nsContext.addNamespace( CRS_PREFIX, CRSNS );
+            nsContext.addNamespace( SE_PREFIX, SENS );
 
         }
         return nsContext;

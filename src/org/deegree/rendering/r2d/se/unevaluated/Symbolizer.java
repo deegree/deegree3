@@ -42,7 +42,12 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
 
+import javax.xml.namespace.QName;
+
+import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
+import org.deegree.feature.Property;
+import org.deegree.geometry.Geometry;
 import org.deegree.rendering.r2d.styling.Copyable;
 import org.slf4j.Logger;
 
@@ -64,54 +69,70 @@ public class Symbolizer<T extends Copyable<T>> {
     private T base;
 
     // TODO improve the caching, eg. implement a real cache with a limit etc.
-    private HashMap<String, T> cache = new HashMap<String, T>();
+    private HashMap<String, Pair<T, Geometry>> cache = new HashMap<String, Pair<T, Geometry>>();
 
     private Continuation<T> next;
 
+    private QName geometry;
+
     /**
      * @param evaluated
+     * @param geometry
      */
-    public Symbolizer( T evaluated ) {
+    public Symbolizer( T evaluated, QName geometry ) {
         this.evaluated = evaluated;
+        this.geometry = geometry == null ? new QName( "geometry" ) : geometry;
     }
 
     /**
      * @param base
      * @param next
+     * @param geometry
      */
-    public Symbolizer( T base, Continuation<T> next ) {
+    public Symbolizer( T base, Continuation<T> next, QName geometry ) {
         this.base = base;
         this.next = next;
+        this.geometry = geometry == null ? new QName( "geometry" ) : geometry;
     }
 
     /**
      * @param f
      * @return an appropriate PointStyling
      */
-    public T evaluate( Feature f ) {
-        if ( evaluated != null ) {
-            return evaluated;
-        }
-
+    public Pair<T, Geometry> evaluate( Feature f ) {
         if ( f == null ) {
-            return base.copy();
+            return new Pair<T, Geometry>( evaluated == null ? base.copy() : evaluated.copy(), null );
         }
 
+        Geometry geom = null;
+
+        for ( Property<Geometry> p : f.getGeometryProperties() ) {
+            if ( p.getName().equals( geometry ) ) {
+                geom = p.getValue();
+            }
+        }
         String id = f.getId();
         if ( cache.containsKey( id ) ) {
             return cache.get( id );
         }
 
+        if ( evaluated != null ) {
+            Pair<T, Geometry> pair = new Pair<T, Geometry>( evaluated, geom );
+            cache.put( id, pair );
+            return pair;
+        }
+
         T evald = base.copy();
+        Pair<T, Geometry> pair = new Pair<T, Geometry>( evald, geom );
         if ( next == null ) {
             LOG.warn( "Something wrong with SE/SLD parsing. No continuation found, and no evaluated style." );
-            return evald;
+            return pair;
         }
 
         next.evaluate( evald, f );
-        cache.put( id, evald );
+        cache.put( id, pair );
 
-        return evald;
+        return pair;
     }
 
 }

@@ -311,7 +311,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      *            element to be parsed
      * @return expression object
      */
-    private Expression parseExpression( OMElement element ) {
+    public Expression parseExpression( OMElement element ) {
 
         Expression expression = null;
 

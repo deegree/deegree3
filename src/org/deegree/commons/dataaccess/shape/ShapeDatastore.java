@@ -89,8 +89,7 @@ public class ShapeDatastore {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public ShapeDatastore( String name, CRS crs, Charset encoding ) throws FileNotFoundException,
-                            IOException {
+    public ShapeDatastore( String name, CRS crs, Charset encoding ) throws FileNotFoundException, IOException {
         if ( name.toLowerCase().endsWith( ".shp" ) ) {
             name = name.substring( 0, name.length() - 4 );
         }
@@ -144,7 +143,7 @@ public class ShapeDatastore {
                 }
             }
             props.add( new GenericProperty<Geometry>( geom, pair.second ) );
-            GenericFeature feat = new GenericFeature( type, null, props );
+            GenericFeature feat = new GenericFeature( type, "" + pair.first, props );
             if ( filter.evaluate( feat ) ) {
                 feats.add( feat );
             }
