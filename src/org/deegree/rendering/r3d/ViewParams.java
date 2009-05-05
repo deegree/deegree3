@@ -58,8 +58,23 @@ public class ViewParams {
 
     private int screenSizeY = -1;
 
-    public ViewParams( Point3d eye, Point3d lookingAt, Vector3d viewerUp, double fovy, double zNear, double zFar ) {
+    private float terrainScale;
+
+    /**
+     * 
+     * @param eye
+     * @param lookingAt
+     * @param viewerUp
+     * @param fovy
+     * @param zNear
+     * @param zFar
+     * @param terrainScale
+     */
+    public ViewParams( Point3d eye, Point3d lookingAt, Vector3d viewerUp, double fovy, double zNear, double zFar,
+                       float terrainScale ) {
         this.vf = new ViewFrustum( eye, lookingAt, viewerUp, fovy, 1.0, zNear, zFar );
+        this.terrainScale = terrainScale;
+
     }
 
     /**
@@ -71,11 +86,14 @@ public class ViewParams {
      *            number of pixels of the projected image in the x direction
      * @param screenSizeY
      *            number of pixels of the projected image in the y direction
+     * @param terrainScale
+     *            scaled z value of the terrain.
      */
-    public ViewParams( ViewFrustum vf, int screenSizeX, int screenSizeY ) {
+    public ViewParams( ViewFrustum vf, int screenSizeX, int screenSizeY, float terrainScale ) {
         this.vf = vf;
         this.screenSizeX = screenSizeX;
         this.screenSizeY = screenSizeY;
+        this.terrainScale = terrainScale;
     }
 
     /**
@@ -130,5 +148,20 @@ public class ViewParams {
     public String toString() {
         String s = "{frustum=" + vf + ",pixelsX=" + screenSizeX + ",pixelsY=" + screenSizeY + "}";
         return s;
+    }
+
+    /**
+     * @return the z scale value the terrain
+     */
+    public final float getTerrainScale() {
+        return terrainScale;
+    }
+
+    /**
+     * @param newScale
+     *            the new zScale.
+     */
+    public final void setTerrainScale( float newScale ) {
+        terrainScale = newScale;
     }
 }

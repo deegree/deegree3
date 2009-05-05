@@ -37,6 +37,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d;
 
+import javax.vecmath.Matrix3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
@@ -58,6 +59,14 @@ import javax.vecmath.Vector3d;
  * @version $Revision$
  */
 public class ViewFrustum {
+
+    private static final double RAD_90 = Math.toRadians( 90 );
+
+    private static final double RAD_180 = Math.toRadians( 180 );
+
+    private static final double RAD_270 = Math.toRadians( 270 );
+
+    private static final double RAD_360 = Math.toRadians( 360 );
 
     private double fovy;
 
@@ -102,9 +111,87 @@ public class ViewFrustum {
 
     private static final int FARP = 5;
 
-    public ViewFrustum( Point3d eye, Point3d center, Vector3d up, double fovy, double aspect, double zNear, double zFar ) {
+    public ViewFrustum( Point3d eye, Point3d lookingAt, Vector3d up, double fovy, double aspect, double zNear,
+                        double zFar ) {
         setPerspectiveParams( fovy, aspect, zNear, zFar );
-        setCameraParams( eye, center, up );
+        setCameraParams( eye, lookingAt, up );
+    }
+
+    /**
+     * Create a view Frustum by using the given roll, pitch, yaw and distance to the point of interest (looking at), to
+     * calculate the eye and the up vector.
+     * 
+     * @param pitch
+     * @param yaw
+     * @param roll
+     * @param distance
+     * @param lookingAt
+     * @param fovy
+     * @param aspect
+     * @param zNear
+     * @param zFar
+     */
+    public ViewFrustum( double pitch, double yaw, double roll, double distance, Point3d lookingAt, double fovy,
+                        double aspect, double zNear, double zFar ) {
+        Point3d calculatedEye = calcObserPosition( lookingAt, pitch, yaw, distance );
+        Vector3d calculatedUp = calcUp( roll );
+
+        setPerspectiveParams( fovy, aspect, zNear, zFar );
+        setCameraParams( calculatedEye, lookingAt, calculatedUp );
+    }
+
+    /**
+     * Calculate the position of the viewer regarding the yaw and the pitch.
+     * 
+     * @param pointOfInterest
+     * @param pitch
+     * @param yaw
+     * @param distance
+     * @return the position of the viewer.
+     */
+    private Point3d calcObserPosition( Point3d pointOfInterest, double pitch, double yaw, double distance ) {
+        double z = Math.sin( pitch ) * distance;
+
+        double groundLength = Math.sqrt( ( distance * distance ) - ( z * z ) );
+        double x = 0;
+        double y = 0;
+        // -1-> if yaw is null, we're looking to the north
+        if ( yaw >= 0 && yaw < RAD_90 ) {
+            x = -1 * ( Math.sin( yaw ) * groundLength );
+            y = -1 * ( Math.cos( yaw ) * groundLength );
+        } else if ( yaw >= RAD_90 && yaw < RAD_180 ) {
+            double littleYaw = yaw - RAD_90;
+            y = Math.sin( littleYaw ) * groundLength;
+            x = -1 * ( Math.cos( littleYaw ) * groundLength );
+        } else if ( yaw >= RAD_180 && yaw < RAD_270 ) {
+            double littleYaw = yaw - RAD_180;
+            x = Math.sin( littleYaw ) * groundLength;
+            y = Math.cos( littleYaw ) * groundLength;
+        } else if ( yaw >= RAD_270 && yaw < RAD_360 ) {
+            double littleYaw = yaw - RAD_270;
+            y = -1 * ( Math.sin( littleYaw ) * groundLength );
+            x = Math.cos( littleYaw ) * groundLength;
+        }
+
+        return new Point3d( pointOfInterest.x + x, pointOfInterest.y + y, pointOfInterest.z + z );
+
+    }
+
+    /**
+     * The up vector only depends on the roll
+     * 
+     * @param roll
+     * @return the cameras up-vector.
+     */
+    private Vector3d calcUp( double roll ) {
+        Vector3d newUP = new Vector3d( 0, 0, 1 );
+        if ( Math.abs( roll ) < 1E-10 ) {
+            return newUP;
+        }
+        Matrix3d mat = new Matrix3d();
+        mat.rotX( roll );
+        mat.transform( newUP );
+        return newUP;
     }
 
     public Point3d getEyePos() {
