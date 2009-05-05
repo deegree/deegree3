@@ -73,10 +73,11 @@ public class RenderableManager<T extends Positionable> implements Collection<T> 
     /**
      * @param validDomain
      * @param numberOfObjectsInLeaf
+     * @param maxPixelError
      */
-    public RenderableManager( Envelope validDomain, int numberOfObjectsInLeaf ) {
+    public RenderableManager( Envelope validDomain, int numberOfObjectsInLeaf, double maxPixelError ) {
         this.validDomain = validDomain;
-        root = new QuadTree<T>( validDomain, numberOfObjectsInLeaf );
+        root = new QuadTree<T>( validDomain, numberOfObjectsInLeaf, maxPixelError );
         this.numberOfObjectsInLeaf = numberOfObjectsInLeaf;
     }
 
@@ -85,7 +86,7 @@ public class RenderableManager<T extends Positionable> implements Collection<T> 
      *            of this Renderable Manager
      */
     public RenderableManager( Envelope validDomain ) {
-        this( validDomain, 120 );
+        this( validDomain, 120, 1 );
     }
 
     @Override

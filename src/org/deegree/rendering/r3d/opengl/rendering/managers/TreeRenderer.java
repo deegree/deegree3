@@ -81,46 +81,15 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
         buffer = null;
     }
 
-    // private static final FloatBuffer coordBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
-    // -.5f,
-    // 0,
-    // 0, // ll
-    // .5f,
-    // 0,
-    // 0,// lr
-    // .5f,
-    // 0,
-    // 1,// ur
-    // -.5f, 0,
-    // 1 }// ul
-    // ) );
-    //
-    // private static final FloatBuffer normalBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] {
-    // 0,
-    // -1,
-    // 0, // ll
-    // 0,
-    // -1,
-    // 0,// lr
-    // 0, -1,
-    // 0,// ur
-    // 0, -1, 0 }// ul
-    // ) );
-    //
-    // private static final FloatBuffer textureBuffer = BufferUtil.copyFloatBuffer( FloatBuffer.wrap( new float[] { 0,
-    // 1,
-    // 1, 1,
-    // 1, 0,
-    // 0, 0 } ) );
-
     private int[] bufferID = null;
 
     /**
      * @param validDomain
      * @param numberOfObjectsInLeaf
+     * @param maxPixelError
      */
-    public TreeRenderer( Envelope validDomain, int numberOfObjectsInLeaf ) {
-        super( validDomain, numberOfObjectsInLeaf );
+    public TreeRenderer( Envelope validDomain, int numberOfObjectsInLeaf, double maxPixelError ) {
+        super( validDomain, numberOfObjectsInLeaf, maxPixelError );
     }
 
     /**

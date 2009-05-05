@@ -73,9 +73,11 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
      * @param numberOfObjectsInLeaf
      * @param geometryBuffer
      *            wrapper holding all geometries in a single direct {@link FloatBuffer}
+     * @param maxPixelError
      */
-    public BuildingRenderer( Envelope validDomain, int numberOfObjectsInLeaf, DirectGeometryBuffer geometryBuffer ) {
-        super( validDomain, numberOfObjectsInLeaf );
+    public BuildingRenderer( Envelope validDomain, int numberOfObjectsInLeaf, DirectGeometryBuffer geometryBuffer,
+                             double maxPixelError ) {
+        super( validDomain, numberOfObjectsInLeaf, maxPixelError );
         this.geometryBuffer = geometryBuffer;
     }
 

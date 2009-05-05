@@ -67,13 +67,13 @@ import org.deegree.rendering.r3d.ViewParams;
  */
 public class QuadTree<T extends Positionable> {
 
-    private final float[] min;
+    private float[] min;
 
-    private final float[] max;
+    private float[] max;
 
-    private final float halfWidth;
+    private float halfWidth;
 
-    private final float halfHeight;
+    private float halfHeight;
 
     private QuadTree<T>[] children;
 
@@ -84,21 +84,27 @@ public class QuadTree<T extends Positionable> {
     // the most significant error of a node.
     private float maxError = Float.MIN_VALUE;
 
-    private static final int PIXEL_ERROR = 2;
+    private double maxPixelError;
+
+    private QuadTree( int numberOfObjects, double maxPixelError ) {
+        if ( numberOfObjects < 1 ) {
+            throw new IllegalArgumentException( "The number of objects per leaf may not be smaller than 1." );
+        }
+        this.maxPixelError = maxPixelError;
+        this.numberOfObjects = numberOfObjects;
+    }
 
     /**
      * @param validDomain
      * @param numberOfObjects
      *            each node will contain
+     * @param maxPixelError
      */
-    public QuadTree( Envelope validDomain, int numberOfObjects ) {
-        if ( numberOfObjects < 1 ) {
-            throw new IllegalArgumentException( "The number of objects per leaf may not be smaller than 1." );
-        }
+    public QuadTree( Envelope validDomain, int numberOfObjects, double maxPixelError ) {
+        this( numberOfObjects, maxPixelError );
         if ( validDomain == null ) {
             throw new IllegalArgumentException( "The envelope must be set." );
         }
-        this.numberOfObjects = numberOfObjects;
         double[] env = validDomain.getMin().getAsArray();
         this.min = new float[] { (float) env[0], (float) env[1], (float) ( ( env.length == 3 ) ? env[2] : 0 ) };
         env = validDomain.getMax().getAsArray();
@@ -112,14 +118,12 @@ public class QuadTree<T extends Positionable> {
      * @param max
      * @param numberOfObjects
      *            each leaf node will contain
+     * @param maxPixelError
      */
-    public QuadTree( float[] min, float[] max, int numberOfObjects ) {
-        if ( numberOfObjects < 1 ) {
-            throw new IllegalArgumentException( "The number of objects per leaf may not be smaller than 1." );
-        }
+    public QuadTree( float[] min, float[] max, int numberOfObjects, double maxPixelError ) {
+        this( numberOfObjects, maxPixelError );
         this.min = min;
         this.max = max;
-        this.numberOfObjects = numberOfObjects;
         this.halfHeight = min[1] + ( ( max[1] - min[1] ) * 0.5f );
         this.halfWidth = min[0] + ( ( max[0] - min[0] ) * 0.5f );
     }
@@ -341,7 +345,7 @@ public class QuadTree<T extends Positionable> {
             ma = max;
             break;
         }
-        return new QuadTree<T>( mi, ma, numberOfObjects );
+        return new QuadTree<T>( mi, ma, numberOfObjects, maxPixelError );
     }
 
     /**
@@ -399,14 +403,14 @@ public class QuadTree<T extends Positionable> {
                     double distance = VectorUtils.getDistance( bbox, eye );
                     double estimatePixel = viewParams.estimatePixelSizeForSpaceUnit( distance );
                     double estError = estimatePixel * maxError;
-                    if ( estError > PIXEL_ERROR ) {
+                    if ( estError > maxPixelError ) {
                         if ( comparator != null ) {
                             Collections.sort( objects, comparator );
                         }
                         for ( T obj : objects ) {
                             if ( ( obj.getErrorScalar() * viewParams.estimatePixelSizeForSpaceUnit( Vectors3f.distance(
                                                                                                                         eye,
-                                                                                                                        obj.getPosition() ) ) ) > PIXEL_ERROR ) {
+                                                                                                                        obj.getPosition() ) ) ) > maxPixelError ) {
                                 result.add( obj );
                             }
                         }
@@ -433,7 +437,7 @@ public class QuadTree<T extends Positionable> {
 
         Point min = env.getMin();
         Point max = env.getMax();
-        int dim =  ( min.is3D() ? 3 : 2 );
+        int dim = ( min.is3D() ? 3 : 2 );
         getObjects( new float[] { (float) min.get( 0 ), (float) min.get( 1 ),
                                  ( ( dim == 2 ) ? 0 : (float) min.get( 2 ) ) },
                     new float[] { (float) max.get( 0 ), (float) max.get( 1 ),
