@@ -43,13 +43,9 @@ import static java.lang.Math.min;
 import static java.lang.Math.signum;
 
 import org.deegree.crs.CRS;
-import org.deegree.crs.components.Axis;
-import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class maps a 2D raster to another cartesian world coordinate system.
@@ -71,8 +67,6 @@ import org.slf4j.LoggerFactory;
  */
 public class RasterReference {
 
-    private static Logger LOG = LoggerFactory.getLogger( RasterReference.class );
-
     private double x0;
 
     private double y0;
@@ -80,8 +74,6 @@ public class RasterReference {
     private double xRes;
 
     private double yRes;
-
-    private boolean axisSwitched; //TODO see if the axisSwitching signaling (when getEnvelope() should be placed here) 
 
     private double delta;
 
@@ -154,11 +146,8 @@ public class RasterReference {
      * @param height
      */
     public RasterReference( Envelope env, int width, int height ) {
-        //TODO take in account the envelope's CRS axes orientation & order
         this.x0 = env.getMin().getX();
         this.y0 = env.getMax().getY();
-
-
 
         this.xRes = env.getWidth() / width;
         this.yRes = -1 * env.getHeight() / height;
@@ -177,7 +166,6 @@ public class RasterReference {
      * @return new resized RasterReference
      */
     public RasterReference createResizedEnvelope( Envelope env, int width, int height ) {
-      //TODO take in account the envelope's CRS axes orientation & order
         RasterReference result = new RasterReference();
         result.xRes = env.getWidth() / width * signum( this.xRes );
         result.yRes = env.getHeight() / height * signum( this.yRes );
@@ -200,7 +188,6 @@ public class RasterReference {
      * @return new RasterReference
      */
     public RasterReference createScaledEnvelope( Envelope env, double xRes, double yRes ) {
-      //TODO take in account the envelope's CRS axes orientation & order
         double[] origin = calculateNewOrigin( env );
         return new RasterReference( Type.OUTER, origin[0], origin[1], xRes, yRes );
     }
@@ -212,7 +199,6 @@ public class RasterReference {
      * @return new RasterReference
      */
     public RasterReference createSubEnvelope( Envelope envelope ) {
-      //TODO take in account the envelope's CRS axes orientation & order
         double[] origin = calculateNewOrigin( envelope );
         return new RasterReference( Type.OUTER, origin[0], origin[1], this.xRes, this.yRes );
     }
@@ -224,7 +210,6 @@ public class RasterReference {
      * @return array with origin (x0, y0)
      */
     private double[] calculateNewOrigin( Envelope envelope ) {
-      //TODO take in account the envelope's CRS axes orientation & order
         // +-delta so an evelope on the border of a pixel gets the inner pixel
         int[] min = convertToRasterCRS( envelope.getMin().getX() + delta, envelope.getMin().getY() + delta );
         int[] max = convertToRasterCRS( envelope.getMax().getX() - delta, envelope.getMax().getY() - delta );
@@ -284,7 +269,6 @@ public class RasterReference {
      * @return RasterRect
      */
     public RasterRect convertEnvelopeToRasterCRS( Envelope envelope ) {
-        //TODO take in account the envelope's CRS axes orientation & order
         RasterRect result = new RasterRect();
 
         int[] min = convertToRasterCRS( envelope.getMin().getX() + delta, envelope.getMax().getY() - delta );
@@ -325,7 +309,6 @@ public class RasterReference {
      *            the coordinate system for the envelope
      * 
      * @return the calculated envelope
-     * @throws UnknownCRSException 
      */
     public Envelope getEnvelope( int width, int height, CRS crs ) {
         return getEnvelope( width, height, crs, RasterReference.Type.OUTER );
@@ -346,81 +329,32 @@ public class RasterReference {
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height, CRS crs, RasterReference.Type type ) {
-        double xmin, xmax, ymin, ymax;
-        xmin = x0;
-        xmax = x0 + xRes * width;
-        ymin = y0;
-        ymax = y0 + yRes * height;
-        
         GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
-        
-        // if the CRS is not null, adjust xRes and yRes so that they reflect the CRS' axes orientation & order 
-        Axis[] axes = null;
-        try {
-            if ( crs != null )
-                axes = crs.getWrappedCRS().getAxis();
-        } catch ( UnknownCRSException e ) {
-            LOG.error( e.getMessage(), e );
+
+        double x0, y0, x1, y1;
+
+        if ( type == RasterReference.Type.OUTER ) {
+            x0 = this.x0;
+            y0 = this.y0;
+            x1 = x0 + width * xRes;
+            y1 = y0 + height * yRes;
+        } else {
+            x0 = this.x0 + xRes / 2;
+            y0 = this.y0 + yRes / 2;
+            x1 = x0 + width * xRes - xRes / 2;
+            y1 = y0 + height * yRes - yRes / 2;
         }
-        if ( axes != null ) {            
-            if ( ( axes[0].getOrientation() == Axis.AO_NORTH || axes[0].getOrientation() == Axis.AO_SOUTH ) && 
-                                    ( axes[1].getOrientation() == Axis.AO_EAST || axes[1].getOrientation() == Axis.AO_WEST ) ) {
-                // if the order is swapped (latitude, longitude) instead of vice-versa
-                
-                if ( axes[0].getOrientation() == Axis.AO_NORTH ) {
-                    yRes = Math.abs( yRes );
-                    xmin = y0;
-                    xmax = y0 + yRes * height;
-                } else if ( axes[0].getOrientation() == Axis.AO_SOUTH ) {
-                    yRes = - Math.abs( yRes );                    
-                    xmin = y0 + yRes * height;
-                    xmax = y0;
-                }
-        
-                if ( axes[1].getOrientation() == Axis.AO_EAST ) {
-                    xRes = Math.abs( xRes );
-                    ymin = x0;
-                    ymax = x0 + xRes * width;
-                } else if ( axes[1].getOrientation() == Axis.AO_WEST ) {
-                    xRes = - Math.abs( xRes );                    
-                    ymin = x0 + xRes * width;
-                    ymax = x0;
-                }
-            } else if ( ( axes[0].getOrientation() == Axis.AO_EAST || axes[0].getOrientation() == Axis.AO_WEST ) && 
-                                    ( axes[1].getOrientation() == Axis.AO_NORTH || axes[1].getOrientation() == Axis.AO_SOUTH ) ) {
-                if ( axes[0].getOrientation() == Axis.AO_EAST ) {
-                    xRes = Math.abs( xRes );
-                    xmin = x0;
-                    xmax = x0 + xRes * width;
-                } else if ( axes[0].getOrientation() == Axis.AO_WEST ) {
-                    xRes = - Math.abs( xRes );                    
-                    xmin = x0 + xRes * width;
-                    xmax = x0;
-                }
-        
-                if ( axes[1].getOrientation() == Axis.AO_NORTH ) {
-                    yRes = Math.abs( yRes );
-                    ymin = y0;
-                    ymax = y0 + yRes * height;
-                } else if ( axes[1].getOrientation() == Axis.AO_SOUTH ) {
-                    yRes = - Math.abs( yRes );                    
-                    ymin = y0 + yRes * height;
-                    ymax = y0;
-                }
-            }
-        }
-        
-        if ( type == RasterReference.Type.CENTER ) {
-            xmin = xmin + ( xRes / 2 );
-            ymin = ymin + ( yRes / 2 );
-            xmax = xmax - ( xRes / 2 );
-            ymax = ymax - ( yRes / 2 );
-        }
-        
-        return geomFactory.createEnvelope( new double[] { xmin, ymin }, new double[] { xmax, ymax },
-                                           delta, crs );
+
+        double xmin = min( x0, x1 );
+        double xmax = max( x0, x1 );
+        double ymin = min( y0, y1 );
+        double ymax = max( y0, y1 );
+
+        Envelope envelope = geomFactory.createEnvelope( new double[] { xmin, ymin }, new double[] { xmax, ymax },
+                                                        delta, crs );
+        return envelope;
     }
-    
+
     /**
      * Returns the size in pixel of a raster that extends within given Envelope.
      * 
@@ -540,5 +474,6 @@ public class RasterReference {
         result.delta = min( rasterEnv.delta, this.delta );
 
         return result;
-    }        
+    }
+
 }
