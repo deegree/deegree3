@@ -41,13 +41,18 @@ package org.deegree.rendering.r2d.se.parser;
 import static java.awt.Color.decode;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
+import static org.deegree.rendering.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
+import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMText;
@@ -55,6 +60,7 @@ import org.deegree.commons.filter.Expression;
 import org.deegree.commons.filter.FilterEvaluationException;
 import org.deegree.commons.filter.xml.Filter110XMLAdapter;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.FormattingXMLStreamWriter;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -457,8 +463,32 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                             }
                             if ( p.second != null ) {
                                 try {
-                                    tmp += p.second.evaluate( f );
+                                    Object evald = p.second.evaluate( f );
+                                    if ( evald == null ) {
+                                        XMLOutputFactory factory = XMLOutputFactory.newInstance();
+                                        factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
+                                        StringWriter stringWriter = new StringWriter();
+                                        XMLStreamWriter streamWriter = factory.createXMLStreamWriter( stringWriter );
+                                        XMLStreamWriter xml = new FormattingXMLStreamWriter( streamWriter );
+                                        Filter110XMLAdapter.export( p.second, xml );
+                                        LOG.warn( get( "R2D.EXPRESSION_TO_NULL", stringWriter.toString() ) );
+                                    } else {
+                                        tmp += evald;
+                                    }
                                 } catch ( FilterEvaluationException e ) {
+                                    XMLOutputFactory factory = XMLOutputFactory.newInstance();
+                                    factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
+                                    StringWriter stringWriter = new StringWriter();
+                                    try {
+                                        XMLStreamWriter streamWriter = factory.createXMLStreamWriter( stringWriter );
+                                        XMLStreamWriter xml = new FormattingXMLStreamWriter( streamWriter );
+                                        Filter110XMLAdapter.export( p.second, xml );
+                                        LOG.warn( get( "R2D.ERROR_EVAL", e.getLocalizedMessage(),
+                                                       stringWriter.toString() ) );
+                                    } catch ( XMLStreamException e1 ) {
+                                        LOG.error( "Unknown error", e );
+                                    }
+                                } catch ( XMLStreamException e ) {
                                     LOG.error( "Unknown error", e );
                                 }
                             }

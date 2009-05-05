@@ -57,9 +57,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Responsible for the access to messages that are visible to the user.
  * <p>
- * Messages are read from the properties file <code>messages_LANG.properties</code> (LANG is always a lowercased ISO
- * 639 code), so internationalization is supported. If a certain property (or the property file) for the specific
- * default language of the system is not found, the message is taken from <code>messages_en.properties</code>.
+ * Messages are read from the properties file <code>messages_LANG.properties</code> (LANG is always a lowercased ISO 639
+ * code), so internationalization is supported. If a certain property (or the property file) for the specific default
+ * language of the system is not found, the message is taken from <code>messages_en.properties</code>.
  * 
  * @see Locale#getLanguage()
  * 
@@ -201,4 +201,14 @@ public class Messages {
     public static String getMessage( String key, Object... arguments ) {
         return get( defaultProps, key, arguments );
     }
+
+    /**
+     * @param key
+     * @param args
+     * @return the value
+     */
+    public static String get( String key, Object... args ) {
+        return getMessage( key, args );
+    }
+
 }

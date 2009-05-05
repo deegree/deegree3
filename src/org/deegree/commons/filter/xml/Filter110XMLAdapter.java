@@ -918,7 +918,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      *            target of the xml stream
      * @throws XMLStreamException
      */
-    private static void export( Expression expression, XMLStreamWriter writer )
+    public static void export( Expression expression, XMLStreamWriter writer )
                             throws XMLStreamException {
 
         QName elementName = expressionTypeToElementName.get( expression.getType() );
