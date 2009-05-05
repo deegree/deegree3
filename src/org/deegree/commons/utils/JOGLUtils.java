@@ -38,9 +38,6 @@
 
 package org.deegree.commons.utils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-
 import javax.media.opengl.GL;
 
 import org.deegree.commons.i18n.Messages;
@@ -147,5 +144,24 @@ public class JOGLUtils {
         sb.append( "\n" );
         System.out.println( sb.toString() );
 
+    }
+
+    /**
+     * Calculate the eye position from the given modelview, note, no scale may be applied.
+     * 
+     * @param gl
+     *            to get the modelview from.
+     * @return the eye position of the modelview matrix.
+     */
+    public static float[] getEyeFromModelView( GL gl ) {
+        float[] originalModelView = new float[16];
+        gl.glGetFloatv( GL.GL_MODELVIEW_MATRIX, originalModelView, 0 );
+
+        float[] newEye = new float[3];
+        float[] t = new float[] { -originalModelView[12], -originalModelView[13], -originalModelView[14] };
+        newEye[0] = originalModelView[0] * t[0] + originalModelView[1] * t[1] + originalModelView[2] * t[2];
+        newEye[1] = originalModelView[4] * t[0] + originalModelView[5] * t[1] + originalModelView[6] * t[2];
+        newEye[2] = originalModelView[8] * t[0] + originalModelView[9] * t[1] + originalModelView[10] * t[2];
+        return newEye;
     }
 }
