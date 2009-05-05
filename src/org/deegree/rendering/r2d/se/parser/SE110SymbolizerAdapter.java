@@ -47,7 +47,6 @@ import java.awt.Color;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
@@ -144,43 +143,43 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
 
         contn = updateOrContinue( graphic, "se:Opacity", base, new Updater<Graphic>() {
             public void update( Graphic obj, String val ) {
-                obj.opacity = parseDouble( val );
+                obj.opacity = Double.parseDouble( val );
             }
         }, parser, contn );
 
         contn = updateOrContinue( graphic, "se:Size", base, new Updater<Graphic>() {
             public void update( Graphic obj, String val ) {
-                obj.size = parseDouble( val );
+                obj.size = Double.parseDouble( val );
             }
         }, parser, contn );
 
         contn = updateOrContinue( graphic, "se:Rotation", base, new Updater<Graphic>() {
             public void update( Graphic obj, String val ) {
-                obj.rotation = parseDouble( val );
+                obj.rotation = Double.parseDouble( val );
             }
         }, parser, contn );
 
         contn = updateOrContinue( graphic, "se:AnchorPoint/se:AnchorPointX", base, new Updater<Graphic>() {
             public void update( Graphic obj, String val ) {
-                obj.anchorPointX = parseDouble( val );
+                obj.anchorPointX = Double.parseDouble( val );
             }
         }, parser, contn );
 
         contn = updateOrContinue( graphic, "se:AnchorPoint/se:AnchorPointY", base, new Updater<Graphic>() {
             public void update( Graphic obj, String val ) {
-                obj.anchorPointY = parseDouble( val );
+                obj.anchorPointY = Double.parseDouble( val );
             }
         }, parser, contn );
 
         contn = updateOrContinue( graphic, "se:Displacement/se:DisplacementX", base, new Updater<Graphic>() {
             public void update( Graphic obj, String val ) {
-                obj.displacementX = parseDouble( val );
+                obj.displacementX = Double.parseDouble( val );
             }
         }, parser, contn );
 
         contn = updateOrContinue( graphic, "se:Displacement/se:DisplacementY", base, new Updater<Graphic>() {
             public void update( Graphic obj, String val ) {
-                obj.displacementY = parseDouble( val );
+                obj.displacementY = Double.parseDouble( val );
             }
         }, parser, contn );
 
@@ -279,7 +278,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
             @Override
             public void update( Fill obj, String val ) {
                 // keep original color
-                float alpha = parseFloat( val );
+                float alpha = Float.parseFloat( val );
                 float[] cols = obj.color.getRGBColorComponents( null );
                 obj.color = new Color( cols[0], cols[1], cols[2], alpha );
             }
@@ -317,7 +316,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
             @Override
             public void update( Stroke obj, String val ) {
                 // keep original color
-                float alpha = parseFloat( val );
+                float alpha = Float.parseFloat( val );
                 float[] cols = obj.color.getRGBColorComponents( null );
                 obj.color = new Color( cols[0], cols[1], cols[2], alpha );
             }
@@ -326,7 +325,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
         contn = updateOrContinue( stroke, "se:SvgParameter[@name='stroke-width']", base, new Updater<Stroke>() {
             @Override
             public void update( Stroke obj, String val ) {
-                obj.width = parseDouble( val );
+                obj.width = Double.parseDouble( val );
             }
         }, parser, contn );
 
@@ -354,7 +353,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
         contn = updateOrContinue( stroke, "se:SvgParameter[@name='stroke-dashoffset']", base, new Updater<Stroke>() {
             @Override
             public void update( Stroke obj, String val ) {
-                obj.dashoffset = parseDouble( val );
+                obj.dashoffset = Double.parseDouble( val );
             }
         }, parser, contn );
 
@@ -392,14 +391,14 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 contn = updateOrContinue( stroke, "se:GraphicStroke/se:InitialGap", base, new Updater<Stroke>() {
                     @Override
                     public void update( Stroke obj, String val ) {
-                        obj.strokeInitialGap = parseDouble( val );
+                        obj.strokeInitialGap = Double.parseDouble( val );
                     }
                 }, parser, contn );
 
                 contn = updateOrContinue( stroke, "se:GraphicStroke/se:Gap", base, new Updater<Stroke>() {
                     @Override
                     public void update( Stroke obj, String val ) {
-                        obj.strokeGap = parseDouble( val );
+                        obj.strokeGap = Double.parseDouble( val );
                     }
                 }, parser, contn );
             }
