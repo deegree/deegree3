@@ -50,6 +50,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -57,6 +58,7 @@ import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
@@ -429,7 +431,6 @@ public class WMSClient111 {
         }
 
         if ( errorsInImage && res.first == null ) {
-
             if ( transparent ) {
                 // TODO create image of type RGBA
                 res.first = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
@@ -441,11 +442,16 @@ public class WMSClient111 {
             // TODO use optimized coordinates and font size
             g.setColor( Color.BLACK );
             g.fillRect( 0, 0, width - 1, height - 1 );
-            g.setColor( Color.WHITE );;
+            g.setColor( Color.WHITE );
             g.drawString( "Error: " + res.second, 0, 12 );
             res.second = null;
         }
 
+        if (LOG.isDebugEnabled() && res.first != null) {
+            File tmpFile = File.createTempFile( "WMSClient", ".png" );
+            ImageIO.write( res.first, "png", tmpFile );
+        }
+        
         return res;
     }
 
