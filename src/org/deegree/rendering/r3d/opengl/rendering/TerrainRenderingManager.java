@@ -47,11 +47,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
 import javax.swing.JFrame;
 
+import org.deegree.commons.concurrent.ExecutionFinishedEvent;
+import org.deegree.commons.concurrent.Executor;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
@@ -174,7 +178,7 @@ public class TerrainRenderingManager {
 
         // determine textures for each fragment
         Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures = getTextures( params, activeLOD,
-                                                                                         textureManagers, zScale );
+                                                                                         textureManagers );
 
         // render fragments with textures
         render( gl, fragmentToTextures, textureManagers, zScale );
@@ -218,25 +222,48 @@ public class TerrainRenderingManager {
 
     private Map<RenderMeshFragment, List<FragmentTexture>> getTextures( ViewParams params,
                                                                         Set<RenderMeshFragment> fragments,
-                                                                        TextureManager[] textureManagers, float zScale ) {
+                                                                        TextureManager[] textureManagers ) {
 
         LOG.info( "Texturizing " + fragments.size() + " fragments, managers: " + textureManagers.length );
-        Map<RenderMeshFragment, List<FragmentTexture>> meshFragmentToTexture = new HashMap<RenderMeshFragment, List<FragmentTexture>>();
+
+        // fetch textures in parallel threads (with timeout)
+        List<Callable<Map<RenderMeshFragment, FragmentTexture>>> workers = new ArrayList<Callable<Map<RenderMeshFragment, FragmentTexture>>>(
+                                                                                                                                              textureManagers.length );
         for ( TextureManager manager : textureManagers ) {
-            Map<RenderMeshFragment, FragmentTexture> fragmentToTexture = manager.getTextures(
-                                                                                              params,
-                                                                                              (float) maxProjectedTexelSize,
-                                                                                              fragments, zScale );
-            for ( RenderMeshFragment fragment : fragmentToTexture.keySet() ) {
-                FragmentTexture texture = fragmentToTexture.get( fragment );
-                List<FragmentTexture> textures = meshFragmentToTexture.get( fragment );
-                if ( textures == null ) {
-                    textures = new ArrayList<FragmentTexture>();
-                    meshFragmentToTexture.put( fragment, textures );
-                }
-                textures.add( texture );
-            }
+            workers.add( new TextureWorker( params, fragments, manager, (float) maxProjectedTexelSize ) );
         }
+        Executor exec = Executor.getInstance();
+        List<ExecutionFinishedEvent<Map<RenderMeshFragment, FragmentTexture>>> results = null;
+        try {
+            results = exec.performSynchronously( workers, (long) 10 * 1000 );
+        } catch ( InterruptedException e ) {
+            LOG.error (e.getMessage(), e);
+        }
+
+        // build result map
+        Map<RenderMeshFragment, List<FragmentTexture>> meshFragmentToTexture = new HashMap<RenderMeshFragment, List<FragmentTexture>>();        
+        for ( ExecutionFinishedEvent<Map<RenderMeshFragment, FragmentTexture>> result : results ) {
+            Map<RenderMeshFragment, FragmentTexture> fragmentToTexture;
+            try {
+
+                // retrieve worker result (may produce an exception)
+                fragmentToTexture = result.getResult();
+
+                for ( RenderMeshFragment fragment : fragments ) {
+                    FragmentTexture texture = fragmentToTexture.get( fragment );
+                    List<FragmentTexture> textures = meshFragmentToTexture.get( fragment );
+                    if ( textures == null ) {
+                        textures = new ArrayList<FragmentTexture>();
+                        meshFragmentToTexture.put( fragment, textures );
+                    }
+                    textures.add( texture );
+                }                
+            } catch (CancellationException e) {
+                LOG.warn ("Timeout occured fetching textures.");
+            } catch (Throwable e) {
+                LOG.debug (e.getMessage(), e);
+            }
+        }        
         return meshFragmentToTexture;
     }
 
@@ -244,23 +271,6 @@ public class TerrainRenderingManager {
                          TextureManager[] textureManagers, float zScale ) {
 
         long begin = System.currentTimeMillis();
-
-        // // enable the needed number of texture units
-        // int maxTextureCount = 0;
-        // for ( List<FragmentTexture> textures : fragmentToTextures.values() ) {
-        // if ( textures.size() > maxTextureCount ) {
-        // maxTextureCount = textures.size();
-        // }
-        // }
-        // LOG.info ("Enabling " + maxTextureCount + " texture units.");
-        // for ( int i = 0; i < maxTextureCount; i++ ) {
-        // int glTextureId = JOGLUtils.getTextureUnitConst( i );
-        // gl.glEnable( glTextureId );
-        // gl.glClientActiveTexture( glTextureId );
-        // gl.glActiveTexture( glTextureId );
-        // gl.glEnable( GL.GL_TEXTURE_2D );
-        // gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-        // }
 
         try {
             fragmentManager.requireOnGPU( activeLOD, gl );
@@ -294,15 +304,6 @@ public class TerrainRenderingManager {
             gl.glPopMatrix();
             gl.glDisable( GL.GL_NORMALIZE );
         }
-
-        // // disable all activated texture units
-        // for ( int i = 0; i < maxTextureCount; i++ ) {
-        // int glTextureId = JOGLUtils.getTextureUnitConst( i );
-        // gl.glActiveTexture( glTextureId );
-        // gl.glDisable( GL.GL_TEXTURE_2D );
-        // gl.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-        // gl.glDisable( glTextureId );
-        // }
 
         long elapsed = System.currentTimeMillis() - begin;
         LOG.debug( "Rendering of " + activeLOD.size() + ": " + elapsed + " milliseconds." );
@@ -355,5 +356,30 @@ public class TerrainRenderingManager {
         // gl.glWindowPos2d( x, 88 );
         // glut.glutBitmapString( GLUT.BITMAP_HELVETICA_12, "geometry error: " + geometryMaxPixelError );
         gl.glColor3f( 1.0f, 1.0f, 1.0f );
+    }
+
+    private class TextureWorker implements Callable<Map<RenderMeshFragment, FragmentTexture>> {
+
+        private final ViewParams params;
+
+        private final Set<RenderMeshFragment> fragments;
+
+        private final TextureManager textureManager;
+
+        private final float maxProjectedTexelSize;
+
+        private TextureWorker( ViewParams params, Set<RenderMeshFragment> fragments, TextureManager textureManager,
+                               float maxProjectedTexelSize ) {
+            this.params = params;
+            this.fragments = fragments;
+            this.textureManager = textureManager;
+            this.maxProjectedTexelSize = maxProjectedTexelSize;
+        }
+
+        @Override
+        public Map<RenderMeshFragment, FragmentTexture> call()
+                                throws Exception {
+            return textureManager.getTextures( params, maxProjectedTexelSize, fragments );
+        }
     }
 }

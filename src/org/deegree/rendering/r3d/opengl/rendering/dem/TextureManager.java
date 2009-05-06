@@ -117,18 +117,16 @@ public class TextureManager {
      * @param params
      * @param maxProjectedTexelSize
      * @param fragments
-     * @param zScale
-     *            scaling factor applied to z values of the fragments (and their bounding boxes)
      * @return view-optimized textures, not necessarily enabled
      */
     public Map<RenderMeshFragment, FragmentTexture> getTextures( ViewParams params, float maxProjectedTexelSize,
-                                                                 Set<RenderMeshFragment> fragments, float zScale ) {
+                                                                 Set<RenderMeshFragment> fragments ) {
 
         LOG.info( "Texturizing " + fragments.size() + " fragments" );
         Map<RenderMeshFragment, FragmentTexture> meshFragmentToTexture = new HashMap<RenderMeshFragment, FragmentTexture>();
 
         // create texture requests for each fragment
-        List<TextureRequest> requests = createTextureRequests( params, maxProjectedTexelSize, fragments, zScale );
+        List<TextureRequest> requests = createTextureRequests( params, maxProjectedTexelSize, fragments );
 
         // check which texture requests can be fullfilled from cache
         List<TextureRequest> fromCache = new ArrayList<TextureRequest>();
@@ -183,7 +181,7 @@ public class TextureManager {
     }
 
     private List<TextureRequest> createTextureRequests( ViewParams params, float maxProjectedTexelSize,
-                                                        Set<RenderMeshFragment> fragments, float zScale ) {
+                                                        Set<RenderMeshFragment> fragments ) {
 
         List<TextureRequest> requests = new ArrayList<TextureRequest>();
 
@@ -196,10 +194,10 @@ public class TextureManager {
             float[][] scaledBBox = new float[2][3];
             scaledBBox[0][0] = fragmentBBox[0][0];
             scaledBBox[0][1] = fragmentBBox[0][1];
-            scaledBBox[0][2] = fragmentBBox[0][2] * zScale;
+            scaledBBox[0][2] = fragmentBBox[0][2] * params.getTerrainScale();
             scaledBBox[1][0] = fragmentBBox[1][0];
             scaledBBox[1][1] = fragmentBBox[1][1];
-            scaledBBox[1][2] = fragmentBBox[1][2] * zScale;
+            scaledBBox[1][2] = fragmentBBox[1][2] * params.getTerrainScale();
 
             double dist = VectorUtils.getDistance( scaledBBox, eyePos );
             double pixelSize = params.estimatePixelSizeForSpaceUnit( dist );
