@@ -38,6 +38,8 @@
 
 package org.deegree.commons.utils;
 
+import java.awt.Color;
+
 import javax.media.opengl.GL;
 
 import org.deegree.commons.i18n.Messages;
@@ -163,5 +165,39 @@ public class JOGLUtils {
         newEye[1] = originalModelView[4] * t[0] + originalModelView[5] * t[1] + originalModelView[6] * t[2];
         newEye[2] = originalModelView[8] * t[0] + originalModelView[9] * t[1] + originalModelView[10] * t[2];
         return newEye;
+    }
+
+    /**
+     * Create an int with rgba from the given color (which returns the argb values).
+     * 
+     * @param color
+     *            to be converted.
+     * @return the color as an int holding rgba.
+     */
+    public static int convertColorGLColor( Color color ) {
+        int oldColor = color.getRGB();
+        int alpha = ( oldColor >> 24 ) & 0xFF;
+        int red = ( oldColor >> 16 ) & 0xFF;
+        int green = ( oldColor >> 8 ) & 0xFF;
+        int blue = oldColor & 0xFF;
+
+        int newColor = alpha;
+        newColor |= ( red << 24 );
+        newColor |= ( green << 16 );
+        newColor |= ( blue << 8 );
+        return newColor;
+
+    }
+
+    /**
+     * The float array appropriate for opengl.
+     * 
+     * @param color
+     *            (rgba) to be converted into a float arra.
+     * @return the float array ready to be rendered.
+     */
+    public static float[] getColorIntAsFloats( int color ) {
+        return new float[] { ( ( color >> 24 ) & 0xFF ) / 255f, ( ( color >> 16 ) & 0xFF ) / 255f,
+                            ( ( color >> 8 ) & 0xFF ) / 255f, ( color & 0xFF ) / 255f, };
     }
 }
