@@ -312,7 +312,7 @@ public class TerrainRenderingManager {
     private Set<RenderMeshFragment> getNewLOD( ViewParams params, float zScale ) {
 
         ViewFrustum frustum = params.getViewFrustum();
-        ViewFrustumCrit crit = new ViewFrustumCrit( params, (float) maxPixelError );
+        ViewFrustumCrit crit = new ViewFrustumCrit( params, (float) maxPixelError, zScale );
         SpatialSelection lodAdaptor = new SpatialSelection( fragmentManager.getMultiresolutionMesh(), crit, frustum,
                                                             zScale );
 

@@ -37,6 +37,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.crit;
 
+import org.deegree.commons.utils.math.VectorUtils;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.Arc;
@@ -55,15 +56,15 @@ public class ViewFrustumCrit implements LODCriterion {
 
     private static final Logger LOG = LoggerFactory.getLogger( ViewFrustumCrit.class );
 
-    private float pixelError;
+    private final float pixelError;
 
-    private int screenX;
+    private final int screenX;
 
-    private int screenY;
+    private final int screenY;
 
-    private ViewFrustum viewRegion;
-
-    private BoxPointDistance distance = new BoxPointDistance();
+    private final ViewFrustum viewRegion;
+    
+    private final float zScale;
 
     /**
      * Creates a new {@link ViewFrustumCrit} instance.
@@ -72,31 +73,15 @@ public class ViewFrustumCrit implements LODCriterion {
      *            specifies the visible space volume (viewer position, view direction, etc.)
      * @param maxPixelError
      *            maximum tolerable screen space error in pixels (in the rendered image)
+     * @param zScale
+     *            scaling factor applied to z values of the mesh geometry (and bounding boxes)
      */
-    public ViewFrustumCrit( ViewParams viewParams, float maxPixelError ) {
+    public ViewFrustumCrit( ViewParams viewParams, float maxPixelError, float zScale ) {
         this.pixelError = maxPixelError;
         this.screenX = viewParams.getScreenPixelsX();
         this.screenY = viewParams.getScreenPixelsY();
         this.viewRegion = viewParams.getViewFrustum();
-    }
-
-    /**
-     * Creates a new {@link ViewFrustumCrit} instance.
-     * 
-     * @param viewVolume
-     *            specifies the visible space volume (viewer position, view direction, etc.)
-     * @param maxPixelError
-     *            maximum tolerable screen space error in pixels (in the rendered image)
-     * @param screenX
-     *            number of pixels in x direction
-     * @param screenY
-     *            number of pixels in y direction
-     */
-    public ViewFrustumCrit( ViewFrustum viewVolume, float maxPixelError, int screenX, int screenY ) {
-        this.pixelError = maxPixelError;
-        this.screenX = screenX;
-        this.screenY = screenY;
-        this.viewRegion = viewVolume;
+        this.zScale = zScale;
     }
 
     /**
@@ -105,19 +90,17 @@ public class ViewFrustumCrit implements LODCriterion {
      * 
      * @param arc
      *            arc to be checked
-     * @param zScale
-     *            scaling factor applied to z values of the mesh geometry (and bounding boxes)
      * @return true, iff the arc's region is inside the view frustum and the estimated screen projection error is
      *         greater than the maximum tolerable error
      */
     @Override
-    public boolean needsRefinement( Arc arc, float zScale ) {
+    public boolean needsRefinement( Arc arc ) {
 
         // step 1: only refine a region if it's inside the view volume
-        float[][] nodeBBox = arc.getBBox();
-        nodeBBox[0][2] *= zScale;
-        nodeBBox[1][2] *= zScale;
-        if ( !viewRegion.intersects( arc.getBBox() ) ) {
+        float[][] scaledBBox = arc.getBBox();
+        scaledBBox[0][2] *= zScale;
+        scaledBBox[1][2] *= zScale;
+        if ( !viewRegion.intersects( scaledBBox ) ) {
             return false;
         }
 
@@ -126,7 +109,8 @@ public class ViewFrustumCrit implements LODCriterion {
         eyePos[0] = (float) viewRegion.getEyePos().x;
         eyePos[1] = (float) viewRegion.getEyePos().y;
         eyePos[2] = (float) viewRegion.getEyePos().z;
-        float dist = distance.getMinDistance( nodeBBox, eyePos );
+        float dist = VectorUtils.getDistance( scaledBBox, eyePos ); 
+            
         float projectionFactor = estimatePixelSizeForSpaceUnit( dist );
         float maxEdgeLen = pixelError * 1.0f;
         float edgeLen = getEdgeLen( arc ) * projectionFactor;
@@ -160,132 +144,6 @@ public class ViewFrustumCrit implements LODCriterion {
     private float estimatePixelSizeForSpaceUnit( float dist ) {
         float h = 2.0f * dist * (float) Math.tan( Math.toRadians( viewRegion.getFOVY() * 0.5f ) );
         return screenY / h;
-    }
-
-    /**
-     * Inner class for calculating the minimum distance between a box and a point.
-     */
-    class BoxPointDistance {
-
-        private float xMin;
-
-        private float yMin;
-
-        private float zMin;
-
-        private float xMax;
-
-        private float yMax;
-
-        private float zMax;
-
-        private float pX;
-
-        private float pY;
-
-        private float pZ;
-
-        /**
-         * Returns the minimum distance between the given box and the given point.
-         * 
-         * @param bbox
-         *            box
-         * @param p
-         *            point
-         * @return minimum distance between the given box and the given point
-         */
-        float getMinDistance( float[][] bbox, float[] p ) {
-            xMin = bbox[0][0];
-            yMin = bbox[0][1];
-            zMin = bbox[0][2];
-            xMax = bbox[1][0];
-            yMax = bbox[1][1];
-            zMax = bbox[1][2];
-
-            pX = p[0];
-            pY = p[1];
-            pZ = p[2];
-
-            if ( pX >= xMin && pX <= xMax && pY >= yMin && pY <= yMax && pZ >= zMin && pZ <= zMax ) {
-                return 0.0f;
-            }
-
-            float[] sideDistances = new float[6];
-            sideDistances[0] = distanceToFront();
-            sideDistances[1] = distanceToBack();
-            sideDistances[2] = distanceToLeft();
-            sideDistances[3] = distanceToRight();
-            sideDistances[4] = distanceToTop();
-            sideDistances[5] = distanceToBottom();
-
-            float dist = sideDistances[0];
-            for ( int i = 1; i < sideDistances.length; i++ ) {
-                if ( sideDistances[i] < dist ) {
-                    dist = sideDistances[i];
-                }
-            }
-
-            return dist;
-        }
-
-        private float distanceToFront() {
-            float qX = getClipped( pX, xMin, xMax );
-            float qY = getClipped( pY, yMin, yMax );
-            float qZ = zMax;
-            return getDistance( qX, qY, qZ );
-        }
-
-        private float distanceToBack() {
-            float qX = getClipped( pX, xMin, xMax );
-            float qY = getClipped( pY, yMin, yMax );
-            float qZ = zMin;
-            return getDistance( qX, qY, qZ );
-        }
-
-        private float distanceToTop() {
-            float qX = getClipped( pX, xMin, xMax );
-            float qY = yMax;
-            float qZ = getClipped( pZ, zMin, zMax );
-            return getDistance( qX, qY, qZ );
-        }
-
-        private float distanceToBottom() {
-            float qX = getClipped( pX, xMin, xMax );
-            float qY = yMin;
-            float qZ = getClipped( pZ, zMin, zMax );
-            return getDistance( qX, qY, qZ );
-        }
-
-        private float distanceToLeft() {
-            float qX = xMin;
-            float qY = getClipped( pY, yMin, yMax );
-            float qZ = getClipped( pZ, zMin, zMax );
-            return getDistance( qX, qY, qZ );
-        }
-
-        private float distanceToRight() {
-            float qX = xMax;
-            float qY = getClipped( pY, yMin, yMax );
-            float qZ = getClipped( pZ, zMin, zMax );
-            return getDistance( qX, qY, qZ );
-        }
-
-        private float getDistance( float qX, float qY, float qZ ) {
-            float dX = qX - pX;
-            float dY = qY - pY;
-            float dZ = qZ - pZ;
-            return (float) Math.sqrt( dX * dX + dY * dY + dZ * dZ );
-        }
-
-        private float getClipped( float value, float min, float max ) {
-            if ( value > max ) {
-                return max;
-            }
-            if ( value < min ) {
-                return min;
-            }
-            return value;
-        }
     }
 
     @Override

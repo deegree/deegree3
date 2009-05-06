@@ -56,12 +56,10 @@ public class Coarsest implements LODCriterion {
      * 
      * @param arc
      *            arc to be checked
-     * @param zScale
-     *            scaling factor applied to z values of the mesh geometry (and bounding boxes)
      * @return always false
      */
     @Override
-    public boolean needsRefinement( Arc arc, float zScale ) {
+    public boolean needsRefinement( Arc arc ) {
         return false;
     }
 }

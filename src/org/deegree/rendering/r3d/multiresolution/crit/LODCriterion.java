@@ -74,9 +74,7 @@ public interface LODCriterion {
      * 
      * @param arc
      *            arc to be checked
-     * @param zScale
-     *            scaling factor applied to z values of the mesh geometry (and bounding boxes)
      * @return true, if the arc is necessary, false otherwise
      */
-    public abstract boolean needsRefinement( Arc arc, float zScale );
+    public abstract boolean needsRefinement( Arc arc );
 }

@@ -89,28 +89,12 @@ public class SpatialSelection {
      * @param mt
      * @param crit
      * @param roi
-     * @param zScale
      */
     public SpatialSelection( MultiresolutionMesh mt, LODCriterion crit, ViewFrustum roi, float zScale ) {
         this.mt = mt;
         this.crit = crit;
         this.roi = roi;
         this.zScale = zScale;
-    }    
-    
-    /**
-     * Creates a new <code>SpatialSelection</code> instance for the given {@link MultiresolutionMesh},
-     * {@link LODCriterion} and region of interest.
-     * 
-     * @param mt
-     * @param crit
-     * @param roi
-     */
-    public SpatialSelection( MultiresolutionMesh mt, LODCriterion crit, ViewFrustum roi ) {
-        this.mt = mt;
-        this.crit = crit;
-        this.roi = roi;
-        this.zScale = 1.0f;
     }
 
     /**
@@ -154,7 +138,7 @@ public class SpatialSelection {
 
             // only process arc if it points to a node below the cut
             if ( !applied[modification.id] ) {
-                if ( crit.needsRefinement( region, zScale ) ) {
+                if ( crit.needsRefinement( region ) ) {
                     int incomingArc = modification.lowestIncomingArc;
                     while ( incomingArc != -1 ) {
                         if ( applied[mt.arcs[incomingArc].sourceNode] ) {

@@ -144,12 +144,6 @@ public class ViewParams {
         vf.setCameraParams( vf.getEyePos(), vf.getLookingAt(), vf.getUp() );
     }
 
-    @Override
-    public String toString() {
-        String s = "{frustum=" + vf + ",pixelsX=" + screenSizeX + ",pixelsY=" + screenSizeY + "}";
-        return s;
-    }
-
     /**
      * @return the z scale value the terrain
      */
@@ -164,4 +158,10 @@ public class ViewParams {
     public final void setTerrainScale( float newScale ) {
         terrainScale = newScale;
     }
+
+    @Override
+    public String toString() {
+        String s = "{frustum=" + vf + ",pixelsX=" + screenSizeX + ",pixelsY=" + screenSizeY + "}";
+        return s;
+    }    
 }
