@@ -61,6 +61,7 @@ import java.awt.TexturePaint;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Path2D.Double;
 import java.awt.image.BufferedImage;
@@ -99,7 +100,7 @@ public class Java2DRenderer implements Renderer {
 
     private Graphics2D graphics;
 
-    private double scale;
+    private AffineTransform worldToScreen = new AffineTransform();
 
     /**
      * @param graphics
@@ -114,16 +115,25 @@ public class Java2DRenderer implements Renderer {
             double scalex = width / bbox.getWidth();
             double scaley = height / bbox.getHeight();
             // always use the bigger scale to determine line width etc.
-            scale = 1 / ( scalex > scaley ? scalex : scaley );
+            double scale = ( 1 / ( scalex > scaley ? scalex : scaley ) );
 
-            AffineTransform worldToScreen = graphics.getTransform();
-            worldToScreen.translate( -bbox.getMin().getX() * scalex, -bbox.getMin().getY() * scaley );
-            worldToScreen.scale( scalex, scaley );
-            graphics.setTransform( worldToScreen );
+            // we have to flip horizontally, so invert y scale and add the screen height
+            worldToScreen.translate( -bbox.getMin().getX() * scalex, bbox.getMin().getY() * scaley + height );
+            worldToScreen.scale( scalex, -scaley );
+
+            LOG.debug( "Rendering with scale {}", scale );
+            LOG.debug( "For coordinate transformations, scaling by x = {} and y = {}", scalex, -scaley );
+            LOG.trace( "Final transformation was {}", worldToScreen );
         } else {
             LOG.warn( "No envelope given, proceeding with a scale of 1." );
-            scale = 1;
         }
+    }
+
+    /**
+     * @param graphics
+     */
+    public Java2DRenderer( Graphics2D graphics ) {
+        this.graphics = graphics;
     }
 
     void applyGraphicFill( Graphic graphic ) {
@@ -151,8 +161,7 @@ public class Java2DRenderer implements Renderer {
             img = graphic.image;
         }
 
-        graphics.setPaint( new TexturePaint( img, new Rectangle2D.Double( x0 * scale, y0 * scale, width * scale,
-                                                                          height * scale ) ) );
+        graphics.setPaint( new TexturePaint( img, new Rectangle2D.Double( x0, y0, width, height ) ) );
     }
 
     void applyFill( Fill fill ) {
@@ -211,23 +220,23 @@ public class Java2DRenderer implements Renderer {
                 break;
             }
         }
-        float dashoffset = (float) ( stroke.dashoffset * scale );
+        float dashoffset = (float) ( stroke.dashoffset );
         float[] dasharray = stroke.dasharray == null ? null : new float[stroke.dasharray.length];
         if ( stroke.dasharray != null ) {
             for ( int i = 0; i < stroke.dasharray.length; ++i ) {
-                dasharray[i] = (float) ( stroke.dasharray[i] * scale );
+                dasharray[i] = (float) ( stroke.dasharray[i] );
             }
         }
 
-        BasicStroke bs = new BasicStroke( (float) ( stroke.width * scale ), linecap, linejoin, miterLimit, dasharray,
+        BasicStroke bs = new BasicStroke( (float) ( stroke.width ), linecap, linejoin, miterLimit, dasharray,
                                           dashoffset );
 
         graphics.setStroke( bs );
     }
 
     private void render( TextStyling styling, Font font, String text, Point p ) {
-        double x = p.getX() + styling.displacementX * scale;
-        double y = p.getY() + styling.displacementY * scale;
+        double x = p.getX() + styling.displacementX;
+        double y = p.getY() + styling.displacementY;
         graphics.setFont( font );
         AffineTransform transform = graphics.getTransform();
         graphics.rotate( styling.rotation, x, y );
@@ -235,14 +244,14 @@ public class Java2DRenderer implements Renderer {
         double width = layout.getBounds().getWidth();
         double height = layout.getBounds().getHeight();
         double px = x - styling.anchorPointX * width; // width/height already include the scale through the font
-                                                        // render
+        // render
         // context
         double py = y + styling.anchorPointY * height;
 
         if ( styling.halo != null ) {
             applyFill( styling.halo.fill );
 
-            BasicStroke stroke = new BasicStroke( round( 2 * styling.halo.radius * scale ), CAP_BUTT, JOIN_ROUND );
+            BasicStroke stroke = new BasicStroke( round( 2 * styling.halo.radius ), CAP_BUTT, JOIN_ROUND );
             graphics.setStroke( stroke );
             graphics.draw( layout.getOutline( getTranslateInstance( px, py ) ) );
         }
@@ -257,9 +266,9 @@ public class Java2DRenderer implements Renderer {
 
     private void render( TextStyling styling, Font font, String text, Curve c ) {
         applyFill( styling.fill );
-        java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement, scale );
+        java.awt.Stroke stroke = new TextStroke( text, font, styling.linePlacement );
         if ( !isZero( styling.linePlacement.perpendicularOffset ) ) {
-            stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset * scale, stroke );
+            stroke = new OffsetStroke( styling.linePlacement.perpendicularOffset, stroke );
         }
 
         graphics.setStroke( stroke );
@@ -289,7 +298,7 @@ public class Java2DRenderer implements Renderer {
         }
 
         // use the first matching name, or Dialog, if none was found
-        int size = round( styling.font.fontSize * scale );
+        int size = round( styling.font.fontSize );
         Font font = new Font( "", style, size );
         for ( String name : styling.font.fontFamily ) {
             font = new Font( name, style, size );
@@ -326,6 +335,10 @@ public class Java2DRenderer implements Renderer {
     }
 
     private void render( PointStyling styling, double x, double y ) {
+        Point2D.Double p = (Point2D.Double) worldToScreen.transform( new Point2D.Double( x, y ), null );
+        x = p.x;
+        y = p.y;
+
         Graphic g = styling.graphic;
 
         BufferedImage img;
@@ -336,19 +349,22 @@ public class Java2DRenderer implements Renderer {
             img = g.image;
         }
 
-        x += g.displacementX * scale;
-        y += g.displacementY * scale;
-        x -= g.anchorPointX * scale * img.getWidth();
-        y -= g.anchorPointY * scale * img.getHeight();
+        x += g.displacementX;
+        y += g.displacementY;
+        x -= g.anchorPointX * img.getWidth();
+        y -= g.anchorPointY * img.getHeight();
 
-        graphics.drawImage( img, round( x ), round( y ), round( img.getWidth() * scale ), round( img.getHeight()
-                                                                                                 * scale ), null );
+        graphics.drawImage( img, round( x ), round( y ), img.getWidth(), img.getHeight(), null );
     }
 
     public void render( PointStyling styling, Geometry geom ) {
         if ( geom == null ) {
             LOG.debug( "Trying to render null geometry." );
             return;
+        }
+
+        if ( LOG.isTraceEnabled() ) {
+            LOG.trace( "Drawing " + geom + " with " + styling );
         }
 
         if ( geom instanceof Point ) {
@@ -383,7 +399,7 @@ public class Java2DRenderer implements Renderer {
         }
     }
 
-    private static Double fromCurve( Curve curve ) {
+    private Double fromCurve( Curve curve ) {
         curve = curve.getAsLineString();
         if ( curve.getCurveSegments().size() != 1 || !( curve.getCurveSegments().get( 0 ) instanceof LineStringSegment ) ) {
             // TODO handle non-linear and multiple curve segments
@@ -402,6 +418,8 @@ public class Java2DRenderer implements Renderer {
             }
             line.lineTo( point.getX(), point.getY() );
         }
+        line.transform( worldToScreen );
+
         return line;
     }
 
@@ -422,7 +440,7 @@ public class Java2DRenderer implements Renderer {
             Double line = fromCurve( (Curve) geom );
             applyStroke( styling.stroke );
             if ( !isZero( styling.perpendicularOffset ) ) {
-                graphics.setStroke( new OffsetStroke( styling.perpendicularOffset * scale, graphics.getStroke() ) );
+                graphics.setStroke( new OffsetStroke( styling.perpendicularOffset, graphics.getStroke() ) );
             }
             graphics.draw( line );
         }
@@ -453,6 +471,13 @@ public class Java2DRenderer implements Renderer {
                         polygon.subtract( new Area( fromCurve( curve ) ) );
                     }
                 }
+
+                if ( polygon == null ) {
+                    LOG.warn( "Trying to render polygon without rings." );
+                    return;
+                }
+
+                polygon.transform( worldToScreen );
 
                 applyFill( styling.fill );
                 graphics.fill( polygon );

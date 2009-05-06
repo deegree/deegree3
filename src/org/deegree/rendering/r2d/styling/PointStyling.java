@@ -61,4 +61,9 @@ public class PointStyling implements Copyable<PointStyling> {
         return other;
     }
 
+    @Override
+    public String toString() {
+        return "PointStyling [" + graphic + "]";
+    }
+
 }

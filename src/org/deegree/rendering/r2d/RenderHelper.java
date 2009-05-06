@@ -43,7 +43,6 @@ import static java.lang.Math.PI;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -142,7 +141,7 @@ public class RenderHelper {
         BufferedImage img = new BufferedImage( size, size, TYPE_INT_ARGB );
         Graphics2D g = img.createGraphics();
 
-        Java2DRenderer renderer = new Java2DRenderer( g, size, size, null );
+        Java2DRenderer renderer = new Java2DRenderer( g );
 
         double sizem1 = size - 1;
 
@@ -187,12 +186,6 @@ public class RenderHelper {
         if ( mark.stroke != null ) {
             renderer.applyStroke( mark.stroke );
             for ( Shape shape : shapes ) {
-                // TODO remove this ugly hack to prevent having it look so bad
-                if ( shape instanceof Path2D ) {
-                    AffineTransform t = new AffineTransform();
-                    t.scale( 0.99, .99 );
-                    shape = ( (Path2D) shape ).createTransformedShape( t );
-                }
                 g.draw( shape );
             }
         }

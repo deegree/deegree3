@@ -67,19 +67,15 @@ public class TextStroke implements Stroke {
 
     private final LinePlacement linePlacement;
 
-    private final double scale;
-
     /**
      * @param text
      * @param font
      * @param linePlacement
-     * @param scale
      */
-    public TextStroke( String text, Font font, LinePlacement linePlacement, double scale ) {
+    public TextStroke( String text, Font font, LinePlacement linePlacement ) {
         this.text = text;
         this.font = font;
         this.linePlacement = linePlacement;
-        this.scale = scale;
         frc = new FontRenderContext( null, false, false );
         lineHeight = font.getLineMetrics( text, frc ).getHeight();
     }
@@ -113,7 +109,7 @@ public class TextStroke implements Stroke {
         // end of line tag. Then, the next segment is considered. If repeat is on, the words list will never be empty
         // and the loop will run until the segment lengths list is empty.
         // TODO: Optimization: do not add Strings, add the GlyphVectors
-        double currentGap = isZero( linePlacement.initialGap ) ? 0 : ( linePlacement.initialGap * scale );
+        double currentGap = isZero( linePlacement.initialGap ) ? 0 : linePlacement.initialGap;
         if ( !isZero( currentGap ) ) {
             StringOrGap sog = new StringOrGap();
             sog.gap = currentGap;
@@ -156,7 +152,7 @@ public class TextStroke implements Stroke {
                     newWord = "";
                     if ( !isZero( linePlacement.gap ) ) {
                         sog = new StringOrGap();
-                        sog.gap = linePlacement.gap * scale;
+                        sog.gap = linePlacement.gap;
                         totalLength += sog.gap;
                         wordsToRender.add( sog );
                     }
