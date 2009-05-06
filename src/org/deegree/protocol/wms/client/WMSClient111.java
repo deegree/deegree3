@@ -57,11 +57,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
@@ -79,6 +81,8 @@ import org.slf4j.Logger;
 
 /**
  * Allows for easy performing of requests again WMS 1.1.1 compliant map services.
+ * 
+ * TODO refactor timeout and tiled request code
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
@@ -342,7 +346,8 @@ public class WMSClient111 {
         return res;
     }
 
-    /**
+    /** 
+     * 
      * @param layers
      * @param width
      * @param height
@@ -369,169 +374,21 @@ public class WMSClient111 {
                                                boolean validate, List<String> validationErrors )
                             throws IOException {
 
-        if ( ( maxMapWidth != -1 && width > maxMapWidth ) || ( maxMapHeight != -1 && height > maxMapHeight ) ) {
-            return getTiledMap( layers, width, height, bbox, srs, format, transparent, errorsInImage, timeout,
-                                validate, validationErrors );
-        }
+        Worker worker = new Worker( layers, width, height, bbox, srs, format, transparent, errorsInImage, validate,
+                                    validationErrors );
 
-        Pair<BufferedImage, String> res = new Pair<BufferedImage, String>();
-
+        Pair<BufferedImage, String> result;
         try {
-            if ( validate ) {
-                LinkedList<String> formats = getFormats( WMSRequestType.GetMap );
-                if ( !formats.contains( format ) ) {
-                    format = formats.get( 0 );
-                    validationErrors.add( "Using format " + format + " instead." );
-                }
-                // TODO validate srs, width, height, rest, etc
-            }
-
-            String url = getAddress( WMSRequestType.GetMap, true );
-            if ( url == null ) {
-                LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capabilities );
-                return null;
-            }
-            if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) ) {
-                url += url.indexOf( "?" ) == -1 ? "?" : "&";
-            }
-            url += "request=GetMap&version=1.1.1&service=WMS&layers=" + join( ",", layers ) + "&styles=&width=" + width
-                   + "&height=" + height + "&bbox=" + bbox.getMin().getX() + "," + bbox.getMin().getY() + ","
-                   + bbox.getMax().getX() + "," + bbox.getMax().getY() + "&srs=" + srs.getName() + "&format=" + format
-                   + "&transparent=" + transparent;
-
-            URL theUrl = new URL( url );
-            URLConnection conn = theUrl.openConnection();
-
             if ( timeout != -1 ) {
-                conn.setConnectTimeout( timeout * 1000 );
-                // TODO use timeout - actual connect time here
-                conn.setReadTimeout( timeout * 1000 );
-            }
-
-            conn.connect();
-            if ( LOG.isTraceEnabled() ) {
-                LOG.trace( "Requesting from " + theUrl );
-                LOG.trace( "Content type is " + conn.getContentType() );
-                LOG.trace( "Content encoding is " + conn.getContentEncoding() );
-            }
-            if ( conn.getContentType().startsWith( format ) ) {
-                res.first = IMAGE.work( conn.getInputStream() );
-            } else if ( conn.getContentType().startsWith( "application/vnd.ogc.se_xml" ) ) {
-                res.second = XML.work( conn.getInputStream() ).toString();
-            } else { // try and find out the hard way
-                res.first = IMAGE.work( conn.getInputStream() );
-                if ( res.first == null ) {
-                    conn = theUrl.openConnection();
-                    res.second = XML.work( conn.getInputStream() ).toString();
-                }
-            }
-        } catch ( Exception e ) {
-            LOG.info( "Error performing GetMap request: " + e.getMessage(), e );
-            res.second = e.getMessage();
-        }
-
-        if ( errorsInImage && res.first == null ) {
-            if ( transparent ) {
-                // TODO create image of type RGBA
-                res.first = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
+                result = worker.call();
             } else {
-                // TODO create image of type RGB
-                res.first = new BufferedImage( width, height, BufferedImage.TYPE_3BYTE_BGR );
+                result = Executor.getInstance().performSynchronously( worker, timeout * 1000 );
             }
-            Graphics2D g = (Graphics2D) res.first.getGraphics();
-            // TODO use optimized coordinates and font size
-            g.setColor( Color.BLACK );
-            g.fillRect( 0, 0, width - 1, height - 1 );
-            g.setColor( Color.WHITE );
-            g.drawString( "Error: " + res.second, 0, 12 );
-            res.second = null;
+        } catch ( Throwable e ) {
+            throw new IOException( e.getMessage(), e );
         }
 
-        if (LOG.isDebugEnabled() && res.first != null) {
-            File tmpFile = File.createTempFile( "WMSClient", ".png" );
-            ImageIO.write( res.first, "png", tmpFile );
-        }
-        
-        return res;
-    }
-
-    // TODO handle axis direction and order correctly, depends on srs
-    private Pair<BufferedImage, String> getTiledMap( List<String> layers, int width, int height, Envelope bbox,
-                                                     CRS srs, String format, boolean transparent,
-                                                     boolean errorsInImage, int timeout, boolean validate,
-                                                     List<String> validationErrors )
-                            throws IOException {
-
-        Pair<BufferedImage, String> response = new Pair<BufferedImage, String>();
-        BufferedImage compositedImage = null;
-        if ( transparent ) {
-            // TODO create image of type RGBA
-            compositedImage = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
-        } else {
-            // TODO create image of type RGB
-            compositedImage = new BufferedImage( width, height, BufferedImage.TYPE_3BYTE_BGR );
-        }
-
-        response.first = compositedImage;
-
-        RasterReference rasterEnv = new RasterReference( bbox, width, height );
-
-        if ( maxMapWidth != -1 ) {
-            int xMin = 0;
-            while ( xMin <= width - 1 ) {
-                int xMax = xMin + maxMapWidth - 1;
-                if ( xMax > width - 1 ) {
-                    xMax = width - 1;
-                }
-                if ( maxMapHeight != -1 ) {
-                    int yMin = 0;
-                    while ( yMin <= height - 1 ) {
-                        int yMax = yMin + maxMapHeight - 1;
-                        if ( yMax > height - 1 ) {
-                            yMax = height - 1;
-                        }
-                        getAndSetSubImage( compositedImage, layers, xMin, ( xMax - xMin ) + 1, yMin,
-                                           ( yMax - yMin ) + 1, rasterEnv, srs, format, transparent, errorsInImage,
-                                           timeout );
-                        yMin = yMax + 1;
-                    }
-                }
-                xMin = xMax + 1;
-            }
-        } else {
-            if ( maxMapHeight != -1 ) {
-                int yMin = 0;
-                while ( yMin <= height - 1 ) {
-                    int yMax = yMin + maxMapHeight - 1;
-                    if ( yMax > height - 1 ) {
-                        yMax = height - 1;
-                    }
-                    int xMin = 0;
-                    int xMax = width - 1;
-                    getAndSetSubImage( compositedImage, layers, xMin, ( xMax - xMin ) + 1, yMin, ( yMax - yMin ) + 1,
-                                       rasterEnv, srs, format, transparent, errorsInImage, timeout );
-                    yMin = yMax + 1;
-                }
-            }
-        }
-        return response;
-    }
-
-    private void getAndSetSubImage( BufferedImage targetImage, List<String> layers, int xMin, int width, int yMin,
-                                    int height, RasterReference rasterEnv, CRS crs, String format, boolean transparent,
-                                    boolean errorsInImage, int timeout )
-                            throws IOException {
-
-        double[] min = rasterEnv.convertToCRS( xMin, yMin + height );
-        double[] max = rasterEnv.convertToCRS( xMin + width, yMin );
-
-        Envelope env = GeometryFactoryCreator.getInstance().getGeometryFactory().createEnvelope( min, max, crs );
-        Pair<BufferedImage, String> response = getMap( layers, width, height, env, crs, format, transparent,
-                                                       errorsInImage, timeout, false, null );
-        if ( response.second != null ) {
-            throw new IOException( response.second );
-        }
-        targetImage.getGraphics().drawImage( response.first, xMin, yMin, null );
+        return result;
     }
 
     /**
@@ -577,5 +434,216 @@ public class WMSClient111 {
             response.second = imageResponse.second;
         }
         return response;
+    }
+
+    // -----------------------------------------------------------------------
+    // Callable that does the HTTP communication, so WMSClient111#getMap()
+    // can return with a reliable timeout
+    // -----------------------------------------------------------------------
+
+    private class Worker implements Callable<Pair<BufferedImage, String>> {
+
+        private List<String> layers;
+
+        private int width;
+
+        private int height;
+
+        private Envelope bbox;
+
+        private CRS srs;
+
+        private String format;
+
+        private boolean transparent;
+
+        private boolean errorsInImage;
+
+        private boolean validate;
+
+        private List<String> validationErrors;
+
+        Worker( List<String> layers, int width, int height, Envelope bbox, CRS srs, String format, boolean transparent,
+                boolean errorsInImage, boolean validate, List<String> validationErrors ) {
+            this.layers = layers;
+            this.width = width;
+            this.height = height;
+            this.bbox = bbox;
+            this.srs = srs;
+            this.format = format;
+            this.transparent = transparent;
+            this.errorsInImage = errorsInImage;
+            this.validate = validate;
+            this.validationErrors = validationErrors;
+        }
+
+        @Override
+        public Pair<BufferedImage, String> call()
+                                throws Exception {
+            return getMap( layers, width, height, bbox, srs, format, transparent, errorsInImage, validate,
+                           validationErrors );
+        }
+
+        private Pair<BufferedImage, String> getMap( List<String> layers, int width, int height, Envelope bbox, CRS srs,
+                                                    String format, boolean transparent, boolean errorsInImage,
+                                                    boolean validate, List<String> validationErrors )
+                                throws IOException {
+            if ( ( maxMapWidth != -1 && width > maxMapWidth ) || ( maxMapHeight != -1 && height > maxMapHeight ) ) {
+                return getTiledMap( layers, width, height, bbox, srs, format, transparent, errorsInImage, validate,
+                                    validationErrors );
+            }
+
+            Pair<BufferedImage, String> res = new Pair<BufferedImage, String>();
+
+            try {
+                if ( validate ) {
+                    LinkedList<String> formats = getFormats( WMSRequestType.GetMap );
+                    if ( !formats.contains( format ) ) {
+                        format = formats.get( 0 );
+                        validationErrors.add( "Using format " + format + " instead." );
+                    }
+                    // TODO validate srs, width, height, rest, etc
+                }
+
+                String url = getAddress( WMSRequestType.GetMap, true );
+                if ( url == null ) {
+                    LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capabilities );
+                    return null;
+                }
+                if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) ) {
+                    url += url.indexOf( "?" ) == -1 ? "?" : "&";
+                }
+                url += "request=GetMap&version=1.1.1&service=WMS&layers=" + join( ",", layers ) + "&styles=&width="
+                       + width + "&height=" + height + "&bbox=" + bbox.getMin().getX() + "," + bbox.getMin().getY()
+                       + "," + bbox.getMax().getX() + "," + bbox.getMax().getY() + "&srs=" + srs.getName() + "&format="
+                       + format + "&transparent=" + transparent;
+
+                URL theUrl = new URL( url );
+                URLConnection conn = theUrl.openConnection();
+
+                conn.connect();
+                if ( LOG.isTraceEnabled() ) {
+                    LOG.trace( "Requesting from " + theUrl );
+                    LOG.trace( "Content type is " + conn.getContentType() );
+                    LOG.trace( "Content encoding is " + conn.getContentEncoding() );
+                }
+                if ( conn.getContentType().startsWith( format ) ) {
+                    res.first = IMAGE.work( conn.getInputStream() );
+                } else if ( conn.getContentType().startsWith( "application/vnd.ogc.se_xml" ) ) {
+                    res.second = XML.work( conn.getInputStream() ).toString();
+                } else { // try and find out the hard way
+                    res.first = IMAGE.work( conn.getInputStream() );
+                    if ( res.first == null ) {
+                        conn = theUrl.openConnection();
+                        res.second = XML.work( conn.getInputStream() ).toString();
+                    }
+                }
+            } catch ( Exception e ) {
+                LOG.info( "Error performing GetMap request: " + e.getMessage(), e );
+                res.second = e.getMessage();
+            }
+
+            if ( errorsInImage && res.first == null ) {
+                if ( transparent ) {
+                    // TODO create image of type RGBA
+                    res.first = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
+                } else {
+                    // TODO create image of type RGB
+                    res.first = new BufferedImage( width, height, BufferedImage.TYPE_3BYTE_BGR );
+                }
+                Graphics2D g = (Graphics2D) res.first.getGraphics();
+                // TODO use optimized coordinates and font size
+                g.setColor( Color.BLACK );
+                g.fillRect( 0, 0, width - 1, height - 1 );
+                g.setColor( Color.WHITE );
+                g.drawString( "Error: " + res.second, 0, 12 );
+                res.second = null;
+            }
+
+            if ( LOG.isDebugEnabled() && res.first != null ) {
+                File tmpFile = File.createTempFile( "WMSClient", ".png" );
+                ImageIO.write( res.first, "png", tmpFile );
+            }
+
+            return res;
+        }
+
+        // TODO handle axis direction and order correctly, depends on srs
+        private Pair<BufferedImage, String> getTiledMap( List<String> layers, int width, int height, Envelope bbox,
+                                                         CRS srs, String format, boolean transparent,
+                                                         boolean errorsInImage, boolean validate,
+                                                         List<String> validationErrors )
+                                throws IOException {
+
+            Pair<BufferedImage, String> response = new Pair<BufferedImage, String>();
+            BufferedImage compositedImage = null;
+            if ( transparent ) {
+                // TODO create image of type RGBA
+                compositedImage = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
+            } else {
+                // TODO create image of type RGB
+                compositedImage = new BufferedImage( width, height, BufferedImage.TYPE_3BYTE_BGR );
+            }
+
+            response.first = compositedImage;
+
+            RasterReference rasterEnv = new RasterReference( bbox, width, height );
+
+            if ( maxMapWidth != -1 ) {
+                int xMin = 0;
+                while ( xMin <= width - 1 ) {
+                    int xMax = xMin + maxMapWidth - 1;
+                    if ( xMax > width - 1 ) {
+                        xMax = width - 1;
+                    }
+                    if ( maxMapHeight != -1 ) {
+                        int yMin = 0;
+                        while ( yMin <= height - 1 ) {
+                            int yMax = yMin + maxMapHeight - 1;
+                            if ( yMax > height - 1 ) {
+                                yMax = height - 1;
+                            }
+                            getAndSetSubImage( compositedImage, layers, xMin, ( xMax - xMin ) + 1, yMin,
+                                               ( yMax - yMin ) + 1, rasterEnv, srs, format, transparent, errorsInImage );
+                            yMin = yMax + 1;
+                        }
+                    }
+                    xMin = xMax + 1;
+                }
+            } else {
+                if ( maxMapHeight != -1 ) {
+                    int yMin = 0;
+                    while ( yMin <= height - 1 ) {
+                        int yMax = yMin + maxMapHeight - 1;
+                        if ( yMax > height - 1 ) {
+                            yMax = height - 1;
+                        }
+                        int xMin = 0;
+                        int xMax = width - 1;
+                        getAndSetSubImage( compositedImage, layers, xMin, ( xMax - xMin ) + 1, yMin,
+                                           ( yMax - yMin ) + 1, rasterEnv, srs, format, transparent, errorsInImage );
+                        yMin = yMax + 1;
+                    }
+                }
+            }
+            return response;
+        }
+
+        private void getAndSetSubImage( BufferedImage targetImage, List<String> layers, int xMin, int width, int yMin,
+                                        int height, RasterReference rasterEnv, CRS crs, String format,
+                                        boolean transparent, boolean errorsInImage )
+                                throws IOException {
+
+            double[] min = rasterEnv.convertToCRS( xMin, yMin + height );
+            double[] max = rasterEnv.convertToCRS( xMin + width, yMin );
+
+            Envelope env = GeometryFactoryCreator.getInstance().getGeometryFactory().createEnvelope( min, max, crs );
+            Pair<BufferedImage, String> response = getMap( layers, width, height, env, crs, format, transparent,
+                                                           errorsInImage, false, null );
+            if ( response.second != null ) {
+                throw new IOException( response.second );
+            }
+            targetImage.getGraphics().drawImage( response.first, xMin, yMin, null );
+        }
     }
 }
