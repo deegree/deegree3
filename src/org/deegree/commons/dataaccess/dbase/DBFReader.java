@@ -76,15 +76,13 @@ public class DBFReader {
 
     private final RandomAccessFile in;
 
-    private int noOfRecords, recordLength, headerLength;
+    private final int noOfRecords, recordLength, headerLength;
 
     private HashMap<String, Field> fields = new HashMap<String, Field>();
 
     private LinkedList<String> fieldOrder = new LinkedList<String>();
 
     private final Charset encoding;
-
-    private long position;
 
     /**
      * Already reads/parses the header.
@@ -220,7 +218,6 @@ public class DBFReader {
             }
         }
 
-        position = headerLength;
     }
 
     private static String getString( byte[] bs, Charset encoding )
@@ -242,7 +239,7 @@ public class DBFReader {
         HashMap<SimplePropertyType, Property<?>> map = new HashMap<SimplePropertyType, Property<?>>();
 
         long pos = headerLength + num * recordLength;
-        if ( pos != position ) {
+        if ( pos != in.getFilePointer() ) {
             in.seek( pos );
             pos = headerLength + ( num + 1 ) * recordLength;
         }

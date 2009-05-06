@@ -122,10 +122,16 @@ public class ShapeDatastore {
             }
         }
 
-        LinkedList<Pair<Integer, Geometry>> list = shp.query( bbox );
+        LinkedList<Pair<Integer, Geometry>> list;
+        synchronized ( shp ) {
+            list = shp.query( bbox );
+        }
 
         LinkedList<Feature> feats = new LinkedList<Feature>();
-        LinkedList<PropertyType> fields = dbf.getFields();
+        LinkedList<PropertyType> fields;
+        synchronized ( dbf ) {
+            fields = dbf.getFields();
+        }
         GeometryPropertyType geom = new GeometryPropertyType( new QName( "geometry" ), 0, 1,
                                                               new QName( "http://www.opengis.net/gml", "geometry" ) );
         fields.add( geom );
@@ -135,7 +141,10 @@ public class ShapeDatastore {
 
         while ( !list.isEmpty() ) {
             Pair<Integer, Geometry> pair = list.poll();
-            HashMap<SimplePropertyType, Property<?>> entry = dbf.getEntry( pair.first );
+            HashMap<SimplePropertyType, Property<?>> entry;
+            synchronized ( dbf ) {
+                entry = dbf.getEntry( pair.first );
+            }
             LinkedList<Property<?>> props = new LinkedList<Property<?>>();
             for ( PropertyType t : fields ) {
                 if ( entry.containsKey( t ) ) {
@@ -150,6 +159,13 @@ public class ShapeDatastore {
         }
 
         return new GenericFeatureCollection( null, feats );
+    }
+
+    /**
+     * @return the envelope of the shape file
+     */
+    public Envelope getEnvelope() {
+        return shp.getEnvelope();
     }
 
 }
