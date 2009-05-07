@@ -66,7 +66,7 @@ public class LODAnalyzer extends GLCanvas implements GLEventListener {
 
     private ViewFrustum frustum;
 
-    LODAnalyzer() throws GLException {
+    public LODAnalyzer() throws GLException {
         setMinimumSize( new Dimension( 0, 0 ) );
         addGLEventListener( this );
     }
@@ -82,7 +82,7 @@ public class LODAnalyzer extends GLCanvas implements GLEventListener {
         renderLODStructure( drawable.getGL() );
     }
 
-    void updateParameters( Collection<RenderMeshFragment> currentLOD, ViewFrustum frustum ) {
+    public void updateParameters( Collection<RenderMeshFragment> currentLOD, ViewFrustum frustum ) {
         this.currentLOD = currentLOD;
         this.frustum = frustum;
     }

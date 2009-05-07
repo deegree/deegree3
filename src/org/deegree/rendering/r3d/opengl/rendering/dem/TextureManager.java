@@ -111,6 +111,10 @@ public class TextureManager {
         this.gpuCache = new GPUCache( maxFragmentTexturesInGPUMemory );
     }
 
+    public double getMatchingResolution( double unitsPerPixel ) {
+        return tileManager.getMatchingResolution( unitsPerPixel );
+    }    
+    
     /**
      * Retrieves view-optimized textures for the {@link RenderMeshFragment}s.
      * 
@@ -201,7 +205,6 @@ public class TextureManager {
 
             double dist = VectorUtils.getDistance( scaledBBox, eyePos );
             double pixelSize = params.estimatePixelSizeForSpaceUnit( dist );
-
             double metersPerPixel = maxProjectedTexelSize / pixelSize;
             metersPerPixel = tileManager.getMatchingResolution( metersPerPixel );
 

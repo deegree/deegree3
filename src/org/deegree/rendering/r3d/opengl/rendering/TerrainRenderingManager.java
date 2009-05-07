@@ -38,9 +38,9 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
-import java.awt.BorderLayout;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,10 +52,10 @@ import java.util.concurrent.CancellationException;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
-import javax.swing.JFrame;
 
 import org.deegree.commons.concurrent.ExecutionFinishedEvent;
 import org.deegree.commons.concurrent.Executor;
+import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
@@ -84,16 +84,13 @@ public class TerrainRenderingManager {
     // contains the mesh fragments that make up the current LOD
     private Set<RenderMeshFragment> activeLOD = new HashSet<RenderMeshFragment>();
 
-    public boolean showStructure;
-
-    private LODAnalyzer analyzer;
-
-    private JFrame analyzerFrame;
-
     private long numTexels = 0;
 
     // shaderProgramIds [i]: id of GL shader program for compositing i texture layers
     private int[] shaderProgramIds;
+
+    // max texture size as reported by OpenGL driver
+    private int maxTextureSize = 4096;
 
     private double maxPixelError;
 
@@ -156,6 +153,8 @@ public class TerrainRenderingManager {
             }
             shaderProgramIds[i - 1] = shaderProgramId;
         }
+        
+        System.out.println ("Max texture size: " + JOGLUtils.getMaxTextureSize(gl));
     }
 
     /**
@@ -174,7 +173,7 @@ public class TerrainRenderingManager {
                                                                                      : params.getTerrainScale();
 
         // adapt geometry LOD (fragments)
-        updateLOD( gl, params, zScale );
+        updateLOD( gl, params, zScale, textureManagers );
 
         // determine textures for each fragment
         Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures = getTextures( params, activeLOD,
@@ -186,9 +185,13 @@ public class TerrainRenderingManager {
         displayStats( gl, params );
     }
 
-    private void updateLOD( GL gl, ViewParams params, float scale ) {
+    public Collection<RenderMeshFragment> getCurrentLOD() {
+        return activeLOD;
+    }    
+    
+    private void updateLOD( GL gl, ViewParams params, float scale, TextureManager[] textureManagers ) {
 
-        Set<RenderMeshFragment> nextLOD = getNewLOD( params, scale );
+        Set<RenderMeshFragment> nextLOD = getNewLOD( params, scale, textureManagers );
 
         // determine fragments that can be released for the next frame
         Set<RenderMeshFragment> unloadFragments = new HashSet<RenderMeshFragment>( activeLOD );
@@ -200,23 +203,6 @@ public class TerrainRenderingManager {
             fragmentManager.require( activeLOD );
         } catch ( IOException e ) {
             e.printStackTrace();
-        }
-
-        if ( showStructure ) {
-            if ( analyzerFrame == null ) {
-                analyzer = new LODAnalyzer();
-                analyzerFrame = new JFrame( "LOD structure" );
-                analyzerFrame.getContentPane().add( analyzer, BorderLayout.CENTER );
-                analyzerFrame.setDefaultCloseOperation( javax.swing.WindowConstants.HIDE_ON_CLOSE );
-                analyzerFrame.setSize( 200, 200 );
-                analyzerFrame.setLocationByPlatform( true );
-            }
-            if ( !analyzerFrame.isVisible() ) {
-                analyzerFrame.setVisible( true );
-            }
-
-            analyzer.updateParameters( activeLOD, params.getViewFrustum() );
-            analyzer.repaint();
         }
     }
 
@@ -235,13 +221,14 @@ public class TerrainRenderingManager {
         Executor exec = Executor.getInstance();
         List<ExecutionFinishedEvent<Map<RenderMeshFragment, FragmentTexture>>> results = null;
         try {
-            results = exec.performSynchronously( workers, (long) 10 * 1000 );
+            // TODO get timeout from configuration
+            results = exec.performSynchronously( workers, (long) 30 * 1000 );
         } catch ( InterruptedException e ) {
-            LOG.error (e.getMessage(), e);
+            LOG.error( e.getMessage(), e );
         }
 
         // build result map
-        Map<RenderMeshFragment, List<FragmentTexture>> meshFragmentToTexture = new HashMap<RenderMeshFragment, List<FragmentTexture>>();        
+        Map<RenderMeshFragment, List<FragmentTexture>> meshFragmentToTexture = new HashMap<RenderMeshFragment, List<FragmentTexture>>();
         for ( ExecutionFinishedEvent<Map<RenderMeshFragment, FragmentTexture>> result : results ) {
             Map<RenderMeshFragment, FragmentTexture> fragmentToTexture;
             try {
@@ -257,13 +244,13 @@ public class TerrainRenderingManager {
                         meshFragmentToTexture.put( fragment, textures );
                     }
                     textures.add( texture );
-                }                
-            } catch (CancellationException e) {
-                LOG.warn ("Timeout occured fetching textures.");
-            } catch (Throwable e) {
-                LOG.debug (e.getMessage(), e);
+                }
+            } catch ( CancellationException e ) {
+                LOG.warn( "Timeout occured fetching textures." );
+            } catch ( Throwable e ) {
+                LOG.debug( e.getMessage(), e );
             }
-        }        
+        }
         return meshFragmentToTexture;
     }
 
@@ -309,10 +296,11 @@ public class TerrainRenderingManager {
         LOG.debug( "Rendering of " + activeLOD.size() + ": " + elapsed + " milliseconds." );
     }
 
-    private Set<RenderMeshFragment> getNewLOD( ViewParams params, float zScale ) {
+    private Set<RenderMeshFragment> getNewLOD( ViewParams params, float zScale, TextureManager[] textureManagers ) {
 
         ViewFrustum frustum = params.getViewFrustum();
-        ViewFrustumCrit crit = new ViewFrustumCrit( params, (float) maxPixelError, zScale );
+        ViewFrustumCrit crit = new ViewFrustumCrit( params, (float) maxPixelError, zScale, maxTextureSize,
+                                                    textureManagers, (float) maxProjectedTexelSize );
         SpatialSelection lodAdaptor = new SpatialSelection( fragmentManager.getMultiresolutionMesh(), crit, frustum,
                                                             zScale );
 

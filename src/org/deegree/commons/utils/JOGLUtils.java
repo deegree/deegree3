@@ -93,15 +93,27 @@ public class JOGLUtils {
     }
 
     /**
+     * Returns maximum texture size support by the GL driver.
+     * 
+     * @param gl
+     * @return maximum texture size (pixels)
+     */
+    public static int getMaxTextureSize( GL gl ) {
+        int[] valueBuffer = new int[1];
+        gl.glGetIntegerv( GL.GL_MAX_TEXTURE_SIZE, valueBuffer, 0 );
+        return valueBuffer[0];
+    }
+
+    /**
      * Returns the number of texture image units that can be used in fragment shaders.
      * <p>
      * NOTE: This method evaluates the value of <code>GL_MAX_TEXTURE_IMAGE_UNITS</code>. The number is usually not
-     * identical to <code>GL_MAX_TEXTURE_UNITS</code> which denotes the maximum number of texture units in fixed
-     * shader functions.
+     * identical to <code>GL_MAX_TEXTURE_UNITS</code> which denotes the maximum number of texture units in fixed shader
+     * functions.
      * </p>
      * 
      * @param gl
-     * @return
+     * @return number of texture image units
      */
     public static int getNumTextureImageUnits( GL gl ) {
         int[] valueBuffer = new int[1];
@@ -209,7 +221,6 @@ public class JOGLUtils {
         newColor |= ( green << 16 );
         newColor |= ( blue << 8 );
         return newColor;
-
     }
 
     /**

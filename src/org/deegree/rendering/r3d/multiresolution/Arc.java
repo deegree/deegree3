@@ -86,6 +86,8 @@ public class Arc {
     /** Id of the next arc with the same destination node (-1 if there is none). */
     public final int nextArcWithSameDestination;
 
+    private MeshFragment [] fragments;
+    
     /**
      * Creates a new {@link Arc} instance.
      * 
@@ -132,7 +134,7 @@ public class Arc {
         target.putInt( highestPatch );
         target.putInt( nextArcWithSameDestination );
     }
-
+  
     /**
      * Returns the geometry error associated with the region that this arc represents.
      * 
@@ -142,6 +144,21 @@ public class Arc {
         return mt.nodes[sourceNode].geometryError;
     }
 
+    /**
+     * Returns the fragments associated with this arc.
+     * 
+     * @return the fragments associated
+     */
+    public MeshFragment[] getFragments() {
+        if (fragments == null) {
+            fragments = new MeshFragment [highestPatch - lowestPatch + 1];
+            for ( int i = 0; i < fragments.length; i++ ) {
+               fragments [i] = mt.fragments[i + lowestPatch];
+            }
+        }
+        return fragments; 
+    }    
+    
     /**
      * Determines if this arc interferes with the given {@link Geometry}.
      * 
