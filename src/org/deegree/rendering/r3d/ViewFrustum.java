@@ -134,7 +134,7 @@ public class ViewFrustum {
     public ViewFrustum( double pitch, double yaw, double roll, double distance, Point3d lookingAt, double fovy,
                         double aspect, double zNear, double zFar ) {
         Point3d calculatedEye = calcObserPosition( lookingAt, pitch, yaw, distance );
-        Vector3d calculatedUp = calcUp( roll );
+        Vector3d calculatedUp = calcUp( roll, calculatedEye, lookingAt );
 
         setPerspectiveParams( fovy, aspect, zNear, zFar );
         setCameraParams( calculatedEye, lookingAt, calculatedUp );
@@ -183,15 +183,28 @@ public class ViewFrustum {
      * @param roll
      * @return the cameras up-vector.
      */
-    private Vector3d calcUp( double roll ) {
+    private Vector3d calcUp( double roll, Point3d eye, Point3d poi ) {
+
         Vector3d newUP = new Vector3d( 0, 0, 1 );
-        if ( Math.abs( roll ) < 1E-10 ) {
+        if ( Math.abs( roll ) > 1E-10 ) {
+            Matrix3d mat = new Matrix3d();
+            mat.rotX( roll );
+            mat.transform( newUP );
+        }
+
+        Vector3d resultUp = new Vector3d();
+        Vector3d viewDir = new Vector3d();
+        viewDir.sub( eye, poi );
+        viewDir.normalize();
+        double dot = newUP.dot( viewDir );
+        if ( Math.abs( dot ) < 1E-10 ) {
             return newUP;
         }
-        Matrix3d mat = new Matrix3d();
-        mat.rotX( roll );
-        mat.transform( newUP );
-        return newUP;
+        viewDir.scale( dot );
+        resultUp.sub( newUP, viewDir );
+        resultUp.normalize();
+        return resultUp;
+
     }
 
     public Point3d getEyePos() {

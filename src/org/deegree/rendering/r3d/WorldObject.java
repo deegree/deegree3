@@ -89,7 +89,7 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
 
     private transient Envelope bbox;
 
-    private transient float[] position;
+    protected transient float[] position;
 
     private transient float error;
 

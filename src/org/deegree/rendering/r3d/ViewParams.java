@@ -60,6 +60,8 @@ public class ViewParams {
 
     private float terrainScale;
 
+    private double[] scales = new double[] { 10, 100, 250, 500, 1000, 2000 };
+
     /**
      * 
      * @param eye
@@ -158,6 +160,14 @@ public class ViewParams {
     public final void setTerrainScale( float newScale ) {
         terrainScale = newScale;
     }
+
+    /**
+     * @return the scales configured by the user.
+     */
+    public double[] getConfiguredScales() {
+        return scales;
+    }
+
 
     @Override
     public String toString() {
