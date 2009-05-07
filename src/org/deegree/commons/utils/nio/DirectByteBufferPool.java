@@ -70,17 +70,17 @@ public class DirectByteBufferPool {
 
     private final Map<Integer, Set<PooledByteBuffer>> freeBuffers = new HashMap<Integer, Set<PooledByteBuffer>>();
 
-    public DirectByteBufferPool (int capacityLimit, int bufferLimit) {
+    public DirectByteBufferPool( int capacityLimit, int bufferLimit ) {
         this.MAX_MEMORY_CAPACITY = capacityLimit;
         this.MAX_NUM_OF_BUFFERS = bufferLimit;
     }
-    
+
     /**
      * @param capacity
      * @return
      * @throws OutOfMemoryError
-     *             if no PooledByteBuffer with the given capacity is available and allocating it from the system would exceed
-     *             the assigned resources
+     *             if no PooledByteBuffer with the given capacity is available and allocating it from the system would
+     *             exceed the assigned resources
      */
     public synchronized PooledByteBuffer allocate( int capacity )
                             throws OutOfMemoryError {
@@ -91,7 +91,7 @@ public class DirectByteBufferPool {
         if ( freeBuffers != null && freeBuffers.size() > 0 ) {
             buffer = freeBuffers.iterator().next();
             buffer.getBuffer().rewind();
-            freeBuffers.remove( buffer );            
+            freeBuffers.remove( buffer );
         } else {
             if ( numBuffers >= MAX_NUM_OF_BUFFERS ) {
                 String msg = "Maximum number of direct buffers (=" + MAX_NUM_OF_BUFFERS + ") exceeded";
@@ -101,30 +101,31 @@ public class DirectByteBufferPool {
                 String msg = "Maximum memory size for direct buffers (=" + MAX_MEMORY_CAPACITY + ") exceeded";
                 throw new OutOfMemoryError( msg );
             }
-            buffer = new PooledByteBuffer (capacity, this);
+            buffer = new PooledByteBuffer( capacity, this );
+
             numBuffers++;
             totalCapacity += capacity;
             allBuffers.add( buffer );
-            LOG.debug ("New buffer: " + buffer );
+            LOG.debug( "New buffer: " + buffer );
         }
         return buffer;
     }
-    
-    public synchronized void deallocate (PooledByteBuffer buffer) {
-        if (!allBuffers.contains( buffer )) {
+
+    public synchronized void deallocate( PooledByteBuffer buffer ) {
+        if ( !allBuffers.contains( buffer ) ) {
             String msg = "Buffer to be deallocated (" + buffer + ") has not been allocated using the pool.";
-            throw new IllegalArgumentException(msg);
+            throw new IllegalArgumentException( msg );
         }
         int capacity = buffer.getBuffer().capacity();
         Set<PooledByteBuffer> buffers = freeBuffers.get( capacity );
-        if (buffers == null) {
+        if ( buffers == null ) {
             buffers = new HashSet<PooledByteBuffer>();
-            freeBuffers.put (capacity, buffers);
+            freeBuffers.put( capacity, buffers );
         }
         buffers.add( buffer );
     }
-    
-    public String toString () {
-        return "Number of buffers: " + numBuffers + ", total capacity: " + totalCapacity; 
+
+    public String toString() {
+        return "Number of buffers: " + numBuffers + ", total capacity: " + totalCapacity;
     }
 }

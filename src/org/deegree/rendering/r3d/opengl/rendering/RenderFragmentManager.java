@@ -53,8 +53,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Manages the loading, unloading and caching of {@link RenderMeshFragment} data and the enabling/disabling in a
- * certain GL context.
+ * Manages the loading, unloading and caching of {@link RenderMeshFragment} data and the enabling/disabling in a certain
+ * GL context.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
