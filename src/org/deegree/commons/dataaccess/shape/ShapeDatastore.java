@@ -38,6 +38,9 @@
 
 package org.deegree.commons.dataaccess.shape;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -67,6 +70,7 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.slf4j.Logger;
 
 /**
  * <code>ShapeDatastore</code>
@@ -78,9 +82,21 @@ import org.deegree.geometry.Geometry;
  */
 public class ShapeDatastore {
 
+    private static final Logger LOG = getLogger( ShapeDatastore.class );
+
     private SHPReader shp;
 
     private DBFReader dbf;
+
+    private long shpLastModified, dbfLastModified;
+
+    private File shpFile, dbfFile;
+
+    private String name;
+
+    private CRS crs;
+
+    private Charset encoding;
 
     /**
      * @param name
@@ -94,6 +110,15 @@ public class ShapeDatastore {
             name = name.substring( 0, name.length() - 4 );
         }
 
+        this.name = name;
+        this.crs = crs;
+        this.encoding = encoding;
+
+        shpFile = new File( name + ".shp" );
+        shpLastModified = shpFile.lastModified();
+        dbfFile = new File( name + ".shp" );
+        dbfLastModified = dbfFile.lastModified();
+
         shp = new SHPReader( new RandomAccessFile( name + ".shp", "r" ), crs );
         dbf = new DBFReader( new RandomAccessFile( name + ".dbf", "r" ), encoding );
     }
@@ -106,6 +131,22 @@ public class ShapeDatastore {
      */
     public FeatureCollection query( Filter filter )
                             throws IOException, FilterEvaluationException {
+
+        synchronized ( shpFile ) {
+            if ( shpLastModified != shpFile.lastModified() ) {
+                shp.close();
+                shp = new SHPReader( new RandomAccessFile( name + ".shp", "r" ), crs );
+                LOG.debug( "Re-opening the shape file {}", name );
+            }
+        }
+        synchronized ( dbfFile ) {
+            if ( dbfLastModified != dbfFile.lastModified() ) {
+                dbf.close();
+                dbf = new DBFReader( new RandomAccessFile( name + ".dbf", "r" ), encoding );
+                LOG.debug( "Re-opening the dbf file {}", name );
+            }
+        }
+
         Envelope bbox = null;
         if ( filter instanceof OperatorFilter ) {
             OperatorFilter of = (OperatorFilter) filter;

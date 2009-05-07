@@ -69,7 +69,7 @@ public class Symbolizer<T extends Copyable<T>> {
     private T base;
 
     // TODO improve the caching, eg. implement a real cache with a limit etc.
-    private HashMap<String, Pair<T, Geometry>> cache = new HashMap<String, Pair<T, Geometry>>();
+    private HashMap<String, T> cache = new HashMap<String, T>();
 
     private Continuation<T> next;
 
@@ -133,12 +133,12 @@ public class Symbolizer<T extends Copyable<T>> {
         }
         String id = f.getId();
         if ( cache.containsKey( id ) ) {
-            return cache.get( id );
+            return new Pair<T, Geometry>( cache.get( id ), geom );
         }
 
         if ( evaluated != null ) {
             Pair<T, Geometry> pair = new Pair<T, Geometry>( evaluated, geom );
-            cache.put( id, pair );
+            cache.put( id, pair.first );
             return pair;
         }
 
@@ -150,7 +150,7 @@ public class Symbolizer<T extends Copyable<T>> {
         }
 
         next.evaluate( evald, f );
-        cache.put( id, pair );
+        cache.put( id, pair.first );
 
         return pair;
     }

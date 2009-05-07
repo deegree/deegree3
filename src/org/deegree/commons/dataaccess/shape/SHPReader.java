@@ -878,4 +878,14 @@ public class SHPReader {
         return res;
     }
 
+    /**
+     * Closes the underlying input stream.
+     * 
+     * @throws IOException
+     */
+    public void close()
+                            throws IOException {
+        in.close();
+    }
+
 }
