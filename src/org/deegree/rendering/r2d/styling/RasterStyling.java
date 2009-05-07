@@ -46,7 +46,11 @@ package org.deegree.rendering.r2d.styling;
  * 
  * @version $Revision$, $Date$
  */
-public class RasterStyling {
+public class RasterStyling implements Copyable<RasterStyling> {
+
+    public RasterStyling copy() {
+        return new RasterStyling();
+    }
 
     // TODO
 

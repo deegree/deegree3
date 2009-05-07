@@ -75,24 +75,37 @@ public class Symbolizer<T extends Copyable<T>> {
 
     private QName geometry;
 
+    private String name;
+
     /**
      * @param evaluated
      * @param geometry
+     * @param name
      */
-    public Symbolizer( T evaluated, QName geometry ) {
+    public Symbolizer( T evaluated, QName geometry, String name ) {
         this.evaluated = evaluated;
-        this.geometry = geometry == null ? new QName( "geometry" ) : geometry;
+        this.geometry = geometry;
+        this.name = name;
     }
 
     /**
      * @param base
      * @param next
      * @param geometry
+     * @param name
      */
-    public Symbolizer( T base, Continuation<T> next, QName geometry ) {
+    public Symbolizer( T base, Continuation<T> next, QName geometry, String name ) {
         this.base = base;
         this.next = next;
-        this.geometry = geometry == null ? new QName( "geometry" ) : geometry;
+        this.geometry = geometry;
+        this.name = name;
+    }
+
+    /**
+     * @return the name of the symbolizer
+     */
+    public String getName() {
+        return name;
     }
 
     /**
@@ -106,9 +119,16 @@ public class Symbolizer<T extends Copyable<T>> {
 
         Geometry geom = null;
 
-        for ( Property<Geometry> p : f.getGeometryProperties() ) {
-            if ( p.getName().equals( geometry ) ) {
-                geom = p.getValue();
+        Property<Geometry>[] geoms = f.getGeometryProperties();
+        if ( geometry == null ) {
+            if ( geoms.length > 0 ) {
+                geom = geoms[0].getValue();
+            }
+        } else {
+            for ( Property<Geometry> p : geoms ) {
+                if ( p.getName().equals( geometry ) ) {
+                    geom = p.getValue();
+                }
             }
         }
         String id = f.getId();

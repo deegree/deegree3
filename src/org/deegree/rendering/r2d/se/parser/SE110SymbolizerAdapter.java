@@ -96,12 +96,16 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
      * @return the symbolizer
      */
     public Symbolizer<PointStyling> parsePointSymbolizer() {
-        QName geom = getNodeAsQName( getRootElement(), new XPath( "se:Geometry", nscontext ), null );
+        OMElement root = getRootElement();
+
+        String name = getNodeAsString( root, new XPath( "se:Name", nscontext ), null );
+
+        QName geom = getNodeAsQName( root, new XPath( "se:Geometry", nscontext ), null );
         PointStyling baseOrEvaluated = new PointStyling();
-        final Pair<Graphic, Continuation<Graphic>> pair = parseGraphic( getRootElement() );
+        final Pair<Graphic, Continuation<Graphic>> pair = parseGraphic( root );
 
         if ( pair == null ) {
-            return new Symbolizer<PointStyling>( baseOrEvaluated, geom );
+            return new Symbolizer<PointStyling>( baseOrEvaluated, geom, name );
         }
 
         baseOrEvaluated.graphic = pair.first;
@@ -112,10 +116,10 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 public void updateStep( PointStyling base, Feature f ) {
                     pair.second.evaluate( base.graphic, f );
                 }
-            }, geom );
+            }, geom, name );
         }
 
-        return new Symbolizer<PointStyling>( baseOrEvaluated, geom );
+        return new Symbolizer<PointStyling>( baseOrEvaluated, geom, name );
     }
 
     /**
