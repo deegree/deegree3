@@ -123,6 +123,28 @@ public class ShapeDatastore {
         dbf = new DBFReader( new RandomAccessFile( name + ".dbf", "r" ), encoding );
     }
 
+    private void checkForUpdate() {
+        try {
+            synchronized ( shpFile ) {
+                if ( shpLastModified != shpFile.lastModified() ) {
+                    shp.close();
+                    shp = new SHPReader( new RandomAccessFile( name + ".shp", "r" ), crs );
+                    LOG.debug( "Re-opening the shape file {}", name );
+                }
+            }
+            synchronized ( dbfFile ) {
+                if ( dbfLastModified != dbfFile.lastModified() ) {
+                    dbf.close();
+                    dbf = new DBFReader( new RandomAccessFile( name + ".dbf", "r" ), encoding );
+                    LOG.debug( "Re-opening the dbf file {}", name );
+                }
+            }
+        } catch ( IOException e ) {
+            LOG.debug( "Shape file {} is unavailable at the moment: {}", name, e.getLocalizedMessage() );
+            LOG.trace( "Stack trace was {}", e );
+        }
+    }
+
     /**
      * @param filter
      * @return a feature collection with matching features
@@ -132,20 +154,7 @@ public class ShapeDatastore {
     public FeatureCollection query( Filter filter )
                             throws IOException, FilterEvaluationException {
 
-        synchronized ( shpFile ) {
-            if ( shpLastModified != shpFile.lastModified() ) {
-                shp.close();
-                shp = new SHPReader( new RandomAccessFile( name + ".shp", "r" ), crs );
-                LOG.debug( "Re-opening the shape file {}", name );
-            }
-        }
-        synchronized ( dbfFile ) {
-            if ( dbfLastModified != dbfFile.lastModified() ) {
-                dbf.close();
-                dbf = new DBFReader( new RandomAccessFile( name + ".dbf", "r" ), encoding );
-                LOG.debug( "Re-opening the dbf file {}", name );
-            }
-        }
+        checkForUpdate();
 
         Envelope bbox = null;
         if ( filter instanceof OperatorFilter ) {
@@ -206,6 +215,7 @@ public class ShapeDatastore {
      * @return the envelope of the shape file
      */
     public Envelope getEnvelope() {
+        checkForUpdate();
         return shp.getEnvelope();
     }
 
