@@ -124,13 +124,36 @@ public class JOGLUtils {
     }
 
     /**
-     * output the current modelview matrix of the given context.
+     * Get a string representation of the current modelview matrix of the given context.
      * 
      * @param gl
+     * @return the String representation of modelview matrix
      */
-    public static void outputMV( GL gl ) {
+    public static String getMVAsString( GL gl ) {
+        return outputMatrix( gl, GL.GL_MODELVIEW_MATRIX );
+    }
+
+    /**
+     * Get a string representation of the current Projection matrix of the given context.
+     * 
+     * @param gl
+     * @return the String representation of projection matrix
+     */
+    public static String getProjectionAsString( GL gl ) {
+        return outputMatrix( gl, GL.GL_PROJECTION_MATRIX );
+    }
+
+    /**
+     * Get a string representation of the given matrix type of the given context.
+     * 
+     * @param gl
+     * @param GL_MATRIX_TYPE
+     *            one of {@link GL#GL_MODELVIEW_MATRIX}, {@link GL#GL_PROJECTION_MATRIX}
+     * @return the String representation of given matrix
+     */
+    public static String outputMatrix( GL gl, int GL_MATRIX_TYPE ) {
         float[] mv = new float[16];
-        gl.glGetFloatv( GL.GL_MODELVIEW_MATRIX, mv, 0 );
+        gl.glGetFloatv( GL_MATRIX_TYPE, mv, 0 );
         StringBuilder sb = new StringBuilder();
         sb.append( mv[0] ).append( ",\t" ).append( mv[4] ).append( ",\t" ).append( mv[8] ).append( ",\t" ).append(
                                                                                                                    mv[12] );
@@ -144,7 +167,7 @@ public class JOGLUtils {
         sb.append( mv[3] ).append( ",\t\t" ).append( mv[7] ).append( ",\t\t" ).append( mv[11] ).append( ",\t\t" ).append(
                                                                                                                           mv[15] );
         sb.append( "\n" );
-        System.out.println( sb.toString() );
+        return sb.toString();
 
     }
 
@@ -187,6 +210,18 @@ public class JOGLUtils {
         newColor |= ( blue << 8 );
         return newColor;
 
+    }
+
+    /**
+     * Create an a float array from the given color object, which can be used for rendering with jogl.
+     * 
+     * @param color
+     *            to be converted.
+     * @return the color as an float array holding rgba.
+     */
+    public static float[] convertColorFloats( Color color ) {
+        int c = convertColorGLColor( color );
+        return getColorIntAsFloats( c );
     }
 
     /**

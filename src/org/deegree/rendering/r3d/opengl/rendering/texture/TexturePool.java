@@ -70,20 +70,12 @@ public class TexturePool {
 
     private static Map<String, String> idToFile = new HashMap<String, String>();
 
-    private static Map<String, Integer> idToUnit = new HashMap<String, Integer>();
-    static {
-        idToFile.put( "4", System.getProperty( "user.home" )
-                           + "/workspace/bonn_3doptimierung/resources/data/example_data/Platanus_acerifolia_M.tif" );
-        idToFile.put( "3", System.getProperty( "user.home" )
-                           + "/workspace/bonn_3doptimierung/resources/data/example_data/Pinus_nigra_M.tif" );
-        idToFile.put( "2", System.getProperty( "user.home" )
-                           + "/workspace/bonn_3doptimierung/resources/data/example_data/Magnolia_grandiflora_M.png" );
-
-        idToFile.put( "1", System.getProperty( "user.home" ) + "/jogl.png" );
-
-        idToFile.put( "18", "/home/rutger/tree.png" );
-    }
-
+    /**
+     * Add all files from the given directory to the pool, use the file name as the key.
+     * 
+     * @param textureDir
+     *            to scan for files.
+     */
     public static synchronized void addTexturesFromDirectory( File textureDir ) {
         if ( textureDir.exists() ) {
             if ( textureDir.isDirectory() ) {
@@ -98,6 +90,28 @@ public class TexturePool {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Add the given file with the given key to the map.
+     * 
+     * @param key
+     *            to be used.
+     * @param textureFile
+     *            to be added.
+     */
+    public static synchronized void addTexture( String key, File textureFile ) {
+        if ( key != null && !"".equals( key ) && textureFile.exists() && !textureFile.isDirectory() ) {
+            if ( idToFile.containsKey( key ) ) {
+                LOG.warn( "Ignoring texture key: " + key
+                          + " because it is already present in the texture pool with file: " + idToFile.get( key ) );
+            } else {
+                idToFile.put( key, textureFile.getAbsolutePath() );
+            }
+        } else {
+            LOG.warn( "Ignoring texture key: " + key
+                      + " because it is null, empty or the file does not exist or is a directory." );
         }
     }
 
@@ -133,7 +147,6 @@ public class TexturePool {
     }
 
     /**
-     * @param context
      * @param texture
      */
     public static void dispose( String texture ) {

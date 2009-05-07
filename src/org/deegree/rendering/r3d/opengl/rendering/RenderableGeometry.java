@@ -38,6 +38,8 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
+import static org.deegree.commons.utils.JOGLUtils.getColorIntAsFloats;
+
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
@@ -193,21 +195,10 @@ public class RenderableGeometry implements RenderableQualityModelPart {
      * Create float arrays of the int colors.
      */
     private void createColors() {
-        ambientColor = getAsFloats( style.getAmbientColor() );
-        emmisiveColor = getAsFloats( style.getEmmisiveColor() );
-        specularColor = getAsFloats( style.getSpecularColor() );
-        diffuseColor = getAsFloats( style.getDiffuseColor() );
-    }
-
-    /**
-     * The float array appropriate for opengl.
-     * 
-     * @param color
-     * @return
-     */
-    private float[] getAsFloats( int color ) {
-        return new float[] { ( ( color >> 24 ) & 0xFF ) / 255f, ( ( color >> 16 ) & 0xFF ) / 255f,
-                            ( ( color >> 8 ) & 0xFF ) / 255f, ( color & 0xFF ) / 255f, };
+        ambientColor = getColorIntAsFloats( style.getAmbientColor() );
+        emmisiveColor = getColorIntAsFloats( style.getEmmisiveColor() );
+        specularColor = getColorIntAsFloats( style.getSpecularColor() );
+        diffuseColor = getColorIntAsFloats( style.getDiffuseColor() );
     }
 
     @Override
@@ -218,6 +209,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
     public void renderPrepared( GL context, ViewParams params, DirectGeometryBuffer geomBuffer ) {
         enableArrays( context, geomBuffer );
         context.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
+        context.glMaterialfv( GL.GL_FRONT, GL.GL_AMBIENT, ambientColor, 0 );
         context.glMaterialfv( GL.GL_FRONT, GL.GL_DIFFUSE, diffuseColor, 0 );
         context.glMaterialfv( GL.GL_FRONT, GL.GL_SPECULAR, specularColor, 0 );
         context.glMaterialfv( GL.GL_FRONT, GL.GL_EMISSION, emmisiveColor, 0 );
@@ -302,7 +294,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
         this.hasNormals = ( vertexNormals != null && vertexNormals.length > 0 );
         if ( hasNormals ) {
             if ( vertexNormals.length % 3 != 0 ) {
-                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                                                                                                                                                                                                                                                                                                                                                 )
+                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                                                                                                                                                                                                                                                                                                                                                      )
                                                     + ") must be kongruent to 3." );
             } else if ( ( vertexNormals.length / 3 ) != vertexCount ) {
                 throw new IllegalArgumentException( "The number of normals (" + ( vertexNormals.length / 3 )
