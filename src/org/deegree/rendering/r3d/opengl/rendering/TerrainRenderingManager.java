@@ -84,8 +84,6 @@ public class TerrainRenderingManager {
     // contains the mesh fragments that make up the current LOD
     private Set<RenderMeshFragment> activeLOD = new HashSet<RenderMeshFragment>();
 
-    private long numTexels = 0;
-
     // shaderProgramIds [i]: id of GL shader program for compositing i texture layers
     private int[] shaderProgramIds;
 

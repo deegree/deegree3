@@ -39,6 +39,7 @@ package org.deegree.rendering.r3d.multiresolution;
 
 import java.nio.ByteBuffer;
 
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.deegree.geometry.Geometry;
 import org.deegree.rendering.r3d.ViewFrustum;
 
@@ -86,8 +87,10 @@ public class Arc {
     /** Id of the next arc with the same destination node (-1 if there is none). */
     public final int nextArcWithSameDestination;
 
-    private MeshFragment [] fragments;
-    
+    private MeshFragment[] fragments;
+
+    private float error = -1;
+
     /**
      * Creates a new {@link Arc} instance.
      * 
@@ -134,14 +137,21 @@ public class Arc {
         target.putInt( highestPatch );
         target.putInt( nextArcWithSameDestination );
     }
-  
+
     /**
-     * Returns the geometry error associated with the region that this arc represents.
+     * Returns the geometry error. This is the largest errors of all fragments associated with the arc.
      * 
      * @return the associated geometry error
      */
     public float getGeometricError() {
-        return mt.nodes[sourceNode].geometryError;
+        if ( error < 0.0 ) {
+            for ( MeshFragment fragment : getFragments() ) {
+                if (error == Float.NaN || fragment.error > error) {                    
+                    error = fragment.error;
+                }
+            }
+        }
+        return error;
     }
 
     /**
@@ -150,15 +160,15 @@ public class Arc {
      * @return the fragments associated
      */
     public MeshFragment[] getFragments() {
-        if (fragments == null) {
-            fragments = new MeshFragment [highestPatch - lowestPatch + 1];
+        if ( fragments == null ) {
+            fragments = new MeshFragment[highestPatch - lowestPatch + 1];
             for ( int i = 0; i < fragments.length; i++ ) {
-               fragments [i] = mt.fragments[i + lowestPatch];
+                fragments[i] = mt.fragments[i + lowestPatch];
             }
         }
-        return fragments; 
-    }    
-    
+        return fragments;
+    }
+
     /**
      * Determines if this arc interferes with the given {@link Geometry}.
      * 

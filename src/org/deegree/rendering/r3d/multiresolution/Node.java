@@ -49,9 +49,6 @@ import java.nio.ByteBuffer;
  */
 public class Node {
 
-    // the Batched Multi-Triangulation that this node belongs to
-    // private BatchedMT mt;
-
     /** Size of binary representation (in bytes) */
     public static int SIZE = 40;
 
@@ -96,7 +93,6 @@ public class Node {
      *                offset in the buffer
      */
     Node(MultiresolutionMesh mt, int id, ByteBuffer buffer, int baseOffset) {
-        // this.mt = mt;
         this.id = id;
         lowestOutgoingArc = buffer.getInt(baseOffset + LOWEST_OUTGOING_OFFSET);
         highestOutgoingArc = buffer.getInt(baseOffset + HIGHEST_OUTGOING_OFFSET);

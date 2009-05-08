@@ -58,7 +58,7 @@ public class ViewFrustumCrit implements LODCriterion {
 
     private static final Logger LOG = LoggerFactory.getLogger( ViewFrustumCrit.class );
 
-    private final float pixelError;
+    private final float maxPixelError;
 
     private final ViewParams viewParams;
 
@@ -96,7 +96,7 @@ public class ViewFrustumCrit implements LODCriterion {
      */
     public ViewFrustumCrit( ViewParams viewParams, float maxPixelError, float zScale, int maxTextureSize,
                             TextureManager[] textureManagers, float maxProjectedTexelSize ) {
-        this.pixelError = maxPixelError;
+        this.maxPixelError = maxPixelError;
         this.viewParams = viewParams;
         this.screenX = viewParams.getScreenPixelsX();
         this.screenY = viewParams.getScreenPixelsY();
@@ -220,25 +220,13 @@ public class ViewFrustumCrit implements LODCriterion {
         eyePos[0] = (float) viewRegion.getEyePos().x;
         eyePos[1] = (float) viewRegion.getEyePos().y;
         eyePos[2] = (float) viewRegion.getEyePos().z;
+
         float dist = VectorUtils.getDistance( scaledBBox, eyePos );
-
         float projectionFactor = estimatePixelSizeForSpaceUnit( dist );
-        float maxEdgeLen = pixelError * 1.0f;
-        float edgeLen = getEdgeLen( arc ) * projectionFactor;
-
-        LOG.debug( "Checking region (DAG arc) for refinement. Arc error=" + arc.getGeometricError() + ", distance="
-                   + dist + ", projectionFactor=" + projectionFactor );
-        LOG.debug( "Max acceptable edge length (pixels)=" + maxEdgeLen + ", estimated edge length=" + edgeLen );
-        return edgeLen <= maxEdgeLen;
-    }
-
-    private float getEdgeLen( Arc arc ) {
-        float error = arc.getGeometricError();
-
-        if ( error % 1 == 0 ) {
-            return (float) Math.pow( 2, error / 2 );
-        }
-        return (float) Math.pow( 2, ( error - 1 ) / 2 ) * SQR_2;
+        float screenError = projectionFactor * arc.getGeometricError();
+        System.out.println ("error: " + arc.getGeometricError());
+        System.out.println ("screen error: " + screenError);
+        return screenError <= maxPixelError;
     }
 
     /**
@@ -256,6 +244,6 @@ public class ViewFrustumCrit implements LODCriterion {
 
     @Override
     public String toString() {
-        return "frustum=" + viewRegion + ",pixelsX=" + screenX + ",pixelsY=" + screenY + ",maxError=" + pixelError;
+        return "frustum=" + viewRegion + ",pixelsX=" + screenX + ",pixelsY=" + screenY + ",maxError=" + maxPixelError;
     }
 }

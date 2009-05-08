@@ -77,11 +77,11 @@ public class MultiresolutionMesh {
 
     private static Logger LOG = LoggerFactory.getLogger( MultiresolutionMesh.class );
 
-    /** Default name for the blob file that contains the mesh fragments. */
-    public static final String FRAGMENTS_FILE_NAME = "patchdata.blob";
+    /** Default name for the binary file that contains the mesh fragments. */
+    public static final String FRAGMENTS_FILE_NAME = "fragments.bin";
 
-    /** Default name for the index file that contains the multiresolution DAG. */
-    public static final String INDEX_FILE_NAME = "mrindex.blob";
+    /** Default name for the binary index file that contains the multiresolution DAG. */
+    public static final String INDEX_FILE_NAME = "mrindex.bin";
 
     /** Contains all {@link Node}s of the DAG, the array index corresponds to its id. */
     public Node[] nodes;
