@@ -50,7 +50,7 @@ import java.nio.ByteBuffer;
 public class Node {
 
     /** Size of binary representation (in bytes) */
-    public static int SIZE = 40;
+    public static int SIZE = 36;
 
     private static int LOWEST_OUTGOING_OFFSET = 0;
 
@@ -58,9 +58,7 @@ public class Node {
 
     private static int LOWEST_INCOMING_OFFSET = 8;
 
-    private static int GEOMETRY_ERROR_OFFSET = 12;
-
-    private static int BBOX_OFFSET = 16;
+    private static int BBOX_OFFSET = 12;
 
     /** Id of the node. */
     public final int id;
@@ -73,9 +71,6 @@ public class Node {
 
     /** Lowest id of all arcs entering this node. */
     public final int lowestIncomingArc;
-
-    /** Geometry error associated with the patches of this node. */
-    public final float geometryError;
 
     /** Bounding box of this node. */
     public final float[][] bbox = new float[2][3];
@@ -97,7 +92,6 @@ public class Node {
         lowestOutgoingArc = buffer.getInt(baseOffset + LOWEST_OUTGOING_OFFSET);
         highestOutgoingArc = buffer.getInt(baseOffset + HIGHEST_OUTGOING_OFFSET);
         lowestIncomingArc = buffer.getInt(baseOffset + LOWEST_INCOMING_OFFSET);
-        geometryError = buffer.getFloat(baseOffset + GEOMETRY_ERROR_OFFSET);
         bbox[0][0] = buffer.getFloat(baseOffset + BBOX_OFFSET + 0);
         bbox[0][1] = buffer.getFloat(baseOffset + BBOX_OFFSET + 4);
         bbox[0][2] = buffer.getFloat(baseOffset + BBOX_OFFSET + 8);
@@ -117,17 +111,14 @@ public class Node {
      *                highest id of all arcs leaving from this node
      * @param lowestIncomingArc
      *                lowest id of all arcs entering this node
-     * @param error
-     *                geometry error associated with the patches of this node
      * @param bbox
      *                bounding box of this node
      */
     public static void store(ByteBuffer target, int lowestOutgoingArc, int highestOutgoingArc,
-            int lowestIncomingArc, float error, float[][] bbox) {
+            int lowestIncomingArc, float[][] bbox) {
         target.putInt(lowestOutgoingArc);
         target.putInt(highestOutgoingArc);
         target.putInt(lowestIncomingArc);
-        target.putFloat(error);
         target.putFloat(bbox[0][0]);
         target.putFloat(bbox[0][1]);
         target.putFloat(bbox[0][2]);

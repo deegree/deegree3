@@ -73,6 +73,6 @@ public class MaxError implements LODCriterion {
      */
     @Override
     public boolean needsRefinement( Arc arc ) {
-        return arc.getGeometricError() > c;
+        return arc.geometricError > c;
     }
 }

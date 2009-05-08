@@ -39,7 +39,6 @@ package org.deegree.rendering.r3d.multiresolution;
 
 import java.nio.ByteBuffer;
 
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.deegree.geometry.Geometry;
 import org.deegree.rendering.r3d.ViewFrustum;
 
@@ -57,7 +56,7 @@ public class Arc {
     private MultiresolutionMesh mt;
 
     /** Size of binary representation (in bytes) */
-    public static int SIZE = 20;
+    public static int SIZE = 24;
 
     private static int SOURCE_NODE_OFFSET = 0;
 
@@ -68,6 +67,8 @@ public class Arc {
     private static int HIGHEST_PATCH_OFFSET = 12;
 
     private static int NEXT_ARC_SAME_DESTINATION_OFFSET = 16;
+
+    private static int GEOMETRIC_ERROR_OFFSET = 20;
 
     /** Id of the arc. */
     public final int id;
@@ -87,9 +88,10 @@ public class Arc {
     /** Id of the next arc with the same destination node (-1 if there is none). */
     public final int nextArcWithSameDestination;
 
-    private MeshFragment[] fragments;
+    /** Geometric error (highest error of all fragments). */
+    public final float geometricError;
 
-    private float error = -1;
+    private MeshFragment[] fragments;
 
     /**
      * Creates a new {@link Arc} instance.
@@ -111,6 +113,7 @@ public class Arc {
         lowestPatch = buffer.getInt( baseOffset + LOWEST_PATCH_OFFSET );
         highestPatch = buffer.getInt( baseOffset + HIGHEST_PATCH_OFFSET );
         nextArcWithSameDestination = buffer.getInt( baseOffset + NEXT_ARC_SAME_DESTINATION_OFFSET );
+        geometricError = buffer.getFloat( baseOffset + GEOMETRIC_ERROR_OFFSET );
     }
 
     /**
@@ -128,30 +131,17 @@ public class Arc {
      *            highest patch id in the label of the arc
      * @param nextArcWithSameDestination
      *            id of the next arc with the same destination node (-1 if there is none)
+     * @param geometricError
+     *            geometric error
      */
     public static void store( ByteBuffer target, int sourceNode, int destinationNode, int lowestPatch,
-                              int highestPatch, int nextArcWithSameDestination ) {
+                              int highestPatch, int nextArcWithSameDestination, float geometricError ) {
         target.putInt( sourceNode );
         target.putInt( destinationNode );
         target.putInt( lowestPatch );
         target.putInt( highestPatch );
         target.putInt( nextArcWithSameDestination );
-    }
-
-    /**
-     * Returns the geometry error. This is the largest errors of all fragments associated with the arc.
-     * 
-     * @return the associated geometry error
-     */
-    public float getGeometricError() {
-        if ( error < 0.0 ) {
-            for ( MeshFragment fragment : getFragments() ) {
-                if (error == Float.NaN || fragment.error > error) {                    
-                    error = fragment.error;
-                }
-            }
-        }
-        return error;
+        target.putFloat( geometricError );
     }
 
     /**

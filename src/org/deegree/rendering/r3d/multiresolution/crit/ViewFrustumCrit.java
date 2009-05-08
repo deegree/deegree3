@@ -223,9 +223,9 @@ public class ViewFrustumCrit implements LODCriterion {
 
         float dist = VectorUtils.getDistance( scaledBBox, eyePos );
         float projectionFactor = estimatePixelSizeForSpaceUnit( dist );
-        float screenError = projectionFactor * arc.getGeometricError();
-        System.out.println ("error: " + arc.getGeometricError());
-        System.out.println ("screen error: " + screenError);
+        float screenError = projectionFactor * arc.geometricError;
+//        System.out.println ("error: " + arc.geometryError);
+//        System.out.println ("screen error: " + screenError);
         return screenError <= maxPixelError;
     }
 
