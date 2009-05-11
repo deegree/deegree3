@@ -3,7 +3,7 @@
     <property file="${ivybuild.dir}/ivy.properties" />
 
     <!--=======================================================
-    STANDARD Targets common in all build-ivy.xml files 
+    STANDARD Targets common in all build-ivy.xml files
     =============================================================/-->
 
     <!-- create the paths of the libs -->
@@ -27,7 +27,7 @@
                   it into ant's lib dir (note that the latter copy will always take precedence).
                   We will not fail as long as ivy home lib dir exists (it may be empty) and
                   ivy is in at least one of ant's lib dir or the ivy home lib dir.
-                  download Ivy from web site so that it can be used even without any special installation 
+                  download Ivy from web site so that it can be used even without any special installation
                   -->
         <get src="${ivy.repository.location}" dest="${ivy.jar.file}" usetimestamp="true" />
     </target>
@@ -71,8 +71,8 @@
         <echo message="classes = ${classes.dir}" />
     </target>
 
-    <!-- ================================= 
-          target: resolve              
+    <!-- =================================
+          target: resolve
          ================================= -->
     <target name="resolve" depends="load-ivy" description="-> resolve and retrieve dependencies with ivy">
         <ivy:retrieve conf="${module.name}-build" pattern="${lib.dir}/[artifact](-[revision]).[ext]" file="${dependencies.file}" log="${ivy.resolve.verbose}" sync="true" />
@@ -97,23 +97,30 @@
         <echo message="Building version: ${build.version}" />
     </target>
 
-    <!-- ================================= 
-          target: compile              
+    <!-- =================================
+          target: compile
          ================================= -->
     <target name="compile" depends="version" description="-> compile ${module.name}">
-        <!-- if any of the dependend jars was updated, delete the previously compiled classes. This way the api-dependency is garanteed. 
-             
+        <!-- if any of the dependend jars was updated, delete the previously compiled classes. This way the api-dependency is garanteed.
+
              For clarification, consider you removed a public method in a dependend d3 module. By calling publish-all you will get these changes in the
              dependee module, but, the java compiler does not recognize that the api has changed (the method is not available anymore) and
              so no java files will be compiled a new.
-              
-             While executing this 'broken' configuration, you will get a 'NoSuchMethodException' because your newly created depend jar 
+
+             While executing this 'broken' configuration, you will get a 'NoSuchMethodException' because your newly created depend jar
              does not contain the method the dependee classes were compiled against.
              -->
         <dependset>
             <srcfileset dir="${lib.dir}" includes="*jar" />
             <targetfileset dir="${classes.dir}" includes="**/*.class" />
         </dependset>
+        <!-- touch the package-info.java files to ensure one of the three great 1.7.1 ant conditions apply and they're compiled -->
+        <!-- TODO find all places where package-info.class files are deleted and delete they're parent directories instead, this would solve the problems better -->
+        <touch>
+          <fileset dir="${src.dir}">
+            <include name="**/package-info.java" />
+          </fileset>
+        </touch>
         <!--updateProperty needs ant 1.7.1 -->
         <javac updatedProperty="compile.change" destdir="${classes.dir}" classpathref="build.path" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.enabled}" source="${source.version}" target="${target.version}">
             <src path="${src.dir}" />
@@ -206,8 +213,8 @@
     </target>
 
 
-    <!-- ================================= 
-          publish targets, publishing means: make the current 'revision' available for all other modules by putting them in a (local) repository.              
+    <!-- =================================
+          publish targets, publishing means: make the current 'revision' available for all other modules by putting them in a (local) repository.
          ================================= -->
 
     <target name="publish-local-src" depends="zip-sources" description="-> publish ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
@@ -235,7 +242,7 @@
     </target>
 
     <!-- ==================================
-          target: clean 
+          target: clean
      ================================= -->
     <target name="clean" description="-> cleans this projects created directory">
         <echo message="clean: ${module.name}" />
