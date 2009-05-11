@@ -36,7 +36,7 @@ Version: 1.2.15
 Description: Logging implementation.
 Comments: deegrees default logging implementation used by slf4j
 Used for: everything (indirectly by slf4j)
-Origin of Files: http://logging.apache.org/log4j/1.2/download.html
+Origin of files: http://logging.apache.org/log4j/1.2/download.html
 License: The Apache Software License, Version 2.0
 Responsible: otonnhofer
 
@@ -48,19 +48,39 @@ Description: Java Advanced Imaging, high-level imaging API
 Comments: mlibwrapper_jar contains native implementation of parts of jai
 Used for: - org.deegree.crs.transformation (polynomial transformation)
           - org.deegree.dataaccess.jai (image/raster reading and writing)
-Origin of Files: https://jai.dev.java.net/binary-builds.html
+Origin of files: https://jai.dev.java.net/binary-builds.html
 License: Java Distribution License (JDL)
 Responsible: rbezema, otonnhofer
 
-=== commons ===
+=== commons httpclient ===
 Files: commons-httpclient-3.1.jar
 URL: http://hc.apache.org/httpclient-3.x/
 Version: 3.1
 Description: Jakarta Commons HTTP client
 Used for: everything that accesses the web
-Origin of Files: http://hc.apache.org/downloads.cgi
+Origin of files: http://hc.apache.org/downloads.cgi
 License: The Apache Software License, Version 2.0
 Responsible: aschmitz
+
+=== commons pool ===
+Files: commons-pool-1.4.jar
+URL: http://commons.apache.org/pool/
+Version: 1.4
+Description: Apache Commons Pool
+Used for: JDBC connection pooling (org.deegree.commons.jdbc.ConnectionPool)
+Origin of files: http://commons.apache.org/pool/download_pool.cgi
+License: The Apache Software License, Version 2.0
+Responsible: mschneider
+
+=== commons dbcp ===
+Files: commons-dbcp-1.2.2.jar
+URL: http://commons.apache.org/dbcp/
+Version: 1.2.2
+Description: Apache Commons DBCP
+Used for: JDBC connection pooling (org.deegree.commons.jdbc.ConnectionPool)
+Origin of files: http://commons.apache.org/downloads/download_dbcp.cgi
+License: The Apache Software License, Version 2.0
+Responsible: mschneider
 
 === jaxb ===
 Files: jaxb-impl-2.1.10.jar,jaxb-xjc-2.1.10.jar
@@ -68,7 +88,7 @@ URL: https://jaxb.dev.java.net/
 Version: 2.1.10
 Description: Jaxb is a tool which binds schema files to java classes and vice versa
 Used for: binding of configuration schema files
-Origin of Files: jaxb distribution: https://jaxb.dev.java.net/2.1.10/JAXB2_20090206.jar
+Origin of files: jaxb distribution: https://jaxb.dev.java.net/2.1.10/JAXB2_20090206.jar
 Licence: https://jaxb.dev.java.net/
 Responsible: rbezema
 
