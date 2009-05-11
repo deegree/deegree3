@@ -11,11 +11,7 @@
     <xs:complexContent>
       <xs:extension base="ds:AbstractDataSourceType">
         <xs:sequence>
-          <xs:element name="Driver" type="xs:string" />
-          <xs:element name="HostURL" type="xs:string" />
-          <xs:element name="DataBase" type="xs:string" />
-          <xs:element name="User" type="xs:string" />
-          <xs:element name="Password" type="xs:string" />
+          <xs:element name="ConnectionPoolId" type="xs:string" />
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -29,11 +25,7 @@
       <xs:complexContent>
         <xs:extension base="ds:AbstractGeospatialDataSourceType">
           <xs:sequence>
-            <xs:element name="Driver" type="xs:string" />
-            <xs:element name="HostURL" type="xs:string" />
-            <xs:element name="DataBase" type="xs:string" />
-            <xs:element name="User" type="xs:string" />
-            <xs:element name="Password" type="xs:string" />
+            <xs:element name="ConnectionPoolId" type="xs:string" />
           </xs:sequence>
         </xs:extension>
       </xs:complexContent>

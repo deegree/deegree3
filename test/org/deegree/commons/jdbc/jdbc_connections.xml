@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<JDBCConnections configVersion="0.1.0"
+  xmlns="http://www.deegree.org/configuration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/configuration ../../../../../resources/schema/commons/0.1.0/jdbc.xsd">
+  <PooledConnection id="conn1">
+    <Driver>org.postgresql.Driver</Driver>
+    <Url>jdbc:postgresql://hurricane:5432/bonn_3doptimierung</Url>
+    <User>postgres</User>
+    <Password>postgres</Password>
+    <PoolMinSize>5</PoolMinSize>
+    <PoolMaxSize>20</PoolMaxSize>
+  </PooledConnection>
+  <PooledConnection id="conn2">
+    <Driver>org.postgresql.Driver</Driver>
+    <Url>jdbc:postgresql://hurricane:5432/deegreetest</Url>
+    <User>deegreetest</User>
+    <Password>deegreetest</Password>
+    <PoolMinSize>5</PoolMinSize>
+    <PoolMaxSize>20</PoolMaxSize>
+  </PooledConnection>
+</JDBCConnections>

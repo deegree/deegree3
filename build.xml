@@ -17,75 +17,93 @@
    under the License.    
 -->
 <project name="commons" default="publish" xmlns:ivy="antlib:org.apache.ivy.ant">
-    <property file="build.properties" />
+	<property file="build.properties" />
 
-    <import file="${ivybuild.dir}/ivy-build.xml" optional="false" />
+	<import file="${ivybuild.dir}/ivy-build.xml" optional="false" />
 
-    <echo message="basedir: ${basedir}" />
+	<echo message="basedir: ${basedir}" />
 
-    <!-- Support the ant-contrib tasks. -->
-    <taskdef resource="net/sf/antcontrib/antlib.xml">
-        <classpath>
-            <pathelement location="${basedir}/lib/ant-contrib/ant-contrib-1.0b3.jar" />
-        </classpath>
-    </taskdef>
+	<!-- Support the ant-contrib tasks. -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${basedir}/lib/ant-contrib/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
 
-    <target name="bind" depends="resolve">
-        <!-- Support jaxb tasks -->
-        <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
-            <classpath refid="build.path" />
-        </taskdef>
-        <property name="schema.file" value="commons.xsd" />
-        <property name="schema.name" value="commons" />
+	<target name="bind" depends="resolve">
+		<!-- Support jaxb tasks -->
+		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+			<classpath refid="build.path" />
+		</taskdef>
+		<property name="schema.file" value="commons.xsd" />
+		<property name="schema.name" value="commons" />
 
-        <property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
-        <property name="src.output.dir" value="${src.dir}/org/deegree/${schema.name}/configuration" />
+		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
+		<property name="src.output.dir" value="${src.dir}/org/deegree/${schema.name}/configuration" />
 
-        <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
-            <produces dir="${src.output.dir}" includes="**/*.java" />
-        </xjc>
-    </target>
+		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
+			<produces dir="${src.output.dir}" includes="**/*.java" />
+		</xjc>
+	</target>
 
-    <target name="bind-commons-configuration" depends="bind, publish" description="Bind the commons configuration files and publish the result." />
-    
-    <target name="bind-ds" depends="resolve">
-           <!-- Support jaxb tasks -->
-           <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
-               <classpath refid="build.path" />
-           </taskdef>
-           <property name="schema.file" value="all_datasources.xsd" />
-           <property name="schema.name" value="datasource" />
-           <property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
-           <property name="src.output.dir" value="${src.dir}/org/deegree/commons/${schema.name}/configuration" />
+	<target name="bind-commons-configuration" depends="bind, publish" description="Bind the commons configuration files and publish the result." />
 
-           <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
-               <depends dir="${schema.dir}" includes="**/*.xsd" />
-               <produces dir="${src.output.dir}" includes="**/*.java" />
-           </xjc>
-       </target>
+	<target name="bind-ds" depends="resolve">
+		<!-- Support jaxb tasks -->
+		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+			<classpath refid="build.path" />
+		</taskdef>
+		<property name="schema.file" value="all_datasources.xsd" />
+		<property name="schema.name" value="datasource" />
+		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
+		<property name="src.output.dir" value="${src.dir}/org/deegree/commons/${schema.name}/configuration" />
 
-       <target name="bind-datasource-configuration" depends="bind-ds, publish" description="Bind the dataaccess configuration files and publish the result." />
+		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
+			<depends dir="${schema.dir}" includes="**/*.xsd" />
+			<produces dir="${src.output.dir}" includes="**/*.java" />
+		</xjc>
+	</target>
 
-    <target name="create-tables" description="run SQL scripts that create tables for the database backend">
-	<sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="jdbc:derby:src/META-INF/deegreeCRS" userid="" password="">
- 	 <classpath>
-		<pathelement location="lib/derby/derby-10.4.2.0.jar"/>
-	 </classpath>
-	  <transaction  src="scripts/database/1.Transformations.SQL"/>
-	  <transaction  src="scripts/database/2.Datums.SQL"/>
-	  <transaction  src="scripts/database/3.Projections.SQL"/>
-	  <transaction  src="scripts/database/4.CoordinateSystems.SQL"/>
-	  <transaction  src="scripts/database/5.Identifiables.SQL"/>
-	</sql>
-    </target>
+	<target name="bind-datasource-configuration" depends="bind-ds, publish" description="Bind the dataaccess configuration files and publish the result." />
 
-    <target name="drop-tables" description="run SQL script that drops all tables in the database backend">
-	<sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="jdbc:derby:src/META-INF/deegreeCRS" userid="" password="">
-	<classpath>
-		<pathelement location="lib/derby/derby-10.4.2.0.jar"/>
-	</classpath>
-	  <transaction  src="scripts/database/0.drop-all-in-order.SQL"/>
-	</sql>
-    </target>
+	<target name="bind-jdbc" depends="resolve">
+		<!-- Support jaxb tasks -->
+		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+			<classpath refid="build.path" />
+		</taskdef>
+		<property name="schema.file" value="jdbc.xsd" />
+		<property name="schema.name" value="commons" />
+		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
+		<property name="src.output.dir" value="${src.dir}/org/deegree/commons/${schema.name}/configuration" />
+
+		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
+			<depends dir="${schema.dir}" includes="**/*.xsd" />
+			<produces dir="${src.output.dir}" includes="**/*.java" />
+		</xjc>
+	</target>
+
+	<target name="bind-jdbc-configuration" depends="bind-jdbc, publish" description="Bind the JDBC connection configuration files and publish the result." />
+
+	<target name="create-tables" description="run SQL scripts that create tables for the database backend">
+		<sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="jdbc:derby:src/META-INF/deegreeCRS" userid="" password="">
+			<classpath>
+				<pathelement location="lib/derby/derby-10.4.2.0.jar" />
+			</classpath>
+			<transaction src="scripts/database/1.Transformations.SQL" />
+			<transaction src="scripts/database/2.Datums.SQL" />
+			<transaction src="scripts/database/3.Projections.SQL" />
+			<transaction src="scripts/database/4.CoordinateSystems.SQL" />
+			<transaction src="scripts/database/5.Identifiables.SQL" />
+		</sql>
+	</target>
+
+	<target name="drop-tables" description="run SQL script that drops all tables in the database backend">
+		<sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="jdbc:derby:src/META-INF/deegreeCRS" userid="" password="">
+			<classpath>
+				<pathelement location="lib/derby/derby-10.4.2.0.jar" />
+			</classpath>
+			<transaction src="scripts/database/0.drop-all-in-order.SQL" />
+		</sql>
+	</target>
 
 </project>
