@@ -65,6 +65,7 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.concurrent.Executor;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.ProxyUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -346,7 +347,7 @@ public class WMSClient111 {
         return res;
     }
 
-    /** 
+    /**
      * 
      * @param layers
      * @param width
@@ -519,7 +520,8 @@ public class WMSClient111 {
                        + format + "&transparent=" + transparent;
 
                 URL theUrl = new URL( url );
-                URLConnection conn = theUrl.openConnection();
+                URLConnection conn = ProxyUtils.openURLConnection( theUrl, ProxyUtils.getHttpProxyUser( true ),
+                                                                   ProxyUtils.getHttpProxyPassword( true ) );
 
                 conn.connect();
                 if ( LOG.isTraceEnabled() ) {

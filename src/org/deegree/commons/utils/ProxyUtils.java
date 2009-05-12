@@ -38,6 +38,9 @@
 
 package org.deegree.commons.utils;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Properties;
 
 import org.deegree.commons.configuration.ProxyConfiguration;
@@ -222,6 +225,26 @@ public final class ProxyUtils {
         } else {
             System.clearProperty( key );
         }
+    }
+
+    /**
+     * This method should be used everywhere instead of <code>URL.openConnection()</code>, as it copes with proxies that
+     * require user authentication.
+     * 
+     * @param url
+     * @param user
+     * @param pass
+     * @return connection
+     * @throws IOException
+     */
+    public static URLConnection openURLConnection( URL url, String user, String pass )
+                            throws IOException {
+        URLConnection conn = url.openConnection();
+        if ( user != null ) {
+            String userAndPass = new sun.misc.BASE64Encoder().encode( ( user + ":" + pass ).getBytes() );
+            conn.setRequestProperty( "Proxy-Authorization", "Basic " + userAndPass );
+        }
+        return conn;
     }
 
     public static String getProxyHost() {
