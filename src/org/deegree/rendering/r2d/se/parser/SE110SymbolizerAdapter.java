@@ -45,14 +45,14 @@ import static org.deegree.rendering.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
-import java.io.StringWriter;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMText;
@@ -60,7 +60,6 @@ import org.deegree.commons.filter.Expression;
 import org.deegree.commons.filter.FilterEvaluationException;
 import org.deegree.commons.filter.xml.Filter110XMLAdapter;
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.FormattingXMLStreamWriter;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -138,16 +137,35 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
         Graphic base = new Graphic();
         Continuation<Graphic> contn = null;
 
-        final Pair<Mark, Continuation<Mark>> pair = parseMark( graphic );
-        if ( pair != null ) {
-            base.mark = pair.first;
-            if ( pair.second != null ) {
-                contn = new Continuation<Graphic>() {
-                    @Override
-                    public void updateStep( Graphic base, Feature f ) {
-                        pair.second.evaluate( base.mark, f );
+        Iterator<?> iter = graphic.getChildElements();
+        while ( iter.hasNext() ) {
+            OMElement elem = (OMElement) iter.next();
+
+            if ( elem.getLocalName().equals( "Mark" ) ) {
+                final Pair<Mark, Continuation<Mark>> pair = parseMark( elem );
+                if ( pair != null ) {
+                    base.mark = pair.first;
+                    if ( pair.second != null ) {
+                        contn = new Continuation<Graphic>() {
+                            @Override
+                            public void updateStep( Graphic base, Feature f ) {
+                                pair.second.evaluate( base.mark, f );
+                            }
+                        };
+                        break;
                     }
-                };
+                }
+            }
+            if ( elem.getLocalName().equals( "ExternalGraphic" ) ) {
+                try {
+                    base.image = parseExternalGraphic( elem );
+                    if ( base.image != null ) {
+                        break;
+                    }
+                } catch ( IOException e ) {
+                    LOG.debug( "Stack trace", e );
+                    LOG.warn( get( "R2D.EXTERNAL_GRAPHIC_NOT_LOADED" ), elem.getLineNumber(), elem.toString() );
+                }
             }
         }
 
@@ -197,11 +215,38 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
     }
 
     /**
-     * @param root
+     * @param g
+     * @return a pre-rendered image
+     * @throws IOException
+     */
+    public BufferedImage parseExternalGraphic( OMElement g )
+                            throws IOException {
+        if ( g == null ) {
+            return null;
+        }
+
+        // TODO inline content
+        // TODO color replacement
+
+        // TODO in case of svg, load/render it with batik
+        // String format = getNodeAsString( g, new XPath( "se:Format", nscontext ), null );
+
+        String str = getNodeAsString( g, new XPath( "se:OnlineResource/@xlink:href", nscontext ), null );
+        if ( str != null ) {
+            URL url = resolve( str );
+            LOG.debug( "Loading external graphic from URL {}", url );
+            return ImageIO.read( url );
+
+        }
+
+        return null;
+    }
+
+    /**
+     * @param mark
      * @return a base mark and a continuation, or an evaluated mark
      */
-    public Pair<Mark, Continuation<Mark>> parseMark( OMElement root ) {
-        OMElement mark = getElement( root, new XPath( "se:Mark", nscontext ) );
+    public Pair<Mark, Continuation<Mark>> parseMark( OMElement mark ) {
         if ( mark == null ) {
             return null;
         }
@@ -433,23 +478,27 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
         OMElement opacity = getElement( root, new XPath( name, nscontext ) );
         if ( opacity != null ) {
             Iterator<?> iter = opacity.getChildren();
-            final LinkedList<Pair<String, Expression>> text = new LinkedList<Pair<String, Expression>>(); // no real
+            final LinkedList<Pair<String, Pair<Expression, String>>> text = new LinkedList<Pair<String, Pair<Expression, String>>>(); // no
+            // real
             // 'alternative', have we?
             boolean textOnly = true;
             while ( iter.hasNext() ) {
                 Object cur = iter.next();
                 if ( cur instanceof OMElement ) {
+                    OMElement om = (OMElement) cur;
                     Expression expr = parser.parseExpression( (OMElement) cur );
-                    text.add( new Pair<String, Expression>( null, expr ) );
+                    Pair<Expression, String> second = new Pair<Expression, String>( expr, get( "R2D.LINE",
+                                                                                               om.getLineNumber(), om ) );
+                    text.add( new Pair<String, Pair<Expression, String>>( null, second ) );
                     textOnly = false;
                 }
                 if ( cur instanceof OMText ) {
                     OMText t = (OMText) cur;
                     if ( textOnly && !text.isEmpty() ) { // concat text in case of multiple text nodes from beginning
                         String txt = text.removeLast().first;
-                        text.add( new Pair<String, Expression>( txt + t.getText(), null ) );
+                        text.add( new Pair<String, Pair<Expression, String>>( txt + t.getText(), null ) );
                     } else {
-                        text.add( new Pair<String, Expression>( t.getText(), null ) );
+                        text.add( new Pair<String, Pair<Expression, String>>( t.getText(), null ) );
                     }
                 }
             }
@@ -461,39 +510,20 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                     @Override
                     public void updateStep( T base, Feature f ) {
                         String tmp = "";
-                        for ( Pair<String, Expression> p : text ) {
+                        for ( Pair<String, Pair<Expression, String>> p : text ) {
                             if ( p.first != null ) {
                                 tmp += p.first;
                             }
                             if ( p.second != null ) {
                                 try {
-                                    Object evald = p.second.evaluate( f );
+                                    Object evald = p.second.first.evaluate( f );
                                     if ( evald == null ) {
-                                        XMLOutputFactory factory = XMLOutputFactory.newInstance();
-                                        factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
-                                        StringWriter stringWriter = new StringWriter();
-                                        XMLStreamWriter streamWriter = factory.createXMLStreamWriter( stringWriter );
-                                        XMLStreamWriter xml = new FormattingXMLStreamWriter( streamWriter );
-                                        Filter110XMLAdapter.export( p.second, xml );
-                                        LOG.warn( get( "R2D.EXPRESSION_TO_NULL", stringWriter.toString() ) );
+                                        LOG.warn( get( "R2D.EXPRESSION_TO_NULL" ), p.second.second );
                                     } else {
                                         tmp += evald;
                                     }
                                 } catch ( FilterEvaluationException e ) {
-                                    XMLOutputFactory factory = XMLOutputFactory.newInstance();
-                                    factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
-                                    StringWriter stringWriter = new StringWriter();
-                                    try {
-                                        XMLStreamWriter streamWriter = factory.createXMLStreamWriter( stringWriter );
-                                        XMLStreamWriter xml = new FormattingXMLStreamWriter( streamWriter );
-                                        Filter110XMLAdapter.export( p.second, xml );
-                                        LOG.warn( get( "R2D.ERROR_EVAL", e.getLocalizedMessage(),
-                                                       stringWriter.toString() ) );
-                                    } catch ( XMLStreamException e1 ) {
-                                        LOG.error( "Unknown error", e );
-                                    }
-                                } catch ( XMLStreamException e ) {
-                                    LOG.error( "Unknown error", e );
+                                    LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), p.second.second );
                                 }
                             }
                         }

@@ -136,7 +136,7 @@ public class Java2DRenderer implements Renderer {
         this.graphics = graphics;
     }
 
-    void applyGraphicFill( Graphic graphic ) {
+    private Rectangle2D.Double getGraphicBounds( Graphic graphic, double x, double y ) {
         double width = graphic.size;
         double height = graphic.size;
 
@@ -150,9 +150,13 @@ public class Java2DRenderer implements Renderer {
             }
         }
 
-        double x0 = width * graphic.anchorPointX + graphic.displacementX;
-        double y0 = height * graphic.anchorPointY + graphic.displacementY;
+        double x0 = x - width * graphic.anchorPointX + graphic.displacementX;
+        double y0 = y - height * graphic.anchorPointY + graphic.displacementY;
 
+        return new Rectangle2D.Double( x0, y0, width, height );
+    }
+
+    void applyGraphicFill( Graphic graphic ) {
         BufferedImage img;
 
         if ( graphic.image == null ) {
@@ -161,7 +165,7 @@ public class Java2DRenderer implements Renderer {
             img = graphic.image;
         }
 
-        graphics.setPaint( new TexturePaint( img, new Rectangle2D.Double( x0, y0, width, height ) ) );
+        graphics.setPaint( new TexturePaint( img, getGraphicBounds( graphic, 0, 0 ) ) );
     }
 
     void applyFill( Fill fill ) {
@@ -339,9 +343,9 @@ public class Java2DRenderer implements Renderer {
         x = p.x;
         y = p.y;
 
-        Graphic g = styling.graphic;
-
         BufferedImage img;
+
+        Graphic g = styling.graphic;
 
         if ( g.image == null ) {
             img = renderMark( g.mark, g.size < 0 ? 6 : round( g.size ) );
@@ -349,12 +353,9 @@ public class Java2DRenderer implements Renderer {
             img = g.image;
         }
 
-        x += g.displacementX;
-        y += g.displacementY;
-        x -= g.anchorPointX * img.getWidth();
-        y -= g.anchorPointY * img.getHeight();
+        Rectangle2D.Double rect = getGraphicBounds( g, x, y );
 
-        graphics.drawImage( img, round( x ), round( y ), img.getWidth(), img.getHeight(), null );
+        graphics.drawImage( img, round( rect.x ), round( rect.y ), round( rect.width ), round( rect.height ), null );
     }
 
     public void render( PointStyling styling, Geometry geom ) {
