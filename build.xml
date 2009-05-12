@@ -66,24 +66,6 @@
 
 	<target name="bind-datasource-configuration" depends="bind-ds, publish" description="Bind the dataaccess configuration files and publish the result." />
 
-	<target name="bind-jdbc" depends="resolve">
-		<!-- Support jaxb tasks -->
-		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
-			<classpath refid="build.path" />
-		</taskdef>
-		<property name="schema.file" value="jdbc.xsd" />
-		<property name="schema.name" value="commons" />
-		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
-		<property name="src.output.dir" value="${src.dir}/org/deegree/commons/${schema.name}/configuration" />
-
-		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
-			<depends dir="${schema.dir}" includes="**/*.xsd" />
-			<produces dir="${src.output.dir}" includes="**/*.java" />
-		</xjc>
-	</target>
-
-	<target name="bind-jdbc-configuration" depends="bind-jdbc, publish" description="Bind the JDBC connection configuration files and publish the result." />
-
 	<target name="create-tables" description="run SQL scripts that create tables for the database backend">
 		<sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="jdbc:derby:src/META-INF/deegreeCRS" userid="" password="">
 			<classpath>

@@ -48,9 +48,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.deegree.commons.configuration.JDBCConnections;
+import org.deegree.commons.configuration.PooledConnection;
 import org.deegree.commons.i18n.Messages;
-import org.deegree.commons.jdbc.configuration.JDBCConnections;
-import org.deegree.commons.jdbc.configuration.PooledConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +68,6 @@ import org.slf4j.LoggerFactory;
  */
 public class ConnectionManager {
 
-    /** Name of the configuration file. */
-    public static final String CONFIG_FILE_NAME = "jdbc_connections.xml";
-
     private static Logger LOG = LoggerFactory.getLogger( ConnectionManager.class );
 
     private static Map<String, ConnectionPool> idToPools;
@@ -78,17 +75,30 @@ public class ConnectionManager {
     /**
      * Initializes the {@link ConnectionManager}. This method must only be called once.
      * 
-     * @param configURL
-     * @throws JAXBException
+     * @param jaxbConns
      * @throws SQLException
      */
-    public synchronized static void init( URL configURL )
-                            throws JAXBException, SQLException {
+    public synchronized static void init( JDBCConnections jaxbConns )
+                            throws SQLException {
         if ( idToPools != null ) {
             throw new SQLException( Messages.getMessage( "JDBC_MANAGER_ALREADY_INITIALIZED" ) );
         }
         idToPools = new HashMap<String, ConnectionPool>();
-        addConnections( configURL );
+        addConnections( jaxbConns );
+    }
+
+    /**
+     * Initializes the {@link ConnectionManager}. This method must only be called once.
+     * 
+     * @param jdbcConfigUrl
+     * @throws JAXBException
+     * @throws SQLException
+     */
+    public synchronized static void init( URL jdbcConfigUrl )
+                            throws JAXBException, SQLException {
+        JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.configuration" );
+        Unmarshaller u = jc.createUnmarshaller();
+        init ((JDBCConnections) u.unmarshal( jdbcConfigUrl ));
     }
 
     /**
@@ -109,12 +119,8 @@ public class ConnectionManager {
         return pool.getConnection();
     }
 
-    private static void addConnections( URL jdbcConfigUrl )
-                            throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.jdbc.configuration" );
-        Unmarshaller u = jc.createUnmarshaller();
-        JDBCConnections config = (JDBCConnections) u.unmarshal( jdbcConfigUrl );
-        for ( PooledConnection jaxbConn : config.getPooledConnection() ) {
+    private static void addConnections( JDBCConnections jaxbConns ) {
+        for ( PooledConnection jaxbConn : jaxbConns.getPooledConnection() ) {
             addConnection( jaxbConn );
         }
     }
