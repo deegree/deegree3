@@ -48,6 +48,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.deegree.commons.configuration.DatabaseType;
 import org.deegree.commons.configuration.JDBCConnections;
 import org.deegree.commons.configuration.PooledConnection;
 import org.deegree.commons.i18n.Messages;
@@ -70,36 +71,7 @@ public class ConnectionManager {
 
     private static Logger LOG = LoggerFactory.getLogger( ConnectionManager.class );
 
-    private static Map<String, ConnectionPool> idToPools;
-
-    /**
-     * Initializes the {@link ConnectionManager}. This method must only be called once.
-     * 
-     * @param jaxbConns
-     * @throws SQLException
-     */
-    public synchronized static void init( JDBCConnections jaxbConns )
-                            throws SQLException {
-        if ( idToPools != null ) {
-            throw new SQLException( Messages.getMessage( "JDBC_MANAGER_ALREADY_INITIALIZED" ) );
-        }
-        idToPools = new HashMap<String, ConnectionPool>();
-        addConnections( jaxbConns );
-    }
-
-    /**
-     * Initializes the {@link ConnectionManager}. This method must only be called once.
-     * 
-     * @param jdbcConfigUrl
-     * @throws JAXBException
-     * @throws SQLException
-     */
-    public synchronized static void init( URL jdbcConfigUrl )
-                            throws JAXBException, SQLException {
-        JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.configuration" );
-        Unmarshaller u = jc.createUnmarshaller();
-        init ((JDBCConnections) u.unmarshal( jdbcConfigUrl ));
-    }
+    private static Map<String, ConnectionPool> idToPools = new HashMap<String, ConnectionPool>();
 
     /**
      * Returns a connection from the connection pool with the given id.
@@ -118,31 +90,102 @@ public class ConnectionManager {
         }
         return pool.getConnection();
     }
+    
+    /**
+     * Returns the database type for the connection pool with the given id.
+     * 
+     * @param id
+     *            id of the connection pool
+     * @return corresponding database type
+     * @throws SQLException
+     *             if the connection pool is unknown or a SQLException occurs creating the connection
+     */
+    public static DatabaseType getConnectionType( String id )
+                            throws SQLException {
+        ConnectionPool pool = idToPools.get( id );
+        if ( pool == null ) {
+            throw new SQLException( Messages.getMessage( "JDBC_UNKNOWN_CONNECTION", id ) );
+        }
+        return pool.getType();
+    }    
 
-    private static void addConnections( JDBCConnections jaxbConns ) {
-        for ( PooledConnection jaxbConn : jaxbConns.getPooledConnection() ) {
-            addConnection( jaxbConn );
+    /**
+     * Adds the connection pools defined in the given file.
+     * 
+     * @param jdbcConfigUrl
+     * @throws JAXBException
+     */
+    public static void addConnections( URL jdbcConfigUrl )
+                            throws JAXBException {
+        synchronized ( ConnectionManager.class ) {
+            JAXBContext jc = JAXBContext.newInstance( "org.deegree.commons.configuration" );
+            Unmarshaller u = jc.createUnmarshaller();
+            addConnections( (JDBCConnections) u.unmarshal( jdbcConfigUrl ) );
         }
     }
 
-    private static void addConnection( PooledConnection jaxbConn ) {
-        String id = jaxbConn.getId();
-        String url = jaxbConn.getUrl();
-        String driver = jaxbConn.getDriver();
-        String user = jaxbConn.getUser();
-        String password = jaxbConn.getPassword();
-        int poolMinSize = jaxbConn.getPoolMinSize().intValue();
-        int poolMaxSize = jaxbConn.getPoolMaxSize().intValue();
-
-        LOG.info( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", id, driver, url, user, poolMinSize,
-                                       poolMaxSize ) );
-        if ( idToPools.containsKey( id ) ) {
-            throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", id ) );
+    /**
+     * Adds connection pools for the given pool definitions.
+     * 
+     * @param jaxbConns
+     */
+    public static void addConnections( JDBCConnections jaxbConns ) {
+        synchronized ( ConnectionManager.class ) {
+            for ( PooledConnection jaxbConn : jaxbConns.getPooledConnection() ) {
+                addConnection( jaxbConn );
+            }
         }
-
-        ConnectionPool pool = new ConnectionPool( id, jaxbConn.getDriver(), url, user, password, poolMinSize,
-                                                  poolMaxSize );
-        idToPools.put( id, pool );
     }
 
+    /**
+     * Adds a connection pool from the given pool definition.
+     * 
+     * @param jaxbConn
+     */
+    public static void addConnection( PooledConnection jaxbConn ) {
+        synchronized ( ConnectionManager.class ) {
+            String id = jaxbConn.getId();
+            String url = jaxbConn.getUrl();
+            DatabaseType type = jaxbConn.getDatabaseType();
+            String user = jaxbConn.getUser();
+            String password = jaxbConn.getPassword();
+            int poolMinSize = jaxbConn.getPoolMinSize().intValue();
+            int poolMaxSize = jaxbConn.getPoolMaxSize().intValue();
+
+            LOG.info( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", id, type, url, user, poolMinSize,
+                                           poolMaxSize ) );
+            if ( idToPools.containsKey( id ) ) {
+                throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", id ) );
+            }
+
+            ConnectionPool pool = new ConnectionPool( id, type, url, user, password, poolMinSize, poolMaxSize );
+            idToPools.put( id, pool );
+        }
+    }
+
+    /**
+     * Adds a connection pool as specified in the parameters.
+     * 
+     * @param id
+     * @param type
+     * @param url
+     * @param user
+     * @param password
+     * @param poolMinSize
+     * @param poolMaxSize
+     */
+    public static void addConnection( String id, DatabaseType type, String url, String user, String password,
+                                      int poolMinSize, int poolMaxSize ) {
+        synchronized ( ConnectionManager.class ) {
+
+            LOG.info( Messages.getMessage( "JDBC_SETTING_UP_CONNECTION_POOL", id, type, url, user, poolMinSize,
+                                           poolMaxSize ) );
+            if ( idToPools.containsKey( id ) ) {
+                throw new IllegalArgumentException( Messages.getMessage( "JDBC_DUPLICATE_ID", id ) );
+            }
+
+            ConnectionPool pool = new ConnectionPool( id, type, url, user, password, poolMinSize, poolMaxSize );
+            idToPools.put( id, pool );
+        }
+    }
 }

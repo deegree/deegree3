@@ -52,7 +52,7 @@ public class ConnectionManagerTest {
     public void testConnectionAllocation () throws JAXBException, SQLException {
 
         URL configURL = ConnectionManagerTest.class.getResource( "jdbc_connections.xml");
-        ConnectionManager.init (configURL);
+        ConnectionManager.addConnections( configURL);
         
         Connection[] conns = new Connection[20];
         for ( int i = 0; i < conns.length; i++ ) {
