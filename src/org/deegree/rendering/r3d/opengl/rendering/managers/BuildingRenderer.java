@@ -39,6 +39,7 @@
 package org.deegree.rendering.r3d.opengl.rendering.managers;
 
 import java.nio.FloatBuffer;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -68,17 +69,22 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
 
     private final DirectGeometryBuffer geometryBuffer;
 
+    private SwitchLevels switchLevels;
+
     /**
      * @param validDomain
      * @param numberOfObjectsInLeaf
      * @param geometryBuffer
      *            wrapper holding all geometries in a single direct {@link FloatBuffer}
      * @param maxPixelError
+     * @param levels
+     *            configured values for switching between different lods of the buildings.
      */
     public BuildingRenderer( Envelope validDomain, int numberOfObjectsInLeaf, DirectGeometryBuffer geometryBuffer,
-                             double maxPixelError ) {
+                             double maxPixelError, SwitchLevels levels ) {
         super( validDomain, numberOfObjectsInLeaf, maxPixelError );
         this.geometryBuffer = geometryBuffer;
+        this.switchLevels = levels;
     }
 
     /**
@@ -88,8 +94,25 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
      * @return an ordered List of trees.
      */
     public List<WorldRenderableObject> getBuildingsForViewParameters( ViewParams params ) {
-        // BuildingComparator a = new BuildingComparator( params.getViewFrustum().getEyePos() );
         return getObjects( params, null );
+    }
+
+    @Override
+    public boolean add( WorldRenderableObject renderable ) {
+        renderable.setSwitchLevels( switchLevels );
+        return super.add( renderable );
+    }
+
+    @Override
+    public boolean addAll( Collection<? extends WorldRenderableObject> c ) {
+        boolean result = true;
+        for ( WorldRenderableObject p : c ) {
+            if ( !result ) {
+                break;
+            }
+            result = add( p );
+        }
+        return result;
     }
 
     @Override
@@ -151,7 +174,7 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
     }
 
     /**
-     * @return
+     * @return the geometry buffer used for rendering.
      */
     public DirectGeometryBuffer getGeometryBuffer() {
         return geometryBuffer;
