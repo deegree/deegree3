@@ -38,7 +38,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
-import static org.deegree.commons.utils.JOGLUtils.getColorIntAsFloats;
+import static org.deegree.commons.utils.JOGLUtils.convertColorIntAsFloats;
 
 import java.nio.FloatBuffer;
 
@@ -195,10 +195,10 @@ public class RenderableGeometry implements RenderableQualityModelPart {
      * Create float arrays of the int colors.
      */
     private void createColors() {
-        ambientColor = getColorIntAsFloats( style.getAmbientColor() );
-        emmisiveColor = getColorIntAsFloats( style.getEmmisiveColor() );
-        specularColor = getColorIntAsFloats( style.getSpecularColor() );
-        diffuseColor = getColorIntAsFloats( style.getDiffuseColor() );
+        ambientColor = convertColorIntAsFloats( style.getAmbientColor() );
+        emmisiveColor = convertColorIntAsFloats( style.getEmmisiveColor() );
+        specularColor = convertColorIntAsFloats( style.getSpecularColor() );
+        diffuseColor = convertColorIntAsFloats( style.getDiffuseColor() );
     }
 
     @Override
