@@ -38,11 +38,20 @@
 
 package org.deegree.commons.utils;
 
-import java.awt.Color;
+import static javax.media.opengl.GL.GL_UNSIGNED_BYTE;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 
 import org.deegree.commons.i18n.Messages;
+
+import com.sun.opengl.util.BufferUtil;
 
 /**
  * JOGL-related utility methods.
@@ -232,7 +241,7 @@ public class JOGLUtils {
      */
     public static float[] convertColorFloats( Color color ) {
         int c = convertColorGLColor( color );
-        return getColorIntAsFloats( c );
+        return convertColorIntAsFloats( c );
     }
 
     /**
@@ -242,8 +251,66 @@ public class JOGLUtils {
      *            (rgba) to be converted into a float arra.
      * @return the float array ready to be rendered.
      */
-    public static float[] getColorIntAsFloats( int color ) {
+    public static float[] convertColorIntAsFloats( int color ) {
         return new float[] { ( ( color >> 24 ) & 0xFF ) / 255f, ( ( color >> 16 ) & 0xFF ) / 255f,
                             ( ( color >> 8 ) & 0xFF ) / 255f, ( color & 0xFF ) / 255f, };
+    }
+
+    /**
+     * Create an int value ([a]rgb) from the given color array (rgb[a]), the result can be used for buffered images.
+     * 
+     * @param color
+     *            to be converted may be of length 3 or 4, not <code>null</code>.
+     * @return the color as an int holding argb.
+     */
+    public static int convertBytesToColorInt( byte[] color ) {
+        int result = 0;
+        if ( color.length == 4 ) {
+            result = color[3] & 0x000000FF;
+            result <<= 8;
+        }
+        result |= ( color[0] & 0x000000FF );
+        result <<= 8;
+        result |= ( color[1] & 0x000000FF );
+        result <<= 8;
+        result |= ( color[2] & 0x000000FF );
+
+        return result;
+    }
+
+    /**
+     * Read the framebuffer's rgb values and place them into a {@link BufferedImage}. If the resultImage was
+     * <code>null</code> or it's height or width are to small a new BufferedImage is created. The resultImage type is
+     * supposed to be {@link BufferedImage#TYPE_INT_RGB}.
+     * 
+     * @param glContext
+     *            to get the image from.
+     * @param viewPortX
+     *            the x location in the framebuffer.
+     * @param viewPortY
+     *            the y location in the framebuffer.
+     * @param width
+     *            of read in the framebuffer.
+     * @param height
+     *            of read in the framebuffer.
+     * @param resultImage
+     *            which will hold the result, may be <code>null</code>
+     * @return the resultImage or a newly created BufferedImage holding the requested data from the framebuffer.
+     */
+    public static BufferedImage getFrameBufferRGB( GL glContext, int viewPortX, int viewPortY, int width, int height,
+                                                   BufferedImage resultImage ) {
+        ByteBuffer image = BufferUtil.newByteBuffer( width * height * 3 );
+        glContext.glReadPixels( viewPortX, viewPortY, width, height, GL.GL_RGB, GL_UNSIGNED_BYTE, image );
+        if ( resultImage == null || resultImage.getWidth() < width || resultImage.getHeight() < height ) {
+            resultImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
+        }
+        byte[] color = new byte[3];
+        for ( int y = height - 1; y >= 0; --y ) {
+            for ( int x = 0; x < width; x++ ) {
+                image.get( color );
+                resultImage.setRGB( x, y, convertBytesToColorInt( color ) );
+            }
+        }
+        return resultImage;
     }
 }
