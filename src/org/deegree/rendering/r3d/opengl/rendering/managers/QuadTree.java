@@ -595,4 +595,11 @@ public class QuadTree<T extends Positionable> {
         attList.add( GraphvizDot.getFillColorDef( color ) );
         return attList;
     }
+
+    /**
+     * @return the configured max pixel error.
+     */
+    public final double getMaxPixelError() {
+        return maxPixelError;
+    }
 }

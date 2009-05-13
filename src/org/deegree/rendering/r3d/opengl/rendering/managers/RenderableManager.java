@@ -270,4 +270,11 @@ public class RenderableManager<T extends Positionable> implements Collection<T> 
         out.close();
     }
 
+    /**
+     * @return the used max pixel error.
+     */
+    public double getMaxPixelError() {
+        return root.getMaxPixelError();
+    }
+
 }
