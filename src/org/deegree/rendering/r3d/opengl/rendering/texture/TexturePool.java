@@ -94,6 +94,20 @@ public class TexturePool {
     }
 
     /**
+     * @param f
+     *            file to be added to the pool
+     * @return the key for the file.
+     */
+    public static synchronized String addTexture( File f ) {
+        String result = null;
+        if ( f != null && f.exists() && !f.isDirectory() ) {
+            result = f.getName();
+            idToFile.put( result, f.getAbsolutePath() );
+        }
+        return result;
+    }
+
+    /**
      * Add the given file with the given key to the map.
      * 
      * @param key
@@ -189,4 +203,5 @@ public class TexturePool {
         }
         return 0;
     }
+
 }
