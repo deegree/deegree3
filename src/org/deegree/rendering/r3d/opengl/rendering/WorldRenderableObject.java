@@ -39,12 +39,11 @@
 package org.deegree.rendering.r3d.opengl.rendering;
 
 import javax.media.opengl.GL;
-import javax.vecmath.Point3d;
 
-import org.deegree.commons.utils.math.Vectors3d;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.WorldObject;
+import org.deegree.rendering.r3d.opengl.rendering.managers.SwitchLevels;
 
 /**
  * The <code>WorldRenderableObject</code> class TODO add class documentation here.
@@ -60,9 +59,7 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
                                                                                                           JOGLRenderable {
     private static final long serialVersionUID = 2998719476993351372L;
 
-    private static int counter = 10;
-
-    private static int level = 2;
+    private SwitchLevels switchLevels;
 
     /**
      * Creates a new WorldRenderableObject with given number of data quality levels (LOD)
@@ -126,6 +123,7 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
      * 
      * @param context
      *            to render to
+     * @param params
      * @param geomBuffer
      *            to be get the coordinates from.
      */
@@ -134,31 +132,15 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
     }
 
     /**
-     * @param eye
+     * @param viewParams
      * @return the level to render.
      */
     protected int calcQualityLevel( ViewParams viewParams ) {
-        Point3d eyePos = viewParams.getViewFrustum().getEyePos();
-        double[] eye = new double[3];
-        eyePos.get( eye );
+        int level = qualityLevels.length - 1;
 
-        double[] scales = viewParams.getConfiguredScales();
-
-        double[] viewVec = new double[3];
-        viewVec[0] = eye[0] - position[0];
-        viewVec[1] = eye[1] - position[1];
-        viewVec[2] = eye[2] - position[2];
-        double dist = Vectors3d.length( viewVec );
-
-        int level = scales.length - 1;
-        for ( int i = ( scales.length - 1 ); i >= 0 && ( ( level - i ) <= 1 ); --i ) {
-            double scale = scales[i];
-            if ( scale >= dist ) {
-                level = i;
-            }
+        if ( switchLevels != null ) {
+            level = switchLevels.calcLevel( viewParams, getPosition(), level, getErrorScalar() );
         }
-        level = 3;
-
         return level;
     }
 
@@ -190,6 +172,13 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
             }
         }
         return result;
+    }
+
+    /**
+     * @param switchLevels
+     */
+    public void setSwitchLevels( SwitchLevels switchLevels ) {
+        this.switchLevels = switchLevels;
     }
 
 }
