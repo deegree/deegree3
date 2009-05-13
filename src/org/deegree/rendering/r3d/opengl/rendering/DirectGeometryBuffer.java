@@ -45,8 +45,6 @@ import java.nio.FloatBuffer;
 
 import org.deegree.commons.utils.AllocatedHeapMemory;
 
-import sun.misc.VM;
-
 import com.sun.opengl.util.BufferUtil;
 
 /**
@@ -77,7 +75,7 @@ public class DirectGeometryBuffer {
                   + ( 2 * coordinateCapacity * AllocatedHeapMemory.FLOAT_SIZE ) / 1048576 + " MB" );
         LOG.info( "Allocating directbuffer for " + textureCapacity + " texture oordinates: "
                   + ( textureCapacity * AllocatedHeapMemory.FLOAT_SIZE ) / 1048576 + " MB" );
-        LOG.info( "VM has total mb of direct memory: " + VM.maxDirectMemory() / 1048576 );
+        // LOG.info( "VM has total mb of direct memory: " + VM.maxDirectMemory() / 1048576 );
 
         coordBuffer = BufferUtil.newFloatBuffer( coordinateCapacity );
         normalBuffer = BufferUtil.newFloatBuffer( coordinateCapacity );
