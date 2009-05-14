@@ -42,11 +42,8 @@ import static javax.media.opengl.GL.GL_UNSIGNED_BYTE;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import javax.imageio.ImageIO;
 import javax.media.opengl.GL;
 
 import org.deegree.commons.i18n.Messages;
@@ -117,8 +114,8 @@ public class JOGLUtils {
      * Returns the number of texture image units that can be used in fragment shaders.
      * <p>
      * NOTE: This method evaluates the value of <code>GL_MAX_TEXTURE_IMAGE_UNITS</code>. The number is usually not
-     * identical to <code>GL_MAX_TEXTURE_UNITS</code> which denotes the maximum number of texture units in fixed shader
-     * functions.
+     * identical to <code>GL_MAX_TEXTURE_UNITS</code> which denotes the maximum number of texture units in fixed
+     * shader functions.
      * </p>
      * 
      * @param gl
@@ -285,6 +282,8 @@ public class JOGLUtils {
      * 
      * @param glContext
      *            to get the image from.
+     * @param imageBuffer
+     *            to write the framebuffer to.
      * @param viewPortX
      *            the x location in the framebuffer.
      * @param viewPortY
@@ -297,17 +296,19 @@ public class JOGLUtils {
      *            which will hold the result, may be <code>null</code>
      * @return the resultImage or a newly created BufferedImage holding the requested data from the framebuffer.
      */
-    public static BufferedImage getFrameBufferRGB( GL glContext, int viewPortX, int viewPortY, int width, int height,
-                                                   BufferedImage resultImage ) {
-        ByteBuffer image = BufferUtil.newByteBuffer( width * height * 3 );
-        glContext.glReadPixels( viewPortX, viewPortY, width, height, GL.GL_RGB, GL_UNSIGNED_BYTE, image );
+    public static BufferedImage getFrameBufferRGB( GL glContext, ByteBuffer imageBuffer, int viewPortX, int viewPortY,
+                                                   int width, int height, BufferedImage resultImage ) {
+        if ( imageBuffer == null || ( imageBuffer.capacity() < ( width * height * 3 ) ) ) {
+            imageBuffer = BufferUtil.newByteBuffer( width * height * 3 );
+        }
+        glContext.glReadPixels( viewPortX, viewPortY, width, height, GL.GL_RGB, GL_UNSIGNED_BYTE, imageBuffer );
         if ( resultImage == null || resultImage.getWidth() < width || resultImage.getHeight() < height ) {
             resultImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
         }
         byte[] color = new byte[3];
         for ( int y = height - 1; y >= 0; --y ) {
             for ( int x = 0; x < width; x++ ) {
-                image.get( color );
+                imageBuffer.get( color );
                 resultImage.setRGB( x, y, convertBytesToColorInt( color ) );
             }
         }

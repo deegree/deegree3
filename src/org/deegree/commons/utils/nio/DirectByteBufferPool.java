@@ -70,6 +70,12 @@ public class DirectByteBufferPool {
 
     private final Map<Integer, Set<PooledByteBuffer>> freeBuffers = new HashMap<Integer, Set<PooledByteBuffer>>();
 
+    /**
+     * Construct a direct byte buffer which may allocate buffers with given capacity
+     * 
+     * @param capacityLimit
+     * @param bufferLimit
+     */
     public DirectByteBufferPool( int capacityLimit, int bufferLimit ) {
         this.MAX_MEMORY_CAPACITY = capacityLimit;
         this.MAX_NUM_OF_BUFFERS = bufferLimit;
@@ -77,7 +83,8 @@ public class DirectByteBufferPool {
 
     /**
      * @param capacity
-     * @return
+     * @return the requested byte buffer
+     * 
      * @throws OutOfMemoryError
      *             if no PooledByteBuffer with the given capacity is available and allocating it from the system would
      *             exceed the assigned resources
@@ -111,6 +118,12 @@ public class DirectByteBufferPool {
         return buffer;
     }
 
+    /**
+     * Notifies the pool the given buffer is free for use.
+     * 
+     * @param buffer
+     *            to be freed.
+     */
     public synchronized void deallocate( PooledByteBuffer buffer ) {
         if ( !allBuffers.contains( buffer ) ) {
             String msg = "Buffer to be deallocated (" + buffer + ") has not been allocated using the pool.";
@@ -125,6 +138,7 @@ public class DirectByteBufferPool {
         buffers.add( buffer );
     }
 
+    @Override
     public String toString() {
         return "Number of buffers: " + numBuffers + ", total capacity: " + totalCapacity;
     }
