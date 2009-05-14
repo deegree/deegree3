@@ -41,6 +41,8 @@ package org.deegree.rendering.r3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import org.deegree.rendering.r3d.opengl.rendering.TerrainRenderingManager;
+
 /**
  * Encapsulates the relevant viewing and projection parameters that are needed for performing view frustum culling and
  * LOD (level-of-detail) adaptation.
@@ -60,7 +62,9 @@ public class ViewParams {
 
     private float terrainScale;
 
-    private double[] scales = new double[] { 10, 100, 250, 500, 1000, 2000 };
+    private int maxTextureSize;
+
+    private int[] shaderProgramIds;
 
     /**
      * 
@@ -161,17 +165,39 @@ public class ViewParams {
         terrainScale = newScale;
     }
 
-    /**
-     * @return the scales configured by the user.
-     */
-    public double[] getConfiguredScales() {
-        return scales;
-    }
-
 
     @Override
     public String toString() {
         String s = "{frustum=" + vf + ",pixelsX=" + screenSizeX + ",pixelsY=" + screenSizeY + "}";
         return s;
-    }    
+    }
+
+    /**
+     * @param maxTextureSize
+     */
+    public void setMaxTextureSize( int maxTextureSize ) {
+        this.maxTextureSize = maxTextureSize;
+    }
+
+    /**
+     * @return the maxTextureSize used in the {@link TerrainRenderingManager}
+     */
+    public final int getMaxTextureSize() {
+        return maxTextureSize;
+    }
+
+    /**
+     * @param shaderProgramIds
+     *            used in the {@link TerrainRenderingManager}
+     */
+    public void setDEMShaderIds( int[] shaderProgramIds ) {
+        this.shaderProgramIds = shaderProgramIds;
+    }
+
+    /**
+     * @return the shaderProgramIds used in the {@link TerrainRenderingManager}
+     */
+    public final int[] getDEMShaderIds() {
+        return shaderProgramIds;
+    }
 }
