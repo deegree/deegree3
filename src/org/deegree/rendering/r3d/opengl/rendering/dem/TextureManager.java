@@ -74,8 +74,6 @@ public class TextureManager {
 
     private final TextureTileManager tileManager;
 
-    private final int maxTextureSize;
-
     private final double[] translationToLocalCRS;
 
     private final MemoryCache memCache;
@@ -94,27 +92,29 @@ public class TextureManager {
      *            managing all tiles
      * @param translationToLocalCRS
      *            the translation vector
-     * @param maxTextureSize
-     *            the maximum width /heigth of a texture
      * @param maxFragmentTexturesInMemory
      *            the number of texturetiles
      * @param maxFragmentTexturesInGPUMemory
      */
     public TextureManager( DirectByteBufferPool directByteBufferPool, TextureTileManager tileManager,
-                           double[] translationToLocalCRS, int maxTextureSize, int maxFragmentTexturesInMemory,
+                           double[] translationToLocalCRS, int maxFragmentTexturesInMemory,
                            int maxFragmentTexturesInGPUMemory ) {
         bufferPool = directByteBufferPool;
         memCache = new MemoryCache( maxFragmentTexturesInMemory );
         this.tileManager = tileManager;
         this.translationToLocalCRS = translationToLocalCRS;
-        this.maxTextureSize = maxTextureSize;
         this.gpuCache = new GPUCache( maxFragmentTexturesInGPUMemory );
     }
 
+    /**
+     * 
+     * @param unitsPerPixel
+     * @return the matching resolution
+     */
     public double getMatchingResolution( double unitsPerPixel ) {
         return tileManager.getMatchingResolution( unitsPerPixel );
-    }    
-    
+    }
+
     /**
      * Retrieves view-optimized textures for the {@link RenderMeshFragment}s.
      * 
@@ -178,6 +178,12 @@ public class TextureManager {
         return meshFragmentToTexture;
     }
 
+    /**
+     * Enables this TextureManager.
+     * 
+     * @param textures
+     * @param gl
+     */
     public void enable( Collection<FragmentTexture> textures, GL gl ) {
         for ( FragmentTexture fragmentTexture : textures ) {
             gpuCache.enable( fragmentTexture, gl );
@@ -209,7 +215,7 @@ public class TextureManager {
             metersPerPixel = tileManager.getMatchingResolution( metersPerPixel );
 
             // check if the texture gets too large with respect to the maximum texture size
-            metersPerPixel = clipResolution( metersPerPixel, fragmentBBox );
+            metersPerPixel = clipResolution( metersPerPixel, fragmentBBox, params.getMaxTextureSize() );
 
             float minX = fragment.getBBox()[0][0] - (float) translationToLocalCRS[0];
             float minY = fragment.getBBox()[0][1] - (float) translationToLocalCRS[1];
@@ -222,8 +228,8 @@ public class TextureManager {
         return requests;
     }
 
-    private double clipResolution( double metersPerPixel, float[][] tilebbox ) {
-
+    private double clipResolution( double metersPerPixel, float[][] tilebbox, int maxTextureSize ) {
+        // LOG.warn( "The maxTextureSize in the TextureManager is hardcoded to 1024." );
         float width = tilebbox[1][0] - tilebbox[0][0];
         float height = tilebbox[1][1] - tilebbox[0][1];
         float maxLen = width > height ? width : height;

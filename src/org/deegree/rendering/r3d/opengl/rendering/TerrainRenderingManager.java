@@ -51,17 +51,14 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 
 import javax.media.opengl.GL;
-import javax.media.opengl.GLAutoDrawable;
 
 import org.deegree.commons.concurrent.ExecutionFinishedEvent;
 import org.deegree.commons.concurrent.Executor;
-import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
 import org.deegree.rendering.r3d.multiresolution.SpatialSelection;
 import org.deegree.rendering.r3d.multiresolution.crit.ViewFrustumCrit;
-import org.deegree.rendering.r3d.opengl.rendering.dem.CompositingShader;
 import org.deegree.rendering.r3d.opengl.rendering.dem.FragmentTexture;
 import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
 import org.deegree.rendering.r3d.opengl.rendering.dem.TextureManager;
@@ -84,75 +81,21 @@ public class TerrainRenderingManager {
     // contains the mesh fragments that make up the current LOD
     private Set<RenderMeshFragment> activeLOD = new HashSet<RenderMeshFragment>();
 
-    // shaderProgramIds [i]: id of GL shader program for compositing i texture layers
-    private int[] shaderProgramIds;
-
-    // max texture size as reported by OpenGL driver
-    private int maxTextureSize = 4096;
-
     private double maxPixelError;
 
     private double maxProjectedTexelSize;
 
+    /**
+     * 
+     * @param fragmentManager
+     * @param maxPixelError
+     * @param maxProjectedTexelSize
+     */
     public TerrainRenderingManager( RenderFragmentManager fragmentManager, double maxPixelError,
                                     double maxProjectedTexelSize ) {
         this.fragmentManager = fragmentManager;
         this.maxPixelError = maxPixelError;
         this.maxProjectedTexelSize = maxProjectedTexelSize;
-    }
-
-    public void init( GLAutoDrawable drawable ) {
-        LOG.trace( "init( GLAutoDrawable ) called" );
-
-        GL gl = drawable.getGL();
-
-        int numTextureUnits = 8;
-        LOG.info( "building " + numTextureUnits + " shader programs" );
-        shaderProgramIds = new int[numTextureUnits];
-        for ( int i = 1; i <= numTextureUnits; i++ ) {
-            LOG.info( "Building fragment shader for compositing " + i + " textures." );
-
-            // generate and compile shader
-            int shaderId = gl.glCreateShader( GL.GL_FRAGMENT_SHADER );
-            gl.glShaderSource( shaderId, 1, new String[] { CompositingShader.getGLSLCode( i ) }, (int[]) null, 0 );
-            gl.glCompileShader( shaderId );
-
-            // create program and attach shader
-            int shaderProgramId = gl.glCreateProgram();
-            gl.glAttachShader( shaderProgramId, shaderId );
-
-            // link program
-            gl.glLinkProgram( shaderProgramId );
-            int[] linkStatus = new int[1];
-            gl.glGetProgramiv( shaderProgramId, GL.GL_LINK_STATUS, linkStatus, 0 );
-            if ( linkStatus[0] == GL.GL_FALSE ) {
-                int[] length = new int[1];
-                gl.glGetProgramiv( shaderProgramId, GL.GL_INFO_LOG_LENGTH, length, 0 );
-                byte[] infoLog = new byte[length[0]];
-                gl.glGetProgramInfoLog( shaderProgramId, length[0], length, 0, infoLog, 0 );
-                String msg = new String( infoLog );
-                LOG.error( "shader source: " + CompositingShader.getGLSLCode( i ) );
-                LOG.error( msg );
-                throw new RuntimeException( msg );
-            }
-
-            // validate program
-            gl.glValidateProgram( shaderProgramId );
-            int[] validateStatus = new int[1];
-            gl.glGetProgramiv( shaderProgramId, GL.GL_VALIDATE_STATUS, validateStatus, 0 );
-            if ( validateStatus[0] == GL.GL_FALSE ) {
-                int[] length = new int[1];
-                gl.glGetProgramiv( shaderProgramId, GL.GL_INFO_LOG_LENGTH, length, 0 );
-                byte[] infoLog = new byte[length[0]];
-                gl.glGetProgramInfoLog( shaderProgramId, length[0], length, 0, infoLog, 0 );
-                String msg = new String( infoLog );
-                LOG.error( msg );
-                throw new RuntimeException( msg );
-            }
-            shaderProgramIds[i - 1] = shaderProgramId;
-        }
-        
-        System.out.println ("Max texture size: " + JOGLUtils.getMaxTextureSize(gl));
     }
 
     /**
@@ -178,15 +121,15 @@ public class TerrainRenderingManager {
                                                                                          textureManagers );
 
         // render fragments with textures
-        render( gl, fragmentToTextures, textureManagers, zScale );
+        render( gl, fragmentToTextures, textureManagers, zScale, params.getDEMShaderIds() );
 
         displayStats( gl, params );
     }
 
     public Collection<RenderMeshFragment> getCurrentLOD() {
         return activeLOD;
-    }    
-    
+    }
+
     private void updateLOD( GL gl, ViewParams params, float scale, TextureManager[] textureManagers ) {
 
         Set<RenderMeshFragment> nextLOD = getNewLOD( params, scale, textureManagers );
@@ -224,36 +167,39 @@ public class TerrainRenderingManager {
         } catch ( InterruptedException e ) {
             LOG.error( e.getMessage(), e );
         }
-
-        // build result map
         Map<RenderMeshFragment, List<FragmentTexture>> meshFragmentToTexture = new HashMap<RenderMeshFragment, List<FragmentTexture>>();
-        for ( ExecutionFinishedEvent<Map<RenderMeshFragment, FragmentTexture>> result : results ) {
-            Map<RenderMeshFragment, FragmentTexture> fragmentToTexture;
-            try {
+        if ( results != null ) {
+            // build result map
+            for ( ExecutionFinishedEvent<Map<RenderMeshFragment, FragmentTexture>> result : results ) {
+                Map<RenderMeshFragment, FragmentTexture> fragmentToTexture;
+                try {
 
-                // retrieve worker result (may produce an exception)
-                fragmentToTexture = result.getResult();
+                    // retrieve worker result (may produce an exception)
+                    fragmentToTexture = result.getResult();
 
-                for ( RenderMeshFragment fragment : fragments ) {
-                    FragmentTexture texture = fragmentToTexture.get( fragment );
-                    List<FragmentTexture> textures = meshFragmentToTexture.get( fragment );
-                    if ( textures == null ) {
-                        textures = new ArrayList<FragmentTexture>();
-                        meshFragmentToTexture.put( fragment, textures );
+                    for ( RenderMeshFragment fragment : fragments ) {
+                        FragmentTexture texture = fragmentToTexture.get( fragment );
+                        List<FragmentTexture> textures = meshFragmentToTexture.get( fragment );
+                        if ( textures == null ) {
+                            textures = new ArrayList<FragmentTexture>();
+                            meshFragmentToTexture.put( fragment, textures );
+                        }
+                        textures.add( texture );
                     }
-                    textures.add( texture );
+                } catch ( CancellationException e ) {
+                    LOG.warn( "Timeout occured fetching textures." );
+                } catch ( Throwable e ) {
+                    LOG.debug( e.getMessage(), e );
                 }
-            } catch ( CancellationException e ) {
-                LOG.warn( "Timeout occured fetching textures." );
-            } catch ( Throwable e ) {
-                LOG.debug( e.getMessage(), e );
             }
+        } else {
+            LOG.warn( "No textures retrieved from the datasources." );
         }
         return meshFragmentToTexture;
     }
 
     private void render( GL gl, Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures,
-                         TextureManager[] textureManagers, float zScale ) {
+                         TextureManager[] textureManagers, float zScale, int[] shaderProgramIds ) {
 
         long begin = System.currentTimeMillis();
 
@@ -297,7 +243,7 @@ public class TerrainRenderingManager {
     private Set<RenderMeshFragment> getNewLOD( ViewParams params, float zScale, TextureManager[] textureManagers ) {
 
         ViewFrustum frustum = params.getViewFrustum();
-        ViewFrustumCrit crit = new ViewFrustumCrit( params, (float) maxPixelError, zScale, maxTextureSize,
+        ViewFrustumCrit crit = new ViewFrustumCrit( params, (float) maxPixelError, zScale, params.getMaxTextureSize(),
                                                     textureManagers, (float) maxProjectedTexelSize );
         SpatialSelection lodAdaptor = new SpatialSelection( fragmentManager.getMultiresolutionMesh(), crit, frustum,
                                                             zScale );
@@ -354,8 +300,8 @@ public class TerrainRenderingManager {
 
         private final float maxProjectedTexelSize;
 
-        private TextureWorker( ViewParams params, Set<RenderMeshFragment> fragments, TextureManager textureManager,
-                               float maxProjectedTexelSize ) {
+        TextureWorker( ViewParams params, Set<RenderMeshFragment> fragments, TextureManager textureManager,
+                       float maxProjectedTexelSize ) {
             this.params = params;
             this.fragments = fragments;
             this.textureManager = textureManager;
