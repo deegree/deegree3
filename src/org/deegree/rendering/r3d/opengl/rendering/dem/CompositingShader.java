@@ -37,8 +37,22 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.opengl.rendering.dem;
 
+/**
+ * The <code>CompositingShader</code> generates a fragment shader file for a number of texture units. The applied
+ * colormodel is sort of a 'decall' functionality with glColor and semi transparent support.
+ * 
+ * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+ * @author last edited by: $Author: rbezema $
+ * @version $Revision: $, $Date: $
+ * 
+ */
 public class CompositingShader {
 
+    /**
+     * @param numTextures
+     * @return create a fragment shader program which is programmed with a 'DECAL'-like strukture with semi-transpartent
+     *         supprt, for the given number of texture units.
+     */
     public static String getGLSLCode( int numTextures ) {
 
         StringBuffer sb = new StringBuffer();
@@ -66,9 +80,5 @@ public class CompositingShader {
         sb.append( "\n   gl_FragColor = gl_FragColor * gl_Color;\n" );
         sb.append( "}\n" );
         return sb.toString();
-    }
-
-    public static void main( String[] args ) {
-        System.out.println( getGLSLCode( 6 ) );
     }
 }

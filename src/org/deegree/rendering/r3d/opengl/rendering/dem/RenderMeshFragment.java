@@ -48,8 +48,7 @@ import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
 import org.deegree.rendering.r3d.multiresolution.MeshFragmentData;
 import org.deegree.rendering.r3d.multiresolution.MultiresolutionMesh;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.FragmentTexture;
 
 /**
  * Encapsulates a {@link MeshFragment} of a {@link MultiresolutionMesh} that can be rendered via JOGL.
@@ -74,8 +73,6 @@ import org.slf4j.LoggerFactory;
  */
 public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
-    private static final Logger LOG = LoggerFactory.getLogger( RenderMeshFragment.class );
-
     private final MeshFragment fragment;
 
     private MeshFragmentData data;
@@ -85,22 +82,40 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
     // 2: triangle buffer
     private int[] glBufferObjectIds;
 
+    /**
+     * @param fragment
+     *            a MultiresolutionMesh fragment to create a renderable fragment from.
+     */
     public RenderMeshFragment( MeshFragment fragment ) {
         this.fragment = fragment;
     }
 
+    /**
+     * @return the macro triangle fragment id.
+     */
     public int getId() {
         return fragment.id;
     }
 
+    /**
+     * @return the bbox of the MultiresolutionMesh fragment.
+     */
     public float[][] getBBox() {
         return fragment.bbox;
     }
 
+    /**
+     * 
+     * @return the geometric error of the MultiresolutionMesh fragment.
+     */
     public float getGeometricError() {
         return fragment.error;
     }
 
+    /**
+     * 
+     * @return the actual data of the MultiresolutionMesh fragment.
+     */
     public MeshFragmentData getData() {
         return data;
     }
@@ -200,7 +215,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
      * 
      * @param gl
      * @param textures
-     * @param shaderProgramId 
+     * @param shaderProgramId
      * @throws RuntimeException
      *             if the geometry data is currently not bound to VBOs
      */
@@ -212,7 +227,7 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
 
         // render with or without texture
         if ( textures != null && textures.size() > 0 ) {
-            
+
             // first texture (uses always-available texture unit 0)
             gl.glClientActiveTexture( GL.GL_TEXTURE0 );
             gl.glActiveTexture( GL.GL_TEXTURE0 );
@@ -222,8 +237,8 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
             gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, textures.get( 0 ).getGLVertexCoordBufferId() );
             gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
 
-            gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( 0 ).getGLTextureId() );          
-            
+            gl.glBindTexture( GL.GL_TEXTURE_2D, textures.get( 0 ).getGLTextureId() );
+
             // second to last texture
             for ( int i = 1; i < textures.size(); i++ ) {
                 int textureUnitId = JOGLUtils.getTextureUnitConst( i );
@@ -239,8 +254,8 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
             }
 
             // activate shader and set texSamplers
-            gl.glUseProgram( shaderProgramId );   
-            for (int i = 0; i < textures.size(); i++) {
+            gl.glUseProgram( shaderProgramId );
+            for ( int i = 0; i < textures.size(); i++ ) {
                 int texSampler = gl.glGetUniformLocation( shaderProgramId, "tex" + i );
                 gl.glUniform1i( texSampler, i );
             }

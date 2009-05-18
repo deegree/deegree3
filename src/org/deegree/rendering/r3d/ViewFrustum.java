@@ -45,7 +45,7 @@ import javax.vecmath.Vector3d;
  * Models a frustum volume, commonly used for view frustums (space volume visible to a viewer of a 3D scene).
  * <p>
  * Offers convenient methods for view-frustum culling ({@link #intersects(double[][])}, {@link #intersects(float[][])}),
- * viewer-relative movements ({@link #moveForward(double)}, {@link #moveRight(double)}, {@link moveUp}) as well as
+ * viewer-relative movements ({@link #moveForward(double)}, {@link #moveRight(double)}, {@link #moveUp}) as well as
  * rotations ({@link #rotateX(double)}, {@link #rotateY(double)}, {@link #rotateZ(double)}).
  * </p>
  * <p>
@@ -82,7 +82,45 @@ public class ViewFrustum {
 
     private Vector3d up, backward, right;
 
-    public Point3d ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr;
+    /**
+     * near top left
+     */
+    public Point3d ntl;
+
+    /**
+     * near top right
+     */
+    public Point3d ntr;
+
+    /**
+     * near bottom left
+     */
+    public Point3d nbl;
+
+    /**
+     * near bottom right
+     */
+    public Point3d nbr;
+
+    /**
+     * far top left
+     */
+    public Point3d ftl;
+
+    /**
+     * far top right
+     */
+    public Point3d ftr;
+
+    /**
+     * far bottom left
+     */
+    public Point3d fbl;
+
+    /**
+     * far bottom right
+     */
+    public Point3d fbr;
 
     private double tang;
 
@@ -111,6 +149,18 @@ public class ViewFrustum {
 
     private static final int FARP = 5;
 
+    /**
+     * Create a viewFrustum from the given parameters.
+     * 
+     * @param eye
+     * @param lookingAt
+     * @param up
+     * @param fovy
+     *            the field-of-view in y direction
+     * @param aspect
+     * @param zNear
+     * @param zFar
+     */
     public ViewFrustum( Point3d eye, Point3d lookingAt, Vector3d up, double fovy, double aspect, double zNear,
                         double zFar ) {
         setPerspectiveParams( fovy, aspect, zNear, zFar );
@@ -127,6 +177,7 @@ public class ViewFrustum {
      * @param distance
      * @param lookingAt
      * @param fovy
+     *            the field-of-view in y direction
      * @param aspect
      * @param zNear
      * @param zFar
@@ -207,38 +258,66 @@ public class ViewFrustum {
 
     }
 
+    /**
+     * @return the eye position
+     */
     public Point3d getEyePos() {
         return eye;
     }
 
+    /**
+     * @return the poi
+     */
     public Point3d getLookingAt() {
         return lookingAt;
     }
 
+    /**
+     * @return the up vector
+     */
     public Vector3d getUp() {
         return up;
     }
 
+    /**
+     * @return the right vector
+     */
     public Vector3d getRight() {
         return right;
     }
 
+    /**
+     * @return the backward vector
+     */
     public Vector3d getBackward() {
         return backward;
     }
 
+    /**
+     * @return the field-of-view in y direction
+     */
     public double getFOVY() {
         return fovy;
     }
 
+    /**
+     * @return the near clipping plane.
+     */
     public double getZNear() {
         return zNear;
     }
 
+    /**
+     * @return the far clipping plane
+     */
     public double getZFar() {
         return zFar;
     }
 
+    /**
+     * @param box
+     * @return true if the box intersect with this viewfrustum.
+     */
     public boolean intersects( double[][] box ) {
         int classification = intersectsFrustum( box );
         if ( classification == OUTSIDE ) {
@@ -247,6 +326,10 @@ public class ViewFrustum {
         return true;
     }
 
+    /**
+     * @param box
+     * @return true if the box intersect with this viewfrustum.
+     */
     public boolean intersects( float[][] box ) {
         int classification = intersectsFrustum( box );
         if ( classification == OUTSIDE ) {
@@ -325,7 +408,7 @@ public class ViewFrustum {
      * The parameters correspond to those of the OpenGL <code>gluLookAt()</code> function.
      * 
      * @param eye
-     * @param center
+     * @param lookingAt
      * @param up
      */
     public void setCameraParams( Point3d eye, Point3d lookingAt, Vector3d up ) {
@@ -399,6 +482,11 @@ public class ViewFrustum {
         pl[FARP] = new Plane( ftr, ftl, fbl );
     }
 
+    /**
+     * Move the viewfrustum to the right (according to the view direction).
+     * 
+     * @param delta
+     */
     public void moveRight( double delta ) {
         Vector3d deltaVector = new Vector3d( right );
         deltaVector.scale( delta );
@@ -407,6 +495,11 @@ public class ViewFrustum {
         setCameraParams( eye, lookingAt, up );
     }
 
+    /**
+     * Move the viewfrustum to the up (according to the view direction).
+     * 
+     * @param delta
+     */
     public void moveUp( double delta ) {
         Vector3d deltaVector = new Vector3d( up );
         deltaVector.scale( delta );
@@ -415,6 +508,11 @@ public class ViewFrustum {
         setCameraParams( eye, lookingAt, up );
     }
 
+    /**
+     * Move the viewfrustum to the forward (according to the view direction).
+     * 
+     * @param delta
+     */
     public void moveForward( double delta ) {
         Vector3d deltaVector = new Vector3d( backward );
         deltaVector.scale( -delta );
@@ -423,6 +521,11 @@ public class ViewFrustum {
         setCameraParams( eye, lookingAt, up );
     }
 
+    /**
+     * Rotate the viewfrustum around the x-axis (according to the view direction). pitch
+     * 
+     * @param delta
+     */
     public void rotateX( double delta ) {
         rotate( up, right, delta );
         rotate( backward, right, delta );
@@ -433,6 +536,11 @@ public class ViewFrustum {
         setCameraParams( eye, lookingAt, up );
     }
 
+    /**
+     * Rotate the viewfrustum around the y-axis (according to the view direction). roll
+     * 
+     * @param delta
+     */
     public void rotateY( double delta ) {
         rotate( right, up, delta );
         rotate( backward, up, delta );
@@ -443,6 +551,11 @@ public class ViewFrustum {
         setCameraParams( eye, lookingAt, up );
     }
 
+    /**
+     * Rotate the viewfrustum around the z-axis (according to the view direction). yaw
+     * 
+     * @param delta
+     */
     public void rotateZ( double delta ) {
         rotate( right, backward, delta );
         rotate( up, backward, delta );
@@ -485,6 +598,9 @@ public class ViewFrustum {
                + ",aspect=" + aspect + ",backward=" + backward + "}";
     }
 
+    /**
+     * @return a string representation of this view frustums initialization parameters.
+     */
     public String toInitString() {
         String s = "Point3d eye = new Point3d( " + eye.x + "," + eye.y + "," + eye.z + ");\n";
         s += "Point3d lookingAt = new Point3d( " + lookingAt.x + "," + lookingAt.y + "," + lookingAt.z + ");\n";

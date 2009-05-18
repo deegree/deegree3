@@ -55,7 +55,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
-import org.deegree.rendering.r3d.opengl.rendering.WorldRenderableObject;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

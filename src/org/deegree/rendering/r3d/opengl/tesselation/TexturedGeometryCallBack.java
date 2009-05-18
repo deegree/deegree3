@@ -38,9 +38,9 @@
 
 package org.deegree.rendering.r3d.opengl.tesselation;
 
-import org.deegree.rendering.r3d.geometry.TexturedGeometry;
-import org.deegree.rendering.r3d.opengl.rendering.RenderableGeometry;
-import org.deegree.rendering.r3d.opengl.rendering.RenderableTexturedGeometry;
+import org.deegree.rendering.r3d.model.geometry.TexturedGeometry;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableTexturedGeometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

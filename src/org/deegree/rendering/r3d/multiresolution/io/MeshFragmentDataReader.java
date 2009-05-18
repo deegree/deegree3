@@ -54,7 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO comment me
+ * This class opens a channel to a file containing meshfragments.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -66,21 +66,35 @@ public class MeshFragmentDataReader {
     private static final Logger LOG = LoggerFactory.getLogger( MeshFragmentDataReader.class );
 
     // TODO not static
-    private static final DirectByteBufferPool bufferPool = new DirectByteBufferPool(300 * 1024 * 1024, 500);
-    
+    private static final DirectByteBufferPool bufferPool = new DirectByteBufferPool( 300 * 1024 * 1024, 500 );
+
     private final FileChannel channel;
 
+    /**
+     * Construct access to a file containing mesh fragments.
+     * 
+     * @param meshFragments
+     * @throws FileNotFoundException
+     */
     public MeshFragmentDataReader( File meshFragments ) throws FileNotFoundException {
         this.channel = new FileInputStream( meshFragments ).getChannel();
     }
 
+    /**
+     * Read meshdata from the file.
+     * 
+     * @param fragmentId
+     * @param offset
+     * @param length
+     * @return the actual data read from the file.
+     * @throws IOException
+     */
     public MeshFragmentData read( int fragmentId, long offset, int length )
                             throws IOException {
 
         PooledByteBuffer pooledByteBuffer = bufferPool.allocate( length );
-//        PooledByteBuffer pooledByteBuffer = new PooledByteBuffer(length);
+        // PooledByteBuffer pooledByteBuffer = new PooledByteBuffer(length);
         ByteBuffer rawTileBuffer = pooledByteBuffer.getBuffer();
-        rawTileBuffer.order( ByteOrder.nativeOrder() );
 
         LOG.debug( "Reading mesh fragment with id " + fragmentId + " (offset: " + offset + ", length: " + length + ")." );
         long begin = System.currentTimeMillis();

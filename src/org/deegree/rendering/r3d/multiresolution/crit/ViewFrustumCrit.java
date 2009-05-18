@@ -42,9 +42,7 @@ import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.Arc;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
-import org.deegree.rendering.r3d.opengl.rendering.dem.TextureManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
 
 /**
  * {@link LODCriterion} for specifying LODs that are optimized for perspective rendering.
@@ -55,8 +53,6 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$
  */
 public class ViewFrustumCrit implements LODCriterion {
-
-    private static final Logger LOG = LoggerFactory.getLogger( ViewFrustumCrit.class );
 
     private final float maxPixelError;
 
@@ -75,8 +71,6 @@ public class ViewFrustumCrit implements LODCriterion {
     private final TextureManager[] textureManagers;
 
     private final float maxProjectedTexelSize;
-
-    private static final float SQR_2 = (float) Math.sqrt( 2 );
 
     /**
      * Creates a new {@link ViewFrustumCrit} instance.
@@ -224,8 +218,8 @@ public class ViewFrustumCrit implements LODCriterion {
         float dist = VectorUtils.getDistance( scaledBBox, eyePos );
         float projectionFactor = estimatePixelSizeForSpaceUnit( dist );
         float screenError = projectionFactor * arc.geometricError;
-//        System.out.println ("error: " + arc.geometryError);
-//        System.out.println ("screen error: " + screenError);
+        // System.out.println ("error: " + arc.geometryError);
+        // System.out.println ("screen error: " + screenError);
         return screenError <= maxPixelError;
     }
 

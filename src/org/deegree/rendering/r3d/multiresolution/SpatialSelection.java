@@ -50,8 +50,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of <i>spatial selection</i> algorithm for {@link MultiresolutionMesh}.
  * <p>
- * This is a variant of the {@link SelectiveRefinement} algorithm that only extracts a region of an LOD that lies inside a
- * certain region of interest (ROI). Mesh fragments outside the roi are clipped.
+ * This is a variant of the {@link SelectiveRefinement} algorithm that only extracts a region of an LOD that lies inside
+ * a certain region of interest (ROI). Mesh fragments outside the roi are clipped.
  * </p>
  * 
  * @see SelectiveRefinement
@@ -89,6 +89,8 @@ public class SpatialSelection {
      * @param mt
      * @param crit
      * @param roi
+     * @param zScale
+     *            of the dem.
      */
     public SpatialSelection( MultiresolutionMesh mt, LODCriterion crit, ViewFrustum roi, float zScale ) {
         this.mt = mt;

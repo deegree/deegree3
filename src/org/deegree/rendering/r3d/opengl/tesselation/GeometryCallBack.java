@@ -46,8 +46,8 @@ import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.GLUtessellatorCallbackAdapter;
 
 import org.deegree.commons.utils.math.Vectors3f;
-import org.deegree.rendering.r3d.geometry.SimpleAccessGeometry;
-import org.deegree.rendering.r3d.opengl.rendering.RenderableGeometry;
+import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

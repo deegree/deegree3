@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>DirectByteBufferPool</code> pools a number of direct 'native' bytebuffers so they can be reused.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -74,7 +74,9 @@ public class DirectByteBufferPool {
      * Construct a direct byte buffer which may allocate buffers with given capacity
      * 
      * @param capacityLimit
+     *            total capacity of this pool.
      * @param bufferLimit
+     *            the number of buffers
      */
     public DirectByteBufferPool( int capacityLimit, int bufferLimit ) {
         this.MAX_MEMORY_CAPACITY = capacityLimit;

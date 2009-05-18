@@ -44,7 +44,7 @@ import java.nio.FloatBuffer;
 import org.deegree.commons.utils.nio.PooledByteBuffer;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * The <code>MeshFragmentData</code> holds the fragment data.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -55,15 +55,24 @@ public class MeshFragmentData {
 
     private int numTriangles;
 
-    private final PooledByteBuffer rawBuffer;    
-    
+    private final PooledByteBuffer rawBuffer;
+
     private final FloatBuffer vertexBuffer;
 
     private final Buffer indexBuffer;
 
     private final FloatBuffer normalsBuffer;
 
-    public MeshFragmentData( PooledByteBuffer rawBuffer, FloatBuffer vertexBuffer, FloatBuffer normalsBuffer, Buffer indexBuffer ) {
+    /**
+     * Construct from the given rawbuffer.
+     * 
+     * @param rawBuffer
+     * @param vertexBuffer
+     * @param normalsBuffer
+     * @param indexBuffer
+     */
+    public MeshFragmentData( PooledByteBuffer rawBuffer, FloatBuffer vertexBuffer, FloatBuffer normalsBuffer,
+                             Buffer indexBuffer ) {
         this.rawBuffer = rawBuffer;
         this.vertexBuffer = vertexBuffer;
         this.normalsBuffer = normalsBuffer;
@@ -71,10 +80,17 @@ public class MeshFragmentData {
         this.numTriangles = indexBuffer.capacity() / 3;
     }
 
+    /**
+     * @return the number of triangles
+     */
     public int getNumTriangles() {
         return numTriangles;
     }
 
+    /**
+     * 
+     * @return the number of vertices.
+     */
     public FloatBuffer getVertices() {
         return vertexBuffer;
     }
@@ -95,11 +111,17 @@ public class MeshFragmentData {
         return indexBuffer;
     }
 
+    /**
+     * @return the normal buffer
+     */
     public FloatBuffer getNormals() {
         return normalsBuffer;
     }
-    
-    public void freeBuffers () {
+
+    /**
+     * free the pooled buffer.
+     */
+    public void freeBuffers() {
         rawBuffer.free();
     }
 }

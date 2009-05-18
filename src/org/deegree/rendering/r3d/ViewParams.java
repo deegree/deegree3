@@ -41,7 +41,7 @@ package org.deegree.rendering.r3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-import org.deegree.rendering.r3d.opengl.rendering.TerrainRenderingManager;
+import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
 
 /**
  * Encapsulates the relevant viewing and projection parameters that are needed for performing view frustum culling and
@@ -56,9 +56,9 @@ public class ViewParams {
 
     private ViewFrustum vf;
 
-    private int screenSizeX = -1;
+    private int projectionWidth = -1;
 
-    private int screenSizeY = -1;
+    private int projectionHeight = -1;
 
     private float terrainScale;
 
@@ -88,17 +88,17 @@ public class ViewParams {
      * 
      * @param vf
      *            view frustum (volume visible to the viewer)
-     * @param screenSizeX
+     * @param projectionWidth
      *            number of pixels of the projected image in the x direction
-     * @param screenSizeY
+     * @param projectionHeight
      *            number of pixels of the projected image in the y direction
      * @param terrainScale
      *            scaled z value of the terrain.
      */
-    public ViewParams( ViewFrustum vf, int screenSizeX, int screenSizeY, float terrainScale ) {
+    public ViewParams( ViewFrustum vf, int projectionWidth, int projectionHeight, float terrainScale ) {
         this.vf = vf;
-        this.screenSizeX = screenSizeX;
-        this.screenSizeY = screenSizeY;
+        this.projectionWidth = projectionWidth;
+        this.projectionHeight = projectionHeight;
         this.terrainScale = terrainScale;
     }
 
@@ -117,7 +117,7 @@ public class ViewParams {
      * @return number of pixels in x direction
      */
     public int getScreenPixelsX() {
-        return screenSizeX;
+        return projectionWidth;
     }
 
     /**
@@ -126,7 +126,7 @@ public class ViewParams {
      * @return number of pixels in y direction
      */
     public int getScreenPixelsY() {
-        return screenSizeY;
+        return projectionHeight;
     }
 
     /**
@@ -139,12 +139,18 @@ public class ViewParams {
      */
     public double estimatePixelSizeForSpaceUnit( double dist ) {
         double h = 2.0 * dist * (float) Math.tan( Math.toRadians( vf.getFOVY() * 0.5f ) );
-        return screenSizeY / h;
+        return projectionHeight / h;
     }
 
-    public void setScreenDimensions( int width, int height ) {
-        screenSizeX = width;
-        screenSizeY = height;
+    /**
+     * Set the new projection plane dimensions
+     * 
+     * @param width
+     * @param height
+     */
+    public void setProjectionPlaneDimensions( int width, int height ) {
+        projectionWidth = width;
+        projectionHeight = height;
         double aspect = (double) width / height;
         vf.setPerspectiveParams( vf.getFOVY(), aspect, vf.getZNear(), vf.getZFar() );
         vf.setCameraParams( vf.getEyePos(), vf.getLookingAt(), vf.getUp() );
@@ -165,10 +171,9 @@ public class ViewParams {
         terrainScale = newScale;
     }
 
-
     @Override
     public String toString() {
-        String s = "{frustum=" + vf + ",pixelsX=" + screenSizeX + ",pixelsY=" + screenSizeY + "}";
+        String s = "{frustum=" + vf + ",pixelsX=" + projectionWidth + ",pixelsY=" + projectionHeight + "}";
         return s;
     }
 

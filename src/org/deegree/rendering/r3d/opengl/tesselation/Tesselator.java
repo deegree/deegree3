@@ -43,12 +43,12 @@ import java.util.ArrayList;
 import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.GLUtessellator;
 
-import org.deegree.rendering.r3d.geometry.GeometryQualityModel;
-import org.deegree.rendering.r3d.geometry.SimpleAccessGeometry;
-import org.deegree.rendering.r3d.geometry.TexturedGeometry;
-import org.deegree.rendering.r3d.opengl.rendering.RenderableGeometry;
-import org.deegree.rendering.r3d.opengl.rendering.RenderableQualityModel;
-import org.deegree.rendering.r3d.opengl.rendering.RenderableQualityModelPart;
+import org.deegree.rendering.r3d.model.geometry.GeometryQualityModel;
+import org.deegree.rendering.r3d.model.geometry.SimpleAccessGeometry;
+import org.deegree.rendering.r3d.model.geometry.TexturedGeometry;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
+import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModelPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

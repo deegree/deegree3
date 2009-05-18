@@ -60,10 +60,19 @@ public class MeshFragment implements Comparable<MeshFragment> {
      */
     public static int SIZE = 40;
 
+    /**
+     * the id of the mesh fragment
+     */
     public final int id;
 
+    /**
+     * The bbox of the frament
+     */
     public final float[][] bbox = new float[2][3];
 
+    /**
+     * The geometric error.
+     */
     public final float error;
 
     private long blobPosition;
@@ -86,10 +95,16 @@ public class MeshFragment implements Comparable<MeshFragment> {
         this.length = buffer.getInt();
     }
 
+    /**
+     * @return offset of in the file.
+     */
     public long getOffset() {
         return blobPosition;
     }
 
+    /**
+     * @return the last byte position.
+     */
     public long getLastByteOffset() {
         return blobPosition + length - 1;
     }
@@ -109,6 +124,20 @@ public class MeshFragment implements Comparable<MeshFragment> {
         return patchReader.read( id, blobPosition, length );
     }
 
+    /**
+     * Save this fragment to the given ByteBuffer.
+     * 
+     * @param target
+     * @param minX
+     * @param minY
+     * @param minZ
+     * @param maxX
+     * @param maxY
+     * @param maxZ
+     * @param error
+     * @param blobPosition
+     * @param length
+     */
     public static void store( ByteBuffer target, float minX, float minY, float minZ, float maxX, float maxY,
                               float maxZ, float error, long blobPosition, int length ) {
         target.putFloat( minX );
@@ -122,6 +151,15 @@ public class MeshFragment implements Comparable<MeshFragment> {
         target.putInt( length );
     }
 
+    /**
+     * Save this fragment to the given byte buffer.
+     * 
+     * @param target
+     * @param bbox
+     * @param error
+     * @param blobPosition
+     * @param length
+     */
     public static void store( ByteBuffer target, float[][] bbox, float error, long blobPosition, int length ) {
         target.putFloat( bbox[0][0] );
         target.putFloat( bbox[0][1] );
@@ -141,10 +179,10 @@ public class MeshFragment implements Comparable<MeshFragment> {
 
     @Override
     public int compareTo( MeshFragment o ) {
-        if (id < o.id) {
+        if ( id < o.id ) {
             return -1;
         }
-        if (id > o.id) {
+        if ( id > o.id ) {
             return 1;
         }
         return 0;
