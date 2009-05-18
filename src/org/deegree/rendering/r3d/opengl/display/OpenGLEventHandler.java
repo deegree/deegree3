@@ -55,6 +55,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,10 +172,12 @@ public class OpenGLEventHandler implements GLEventListener {
         Point3d center = new Point3d( lookAt[0], lookAt[1], lookAt[2] );
         Vector3d up = new Vector3d( 0, 0, 1 );
         ViewFrustum vf = new ViewFrustum( newEyeP, center, up, 60.0, (double) width / height, 0.5, farClippingPlane );
-        ViewParams params = new ViewParams( vf, width, height, 1 );
+        ViewParams params = new ViewParams( vf, width, height );
+        RenderContext context = new RenderContext( params );
+        context.setContext( gl );
 
         for ( WorldRenderableObject dObj : worldRenderableObjects ) {
-            dObj.render( gl, params );
+            dObj.render( context );
         }
 
         if ( renderTestObject ) {
