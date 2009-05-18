@@ -36,6 +36,7 @@ public class PooledByteBuffer {
      */
     public PooledByteBuffer( int capacity ) {
         this.buffer = ByteBuffer.allocateDirect( capacity );
+        this.buffer.order( ByteOrder.nativeOrder() );
     }
 
     /**
