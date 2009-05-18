@@ -95,6 +95,7 @@ public class MeshFragmentDataReader {
         PooledByteBuffer pooledByteBuffer = bufferPool.allocate( length );
         // PooledByteBuffer pooledByteBuffer = new PooledByteBuffer(length);
         ByteBuffer rawTileBuffer = pooledByteBuffer.getBuffer();
+        // rawTileBuffer.order( ByteOrder.nativeOrder() );
 
         LOG.debug( "Reading mesh fragment with id " + fragmentId + " (offset: " + offset + ", length: " + length + ")." );
         long begin = System.currentTimeMillis();

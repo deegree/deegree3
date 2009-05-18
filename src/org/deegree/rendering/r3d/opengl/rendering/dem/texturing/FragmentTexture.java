@@ -85,6 +85,7 @@ public class FragmentTexture {
         this.fragment = geometry;
         this.texture = texture;
         this.buffer = buffer;
+        // buffer.getBuffer().order( ByteOrder.nativeOrder() );
         this.texCoordsBuffer = generateTexCoordsBuffer( xOffset, yOffset );
         this.xOffset = xOffset;
         this.yOffset = yOffset;
@@ -122,8 +123,9 @@ public class FragmentTexture {
         for ( int i = 0; i < vertexBuffer.capacity() / 3; i++ ) {
             float x = vertexBuffer.get();
             float y = vertexBuffer.get();
-            // rb: commented z out, because it was never read.
-            // float z = vertexBuffer.get();
+            // rb: FOLLOWING get must of course be evaluated.
+            vertexBuffer.get();
+
             texCoordsBuffer.put( ( x - tileXMin ) / tileWidth );
             texCoordsBuffer.put( 1.0f - ( y - tileYMin ) / tileHeight );
         }
