@@ -54,6 +54,8 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
  */
 public class ViewFrustumCrit implements LODCriterion {
 
+    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( ViewFrustumCrit.class );
+
     private final float maxPixelError;
 
     private final ViewParams viewParams;
@@ -167,8 +169,8 @@ public class ViewFrustumCrit implements LODCriterion {
         double metersPerPixel = maxProjectedTexelSize / pixelSize;
         double resolution = getFinestTextureResolution( metersPerPixel );
         double textureSize = getMaxSideLen( fragment ) / resolution;
-        System.out.println( "Side len: " + getMaxSideLen( fragment ) + ", resolution: " + resolution
-                            + ", texture size: " + textureSize );
+        LOG.debug( "Side len: " + getMaxSideLen( fragment ) + ", resolution: " + resolution + ", texture size: "
+                   + textureSize );
 
         return textureSize <= maxTextureSize;
     }
