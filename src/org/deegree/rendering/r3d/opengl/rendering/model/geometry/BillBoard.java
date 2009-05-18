@@ -46,7 +46,7 @@ import javax.vecmath.Point3d;
 
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
-import org.deegree.rendering.r3d.ViewParams;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.managers.PositionableModel;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.slf4j.Logger;
@@ -138,8 +138,9 @@ public class BillBoard extends RenderableQualityModel implements PositionableMod
     }
 
     @Override
-    public void render( GL context, ViewParams params ) {
-        Point3d eye = params.getViewFrustum().getEyePos();
+    public void render( RenderContext glRenderContext ) {
+        Point3d eye = glRenderContext.getViewParams().getViewFrustum().getEyePos();
+        GL context = glRenderContext.getContext();
         context.glPushMatrix();
         context.glDepthMask( false );
         context.glEnable( GL.GL_TEXTURE_2D );
@@ -151,7 +152,7 @@ public class BillBoard extends RenderableQualityModel implements PositionableMod
 
         context.glScalef( width, 1, height );
 
-        TexturePool.loadTexture( context, textureID );
+        TexturePool.loadTexture( glRenderContext, textureID );
 
         // context.glMaterialfv( GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT_AND_DIFFUSE, new float[] { 1, 1, 1, .1f }, 0 );
         context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );

@@ -44,6 +44,7 @@ import javax.media.opengl.GL;
 
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
 import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,14 +161,9 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
         this.textureOrdinatesCount = vertexCount * 2;
     }
 
-    /**
-     * Load the float buffers and enable the client state.
-     * 
-     * @param context
-     */
     @Override
-    protected void enableArrays( GL context, DirectGeometryBuffer geomBuffer ) {
-        super.enableArrays( context, geomBuffer );
+    protected void enableArrays( RenderContext glRenderContext, DirectGeometryBuffer geomBuffer ) {
+        super.enableArrays( glRenderContext, geomBuffer );
 
         if ( texturePosition >= 0 && textureBuffer == null && geomBuffer != null ) {
             textureBuffer = geomBuffer.getTextureCoordinates( texturePosition, textureOrdinatesCount );
@@ -176,23 +172,20 @@ public class RenderableTexturedGeometry extends RenderableGeometry {
             }
         }
         if ( textureBuffer != null ) {
-            context.glEnable( GL.GL_TEXTURE_2D );
-            TexturePool.loadTexture( context, texture );
-            context.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-            context.glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
+            glRenderContext.getContext().glEnable( GL.GL_TEXTURE_2D );
+            TexturePool.loadTexture( glRenderContext, texture );
+            glRenderContext.getContext().glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+            glRenderContext.getContext().glTexCoordPointer( 2, GL.GL_FLOAT, 0, textureBuffer );
         }
 
     }
 
-    /**
-     * @param context
-     */
     @Override
-    public void disableArrays( GL context ) {
-        super.disableArrays( context );
+    public void disableArrays( RenderContext glRenderContext ) {
+        super.disableArrays( glRenderContext );
         LOG.trace( "Disabling array state and texture 2d" );
-        context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
-        context.glDisable( GL.GL_TEXTURE_2D );
+        glRenderContext.getContext().glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
+        glRenderContext.getContext().glDisable( GL.GL_TEXTURE_2D );
     }
 
     /**

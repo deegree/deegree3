@@ -45,7 +45,7 @@ import javax.media.opengl.GL;
 
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactoryCreator;
-import org.deegree.rendering.r3d.ViewParams;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
@@ -72,14 +72,12 @@ public class PrototypePool {
     }
 
     /**
-     * @param context
-     * @param params
-     *            to be rendered with.
+     * @param glRenderContext
      * @param prototype
      * @param buffer
      *            to be used for rendering.
      */
-    public synchronized static void render( GL context, ViewParams params, PrototypeReference prototype,
+    public synchronized static void render( RenderContext glRenderContext, PrototypeReference prototype,
                                             DirectGeometryBuffer buffer ) {
         if ( prototype == null || prototype.getPrototypeID() == null ) {
             return;
@@ -91,6 +89,8 @@ public class PrototypePool {
             return;
         }
 
+        GL context = glRenderContext.getContext();
+
         context.glPushMatrix();
 
         float[] loc = prototype.getLocation();
@@ -98,9 +98,9 @@ public class PrototypePool {
         context.glRotatef( prototype.getAngle(), 0, 0, 1 );
         context.glScalef( prototype.getWidth(), prototype.getDepth(), prototype.getHeight() );
         if ( buffer == null ) {
-            model.render( context, params );
+            model.render( null );
         } else {
-            model.renderPrepared( context, params, buffer );
+            model.renderPrepared( glRenderContext, buffer );
         }
         context.glPopMatrix();
     }

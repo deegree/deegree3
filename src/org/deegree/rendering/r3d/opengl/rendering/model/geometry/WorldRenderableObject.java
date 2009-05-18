@@ -38,12 +38,10 @@
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
-import javax.media.opengl.GL;
-
 import org.deegree.geometry.Envelope;
-import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.model.WorldObject;
 import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.managers.LODSwitcher;
 
 /**
@@ -99,7 +97,7 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
      * @param level
      * @param geomBuffer
      */
-    private void render( GL context, ViewParams params, int level, DirectGeometryBuffer geomBuffer ) {
+    private void render( RenderContext glRenderContext, int level, DirectGeometryBuffer geomBuffer ) {
         if ( qualityLevels != null ) {
             if ( level >= 0 && qualityLevels.length > level ) {
                 RenderableQualityModel model = qualityLevels[level];
@@ -110,39 +108,37 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
                     }
                 }
                 if ( model != null ) {
-                    model.renderPrepared( context, params, geomBuffer );
+                    model.renderPrepared( glRenderContext, geomBuffer );
                 }
             }
         }
     }
 
     @Override
-    public void render( GL context, ViewParams params ) {
-        render( context, params, calcQualityLevel( params ), null );
+    public void render( RenderContext glRenderContext ) {
+        render( glRenderContext, calcQualityLevel( glRenderContext ), null );
     }
 
     /**
      * This method assumes the coordinates and normals are located in the given {@link DirectGeometryBuffer}.
      * 
-     * @param context
-     *            to render to
-     * @param params
+     * @param glRenderContext
      * @param geomBuffer
      *            to be get the coordinates from.
      */
-    public void renderPrepared( GL context, ViewParams params, DirectGeometryBuffer geomBuffer ) {
-        render( context, params, calcQualityLevel( params ), geomBuffer );
+    public void renderPrepared( RenderContext glRenderContext, DirectGeometryBuffer geomBuffer ) {
+        render( glRenderContext, calcQualityLevel( glRenderContext ), geomBuffer );
     }
 
     /**
-     * @param viewParams
+     * @param glRenderContext
      * @return the level to render.
      */
-    protected int calcQualityLevel( ViewParams viewParams ) {
+    protected int calcQualityLevel( RenderContext glRenderContext ) {
         int level = qualityLevels.length - 1;
 
         if ( switchLevels != null ) {
-            level = switchLevels.calcLevel( viewParams, getPosition(), level, getErrorScalar() );
+            level = switchLevels.calcLevel( glRenderContext, getPosition(), level, getErrorScalar() );
         }
         return level;
     }

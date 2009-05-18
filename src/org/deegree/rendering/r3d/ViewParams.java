@@ -41,8 +41,6 @@ package org.deegree.rendering.r3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
-
 /**
  * Encapsulates the relevant viewing and projection parameters that are needed for performing view frustum culling and
  * LOD (level-of-detail) adaptation.
@@ -60,12 +58,6 @@ public class ViewParams {
 
     private int projectionHeight = -1;
 
-    private float terrainScale;
-
-    private int maxTextureSize;
-
-    private int[] shaderProgramIds;
-
     /**
      * 
      * @param eye
@@ -74,13 +66,9 @@ public class ViewParams {
      * @param fovy
      * @param zNear
      * @param zFar
-     * @param terrainScale
      */
-    public ViewParams( Point3d eye, Point3d lookingAt, Vector3d viewerUp, double fovy, double zNear, double zFar,
-                       float terrainScale ) {
+    public ViewParams( Point3d eye, Point3d lookingAt, Vector3d viewerUp, double fovy, double zNear, double zFar ) {
         this.vf = new ViewFrustum( eye, lookingAt, viewerUp, fovy, 1.0, zNear, zFar );
-        this.terrainScale = terrainScale;
-
     }
 
     /**
@@ -92,14 +80,12 @@ public class ViewParams {
      *            number of pixels of the projected image in the x direction
      * @param projectionHeight
      *            number of pixels of the projected image in the y direction
-     * @param terrainScale
-     *            scaled z value of the terrain.
+     * 
      */
-    public ViewParams( ViewFrustum vf, int projectionWidth, int projectionHeight, float terrainScale ) {
+    public ViewParams( ViewFrustum vf, int projectionWidth, int projectionHeight ) {
         this.vf = vf;
         this.projectionWidth = projectionWidth;
         this.projectionHeight = projectionHeight;
-        this.terrainScale = terrainScale;
     }
 
     /**
@@ -156,53 +142,9 @@ public class ViewParams {
         vf.setCameraParams( vf.getEyePos(), vf.getLookingAt(), vf.getUp() );
     }
 
-    /**
-     * @return the z scale value the terrain
-     */
-    public final float getTerrainScale() {
-        return terrainScale;
-    }
-
-    /**
-     * @param newScale
-     *            the new zScale.
-     */
-    public final void setTerrainScale( float newScale ) {
-        terrainScale = newScale;
-    }
-
     @Override
     public String toString() {
         String s = "{frustum=" + vf + ",pixelsX=" + projectionWidth + ",pixelsY=" + projectionHeight + "}";
         return s;
-    }
-
-    /**
-     * @param maxTextureSize
-     */
-    public void setMaxTextureSize( int maxTextureSize ) {
-        this.maxTextureSize = maxTextureSize;
-    }
-
-    /**
-     * @return the maxTextureSize used in the {@link TerrainRenderingManager}
-     */
-    public final int getMaxTextureSize() {
-        return maxTextureSize;
-    }
-
-    /**
-     * @param shaderProgramIds
-     *            used in the {@link TerrainRenderingManager}
-     */
-    public void setDEMShaderIds( int[] shaderProgramIds ) {
-        this.shaderProgramIds = shaderProgramIds;
-    }
-
-    /**
-     * @return the shaderProgramIds used in the {@link TerrainRenderingManager}
-     */
-    public final int[] getDEMShaderIds() {
-        return shaderProgramIds;
     }
 }

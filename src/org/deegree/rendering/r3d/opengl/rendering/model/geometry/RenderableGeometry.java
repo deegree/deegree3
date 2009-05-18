@@ -45,8 +45,8 @@ import java.nio.FloatBuffer;
 import javax.media.opengl.GL;
 
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
-import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.tesselation.Tesselator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -209,12 +209,13 @@ public class RenderableGeometry implements RenderableQualityModelPart {
     }
 
     @Override
-    public void render( GL context, ViewParams params ) {
-        this.renderPrepared( context, params, null );
+    public void render( RenderContext glRenderContext ) {
+        this.renderPrepared( glRenderContext, null );
     }
 
-    public void renderPrepared( GL context, ViewParams params, DirectGeometryBuffer geomBuffer ) {
-        enableArrays( context, geomBuffer );
+    public void renderPrepared( RenderContext glRenderContext, DirectGeometryBuffer geomBuffer ) {
+        enableArrays( glRenderContext, geomBuffer );
+        GL context = glRenderContext.getContext();
         context.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
         context.glMaterialfv( GL.GL_FRONT, GL.GL_AMBIENT, ambientColor, 0 );
         context.glMaterialfv( GL.GL_FRONT, GL.GL_DIFFUSE, diffuseColor, 0 );
@@ -224,17 +225,17 @@ public class RenderableGeometry implements RenderableQualityModelPart {
         context.glDrawArrays( openGLType, 0, vertexCount );
         context.glPopAttrib();
 
-        disableArrays( context );
+        disableArrays( glRenderContext );
     }
 
     /**
      * Load the float buffers and enable the client state.
      * 
-     * @param context
+     * @param glRenderContext
      * @param geomBuffer
      *            for which the coord/normal Positions are valid for.
      */
-    protected void enableArrays( GL context, DirectGeometryBuffer geomBuffer ) {
+    protected void enableArrays( RenderContext glRenderContext, DirectGeometryBuffer geomBuffer ) {
 
         LOG.trace( "Loading coordbuffer" );
 
@@ -248,7 +249,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
             if ( ambientColor == null ) {
                 createColors();
             }
-            context.glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
+            glRenderContext.getContext().glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
             if ( hasNormals ) {
                 LOG.trace( "Loading normal buffer" );
                 if ( normalPosition >= 0 && ( normalBuffer == null ) && ( geomBuffer != null ) ) {
@@ -256,7 +257,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
                     hasNormals = ( normalBuffer != null );
                 }
                 if ( normalBuffer != null ) {
-                    context.glNormalPointer( GL.GL_FLOAT, 0, normalBuffer );
+                    glRenderContext.getContext().glNormalPointer( GL.GL_FLOAT, 0, normalBuffer );
                 }
 
             }
@@ -267,9 +268,9 @@ public class RenderableGeometry implements RenderableQualityModelPart {
     }
 
     /**
-     * @param context
+     * @param glRenderContext
      */
-    public void disableArrays( GL context ) {
+    public void disableArrays( RenderContext glRenderContext ) {
         // if ( !hasNormals ) {
         // context.glEnableClientState( GL.GL_NORMAL_ARRAY );
         // }
@@ -301,7 +302,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
         this.hasNormals = ( vertexNormals != null && vertexNormals.length > 0 );
         if ( hasNormals ) {
             if ( vertexNormals.length % 3 != 0 ) {
-                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                                                                                                                                                                                                                                                                                                                                                          )
+                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                                                                                                                                                                                                                                                                                                                                                                    )
                                                     + ") must be kongruent to 3." );
             } else if ( ( vertexNormals.length / 3 ) != vertexCount ) {
                 throw new IllegalArgumentException( "The number of normals (" + ( vertexNormals.length / 3 )

@@ -45,6 +45,7 @@ import javax.vecmath.Point3d;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.rendering.r3d.ViewParams;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 
 /**
@@ -115,16 +116,17 @@ public class LODSwitcher {
 
     /**
      * 
-     * @param viewParams
+     * @param glRenderContext
      * @param position
      * @param maxNumberOfLevels
      * @param sizeInUnits
      *            of the building (normally the length of the min-max points of the bbox)
      * @return the level of detail calculated from the configured level switches
      */
-    public int calcLevel( ViewParams viewParams, float[] position, int maxNumberOfLevels, float sizeInUnits ) {
+    public int calcLevel( RenderContext glRenderContext, float[] position, int maxNumberOfLevels, float sizeInUnits ) {
         int level = Math.min( maxNumberOfLevels, levels.length - 1 );
         int result = -1;
+        ViewParams viewParams = glRenderContext.getViewParams();
 
         Point3d e = viewParams.getViewFrustum().getEyePos();
         float[] eye = new float[] { (float) e.x, (float) e.y, (float) e.z };

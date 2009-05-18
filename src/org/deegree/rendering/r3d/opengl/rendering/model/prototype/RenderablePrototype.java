@@ -39,7 +39,7 @@
 package org.deegree.rendering.r3d.opengl.rendering.model.prototype;
 
 import org.deegree.geometry.Envelope;
-import org.deegree.rendering.r3d.ViewParams;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableQualityModel;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 
@@ -78,12 +78,12 @@ public class RenderablePrototype extends WorldRenderableObject {
     }
 
     /**
-     * @param params
+     * @param glRenderContext
      *            necessary to calculate the right level
      * @return 0
      */
     @Override
-    protected int calcQualityLevel( ViewParams params ) {
+    protected int calcQualityLevel( RenderContext glRenderContext ) {
         return 0;
     }
 

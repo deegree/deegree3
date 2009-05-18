@@ -51,6 +51,7 @@ import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.BillBoard;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 
@@ -103,7 +104,9 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
     }
 
     @Override
-    public void render( GL context, ViewParams params ) {
+    public void render( RenderContext glRenderContext ) {
+        ViewParams params = glRenderContext.getViewParams();
+        GL context = glRenderContext.getContext();
         long begin = System.currentTimeMillis();
         Point3d eye = params.getViewFrustum().getEyePos();
         float[] eye2 = new float[] { (float) eye.x, (float) eye.y, (float) eye.z };
@@ -138,13 +141,13 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
 
             Iterator<BillBoard> it = allBillBoards.iterator();
             BillBoard b = it.next();
-            Texture currentTexture = TexturePool.getTexture( context, b.getTextureID() );
+            Texture currentTexture = TexturePool.getTexture( glRenderContext, b.getTextureID() );
             if ( currentTexture != null ) {
                 currentTexture.bind();
             }
             while ( it.hasNext() ) {
                 context.glPushMatrix();
-                Texture t = TexturePool.getTexture( context, b.getTextureID() );
+                Texture t = TexturePool.getTexture( glRenderContext, b.getTextureID() );
                 if ( t != null ) {
                     if ( currentTexture == null || t.getTextureObject() != currentTexture.getTextureObject() ) {
                         t.bind();

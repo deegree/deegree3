@@ -52,6 +52,7 @@ import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderableObject;
 
@@ -116,8 +117,10 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
     }
 
     @Override
-    public void render( GL context, ViewParams params ) {
+    public void render( RenderContext glRenderContext ) {
         long begin = System.currentTimeMillis();
+        ViewParams params = glRenderContext.getViewParams();
+        GL context = glRenderContext.getContext();
         Point3d eye = params.getViewFrustum().getEyePos();
         List<WorldRenderableObject> allBillBoards = getBuildingsForViewParameters( params );
         if ( !allBillBoards.isEmpty() ) {
@@ -135,7 +138,7 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
             while ( it.hasNext() ) {
                 WorldRenderableObject b = it.next();
                 context.glPushMatrix();
-                b.renderPrepared( context, params, geometryBuffer );
+                b.renderPrepared( glRenderContext, geometryBuffer );
                 context.glPopMatrix();
             }
         }

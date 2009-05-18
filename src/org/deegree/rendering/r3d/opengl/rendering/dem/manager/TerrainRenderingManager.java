@@ -59,6 +59,7 @@ import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.multiresolution.MeshFragment;
 import org.deegree.rendering.r3d.multiresolution.SpatialSelection;
 import org.deegree.rendering.r3d.multiresolution.crit.ViewFrustumCrit;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.dem.RenderMeshFragment;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.FragmentTexture;
 import org.deegree.rendering.r3d.opengl.rendering.dem.texturing.TextureTile;
@@ -111,28 +112,27 @@ public class TerrainRenderingManager {
      * Renders a view-optimized representation of the terrain geometry using the given scale and textures to the
      * specified GL context.
      * 
-     * @param gl
-     * @param params
+     * @param glRenderContext
      * @param disableElevationModel
      * @param textureManagers
      */
-    public void render( GL gl, ViewParams params, boolean disableElevationModel, TextureManager[] textureManagers ) {
+    public void render( RenderContext glRenderContext, boolean disableElevationModel, TextureManager[] textureManagers ) {
 
         // ensure correct zScale (zScale = 0 does not work as expected)
-        float zScale = ( disableElevationModel || params.getTerrainScale() < 0.001f ) ? 0.001f
-                                                                                     : params.getTerrainScale();
+        float zScale = ( disableElevationModel ) ? 0.001f : glRenderContext.getTerrainScale();
 
         // adapt geometry LOD (fragments)
-        updateLOD( gl, params, zScale, textureManagers );
+        updateLOD( glRenderContext, zScale, textureManagers );
 
         // determine textures for each fragment
-        Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures = getTextures( params, activeLOD,
+        Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures = getTextures( glRenderContext, activeLOD,
                                                                                          textureManagers );
 
         // render fragments with textures
-        render( gl, fragmentToTextures, textureManagers, zScale, params.getDEMShaderIds() );
-
-        displayStats( gl, params );
+        render( glRenderContext, fragmentToTextures, textureManagers, zScale );
+        if ( LOG.isDebugEnabled() ) {
+            displayStats( glRenderContext );
+        }
     }
 
     /**
@@ -142,14 +142,14 @@ public class TerrainRenderingManager {
         return activeLOD;
     }
 
-    private void updateLOD( GL gl, ViewParams params, float scale, TextureManager[] textureManagers ) {
+    private void updateLOD( RenderContext glRenderContext, float scale, TextureManager[] textureManagers ) {
 
-        Set<RenderMeshFragment> nextLOD = getNewLOD( params, scale, textureManagers );
+        Set<RenderMeshFragment> nextLOD = getNewLOD( glRenderContext, scale, textureManagers );
 
         // determine fragments that can be released for the next frame
         Set<RenderMeshFragment> unloadFragments = new HashSet<RenderMeshFragment>( activeLOD );
         unloadFragments.removeAll( nextLOD );
-        fragmentManager.release( unloadFragments, gl );
+        fragmentManager.release( unloadFragments, glRenderContext.getContext() );
 
         activeLOD = nextLOD;
         try {
@@ -159,7 +159,7 @@ public class TerrainRenderingManager {
         }
     }
 
-    private Map<RenderMeshFragment, List<FragmentTexture>> getTextures( ViewParams params,
+    private Map<RenderMeshFragment, List<FragmentTexture>> getTextures( RenderContext glRenderContext,
                                                                         Set<RenderMeshFragment> fragments,
                                                                         TextureManager[] textureManagers ) {
 
@@ -169,7 +169,7 @@ public class TerrainRenderingManager {
         List<Callable<Map<RenderMeshFragment, FragmentTexture>>> workers = new ArrayList<Callable<Map<RenderMeshFragment, FragmentTexture>>>(
                                                                                                                                               textureManagers.length );
         for ( TextureManager manager : textureManagers ) {
-            workers.add( new TextureWorker( params, fragments, manager, (float) maxProjectedTexelSize ) );
+            workers.add( new TextureWorker( glRenderContext, fragments, manager, (float) maxProjectedTexelSize ) );
         }
         Executor exec = Executor.getInstance();
         List<ExecutionFinishedEvent<Map<RenderMeshFragment, FragmentTexture>>> results = null;
@@ -210,11 +210,12 @@ public class TerrainRenderingManager {
         return meshFragmentToTexture;
     }
 
-    private void render( GL gl, Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures,
-                         TextureManager[] textureManagers, float zScale, int[] shaderProgramIds ) {
+    private void render( RenderContext glRenderContext,
+                         Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures,
+                         TextureManager[] textureManagers, float zScale ) {
 
         long begin = System.currentTimeMillis();
-
+        GL gl = glRenderContext.getContext();
         try {
             fragmentManager.requireOnGPU( activeLOD, gl );
         } catch ( IOException e ) {
@@ -236,7 +237,7 @@ public class TerrainRenderingManager {
                 for ( FragmentTexture texture : textures ) {
                     textureManagers[i++].enable( Collections.singletonList( texture ), gl );
                 }
-                fragment.render( gl, textures, shaderProgramIds[textures.size() - 1] );
+                fragment.render( gl, textures, glRenderContext.getShaderProgramIds()[textures.size() - 1] );
             } else {
                 fragment.render( gl, null, 0 );
             }
@@ -252,11 +253,14 @@ public class TerrainRenderingManager {
         LOG.debug( "Rendering of " + activeLOD.size() + ": " + elapsed + " milliseconds." );
     }
 
-    private Set<RenderMeshFragment> getNewLOD( ViewParams params, float zScale, TextureManager[] textureManagers ) {
+    private Set<RenderMeshFragment> getNewLOD( RenderContext glRenderContext, float zScale,
+                                               TextureManager[] textureManagers ) {
 
+        ViewParams params = glRenderContext.getViewParams();
         ViewFrustum frustum = params.getViewFrustum();
-        ViewFrustumCrit crit = new ViewFrustumCrit( params, (float) maxPixelError, zScale, params.getMaxTextureSize(),
-                                                    textureManagers, (float) maxProjectedTexelSize );
+        ViewFrustumCrit crit = new ViewFrustumCrit( params, (float) maxPixelError, zScale,
+                                                    glRenderContext.getMaxTextureSize(), textureManagers,
+                                                    (float) maxProjectedTexelSize );
         SpatialSelection lodAdaptor = new SpatialSelection( fragmentManager.getMultiresolutionMesh(), crit, frustum,
                                                             zScale );
 
@@ -269,7 +273,7 @@ public class TerrainRenderingManager {
         return fragmentIds;
     }
 
-    private void displayStats( GL gl, ViewParams vp ) {
+    private void displayStats( RenderContext glRenderContext ) {
 
         // calculate the number of drawn texels
         Set<TextureTile> usedTextures = new HashSet<TextureTile>();
@@ -283,6 +287,9 @@ public class TerrainRenderingManager {
         for ( TextureTile textureTile : usedTextures ) {
             numTexels += textureTile.getPixelsX() * textureTile.getPixelsY();
         }
+
+        ViewParams vp = glRenderContext.getViewParams();
+        GL gl = glRenderContext.getContext();
 
         int x = vp.getScreenPixelsX() - 120;
         gl.glDisable( GL.GL_TEXTURE_2D );
@@ -304,7 +311,7 @@ public class TerrainRenderingManager {
 
     private class TextureWorker implements Callable<Map<RenderMeshFragment, FragmentTexture>> {
 
-        private final ViewParams params;
+        private final RenderContext glRenderContext;
 
         private final Set<RenderMeshFragment> fragments;
 
@@ -312,9 +319,9 @@ public class TerrainRenderingManager {
 
         private final float maxProjTexelSize;
 
-        TextureWorker( ViewParams params, Set<RenderMeshFragment> fragments, TextureManager textureManager,
+        TextureWorker( RenderContext glRenderContext, Set<RenderMeshFragment> fragments, TextureManager textureManager,
                        float maxProjectedTexelSize ) {
-            this.params = params;
+            this.glRenderContext = glRenderContext;
             this.fragments = fragments;
             this.textureManager = textureManager;
             this.maxProjTexelSize = maxProjectedTexelSize;
@@ -323,7 +330,7 @@ public class TerrainRenderingManager {
         @Override
         public Map<RenderMeshFragment, FragmentTexture> call()
                                 throws Exception {
-            return textureManager.getTextures( params, maxProjTexelSize, fragments );
+            return textureManager.getTextures( glRenderContext, maxProjTexelSize, fragments );
         }
     }
 }

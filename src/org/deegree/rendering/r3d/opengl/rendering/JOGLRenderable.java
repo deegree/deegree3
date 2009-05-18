@@ -38,9 +38,7 @@
 
 package org.deegree.rendering.r3d.opengl.rendering;
 
-import javax.media.opengl.GL;
 
-import org.deegree.rendering.r3d.ViewParams;
 
 /**
  * Interface for objects that can be rendered to a 3D OpenGL scene.
@@ -63,12 +61,8 @@ public interface JOGLRenderable {
      * on them to perform view frustum culling and LOD adaptation.</li>
      * </ul>
      * </p>
-     * 
-     * @param context
-     *            JOGL context
-     * @param params
-     *            viewing parameters
+     * @param glRenderContext TODO
      */
-    public void render( GL context, ViewParams params );
+    public void render( RenderContext glRenderContext );
 
 }

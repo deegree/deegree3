@@ -40,11 +40,9 @@ package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
 import java.util.ArrayList;
 
-import javax.media.opengl.GL;
-
-import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.model.QualityModel;
 import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypePool;
 import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypeReference;
 
@@ -100,8 +98,8 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
     }
 
     @Override
-    public void render( GL context, ViewParams params ) {
-        this.renderPrepared( context, params, null );
+    public void render( RenderContext glRenderContext ) {
+        this.renderPrepared( glRenderContext, null );
     }
 
     @Override
@@ -154,19 +152,18 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
     }
 
     /**
-     * @param context
-     * @param params
+     * @param glRenderContext
      * @param geomBuffer
      */
-    public void renderPrepared( GL context, ViewParams params, DirectGeometryBuffer geomBuffer ) {
+    public void renderPrepared( RenderContext glRenderContext, DirectGeometryBuffer geomBuffer ) {
         if ( prototype != null ) {
-            PrototypePool.render( context, params, prototype, geomBuffer );
+            PrototypePool.render( glRenderContext, prototype, geomBuffer );
         } else {
             // no prototype to render, trying geometries
             if ( qualityModelParts != null && qualityModelParts.size() > 0 ) {
                 for ( RenderableQualityModelPart data : qualityModelParts ) {
                     if ( data != null ) {
-                        data.renderPrepared( context, params, geomBuffer );
+                        data.renderPrepared( glRenderContext, geomBuffer );
                     }
                 }
             }

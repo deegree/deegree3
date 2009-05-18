@@ -43,9 +43,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GLException;
 
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,21 +130,21 @@ public class TexturePool {
     }
 
     /**
-     * @param context
+     * @param glRenderContext
      * @param texture
      * @return the texture mapped to the given string or <code>null</code> if no texture with that id was found.
      */
-    public static synchronized Texture getTexture( GL context, String texture ) {
+    public static synchronized Texture getTexture( RenderContext glRenderContext, String texture ) {
         return getTexture( texture );
     }
 
     /**
-     * @param context
+     * @param glRenderContext
      * @param texture
      */
-    public static synchronized void loadTexture( GL context, String texture ) {
+    public static synchronized void loadTexture( RenderContext glRenderContext, String texture ) {
 
-        Texture tex = getTexture( context, texture );
+        Texture tex = getTexture( glRenderContext, texture );
         if ( tex == null ) {
             LOG.warn( "No texture for id: " + texture );
             return;

@@ -40,7 +40,7 @@ package org.deegree.rendering.r3d.opengl.rendering.model.prototype;
 
 import javax.media.opengl.GL;
 
-import org.deegree.rendering.r3d.ViewParams;
+import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
 
@@ -73,20 +73,20 @@ public class BOXGeometry extends RenderableGeometry {
     private final float[] color = { 0.8f, 0.8f, 0.8f };
 
     @Override
-    public void render( GL context, ViewParams params ) {
-        drawCube( context );
+    public void render( RenderContext glRenderContext ) {
+        drawCube( glRenderContext.getContext() );
     }
 
     @Override
-    protected void enableArrays( GL context, DirectGeometryBuffer geomBuffer ) {
-        super.disableArrays( context );
+    protected void enableArrays( RenderContext glRenderContext, DirectGeometryBuffer geomBuffer ) {
+        super.disableArrays( glRenderContext );
     }
 
     /**
      * An empty consturctor.
      */
     public BOXGeometry() {
-        super( null, GL.GL_QUADS, null, true );
+        super( new float[] { 0, 0, 0 }, GL.GL_QUADS, null, true );
     }
 
     /*
