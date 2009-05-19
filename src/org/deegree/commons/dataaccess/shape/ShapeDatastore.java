@@ -60,6 +60,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
 import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.crs.exceptions.WKTParsingException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
@@ -124,7 +125,14 @@ public class ShapeDatastore {
         if ( crs == null ) {
             File prj = new File( name + ".prj" );
             if ( prj.exists() ) {
-                crs = new CRS( prj );
+                try {
+                    crs = new CRS( prj );
+                } catch ( WKTParsingException e ) {
+                    LOG.warn( "Could not parse the .prj projection file for {}, reason: {}", name,
+                              e.getLocalizedMessage() );
+                    LOG.debug( "Stack trace", e );
+                    crs = new CRS( "EPSG:4326" );
+                }
             } else {
                 crs = new CRS( "EPSG:4326" );
             }
