@@ -38,6 +38,10 @@
 
 package org.deegree.crs;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.deegree.crs.configuration.deegree.db.WKTParser;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -83,11 +87,23 @@ public class CRS {
         this.crsName = crsName;
     }
 
+    /**
+     * @param crs
+     */
     public CRS( CoordinateSystem crs ) {
-        if (crs != null) {
+        if ( crs != null ) {
             crsName = crs.getName();
             this.crs = crs;
         }
+    }
+
+    /**
+     * @param prj
+     * @throws IOException
+     */
+    public CRS( File prj ) throws IOException {
+        crs = new WKTParser( prj.toString() ).parseCoordinateSystem();
+        crsName = crs.getName();
     }
 
     /**
@@ -113,13 +129,16 @@ public class CRS {
         return crs;
     }
 
+    /**
+     * @param otherCRS
+     * @return false
+     */
     public boolean equals2( CRS otherCRS ) {
-        // TODO Auto-generated method stub
         return false;
     }
-    
+
     @Override
-    public String toString ()  {
-        return "{name=" + crsName + ", resolved=" + (crs != null) + "}";
+    public String toString() {
+        return "{name=" + crsName + ", resolved=" + ( crs != null ) + "}";
     }
 }

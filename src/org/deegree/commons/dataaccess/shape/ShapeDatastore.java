@@ -58,6 +58,8 @@ import org.deegree.commons.filter.logical.And;
 import org.deegree.commons.filter.spatial.BBOX;
 import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
+import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeature;
@@ -70,6 +72,7 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
 import org.slf4j.Logger;
 
 /**
@@ -100,6 +103,8 @@ public class ShapeDatastore {
 
     private boolean available = true;
 
+    private GeometryTransformer transformer;
+
     /**
      * @param name
      * @param crs
@@ -116,13 +121,33 @@ public class ShapeDatastore {
         this.crs = crs;
         this.encoding = encoding;
 
+        if ( crs == null ) {
+            File prj = new File( name + ".prj" );
+            if ( prj.exists() ) {
+                crs = new CRS( prj );
+            } else {
+                crs = new CRS( "EPSG:4326" );
+            }
+            try {
+                transformer = new GeometryTransformer( crs.getWrappedCRS() );
+            } catch ( IllegalArgumentException e ) {
+                LOG.error( "Unknown error", e );
+            } catch ( UnknownCRSException e ) {
+                LOG.error( "Unknown error", e );
+            }
+        }
+
         shpFile = new File( name + ".shp" );
         shpLastModified = shpFile.lastModified();
         dbfFile = new File( name + ".shp" );
         dbfLastModified = dbfFile.lastModified();
 
         shp = new SHPReader( new RandomAccessFile( name + ".shp", "r" ), crs );
-        dbf = new DBFReader( new RandomAccessFile( name + ".dbf", "r" ), encoding );
+        try {
+            dbf = new DBFReader( new RandomAccessFile( name + ".dbf", "r" ), encoding );
+        } catch ( IOException e ) {
+            LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", name );
+        }
     }
 
     private void checkForUpdate() {
@@ -135,7 +160,7 @@ public class ShapeDatastore {
                 }
             }
             synchronized ( dbfFile ) {
-                if ( dbfLastModified != dbfFile.lastModified() ) {
+                if ( dbf != null && dbfLastModified != dbfFile.lastModified() ) {
                     dbf.close();
                     dbf = new DBFReader( new RandomAccessFile( name + ".dbf", "r" ), encoding );
                     LOG.debug( "Re-opening the dbf file {}", name );
@@ -178,16 +203,33 @@ public class ShapeDatastore {
                 }
             }
         }
+        if ( bbox != null ) {
+            try {
+                bbox = (Envelope) transformer.transform( bbox );
+            } catch ( IllegalArgumentException e ) {
+                LOG.error( "Unknown error", e );
+            } catch ( TransformationException e ) {
+                LOG.error( "Unknown error", e );
+            } catch ( UnknownCRSException e ) {
+                LOG.error( "Unknown error", e );
+            }
+        }
 
         LinkedList<Pair<Integer, Geometry>> list;
         synchronized ( shp ) {
             list = shp.query( bbox );
         }
 
+        LOG.debug( "Got {} geometries", list.size() );
+
         LinkedList<Feature> feats = new LinkedList<Feature>();
         LinkedList<PropertyType> fields;
-        synchronized ( dbf ) {
-            fields = dbf.getFields();
+        if ( dbf == null ) {
+            fields = new LinkedList<PropertyType>();
+        } else {
+            synchronized ( dbf ) {
+                fields = dbf.getFields();
+            }
         }
         GeometryPropertyType geom = new GeometryPropertyType( new QName( "geometry" ), 0, 1,
                                                               new QName( "http://www.opengis.net/gml", "geometry" ) );
@@ -199,8 +241,12 @@ public class ShapeDatastore {
         while ( !list.isEmpty() ) {
             Pair<Integer, Geometry> pair = list.poll();
             HashMap<SimplePropertyType, Property<?>> entry;
-            synchronized ( dbf ) {
-                entry = dbf.getEntry( pair.first );
+            if ( dbf != null ) {
+                synchronized ( dbf ) {
+                    entry = dbf.getEntry( pair.first );
+                }
+            } else {
+                entry = new HashMap<SimplePropertyType, Property<?>>();
             }
             LinkedList<Property<?>> props = new LinkedList<Property<?>>();
             for ( PropertyType t : fields ) {
@@ -210,6 +256,7 @@ public class ShapeDatastore {
             }
             props.add( new GenericProperty<Geometry>( geom, pair.second ) );
             GenericFeature feat = new GenericFeature( type, "" + pair.first, props );
+
             if ( filter.evaluate( feat ) ) {
                 feats.add( feat );
             }
@@ -232,7 +279,9 @@ public class ShapeDatastore {
     public void close()
                             throws IOException {
         shp.close();
-        dbf.close();
+        if ( dbf != null ) {
+            dbf.close();
+        }
     }
 
     /**

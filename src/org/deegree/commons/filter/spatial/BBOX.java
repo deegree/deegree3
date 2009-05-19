@@ -43,12 +43,18 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.filter.spatial;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import org.deegree.commons.filter.FilterEvaluationException;
 import org.deegree.commons.filter.MatchableObject;
 import org.deegree.commons.filter.expression.PropertyName;
+import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
 import org.jaxen.JaxenException;
+import org.slf4j.Logger;
 
 /**
  * TODO add documentation here
@@ -60,26 +66,49 @@ import org.jaxen.JaxenException;
  */
 public class BBOX extends SpatialOperator {
 
+    private static final Logger LOG = getLogger( BBOX.class );
+
     private Envelope bbox;
+
+    private PropertyName geometry;
 
     /**
      * @param bbox
+     * @param geometry
      */
-    public BBOX( Envelope bbox ) {
+    public BBOX( Envelope bbox, PropertyName geometry ) {
         this.bbox = bbox;
+        this.geometry = geometry;
     }
 
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         try {
-            Object o = object.getPropertyValue( new PropertyName( "geometry", null ) );
-            return o != null && o instanceof Geometry && bbox.intersects( (Geometry) o );
+            Object o = object.getPropertyValue( geometry );
+            if ( !( o instanceof Geometry ) ) {
+                return false;
+            }
+            Geometry g = (Geometry) o;
+            Envelope bbox = this.bbox;
+
+            if ( !bbox.getCoordinateSystem().getWrappedCRS().equals( g.getCoordinateSystem().getWrappedCRS() ) ) {
+                bbox = (Envelope) new GeometryTransformer( g.getCoordinateSystem().getWrappedCRS() ).transform( bbox );
+            }
+            return bbox.intersects( g );
         } catch ( JaxenException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.debug( "Stack trace", e );
+            throw new FilterEvaluationException( "BBOX filter could not be evaluated, since "
+                                                 + "the geometry value could not be extracted: "
+                                                 + e.getLocalizedMessage() );
+        } catch ( IllegalArgumentException e ) {
+            LOG.error( "Unknown error", e );
+        } catch ( TransformationException e ) {
+            LOG.error( "Unknown error", e );
+        } catch ( UnknownCRSException e ) {
+            LOG.error( "Unknown error", e );
         }
-        throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()
-                                             + "' operator is not implemented yet." );
+
+        return false;
     }
 
     /**
