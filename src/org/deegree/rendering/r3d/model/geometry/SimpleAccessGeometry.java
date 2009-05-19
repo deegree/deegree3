@@ -104,14 +104,14 @@ public class SimpleAccessGeometry implements QualityModelPart {
      *            containing indizes to the vertex, not the array offset.
      */
     public SimpleAccessGeometry( float[] coordinates, int[] innerRings ) {
-        this( coordinates, innerRings, new SimpleGeometryStyle( 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 1 ) );
+        this( coordinates, innerRings, new SimpleGeometryStyle() );
     }
 
     /**
      * @param coordinates
      */
     public SimpleAccessGeometry( float[] coordinates ) {
-        this( coordinates, null, new SimpleGeometryStyle( 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 0x00FFFFFF, 1 ) );
+        this( coordinates, null, new SimpleGeometryStyle() );
     }
 
     /**
