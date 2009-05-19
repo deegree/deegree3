@@ -723,7 +723,8 @@ public class WKTParser {
             if ( !params.containsKey( "standard_parallel2" ) )
                 params.put( "standard_parallel2", 0.0 );
 
-            if ( projectionType.equalsIgnoreCase( "transverse_mercator" ) )
+            if ( projectionType.equalsIgnoreCase( "transverse_mercator" ) || 
+                                    projectionType.equalsIgnoreCase( "Gauss_Kruger" ) )
                 return new ProjectedCRS(
                                          new TransverseMercator(
                                                                  true,
