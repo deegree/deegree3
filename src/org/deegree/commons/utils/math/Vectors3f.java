@@ -482,4 +482,18 @@ public class Vectors3f {
         return ( Math.abs( first[0] - second[0] ) < precision ) && ( Math.abs( first[1] - second[1] ) < precision )
                && ( Math.abs( first[2] - second[2] ) < precision );
     }
+
+    /**
+     * Apply the given scale to all scalars in the vector
+     * 
+     * @param scale
+     *            to be applied
+     * @param vector
+     *            with length 3.
+     */
+    public static void scale( float scale, float[] vector ) {
+        vector[0] *= scale;
+        vector[1] *= scale;
+        vector[2] *= scale;
+    }
 }
