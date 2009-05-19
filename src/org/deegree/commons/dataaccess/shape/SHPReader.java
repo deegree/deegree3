@@ -218,7 +218,7 @@ public class SHPReader {
         in.seek( 24 );
         int length = in.readInt() * 2; // 16 bit words...
 
-        LOG.trace( "Length: " + length );
+        LOG.trace( "Length {}", length );
 
         // whyever they mix byte orders?
         int version = readLEInt( in );

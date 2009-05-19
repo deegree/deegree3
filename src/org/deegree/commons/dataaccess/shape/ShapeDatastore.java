@@ -98,6 +98,8 @@ public class ShapeDatastore {
 
     private Charset encoding;
 
+    private boolean available = true;
+
     /**
      * @param name
      * @param crs
@@ -140,6 +142,7 @@ public class ShapeDatastore {
                 }
             }
         } catch ( IOException e ) {
+            available = false;
             LOG.debug( "Shape file {} is unavailable at the moment: {}", name, e.getLocalizedMessage() );
             LOG.trace( "Stack trace was {}", e );
         }
@@ -155,6 +158,10 @@ public class ShapeDatastore {
                             throws IOException, FilterEvaluationException {
 
         checkForUpdate();
+
+        if ( !available ) {
+            return null;
+        }
 
         Envelope bbox = null;
         if ( filter instanceof OperatorFilter ) {
@@ -217,6 +224,22 @@ public class ShapeDatastore {
     public Envelope getEnvelope() {
         checkForUpdate();
         return shp.getEnvelope();
+    }
+
+    /**
+     * @throws IOException
+     */
+    public void close()
+                            throws IOException {
+        shp.close();
+        dbf.close();
+    }
+
+    /**
+     * @return whether the shape file is currently available
+     */
+    public boolean isAvailable() {
+        return available;
     }
 
 }
