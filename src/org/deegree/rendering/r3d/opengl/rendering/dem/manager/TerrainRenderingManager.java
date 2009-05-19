@@ -163,7 +163,7 @@ public class TerrainRenderingManager {
                                                                         Set<RenderMeshFragment> fragments,
                                                                         TextureManager[] textureManagers ) {
 
-        LOG.info( "Texturizing " + fragments.size() + " fragments, managers: " + textureManagers.length );
+        LOG.debug( "Texturizing " + fragments.size() + " fragments, managers: " + textureManagers.length );
 
         // fetch textures in parallel threads (with timeout)
         List<Callable<Map<RenderMeshFragment, FragmentTexture>>> workers = new ArrayList<Callable<Map<RenderMeshFragment, FragmentTexture>>>(

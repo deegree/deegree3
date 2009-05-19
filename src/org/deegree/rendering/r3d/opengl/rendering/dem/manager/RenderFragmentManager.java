@@ -86,7 +86,7 @@ public class RenderFragmentManager {
      */
     public RenderFragmentManager( MultiresolutionMesh mrModel, int maxCached ) {
 
-        LOG.info( "Creating RenderFragmentManager." );
+        LOG.debug( "Creating RenderFragmentManager." );
         this.mrModel = mrModel;
         renderFragments = new RenderMeshFragment[mrModel.fragments.length];
         for ( int fragmentId = 0; fragmentId < mrModel.fragments.length; fragmentId++ ) {
@@ -123,7 +123,7 @@ public class RenderFragmentManager {
             memoryCache.get( fragment.getId() );
         }
         long elapsed = System.currentTimeMillis() - begin;
-        LOG.info( "Preparing of " + fragments.size() + " fragments (" + loaded + " new): " + elapsed + " ms" );
+        LOG.debug( "Preparing of " + fragments.size() + " fragments (" + loaded + " new): " + elapsed + " ms" );
     }
 
     /**
@@ -150,7 +150,7 @@ public class RenderFragmentManager {
             }
         }
         long elapsed = System.currentTimeMillis() - begin;
-        LOG.info( "Preparing (GPU) of " + fragments.size() + " fragments (" + loaded + " new): " + elapsed + " ms" );
+        LOG.debug( "Preparing (GPU) of " + fragments.size() + " fragments (" + loaded + " new): " + elapsed + " ms" );
     }
 
     /**
@@ -171,7 +171,7 @@ public class RenderFragmentManager {
             }
         }
         long elapsed = System.currentTimeMillis() - begin;
-        LOG.info( "Releasing (GPU) of " + fragments.size() + " fragments: " + elapsed + " ms" );
+        LOG.debug( "Releasing (GPU) of " + fragments.size() + " fragments: " + elapsed + " ms" );
     }
 
     @Override

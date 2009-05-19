@@ -133,7 +133,7 @@ public class TextureManager {
                                                                  float maxProjectedTexelSize,
                                                                  Set<RenderMeshFragment> fragments ) {
 
-        LOG.info( "Texturizing " + fragments.size() + " fragments" );
+        LOG.debug( "Texturizing " + fragments.size() + " fragments" );
         Map<RenderMeshFragment, FragmentTexture> meshFragmentToTexture = new HashMap<RenderMeshFragment, FragmentTexture>();
 
         // create texture requests for each fragment
@@ -148,15 +148,15 @@ public class TextureManager {
                 fromCache.add( request );
             }
         }
-        LOG.info( "From cache: " + meshFragmentToTexture.size() );
+        LOG.debug( "From cache: " + meshFragmentToTexture.size() );
 
         // determine remaining texture requests
         requests.removeAll( fromCache );
-        LOG.info( "To be processed: " + requests.size() );
+        LOG.debug( "To be processed: " + requests.size() );
 
         // produce tile requests (multiple fragments may share a tile)
         List<TextureTileRequest> tileRequests = createTileRequests( requests );
-        LOG.info( tileRequests.size() + " tile requests" );
+        LOG.debug( tileRequests.size() + " tile requests" );
 
         // fetch texture tiles and assign textures to fragments
         for ( TextureRequest request : requests ) {
@@ -280,7 +280,7 @@ public class TextureManager {
                 minimizedRequests.add( request );
             }
         }
-        LOG.info( "Tile requests: " + requests.size() + ", minimized: " + minimizedRequests.size() );
+        LOG.debug( "Tile requests: " + requests.size() + ", minimized: " + minimizedRequests.size() );
         return minimizedRequests;
     }
 
