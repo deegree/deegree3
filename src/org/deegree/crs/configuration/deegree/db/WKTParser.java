@@ -66,6 +66,8 @@ import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.coordinatesystems.VerticalCRS;
 import org.deegree.crs.exceptions.UnknownUnitException;
 import org.deegree.crs.exceptions.WKTParsingException;
+import org.deegree.crs.projections.azimuthal.StereographicAlternative;
+import org.deegree.crs.projections.azimuthal.StereographicAzimuthal;
 import org.deegree.crs.projections.conic.LambertConformalConic;
 import org.deegree.crs.projections.cylindric.TransverseMercator;
 import org.deegree.crs.transformations.helmert.Helmert;
@@ -781,6 +783,45 @@ public class WKTParser {
                                          new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
                                                                                            new String[] { name }, null,
                                                                                            null, null ) );
+            else if ( projectionType.equalsIgnoreCase( "Stereographic_Alternative" ) || 
+                                    projectionType.equalsIgnoreCase( "Double_Stereographic" ) || 
+                                    projectionType.equalsIgnoreCase( "Oblique_Stereographic" ) )
+                return new ProjectedCRS(
+                                        new StereographicAlternative(
+                                                                   geographicCRS,
+                                                                   (Double) params.get( "false_northing" ),
+                                                                   (Double) params.get( "false_easting" ),
+                                                                   new Point2d(
+                                                                                (Double) params.get( "central_meridian" ),
+                                                                                (Double) params.get( "latitude_of_origin" ) ),
+                                                                   unit,
+                                                                   (Double) params.get( "scale_factor" ),
+                                                                   new CRSIdentifiable(
+                                                                                        new CRSCodeType[] { projectionCode },
+                                                                                        new String[] { projectionType },
+                                                                                        null, null, null ) ),
+                                        new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
+                                                                                          new String[] { name }, null,
+                                                                                          null, null ) );
+            else if ( projectionType.equalsIgnoreCase( "Stereographic_Azimuthal" ) )
+                return new ProjectedCRS(
+                                        new StereographicAzimuthal(
+                                                                   //TODO true_scale_latitude parameter???
+                                                                   geographicCRS,
+                                                                   (Double) params.get( "false_northing" ),
+                                                                   (Double) params.get( "false_easting" ),
+                                                                   new Point2d(
+                                                                                (Double) params.get( "central_meridian" ),
+                                                                                (Double) params.get( "latitude_of_origin" ) ),
+                                                                   unit,
+                                                                   (Double) params.get( "scale_factor" ),
+                                                                   new CRSIdentifiable(
+                                                                                        new CRSCodeType[] { projectionCode },
+                                                                                        new String[] { projectionType },
+                                                                                        null, null, null ) ),
+                                        new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
+                                                                                          new String[] { name }, null,
+                                                                                          null, null ) );
             else
                 throw new WKTParsingException( "The projection type " + projectionType + " is not supported." );
 
