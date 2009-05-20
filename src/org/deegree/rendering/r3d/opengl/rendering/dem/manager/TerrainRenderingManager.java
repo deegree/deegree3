@@ -128,11 +128,19 @@ public class TerrainRenderingManager {
         Map<RenderMeshFragment, List<FragmentTexture>> fragmentToTextures = getTextures( glRenderContext, activeLOD,
                                                                                          textureManagers );
 
+        glRenderContext.getContext().glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
+        // glRenderContext.getContext().glMaterialfv( GL.GL_FRONT, GL.GL_AMBIENT, new float[] { 0.8f, 0.8f, 0.8f, 1 }, 0
+        // );
+        glRenderContext.getContext().glMaterialfv( GL.GL_FRONT, GL.GL_DIFFUSE, new float[] { 0.8f, 0.8f, 0.8f, 1 }, 0 );
+        glRenderContext.getContext().glMaterialfv( GL.GL_FRONT, GL.GL_SPECULAR, new float[] { 0.02f, 0.02f, 0.02f, 1 },
+                                                   0 );
+        glRenderContext.getContext().glMaterialf( GL.GL_FRONT, GL.GL_SHININESS, 1.5f );
         // render fragments with textures
         render( glRenderContext, fragmentToTextures, textureManagers, zScale );
         if ( LOG.isDebugEnabled() ) {
             displayStats( glRenderContext );
         }
+        glRenderContext.getContext().glPopAttrib();
     }
 
     /**
