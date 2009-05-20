@@ -55,6 +55,11 @@ public interface PositionableModel {
     public float[] getPosition();
 
     /**
+     * @return the boundingbox of the model with float[0][0-3] the min, float[1][0-3] the max.
+     */
+    public float[][] getModelBBox();
+
+    /**
      * @return a scalar which is represents the 'error' of this positionable.
      */
     public float getErrorScalar();

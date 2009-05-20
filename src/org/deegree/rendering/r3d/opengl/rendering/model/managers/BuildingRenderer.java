@@ -134,6 +134,7 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
                 LOG.debug( "Number of buildings from viewparams: " + allBillBoards.size() );
                 LOG.debug( "Total number of buildings : " + size() );
             }
+            context.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
             Iterator<WorldRenderableObject> it = allBillBoards.iterator();
             while ( it.hasNext() ) {
                 WorldRenderableObject b = it.next();
@@ -141,6 +142,7 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
                 b.renderPrepared( glRenderContext, geometryBuffer );
                 context.glPopMatrix();
             }
+            context.glPopAttrib();
         }
 
     }

@@ -44,6 +44,7 @@ import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
 
+import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
 import org.deegree.rendering.r3d.model.geometry.SimpleGeometryStyle;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
@@ -99,7 +100,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
 
     private transient int numberOfOrdinates;
 
-    private transient float[] ambientColor;
+    // private transient float[] ambientColor;
 
     private transient float[] diffuseColor;
 
@@ -126,6 +127,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
         case GL.GL_TRIANGLES:
         case GL.GL_TRIANGLE_STRIP:
         case GL.GL_QUADS:
+        case GL.GL_POLYGON:
             break;
         default:
             throw new UnsupportedOperationException( "Unknown opengl type: " + openGLType );
@@ -201,7 +203,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
      * Create float arrays of the int colors.
      */
     private void createColors() {
-        ambientColor = convertColorIntAsFloats( style.getAmbientColor() );
+        // ambientColor = new float[] { 0.6f, 0.6f, 0.6f, 1 };// convertColorIntAsFloats( style.getAmbientColor() );
         emmisiveColor = convertColorIntAsFloats( style.getEmmisiveColor() );
         specularColor = convertColorIntAsFloats( style.getSpecularColor() );
         diffuseColor = convertColorIntAsFloats( style.getDiffuseColor() );
@@ -215,16 +217,34 @@ public class RenderableGeometry implements RenderableQualityModelPart {
     public void renderPrepared( RenderContext glRenderContext, DirectGeometryBuffer geomBuffer ) {
         enableArrays( glRenderContext, geomBuffer );
         GL context = glRenderContext.getContext();
+        normalBuffer.rewind();
+
         context.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
-        context.glMaterialfv( GL.GL_FRONT, GL.GL_AMBIENT, ambientColor, 0 );
-        context.glMaterialfv( GL.GL_FRONT, GL.GL_DIFFUSE, diffuseColor, 0 );
-        context.glMaterialfv( GL.GL_FRONT, GL.GL_SPECULAR, specularColor, 0 );
-        context.glMaterialfv( GL.GL_FRONT, GL.GL_EMISSION, emmisiveColor, 0 );
-        context.glMaterialf( GL.GL_FRONT, GL.GL_SHININESS, style.getShininess() );
+        // context.glMaterialfv( GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, ambientColor, 0 );
+        context.glMaterialfv( GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE, diffuseColor, 0 );
+        context.glMaterialfv( GL.GL_FRONT_AND_BACK, GL.GL_SPECULAR, specularColor, 0 );
+        context.glMaterialfv( GL.GL_FRONT_AND_BACK, GL.GL_EMISSION, emmisiveColor, 0 );
+        context.glMaterialf( GL.GL_FRONT_AND_BACK, GL.GL_SHININESS, style.getShininess() );
         context.glDrawArrays( openGLType, 0, vertexCount );
         context.glPopAttrib();
 
         disableArrays( glRenderContext );
+    }
+
+    @SuppressWarnings("unused")
+    private void checkNormalLength() {
+        float[] normal = new float[3];
+
+        for ( ; normalBuffer.position() + 2 < normalBuffer.capacity(); ) {
+            normal[0] = normalBuffer.get();
+            normal[1] = normalBuffer.get();
+            normal[2] = normalBuffer.get();
+            float length = Vectors3f.length( normal );
+            if ( length > 1 ) {
+                System.out.println( "Normal is larger 1: " + length + ", this may not be. " );
+            }
+        }
+        normalBuffer.rewind();
     }
 
     /**
@@ -245,7 +265,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
             }
         }
         if ( coordBuffer != null ) {
-            if ( ambientColor == null ) {
+            if ( diffuseColor == null ) {
                 createColors();
             }
             glRenderContext.getContext().glVertexPointer( 3, GL.GL_FLOAT, 0, coordBuffer );
@@ -301,7 +321,7 @@ public class RenderableGeometry implements RenderableQualityModelPart {
         this.hasNormals = ( vertexNormals != null && vertexNormals.length > 0 );
         if ( hasNormals ) {
             if ( vertexNormals.length % 3 != 0 ) {
-                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                                                                                                                                                                                                                                                                                                                                                                     )
+                throw new IllegalArgumentException( "The number of vertex normals(" + ( vertexNormals.length                                                                                                                                                                                                                                                                                                                                                                                                                                                     )
                                                     + ") must be kongruent to 3." );
             } else if ( ( vertexNormals.length / 3 ) != vertexCount ) {
                 throw new IllegalArgumentException( "The number of normals (" + ( vertexNormals.length / 3 )

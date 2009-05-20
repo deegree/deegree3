@@ -118,14 +118,14 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
                 LOG.debug( "Number of trees from viewparams: " + allBillBoards.size() );
                 LOG.debug( "Total number of trees : " + size() );
             }
-            context.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
+            context.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT | GL.GL_ENABLE_BIT );
             context.glMaterialfv( GL.GL_FRONT, GL.GL_DIFFUSE, new float[] { 1, 1, 1, 1 }, 0 );
             context.glMaterialfv( GL.GL_FRONT, GL.GL_SPECULAR, new float[] { 0.3f, 0.3f, 0.3f, 1 }, 0 );
+
             context.glEnable( GL.GL_TEXTURE_2D );
-            context.glEnable( GL.GL_BLEND ); // enable color and texture blending
-            // context.glBlendColor( 0, 0, 0, 0 );
-            context.glBlendFunc( GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA );
-            // context.glDepthMask( false );
+
+            context.glEnable( GL.GL_ALPHA_TEST );
+            context.glAlphaFunc( GL.GL_GREATER, 0.4f );
 
             if ( bufferID == null ) {
                 bufferID = new int[1];
@@ -140,12 +140,9 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
             context.glInterleavedArrays( GL.GL_T2F_N3F_V3F, 0, 0 );
 
             Iterator<BillBoard> it = allBillBoards.iterator();
-            BillBoard b = it.next();
-            Texture currentTexture = TexturePool.getTexture( glRenderContext, b.getTextureID() );
-            if ( currentTexture != null ) {
-                currentTexture.bind();
-            }
+            Texture currentTexture = null;
             while ( it.hasNext() ) {
+                BillBoard b = it.next();
                 context.glPushMatrix();
                 Texture t = TexturePool.getTexture( glRenderContext, b.getTextureID() );
                 if ( t != null ) {
@@ -153,18 +150,17 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
                         t.bind();
                         currentTexture = t;
                     }
+                    b.renderPrepared( context, eye2 );
                 }
-                b.renderPrepared( context, eye2 );
                 context.glPopMatrix();
-                b = it.next();
+
             }
             context.glDisable( GL.GL_TEXTURE_2D );
-            context.glDisable( GL.GL_BLEND ); // enable color and texture blending
-            context.glBlendFunc( GL.GL_ONE, GL.GL_ZERO );
             context.glDisableClientState( GL.GL_TEXTURE_COORD_ARRAY );
             context.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, 0 );
+
             context.glPopAttrib();
-            // context.glDepthMask( true );
+
         }
         LOG.info( "Rendering trees: " + ( System.currentTimeMillis() - begin ) + " ms" );
 

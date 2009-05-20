@@ -112,6 +112,8 @@ public class BillBoard extends RenderableQualityModel implements PositionableMod
                                                                                                                 0.001f,
                                                                                                                 0.001f } ) );
 
+    private transient float[][] bbox;
+
     /**
      * Constructs a billboard data structure with the given texture id.
      * 
@@ -333,5 +335,21 @@ public class BillBoard extends RenderableQualityModel implements PositionableMod
     @Override
     public float getGroundLevel() {
         return location[2];
+    }
+
+    @Override
+    public float[][] getModelBBox() {
+        if ( bbox == null ) {
+            bbox = new float[2][3];
+            float half = width * 0.5f;
+            bbox[0][0] = location[0] - half;
+            bbox[0][1] = location[1] - half;
+            bbox[0][2] = location[2];
+
+            bbox[1][0] = location[0] + ( half );
+            bbox[1][1] = location[1] + half;
+            bbox[1][2] = location[2] + height;
+        }
+        return bbox;
     }
 }

@@ -90,6 +90,8 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
 
     private transient Envelope bbox;
 
+    private transient float[][] modelBBox;
+
     /**
      * the position of this world object.
      */
@@ -388,5 +390,22 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
      */
     public final void setExternalReference( String externalReference ) {
         this.externalReference = externalReference;
+    }
+
+    @Override
+    public float[][] getModelBBox() {
+        if ( modelBBox == null ) {
+            modelBBox = new float[2][3];
+            double[] min = bbox.getMin().getAsArray();
+            double[] max = bbox.getMax().getAsArray();
+            modelBBox[0][0] = (float) min[0];
+            modelBBox[0][1] = (float) min[1];
+            modelBBox[0][2] = (float) min[2];
+
+            modelBBox[1][0] = (float) max[0];
+            modelBBox[1][1] = (float) max[1];
+            modelBBox[1][2] = (float) max[2];
+        }
+        return modelBBox;
     }
 }

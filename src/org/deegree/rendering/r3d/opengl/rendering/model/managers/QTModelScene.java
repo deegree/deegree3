@@ -399,24 +399,28 @@ public class QTModelScene<T extends PositionableModel> {
         if ( viewParams.getViewFrustum().intersects( bbox ) ) {
             if ( isLeaf() ) {
                 if ( objects != null ) {
-
                     double distance = VectorUtils.getDistance( bbox, eye );
                     double estimatePixel = viewParams.estimatePixelSizeForSpaceUnit( distance );
                     double estError = estimatePixel * maxError;
-                    if ( estError > maxPixelError ) {
+                    if ( distance <= 1E-10 || ( estError > maxPixelError ) ) {
                         if ( comparator != null ) {
                             Collections.sort( objects, comparator );
                         }
+
                         for ( T obj : objects ) {
-                            if ( ( obj.getErrorScalar() * viewParams.estimatePixelSizeForSpaceUnit( Vectors3f.distance(
-                                                                                                                        eye,
-                                                                                                                        obj.getPosition() ) ) ) > maxPixelError ) {
+                            distance = Vectors3f.distance( eye, obj.getPosition() );
+                            double estPixelSize = viewParams.estimatePixelSizeForSpaceUnit( distance );
+                            boolean noPixelError = ( obj.getErrorScalar() * estPixelSize ) > maxPixelError;
+                            float[][] objBBox = obj.getModelBBox();
+                            boolean intersects = viewParams.getViewFrustum().intersects( objBBox );
+                            if ( noPixelError && intersects ) {
                                 result.add( obj );
                             }
+
                         }
                     }
-
                 }
+
             } else {
                 for ( QTModelScene<T> n : children ) {
                     if ( n != null ) {
