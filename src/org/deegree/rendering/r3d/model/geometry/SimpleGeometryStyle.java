@@ -74,12 +74,12 @@ public class SimpleGeometryStyle implements MemoryAware, Serializable {
     private transient float shininess;
 
     /**
-     * set the colors to 0x090909FF, emmisive to 0 and the shininess to 20;
+     * set the colors to 0xAAAAAAFF, emmisive to 0 and the shininess to 20;
      */
     public SimpleGeometryStyle() {
-        this.specularColor = 0x040404FF;
-        this.ambientColor = 0x090909FF;
-        this.diffuseColor = 0x090909FF;
+        this.specularColor = 0xAAAAAAFF;
+        this.ambientColor = 0xAAAAAAFF;
+        this.diffuseColor = 0xAAAAAAFF;
         this.emmisiveColor = 0;
         this.shininess = 20;
     }
