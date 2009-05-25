@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering.r3d.opengl.rendering.model.managers;
+package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
 import java.nio.FloatBuffer;
 import java.util.Collection;
@@ -125,11 +125,9 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
         List<WorldRenderableObject> allBillBoards = getBuildingsForViewParameters( params );
         if ( !allBillBoards.isEmpty() ) {
             // back to front
-            begin = System.currentTimeMillis();
             Collections.sort( allBillBoards, new DistComparator( eye ) );
-            LOG.info( "Sorting of " + allBillBoards.size() + " buildings took: "
-                      + ( System.currentTimeMillis() - begin ) + " ms" );
-
+            // LOG.debug( "Sorting of " + allBillBoards.size() + " buildings took: "
+            // + ( System.currentTimeMillis() - begin ) + " ms" );
             if ( LOG.isDebugEnabled() ) {
                 LOG.debug( "Number of buildings from viewparams: " + allBillBoards.size() );
                 LOG.debug( "Total number of buildings : " + size() );
@@ -143,6 +141,10 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
                 context.glPopMatrix();
             }
             context.glPopAttrib();
+            LOG.debug( "Rendering of " + allBillBoards.size() + " buildings took: "
+                       + ( System.currentTimeMillis() - begin ) + " ms" );
+        } else {
+            LOG.debug( "Not rendering any buildings." );
         }
 
     }

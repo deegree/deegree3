@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering.r3d.opengl.rendering.model.managers;
+package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

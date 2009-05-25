@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering.r3d.opengl.rendering.model.managers;
+package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -52,8 +52,8 @@ import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.ViewParams;
 
 /**
- * The <code>RenderableManager</code> is a collection based on a quadtree which can hold {@link PositionableModel} objects
- * and cull them according to a given {@link ViewParams} view frustum.
+ * The <code>RenderableManager</code> is a collection based on a quadtree which can hold {@link PositionableModel}
+ * objects and cull them according to a given {@link ViewParams} view frustum.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -69,6 +69,8 @@ public class RenderableManager<T extends PositionableModel> implements Collectio
     private final int numberOfObjectsInLeaf;
 
     private final Envelope validDomain;
+
+    private int size;
 
     /**
      * @param validDomain
@@ -91,13 +93,21 @@ public class RenderableManager<T extends PositionableModel> implements Collectio
 
     @Override
     public boolean add( T renderable ) {
-        return root.add( renderable );
+        boolean result = root.add( renderable );
+        if ( result ) {
+            size++;
+        }
+        return result;
     }
 
     @Override
     public boolean remove( Object o ) {
         if ( o instanceof PositionableModel ) {
-            return root.remove( (PositionableModel) o );
+            boolean result = root.remove( (PositionableModel) o );
+            if ( result ) {
+                size--;
+            }
+            return result;
         }
         return false;
     }
@@ -158,7 +168,7 @@ public class RenderableManager<T extends PositionableModel> implements Collectio
 
     @Override
     public int size() {
-        return root.getObjects().size();
+        return size;
     }
 
     @Override

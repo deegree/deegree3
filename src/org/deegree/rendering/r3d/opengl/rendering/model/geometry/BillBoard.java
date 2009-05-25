@@ -47,7 +47,7 @@ import javax.vecmath.Point3d;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.commons.utils.memory.AllocatedHeapMemory;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
-import org.deegree.rendering.r3d.opengl.rendering.model.managers.PositionableModel;
+import org.deegree.rendering.r3d.opengl.rendering.model.manager.PositionableModel;
 import org.deegree.rendering.r3d.opengl.rendering.model.texture.TexturePool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

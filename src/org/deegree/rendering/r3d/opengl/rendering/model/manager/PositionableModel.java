@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering.r3d.opengl.rendering.model.managers;
+package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
 /**
  * The <code>PositionableModel</code> defines methods on an object model for getting scene position and size

@@ -36,7 +36,7 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.rendering.r3d.opengl.rendering.model.managers;
+package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
 import java.nio.FloatBuffer;
 import java.util.Collections;
@@ -160,9 +160,11 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
             context.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, 0 );
 
             context.glPopAttrib();
-
+            LOG.debug( "Rendering of " + allBillBoards.size() + " trees took: " + ( System.currentTimeMillis() - begin )
+                       + " ms" );
+        } else {
+            LOG.debug( "Not rendering any trees." );
         }
-        LOG.info( "Rendering trees: " + ( System.currentTimeMillis() - begin ) + " ms" );
 
     }
 

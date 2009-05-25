@@ -50,7 +50,7 @@ import org.deegree.commons.utils.memory.AllocatedHeapMemory;
 import org.deegree.commons.utils.memory.MemoryAware;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.rendering.r3d.opengl.rendering.model.managers.PositionableModel;
+import org.deegree.rendering.r3d.opengl.rendering.model.manager.PositionableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

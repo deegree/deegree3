@@ -42,7 +42,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.model.WorldObject;
 import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
-import org.deegree.rendering.r3d.opengl.rendering.model.managers.LODSwitcher;
+import org.deegree.rendering.r3d.opengl.rendering.model.manager.LODSwitcher;
 
 /**
  * The <code>WorldRenderableObject</code> defines a number of renderable quality levels, where each level may be a
