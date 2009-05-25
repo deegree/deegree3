@@ -152,6 +152,8 @@ public class TerrainRenderingManager {
 
     private void updateLOD( RenderContext glRenderContext, float scale, TextureManager[] textureManagers ) {
 
+        long begin = System.currentTimeMillis();
+
         Set<RenderMeshFragment> nextLOD = getNewLOD( glRenderContext, scale, textureManagers );
 
         // determine fragments that can be released for the next frame
@@ -165,12 +167,15 @@ public class TerrainRenderingManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
+        LOG.debug( "Loading of " + activeLOD.size() + " fragments: " + ( System.currentTimeMillis() - begin )
+                   + " milliseconds." );
     }
 
     private Map<RenderMeshFragment, List<FragmentTexture>> getTextures( RenderContext glRenderContext,
                                                                         Set<RenderMeshFragment> fragments,
                                                                         TextureManager[] textureManagers ) {
 
+        long begin = System.currentTimeMillis();
         LOG.debug( "Texturizing " + fragments.size() + " fragments, managers: " + textureManagers.length );
 
         // fetch textures in parallel threads (with timeout)
@@ -212,9 +217,11 @@ public class TerrainRenderingManager {
                     LOG.debug( e.getMessage(), e );
                 }
             }
+            LOG.debug( "Fetching of textures: " + ( System.currentTimeMillis() - begin ) + " milliseconds." );
         } else {
             LOG.warn( "No textures retrieved from the datasources." );
         }
+
         return meshFragmentToTexture;
     }
 
@@ -229,6 +236,8 @@ public class TerrainRenderingManager {
         } catch ( IOException e ) {
             e.printStackTrace();
         }
+        LOG.debug( "GPU upload of " + activeLOD.size() + " fragments: " + ( System.currentTimeMillis() - begin )
+                   + " milliseconds." );
 
         // set z-scale
         if ( zScale != 1.0f ) {
@@ -258,7 +267,7 @@ public class TerrainRenderingManager {
         }
 
         long elapsed = System.currentTimeMillis() - begin;
-        LOG.debug( "Rendering of " + activeLOD.size() + ": " + elapsed + " milliseconds." );
+        LOG.debug( "Rendering of " + activeLOD.size() + " fragments took: " + elapsed + " ms." );
     }
 
     private Set<RenderMeshFragment> getNewLOD( RenderContext glRenderContext, float zScale,
