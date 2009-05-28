@@ -67,7 +67,9 @@ import org.deegree.feature.Feature;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation.Updater;
+import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
+import org.deegree.rendering.r2d.styling.PolygonStyling;
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Graphic;
 import org.deegree.rendering.r2d.styling.components.Mark;
@@ -119,6 +121,121 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
         }
 
         return new Symbolizer<PointStyling>( baseOrEvaluated, geom, name );
+    }
+
+    /**
+     * @return the symbolizer
+     */
+    public Symbolizer<LineStyling> parseLineSymbolizer() {
+        OMElement root = getRootElement();
+
+        String name = getNodeAsString( root, new XPath( "se:Name", nscontext ), null );
+
+        QName geom = getNodeAsQName( root, new XPath( "se:Geometry", nscontext ), null );
+        LineStyling baseOrEvaluated = new LineStyling();
+
+        final Pair<Stroke, Continuation<Stroke>> pair = parseStroke( root );
+
+        Continuation<LineStyling> contn = null;
+
+        if ( pair != null ) {
+            baseOrEvaluated.stroke = pair.first;
+
+            if ( pair.second != null ) {
+                contn = new Continuation<LineStyling>() {
+                    @Override
+                    public void updateStep( LineStyling base, Feature f ) {
+                        pair.second.evaluate( base.stroke, f );
+                    }
+                };
+            }
+        }
+
+        contn = updateOrContinue( root, "se:PerpendicularOffset", baseOrEvaluated, new Updater<LineStyling>() {
+            @Override
+            public void update( LineStyling obj, String val ) {
+                obj.perpendicularOffset = Double.parseDouble( val );
+            }
+        }, new Filter110XMLAdapter(), contn );
+
+        if ( contn == null ) {
+            return new Symbolizer<LineStyling>( baseOrEvaluated, geom, name );
+        }
+
+        return new Symbolizer<LineStyling>( baseOrEvaluated, contn, geom, name );
+    }
+
+    /**
+     * @return the symbolizer
+     */
+    public Symbolizer<PolygonStyling> parsePolygonSymbolizer() {
+        OMElement root = getRootElement();
+
+        String name = getNodeAsString( root, new XPath( "se:Name", nscontext ), null );
+
+        QName geom = getNodeAsQName( root, new XPath( "se:Geometry", nscontext ), null );
+        PolygonStyling baseOrEvaluated = new PolygonStyling();
+
+        final Pair<Stroke, Continuation<Stroke>> pair = parseStroke( root );
+
+        Continuation<PolygonStyling> contn = null;
+
+        if ( pair != null ) {
+            baseOrEvaluated.stroke = pair.first;
+
+            if ( pair.second != null ) {
+                contn = new Continuation<PolygonStyling>() {
+                    @Override
+                    public void updateStep( PolygonStyling base, Feature f ) {
+                        pair.second.evaluate( base.stroke, f );
+                    }
+                };
+            }
+        }
+
+        final Pair<Fill, Continuation<Fill>> fillPair = parseFill( root );
+
+        if ( fillPair != null ) {
+            baseOrEvaluated.fill = fillPair.first;
+
+            if ( fillPair.second != null ) {
+                contn = new Continuation<PolygonStyling>() {
+                    @Override
+                    public void updateStep( PolygonStyling base, Feature f ) {
+                        fillPair.second.evaluate( base.fill, f );
+                    }
+                };
+            }
+        }
+
+        contn = updateOrContinue( root, "se:PerpendicularOffset", baseOrEvaluated, new Updater<PolygonStyling>() {
+            @Override
+            public void update( PolygonStyling obj, String val ) {
+                obj.perpendicularOffset = Double.parseDouble( val );
+            }
+        }, new Filter110XMLAdapter(), contn );
+
+        contn = updateOrContinue( root, "se:Displacement/se:DisplacementX", baseOrEvaluated,
+                                  new Updater<PolygonStyling>() {
+                                      @Override
+                                      public void update( PolygonStyling obj, String val ) {
+                                          obj.displacementX = Double.parseDouble( val );
+                                      }
+                                  }, new Filter110XMLAdapter(), contn );
+
+        contn = updateOrContinue( root, "se:Displacement/se:DisplacementY", baseOrEvaluated,
+                                  new Updater<PolygonStyling>() {
+                                      @Override
+                                      public void update( PolygonStyling obj, String val ) {
+                                          obj.displacementY = Double.parseDouble( val );
+                                      }
+                                  }, new Filter110XMLAdapter(), contn );
+
+        if ( contn == null ) {
+            return new Symbolizer<PolygonStyling>( baseOrEvaluated, geom, name );
+        }
+
+        return new Symbolizer<PolygonStyling>( baseOrEvaluated, contn, geom, name );
     }
 
     /**
@@ -479,8 +596,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
         if ( opacity != null ) {
             Iterator<?> iter = opacity.getChildren();
             final LinkedList<Pair<String, Pair<Expression, String>>> text = new LinkedList<Pair<String, Pair<Expression, String>>>(); // no
-            // real
-            // 'alternative', have we?
+            // real 'alternative', have we?
             boolean textOnly = true;
             while ( iter.hasNext() ) {
                 Object cur = iter.next();
