@@ -38,6 +38,8 @@
 
 package org.deegree.rendering.r2d.styling;
 
+import static org.deegree.commons.utils.JavaUtils.generateToString;
+
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Stroke;
 
@@ -84,6 +86,11 @@ public class PolygonStyling implements Copyable<PolygonStyling> {
         copy.displacementY = displacementY;
         copy.perpendicularOffset = perpendicularOffset;
         return copy;
+    }
+
+    @Override
+    public String toString() {
+        return generateToString( this );
     }
 
 }

@@ -311,6 +311,9 @@ public class SHPReader {
      */
     public LinkedList<Pair<Integer, Geometry>> query( Envelope bbox )
                             throws IOException {
+
+        LOG.debug( "Querying shp with bbox {}", bbox );
+
         LinkedList<Pair<Integer, Geometry>> list = new LinkedList<Pair<Integer, Geometry>>();
 
         in.seek( 100 );

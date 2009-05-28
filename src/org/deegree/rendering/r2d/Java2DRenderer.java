@@ -429,9 +429,7 @@ public class Java2DRenderer implements Renderer {
             return;
         }
 
-        if ( LOG.isTraceEnabled() ) {
-            LOG.trace( "Drawing " + geom + " with " + styling );
-        }
+        LOG.trace( "Drawing {} with {}", geom, styling );
 
         if ( geom instanceof Point ) {
             LOG.warn( "Trying to render point with line styling." );
@@ -460,6 +458,7 @@ public class Java2DRenderer implements Renderer {
     }
 
     private void render( PolygonStyling styling, Surface surface ) {
+
         for ( SurfacePatch patch : surface.getPatches() ) {
             if ( patch instanceof PolygonPatch ) {
                 PolygonPatch polygonPatch = (PolygonPatch) patch;
@@ -476,8 +475,6 @@ public class Java2DRenderer implements Renderer {
                     LOG.warn( "Trying to render polygon without rings." );
                     return;
                 }
-
-                polygon.transform( worldToScreen );
 
                 applyFill( styling.fill );
                 graphics.fill( polygon );
@@ -502,6 +499,7 @@ public class Java2DRenderer implements Renderer {
             LOG.warn( "Trying to render line with polygon styling." );
         }
         if ( geom instanceof Surface ) {
+            LOG.trace( "Drawing {} with {}", geom, styling );
             render( styling, (Surface) geom );
         }
     }
