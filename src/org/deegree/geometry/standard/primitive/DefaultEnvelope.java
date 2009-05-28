@@ -37,6 +37,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.deegree.crs.CRS;
@@ -44,8 +45,10 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
+import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
@@ -83,9 +86,9 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
         this.min = min;
         this.max = max;
     }
-    
+
     @Override
-    public boolean is3D(){
+    public boolean is3D() {
         return min.is3D();
     }
 
@@ -162,7 +165,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
                 result = geomFactory.createEnvelope( new double[] { newMinX, newMinY },
                                                      new double[] { newMaxX, newMaxY }, DELTA, null );
             } else {
-                
+
             }
             break;
         }
@@ -223,6 +226,49 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
                 double maxX1 = this.getMax().getX();
                 double maxY1 = this.getMax().getY();
                 return px >= minX1 && px <= maxX1 && py >= minY1 && py <= maxY1;
+            }
+            case Curve: {
+                // CAUTION: incorrect hack to move forward in WMS!
+                double minx = min.getX();
+                double miny = min.getY();
+                double maxx = max.getX();
+                double maxy = max.getY();
+
+                Curve c = (Curve) primitive;
+
+                for ( Point pt : c.getControlPoints() ) {
+                    if ( minx < pt.getX() && pt.getX() < maxx && miny < pt.getY() && pt.getY() < maxy ) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            case Surface: {
+                // CAUTION: incorrect hack to move forward in WMS!
+                if ( primitive instanceof Polygon ) {
+                    double minx = min.getX();
+                    double miny = min.getY();
+                    double maxx = max.getX();
+                    double maxy = max.getY();
+
+                    Polygon p = (Polygon) primitive;
+                    for ( Point pt : p.getExteriorRingCoordinates() ) {
+                        if ( minx < pt.getX() && pt.getX() < maxx && miny < pt.getY() && pt.getY() < maxy ) {
+                            return true;
+                        }
+                    }
+
+                    for ( List<Point> list : p.getInteriorRingsCoordinates() ) {
+                        for ( Point pt : list ) {
+                            if ( minx < pt.getX() && pt.getX() < maxx && miny < pt.getY() && pt.getY() < maxy ) {
+                                return true;
+                            }
+                        }
+                    }
+
+                    return false;
+                }
             }
             default: {
                 throw new UnsupportedOperationException( "Intersects not implemented for Envelope/"
@@ -337,7 +383,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "min: " + min + ", max: " + max + ", crs: " + crs;
-    }    
+    }
 }
