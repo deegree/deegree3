@@ -211,7 +211,7 @@ public class ShapeDatastore {
                 }
             }
         }
-        if ( bbox != null ) {
+        if ( bbox != null && transformer != null ) {
             try {
                 bbox = (Envelope) transformer.transform( bbox );
             } catch ( IllegalArgumentException e ) {
