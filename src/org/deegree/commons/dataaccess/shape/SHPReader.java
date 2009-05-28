@@ -63,7 +63,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment;
+import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.slf4j.Logger;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
@@ -521,7 +521,7 @@ public class SHPReader {
                             throws IOException {
         double[][][] ps = readLines( m, z, length );
 
-        CurveSegment[] segs = new CurveSegment[ps.length];
+        LineStringSegment[] segs = new LineStringSegment[ps.length];
 
         for ( int i = 0; i < segs.length; ++i ) {
             LinkedList<Point> points = new LinkedList<Point>();
