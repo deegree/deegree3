@@ -48,7 +48,7 @@ import javax.xml.namespace.QName;
 import org.apache.xerces.impl.dv.XSSimpleType;
 
 /**
- * A {@link PropertyType} that defines a property with a simple value, e.g. a string or a number.
+ * A {@link PropertyType} that defines a property with a primitive value, e.g. a string or a number.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -60,6 +60,26 @@ public class SimplePropertyType extends AbstractPropertyType {
     private QName xsdType;
 
     private XSSimpleType typeDef;
+    
+    /**
+     * Known primitive types.
+     * <p>
+     * TODO add missing types
+     * </p>
+     * 
+     * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+     * @author last edited by: $Author: schneider $
+     * 
+     * @version $Revision: $, $Date: $
+     */
+    public enum PrimitiveType {        
+        STRING,
+        BOOLEAN,
+        INTEGER,
+        DATE,
+        FLOAT,
+        DOUBLE
+    }
 
     public SimplePropertyType( QName name, int minOccurs, int maxOccurs, XSSimpleType typeDef ) {
         super( name, minOccurs, maxOccurs );
@@ -69,6 +89,10 @@ public class SimplePropertyType extends AbstractPropertyType {
     public SimplePropertyType( QName name, int minOccurs, int maxOccurs, QName xsdType ) {
         super( name, minOccurs, maxOccurs );
         this.xsdType = xsdType;
+    }
+
+    public SimplePropertyType( QName propName, int minOccurs, int maxOccurs, PrimitiveType type ) {
+        super( propName, minOccurs, maxOccurs );
     }
 
     @Override
