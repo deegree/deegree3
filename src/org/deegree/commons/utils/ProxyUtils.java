@@ -48,7 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Utility class for accessing and modifying the VM's proxy configuration.
+ * Utility class for accessing and modifying the VM's proxy configuration and for opening URL connections that respect
+ * proxy configurations which require authentication.
  * <p>
  * Please note that Java's proxy configuration is VM-global: there is a set of system properties (proxyHost, proxyPort,
  * etc.) that determines the behaviour of network-related classes (e.g. in <code>java.net</code>). This makes sense, as
@@ -241,6 +242,7 @@ public final class ProxyUtils {
                             throws IOException {
         URLConnection conn = url.openConnection();
         if ( user != null ) {
+            // TODO evaluate java.net.Authenticator
             String userAndPass = new sun.misc.BASE64Encoder().encode( ( user + ":" + pass ).getBytes() );
             conn.setRequestProperty( "Proxy-Authorization", "Basic " + userAndPass );
         }

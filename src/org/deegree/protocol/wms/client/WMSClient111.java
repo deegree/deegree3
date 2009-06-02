@@ -520,10 +520,11 @@ public class WMSClient111 {
                        + format + "&transparent=" + transparent;
 
                 URL theUrl = new URL( url );
+                LOG.debug( "Connecting to URL " + theUrl );
                 URLConnection conn = ProxyUtils.openURLConnection( theUrl, ProxyUtils.getHttpProxyUser( true ),
                                                                    ProxyUtils.getHttpProxyPassword( true ) );
-
                 conn.connect();
+                LOG.debug( "Connected." );                
                 if ( LOG.isTraceEnabled() ) {
                     LOG.trace( "Requesting from " + theUrl );
                     LOG.trace( "Content type is " + conn.getContentType() );
@@ -540,12 +541,14 @@ public class WMSClient111 {
                         res.second = XML.work( conn.getInputStream() ).toString();
                     }
                 }
+                LOG.debug( "Received response." );
             } catch ( Exception e ) {
                 LOG.info( "Error performing GetMap request: " + e.getMessage(), e );
                 res.second = e.getMessage();
             }
 
             if ( errorsInImage && res.first == null ) {
+                LOG.debug ("Painting image with error: " + res.second);
                 if ( transparent ) {
                     // TODO create image of type RGBA
                     res.first = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
