@@ -55,24 +55,68 @@ import org.deegree.geometry.Geometry;
  *
  * @version $Revision:$, $Date:$
  */
-public class GeometryPropertyType extends AbstractPropertyType {
+public class GeometryPropertyType extends AbstractPropertyType {  
 
-    private QName xsdType;    
+    public enum GeometryType {
+        /** Any kind of geometry (primitive, composite or aggregate). */
+        GEOMETRY,
+        /** A primitive geometry. */
+        PRIMITIVE,
+        /** A composite geometry. */
+        COMPOSITE,
+        POINT,
+        CURVE,
+        LINE_STRING,
+        RING,
+        LINEAR_RING,
+        ORIENTABLE_CURVE,
+        COMPOSITE_CURVE,
+        SURFACE,
+        POLYHEDRAL_SURFACE,
+        TRIANGULATED_SURFACE,
+        TIN,
+        POLYGON,
+        ORIENTABLE_SURFACE,
+        COMPOSITE_SURFACE,
+        SOLID,
+        COMPOSITE_SOLID,
+        MULTI_GEOMETRY,
+        MULTI_POINT,
+        MULTI_CURVE,
+        MULTI_LINE_STRING,
+        MULTI_SURFACE,
+        MULTI_POLYGON,
+        MULTI_SOLID        
+    }
+    
+    public enum CoordinateDimension {
+        DIM_2,
+        DIM_3,
+        DIM_2_OR_3,
+    }
 
-    public GeometryPropertyType (QName name, int minOccurs, int maxOccurs, QName xsdType) {
+    private GeometryType geomType;
+    
+    private CoordinateDimension dim;
+    
+    public GeometryPropertyType (QName name, int minOccurs, int maxOccurs, GeometryType geomType, CoordinateDimension dim) {
         super (name, minOccurs, maxOccurs);
-        this.xsdType = xsdType;
+        this.geomType = geomType;
+        this.dim = dim;
     }
 
-    @Override
-    public QName getXSDValueType() {
-        return xsdType;
+    public GeometryType getGeometryType() {
+        return geomType;
     }
+    
+    public CoordinateDimension getCoordinateDimension() {
+        return dim;
+    }    
 
     @Override
     public String toString() {
         String s = "- geometry property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
-                   + ", geometry type: " + xsdType;
+                   + ", geometry type: " + geomType;
         return s;
     }    
 }

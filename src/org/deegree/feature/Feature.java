@@ -54,8 +54,8 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 
 /**
- * A feature is a structured object with named properties. Properties may have geometric and non-geometric values and
- * may be (nested) features.
+ * A feature is a structured object with named properties and an identifier. Properties may have geometric and
+ * non-geometric values and may be (nested) features.
  * <p>
  * The feature interface is designed to be compatible with the concepts from the following standards:
  * <p>
@@ -88,7 +88,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
     /**
      * Sets the id of the feature.
      * <p>
-     * In the GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3) or <code>fid</code>
+     * In an GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3) or <code>fid</code>
      * (GML 2) attribute of the feature element.
      * </p>
      * 
@@ -100,7 +100,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
     /**
      * Returns the name of the feature.
      * <p>
-     * In the GML representation of the feature, this corresponds to the feature element's name.
+     * In an GML representation of the feature, this corresponds to the feature element's name.
      * </p>
      * 
      * @return the name of the feature instance
@@ -166,8 +166,8 @@ public interface Feature extends Identifiable<String>, MatchableObject {
      * 
      * @return all geometry properties
      */
-    public Property<Geometry>[] getGeometryProperties();    
-    
+    public Property<Geometry>[] getGeometryProperties();
+
     /**
      * Returns the envelope of the feature.
      * 

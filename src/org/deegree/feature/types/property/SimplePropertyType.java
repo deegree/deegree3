@@ -45,8 +45,6 @@ package org.deegree.feature.types.property;
 
 import javax.xml.namespace.QName;
 
-import org.apache.xerces.impl.dv.XSSimpleType;
-
 /**
  * A {@link PropertyType} that defines a property with a primitive value, e.g. a string or a number.
  * 
@@ -57,10 +55,6 @@ import org.apache.xerces.impl.dv.XSSimpleType;
  */
 public class SimplePropertyType extends AbstractPropertyType {
 
-    private QName xsdType;
-
-    private XSSimpleType typeDef;
-    
     /**
      * Known primitive types.
      * <p>
@@ -77,38 +71,26 @@ public class SimplePropertyType extends AbstractPropertyType {
         BOOLEAN,
         INTEGER,
         DATE,
+        DATE_TIME,
         FLOAT,
-        DOUBLE
-    }
-
-    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, XSSimpleType typeDef ) {
-        super( name, minOccurs, maxOccurs );
-        this.typeDef = typeDef;
-    }
-
-    public SimplePropertyType( QName name, int minOccurs, int maxOccurs, QName xsdType ) {
-        super( name, minOccurs, maxOccurs );
-        this.xsdType = xsdType;
-    }
+        DOUBLE,
+    }    
+    
+    private PrimitiveType primitiveType;   
 
     public SimplePropertyType( QName propName, int minOccurs, int maxOccurs, PrimitiveType type ) {
         super( propName, minOccurs, maxOccurs );
+        this.primitiveType = type;
     }
 
-    @Override
-    public QName getXSDValueType() {
-        return xsdType;
+    public PrimitiveType getPrimitiveType() {
+        return primitiveType;
     }
 
     @Override
     public String toString() {
         String s = "- simple property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
-                   + ", xsdType: ";
-        if ( xsdType != null ) {
-            s += xsdType;
-        } else {
-            s += typeDef;
-        }
+                   + ", type: " + primitiveType;
         return s;
     }
 }

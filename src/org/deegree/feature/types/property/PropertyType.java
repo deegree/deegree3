@@ -82,11 +82,4 @@ public interface PropertyType {
      * @return the maximum number of times that this property must be present, or -1 (=unbounded)
      */    
     public int getMaxOccurs();
-
-    /**
-     * Returns the name of the XML type definition.
-     *
-     * @return the name of the XML type
-     */
-    public QName getXSDValueType();
 }

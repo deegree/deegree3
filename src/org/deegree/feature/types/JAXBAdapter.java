@@ -59,6 +59,7 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
 
 /**
@@ -71,7 +72,7 @@ import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
  */
 public class JAXBAdapter {
 
-    public org.deegree.feature.types.ApplicationSchema convert( ApplicationSchemaDecl jaxbSchema ) {
+    public ApplicationSchema convert( ApplicationSchemaDecl jaxbSchema ) {
         FeatureType[] fts = new FeatureType[jaxbSchema.getFeatureType().size()];
         int i = 0;
         for ( FeatureTypeDecl jaxbFt : jaxbSchema.getFeatureType() ) {
@@ -140,8 +141,10 @@ public class JAXBAdapter {
     private GeometryPropertyType convertGeometryPropertyDecl( GeometryPropertyDecl jaxbPropertyDecl ) {
         QName propName = getPropertyName (jaxbPropertyDecl);        
         int minOccurs = jaxbPropertyDecl.getMinOccurs().intValue();
-        int maxOccurs = getMaxOccurs( jaxbPropertyDecl );        
-        return new GeometryPropertyType (propName, minOccurs, maxOccurs, null );
+        int maxOccurs = getMaxOccurs( jaxbPropertyDecl );
+        // TODO
+        CoordinateDimension dim = CoordinateDimension.DIM_2_OR_3;        
+        return new GeometryPropertyType (propName, minOccurs, maxOccurs, null, dim );
     }
 
     private FeaturePropertyType convertFeaturePropertyDecl( FeaturePropertyDecl jaxbPropertyDecl ) {

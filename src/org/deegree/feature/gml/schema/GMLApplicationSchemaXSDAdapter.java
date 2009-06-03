@@ -72,6 +72,9 @@ import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.MeasurePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,10 +152,10 @@ public class GMLApplicationSchemaXSDAdapter {
 
     private FeatureType buildFeatureType( XSElementDeclaration featureElementDecl ) {
         QName ftName = new QName( featureElementDecl.getNamespace(), featureElementDecl.getName() );
-        LOG.debug( "Building feature type declaration: '" + ftName + "'" );
+        LOG.info( "Building feature type declaration: '" + ftName + "'" );
 
         if ( featureElementDecl.getTypeDefinition().getType() == XSTypeDefinition.SIMPLE_TYPE ) {
-            String msg = "The type of feature element '" + ftName
+            String msg = "The schema type of feature element '" + ftName
                          + "' is simple, but feature elements must always have a complex type.";
             throw new IllegalArgumentException( msg );
         }
@@ -301,7 +304,8 @@ public class GMLApplicationSchemaXSDAdapter {
         XSTypeDefinition typeDef = elementDecl.getTypeDefinition();
         switch ( typeDef.getTypeCategory() ) {
         case XSTypeDefinition.SIMPLE_TYPE: {
-            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, (XSSimpleType) typeDef );
+            PrimitiveType type = getPrimitiveType ((XSSimpleType) typeDef);
+            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, type );
             break;
         }
         case XSTypeDefinition.COMPLEX_TYPE: {
@@ -482,7 +486,8 @@ public class GMLApplicationSchemaXSDAdapter {
                         QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
                         if ( geometryNameToGeometryElement.get( elementName ) != null ) {
                             LOG.debug( "Identified a geometry property." );
-                            return new GeometryPropertyType( ptName, minOccurs, maxOccurs, elementName );
+                            GeometryType geometryType = getGeometryType( elementName );
+                            return new GeometryPropertyType( ptName, minOccurs, maxOccurs, geometryType, CoordinateDimension.DIM_2_OR_3 );
                         }
                     }
                     case XSConstants.WILDCARD: {
@@ -518,6 +523,16 @@ public class GMLApplicationSchemaXSDAdapter {
             break;
         }
         }
+        return null;
+    }
+    
+    private GeometryType getGeometryType (QName gmlGeometryName) {
+        LOG.info( "Mapping '" + gmlGeometryName + "'...");
+        return null;
+    }
+
+    private PrimitiveType getPrimitiveType( XSSimpleType typeDef ) {
+        LOG.info( "Mapping '" + typeDef.getName() + "'...");
         return null;
     }
 }

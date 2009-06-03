@@ -71,6 +71,8 @@ import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
@@ -239,8 +241,8 @@ public class ShapeDatastore {
                 fields = dbf.getFields();
             }
         }
-        GeometryPropertyType geom = new GeometryPropertyType( new QName( "geometry" ), 0, 1,
-                                                              new QName( "http://www.opengis.net/gml", "geometry" ) );
+        GeometryPropertyType geom = new GeometryPropertyType( new QName( "geometry" ), 0, 1, GeometryType.GEOMETRY,
+                                                              CoordinateDimension.DIM_2_OR_3 );
         fields.add( geom );
 
         GenericFeatureType type = new GenericFeatureType( new QName( "feature" ), fields, false );

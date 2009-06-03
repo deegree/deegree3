@@ -77,6 +77,9 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
+import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
+import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
 import org.deegree.geometry.Geometry;
 import org.junit.Test;
 
@@ -100,9 +103,9 @@ public class GMLFeatureParserTest {
         // manually set up a simple "app:Country" feature type
         List<PropertyType> propDecls = new ArrayList<PropertyType>();
         propDecls.add( new SimplePropertyType( new QName( "http://www.deegree.org/app", "name" ), 1, 1,
-                                               new QName( "http://www.w3.org/2001/XMLSchema", "string" ) ) );
+                                               PrimitiveType.STRING ) );
         propDecls.add( new GeometryPropertyType( new QName( "http://www.deegree.org/app", "boundary" ), 1, 1,
-                                                 new QName( "http://www.opengis.net", "MultiSurfacePropertyType" ) ) );
+                                                 GeometryType.MULTI_SURFACE, CoordinateDimension.DIM_2 ) );
 
         FeatureType ft = new GenericFeatureType( new QName( "http://www.deegree.org/app", "Country" ), propDecls, false );
         FeatureType[] fts = new FeatureType[] { ft };
@@ -135,9 +138,9 @@ public class GMLFeatureParserTest {
         // manually set up a simple "app:Country" feature type
         List<PropertyType> propDecls = new ArrayList<PropertyType>();
         propDecls.add( new SimplePropertyType( new QName( "name" ), 1, 1,
-                                               new QName( "http://www.w3.org/2001/XMLSchema", "string" ) ) );
-        propDecls.add( new GeometryPropertyType( new QName( "boundary" ), 1, 1, new QName( "http://www.opengis.net",
-                                                                                           "MultiSurfacePropertyType" ) ) );
+                                               PrimitiveType.STRING ) );
+        propDecls.add( new GeometryPropertyType( new QName( "http://www.deegree.org/app", "boundary" ), 1, 1,
+                                                 GeometryType.MULTI_SURFACE, CoordinateDimension.DIM_2 ) );
 
         FeatureType ft = new GenericFeatureType( new QName( "Country" ), propDecls, false );
         FeatureType[] fts = new FeatureType[] { ft };
@@ -177,9 +180,9 @@ public class GMLFeatureParserTest {
         // manually set up a simple "app:Country" feature type
         List<PropertyType> propDecls = new ArrayList<PropertyType>();
         propDecls.add( new SimplePropertyType( new QName( "http://www.deegree.org/app", "name" ), 1, 1,
-                                               new QName( "http://www.w3.org/2001/XMLSchema", "string" ) ) );
+                                               PrimitiveType.STRING ) );
         propDecls.add( new GeometryPropertyType( new QName( "http://www.deegree.org/app", "boundary" ), 1, 1,
-                                                 new QName( "http://www.opengis.net", "MultiSurfacePropertyType" ) ) );
+                                                 GeometryType.MULTI_SURFACE, CoordinateDimension.DIM_2 ) );
         fts[0] = new GenericFeatureType( new QName( "http://www.deegree.org/app", "Country" ), propDecls, false );
 
         // manually set up "gml:FeatureCollection" feature (collection) type

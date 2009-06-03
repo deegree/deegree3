@@ -54,7 +54,6 @@ public class CustomComplexPropertyType extends AbstractPropertyType {
         this.xsdType = xsdType;
     }
 
-    @Override
     public QName getXSDValueType() {
         return xsdType;
     }

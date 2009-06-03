@@ -110,12 +110,7 @@ public class FeaturePropertyType extends AbstractPropertyType {
     @Override
     public String toString() {
         String s = "- feature property type: '" + name + "', minOccurs=" + minOccurs + ", maxOccurs=" + maxOccurs
-                   + ", value feature type: " + valueFt.getName();
+                   + ", value feature type: " + valueFtName;
         return s;
-    }
-
-    @Override
-    public QName getXSDValueType() {
-        return valueFtName;
     }
 }

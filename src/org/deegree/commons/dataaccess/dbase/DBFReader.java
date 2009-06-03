@@ -60,6 +60,7 @@ import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
 import org.slf4j.Logger;
 
 /**
@@ -167,36 +168,29 @@ public class DBFReader {
                     fieldLength += fieldPrecision << 8;
                     LOG.trace( "Field length is changed to " + fieldLength + " for text field." );
                 }
-                pt = new SimplePropertyType( new QName( name ), 0, 1, new QName( "http://www.w3.org/2001/XMLSchema",
-                                                                                 "string" ) );
+                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.STRING );
                 break;
             case 'N':
-                pt = new SimplePropertyType( new QName( name ), 0, 1, new QName( "http://www.w3.org/2001/XMLSchema",
-                                                                                 fieldPrecision == 0 ? "integer"
-                                                                                                    : "double" ) );
+                pt = new SimplePropertyType( new QName( name ), 0, 1, fieldPrecision == 0 ? PrimitiveType.INTEGER
+                                                                                         : PrimitiveType.DOUBLE );
                 break;
             case 'L':
-                pt = new SimplePropertyType( new QName( name ), 0, 1, new QName( "http://www.w3.org/2001/XMLSchema",
-                                                                                 "boolean" ) );
+                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.BOOLEAN );
                 break;
             case 'D':
-                pt = new SimplePropertyType( new QName( name ), 0, 1, new QName( "http://www.w3.org/2001/XMLSchema",
-                                                                                 "date" ) );
+                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.DATE );
                 break;
             case 'F':
-                pt = new SimplePropertyType( new QName( name ), 0, 1, new QName( "http://www.w3.org/2001/XMLSchema",
-                                                                                 "double" ) );
+                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.DOUBLE );
                 break;
             case 'T':
                 LOG.warn( "Date/Time fields are not supported. Please send the file to the devs, so they can implement it." );
                 break;
             case 'I':
-                pt = new SimplePropertyType( new QName( name ), 0, 1, new QName( "http://www.w3.org/2001/XMLSchema",
-                                                                                 "int" ) );
+                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.INTEGER );
                 break;
             case '@':
-                pt = new SimplePropertyType( new QName( name ), 0, 1, new QName( "http://www.w3.org/2001/XMLSchema",
-                                                                                 "dateTime" ) );
+                pt = new SimplePropertyType( new QName( name ), 0, 1, PrimitiveType.DATE_TIME );
                 break;
             case 'O':
                 LOG.warn( "Double fields are not supported. Please send the file to the devs, so they can implement it." );
@@ -207,7 +201,7 @@ public class DBFReader {
             }
 
             LOG.trace( "Found field with name '" + name + "' and type "
-                       + ( pt != null ? pt.getXSDValueType() : " no supported type." ) );
+                       + ( pt != null ? pt.getPrimitiveType() : " no supported type." ) );
 
             fields.put( name, new Field( type, pt, fieldLength ) );
             fieldOrder.add( name );
@@ -263,7 +257,7 @@ public class DBFReader {
             case 'F': {
                 in.readFully( bs );
                 String val = getString( bs, encoding ).trim();
-                if ( field.propertyType.getXSDValueType().getLocalPart().equals( "integer" ) ) {
+                if ( field.propertyType.getPrimitiveType() == PrimitiveType.INTEGER ) {
                     property = new GenericProperty<Integer>( field.propertyType, val.isEmpty() ? null
                                                                                               : Integer.valueOf( val ) );
                 } else {
