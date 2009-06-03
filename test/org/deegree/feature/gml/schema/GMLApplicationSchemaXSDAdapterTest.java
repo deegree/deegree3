@@ -17,9 +17,7 @@ public class GMLApplicationSchemaXSDAdapterTest {
         GMLApplicationSchemaXSDAdapter adapter = new GMLApplicationSchemaXSDAdapter( schemaURL, GMLVersion.VERSION_31 );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         for ( FeatureType ft : fts ) {
-            if ( ft.getName().getLocalPart().equals( "BP_WaldFlaeche" ) ) {
-                System.out.println( ft );
-            }
+            System.out.println( ft );
         }
     }
 }

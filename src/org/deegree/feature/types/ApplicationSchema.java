@@ -51,6 +51,9 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSModel;
+import org.deegree.feature.i18n.Messages;
+import org.deegree.feature.types.property.FeaturePropertyType;
+import org.deegree.feature.types.property.PropertyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,8 +66,8 @@ import org.slf4j.LoggerFactory;
  * @version $Revision:$, $Date:$
  */
 public class ApplicationSchema {
-    
-    private static final Logger LOG = LoggerFactory.getLogger( ApplicationSchema.class );    
+
+    private static final Logger LOG = LoggerFactory.getLogger( ApplicationSchema.class );
 
     private final Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
@@ -85,12 +88,17 @@ public class ApplicationSchema {
      *            all feature types (abstract and non-abstract)
      * @param ftSubstitutionGroupRelation
      *            key: feature type A, value: feature type B (A is in substitutionGroup B)
-     * @param model 
+     * @param model
+     * @throws IllegalArgumentException
+     *             if a feature type cannot be resolved (i.e. it is referenced but not defined)
      */
-    public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftSubstitutionGroupRelation, XSModel model ) {        
+    public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftSubstitutionGroupRelation,
+                              XSModel model ) throws IllegalArgumentException {
         for ( FeatureType ft : fts ) {
             ftNameToFt.put( ft.getName(), ft );
         }
+
+        // build substitution group lookup maps
         for ( FeatureType ft : ftSubstitutionGroupRelation.keySet() ) {
             this.ftToSubstitutionGroup.put( ft, ftSubstitutionGroupRelation.get( ft ) );
         }
@@ -103,6 +111,22 @@ public class ApplicationSchema {
             }
             ftToSubstitutionGroups.put( ft, substitutionGroups );
         }
+
+        // resolve values in feature property declarations
+        for ( FeatureType ft : fts ) {
+            for ( PropertyType pt : ft.getPropertyDeclarations() ) {
+                if ( pt instanceof FeaturePropertyType ) {
+                    QName referencedFtName = ( (FeaturePropertyType) pt ).getFTName();
+                    FeatureType referencedFt = ftNameToFt.get( referencedFtName );
+                    if ( referencedFt == null ) {
+                        String msg = Messages.getMessage( "ERROR_SCHEMA_UNKNOWN_FEATURE_TYPE_IN_PROPERTY",
+                                                          referencedFtName, pt.getName() );
+                        throw new IllegalArgumentException( msg );
+                    }
+                }
+            }
+        }
+
         this.model = model;
     }
 
@@ -121,7 +145,7 @@ public class ApplicationSchema {
     }
 
     /**
-     * Returns the feature type with the given name.
+     * Retrieves the feature type with the given name.
      * 
      * @param ftName
      *            feature type name to look up
@@ -131,35 +155,49 @@ public class ApplicationSchema {
         return ftNameToFt.get( ftName );
     }
 
+    /**
+     * Retrieves all substitutions (abstract and non-abstract ones) for the given feature type.
+     * 
+     * @param ft
+     * @return all substitutions for the given feature type
+     */
     public FeatureType getSubstitutions( FeatureType ft ) {
         return null;
     }
 
+    /**
+     * Retrieves all concrete substitutions for the given feature type.
+     * 
+     * @param ft
+     * @return all concrete substitutions for the given feature type
+     */    
     public FeatureType getConcreteSubstitutions( FeatureType ft ) {
         return null;
     }
 
     /**
-     * Determines whether a feature type is substitutable for another feature type.
+     * Determines whether a feature type is substitutable for another feature type according to the schema.
+     * <p>
+     * This is true, iff <code>substitution</code> is either:
+     * <ul>
+     * <li>equal to <code>ft</code></li>
+     * <li>in the substitutionGroup of <code>ft</code></li>
+     * <li>transititively substitutable for <code>ft</code></li>
+     * </ul>
      * 
      * @param ft
      * @param substitution
-     * @return true, if <code>substitution</code> is:
-     *         <ul>
-     *         <li>equal to <code>ft</code></li>
-     *         <li>in the substitutionGroup of <code>ft</code></li>
-     *         <li>transititively substitutable for <code>ft</code></li>
-     *         </ul>
+     * @return true, if the first feature type is a valid substitution for the second
      */
     public boolean isValidSubstitution( FeatureType ft, FeatureType substitution ) {
-        LOG.debug ("ft: " + ft.getName() + ", substitution: " + substitution.getName());
-        if (ft == substitution) {
+        LOG.debug( "ft: " + ft.getName() + ", substitution: " + substitution.getName() );
+        if ( ft == substitution ) {
             return true;
         }
         List<FeatureType> substitutionGroups = ftToSubstitutionGroups.get( substitution );
-        if (substitutionGroups != null) {
+        if ( substitutionGroups != null ) {
             for ( FeatureType substitutionGroup : substitutionGroups ) {
-                if (ft == substitutionGroup) {
+                if ( ft == substitutionGroup ) {
                     return true;
                 }
             }

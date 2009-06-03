@@ -98,9 +98,7 @@ org.deegree.feature.gml.validation.GML311GeometryValidatorTest.class,
 org.deegree.feature.xpath.FeatureXPathTest.class,
 org.deegree.geometry.GeometryTest.class,
 org.deegree.geometry.linearization.CurveLinearizerTest.class,
-org.deegree.geometry.validation.GeometryValidatorTest.class,
-org.deegree.model.gml.GMLFeatureParserTest.class,
-org.deegree.model.gml.schema.GMLApplicationSchemaXSDAdapterTest.class
+org.deegree.geometry.validation.GeometryValidatorTest.class
 } )
 public class CommonsTestSuite {
 

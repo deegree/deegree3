@@ -41,6 +41,7 @@ package org.deegree.feature.types;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -63,7 +64,8 @@ import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimensi
 import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
 
 /**
- * The <code></code> class TODO add class documentation here.
+ * Adapter for retrieving the contents of a deegree application schema declaration document as an
+ * {@link ApplicationSchema}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -72,13 +74,25 @@ import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
  */
 public class JAXBAdapter {
 
-    public ApplicationSchema convert( ApplicationSchemaDecl jaxbSchema ) {
+    private ApplicationSchemaDecl jaxbSchema;
+
+    public JAXBAdapter( URL url ) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.types.jaxb" );
+        Unmarshaller u = jc.createUnmarshaller();
+        this.jaxbSchema = (ApplicationSchemaDecl) u.unmarshal( url );
+    }
+
+    public JAXBAdapter( ApplicationSchemaDecl jaxbSchema ) {
+        this.jaxbSchema = jaxbSchema;
+    }
+
+    public ApplicationSchema getApplicationSchema() {
         FeatureType[] fts = new FeatureType[jaxbSchema.getFeatureType().size()];
         int i = 0;
         for ( FeatureTypeDecl jaxbFt : jaxbSchema.getFeatureType() ) {
             fts[i++] = convert( jaxbFt );
         }
-        return new ApplicationSchema (fts, null, null);
+        return new ApplicationSchema( fts, new HashMap<FeatureType,FeatureType>(), null );
     }
 
     private FeatureType convert( FeatureTypeDecl jaxbFt ) {
@@ -87,6 +101,9 @@ public class JAXBAdapter {
         for ( JAXBElement<? extends AbstractPropertyDecl> jaxbPropertyEl : jaxbFt.getAbstractProperty() ) {
             props.add( convert( jaxbPropertyEl.getValue() ) );
         }
+        if ("".equals( ftName.getPrefix())) {
+            ftName = new QName (jaxbSchema.getTargetNamespace(), ftName.getLocalPart());
+        }        
         return new GenericFeatureType( ftName, props, false );
     }
 
@@ -105,11 +122,11 @@ public class JAXBAdapter {
     }
 
     private SimplePropertyType convertSimplePropertyDecl( SimplePropertyDecl jaxbPropertyDecl ) {
-        QName propName = getPropertyName (jaxbPropertyDecl);        
-        int minOccurs = jaxbPropertyDecl.getMinOccurs().intValue();
+        QName propName = getPropertyName( jaxbPropertyDecl );
+        int minOccurs = getMinOccurs( jaxbPropertyDecl );
         int maxOccurs = getMaxOccurs( jaxbPropertyDecl );
         PrimitiveType type = null;
-        switch (jaxbPropertyDecl.getType()) {
+        switch ( jaxbPropertyDecl.getType() ) {
         case STRING: {
             type = PrimitiveType.STRING;
             break;
@@ -133,44 +150,55 @@ public class JAXBAdapter {
         case FLOAT: {
             type = PrimitiveType.FLOAT;
             break;
-        }                
-        }        
-        return new SimplePropertyType (propName, minOccurs, maxOccurs, type);
+        }
+        }
+        return new SimplePropertyType( propName, minOccurs, maxOccurs, type );
     }
-   
+
     private GeometryPropertyType convertGeometryPropertyDecl( GeometryPropertyDecl jaxbPropertyDecl ) {
-        QName propName = getPropertyName (jaxbPropertyDecl);        
-        int minOccurs = jaxbPropertyDecl.getMinOccurs().intValue();
+        QName propName = getPropertyName( jaxbPropertyDecl );
+        int minOccurs = getMinOccurs( jaxbPropertyDecl );
         int maxOccurs = getMaxOccurs( jaxbPropertyDecl );
         // TODO
-        CoordinateDimension dim = CoordinateDimension.DIM_2_OR_3;        
-        return new GeometryPropertyType (propName, minOccurs, maxOccurs, null, dim );
+        CoordinateDimension dim = CoordinateDimension.DIM_2_OR_3;
+        return new GeometryPropertyType( propName, minOccurs, maxOccurs, null, dim );
     }
 
     private FeaturePropertyType convertFeaturePropertyDecl( FeaturePropertyDecl jaxbPropertyDecl ) {
-        QName propName = getPropertyName (jaxbPropertyDecl);
-        int minOccurs = jaxbPropertyDecl.getMinOccurs().intValue();
+        QName propName = getPropertyName( jaxbPropertyDecl );
+        int minOccurs = getMinOccurs( jaxbPropertyDecl );
         int maxOccurs = getMaxOccurs( jaxbPropertyDecl );
         QName valueFtName = jaxbPropertyDecl.getType();
-        return new FeaturePropertyType(propName, minOccurs, maxOccurs, valueFtName);
+        if ("".equals( valueFtName.getPrefix())) {
+            valueFtName = new QName (jaxbSchema.getTargetNamespace(), valueFtName.getLocalPart());
+        }        
+        return new FeaturePropertyType( propName, minOccurs, maxOccurs, valueFtName );
     }
 
     private QName getPropertyName( AbstractPropertyDecl jaxbPropertyDecl ) {
         return jaxbPropertyDecl.getName();
     }
 
-    private int getMaxOccurs (AbstractPropertyDecl propertyDecl) {
+    private int getMinOccurs( AbstractPropertyDecl propertyDecl ) {
+        int minOccurs = 1;
+        if ( propertyDecl.getMinOccurs() != null ) {
+            minOccurs = propertyDecl.getMinOccurs().intValue();
+        }
+        return minOccurs;
+    }    
+    
+    private int getMaxOccurs( AbstractPropertyDecl propertyDecl ) {
         int maxOccurs = 1;
-        if (propertyDecl.getMaxOccurs() != null) {
-            if ("unbounded".equals( maxOccurs )) {
+        if ( propertyDecl.getMaxOccurs() != null ) {
+            if ( "unbounded".equals( propertyDecl.getMaxOccurs() ) ) {
                 maxOccurs = -1;
             } else {
-                maxOccurs = Integer.parseInt( propertyDecl.getMaxOccurs());
+                maxOccurs = Integer.parseInt( propertyDecl.getMaxOccurs() );
             }
         }
         return maxOccurs;
-    }    
-    
+    }
+
     /**
      * @param args
      * @throws JAXBException
@@ -179,12 +207,11 @@ public class JAXBAdapter {
     public static void main( String[] args )
                             throws JAXBException, MalformedURLException {
 
-        JAXBContext jc = JAXBContext.newInstance( "org.deegree.feature.types.jaxb" );
-        Unmarshaller u = jc.createUnmarshaller();
-        ApplicationSchemaDecl jaxbSchema = (ApplicationSchemaDecl) u.unmarshal( new URL(
-                                                                                         "file:/home/schneider/workspace/d3_commons/resources/schema/feature/example.xml" ) );
-        for ( FeatureTypeDecl ft : jaxbSchema.getFeatureType() ) {
-            System.out.println( "ft: " + ft.getName() );
+        URL url = new URL( "file:/home/schneider/workspace/d3_commons/resources/schema/feature/example.xml" );
+        JAXBAdapter adapter = new JAXBAdapter( url );
+        ApplicationSchema schema = adapter.getApplicationSchema();
+        for ( FeatureType ft : schema.getFeatureTypes() ) {
+            System.out.println( "\nft: " + ft );
         }
     }
 }
