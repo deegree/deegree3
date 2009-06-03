@@ -88,10 +88,10 @@ public class FeaturePropertyType extends AbstractPropertyType {
     }
 
     public FeatureType getValueFt() {
-        if ( valueFt == null ) {
-            String msg = "Internal error. Reference to feature type '" + valueFtName + "' has not been resolved.";
-            throw new RuntimeException (msg);
-        }
+//        if ( valueFt == null ) {
+//            String msg = "Internal error. Reference to feature type '" + valueFtName + "' has not been resolved.";
+//            throw new RuntimeException (msg);
+//        }
         return valueFt;
     }
 

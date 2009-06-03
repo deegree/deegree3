@@ -49,12 +49,15 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 
 /**
  * {@link Feature} implementation that allows the representation of arbitrary {@link SimpleFeature}s.
+ * 
+ * @see GenericFeature
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -110,8 +113,7 @@ public class GenericSimpleFeature extends AbstractFeature implements SimpleFeatu
     @Override
     public void setPropertyValue( QName propName, int occurence, Object value ) {
         if ( occurence != 0 ) {
-            String msg = "Cannot set value of the " + occurence + ". occurence in '" + ft.getName()
-                         + "' feature: multi properties are not allowed in simple features.";
+            String msg = Messages.getMessage( "SIMPLE_FEATURE_MULTIPLE_PROPERTY", occurence, propName, ft.getName() );
             throw new IllegalArgumentException( msg );
         }
         setPropertyValue( propName, value );

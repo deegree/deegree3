@@ -57,8 +57,16 @@ import org.deegree.feature.types.property.PropertyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+
 /**
  * Defines a number of {@link FeatureType}s and their substitution relations.
+ * <p>
+ * Some notes:
+ * <ul>
+ * <li>There is no default head for the feature type substitution relation as in GML (prior to 3.2: gml:_Feature, since
+ * 3.2: gml:AbstractFeature).</li>
+ * </ul> 
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -123,9 +131,21 @@ public class ApplicationSchema {
                                                           referencedFtName, pt.getName() );
                         throw new IllegalArgumentException( msg );
                     }
+                    ( (FeaturePropertyType) pt ).resolve( referencedFt );
                 }
             }
         }
+
+        // add type for 'gml:FeatureCollection' element
+        // TODO do this someplace else (maybe in GMLFeatureParser)
+        List<PropertyType> props = Collections.singletonList( new FeaturePropertyType(
+                                                                                       new QName(
+                                                                                                  "http://www.opengis.net/gml",
+                                                                                                  "featureMember" ), 0,
+                                                                                       -1, null ) );
+        FeatureCollectionType fc = new GenericFeatureCollectionType( new QName( "http://www.opengis.net/gml",
+                                                                                "FeatureCollection" ), props, false );
+        ftNameToFt.put( fc.getName(), fc );
 
         this.model = model;
     }
@@ -170,7 +190,7 @@ public class ApplicationSchema {
      * 
      * @param ft
      * @return all concrete substitutions for the given feature type
-     */    
+     */
     public FeatureType getConcreteSubstitutions( FeatureType ft ) {
         return null;
     }
@@ -190,6 +210,10 @@ public class ApplicationSchema {
      * @return true, if the first feature type is a valid substitution for the second
      */
     public boolean isValidSubstitution( FeatureType ft, FeatureType substitution ) {
+        if ( substitution == null || ft == null ) {
+            LOG.warn( "Testing substitutability against null feature type." );
+            return true;
+        }
         LOG.debug( "ft: " + ft.getName() + ", substitution: " + substitution.getName() );
         if ( ft == substitution ) {
             return true;

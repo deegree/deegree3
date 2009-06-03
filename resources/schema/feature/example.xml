@@ -2,10 +2,18 @@
 <ApplicationSchema targetNamespace="http://www.deegree.org/app"
     xmlns="http://www.deegree.org/feature/featuretype"
     xmlns:app="http://www.deegree.org/app"
+    xmlns:gml="http://www.opengis.net/gml"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.deegree.org/feature/featuretype ./0.1.0/featuretype_definition.xsd">
 
   <FeatureType name="Philosopher">
+<!--
+    <CustomProperty name="gml:metaDataProperty" minOccurs="0" maxOccurs="unbounded"/>
+    <CustomProperty name="gml:description"/>
+    <CodeProperty name="gml:name" minOccurs="0" maxOccurs="unbounded"/>
+    <BoundingShapeProperty name="gml:boundedBy"/>
+    <CustomProperty name="gml:location"/> 
+ -->
     <SimpleProperty name="id" type="integer"/>
     <SimpleProperty name="name" type="string"/>
     <SimpleProperty name="sex" type="string"/>
@@ -36,5 +44,10 @@
     <SimpleProperty name="queryBBoxOverlap" type="float" minOccurs="0" />
     <GeometryProperty name="geom" type="MultiSurface" coordinateDimension="2D"/>
   </FeatureType>
-  
+
+  <FeatureType name="Book">
+    <SimpleProperty name="title" type="string"/>
+    <SimpleProperty name="publicationDate" type="date"/>
+  </FeatureType>
+ 
 </ApplicationSchema>

@@ -52,7 +52,8 @@ import org.deegree.feature.types.FeatureCollectionType;
 /**
  * A feature collection is a collection of {@link Feature} instances.
  * <p>
- * Note that a {@link FeatureCollection} is a {@link Feature} itself.
+ * Note that a {@link FeatureCollection} is a {@link Feature} itself, which complies to the common interpretation, e.g.
+ * in GML.
  * </p>
  * 
  * @see Feature

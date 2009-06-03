@@ -74,7 +74,7 @@ public class Messages {
 
     /* This definition allows Eclipse to display the content of referenced message keys. */
     @SuppressWarnings("unused")
-    private static final String BUNDLE_NAME = "org.deegree.commons.i18n.messages_en";
+    private static final String BUNDLE_NAME = "org.deegree.feature.i18n.messages_en";
 
     private static Properties defaultProps = new Properties();
 

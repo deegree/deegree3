@@ -64,7 +64,7 @@ import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimensi
 import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
 
 /**
- * Adapter for retrieving the contents of a deegree application schema declaration document as an
+ * Adapter for converting the contents of a deegree application schema declaration document as an
  * {@link ApplicationSchema}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -73,7 +73,7 @@ import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
  * @version $Revision: $, $Date: $
  */
 public class JAXBAdapter {
-
+  
     private ApplicationSchemaDecl jaxbSchema;
 
     public JAXBAdapter( URL url ) throws JAXBException {
@@ -176,9 +176,16 @@ public class JAXBAdapter {
     }
 
     private QName getPropertyName( AbstractPropertyDecl jaxbPropertyDecl ) {
-        return jaxbPropertyDecl.getName();
+        return normalizeQName( jaxbPropertyDecl.getName());
     }
 
+    private QName normalizeQName( QName name ) {
+        if ("".equals( name.getPrefix())) {
+            name = new QName (jaxbSchema.getTargetNamespace(), name.getLocalPart());
+        } 
+        return name;
+    } 
+    
     private int getMinOccurs( AbstractPropertyDecl propertyDecl ) {
         int minOccurs = 1;
         if ( propertyDecl.getMinOccurs() != null ) {

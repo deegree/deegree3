@@ -124,8 +124,8 @@ public class GMLFeatureParser extends XMLAdapter {
         this.geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
         this.idContext = idContext;
         this.geomParser = new GML311GeometryParser( geomFac, idContext );
-    }    
-    
+    }
+
     /**
      * Creates a new <code>FeatureGMLAdapter</code> instance instance that is configured for building features with the
      * specified feature types.
@@ -134,7 +134,7 @@ public class GMLFeatureParser extends XMLAdapter {
      *            schema
      */
     public GMLFeatureParser( ApplicationSchema schema ) {
-        this (schema, new GMLIdContext());
+        this( schema, new GMLIdContext() );
     }
 
     /**
@@ -251,25 +251,28 @@ public class GMLFeatureParser extends XMLAdapter {
             return true;
         }
 
-        XSElementDeclaration elementDecl = xsModel.getElementDeclaration( elemName.getLocalPart(),
-                                                                          elemName.getNamespaceURI() );
+        // TODO we don't want the xsModel here
+        if ( xsModel != null ) {
 
-        XSElementDeclaration propElementDecl = xsModel.getElementDeclaration( ptName.getLocalPart(),
-                                                                              ptName.getNamespaceURI() );
+            XSElementDeclaration elementDecl = xsModel.getElementDeclaration( elemName.getLocalPart(),
+                                                                              elemName.getNamespaceURI() );
 
-        if ( elementDecl == null || propElementDecl == null ) {
-            LOG.debug( "Not defined as a top level element." );
-            return false;
-        }
+            XSElementDeclaration propElementDecl = xsModel.getElementDeclaration( ptName.getLocalPart(),
+                                                                                  ptName.getNamespaceURI() );
 
-        XSObjectList list = xsModel.getSubstitutionGroup( propElementDecl );
-        for ( int i = 0; i < list.getLength(); i++ ) {
-            if ( list.item( i ).equals( elementDecl ) ) {
-                LOG.debug( "Yep. In substitution group." );
-                return true;
+            if ( elementDecl == null || propElementDecl == null ) {
+                LOG.debug( "Not defined as a top level element." );
+                return false;
+            }
+
+            XSObjectList list = xsModel.getSubstitutionGroup( propElementDecl );
+            for ( int i = 0; i < list.getLength(); i++ ) {
+                if ( list.item( i ).equals( elementDecl ) ) {
+                    LOG.debug( "Yep. In substitution group." );
+                    return true;
+                }
             }
         }
-
         return false;
     }
 
@@ -344,12 +347,15 @@ public class GMLFeatureParser extends XMLAdapter {
                         String msg = Messages.getMessage( "ERROR_INVALID_FEATURE_PROPERTY", propName );
                         throw new XMLParsingException( xmlStream, msg );
                     }
-                    FeatureType expectedFt = ( (FeaturePropertyType) propDecl ).getValueFt();
-                    FeatureType presentFt = lookupFeatureType( xmlStream, xmlStream.getName() );
-                    if ( !schema.isValidSubstitution( expectedFt, presentFt ) ) {
-                        String msg = Messages.getMessage( "ERROR_PROPERTY_WRONG_FEATURE_TYPE", expectedFt.getName(),
-                                                          propName, presentFt.getName() );
-                        throw new XMLParsingException( xmlStream, msg );
+                    // TODO make this check (no constraints on contained feature type) better
+                    if ( ( (FeaturePropertyType) propDecl ).getFTName() != null ) {
+                        FeatureType expectedFt = ( (FeaturePropertyType) propDecl ).getValueFt();
+                        FeatureType presentFt = lookupFeatureType( xmlStream, xmlStream.getName() );
+                        if ( !schema.isValidSubstitution( expectedFt, presentFt ) ) {
+                            String msg = Messages.getMessage( "ERROR_PROPERTY_WRONG_FEATURE_TYPE",
+                                                              expectedFt.getName(), propName, presentFt.getName() );
+                            throw new XMLParsingException( xmlStream, msg );
+                        }
                     }
                     Feature subFeature = parseFeature( xmlStream, crs );
                     property = new GenericProperty<Feature>( propDecl, propName, subFeature );

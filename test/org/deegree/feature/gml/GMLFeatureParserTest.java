@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -73,6 +74,7 @@ import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
 import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.types.JAXBAdapter;
 import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -282,11 +284,16 @@ public class GMLFeatureParserTest {
     public void testParsingPhilosopherFeatureCollection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException {
-        String schemaURL = this.getClass().getResource( "schema/Philosopher_typesafe.xsd" ).toString();
-        GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
-                                                                                        GMLVersion.VERSION_31 );
-        ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
+                            XMLParsingException, UnknownCRSException, JAXBException {
+
+        URL url = new URL( "file:/home/schneider/workspace/d3_commons/resources/schema/feature/example.xml" );
+        JAXBAdapter adapter = new JAXBAdapter( url );
+        ApplicationSchema schema = adapter.getApplicationSchema();        
+        
+//        String schemaURL = this.getClass().getResource( "schema/Philosopher_typesafe.xsd" ).toString();
+//        GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
+//                                                                                        GMLVersion.VERSION_31 );
+//        ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
@@ -302,7 +309,7 @@ public class GMLFeatureParserTest {
         idContext.resolveXLinks( schema );
 
         for ( Feature member : fc ) {
-            System.out.println( member.getId() );
+            System.out.println( member );
         }
     }
 

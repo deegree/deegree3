@@ -57,6 +57,23 @@
           </documentation>
         </annotation>
       </attribute>
+      <attribute name="abstract" type="boolean" use="optional">
+        <annotation>
+          <documentation>
+            If true, the feature type is abstract and cannot be
+            instantiated.
+          </documentation>
+        </annotation>
+      </attribute>
+      <attribute name="substitutionGroup" type="QName" use="optional">
+        <annotation>
+          <documentation>
+            Name of the feature type that this feature type may
+            substitute, i.e. features of this type may be used wherever the
+            other type is requested.
+          </documentation>
+        </annotation>
+      </attribute>
       <attribute name="javaClass" type="string" use="optional">
         <annotation>
           <documentation>
@@ -177,19 +194,19 @@
       </enumeration>
       <!-- TODO other primitive data types -->
     </restriction>
-  </simpleType>  
+  </simpleType>
   <!--
     === Feature property definition ===
   -->
   <element name="FeatureProperty" substitutionGroup="ft:AbstractProperty">
     <complexType>
-    <annotation>
-      <documentation>Definition of a feature-valued property of a
-        feature type.</documentation>
-      <appinfo>
-        <jaxb:class name="FeaturePropertyDecl" />
-      </appinfo>
-    </annotation>    
+      <annotation>
+        <documentation>Definition of a feature-valued property of a
+          feature type.</documentation>
+        <appinfo>
+          <jaxb:class name="FeaturePropertyDecl" />
+        </appinfo>
+      </annotation>
       <complexContent>
         <extension base="ft:AbstractPropertyType">
           <attribute name="type" type="QName" use="optional">
@@ -277,7 +294,7 @@
       <enumeration value="MultiPolygon" />
       <enumeration value="MultiSolid" />
     </restriction>
-  </simpleType>  
+  </simpleType>
   <!--
     === Custom complex property definition ===
   -->
