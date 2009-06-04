@@ -63,11 +63,9 @@ import org.deegree.geometry.primitive.Point;
  * The <code>WPVSClientD3</code> class supports the functionality of sending requests to the deegree3 WPVS
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author: ionita $
  * 
  * @version $Revision: $, $Date: $
- * 
  */
 public class WPVSClientD3 {
 

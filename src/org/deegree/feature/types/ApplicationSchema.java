@@ -57,8 +57,6 @@ import org.deegree.feature.types.property.PropertyType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.emory.mathcs.backport.java.util.Collections;
-
 /**
  * Defines a number of {@link FeatureType}s and their substitution relations.
  * <p>
@@ -66,7 +64,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * <ul>
  * <li>There is no default head for the feature type substitution relation as in GML (prior to 3.2: gml:_Feature, since
  * 3.2: gml:AbstractFeature).</li>
- * </ul> 
+ * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -138,11 +136,8 @@ public class ApplicationSchema {
 
         // add type for 'gml:FeatureCollection' element
         // TODO do this someplace else (maybe in GMLFeatureParser)
-        List<PropertyType> props = Collections.singletonList( new FeaturePropertyType(
-                                                                                       new QName(
-                                                                                                  "http://www.opengis.net/gml",
-                                                                                                  "featureMember" ), 0,
-                                                                                       -1, null ) );
+        List<PropertyType> props = new ArrayList<PropertyType>( 1 );
+        props.add( new FeaturePropertyType( new QName( "http://www.opengis.net/gml", "featureMember" ), 0, -1, null ) );
         FeatureCollectionType fc = new GenericFeatureCollectionType( new QName( "http://www.opengis.net/gml",
                                                                                 "FeatureCollection" ), props, false );
         ftNameToFt.put( fc.getName(), fc );

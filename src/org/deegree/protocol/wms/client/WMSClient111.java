@@ -77,7 +77,8 @@ import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactoryCreator;
-import org.deegree.protocol.wms.WMSRequestType;
+import org.deegree.protocol.wms.WMSConstants;
+import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.slf4j.Logger;
 
 /**
@@ -154,7 +155,7 @@ public class WMSClient111 {
      * TODO implement updateSequence handling to improve network performance
      */
     public void refreshCapabilities() {
-        String url = getAddress( WMSRequestType.GetCapabilities, true );
+        String url = getAddress( WMSRequestType.GET_CAPABILITIES, true );
         if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) ) {
             url += url.indexOf( "?" ) == -1 ? "?" : "&";
         }
@@ -203,10 +204,30 @@ public class WMSClient111 {
      * @return the address, or null, if not defined or request unavailable
      */
     public String getAddress( WMSRequestType request, boolean get ) {
+        
+        String requestName = null;
+        switch (request) {
+        case DESCRIBE_LAYER: {
+            requestName = WMSConstants.DESCRIBE_LAYER_NAME;
+            break;
+        }
+        case GET_CAPABILITIES: {
+            requestName = WMSConstants.GET_CAPABILITIES_NAME;
+            break;
+        }        
+        case GET_MAP: {
+            requestName = WMSConstants.GET_MAP_NAME;
+            break;
+        }
+        case GET_FEATURE_INFO: {
+            requestName = WMSConstants.GET_FEATURE_INFO_NAME;
+            break;
+        }        
+        }        
         if ( !isOperationSupported( request ) ) {
             return null;
         }
-        return capabilities.getNodeAsString( capabilities.getRootElement(), new XPath( "//" + request.name()
+        return capabilities.getNodeAsString( capabilities.getRootElement(), new XPath( "//" + requestName
                                                                                        + "/DCPType/HTTP/"
                                                                                        + ( get ? "Get" : "Post" )
                                                                                        + "/OnlineResource/@xlink:href",
@@ -498,7 +519,7 @@ public class WMSClient111 {
 
             try {
                 if ( validate ) {
-                    LinkedList<String> formats = getFormats( WMSRequestType.GetMap );
+                    LinkedList<String> formats = getFormats( WMSRequestType.GET_MAP );
                     if ( !formats.contains( format ) ) {
                         format = formats.get( 0 );
                         validationErrors.add( "Using format " + format + " instead." );
@@ -506,7 +527,7 @@ public class WMSClient111 {
                     // TODO validate srs, width, height, rest, etc
                 }
 
-                String url = getAddress( WMSRequestType.GetMap, true );
+                String url = getAddress( WMSRequestType.GET_MAP, true );
                 if ( url == null ) {
                     LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capabilities );
                     return null;
