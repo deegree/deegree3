@@ -38,13 +38,12 @@
 
 package org.deegree.protocol.wpvs.client;
 
-import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.HttpUtils.XML;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.LinkedList;
@@ -55,9 +54,8 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.crs.CRS;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.primitive.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code>WPVSClientD3</code> class supports the functionality of sending requests to the deegree3 WPVS
@@ -68,6 +66,8 @@ import org.deegree.geometry.primitive.Point;
  * @version $Revision: $, $Date: $
  */
 public class WPVSClientD3 {
+
+    private final static Logger LOG = LoggerFactory.getLogger( WPVSClientD3.class );
 
     public enum Requests {
         GetView,
@@ -82,7 +82,7 @@ public class WPVSClientD3 {
         nsContext_d3.addNamespace( "wpvs", "http://www.opengis.net/wpvs/1.0.0-pre" );
         nsContext_d3.addNamespace( "xlink", "http://www.w3.org/1999/xlink" );
         nsContext_d3.addNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-    }        
+    }
 
     private XMLAdapter capabilities;
 
@@ -93,33 +93,43 @@ public class WPVSClientD3 {
     public WPVSClientD3( XMLAdapter capabilities ) {
         this.capabilities = capabilities;
     }
-    
+
     /**
      * 
      * @return all datasets that are queryable
      */
-    public List<String> getDatasets() {
+    public synchronized List<String> getQueryableDatasets() {
         List<String> res = new LinkedList<String>();
         XPath xp = new XPath( "//wpvs:Dataset[@queryable='true']", nsContext_d3 );
         List<OMElement> datasets = capabilities.getElements( capabilities.getRootElement(), xp );
         for ( OMElement node : datasets ) {
-            XPath xpName = new XPath( "wpvs:Name", nsContext_d3 );
-            String name = capabilities.getNodeAsString( node, xpName, null );
-            res.add( name );
+            if ( node != null ) {
+                XPath xpName = new XPath( "wpvs:Name", nsContext_d3 );
+                String name = capabilities.getNodeAsString( node, xpName, null );
+                if ( name != null )
+                    res.add( name );
+            } else
+                LOG.warn( "Found an empty dataset!" );
         }
         return res;
     }
-    
+
     /**
      * 
      * @return all elevation models defined
      */
-    public List<String> getElevationModels() {
+    public synchronized List<String> getElevationModels() {
         List<String> res = new LinkedList<String>();
         XPath xp = new XPath( "//wpvs:ElevationModel", nsContext_d3 );
         List<OMElement> elModels = capabilities.getElements( capabilities.getRootElement(), xp );
         for ( OMElement node : elModels )
-            res.add( node.getText() );
+            if ( node != null ) {
+                XPath xpName = new XPath( "wpvs:Name", nsContext_d3 );
+                String name = capabilities.getNodeAsString( node, xpName, null );
+                res.add( node.getText() );
+                if ( name != null )
+                    res.add( name );
+            }
         return res;
     }
 
@@ -128,7 +138,7 @@ public class WPVSClientD3 {
      * @param request the type of {@link Requests}
      * @return whether the request is defined in the getCapabilities xml file
      */
-    public boolean isOperationSupported( Requests request ) {
+    public synchronized boolean isOperationSupported( Requests request ) {
         XPath xp = new XPath( "//ows:Operation[@name='" + request.name() + "']", nsContext_d3 );
         return capabilities.getElement( capabilities.getRootElement(), xp ) != null;
     }
@@ -139,12 +149,13 @@ public class WPVSClientD3 {
      * @param get whether it is a Get or a Post request 
      * @return the url of the requested operation
      */
-    public String getAddress( Requests request, boolean get ) {
-        if ( !isOperationSupported( request ) ) {
+    public synchronized String getAddress( Requests request, boolean get ) {
+        if ( !isOperationSupported( request ) )
             return null;
-        }
-        String xpathStr = "//ows:Operation[@name=\"" + request.name() + "\"]/ows:DCP/ows:HTTP/"
-        + ( get ? "ows:Get" : "ows:Post" ) + "/@xlink:href";
+        
+        String xpathStr = "//ows:Operation[@name=\"" + request.name() + "\"]";
+        xpathStr += "/ows:DCP/ows:HTTP/" + ( get ? "ows:Get" : "ows:Post" ) + "/@xlink:href";
+        
         OMElement root = capabilities.getRootElement();
         String res = capabilities.getNodeAsString( root, new XPath( xpathStr, nsContext_d3 ), null );
         return res;
@@ -152,70 +163,35 @@ public class WPVSClientD3 {
 
     /**
      * 
-     * @param dataSets
-     * @param width
-     * @param height
-     * @param bbox
-     * @param crs
-     * @param format
-     * @param poi
-     * @param pitch
-     * @param roll
-     * @param yaw
-     * @param elevationModel
-     * @param distance
-     * @param version
-     * @param background
-     * @param clipPlane
-     * @param aov
-     * @param scale
-     * @return
+     * @param url  
+     * @return a {@link Pair} of {@link BuggeredImage} and {@link String}. In case the WPVS returns 
+     * an image the former will be used, otherwise an XML response ( as a String ) will be returned 
+     * in the second value. 
+     * @throws IOException 
      */
-    public Pair<BufferedImage, String> getView( List<String> dataSets, int width, int height, Envelope bbox, CRS crs,
-                                                String format, Point poi, int pitch, int roll, int yaw, 
-                                                String elevationModel, int distance, String version, 
-                                                String background, int clipPlane, int aov, double scale ) {
-        String url = getAddress( Requests.GetView, true );
-        url += "service=WPVS&request=GetView";
-        url += "&BOUNDINGBOX=" + bbox.getMin().getX() + "," + bbox.getMin().getY() + "," + bbox.getMax().getX() + "," + bbox.getMax().getY();
-        url += "&DATASETS=" + join( ",", dataSets );
-        url += "&ELEVATIONMODEL=DEM";
-        url += "&ROLL=" + roll;
-        url += "&AOV=" + aov;
-        url += "&FARCLIPPINGPLANE=" + clipPlane;
-        url += "&CRS=" + crs.getName();
-        url += "&WIDTH=" + width;
-        url += "&HEIGHT=" + height;
-        url += "&SCALE=" + scale;
-        url += "&STYLES=default";
-//        url += "&DATETIME=2007-03-21T12:00:00";
-//        url += "&EXCEPTIONFORMAT=INIMAGE";
-        url += "&VERSION=" + version;
-        url += "&OUTPUTFORMAT=" + format;
-//        url += "&background=" + background;
-        url += "&POI=" + poi.getX() + "," + poi.getY() + "," + poi.getZ();
-        url += "&YAW=" + yaw;
-        url += "&PITCH=" + pitch;
-        url += "&DISTANCE=" + distance;  
-        System.out.println( "Generated GetView request: " + url );
-        
+    public synchronized Pair<BufferedImage, String> getView( URL url ) {                
         Pair<BufferedImage, String> res = new Pair<BufferedImage, String>();
-        URL theUrl;
+        URLConnection conn = null;
         try {
-            theUrl = new URL( url );
-            URLConnection conn = theUrl.openConnection();
+            conn = url.openConnection();
             conn.connect();
-            res.first = IMAGE.work( conn.getInputStream() );
+        } catch ( IOException e ) {
+            System.err.println( "ERROR: Could not open connection/connect to the URL given: " + url );
+            LOG.error( e.getMessage(), e );
+        }
+        
+        InputStream inStream;
+        try {
+            inStream = conn.getInputStream();
+            res.first = IMAGE.work( inStream );
             if ( res.first == null ) {
-                conn = theUrl.openConnection();
+                conn = url.openConnection();
                 res.second = XML.work( conn.getInputStream() ).toString();
             }
-        } catch ( MalformedURLException e ) {
-            e.printStackTrace();
         } catch ( IOException e ) {
-            e.printStackTrace();
-        }
+            LOG.error( e.getMessage(), e );
+        }        
+        
         return res;
     }    
-
 }
