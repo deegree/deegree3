@@ -43,6 +43,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.types.ows;
 
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
+
 /**
  * Version of an OWS operation or specification. Comparability of <code>Version</code> objects simplifies tasks like
  * version negotiation.
@@ -80,14 +82,14 @@ public class Version implements Comparable<Version> {
      *            minor version. Must be between 0 and 99.
      * @param z
      *            minor sub version. Must be between 0 and 99.
-     * @throws IllegalArgumentException
+     * @throws InvalidParameterValueException
      *             if a parameters exceed the allowed range
      */
-    public Version( int x, int y, int z ) throws IllegalArgumentException {
+    public Version( int x, int y, int z ) throws InvalidParameterValueException {
 
         if ( x < 0 || y < 0 || z < 0 || y > 99 || z > 99 ) {
             String msg = x + "." + y + "." + z + " is not a valid OGC/OWS version value.";
-            throw new IllegalArgumentException( msg );
+            throw new InvalidParameterValueException( msg );
         }
 
         this.x = x;
@@ -104,15 +106,15 @@ public class Version implements Comparable<Version> {
      * @param s
      *            a <code>String</code> containing the <code>Version</code> representation to be parsed
      * @return a corresponding <code>Version</code> object
-     * @throws IllegalArgumentException
+     * @throws InvalidParameterValueException
      *             if the string does not contain a parsable <code>Version</code>
      */
     public static Version parseVersion( String s )
-                            throws IllegalArgumentException {
+                            throws InvalidParameterValueException {
         String[] parts = s.split( "\\." );
         if ( parts.length != 3 ) {
             String msg = "String '" + s + " is not a valid OGC/OWS version value.";
-            throw new IllegalArgumentException( msg );
+            throw new InvalidParameterValueException( msg );
         }
 
         int x = -1;
@@ -125,7 +127,7 @@ public class Version implements Comparable<Version> {
             z = Integer.parseInt( parts[2] );
         } catch ( NumberFormatException e ) {
             String msg = "String '" + s + " is not a valid OGC/OWS version value.";
-            throw new IllegalArgumentException( msg );
+            throw new InvalidParameterValueException( msg );
         }
         return new Version( x, y, z );
     }

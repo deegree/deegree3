@@ -38,6 +38,7 @@
 
 package org.deegree.commons.types.ows;
 
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
  * Name or code with an (optional) authority. If the codeSpace attribute is present, its value shall reference a
@@ -60,12 +61,12 @@ public class CodeType {
      * 
      * @param code
      *            code value, not null
-     * @throws IllegalArgumentException
+     * @throws InvalidParameterValueException
      *             if code is null
      */
-    public CodeType( String code ) {
+    public CodeType( String code ) throws InvalidParameterValueException {
         if ( code == null ) {
-            throw new IllegalArgumentException( "code cannot be null" );
+            throw new InvalidParameterValueException( "code cannot be null" );
         }
         this.code = code;
     }
@@ -77,12 +78,12 @@ public class CodeType {
      *            code value, not null
      * @param codeSpace
      *            authority, may be null
-     * @throws IllegalArgumentException
+     * @throws InvalidParameterValueException
      *             if code is null
      */
-    public CodeType( String code, String codeSpace ) {
+    public CodeType( String code, String codeSpace ) throws InvalidParameterValueException {
         if ( code == null ) {
-            throw new IllegalArgumentException( "code cannot be null" );
+            throw new InvalidParameterValueException( "code cannot be null" );
         }
         this.code = code;
         this.codeSpace = codeSpace;

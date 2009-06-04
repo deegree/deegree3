@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 
 /**
  * Parser for OWS/OGC GetCapabilities requests (KVP).
@@ -80,8 +81,11 @@ public class GetCapabilitiesKVPParser {
      * @param kvpParams
      *            normalized KVP-map; keys must be uppercase, each key only has one associated value
      * @return {@link GetCapabilities} request
+     * @throws InvalidParameterValueException
+     *             if a parameter (e.g. ACCEPTVERSIONS) contains a syntactical error
      */
-    public static GetCapabilities parse( Map<String, String> kvpParams ) {
+    public static GetCapabilities parse( Map<String, String> kvpParams )
+                            throws InvalidParameterValueException {
 
         // ACCEPTVERSIONS (optional)
         List<Version> acceptVersions = null;
