@@ -913,6 +913,34 @@ public class XMLAdapter {
         }
         return values;
     }
+    
+    public QName[] getNodesAsQNames( OMElement contextNode, XPath xpath ) {
+        QName[] values = null;
+        List<?> nl = getNodes( contextNode, xpath );
+        if ( nl != null ) {
+            values = new QName[nl.size()];
+            for ( int i = 0; i < nl.size(); i++ ) {
+                Object node = nl.get( i );
+                QName value = null;
+                if ( node instanceof OMText ) {
+                    value = ( (OMText) node ).getTextAsQName();
+                } else if ( node instanceof OMElement ) {
+                    OMElement element = (OMElement) node;
+                    value = element.resolveQName( element.getText() );
+                } else if ( node instanceof OMAttribute ) {
+                    OMAttribute attribute = (OMAttribute) node;
+                    value = attribute.getOwner().resolveQName( attribute.getAttributeValue() );
+                } else {
+                    String msg = "Unexpected node type '" + node.getClass() + "'.";
+                    throw new XMLParsingException( this, contextNode, msg );
+                }
+                values [i] = value;
+            }
+        } else {
+            values = new QName[0];
+        }
+        return values;
+    }    
 
     public OMElement getRequiredElement( OMElement context, XPath xpath )
                             throws XMLParsingException {

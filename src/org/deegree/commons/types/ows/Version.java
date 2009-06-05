@@ -50,7 +50,7 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
  * version negotiation.
  * <p>
  * Description from <code>owsCommon.xsd</code>, version 1.1.0:
- *
+ * 
  * The string value shall contain one x.y.z "version" value (e.g., "2.1.3"). A version number shall contain three
  * non-negative integers separated by decimal points, in the form "x.y.z". The integers y and z shall not exceed 99.
  * <p>
@@ -152,14 +152,14 @@ public class Version implements Comparable<Version> {
     }
 
     @Override
-    public int hashCode () {
+    public int hashCode() {
         // note: 7, 11 and 13 are prime numbers
-        int hash = 7 * (x + 1);
-        hash *= 11 * (y + 1);
-        hash *= 13 * (z + 1);
+        int hash = 7 * ( x + 1 );
+        hash *= 11 * ( y + 1 );
+        hash *= 13 * ( z + 1 );
         return hash;
     }
-    
+
     @Override
     public boolean equals( Object obj ) {
         if ( !( obj instanceof Version ) ) {
@@ -172,5 +172,24 @@ public class Version implements Comparable<Version> {
     @Override
     public String toString() {
         return x + "." + y + "." + z;
+    }
+
+    /**
+     * Returns a formatted string for presenting a number of versions to a human.
+     * 
+     * @param versions
+     *            versions to be listed
+     * @return formatted, human-readable string
+     */
+    public static String getVersionsString( Version... versions ) {
+        int i = 0;
+        String s = "";
+        for ( Version version : versions ) {
+            s += "'" + version + "'";
+            if ( i++ != versions.length - 1 ) {
+                s += ", ";
+            }
+        }
+        return s;
     }
 }
