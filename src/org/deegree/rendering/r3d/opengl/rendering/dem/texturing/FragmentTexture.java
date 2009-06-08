@@ -123,7 +123,7 @@ public class FragmentTexture {
         for ( int i = 0; i < vertexBuffer.capacity() / 3; i++ ) {
             float x = vertexBuffer.get();
             float y = vertexBuffer.get();
-            // rb: FOLLOWING get must of course be evaluated.
+            // skip z value (not relevant for texture coordinate generation)
             vertexBuffer.get();
 
             texCoordsBuffer.put( ( x - tileXMin ) / tileWidth );

@@ -234,6 +234,9 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
             gl.glEnable( GL.GL_TEXTURE_2D );
             gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
 
+            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
+            gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );
+           
             gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, textures.get( 0 ).getGLVertexCoordBufferId() );
             gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
 
@@ -247,6 +250,9 @@ public class RenderMeshFragment implements Comparable<RenderMeshFragment> {
                 gl.glEnable( GL.GL_TEXTURE_2D );
                 gl.glEnableClientState( GL.GL_TEXTURE_COORD_ARRAY );
 
+                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
+                gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );                
+                
                 gl.glBindBufferARB( GL.GL_ARRAY_BUFFER_ARB, textures.get( i ).getGLVertexCoordBufferId() );
                 gl.glTexCoordPointer( 2, GL.GL_FLOAT, 0, 0 );
 
