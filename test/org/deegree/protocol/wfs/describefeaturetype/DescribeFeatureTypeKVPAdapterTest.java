@@ -38,80 +38,47 @@
 
 package org.deegree.protocol.wfs.describefeaturetype;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
 
+import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.protocol.wfs.WFSConstants;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
- * The <code>DescribeFeatureTypeKVPAdapterTest</code> class tests the parsing of the DescribeFeatureType
- * request in the case the content is in KVP format.
+ * The <code>DescribeFeatureTypeKVPAdapterTest</code> class tests the parsing of the DescribeFeatureType request in the
+ * case the content is in KVP format.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author: ionita $
  * 
  * @version $Revision: $, $Date: $
- *
  */
 public class DescribeFeatureTypeKVPAdapterTest extends TestCase {
 
-    final String EXAMPLE_1 = "test/org/deegree/protocol/wfs/describefeaturetype/examples_kvp/v110/example1.kvp";
-    
-    final String EXAMPLE_2 = "test/org/deegree/protocol/wfs/describefeaturetype/examples_kvp/v110/example2.kvp";
-    
-    Map<String, String> kvpParams1;
-    
-    Map<String, String> kvpParams2;
-    
-    @Before
-    public void setUp() throws Exception {
-        BufferedReader reader = new BufferedReader( new FileReader( EXAMPLE_1 ) );
-        String line = null;
-        kvpParams1 = new HashMap<String, String>();
-        while ( ( line = reader.readLine() ) != null ) {
-            if ( line.contains( "=" ) ) {
-                String[] parts = line.split( "=|&" );
-                if ( parts.length == 2 ) {
-                    kvpParams1.put( parts[0], parts[1] );
-                }
-            }
-        }
-        
-        reader = new BufferedReader( new FileReader( EXAMPLE_2 ) );
-        line = null;
-        kvpParams2 = new HashMap<String, String>();
-        while ( ( line = reader.readLine() ) != null ) {
-            if ( line.contains( "=" ) ) {
-                String[] parts = line.split( "=|&" );
-                if ( parts.length == 2 ) {
-                    kvpParams2.put( parts[0], parts[1] );
-                }
-            }
-        }
-    }
-    
+    private final String EXAMPLE_1 = "examples_kvp/v110/example1.kvp";
+
+    private final String EXAMPLE_2 = "examples_kvp/v110/example2.kvp";
+
     @Test
-    public void testEXAMPLE_1() {
-        DescribeFeatureType dft = DescribeFeatureTypeKVPAdapter.parse110( kvpParams1 );
+    public void testEXAMPLE_1() throws IOException {
+        Map<String,String> kvpParams = KVPUtils.readFileIntoMap( this.getClass().getResource( EXAMPLE_1 ) );
+        DescribeFeatureType dft = DescribeFeatureTypeKVPAdapter.parse110( kvpParams );
         assertEquals( dft.getHandle(), null );
         assertEquals( dft.getOutputFormat(), null );
         assertEquals( dft.getTypeNames().length, 1 );
         assertEquals( dft.getTypeNames()[0], new QName( "TreesA_1M" ) );
-        assertEquals( dft.getVersion(), WFSConstants.VERSION_110 );        
+        assertEquals( dft.getVersion(), WFSConstants.VERSION_110 );
     }
-    
+
     @Test
-    public void testEXAMPLE_2() {
-        DescribeFeatureType dft = DescribeFeatureTypeKVPAdapter.parse110( kvpParams2 );
+    public void testEXAMPLE_2() throws IOException {
+        Map<String,String> kvpParams = KVPUtils.readFileIntoMap( this.getClass().getResource( EXAMPLE_2 ) );
+        DescribeFeatureType dft = DescribeFeatureTypeKVPAdapter.parse110( kvpParams );
         assertEquals( dft.getHandle(), null );
         assertEquals( dft.getOutputFormat(), null );
         assertEquals( dft.getTypeNames().length, 2 );
@@ -119,5 +86,4 @@ public class DescribeFeatureTypeKVPAdapterTest extends TestCase {
         assertEquals( dft.getTypeNames()[1], new QName( "BuiltUpA_1M" ) );
         assertEquals( dft.getVersion(), WFSConstants.VERSION_110 );
     }
-
 }

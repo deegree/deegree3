@@ -42,6 +42,11 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.utils.kvp;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -203,5 +208,44 @@ public class KVPUtils {
             }
         }
         return result;
+    }
+
+    /**
+     * Reads a text file with KVP content into a map.
+     * <p>
+     * Example contents:
+     * 
+     * <pre>
+     * http://www.someserver.com/wfs.cgi?
+     * SERVICE=WFS&amp;
+     * VERSION=1.1.0&amp;
+     * REQUEST=DescribeFeatureType&amp;
+     * TYPENAME=TreesA_1M
+     * </pre>
+     * 
+     * Every line that contains a '=' character is taken into account, so for the example the first line is discarded.
+     * </p>
+     * 
+     * @param url
+     *            url of the text file
+     * @return map with the contents of the file, keys are uppercased
+     * @throws IOException
+     *             if the the file cannot be loaded
+     */
+    public static Map<String, String> readFileIntoMap( URL url )
+                            throws IOException {
+        BufferedReader reader = new BufferedReader( new InputStreamReader( url.openStream() ) );
+
+        String line = null;
+        Map<String, String> params = new HashMap<String, String>();
+        while ( ( line = reader.readLine() ) != null ) {
+            if ( line.contains( "=" ) ) {
+                String[] parts = line.split( "=|&" );
+                if ( parts.length == 2 ) {
+                    params.put( parts[0].toUpperCase(), parts[1] );
+                }
+            }
+        }
+        return params;
     }
 }
