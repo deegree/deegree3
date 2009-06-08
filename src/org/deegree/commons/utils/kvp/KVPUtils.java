@@ -46,6 +46,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -223,7 +224,17 @@ public class KVPUtils {
      * TYPENAME=TreesA_1M
      * </pre>
      * 
-     * Every line that contains a '=' character is taken into account, so for the example the first line is discarded.
+     * What this method does:
+     * <ul>
+     * <li>Only lines that contain a <code>'='</code> character are taken into account, so for the example the first line is
+     * discarded.</li>
+     * <li>Every line that contains a <code>'='</code> character is taken into account, so the first line of the example is
+     * discarded.</li>
+     * <li>Every line is split around the '=' character, the first part is used as the key, the second part as the
+     * value.</li>
+     * <li>Keys are uppercased.</li>
+     * <li>Values are URL decoded. </li>
+     * </ul>
      * </p>
      * 
      * @param url
@@ -240,9 +251,11 @@ public class KVPUtils {
         Map<String, String> params = new HashMap<String, String>();
         while ( ( line = reader.readLine() ) != null ) {
             if ( line.contains( "=" ) ) {
-                String[] parts = line.split( "=|&" );
+                String[] parts = line.split( "=" );
                 if ( parts.length == 2 ) {
-                    params.put( parts[0].toUpperCase(), parts[1] );
+                    params.put( parts[0].toUpperCase(), URLDecoder.decode( parts[1], "UTF-8" ) );
+                } else {
+                    throw new IllegalArgumentException();
                 }
             }
         }
