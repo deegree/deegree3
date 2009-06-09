@@ -51,6 +51,9 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.protocol.wms.client.WMSClient111;
+import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link TextureTileProvider} that delegates tile requests to a WMS.
@@ -62,6 +65,8 @@ import org.deegree.protocol.wms.client.WMSClient111;
  */
 public class WMSTextureTileProvider implements TextureTileProvider {
 
+    private static final Logger LOG = LoggerFactory.getLogger( WMSTextureTileProvider.class );    
+    
     private static GeometryFactory fac = GeometryFactoryCreator.getInstance().getGeometryFactory();
 
     private final WMSClient111 client;
@@ -111,16 +116,21 @@ public class WMSTextureTileProvider implements TextureTileProvider {
 
     @Override
     public TextureTile getTextureTile( float minX, float minY, float maxX, float maxY ) {
-
+       
         int width = (int) ( ( maxX - minX ) / res );
         int height = (int) ( ( maxY - minY ) / res );
 
+        LOG.debug ("Fetching texture tile (" + width + "x" + height + ") via WMSClient.");
+        
         Envelope bbox = fac.createEnvelope( minX, minY, maxX, maxY, requestedCRS );
         SimpleRaster raster = null;
         try {
+            
             raster = client.getMapAsSimpleRaster( layers, width, height, bbox, requestedCRS, requestedFormat, true,
                                                   true, requestTimeout, false, new ArrayList<String>() ).first;
+            LOG.debug ("Success");
         } catch ( IOException e ) {
+            LOG.debug ("Failed: " + e.getMessage(), e);
             // this must never happen, cause the above request uses errorsInImage=true
             throw new RuntimeException( e.getMessage() );
         }
