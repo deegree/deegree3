@@ -43,6 +43,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.filter.expression.PropertyName;
+import org.deegree.commons.types.gml.StandardGMLObjectProperties;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.FeatureType;
@@ -149,6 +150,14 @@ public class FeatureReference implements Feature {
         feature.setPropertyValue( propName, occurence, value );
     }
 
+    public StandardGMLObjectProperties getStandardGMLProperties() {
+        return feature.getStandardGMLProperties();
+    }
+
+    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps ) {
+        feature.setStandardGMLProperties( standardProps );
+    }    
+    
     public String getHref() {
         return href;
     }   

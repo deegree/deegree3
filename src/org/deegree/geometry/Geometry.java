@@ -37,12 +37,20 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
+import org.deegree.commons.types.gml.StandardGMLObjectProperties;
 import org.deegree.commons.types.identifier.Identifiable;
 import org.deegree.crs.CRS;
 
 /**
  * 
- * 
+ * <p>
+ * <h4>Notes on the representation of GML geometries</h4>
+ * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
+ * <code>gml:description</code>) which are inherited by any GML geometry type definition are treated in a specific way.
+ * They are modelled using the {@link StandardGMLObjectProperties} class. This design decision has been driven by the
+ * goal to make the implementation less GML (and GML-version) specific and to allow for example to export a
+ * {@link Geometry} instance as either GML 3.2.1 or GML 3.1.1 (different namespaces for the standard properties).
+ * </p>
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
@@ -105,7 +113,7 @@ public interface Geometry extends Identifiable<String> {
      * The predicate indicates whether the underlying points of this Geometry have 3 coordinates or 2 coordinates
      */
     public boolean is3D();
-    
+
     /**
      * The operation "buffer" shall return a Geometry containing all points whose distance from this Geometry is less
      * than or equal to the "distance" passed as a parameter. The Geometry returned is in the same reference system as
@@ -228,4 +236,20 @@ public interface Geometry extends Identifiable<String> {
      * @return an equivalent (or best-fit) JTS geometry
      */
     public com.vividsolutions.jts.geom.Geometry getJTSGeometry();
+    
+    /**
+     * Returns a representation of the standard GML properties (e.g. <code>gml:name</code> or
+     * <code>gml:description</code).
+     * 
+     * @return a representation of the standard GML properties, may be null
+     */
+    public StandardGMLObjectProperties getStandardGMLProperties();
+
+    /**
+     * Sets the standard GML properties (e.g. <code>gml:name</code> or <code>gml:description</code).
+     * 
+     * @param standardProps
+     *            representation of the standard GML properties
+     */
+    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps );    
 }

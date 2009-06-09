@@ -48,6 +48,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.filter.MatchableObject;
+import org.deegree.commons.types.gml.StandardGMLObjectProperties;
 import org.deegree.commons.types.identifier.Identifiable;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
@@ -65,6 +66,16 @@ import org.deegree.geometry.Geometry;
  * <li><a href="http://www.opengeospatial.org/standards/gml">GML features: XML encoding for features</a></li>
  * <li>ISO 19109</li>
  * </ul>
+ * </p>
+ * <p>
+ * <h4>Notes on the representation of GML features</h4>
+ * 
+ * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
+ * <code>gml:description</code>) which are inherited by any GML feature type definition are treated in a specific way. They
+ * are modelled using the {@link StandardGMLObjectProperties} class and not as standard properties of the feature. This design decision
+ * has been driven by the goal to make the implementation less GML (and GML-version) specific and to allow for example
+ * to export a {@link Feature} instance as either GML 3.2.1 or GML 3.1.1 (different namespaces for the standard
+ * properties).
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -199,4 +210,20 @@ public interface Feature extends Identifiable<String>, MatchableObject {
      */
     void setProperties( List<Property<?>> props )
                             throws IllegalArgumentException;
+
+    /**
+     * Returns a representation of the standard GML properties (e.g. <code>gml:name</code> or
+     * <code>gml:description</code).
+     * 
+     * @return a representation of the standard GML properties, may be null
+     */
+    public StandardGMLObjectProperties getStandardGMLProperties();
+
+    /**
+     * Sets the standard GML properties (e.g. <code>gml:name</code> or <code>gml:description</code).
+     * 
+     * @param standardProps
+     *            representation of the standard GML properties
+     */
+    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps );
 }

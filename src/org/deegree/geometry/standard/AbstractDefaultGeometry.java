@@ -43,6 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.geometry.standard;
 
+import org.deegree.commons.types.gml.StandardGMLObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -77,6 +78,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     protected String id;
 
     protected CRS crs;
+
+    private StandardGMLObjectProperties standardProps;
     
     /**
      * @param id
@@ -179,4 +182,14 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
         throw new UnsupportedOperationException();
     }
+    
+    @Override
+    public StandardGMLObjectProperties getStandardGMLProperties() {
+        return standardProps;
+    }
+
+    @Override
+    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps ) {
+        this.standardProps = standardProps;
+    }    
 }

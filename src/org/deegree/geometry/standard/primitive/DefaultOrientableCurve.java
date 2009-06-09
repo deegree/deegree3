@@ -46,6 +46,7 @@ package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
 
+import org.deegree.commons.types.gml.StandardGMLObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -72,6 +73,8 @@ public class DefaultOrientableCurve implements OrientableCurve {
     private Curve baseCurve;
 
     private boolean isReversed;
+
+    private StandardGMLObjectProperties standardProps;
 
     /**
      * Creates a new <code>DefaultOrientableCurve</code> instance from the given parameters.
@@ -257,4 +260,14 @@ public class DefaultOrientableCurve implements OrientableCurve {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public StandardGMLObjectProperties getStandardGMLProperties() {
+        return standardProps;
+    }
+
+    @Override
+    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps ) {
+        this.standardProps = standardProps;
+    }      
 }

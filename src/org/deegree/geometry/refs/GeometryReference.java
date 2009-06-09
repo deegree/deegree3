@@ -38,6 +38,7 @@
 
 package org.deegree.geometry.refs;
 
+import org.deegree.commons.types.gml.StandardGMLObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -152,4 +153,14 @@ public class GeometryReference implements Geometry {
     public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
         return geometry.getJTSGeometry();
     }
+    
+    @Override
+    public StandardGMLObjectProperties getStandardGMLProperties() {
+        return geometry.getStandardGMLProperties();
+    }
+
+    @Override
+    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps ) {
+        geometry.setStandardGMLProperties( standardProps );
+    } 
 }
