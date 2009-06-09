@@ -63,9 +63,6 @@ public class WMSConstants {
     /** WMS protocol version 1.0.0 */
     public static final Version VERSION_100 = Version.parseVersion( "1.0.0" );
 
-    /** WMS protocol version 1.0.7 */
-    public static final Version VERSION_107 = Version.parseVersion( "1.0.7" );
-
     /** WMS protocol version 1.1.0 */
     public static final Version VERSION_110 = Version.parseVersion( "1.1.0" );
 
@@ -102,6 +99,10 @@ public class WMSConstants {
 
     private static final Map<String, WMSRequestType> requestNameToWMSRequest = new HashMap<String, WMSRequestType>();
     
+    private static final Map<WMSRequestType, String> requestTypeToWMSRequestName100 = new HashMap<WMSRequestType, String>();
+
+    private static final Map<WMSRequestType, String> requestTypeToWMSRequestName110 = new HashMap<WMSRequestType, String>();
+    
     static {
         requestNameToWMSRequest.put( CAPABILITIES_NAME, WMSRequestType.GET_CAPABILITIES );
         requestNameToWMSRequest.put( GET_CAPABILITIES_NAME, WMSRequestType.GET_CAPABILITIES );
@@ -110,6 +111,15 @@ public class WMSConstants {
         requestNameToWMSRequest.put( FEATURE_INFO_NAME, WMSRequestType.GET_FEATURE_INFO );
         requestNameToWMSRequest.put( GET_FEATURE_INFO_NAME, WMSRequestType.GET_FEATURE_INFO );
         requestNameToWMSRequest.put( DESCRIBE_LAYER_NAME, WMSRequestType.DESCRIBE_LAYER );
+        
+        requestTypeToWMSRequestName100.put( WMSRequestType.GET_CAPABILITIES, CAPABILITIES_NAME );
+        requestTypeToWMSRequestName100.put( WMSRequestType.GET_FEATURE_INFO, FEATURE_INFO_NAME );
+        requestTypeToWMSRequestName100.put( WMSRequestType.GET_MAP, MAP_NAME );
+        
+        requestTypeToWMSRequestName110.put( WMSRequestType.DESCRIBE_LAYER, DESCRIBE_LAYER_NAME);        
+        requestTypeToWMSRequestName110.put( WMSRequestType.GET_CAPABILITIES, GET_CAPABILITIES_NAME );
+        requestTypeToWMSRequestName110.put( WMSRequestType.GET_FEATURE_INFO, GET_FEATURE_INFO_NAME );
+        requestTypeToWMSRequestName110.put( WMSRequestType.GET_MAP, GET_MAP_NAME );        
     }
 
     /**
@@ -150,4 +160,27 @@ public class WMSConstants {
         }
         return requestType;
     }
+
+    /**
+     * Retrieves the corresponding WMS request name for a {@link WMSRequestType}.
+     * 
+     * @param request
+     *            request type
+     * @param is100
+     *            set to true if names if 1.0.0 protocol should be returned, false for any other version 
+     * @return corresponding name
+     */
+    public static String getRequestNameByType( WMSRequestType request, boolean is100 ) {
+
+        String requestName = null;
+        if (is100) {
+            requestName = requestTypeToWMSRequestName100.get(request);
+            if (requestName == null) {
+                throw new IllegalArgumentException( Messages.get( "WMS_NO_100_OPERATION" ) );
+            }
+        } else {
+            requestName = requestTypeToWMSRequestName110.get(request);
+        }
+        return requestName;
+    }        
 }

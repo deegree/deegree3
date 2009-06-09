@@ -174,7 +174,7 @@ public class WMSClient111 {
      * @return true, if an according section was found in the capabilities
      */
     public boolean isOperationSupported( WMSRequestType request ) {
-        XPath xp = new XPath( "//" + request.name(), null );
+        XPath xp = new XPath( "//" + WMSConstants.getRequestNameByType( request, false ), null );
         return capabilities.getElement( capabilities.getRootElement(), xp ) != null;
     }
 
@@ -186,7 +186,7 @@ public class WMSClient111 {
         if ( !isOperationSupported( request ) ) {
             return null;
         }
-        XPath xp = new XPath( "//" + request.name() + "/Format", null );
+        XPath xp = new XPath( "//" + WMSConstants.getRequestNameByType( request, false ) + "/Format", null );
         LinkedList<String> list = new LinkedList<String>();
         Object res = capabilities.evaluateXPath( xp, capabilities.getRootElement() );
         if ( res instanceof List ) {
@@ -204,9 +204,9 @@ public class WMSClient111 {
      * @return the address, or null, if not defined or request unavailable
      */
     public String getAddress( WMSRequestType request, boolean get ) {
-        
+
         String requestName = null;
-        switch (request) {
+        switch ( request ) {
         case DESCRIBE_LAYER: {
             requestName = WMSConstants.DESCRIBE_LAYER_NAME;
             break;
@@ -214,7 +214,7 @@ public class WMSClient111 {
         case GET_CAPABILITIES: {
             requestName = WMSConstants.GET_CAPABILITIES_NAME;
             break;
-        }        
+        }
         case GET_MAP: {
             requestName = WMSConstants.GET_MAP_NAME;
             break;
@@ -222,8 +222,8 @@ public class WMSClient111 {
         case GET_FEATURE_INFO: {
             requestName = WMSConstants.GET_FEATURE_INFO_NAME;
             break;
-        }        
-        }        
+        }
+        }
         if ( !isOperationSupported( request ) ) {
             return null;
         }
@@ -545,7 +545,7 @@ public class WMSClient111 {
                 URLConnection conn = ProxyUtils.openURLConnection( theUrl, ProxyUtils.getHttpProxyUser( true ),
                                                                    ProxyUtils.getHttpProxyPassword( true ) );
                 conn.connect();
-                LOG.debug( "Connected." );                
+                LOG.debug( "Connected." );
                 if ( LOG.isTraceEnabled() ) {
                     LOG.trace( "Requesting from " + theUrl );
                     LOG.trace( "Content type is " + conn.getContentType() );
@@ -569,7 +569,7 @@ public class WMSClient111 {
             }
 
             if ( errorsInImage && res.first == null ) {
-                LOG.debug ("Painting image with error: " + res.second);
+                LOG.debug( "Painting image with error: " + res.second );
                 if ( transparent ) {
                     // TODO create image of type RGBA
                     res.first = new BufferedImage( width, height, BufferedImage.TYPE_4BYTE_ABGR );
@@ -671,5 +671,13 @@ public class WMSClient111 {
             }
             targetImage.getGraphics().drawImage( response.first, xMin, yMin, null );
         }
+    }
+
+    public static void main( String[] args )
+                            throws MalformedURLException {
+        WMSClient111 client = new WMSClient111(
+                                                new URL(
+                                                         "http://stadtplan.bonn.de/Deegree2wms/services?request=GetCapabilities&version=1.1.1&service=WMS" ) );
+        System.out.println( client.getAddress( WMSRequestType.GET_MAP, true ) );
     }
 }
