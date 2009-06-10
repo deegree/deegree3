@@ -112,15 +112,19 @@
              -->
         <dependset>
             <srcfileset dir="${lib.dir}" includes="*jar" />
-            <targetfileset dir="${classes.dir}" includes="**/*.class" />
+            <targetfileset dir="${classes.dir}" includes="**/*.class" excludes="**/package-info.class"/>
         </dependset>
+        <!-- for the record: the snipped RIGHT ABOVE does the deleting. What a
+        wonder why I did not notice it, with that name... -->
         <!-- touch the package-info.java files to ensure one of the three great 1.7.1 ant conditions apply and they're compiled -->
-        <!-- TODO find all places where package-info.class files are deleted and delete they're parent directories instead, this would solve the problems better -->
-        <touch>
-          <fileset dir="${src.dir}">
-            <include name="**/package-info.java" />
-          </fileset>
-        </touch>
+        <!-- TODO find all places where package-info.class files are deleted and
+        delete their parent directories instead, this would solve the problems
+        better -->
+        <!-- <touch> -->
+        <!--   <fileset dir="${src.dir}"> -->
+        <!--     <include name="**/package-info.java" /> -->
+        <!--   </fileset> -->
+        <!-- </touch> -->
         <!--updateProperty needs ant 1.7.1 -->
         <javac updatedProperty="compile.change" destdir="${classes.dir}" classpathref="build.path" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.enabled}" source="${source.version}" target="${target.version}">
             <src path="${src.dir}" />
