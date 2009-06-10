@@ -82054,7 +82054,32 @@
       </crs:transverseMercator>
     </crs:projection>
   </crs:projectedCRS>
-  <crs:geographicCRS>
+	<crs:projectedCRS>
+		<crs:id>OSM_SLIPPY_MAP</crs:id>
+		<crs:name>OSM_Slippy_Map</crs:name>
+			<crs:Axis>
+				<crs:name>x</crs:name>
+				<crs:units>metre</crs:units>
+				<crs:axisOrientation>east</crs:axisOrientation>
+			</crs:Axis>
+		<crs:Axis>
+			<crs:name>y</crs:name>
+			<crs:units>metre</crs:units>
+			<crs:axisOrientation>north</crs:axisOrientation>
+		</crs:Axis>
+		<crs:axisOrder>x, y</crs:axisOrder>
+		<crs:usedGeographicCRS>EPSG:4326</crs:usedGeographicCRS>
+		<crs:projection class="org.deegree.crs.projections.cylindric.Mercator">
+			<crs:Mercator>
+				<crs:latitudeOfNaturalOrigin inDegrees="true">0.0</crs:latitudeOfNaturalOrigin>
+				<crs:longitudeOfNaturalOrigin inDegrees="true">0.0</crs:longitudeOfNaturalOrigin>
+				<crs:scaleFactor>1.0</crs:scaleFactor>
+				<crs:falseEasting>0</crs:falseEasting>
+				<crs:falseNorthing>0</crs:falseNorthing>
+			</crs:Mercator>
+		</crs:projection>
+	</crs:projectedCRS>
+	<crs:geographicCRS>
     <crs:id>EPSG:4010</crs:id>
     <crs:id>URN:OGC:DEF:CRS:EPSG::4010</crs:id>
     <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4010</crs:id>

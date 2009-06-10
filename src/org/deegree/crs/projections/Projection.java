@@ -398,6 +398,11 @@ public abstract class Projection extends CRSIdentifiable {
     public final boolean isSpherical() {
         return isSpherical;
     }
+    
+    
+    public void makeSpherical() {
+        isSpherical = true;
+    }
 
     /**
      * @return the projectionLatitude also known as central-latitude or latitude-of-origin, in Snyder referenced as

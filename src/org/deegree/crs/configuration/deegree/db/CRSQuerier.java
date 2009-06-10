@@ -40,6 +40,7 @@ package org.deegree.crs.configuration.deegree.db;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -195,7 +196,7 @@ public class CRSQuerier {
         else if ( table_name.equals( "stereographic_alternative" ))
             proj = getStereographicAlternative( projectionId );
         else if ( table_name.equals( "lambert_azimuthal_equal_area" ))
-            proj = getLambertAzimuthalEqualArea( projectionId );    
+            proj = getLambertAzimuthalEqualArea( projectionId );
         else if ( table_name.equals( "custom_projection" ))
             proj = getCustomProjection( projectionId );
         return proj;
@@ -227,11 +228,18 @@ public class CRSQuerier {
             Class<?> t = Class.forName( className );
             t.asSubclass( Projection.class );
             Constructor<?> constructor = t.getConstructor( GeographicCRS.class, double.class, double.class,
-                                                           Point2d.class, Unit.class, double.class, CRSCodeType[].class );
+                                                           Point2d.class, Unit.class, double.class );
 
             p = (Projection) constructor.newInstance( getGeographicCRS( rs.getInt( 2 ) ) , rs.getDouble( 7 ), rs.getDouble( 6 ),
-                                                      new Point2d ( rs.getDouble( 1 ), rs.getDouble( 2 ) ), projUnit, rs.getDouble( 5 ), 
-                                                      identifiable.getCodes() );
+                                                      new Point2d ( rs.getDouble( 1 ), rs.getDouble( 2 ) ), projUnit, rs.getDouble( 5 ) );
+            
+            // TODO THIS IS TENTATIVE as the only use-case for a custom projection is a mercator projection
+            // (OSM_Slippy_Map) which is meant to be spherical ( although from the data coming with it
+            // -- in the ellipsoid namely --  it results non-spherical ). Thus we are forcing it spherical
+            // until we can speak with our CRS expert. Contact us in case you need to load your custom projection. 
+            Method makeSpherical = t.getDeclaredMethod( "makeMercatorSpherical", (Class<?>[]) null );
+            makeSpherical.invoke( p, (Object[]) null );
+            
         } catch ( ClassNotFoundException e ) {
             LOG.error( Messages.getMessage( "CUSTOM_PROJECTION_CLASS_INSTANTIATION", projectionID, e.getMessage() ), e );
         } catch ( NoSuchMethodException e ) {
