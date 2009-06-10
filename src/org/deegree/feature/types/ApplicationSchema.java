@@ -63,7 +63,8 @@ import org.slf4j.LoggerFactory;
  * Some notes:
  * <ul>
  * <li>There is no default head for the feature type substitution relation as in GML (prior to 3.2: gml:_Feature, since
- * 3.2: gml:AbstractFeature).</li>
+ * 3.2: gml:AbstractFeature). This is not necessary, as each {@link FeatureType} object is already identified as a
+ * feature type by its class.</li>
  * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
