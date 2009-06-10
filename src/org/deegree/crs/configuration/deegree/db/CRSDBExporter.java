@@ -39,6 +39,8 @@
 package org.deegree.crs.configuration.deegree.db;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -59,6 +61,7 @@ import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.components.PrimeMeridian;
 import org.deegree.crs.components.VerticalDatum;
 import org.deegree.crs.configuration.CRSConfiguration;
+import org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider;
 import org.deegree.crs.coordinatesystems.CompoundCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeocentricCRS;
@@ -859,9 +862,9 @@ public class CRSDBExporter {
         // Export a custom projection
         //
         LOG.info( "Exporting a Custom Projection( that has class attribute)..." );
-        ResultSet rs = conn.prepareStatement( "SELECT ref_id FROM code, custom_projection " +
-                                              "WHERE code.code= '" + projection.getCode().getCode() + 
-                                              "' AND code.codespace = '" + projection.getCode().getCodeSpace() ).executeQuery();
+        String statementStr = "SELECT ref_id FROM code, custom_projection " + "WHERE code.code= '" + projection.getCode().getCode() + "' AND code.codespace = '" + projection.getCode().getCodeSpace() + "'";
+        System.out.println( statementStr );
+        ResultSet rs = conn.prepareStatement( statementStr ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
             return rs.getInt( 1 );
@@ -878,7 +881,7 @@ public class CRSDBExporter {
             ps.setString( 2, "custom_projection" );
             ps.execute();
 
-            // insert into transverse_mercator
+            // insert into custom_projection
             ps = conn.prepareStatement( "INSERT INTO custom_projection VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? )" );
             ps.setInt( 1, internalID );
 
@@ -1027,7 +1030,59 @@ public class CRSDBExporter {
                 export( crs );
             else
                 LOG.warn( "A null CRS in the exporting CRS list." );
-    }        
+    }
+
+    /**
+     * Method for introducing a CRS into the database from the xml data file. As reference  
+     * the CRS code type is supplied and the name of the class it will be instantiated with.   
+     * 
+     * @param code  the code for the identifiable object that will be exported to the database  
+     * @param className  the class name of the object, so that the exporting method may be determined
+     */
+    public void exportDirectlyFromXML( CRSCodeType code, Class<?> className ) {        
+        // obtain the CRS from the XML file (through the XML provider)
+        CRSConfiguration xmlConfig = CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider" );
+        DeegreeCRSProvider xmlProvider = (DeegreeCRSProvider) xmlConfig.getProvider();        
+        CoordinateSystem crs = xmlProvider.getCRSByCode( code );
+
+        // prepare the exporter ( with getting the database connection )
+        CRSConfiguration dbConfig = CRSConfiguration.getCRSConfiguration();
+        DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) dbConfig.getProvider();
+        Connection conn = dbProvider.getConnection();
+        try {
+            setConnection( conn );
+        } catch ( ClassNotFoundException e1 ) {
+            LOG.error( e1.getMessage(), e1 );
+        }
+
+        // determine the maximum id used so that the next additions can be under immediately larger ids 
+        try {        
+            PreparedStatement ps = conn.prepareStatement( "SELECT MAX(ref_id) FROM code" );
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            internalID = rs.getInt( 1 ) + 1; // if rs.getInt(1) is NULL the value returned is 0 anyway
+        } catch ( SQLException e1 ) {
+            LOG.error( e1.getMessage(), e1 );
+        }
+
+        // since we do not know before runtime what crs type we are exporting, we get the right method
+        // and access it via the java reflection mechanism
+        try {
+            Method exportMethod = CRSDBExporter.class.getDeclaredMethod( "export", className );
+            exportMethod.invoke( this, className.cast( crs ) );
+
+        } catch ( SecurityException e ) {
+            LOG.error( e.getMessage(), e );
+        } catch ( NoSuchMethodException e ) {
+            LOG.error( e.getMessage(), e );
+        } catch ( IllegalArgumentException e ) {
+            LOG.error( e.getMessage(), e );
+        } catch ( IllegalAccessException e ) {
+            LOG.error( e.getMessage(), e );
+        } catch ( InvocationTargetException e ) {
+            LOG.error( e.getMessage(), e );
+        }
+    }
 
     /**
      * Command-line tool for introducing a CRS in WKT format from a file ( provided as 
@@ -1039,7 +1094,7 @@ public class CRSDBExporter {
      * @throws CRSException
      */
     public static void main( String[] args ) throws IOException, SQLException, ClassNotFoundException, CRSException {
-        // get the instantiated CRS from WKT format 
+        // get the instantiated CRS from WKT format
         WKTParser parser = new WKTParser( args[0] );
         CoordinateSystem crs = parser.parseCoordinateSystem();
 
