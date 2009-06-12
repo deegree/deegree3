@@ -20,13 +20,13 @@ NOTE: Necessary libraries that are also used by one of the dependent modules are
 
 
 === slf4j ===
-Files: sl4fj-api-1.5.2.jar,slf4j-log4j12-1.5.2.jar,jcl-over-slf4j-1.5.2.jar
+Files: sl4fj-api-1.5.8.jar,slf4j-log4j12-1.5.8.jar,jcl-over-slf4j-1.5.8.jar
 URL: http://www.slf4j.org/
-Version: 1.5.2
+Version: 1.5.8
 Description: The Simple Logging Facade for Java or (SLF4J) is intended to serve as a simple facade for various logging APIs allowing to the end-user to plug in the desired implementation at deployment time.
 Used for: everything
 License: MIT (aka X11 License), compatible with GNU GPL, see http://www.slf4j.org/license.html
-Origin of files: http://www.slf4j.org/dist/slf4j-1.5.2.tar.gz
+Origin of files: http://www.slf4j.org/dist/slf4j-1.5.8.tar.gz
 Responsible: schneider
 
 === log4j ===
