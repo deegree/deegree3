@@ -1,0 +1,5 @@
+http://www.someserver.com/wfs.cgi&
+SERVICE=WFS&
+VERSION=1.1.0&
+REQUEST=GetFeature&
+FEATUREID=InWaterA_1M.1013,BUILTUP_1M.3456
