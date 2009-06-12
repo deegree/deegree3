@@ -48,6 +48,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.slf4j.Logger;
@@ -57,10 +58,10 @@ import org.slf4j.LoggerFactory;
  * This class contains static utility methods for handling files and filenames.
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
- * 
  */
 public class FileUtils {
 
@@ -104,8 +105,8 @@ public class FileUtils {
      * to load it from the package of the given configuration class. Consider following example:
      * <p>
      * The org.deegree.geometry.GeometryFactory wants to load the File geometry_config.xml located in
-     * org.deegree.geometry.configuration (hence the filename will be <i>configuration/geometry_config.xml</i>)<br />.
-     * This method will first try to read geometry_config.xml (<b>without</b> the 'configuration' directory from the
+     * org.deegree.geometry.configuration (hence the filename will be <i>configuration/geometry_config.xml</i>)<br />
+     * . This method will first try to read geometry_config.xml (<b>without</b> the 'configuration' directory from the
      * given fileName) from the root directory '/' (e.g. WEB-INF/classes in a serlvet environment)<br />
      * If this was unsuccessful this method will try to load the file from the given packageName with the relative
      * fileName appended to it.
@@ -250,5 +251,31 @@ public class FileUtils {
             LOG.error( "Cannot create temporary file for prefix '" + filePrefix + "' and suffix '" + fileSuffix + ".",
                        e );
         }
+    }
+
+    /**
+     * Converts a <code>file:/...</code> <code>URL</code> into a file.
+     * <p>
+     * NOTE: The implementation uses an idea from <a
+     * href="http://weblogs.java.net/blog/kohsuke/archive/2007/04/how_to_convert.html">Kohsuke Kawaguchi</a>.
+     * </p>
+     * 
+     * @param url
+     *            <code>file:/...</code> URL
+     * @return corresponding file object
+     * @throws IllegalArgumentException if the given URL is not a <code>file:/...</code> URL
+     */
+    public static File getAsFile( URL url )
+                            throws IllegalArgumentException {
+        
+        LOG.info ("Protocol: '" + url.getProtocol() + "'");
+        
+        File f;
+        try {
+            f = new File( url.toURI() );
+        } catch ( URISyntaxException e ) {
+            f = new File( url.getPath() );
+        }
+        return f;
     }
 }
