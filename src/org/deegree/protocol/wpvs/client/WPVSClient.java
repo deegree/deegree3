@@ -38,47 +38,36 @@
 
 package org.deegree.protocol.wpvs.client;
 
-import static org.deegree.commons.utils.ArrayUtils.join;
 import static org.deegree.commons.utils.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.HttpUtils.XML;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.imageio.ImageIO;
-
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMNamespace;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
-import org.deegree.crs.CRS;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
-import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <code>WPVSClient</code> currently issues getView requests to the WPVS from deegree2.2. Prior to running
- * this utility, have deegree-wpvs set up in Apache Tomcat ( which here is set to use port 8080).
- * You can download the deegree2 version of WPVS from the deegree download page: 
- * {@link http://www.deegree.org/deegree/portal/media-type/html/user/anon/page/default.psml/js_pane/download}
+ * The <code>WPVSClient</code> class supports the functionality of sending requests to the
+ * Web Perspective View Service (WPVS).
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author: ionita $
  * 
  * @version $Revision: $, $Date: $
- * 
  */
 public class WPVSClient {
 
@@ -89,20 +78,7 @@ public class WPVSClient {
         GetCapabilities,
     }
 
-    private static final NamespaceContext nsContext;
-
-    static {
-        nsContext = new NamespaceContext();
-        nsContext.addNamespace( "ows", "http://www.opengis.net/ows" );
-        nsContext.addNamespace( "wpvs", "http://www.opengis.net/wpvs" );
-        nsContext.addNamespace( "", "http://www.opengis.net/wpvs" );
-        nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
-        nsContext.addNamespace( "ogc", "http://www.opengis.net/ogc" );
-        nsContext.addNamespace( "ows", "http://www.opengis.net/ows" );
-        nsContext.addNamespace( "wfs", "http://www.opengis.net/wfs" );
-        nsContext.addNamespace( "xlink", "http://www.w3.org/1999/xlink" );
-        nsContext.addNamespace( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-    }        
+    private final NamespaceContext nsContext;
 
     private XMLAdapter capabilities;
 
@@ -112,126 +88,158 @@ public class WPVSClient {
 
     public WPVSClient( XMLAdapter capabilities ) {
         this.capabilities = capabilities;
+        // get all defined namespaces from getCapabilities in order to define the namespace context 
+        List<Namespace> nss = parseNamespaces();
+        // add namespaces to namespace context, to be used later with xpath
+        nsContext = new NamespaceContext(); 
+        for ( Namespace ns: nss ) {
+            nsContext.addNamespace( ns.getPrefix(), ns.getUri() );
+        }
     }
+    
+    private List<Namespace> parseNamespaces() {
+        OMElement rootEl = capabilities.getRootElement();
+        Iterator<OMNamespace> nss = rootEl.getAllDeclaredNamespaces();
+        List<Namespace> res = new ArrayList<Namespace>();
+        while ( nss.hasNext() ) {
+            OMNamespace omNs = nss.next();
+            res.add( new Namespace( omNs.getPrefix(), omNs.getNamespaceURI()) );
+        }
+        return res;
+    }    
+    
+    /**
+     * 
+     * The <code>Namespace</code> class encapsulates the namespace structure as needed locally in the
+     * <code>WPVSClient</code> class.
+     * 
+     * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+     * 
+     * @author last edited by: $Author: ionita $
+     * 
+     * @version $Revision: $, $Date: $
+     *
+     */
+    private class Namespace {
+        
+        private String prefix;
+        
+        private String uri;
+        
+        public Namespace( String prefix, String uri ) {
+            this.prefix = prefix;
+            this.uri = uri;
+        }
+        
+        public String getPrefix() {
+            return prefix;
+        }
+        
+        public String getUri() {
+            return uri;
+        }
+        
+    }    
 
     /**
      * 
-     * @reutrn all datasets that are queryable
+     * @return all datasets that are queryable
      */
-    public List<String> getQueryableDatasets() {
+    public synchronized List<String> getQueryableDatasets() {
         List<String> res = new LinkedList<String>();
-
-        XPath xp = new XPath( "//wpvs:Dataset[@queryable='1']", nsContext );
+        XPath xp = new XPath( "//wpvs:Dataset[@queryable='true']", nsContext );
         List<OMElement> datasets = capabilities.getElements( capabilities.getRootElement(), xp );
-
         for ( OMElement node : datasets ) {
-            XPath xpName = new XPath( "wpvs:Name", nsContext );
-            String name = capabilities.getNodeAsString( node, xpName, null );
-            res.add( name );
-        }        
+            if ( node != null ) {
+                XPath xpName = new XPath( "wpvs:Name", nsContext );
+                String name = capabilities.getNodeAsString( node, xpName, null );
+                if ( name != null ) {                    
+                    res.add( name );
+                    System.out.println( "dataset found in GetCapabilities: " + name );
+                }
+            } else
+                LOG.warn( "Found an empty dataset!" );
+        }
         return res;
     }
 
     /**
      * 
-     * @return all Elevation Models defined
+     * @return all elevation models defined
      */
-    public List<String> getElevationModels() {
+    public synchronized List<String> getElevationModels() {
         List<String> res = new LinkedList<String>();
-
         XPath xp = new XPath( "//wpvs:ElevationModel", nsContext );
         List<OMElement> elModels = capabilities.getElements( capabilities.getRootElement(), xp );
-
         for ( OMElement node : elModels )
-            res.add( node.getText() );
+            if ( node != null ) {
+                XPath xpName = new XPath( "wpvs:Name", nsContext );
+                String name = capabilities.getNodeAsString( node, xpName, null );
+                if ( name != null )
+                    res.add( name );
+            }
         return res;
     }
 
     /**
      * 
-     * @param request 
-     * @return whether the request operation appears in getCapabilities or not
+     * @param request the type of {@link Requests}
+     * @return whether the request is defined in the getCapabilities xml file
      */
-    public boolean isOperationSupported( Requests request ) {
+    public synchronized boolean isOperationSupported( Requests request ) {
         XPath xp = new XPath( "//ows:Operation[@name='" + request.name() + "']", nsContext );
         return capabilities.getElement( capabilities.getRootElement(), xp ) != null;
     }
 
     /**
      * 
-     * @param request
-     * @param get
-     * @return the URL (prefix) defined in getCababilities for the request 
+     * @param request the type of {@link Requests}
+     * @param get whether it is a Get or a Post request 
+     * @return the url of the requested operation
      */
-    public String getAddress( Requests request, boolean get ) {
+    public synchronized String getAddress( Requests request, boolean get ) {
         if ( !isOperationSupported( request ) )
             return null;
-
+        
         String xpathStr = "//ows:Operation[@name=\"" + request.name() + "\"]";
         xpathStr += "/ows:DCP/ows:HTTP/" + ( get ? "ows:Get" : "ows:Post" ) + "/@xlink:href";
-
+        
         OMElement root = capabilities.getRootElement();
         String res = capabilities.getNodeAsString( root, new XPath( xpathStr, nsContext ), null );
         return res;
     }
 
-    public Pair<BufferedImage, String> getView( List<String> dataSets, int width, int height, Envelope bbox, 
-                                                CRS crs, String format, Point poi, int pitch, int roll, int yaw, 
-                                                String elevationModel, int distance, String version, 
-                                                String background, int clipPlane, int aov, double scale ) throws IOException {
-        String url = getAddress( Requests.GetView, true );
-        url += "?request=GetView";
-        url += "&BOUNDINGBOX=" + bbox.getMin().getX() + "," + bbox.getMin().getY() + ","; 
-        url += bbox.getMax().getX() + "," + bbox.getMax().getY();
-
-        url += "&DATASETS=" + join( ",", dataSets );
-        url += "&ELEVATIONMODEL=" + elevationModel;
-        url += "&ROLL=" + roll;
-        url += "&AOV=" + aov;
-        url += "&FARCLIPPINGPLANE=" + clipPlane;
-        url += "&CRS=" + crs.getName();
-        url += "&WIDTH=" + width;
-        url += "&HEIGHT=" + height;
-        url += "&SCALE=" + scale;
-        url += "&STYLES=default";
-        url += "&DATETIME=2007-03-21T12:00:00";
-        url += "&EXCEPTIONFORMAT=INIMAGE";
-        url += "&SPLITTER=QUAD";
-        url += "&VERSION=" + version;
-        url += "&OUTPUTFORMAT=" + format;
-        url += "&background=" + background;
-        url += "&POI=" + poi.getX() + "," + poi.getY() + "," + poi.getZ();
-        url += "&YAW=" + yaw;
-        url += "&PITCH=" + pitch;
-        url += "&DISTANCE=" + distance;  
-        LOG.info( "Generated GetView request: " + url );                
-
+    /**
+     * 
+     * @param url  
+     * @return a {@link Pair} of {@link BuggeredImage} and {@link String}. In case the WPVS returns 
+     * an image the former will be used, otherwise an XML response ( as a String ) will be returned 
+     * in the second value. 
+     * @throws IOException 
+     */
+    public synchronized Pair<BufferedImage, String> getView( URL url ) {                
         Pair<BufferedImage, String> res = new Pair<BufferedImage, String>();
-        
-        URL theUrl = new URL( url );
-        URLConnection conn = theUrl.openConnection();
-        conn.connect();
-        
-        res.first = IMAGE.work( conn.getInputStream() );
-        if ( res.first == null ) {
-            conn = theUrl.openConnection();
-            res.second = XML.work( conn.getInputStream() ).toString();
+        URLConnection conn = null;
+        try {
+            conn = url.openConnection();
+            conn.connect();
+        } catch ( IOException e ) {
+            System.err.println( "ERROR: Could not open connection/connect to the URL given: " + url );
+            LOG.error( e.getMessage(), e );
         }
+        
+        InputStream inStream;
+        try {
+            inStream = conn.getInputStream();
+            res.first = IMAGE.work( inStream );
+            if ( res.first == null ) {
+                conn = url.openConnection();
+                res.second = XML.work( conn.getInputStream() ).toString();
+            }
+        } catch ( IOException e ) {
+            LOG.error( e.getMessage(), e );
+        }        
+        
         return res;
-    }
-
-    public static void main( String args[] ) throws IOException {
-        WPVSClient client = new WPVSClient( new URL( "http://localhost:8080/deegree-wpvs/services?REQUEST=GetCapabilities&version=1.0&service=WPVS" ) );
-        GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
-        Envelope bbox = geomFac.createEnvelope( 423750, 4512700, 425500, 4513900, new CRS( "EPSG:26912" ) );
-        Point poi = new DefaultPoint( "poi", new CRS( "EPSG:26912" ), new double[] { 424750.0, 4513400.0, 50 } );
-        Pair<BufferedImage, String> response = client.getView( client.getQueryableDatasets(), 
-                                                               1200/*maxWidth:1200*/, 1000/*maxHeight:1000*/, 
-                                                               bbox, new CRS( "EPSG:26912" ),
-                                                               "image/jpg", poi, 35, 10/*not supported*/, 45, 
-                                                               client.getElevationModels().get( 0 ), 4000, 
-                                                               "1.0.0", "sunset", 10000, 70, 1.0 );
-        ImageIO.write( response.first, "jpg", new File( "/tmp/out.jpg" ) );
-    }
-
+    }    
 }
