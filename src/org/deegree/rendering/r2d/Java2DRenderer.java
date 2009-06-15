@@ -400,11 +400,11 @@ public class Java2DRenderer implements Renderer {
     }
 
     private Double fromCurve( Curve curve ) {
-        curve = curve.getAsLineString();
         if ( curve.getCurveSegments().size() != 1 || !( curve.getCurveSegments().get( 0 ) instanceof LineStringSegment ) ) {
             // TODO handle non-linear and multiple curve segments
             throw new IllegalArgumentException();
         }
+
         LineStringSegment segment = ( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
 
         Double line = new Double();
