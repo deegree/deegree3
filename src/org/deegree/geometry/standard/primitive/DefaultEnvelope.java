@@ -237,7 +237,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
                 Curve c = (Curve) primitive;
 
                 for ( Point pt : c.getControlPoints() ) {
-                    if ( minx < pt.getX() && pt.getX() < maxx && miny < pt.getY() && pt.getY() < maxy ) {
+                    if ( minx <= pt.getX() && pt.getX() <= maxx && miny <= pt.getY() && pt.getY() <= maxy ) {
                         return true;
                     }
                 }
@@ -254,14 +254,14 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
                     Polygon p = (Polygon) primitive;
                     for ( Point pt : p.getExteriorRingCoordinates() ) {
-                        if ( minx < pt.getX() && pt.getX() < maxx && miny < pt.getY() && pt.getY() < maxy ) {
+                        if ( minx <= pt.getX() && pt.getX() <= maxx && miny <= pt.getY() && pt.getY() <= maxy ) {
                             return true;
                         }
                     }
 
                     for ( List<Point> list : p.getInteriorRingsCoordinates() ) {
                         for ( Point pt : list ) {
-                            if ( minx < pt.getX() && pt.getX() < maxx && miny < pt.getY() && pt.getY() < maxy ) {
+                            if ( minx <= pt.getX() && pt.getX() <= maxx && miny <= pt.getY() && pt.getY() <= maxy ) {
                                 return true;
                             }
                         }
