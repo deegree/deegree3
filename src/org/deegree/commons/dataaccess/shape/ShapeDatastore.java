@@ -40,8 +40,10 @@ package org.deegree.commons.dataaccess.shape;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
@@ -133,10 +135,19 @@ public class ShapeDatastore {
                 try {
                     crs = new CRS( prj );
                 } catch ( WKTParsingException e ) {
-                    LOG.warn( "Could not parse the .prj projection file for {}, reason: {}", name,
-                              e.getLocalizedMessage() );
-                    LOG.debug( "Stack trace", e );
-                    crs = new CRS( "EPSG:4326" );
+                    BufferedReader in = new BufferedReader( new FileReader( prj ) );
+                    String c = in.readLine().trim();
+                    try {
+                        crs = new CRS( c );
+                        crs.getWrappedCRS(); // resolve NOW
+                        LOG.debug( ".prj contained EPSG code '{}'", crs.getName() );
+                    } catch ( UnknownCRSException e2 ) {
+                        LOG.warn( "Could not parse the .prj projection file for {}, reason: {}.", name,
+                                  e.getLocalizedMessage() );
+                        LOG.warn( "The file also does not contain a valid EPSG code." );
+                        LOG.trace( "Stack trace of failed WKT parsing:", e );
+                        crs = new CRS( "EPSG:4326" );
+                    }
                 }
             } else {
                 crs = new CRS( "EPSG:4326" );
@@ -150,6 +161,8 @@ public class ShapeDatastore {
             }
         }
 
+        this.crs = crs;
+        
         shpFile = new File( name + ".SHP" );
         if ( !shpFile.exists() ) {
             shpFile = new File( name + ".shp" );
@@ -308,6 +321,13 @@ public class ShapeDatastore {
      */
     public boolean isAvailable() {
         return available;
+    }
+
+    /**
+     * @return the crs of the data store. May be parsed from WKT!
+     */
+    public CRS getCRS() {
+        return crs;
     }
 
 }
