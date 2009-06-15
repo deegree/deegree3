@@ -43,10 +43,20 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.feature.gml.schema;
 
+/**
+ * Enum type for discriminating the different GML versions.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public enum GMLVersion {
 
-    VERSION_32,
-    VERSION_31,
-    VERSION_30,
-    VERSION_2
+    /** GML version 2 series (2.0.0 up to 2.1.2) */
+    GML_2,
+    /** GML version 3.0 and 3.1 series (3.0.0 up to 3.1.1) */
+    GML_31,
+    /** GML version 3.2 series (3.2.1) */
+    GML_32
 }

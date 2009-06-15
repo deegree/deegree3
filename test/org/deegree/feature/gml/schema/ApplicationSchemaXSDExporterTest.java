@@ -36,52 +36,50 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wfs.getfeature;
+package org.deegree.feature.gml.schema;
 
-import org.deegree.commons.types.ows.Version;
-import org.deegree.commons.utils.kvp.InvalidParameterValueException;
-import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.URL;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+
+import org.deegree.commons.xml.FormattingXMLStreamWriter;
+import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.feature.types.JAXBAdapter;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * Adapter between XML <code>GetFeature</code> requests and {@link GetFeature} objects.
- * <p>
- * TODO code for exporting to XML
+ * The <code></code> class TODO add class documentation here.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
-public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
+public class ApplicationSchemaXSDExporterTest {
+
+    private ApplicationSchema schema;
 
     /**
-     * Parses a WFS <code>GetFeature</code> document into a {@link GetFeature} object.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * <li>WFS 1.0.0</li>
-     * <li>WFS 1.1.0</li>
-     * </ul>
-     * 
-     * @return parsed {@link GetFeature} request
-     * @throws XMLParsingException
-     *             if a syntax error occurs in the XML
-     * @throws MissingParameterException
-     *             if the request version is unsupported
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
+     * @throws java.lang.Exception
      */
-    public GetFeature parse() {
-
-        Version version = Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
-
-        GetFeature result = null;
-        // TODO
-        return result;
+    @Before
+    public void setUp()
+                            throws Exception {
+        URL url = new URL( "file:/home/schneider/workspace/d3_commons/resources/schema/feature/example.xml" );
+        JAXBAdapter adapter = new JAXBAdapter( url );
+        schema = adapter.getApplicationSchema();     
     }
 
+    @Test
+    public void testExportAsGML31() throws XMLStreamException, IOException {        
+        XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+//        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );        
+        FormattingXMLStreamWriter writer = new FormattingXMLStreamWriter (outputFactory.createXMLStreamWriter( new FileWriter ("/home/schneider/philosopher_gml200.xsd") ));
+        new ApplicationSchemaXSDExporter(GMLVersion.GML_2, null).export( writer, schema );
+        writer.close();
+    }
 }

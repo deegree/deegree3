@@ -104,13 +104,12 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
         super( url );
         this.mode = mode;
         switch ( mode ) {
-        case VERSION_2: {
+        case GML_2: {
             abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "_Feature", GML_PRE_32_NS );
             abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );
             break;
         }
-        case VERSION_30:
-        case VERSION_31: {
+        case GML_31: {
             abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "_Feature", GML_PRE_32_NS );
             abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "_Geometry", GML_PRE_32_NS );
             abstractValueElementDecl = xmlSchema.getElementDeclaration( "_Value", GML_PRE_32_NS );
@@ -121,7 +120,7 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
             abstractStyleElementDecl = xmlSchema.getElementDeclaration( "_Style", GML_PRE_32_NS );
             break;
         }
-        case VERSION_32: {
+        case GML_32: {
             abstractFeatureElementDecl = xmlSchema.getElementDeclaration( "AbstractFeature", GML_32_NS );
             abstractGeometryElementDecl = xmlSchema.getElementDeclaration( "AbstractGeometry", GML_32_NS );
             abstractValueElementDecl = xmlSchema.getElementDeclaration( "AbstractValue", GML_32_NS );
@@ -143,9 +142,8 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
         List<XSElementDeclaration> fcDecls = null;
 
         switch ( mode ) {
-        case VERSION_2:
-        case VERSION_30:
-        case VERSION_31: {
+        case GML_2:
+        case GML_31: {
             // TODO do this the right way
             fcDecls = new ArrayList<XSElementDeclaration>();
             if ( xmlSchema.getElementDeclaration( "_FeatureCollection", GML_PRE_32_NS ) != null ) {
@@ -161,7 +159,7 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
 
             break;
         }
-        case VERSION_32:
+        case GML_32:
             // GML 3.2 does not have an abstract feature collection element anymore
             // Every gml:AbstractFeature having a property whose content model extends gml:AbstractFeatureMemberType is
             // a feature collection. See OGC 07-061, section 6.5

@@ -38,6 +38,8 @@
 
 package org.deegree.protocol.wfs;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -168,5 +170,28 @@ public abstract class AbstractWFSRequestKVPAdapter {
             }
         }
         return typeName;
+    }
+
+    protected static void appendFirstKVP ( StringBuffer sb, String key, String value ) {
+        sb.append (key);
+        sb.append ('=');
+        try {
+            sb.append (URLEncoder.encode( value, "UTF-8" ));
+        } catch ( UnsupportedEncodingException e ) {
+            // should never happen
+            e.printStackTrace();
+        }
+    }    
+    
+    protected static void appendKVP ( StringBuffer sb, String key, String value ) {
+        sb.append ('&');
+        sb.append (key);
+        sb.append ('=');
+        try {
+            sb.append (URLEncoder.encode( value, "UTF-8" ));
+        } catch ( UnsupportedEncodingException e ) {
+            // should never happen
+            e.printStackTrace();
+        }
     }
 }

@@ -86,9 +86,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GMLApplicationSchemaXSDAdapter {
+public class ApplicationSchemaXSDAdapter {
 
-    private Logger LOG = LoggerFactory.getLogger( GMLApplicationSchemaXSDAdapter.class );
+    private Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDAdapter.class );
 
     private XSModelGMLAnalyzer analyzer;
 
@@ -105,7 +105,7 @@ public class GMLApplicationSchemaXSDAdapter {
     // after all FeatureTypes have been created
     private List<FeaturePropertyType> featurePropertyTypes = new ArrayList<FeaturePropertyType>();
 
-    public GMLApplicationSchemaXSDAdapter( String url, GMLVersion gmlVersion ) throws ClassCastException,
+    public ApplicationSchemaXSDAdapter( String url, GMLVersion gmlVersion ) throws ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
         analyzer = new XSModelGMLAnalyzer( url, gmlVersion );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );

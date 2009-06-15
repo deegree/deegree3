@@ -137,11 +137,11 @@ public class ApplicationSchema {
 
         // add type for 'gml:FeatureCollection' element
         // TODO do this someplace else (maybe in GMLFeatureParser)
-        List<PropertyType> props = new ArrayList<PropertyType>( 1 );
-        props.add( new FeaturePropertyType( new QName( "http://www.opengis.net/gml", "featureMember" ), 0, -1, null ) );
-        FeatureCollectionType fc = new GenericFeatureCollectionType( new QName( "http://www.opengis.net/gml",
-                                                                                "FeatureCollection" ), props, false );
-        ftNameToFt.put( fc.getName(), fc );
+//        List<PropertyType> props = new ArrayList<PropertyType>( 1 );
+//        props.add( new FeaturePropertyType( new QName( "http://www.opengis.net/gml", "featureMember" ), 0, -1, null ) );
+//        FeatureCollectionType fc = new GenericFeatureCollectionType( new QName( "http://www.opengis.net/gml",
+//                                                                                "FeatureCollection" ), props, false );
+//        ftNameToFt.put( fc.getName(), fc );
 
         this.model = model;
     }

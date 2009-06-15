@@ -14,7 +14,7 @@ public class GMLApplicationSchemaXSDAdapterTest {
 //        String schemaURL = "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
         // String schemaURL =
         // "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
-        GMLApplicationSchemaXSDAdapter adapter = new GMLApplicationSchemaXSDAdapter( schemaURL, GMLVersion.VERSION_31 );
+        ApplicationSchemaXSDAdapter adapter = new ApplicationSchemaXSDAdapter( schemaURL, GMLVersion.GML_31 );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         for ( FeatureType ft : fts ) {
             System.out.println( ft );

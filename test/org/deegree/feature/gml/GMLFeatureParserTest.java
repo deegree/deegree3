@@ -68,7 +68,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
-import org.deegree.feature.gml.schema.GMLApplicationSchemaXSDAdapter;
+import org.deegree.feature.gml.schema.ApplicationSchemaXSDAdapter;
 import org.deegree.feature.gml.schema.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -217,8 +217,8 @@ public class GMLFeatureParserTest {
                             XMLParsingException, UnknownCRSException {
 
         String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2008/IMRO2008-with-xlinks.xsd";
-        GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
-                                                                                        GMLVersion.VERSION_31 );
+        ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL,
+                                                                                        GMLVersion.GML_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = new URL(
@@ -242,8 +242,8 @@ public class GMLFeatureParserTest {
                             XMLParsingException, UnknownCRSException {
 
         String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2006/IMRO2006-adapted.xsd";
-        GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
-                                                                                        GMLVersion.VERSION_31 );
+        ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL,
+                                                                                        GMLVersion.GML_31 );
 
         URL docURL = new URL(
                               "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.02020000705-.gml" );
@@ -268,8 +268,8 @@ public class GMLFeatureParserTest {
                             XMLParsingException, UnknownCRSException {
 
         String schemaURL = "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
-        GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
-                                                                                        GMLVersion.VERSION_31 );
+        ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL,
+                                                                                        GMLVersion.GML_31 );
         GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
 
         URL docURL = new URL( "file:///home/schneider/workspace/lkee_xplanung/resources/data/BP2070.gml" );
@@ -319,8 +319,8 @@ public class GMLFeatureParserTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException {
         String schemaURL = "file:///home/schneider/workspace/schemas/citygml/profiles/base/1.0/CityGML.xsd";
-        GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
-                                                                                        GMLVersion.VERSION_31 );
+        ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL,
+                                                                                        GMLVersion.GML_31 );
 
         URL docURL = new URL( "file:///home/schneider/Desktop/Stadt-Ettenheim-LoD3_edited_v1.0.0.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),

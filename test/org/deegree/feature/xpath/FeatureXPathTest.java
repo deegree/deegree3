@@ -58,7 +58,7 @@ import org.deegree.feature.Property;
 import org.deegree.feature.gml.GMLFeatureParser;
 import org.deegree.feature.gml.GMLFeatureParserTest;
 import org.deegree.feature.gml.GMLIdContext;
-import org.deegree.feature.gml.schema.GMLApplicationSchemaXSDAdapter;
+import org.deegree.feature.gml.schema.ApplicationSchemaXSDAdapter;
 import org.deegree.feature.gml.schema.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
 import org.jaxen.JaxenException;
@@ -92,8 +92,8 @@ public class FeatureXPathTest {
                             throws Exception {
 
         String schemaURL = this.getClass().getResource( "../gml/schema/Philosopher_typesafe.xsd" ).toString();
-        GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
-                                                                                        GMLVersion.VERSION_31 );
+        ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL,
+                                                                                        GMLVersion.GML_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
         GMLIdContext idContext = new GMLIdContext();
         GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema, idContext );

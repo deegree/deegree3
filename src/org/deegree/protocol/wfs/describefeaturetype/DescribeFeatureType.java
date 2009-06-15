@@ -97,4 +97,23 @@ public class DescribeFeatureType extends AbstractWFSRequest {
     public QName[] getTypeNames() {
         return typeNames;
     }
+
+    @Override
+    public String toString() {
+        String s = "{version=" + getVersion() + ",handle=" + getHandle() + ",outputFormat=" + outputFormat + ",typeNames=";
+        if (typeNames != null ) {
+            s += "{";
+            for ( int i = 0; i < typeNames.length; i++ ) {
+                s += typeNames [i];
+                if (i != typeNames.length -1) {
+                    s += ",";
+                }
+            }
+            s += "}";
+        } else {
+            s += "null";
+        }
+        s += "}";
+        return s;
+    }
 }

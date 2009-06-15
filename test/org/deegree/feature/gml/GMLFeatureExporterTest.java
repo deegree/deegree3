@@ -55,7 +55,7 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
-import org.deegree.feature.gml.schema.GMLApplicationSchemaXSDAdapter;
+import org.deegree.feature.gml.schema.ApplicationSchemaXSDAdapter;
 import org.deegree.feature.gml.schema.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.junit.XMLAssert;
@@ -88,8 +88,8 @@ public class GMLFeatureExporterTest {
                             IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException,
                             XMLParsingException, UnknownCRSException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
-        GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
-                                                                                        GMLVersion.VERSION_31 );
+        ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL,
+                                                                                        GMLVersion.GML_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureExporterTest.class.getResource( DIR + SOURCE_FILE );

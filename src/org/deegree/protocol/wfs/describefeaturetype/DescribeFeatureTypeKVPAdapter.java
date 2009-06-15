@@ -42,8 +42,11 @@ import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_200;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.types.ows.Version;
@@ -51,8 +54,8 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.KVPUtils;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.protocol.i18n.Messages;
-import org.deegree.protocol.wfs.WFSConstants;
 import org.deegree.protocol.wfs.AbstractWFSRequestKVPAdapter;
+import org.deegree.protocol.wfs.WFSConstants;
 
 /**
  * Adapter between KVP <code>DescribeFeatureType</code> requests and {@link DescribeFeatureType} objects.
@@ -173,5 +176,105 @@ public class DescribeFeatureTypeKVPAdapter extends AbstractWFSRequestKVPAdapter 
         String outputFormat = kvpParams.get( "OUTPUTFORMAT" );
 
         return new DescribeFeatureType( WFSConstants.VERSION_200, null, outputFormat, typeNames );
+    }
+
+    /**
+     * Exports the given {@link DescribeFeatureType} request as a KVP-encoded string (with encoded values).
+     * 
+     * @param request
+     *            request to be exported
+     * @param version
+     *            protocol version of the generated KVP
+     * @return KVP encoded request
+     */
+    public static String export( DescribeFeatureType request, Version version ) {
+
+        StringBuffer sb = new StringBuffer();
+        appendFirstKVP( sb, "VERSION", version.toString() );
+        appendKVP( sb, "REQUEST", "DescribeFeatureType" );
+        if ( request.getOutputFormat() != null ) {
+            appendKVP( sb, "OUTPUTFORMAT", request.getOutputFormat() );
+        }
+
+        QName[] ftNames = request.getTypeNames();
+        if ( ftNames != null && ftNames.length > 0 ) {
+
+            Map<String, String> nsBindings = collectNsBinding( ftNames );
+            augmentNsBindings( nsBindings, ftNames );
+
+            StringBuffer typeNameList = new StringBuffer();
+            for ( QName name : ftNames ) {
+                String typeName = name.getLocalPart();
+                if ( name.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
+                    String prefix = nsBindings.get( name.getNamespaceURI() );
+                    typeName = prefix + ":" + name.getLocalPart();
+                }
+                if ( typeNameList.length() > 0 ) {
+                    typeNameList.append( ',' );
+                }
+                typeNameList.append( typeName );
+            }
+            appendKVP( sb, "TYPENAME", typeNameList.toString() );
+
+            // only versions 1.1.0+ support the NAMESPACE parameter for proper qualifying of namespaces
+            if ( !version.equals( VERSION_100 ) && nsBindings.size() > 0 ) {
+                StringBuffer namespaceList = new StringBuffer();
+                for ( String namespace : nsBindings.keySet() ) {
+                    String prefix = nsBindings.get( namespace );
+                    if ( namespaceList.length() > 0 ) {
+                        namespaceList.append( ',' );
+                    }
+                    namespaceList.append( "xmlns(" );
+                    namespaceList.append( prefix );
+                    namespaceList.append( '=' );
+                    namespaceList.append( namespace );
+                    namespaceList.append( ')' );
+                }
+                appendKVP( sb, "NAMESPACE", namespaceList.toString() );
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Augment the given map of prefix to namespace bindings with generated namespace prefices, so that every qualified
+     * feature type name has a proper namespace prefix.
+     * 
+     * @param nsBindings
+     * @param ftNames
+     */
+    private static void augmentNsBindings( Map<String, String> nsBindings, QName[] ftNames ) {
+        for ( QName name : ftNames ) {
+            if ( name.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
+                if ( nsBindings.get( name.getNamespaceURI() ) == null ) {
+                    String prefix = getUniquePrefix( nsBindings.keySet() );
+                    nsBindings.put( name.getNamespaceURI(), prefix);
+                }
+            }
+        }
+    }
+
+    private static String getUniquePrefix( Set<String> existingPrefices ) {
+        int i = 0;
+        String prefix = null;
+
+        do {
+            prefix = "ns" + ++i;
+        } while ( existingPrefices.contains( prefix ) );
+
+        return prefix;
+    }
+
+    private static Map<String, String> collectNsBinding( QName[] ftNames ) {
+        Map<String, String> nsBindings = new HashMap<String, String>();
+        for ( QName name : ftNames ) {
+            if ( name.getNamespaceURI() != XMLConstants.NULL_NS_URI ) {
+                String currentPrefix = nsBindings.get( name.getNamespaceURI() );
+                if ( currentPrefix == null && !XMLConstants.NULL_NS_URI.equals( name.getPrefix() ) ) {
+                    nsBindings.put( name.getNamespaceURI(), name.getPrefix() );
+                }
+            }
+        }
+        return nsBindings;
     }
 }
