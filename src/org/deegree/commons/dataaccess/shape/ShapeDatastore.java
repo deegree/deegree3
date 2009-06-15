@@ -125,7 +125,10 @@ public class ShapeDatastore {
         this.encoding = encoding;
 
         if ( crs == null ) {
-            File prj = new File( name + ".prj" );
+            File prj = new File( name + ".PRJ" );
+            if ( !prj.exists() ) {
+                prj = new File( name + ".prj" );
+            }
             if ( prj.exists() ) {
                 try {
                     crs = new CRS( prj );
@@ -147,14 +150,20 @@ public class ShapeDatastore {
             }
         }
 
-        shpFile = new File( name + ".shp" );
+        shpFile = new File( name + ".SHP" );
+        if ( !shpFile.exists() ) {
+            shpFile = new File( name + ".shp" );
+        }
         shpLastModified = shpFile.lastModified();
-        dbfFile = new File( name + ".shp" );
+        dbfFile = new File( name + ".DBF" );
+        if ( !dbfFile.exists() ) {
+            dbfFile = new File( name + ".dbf" );
+        }
         dbfLastModified = dbfFile.lastModified();
 
-        shp = new SHPReader( new RandomAccessFile( name + ".shp", "r" ), crs );
+        shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs );
         try {
-            dbf = new DBFReader( new RandomAccessFile( name + ".dbf", "r" ), encoding );
+            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding );
         } catch ( IOException e ) {
             LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", name );
         }
@@ -165,14 +174,14 @@ public class ShapeDatastore {
             synchronized ( shpFile ) {
                 if ( shpLastModified != shpFile.lastModified() ) {
                     shp.close();
-                    shp = new SHPReader( new RandomAccessFile( name + ".shp", "r" ), crs );
+                    shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs );
                     LOG.debug( "Re-opening the shape file {}", name );
                 }
             }
             synchronized ( dbfFile ) {
                 if ( dbf != null && dbfLastModified != dbfFile.lastModified() ) {
                     dbf.close();
-                    dbf = new DBFReader( new RandomAccessFile( name + ".dbf", "r" ), encoding );
+                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding );
                     LOG.debug( "Re-opening the dbf file {}", name );
                 }
             }
