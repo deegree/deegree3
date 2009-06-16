@@ -40,7 +40,6 @@ package org.deegree.rendering.r2d.se.parser;
 
 import static java.awt.Color.decode;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
-import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 import static org.deegree.rendering.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -60,6 +59,7 @@ import org.deegree.commons.filter.Expression;
 import org.deegree.commons.filter.FilterEvaluationException;
 import org.deegree.commons.filter.xml.Filter110XMLAdapter;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
@@ -91,7 +91,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
 
     static final Logger LOG = getLogger( SE110SymbolizerAdapter.class );
 
-    private static final NamespaceContext nscontext = getNamespaceContext();
+    private static final NamespaceContext nscontext = CommonNamespaces.getNamespaceContext();
 
     /**
      * @return the symbolizer
