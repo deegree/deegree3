@@ -175,13 +175,13 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
 
     @Override
     public boolean add( Feature e ) {
-        return false;
+        return memberFeatures.add( e );
     }
 
     @Override
     public boolean addAll( Collection<? extends Feature> c ) {
         // TODO Auto-generated method stub
-        return false;
+        return memberFeatures.addAll( c );
     }
 
     @Override
