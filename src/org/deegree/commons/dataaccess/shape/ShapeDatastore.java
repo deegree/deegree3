@@ -287,7 +287,7 @@ public class ShapeDatastore {
                 }
             }
             props.add( new GenericProperty<Geometry>( geom, pair.second ) );
-            GenericFeature feat = new GenericFeature( type, "" + pair.first, props );
+            GenericFeature feat = new GenericFeature( type, "shp_" + pair.first, props );
 
             if ( filter.evaluate( feat ) ) {
                 feats.add( feat );
