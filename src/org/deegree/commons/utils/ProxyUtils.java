@@ -43,6 +43,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Properties;
 
+import org.apache.axiom.om.util.Base64;
 import org.deegree.commons.configuration.ProxyConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -243,7 +244,7 @@ public final class ProxyUtils {
         URLConnection conn = url.openConnection();
         if ( user != null ) {
             // TODO evaluate java.net.Authenticator
-            String userAndPass = new sun.misc.BASE64Encoder().encode( ( user + ":" + pass ).getBytes() );
+            String userAndPass = Base64.encode( ( user + ":" + pass ).getBytes() );
             conn.setRequestProperty( "Proxy-Authorization", "Basic " + userAndPass );
         }
         return conn;
