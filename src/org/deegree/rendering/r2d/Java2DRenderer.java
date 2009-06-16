@@ -69,9 +69,11 @@ import java.util.List;
 
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
@@ -400,24 +402,20 @@ public class Java2DRenderer implements Renderer {
     }
 
     private Double fromCurve( Curve curve ) {
-        if ( curve.getCurveSegments().size() != 1 || !( curve.getCurveSegments().get( 0 ) instanceof LineStringSegment ) ) {
-            // TODO handle non-linear and multiple curve segments
-            throw new IllegalArgumentException();
-        }
-
-        LineStringSegment segment = ( (LineStringSegment) curve.getCurveSegments().get( 0 ) );
-
         Double line = new Double();
-        // coordinate representation is still subject to change...
-        List<Point> points = segment.getControlPoints();
-        Point p = points.get( 0 );
-        line.moveTo( p.getX(), p.getY() );
-        for ( Point point : segment.getControlPoints() ) {
-            if ( point == p ) {
-                continue;
+
+        for ( CurveSegment seg : curve.getCurveSegments() ) {
+            List<Point> points = ( (LineStringSegment) seg ).getControlPoints();
+            Point p = points.get( 0 );
+            line.moveTo( p.getX(), p.getY() );
+            for ( Point point : points ) {
+                if ( point == p ) {
+                    continue;
+                }
+                line.lineTo( point.getX(), point.getY() );
             }
-            line.lineTo( point.getX(), point.getY() );
         }
+
         line.transform( worldToScreen );
 
         return line;
@@ -491,7 +489,6 @@ public class Java2DRenderer implements Renderer {
             LOG.debug( "Trying to render null geometry." );
             return;
         }
-
         if ( geom instanceof Point ) {
             LOG.warn( "Trying to render point with polygon styling." );
         }
@@ -501,6 +498,12 @@ public class Java2DRenderer implements Renderer {
         if ( geom instanceof Surface ) {
             LOG.trace( "Drawing {} with {}", geom, styling );
             render( styling, (Surface) geom );
+        }
+        if ( geom instanceof MultiGeometry ) {
+            LOG.trace( "Breaking open multi geometry." );
+            for ( Geometry g : (MultiGeometry<?>) geom ) {
+                render( styling, g );
+            }
         }
     }
 

@@ -443,12 +443,14 @@ public class SHPReader {
         return fac.createPoint( null, readLEDouble( in ), readLEDouble( in ), crs );
     }
 
-    private Polygon readPolygon( boolean z, boolean m, int length )
+    private Geometry readPolygon( boolean z, boolean m, int length )
                             throws IOException {
         double[][][] ps = readLines( m, z, length );
 
         Ring outer = null;
         LinkedList<Ring> inners = new LinkedList<Ring>();
+
+        LinkedList<Polygon> polys = new LinkedList<Polygon>();
 
         for ( int i = 0; i < ps.length; ++i ) {
             LinkedList<Point> pos = new LinkedList<Point>();
@@ -458,10 +460,19 @@ public class SHPReader {
             if ( outer == null ) {
                 outer = fac.createLinearRing( null, crs, pos );
             } else {
-                inners.add( fac.createLinearRing( null, crs, pos ) );
+                Ring ring = fac.createLinearRing( null, crs, pos );
+                if ( outer.contains( ring ) ) {
+                    inners.add( ring );
+                } else {
+                    polys.add( fac.createPolygon( null, crs, ring, null ) );
+                    polys.add( fac.createPolygon( null, crs, outer, null ) );
+                }
             }
         }
 
+        if ( polys.size() > 0 ) {
+            return fac.createMultiPolygon( null, crs, polys );
+        }
         return fac.createPolygon( null, crs, outer, inners );
     }
 

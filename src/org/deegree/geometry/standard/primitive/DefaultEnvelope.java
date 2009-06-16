@@ -45,6 +45,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
+import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.Point;
@@ -276,6 +277,13 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
             }
             }
         }
+        case MULTI_GEOMETRY:
+            for ( Geometry g : (MultiGeometry<?>) geometry ) {
+                if ( !intersects( g ) ) {
+                    return false;
+                }
+            }
+            return true;
         default: {
             throw new UnsupportedOperationException( "Intersects not implemented for Envelope/"
                                                      + geometry.getGeometryType().name() );

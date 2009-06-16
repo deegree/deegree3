@@ -55,6 +55,7 @@ import org.deegree.crs.transformations.Transformation;
 import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiPoint;
+import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LinearRing;
@@ -114,7 +115,7 @@ public class GeometryTransformer extends Transformer {
      *             if the transformation between the source and target crs cannot be created.
      * @throws IllegalArgumentException
      *             if the coordinates system of the geometry is <code>null</code>
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     public Geometry transform( Geometry geo )
                             throws TransformationException, IllegalArgumentException, UnknownCRSException {
@@ -189,6 +190,8 @@ public class GeometryTransformer extends Transformer {
                 transformedGeometry = transform( (MultiCurve) geo, trans );
             } else if ( geo instanceof MultiSurface ) {
                 transformedGeometry = transform( (MultiSurface) geo, trans );
+            } else if ( geo instanceof MultiPolygon ) {
+                transformedGeometry = transform( (MultiPolygon) geo, trans );
             } else if ( geo instanceof Envelope ) {
                 transformedGeometry = transform( (Envelope) geo, trans );
             } else {
@@ -197,8 +200,7 @@ public class GeometryTransformer extends Transformer {
         } catch ( GeometryException ge ) {
             throw new TransformationException( Messages.getMessage( "CRS_TRANSFORMATION_ERROR",
                                                                     geo.getCoordinateSystem().getName(),
-                                                                    getTargetCRS().getCodes(), ge.getMessage() ),
-                                               ge );
+                                                                    getTargetCRS().getCodes(), ge.getMessage() ), ge );
         }
         return transformedGeometry;
     }
@@ -277,7 +279,7 @@ public class GeometryTransformer extends Transformer {
             pos = transform( pos, trans );
             curveSegments[i++] = geomFactory.createLineStringSegment( pos );
         }
-        return geomFactory.createCurve( geo.getId(), curveSegments, new CRS (trans.getTargetCRS()) );
+        return geomFactory.createCurve( geo.getId(), curveSegments, new CRS( trans.getTargetCRS() ) );
     }
 
     /**
@@ -322,6 +324,16 @@ public class GeometryTransformer extends Transformer {
         return geomFactory.createMultiSurface( geo.getId(), geo.getCoordinateSystem(), surfaces );
     }
 
+    // TODO: return a proper multi polygon instead
+    private MultiSurface transform( MultiPolygon geo, Transformation trans )
+                            throws TransformationException {
+        ArrayList<Surface> polys = new ArrayList<Surface>( geo.size() );
+        for ( Geometry g : geo ) {
+            polys.add( (Surface) transform( g, trans ) );
+        }
+        return geomFactory.createMultiSurface( geo.getId(), geo.getCoordinateSystem(), polys );
+    }
+
     /**
      * transforms the list of points
      * 
@@ -339,10 +351,10 @@ public class GeometryTransformer extends Transformer {
 
             if ( Double.isNaN( point.getZ() ) ) {
                 result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y },
-                                                     point.getPrecision(), new CRS (trans.getTargetCRS()) ) );
+                                                     point.getPrecision(), new CRS( trans.getTargetCRS() ) ) );
             }
             result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y, tmp.z },
-                                                 point.getPrecision(), new CRS (trans.getTargetCRS()) ) );
+                                                 point.getPrecision(), new CRS( trans.getTargetCRS() ) ) );
         }
         return result;
     }
@@ -362,10 +374,10 @@ public class GeometryTransformer extends Transformer {
 
         if ( Double.isNaN( geo.getZ() ) ) {
             return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y }, geo.getPrecision(),
-                                            new CRS (trans.getTargetCRS()) );
+                                            new CRS( trans.getTargetCRS() ) );
         }
         return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y, result.z }, geo.getPrecision(),
-                                        new CRS (trans.getTargetCRS()) );
+                                        new CRS( trans.getTargetCRS() ) );
     }
 
     /**
@@ -402,6 +414,6 @@ public class GeometryTransformer extends Transformer {
                 patches.add( geomFactory.createPolygonPatch( transformedExteriorRing, transformedInteriorRings ) );
             }
         }
-        return geomFactory.createSurface( geo.getId(), patches, new CRS (trans.getTargetCRS()) );
+        return geomFactory.createSurface( geo.getId(), patches, new CRS( trans.getTargetCRS() ) );
     }
 }
