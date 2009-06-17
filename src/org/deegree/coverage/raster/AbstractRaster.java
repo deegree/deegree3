@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
 import org.deegree.coverage.AbstractCoverage;
@@ -43,10 +41,10 @@ import org.deegree.geometry.Envelope;
 
 /**
  * This class represents an abstract grid coverage.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public abstract class AbstractRaster extends AbstractCoverage {
@@ -62,7 +60,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
 
     /**
      * Instantiate an AbstractRaster with given envelope.
-     * 
+     *
      * @param envelope
      *            The envelope of the raster.
      */
@@ -72,7 +70,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
 
     /**
      * Instantiate an AbstractRaster with given envelope and raster envelope.
-     * 
+     *
      * @param envelope
      *            The envelope of the raster.
      * @param rasterEnv
@@ -85,7 +83,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
 
     /**
      * Returns columns of the raster.
-     * 
+     *
      * @return width in pixel
      */
     public int getColumns() {
@@ -94,7 +92,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
 
     /**
      * Returns rows of the raster.
-     * 
+     *
      * @return height in pixel
      */
     public int getRows() {
@@ -103,7 +101,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
 
     /**
      * Extends current RasterReference with rasterEnv. Useful for extending the raster, e.g. adding a tile.
-     * 
+     *
      * @param rasterEnv
      *            The raster envelope to add to the current.
      */
@@ -117,7 +115,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
 
     /**
      * Checks if the coverage contains the <code>envelope</code>.
-     * 
+     *
      * @param envelope
      *            The envelope to check for.
      */
@@ -134,14 +132,14 @@ public abstract class AbstractRaster extends AbstractCoverage {
 
     /**
      * Creates a copy of the raster with all the data.
-     * 
+     *
      * @return A copy of the raster.
      */
     public abstract AbstractRaster copy();
 
     /**
      * Returns a subset of the raster.
-     * 
+     *
      * @param env
      *            envelope of the subset
      * @return subset of the raster
@@ -150,7 +148,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
 
     /**
      * Returns a subset of the raster.
-     * 
+     *
      * @param x
      *            left boundary
      * @param y
@@ -169,7 +167,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
 
     /**
      * Sets the raster with data from source. Source must overlap the raster (within the envelope).
-     * 
+     *
      * @param source
      *            data to copy
      * @param env
@@ -179,7 +177,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
 
     /**
      * Sets the raster with data from source.
-     * 
+     *
      * @param x
      *            left boundary
      * @param y
@@ -191,9 +189,9 @@ public abstract class AbstractRaster extends AbstractCoverage {
 
     /**
      * Sets a single band with data from source.
-     * 
+     *
      * Copies the first band of source into dstBand.
-     * 
+     *
      * @param x
      *            left boundary
      * @param y
@@ -207,7 +205,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
 
     /**
      * Sets a single band with data from source.
-     * 
+     *
      * @param env
      *            destination area
      * @param dstBand
@@ -220,7 +218,7 @@ public abstract class AbstractRaster extends AbstractCoverage {
     /**
      * Returns the AbstractRaster as a SimpleRaster. The data gets cropped (TiledRaster) or merged (MultiRange) if
      * necessary.
-     * 
+     *
      * @return The raster data as SimpleRaster
      */
     public abstract SimpleRaster getAsSimpleRaster();

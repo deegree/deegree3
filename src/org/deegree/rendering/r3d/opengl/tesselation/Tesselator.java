@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.tesselation;
 
@@ -56,13 +54,13 @@ import org.slf4j.LoggerFactory;
  * The <code>Tesselator</code> class is a {@link GLUtessellator} utility wrapper. Its main purpose is the creation of
  * a {@link RenderableQualityModel} out of a {@link GeometryQualityModel} by triangulating (tesselating) all it's
  * {@link SimpleAccessGeometry}.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class Tesselator {
     private final transient static Logger LOG = LoggerFactory.getLogger( Tesselator.class );
@@ -73,7 +71,7 @@ public class Tesselator {
 
     /**
      * Create a tesselator which triangulates all {@link SimpleAccessGeometry} of a {@link GeometryQualityModel}.
-     * 
+     *
      * @param useDirectBuffers
      *            to use direct buffers instead of heap buffers.
      */
@@ -85,7 +83,7 @@ public class Tesselator {
     /**
      * Create a renderable quality model from the given 'original' geometry model, by tesselating (triangulating) its
      * polygons.
-     * 
+     *
      * @param originalObject
      *            containing polygons
      * @return the renderable object.
@@ -114,7 +112,7 @@ public class Tesselator {
 
     /**
      * Register the callback with the given tesselator.
-     * 
+     *
      * @param tess
      *            to register with
      * @param cb
@@ -131,7 +129,7 @@ public class Tesselator {
 
     /**
      * Create a renderable geometry from the given {@link SimpleAccessGeometry} by tesselating it.
-     * 
+     *
      * @param originalGeometry
      *            may not be null.
      * @return the {@link RenderableGeometry} or <code>null</code> if the given geometry could not be triangulated.
@@ -152,7 +150,7 @@ public class Tesselator {
 
     /**
      * Create a callback for the given geometry and register it with the given tesselator object.
-     * 
+     *
      * @param tess
      * @param geom
      * @return
@@ -170,7 +168,7 @@ public class Tesselator {
 
     /**
      * Tesselate the given geometry with respect to the innerrings and texture coordinates.
-     * 
+     *
      * @param tess
      * @param geom
      * @return
@@ -216,7 +214,7 @@ public class Tesselator {
 
     /**
      * Tesselate a ring indexed by the begin and end vertices not array positions.
-     * 
+     *
      * @param glu
      * @param tess
      * @param begin

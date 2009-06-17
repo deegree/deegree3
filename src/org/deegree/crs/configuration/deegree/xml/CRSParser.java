@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.deegree.xml;
 
@@ -86,18 +84,18 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The <code>CRSParser</code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class CRSParser extends XMLFileResource {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -5621078575657838568L;
 
@@ -219,7 +217,7 @@ public class CRSParser extends XMLFileResource {
 
     /**
      * Parses all elements of the identifiable object.
-     * 
+     *
      * @param element
      *            the xml-representation of the id-object
      * @return the identifiable object or <code>null</code> if no id was given.
@@ -259,7 +257,7 @@ public class CRSParser extends XMLFileResource {
 
     /**
      * Creates an axis array for the given crs element.
-     * 
+     *
      * @param crsElement
      *            to be parsed
      * @return an Array of axis defining their order.
@@ -321,7 +319,7 @@ public class CRSParser extends XMLFileResource {
 
     /**
      * Retrieves a transformation from the resource.
-     * 
+     *
      * @param transformationDefinition
      * @return the parsed transformation or <code>null</code> if no transformation could be parsed.
      */
@@ -332,7 +330,7 @@ public class CRSParser extends XMLFileResource {
 
     /**
      * Parse all polynomial transformations for a given crs.
-     * 
+     *
      * @param crsElement
      *            to parse the transformations for.
      * @return the list of transformations or the empty list if no transformations were found. Never <code>null</code>.
@@ -360,7 +358,7 @@ public class CRSParser extends XMLFileResource {
      * Parses the transformation variables from the given crs:coordinatesystem/crs:polynomialTransformation element. If
      * the class attribute is given, this method will try to invoke an instance of the given class, if it fails
      * <code>null</code> will be returned.
-     * 
+     *
      * @param transformationElement
      *            to parse the values from.
      * @return the instantiated transformation or <code>null</code> if it could not be instantiated.
@@ -501,7 +499,7 @@ public class CRSParser extends XMLFileResource {
 
     /**
      * Parses a unit from the given xml-parent.
-     * 
+     *
      * @param parent
      *            xml-node to parse the unit from.
      * @return the unit object.
@@ -595,7 +593,7 @@ public class CRSParser extends XMLFileResource {
     /**
      * @param crsElement
      *            from which the crs is to be created (using cached datums, conversioninfos and projections).
-     * 
+     *
      * @return a geographic coordinatesystem based on the given xml-element.
      * @throws CRSConfigurationException
      *             if a required element could not be found, or an xmlParsingException occurred.
@@ -639,7 +637,7 @@ public class CRSParser extends XMLFileResource {
     /**
      * @param crsElement
      *            from which the crs is to be created.
-     * 
+     *
      * @return a compound coordinatesystem based on the given xml-element.
      * @throws CRSConfigurationException
      *             if a required element could not be found, or an xmlParsingException occurred.
@@ -691,7 +689,7 @@ public class CRSParser extends XMLFileResource {
 
     /**
      * Parses the required usedDatum element from the given parentElement (probably a crs element).
-     * 
+     *
      * @param parentElement
      *            to parse the required usedDatum element from.
      * @param parentID
@@ -857,7 +855,7 @@ public class CRSParser extends XMLFileResource {
 
     /**
      * Tries to find a cached ellipsoid, if not found, the config will be checked.
-     * 
+     *
      * @param ellipsoidID
      * @return an ellipsoid or <code>null</code> if no ellipsoid with given id was found, or the id was
      *         <code>null</code> or empty.
@@ -964,7 +962,7 @@ public class CRSParser extends XMLFileResource {
 
     /**
      * Parses and instantiates the projection from the given element.
-     * 
+     *
      * @param projectionElement
      *            to create the projection from.
      * @param underlyingCRS
@@ -989,7 +987,7 @@ public class CRSParser extends XMLFileResource {
             latitudeOfNaturalOrigin = ( latitudeOfNaturalOrigin != 0 && inDegrees ) ? Math.toRadians( latitudeOfNaturalOrigin )
                                                                                     : latitudeOfNaturalOrigin;
 
-            double longitudeOfNaturalOrigin = getNodeAsDouble( usedProjection, new XPath( 
+            double longitudeOfNaturalOrigin = getNodeAsDouble( usedProjection, new XPath(
                                                                                          "crs:longitudeOfNaturalOrigin", nsContext ), 0 );
             inDegrees = getNodeAsBoolean( usedProjection, new XPath( "crs:longitudeOfNaturalOrigin/@inDegrees", nsContext), true );
             longitudeOfNaturalOrigin = ( longitudeOfNaturalOrigin != 0 && inDegrees ) ? Math.toRadians( longitudeOfNaturalOrigin )
@@ -1013,7 +1011,7 @@ public class CRSParser extends XMLFileResource {
                      * classes of the parameters, the native type will show up as the typename e.g. int or long.....
                      * <code>
                      * public Projection( GeographicCRS geographicCRS, double falseNorthing, double falseEasting,
-                     * Point2d naturalOrigin, Unit units, double scale, boolean conformal, boolean equalArea ) 
+                     * Point2d naturalOrigin, Unit units, double scale, boolean conformal, boolean equalArea )
                      * </code>
                      */
                     List<OMElement> children = getElements( usedProjection, new XPath( "*", nsContext ) );
@@ -1035,17 +1033,17 @@ public class CRSParser extends XMLFileResource {
                                                                    Point2d.class, Unit.class, double.class );
                     result = (Projection) constructor.newInstance( underlyingCRS, falseNorthing, falseEasting,
                                                                    naturalOrigin, units, scaleFactor );
-                    
+
                     // as it is a Custom projection, set the className attribute
                     result.setClassName( className );
 
                     // TODO THIS IS TENTATIVE as the only use-case for a custom projection is a mercator projection
                     // (OSM_Slippy_Map) which is meant to be spherical ( although from the data coming with it
                     // -- in the ellipsoid namely --  it results non-spherical ). Thus we are forcing it spherical
-                    // until we can speak with our CRS expert. Contact us in case you need to load your custom projection. 
+                    // until we can speak with our CRS expert. Contact us in case you need to load your custom projection.
                     Method makeSpherical = t.getDeclaredMethod( "makeMercatorSpherical", (Class<?>[]) null );
                     makeSpherical.invoke( result, (Object[]) null );
-                    
+
                 } catch ( ClassNotFoundException e ) {
                     LOG.error( e.getMessage(), e );
                 } catch ( SecurityException e ) {
@@ -1188,9 +1186,9 @@ public class CRSParser extends XMLFileResource {
      * <li>geocentricCRS</li>
      * <li>primeMeridian</li>
      * <li>wgs84Transformation</li>
-     * </ul> 
+     * </ul>
      * </code>
-     * 
+     *
      * @param id
      *            to look for.
      * @return the instantiated {@link CRSIdentifiable} or <code>null</code> if it could not be parsed.
@@ -1241,7 +1239,7 @@ public class CRSParser extends XMLFileResource {
         List<OMElement> allCRSIDs = new LinkedList<OMElement>();
         if ( getRootElement() != null ) {
             try {
-                allCRSIDs.addAll( getElements( getRootElement(), new XPath( "//" + PRE + "geographicCRS/" 
+                allCRSIDs.addAll( getElements( getRootElement(), new XPath( "//" + PRE + "geographicCRS/"
                                                                             + PRE + "id", nsContext ) ) );
                 allCRSIDs.addAll( getElements( getRootElement(), new XPath( "//" + PRE + "projectedCRS/"
                                                                             + PRE + "id", nsContext ) ) );

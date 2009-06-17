@@ -1,62 +1,54 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53115 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
-
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.commons.mail;
 
 /**
  * This class encapsulates all the info need to send an email message. This object is passed to the MailerEJB
  * sendMail(...) method.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:tfr@users.sourceforge.net">Torsten Friebe</A>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$,$Date$
  */
 public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 7569652229263596515L;
 
@@ -83,7 +75,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Creates a new mail message with MIME type text/plain.
-     * 
+     *
      * @param from
      *            the sender
      * @param to
@@ -104,7 +96,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Creates a new mail message with the given MIME type.
-     * 
+     *
      * @param from
      *            the sender
      * @param to
@@ -127,7 +119,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
     /**
      * Returns the state of this message. If sender and receiver are unequal null then this message is valid otherwise
      * invalid.
-     * 
+     *
      * @return validation state, <code>true</code> if sender and receiver are not <code>null</code>, otherwise
      *         <code>false</code>
      */
@@ -140,7 +132,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Return mail header including sender, receiver and subject.
-     * 
+     *
      * @return string with sender, receiver and subject
      */
     public String getHeader() {
@@ -149,7 +141,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Description of the Method
-     * 
+     *
      * @return Description of the Return Value
      */
     @Override
@@ -160,7 +152,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     * 
+     *
      * @return sender
      */
     public String getSender() {
@@ -169,7 +161,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     * 
+     *
      * @return The messageBody value
      */
     public String getMessageBody() {
@@ -178,7 +170,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     * 
+     *
      * @return emailReceiver
      */
     public String getReceiver() {
@@ -187,7 +179,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     * 
+     *
      * @param to
      */
     public void setReceiver( String to ) {
@@ -196,7 +188,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     * 
+     *
      * @param message
      */
     public void setMessageBody( String message ) {
@@ -205,7 +197,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     * 
+     *
      * @param from
      */
     public void setSender( String from ) {
@@ -214,7 +206,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Method declaration
-     * 
+     *
      * @param title
      */
     public void setSubject( String title ) {
@@ -223,7 +215,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Gets the subject attribute of the EMailMessage object
-     * 
+     *
      * @return The subject value
      */
     public String getSubject() {
@@ -232,7 +224,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Sets the mimeType attribute of the EMailMessage object
-     * 
+     *
      * @param mimeType
      *            The new mimeType value
      * @throws UnknownMimeTypeException
@@ -251,7 +243,7 @@ public class EMailMessage implements java.io.Serializable, MailMessage {
 
     /**
      * Gets the mimeType attribute of the EMailMessage object
-     * 
+     *
      * @return The mimeType value
      */
     public String getMimeType() {

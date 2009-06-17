@@ -1,40 +1,38 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.geometry.validation;
 
 import java.io.IOException;
@@ -63,14 +61,14 @@ import org.junit.Test;
 
 /**
  * Testcases that check the correct determination of topological errors in {@link GeometryValidator}.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GeometryValidatorTest {
-    
+
     private static GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory( "Standard" );
 
     private static final String BASE_DIR = "testdata/geometries/";
@@ -162,7 +160,7 @@ public class GeometryValidatorTest {
         Assert.assertEquals( 1, eventHandler.getEvents().size() );
         Assert.assertEquals( ValidationEventType.SURFACE_EXTERIOR_RING_CW, eventHandler.getEvents().get( 0 ) );
     }
-    
+
     @Test
     public void validateInvalidPolygon2()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
@@ -173,8 +171,8 @@ public class GeometryValidatorTest {
         Assert.assertEquals( 2, eventHandler.getEvents().size() );
         Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RING_CCW, eventHandler.getEvents().get( 0 ) );
         Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RING_CCW, eventHandler.getEvents().get( 1 ) );
-    }    
-    
+    }
+
     @Test
     public void validateInvalidPolygon3()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
@@ -206,7 +204,7 @@ public class GeometryValidatorTest {
         Geometry geom = parseGeometry( "invalid/Polygon_interiors_touch.gml" );
         Assert.assertFalse( validator.validateGeometry( geom ) );
         Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RINGS_INTERSECT,
-                             eventHandler.getEvents().get( 0 ) );        
+                             eventHandler.getEvents().get( 0 ) );
     }
 
     @Test
@@ -217,8 +215,8 @@ public class GeometryValidatorTest {
         Geometry geom = parseGeometry( "invalid/Polygon_interiors_intersect.gml" );
         Assert.assertFalse( validator.validateGeometry( geom ) );
         Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RINGS_INTERSECT,
-                             eventHandler.getEvents().get( 0 ) );        
-    }    
+                             eventHandler.getEvents().get( 0 ) );
+    }
 
     @Test
     public void validateInvalidPolygon7()
@@ -228,7 +226,7 @@ public class GeometryValidatorTest {
         Geometry geom = parseGeometry( "invalid/Polygon_interior_outside_exterior.gml" );
         Assert.assertFalse( validator.validateGeometry( geom ) );
         Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RING_OUTSIDE_EXTERIOR,
-                             eventHandler.getEvents().get( 0 ) );        
+                             eventHandler.getEvents().get( 0 ) );
     }
 
     @Test
@@ -239,7 +237,7 @@ public class GeometryValidatorTest {
         Geometry geom = parseGeometry( "invalid/Polygon_interior_touches_exterior.gml" );
         Assert.assertFalse( validator.validateGeometry( geom ) );
         Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RING_INTERSECTS_EXTERIOR,
-                             eventHandler.getEvents().get( 0 ) );        
+                             eventHandler.getEvents().get( 0 ) );
     }
 
     @Test
@@ -250,9 +248,9 @@ public class GeometryValidatorTest {
         Geometry geom = parseGeometry( "invalid/Polygon_interior_intersects_exterior.gml" );
         Assert.assertFalse( validator.validateGeometry( geom ) );
         Assert.assertEquals( ValidationEventType.SURFACE_INTERIOR_RING_INTERSECTS_EXTERIOR,
-                             eventHandler.getEvents().get( 0 ) );        
-    }    
-    
+                             eventHandler.getEvents().get( 0 ) );
+    }
+
     private Geometry parseGeometry( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
@@ -361,7 +359,7 @@ class TestValidationEventHandler implements GeometryValidationEventHandler {
     List<ValidationEventType> getEvents() {
         return events;
     }
-    
+
     private void printAffectedGeometryParticles(List<Object> affectedGeometryParticles) {
         String indent = "";
         for ( Object object : affectedGeometryParticles ) {

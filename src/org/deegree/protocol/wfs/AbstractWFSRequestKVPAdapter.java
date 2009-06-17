@@ -1,40 +1,38 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wfs;
 
@@ -51,20 +49,20 @@ import org.deegree.protocol.i18n.Messages;
 
 /**
  * Provides utility methods for parsing common constructs found in WFS KVP requests.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public abstract class AbstractWFSRequestKVPAdapter {
 
     /**
      * Extracts the qualified type names from the <code>TYPENAME</code> parameter.
-     * 
+     *
      * @param kvpUC
      *            the parameters of the request, normalized
-     * @param nsBindings 
+     * @param nsBindings
      *              namespace bindings, may be null
      * @return qualified type names or null if no  <code>TYPENAME</code> parameter is present
      * @throws InvalidParameterValueException
@@ -99,7 +97,7 @@ public abstract class AbstractWFSRequestKVPAdapter {
      * <li><code>NAMESPACE=xmlns(=http://www.someserver.com)</code></li>
      * <li><code>NAMESPACE=xmlns(http://www.someserver.com)</code></li>
      * </ul>
-     * 
+     *
      * @param kvpUC
      *            the parameters of the request, normalized
      * @return mapping between prefices and namespaces (key: prefix, value: namespace), empty string as a key ('') is
@@ -141,7 +139,7 @@ public abstract class AbstractWFSRequestKVPAdapter {
 
     /**
      * Transforms a (possibly prefixed) type name into a qualified name using the given namespace bindings.
-     * 
+     *
      * @param name
      *            possibly prefixed type name
      * @param nsBindings
@@ -181,8 +179,8 @@ public abstract class AbstractWFSRequestKVPAdapter {
             // should never happen
             e.printStackTrace();
         }
-    }    
-    
+    }
+
     protected static void appendKVP ( StringBuffer sb, String key, String value ) {
         sb.append ('&');
         sb.append (key);

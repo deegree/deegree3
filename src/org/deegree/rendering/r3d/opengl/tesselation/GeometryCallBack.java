@@ -1,40 +1,38 @@
 //$HeadURL: svn+ssh://rbezema@svn.wald.intevation.org/deegree/deegree3/services/trunk/src/org/deegree/services/wpvs/tools/GeometryCallBack.java $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.tesselation;
 
@@ -54,13 +52,13 @@ import org.slf4j.LoggerFactory;
 /**
  * The <code>GeometryCallBack</code> class will be called by the {@link Tesselator} if a {@link SimpleAccessGeometry}
  * must be triangulated. This class will calculate the normals from the resulting vertices as well.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author: rbezema $
- * 
+ *
  * @version $Revision: 15512 $, $Date: 2009-01-06 12:12:13 +0100 (Di, 06 Jan 2009) $
- * 
+ *
  */
 public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 
@@ -172,7 +170,7 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 
     /**
      * Create a vertex appropriate for the tesselation of the given type of geometry.
-     * 
+     *
      * @param currentVertexLocation
      *            of the coordinates (the Vertex count)
      * @return the vertex used for the tesselation process.
@@ -185,10 +183,10 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
     /**
      * Calculate the normals for the tesselated geometry and return a renderable geometry created from the given
      * {@link SimpleAccessGeometry}
-     * 
+     *
      * @param useDirectBuffers
      *            to use direct buffers instead of heap buffers.
-     * 
+     *
      * @return the tesselated {@link SimpleAccessGeometry} as a {@link RenderableGeometry}
      */
     public RenderableGeometry createRenderableGeometry( boolean useDirectBuffers ) {
@@ -213,7 +211,7 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 
     /**
      * Calculate the normals according to the openGL type.
-     * 
+     *
      * @return the normals appropriate for the openGL type.
      */
     protected float[] calculateNormals() {
@@ -266,11 +264,11 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
     /**
      * Triangle strips have following use following scheme( programming guide s.44):<code>
      * first triangle consist of vertices v0,v1,v2
-     * after that 
+     * after that
      * even triangles  consist of vertices v+1,v,v+2 (reversed orientation)
-     * odd triangles  consist of vertices v,v+1,v+2 
+     * odd triangles  consist of vertices v,v+1,v+2
      * </code>
-     * 
+     *
      */
     private void calcNormalsForTriangleStrip( float[] normals ) {
         float[] calculatedNormal = new float[3];
@@ -305,7 +303,7 @@ public class GeometryCallBack extends GLUtessellatorCallbackAdapter {
 
     /**
      * Add the given normal to the already present normal 're'-normalize it.
-     * 
+     *
      * @param normals
      *            to use
      * @param calculatedNormal

@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.components;
 
@@ -45,13 +43,13 @@ import org.deegree.crs.CRSIdentifiable;
 
 /**
  * The <code>PrimeMeridian</code> class saves the longitude to the greenwich meridian.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class PrimeMeridian extends CRSIdentifiable {
@@ -70,7 +68,7 @@ public class PrimeMeridian extends CRSIdentifiable {
                                                                                    new CRSCodeType( "8901", "EPSG" ),
 //                                                                                   "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#8901",
 //                                                                                   "URN:OPENGIS:DEF:CRS:EPSG::8901",
-//                                                                                   "URN:OGC:DEF:CRS:EPSG::8901" 
+//                                                                                   "URN:OGC:DEF:CRS:EPSG::8901"
                                                                                    },
                                                                      new String[] { "Greenwich" },
                                                                      new String[] { "1995-06-02" }, null, null );
@@ -143,7 +141,7 @@ public class PrimeMeridian extends CRSIdentifiable {
 
     /**
      * A Prime meredian with 0 degrees longitude from the greenwich meridian.
-     * 
+     *
      * @param units
      *            Angular units of longitude.
      * @param identifiers
@@ -154,7 +152,7 @@ public class PrimeMeridian extends CRSIdentifiable {
 
     /**
      * A Prime meredian with 0 degrees longitude from the greenwich meridian.
-     * 
+     *
      * @param units
      *            Angular units of longitude.
      * @param identifier
@@ -197,7 +195,7 @@ public class PrimeMeridian extends CRSIdentifiable {
     public Unit getAngularUnit() {
         return units;
     }
-    
+
     public void setAngularUnit( Unit units ) {
         this.units = units;
     }
@@ -236,9 +234,9 @@ public class PrimeMeridian extends CRSIdentifiable {
      * <p>
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
-     * 
+     *
      * @return (int) ( result >>> 32 ) ^ (int) result;
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override

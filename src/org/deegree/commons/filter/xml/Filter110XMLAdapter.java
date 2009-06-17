@@ -1,46 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth  
- lat/lon GmbH 
- Aennchenstr. 19
- 53115 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
-
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.commons.filter.xml;
 
 import java.util.ArrayList;
@@ -105,10 +97,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Adapter between XML documents that comply to the Filter Encoding Specification 1.1.0 and {@link Filter} objects.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class Filter110XMLAdapter extends XMLAdapter {
@@ -224,7 +216,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * Parses the encapsulated root element as a {@link Filter}.
      * <p>
      * The element must be a {http://www.opengis.net/ogc}Filter element.
-     * 
+     *
      * @return <code>Filter</code> object
      * @throws XMLParsingException
      */
@@ -256,7 +248,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * Parses the given element as an {@link IdFilter}.
      * <p>
      * The element must be a {http://www.opengis.net/ogc}Filter element.
-     * 
+     *
      * @return <code>Filter</code> object
      * @throws XMLProcessingException
      */
@@ -306,7 +298,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * <li>{http://www.opengis.net/ogc}Literal</li>
      * <li>{http://www.opengis.net/ogc}Function</li>
      * </ul>
-     * 
+     *
      * @param element
      *            element to be parsed
      * @return expression object
@@ -379,7 +371,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Parses the given {http://www.opengis.net/ogc}PropertyName element as a {@link PropertyName}.
-     * 
+     *
      * @param element
      *            element to be parsed
      * @return propertyName object
@@ -400,7 +392,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * <li>{@link SpatialOperator}</li>
      * <li>{@link ComparisonOperator}</li>
      * </ul>
-     * 
+     *
      * @param element
      *            element to be parsed
      * @return expression object
@@ -460,7 +452,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * <li>{http://www.opengis.net/ogc}Touches</li>
      * <li>{http://www.opengis.net/ogc}Within</li>
      * </ul>
-     * 
+     *
      * @param element
      *            element to be parsed
      * @return logical operator object
@@ -487,15 +479,15 @@ public class Filter110XMLAdapter extends XMLAdapter {
             FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
             PropertyName parameter1 = parsePropertyName( childElementIter.next() );
             GML311GeometryParser geomParser = new GML311GeometryParser();
-            
+
             OMElement geometryElement = childElementIter.next();
             XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
-           
+
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
                                                                            reader,
                                                                            getSystemId() );
             xmlReader.nextTag();
-            
+
             Geometry parameter2 = geomParser.parseAbstractGeometry( xmlReader, null );
             spatialOperator = new Intersects(parameter1, parameter2);
             break;
@@ -529,7 +521,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * <li>{http://www.opengis.net/ogc}PropertyIsLike</li>
      * <li>{http://www.opengis.net/ogc}PropertyIsNull</li>
      * </ul>
-     * 
+     *
      * @param element
      *            element to be parsed
      * @return logical operator object
@@ -636,7 +628,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * <li>{http://www.opengis.net/ogc}PropertyIsLessThanOrEqualTo</li>
      * <li>{http://www.opengis.net/ogc}PropertyIsNotEqualTo</li>
      * </ul>
-     * 
+     *
      * @param element
      *            element to be parsed
      * @return binary comparison operator object
@@ -685,7 +677,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * <li>{http://www.opengis.net/ogc}Or</li>
      * <li>{http://www.opengis.net/ogc}Not</li>
      * </ul>
-     * 
+     *
      * @param element
      *            element to be parsed
      * @return logical operator object
@@ -727,7 +719,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Serializes the given {@link Filter} object to XML.
-     * 
+     *
      * @param filter
      *            <code>Filter</code> object to be serialized
      * @param writer
@@ -758,7 +750,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Serializes the given {@link Operator} object to XML.
-     * 
+     *
      * @param operator
      *            <code>BooleanOperator</code> object to be serialized
      * @param writer
@@ -782,7 +774,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Serializes the given {@link LogicalOperator} object to XML.
-     * 
+     *
      * @param operator
      *            <code>LogicalOperator</code> object to be serialized
      * @param writer
@@ -814,7 +806,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Serializes the given {@link ComparisonOperator} object to XML.
-     * 
+     *
      * @param operator
      *            <code>ComparisonOperator</code> object to be serialized
      * @param writer
@@ -878,7 +870,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Serializes the given {@link SpatialOperator} object to XML.
-     * 
+     *
      * @param operator
      *            <code>SpatialOperator</code> object to be serialized
      * @param writer
@@ -911,7 +903,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Serializes the given {@link Expression} object to XML.
-     * 
+     *
      * @param expression
      *            <code>Expression</code> object to be serialized
      * @param writer
@@ -961,7 +953,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Return a String with all element names of the given enum class.
-     * 
+     *
      * @param enumClass
      * @param map
      *            the operator type -> element name map

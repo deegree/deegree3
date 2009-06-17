@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
 import org.deegree.coverage.raster.data.BandType;
@@ -47,10 +45,10 @@ import org.deegree.geometry.Envelope;
 
 /**
  * This class represents a single raster with multiple bands.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class SimpleRaster extends AbstractRaster {
@@ -59,7 +57,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Create a SimpleRaster with no raster data but with an envelope and raster envelope.
-     * 
+     *
      * @param envelope
      *            The envelope of the new raster.
      * @param rasterEnv
@@ -71,7 +69,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Creates a new SimpleRaster with given RasterData and Envelope
-     * 
+     *
      * @param raster
      *            content for the SimpleRaster
      * @param envelope
@@ -87,7 +85,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Creates a new SimpleRaster with given RasterDataContainer and Envelope
-     * 
+     *
      * @param rasterDataContainer
      *            data source for the SimpleRaster
      * @param envelope
@@ -102,7 +100,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Creates a SimpleRaster with same size, DataType and InterleaveType
-     * 
+     *
      * @param bands
      *            number of bands
      * @return new empty SimpleRaster
@@ -114,7 +112,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Creates a new empty SimpleRaster with same size, DataType and InterleaveType.
-     * 
+     *
      * @return new empty SimpleRaster
      */
     public SimpleRaster createCompatibleSimpleRaster() {
@@ -126,7 +124,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Creates a new empty SimpleRaster with same DataType and InterleaveType. Size is determined by the given envelope.
-     * 
+     *
      * @param rEnv
      *            The raster envelope of the new SimpleRaster.
      * @param env
@@ -151,7 +149,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Returns the RasterData of this SimpleRaster
-     * 
+     *
      * @return The raster data of this SimpleRaster.
      */
     public RasterData getRasterData() {
@@ -160,7 +158,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Returns a read-only copy of the RasterData of this SimpleRaster
-     * 
+     *
      * @return The raster data of this SimpleRaster (read-only).
      */
     public RasterData getReadOnlyRasterData() {
@@ -186,7 +184,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Returns a single band of the raster.
-     * 
+     *
      * @param band
      *            Number of the selected band.
      * @return A copy of the selected band.

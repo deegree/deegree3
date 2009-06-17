@@ -1,40 +1,38 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wps;
 
@@ -46,10 +44,10 @@ import org.deegree.protocol.i18n.Messages;
 
 /**
  * Important constants from the WMS specifications.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class WPSConstants {
@@ -58,8 +56,8 @@ public class WPSConstants {
     public static final String WPS_100_NS = "http://www.opengis.net/wps/1.0.0";
 
     /** Common namespace prefix for elements from the WPS specification */
-    public static final String WPS_PREFIX = "wps";    
-    
+    public static final String WPS_PREFIX = "wps";
+
     /** WPS protocol version 1.0.0 */
     public static final Version VERSION_100 = Version.parseVersion( "1.0.0" );
 
@@ -97,10 +95,10 @@ public class WPSConstants {
 
     /**
      * Enum type for discriminating between the different types of WebProcessingService (WPS) requests.
-     * 
+     *
      * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
      * @author last edited by: $Author: schneider $
-     * 
+     *
      * @version $Revision: $, $Date: $
      */
     public enum WPSRequestType {
@@ -121,7 +119,7 @@ public class WPSConstants {
 
     /**
      * Retrieves the corresponding {@link WPSRequestType} for a given WPS request name.
-     * 
+     *
      * @param requestName
      *            name of the request (case-sensitive)
      * @return corresponding type from

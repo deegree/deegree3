@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.crs.utilities;
 
 import static org.deegree.crs.projections.ProjectionUtils.EPS11;
@@ -48,13 +46,13 @@ import org.deegree.crs.components.Axis;
 
 /**
  * The <code>Matrix</code> class TODO add documentation here
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class Matrix extends GMatrix {
@@ -65,7 +63,7 @@ public class Matrix extends GMatrix {
 
     /**
      * Construct a square identity matrix of size <code>size</code>&nbsp;&times;&nbsp;<code>size</code>.
-     * 
+     *
      * @param size
      */
     public Matrix( final int size ) {
@@ -75,7 +73,7 @@ public class Matrix extends GMatrix {
     /**
      * Construct a matrix of size <code>numRow</code>&nbsp;&times;&nbsp;<code>numCol</code>. Elements on the
      * diagonal <var>j==i</var> are set to 1.
-     * 
+     *
      * @param numRow
      * @param numCol
      */
@@ -89,7 +87,7 @@ public class Matrix extends GMatrix {
      * should be exactly <code>numRow*numCol</code> in length. Note that because row and column numbering begins with
      * zero, <code>row</code> and <code>numCol</code> will be one larger than the maximum possible matrix index
      * values.
-     * 
+     *
      * @param numRow
      * @param numCol
      * @param matrix
@@ -103,7 +101,7 @@ public class Matrix extends GMatrix {
 
     /**
      * Constructs a new matrix from a two-dimensional array of doubles.
-     * 
+     *
      * @param matrix
      *            Array of rows. Each row must have the same length.
      * @throws IllegalArgumentException
@@ -123,7 +121,7 @@ public class Matrix extends GMatrix {
 
     /**
      * Constructs a new matrix and copies the initial values from the parameter matrix.
-     * 
+     *
      * @param matrix
      */
     public Matrix( final GMatrix matrix ) {
@@ -132,7 +130,7 @@ public class Matrix extends GMatrix {
 
     /**
      * Construct a 3&times;3 matrix from the specified affine transform.
-     * 
+     *
      * @param transform
      */
     public Matrix( final AffineTransform transform ) {
@@ -149,7 +147,7 @@ public class Matrix extends GMatrix {
      *  &nbsp;0,&nbsp;0,&nbsp;1<br/>
      *  </code>
      * Axis orientation can be inverted only. Rotating axis (e.g. from NORTH,WEST, to NORTH,DOWN, ) is not supported.
-     * 
+     *
      * @param srcAxis
      *            The set of axis orientation for source coordinate system.
      * @param dstAxis
@@ -199,7 +197,7 @@ public class Matrix extends GMatrix {
     /**
      * Returns <code>true</code> if this matrix is an affine transform. A transform is affine if the matrix is square
      * and last row contains only zeros, except in the last column which contains 1.
-     * 
+     *
      * @return <code>true</code> if this matrix is an affine transform.
      */
     public final boolean isAffine() {
@@ -220,9 +218,9 @@ public class Matrix extends GMatrix {
     /**
      * Copies the first 2x3 values into an affine transform object. If not enough values are available, an identity
      * transform is returned.
-     * 
+     *
      * @return an affine transform for this matrix. or an identity if this matrix has not sufficient values.
-     * 
+     *
      */
     public final Matrix3d toAffineTransform() {
         if ( getNumCol() < 3 || getNumRow() < 2 ) {
@@ -234,7 +232,7 @@ public class Matrix extends GMatrix {
 
     /**
      * Returns <code>true</code> if this matrix is an identity matrix.
-     * 
+     *
      * @return <code>true</code> if this matrix is an identity matrix.
      */
     public final boolean isIdentity() {

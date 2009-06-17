@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.coordinatesystems;
 
@@ -64,7 +62,7 @@ import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
  * defined (through a transformation) for an underlying Datum, which can have it's own axis with their own units. The
  * order of the position's coordinates are to be contrued to the axis order of the CRS</li>
  * </ul>
- * 
+ *
  * Summarizing it can be said, that each CRS has following features
  * <ul>
  * <li>A reference code (an casesensitive String identifying this CRS, for example 'EPGS:4326' or
@@ -75,13 +73,13 @@ import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
  * <li>An optional area of use, describing where this CRS is used.</li>
  * <li>The order in which the axis of ther crs are defined.</li>
  * <li>The underlying Datum</li>
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 
 public abstract class CoordinateSystem extends CRSIdentifiable {
@@ -246,7 +244,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
 
     /**
      * Converts the given coordinates in given to the unit of the respective axis.
-     * 
+     *
      * @param coordinates
      *            to convert to.
      * @param units
@@ -284,7 +282,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
 
     /**
      * Helper function to get the typename as a String.
-     * 
+     *
      * @return either the type as a name or 'Unknown' if the type is not known.
      */
     protected String getTypeName() {
@@ -304,7 +302,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
 
     /**
      * Checks if the given axis match this.axisOrder[] in length and order.
-     * 
+     *
      * @param otherAxis
      *            the axis to check
      * @return true if the given axis match this.axisOrder[] false otherwise.
@@ -350,9 +348,9 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      * <p>
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
-     * 
+     *
      * @return (int) ( result >>> 32 ) ^ (int) result;
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -393,7 +391,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
     }
 
 //    public void setDefaultIdentifier( CRSCodeType crsCode ) {
-//        super.setDefaultIdentifier( crsCode );        
+//        super.setDefaultIdentifier( crsCode );
 //    }
 
 }

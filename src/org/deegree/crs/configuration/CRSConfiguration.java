@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration;
 
@@ -76,14 +74,14 @@ import org.slf4j.LoggerFactory;
  * and a fully qualified name denoting the class (an instance of CRSProvider) which should be available in the
  * classpath. This class must have an empty constructor.
  * </p>
- * 
+ *
  * The class is also a command line tool for transferring CRSs between providers. Please see the main method or call the
  * class with -h. The last feature introduced was the possibility of removing CRSs from the database backend (by using
  * the -remove command-line parameter).
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 
@@ -154,7 +152,7 @@ public class CRSConfiguration {
      * name is null or "" the Provider configured in the 'crs_providers.properties' will be returned. If the
      * instantiation of this class fails a {@link org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider} will be
      * returned.
-     * 
+     *
      * @param providerName
      *            the canonical name of the class, e.g. org.deegree.crs.MyProvider
      * @return an instance of a CRS-Configuration with the configured CRSProvider.
@@ -228,7 +226,7 @@ public class CRSConfiguration {
      * Creates or returns an instance of the CRSConfiguration by reading the DEFAULT property configured in the
      * 'crs_providers.properties'. If no key is given (or no string could be loaded), the {@link DeegreeCRSProvider}
      * will be used.
-     * 
+     *
      * @return an instance of a CRS-Configuration with the configured CRSProvider.
      * @throws CRSConfigurationException
      *             if --anything-- went wrong while instantiating the CRSProvider.
@@ -240,10 +238,10 @@ public class CRSConfiguration {
 
     /**
      * Overwrites the crs.configuration property with the given value.
-     * 
+     *
      * @param fileName
      *            to set the crs.configuration property to.
-     * 
+     *
      * @return the old crs.configuration propert (if any)
      * @throws CRSConfigurationException
      *             if --anything-- went wrong while instantiating the CRSProvider.
@@ -257,7 +255,7 @@ public class CRSConfiguration {
      * output File. If the input format is Proj4, an input File will be provided. If the -verify option is provided,
      * then the program will check whether there is an Input-CRS that is not found in an Output-CRS. If this is so, all
      * Input CRS's will be exported to the Output format.
-     * 
+     *
      * @param args
      * @throws Exception
      */

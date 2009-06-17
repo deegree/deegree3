@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.gml;
 
@@ -95,16 +93,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The <code>GMLCRSProvider</code> is a provider for a GML 3.2 backend, this may be a dictionary or a database.
- * 
+ *
  * Note: not all of the GML3.2. features are implemented yet, but the basics (transformations, crs's, axis, units,
  * projections) should work quite well.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
 
@@ -113,17 +111,17 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     private static String PRE = CommonNamespaces.GML3_2_PREFIX + ":";
 
     private static NamespaceContext nsContext = CommonNamespaces.getNamespaceContext();
-    
+
     private XMLAdapter adapter;
 
     /**
      * The 'default constructor' which will be called by the CRSConfiguration
-     * 
+     *
      * @param properties
      *            the properties which can hold information about the configuration of this GML provider.
      */
     public GMLCRSProvider( Properties properties ) {
-    	super( properties, XMLResource.class, null );    	
+    	super( properties, XMLResource.class, null );
         if ( getResolver() == null ) {
             setResolver( new GMLFileResource( this, new Properties( properties ) ) );
         }
@@ -203,7 +201,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
 
     /**
      * Parses some of the gml 3.2 transformation constructs. Currently only helmert transformations are supported.
-     * 
+     *
      * @param rootElement
      * @return the transformation.
      * @throws XMLParsingException
@@ -368,14 +366,14 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         String[] identifiers = { identifier };
 
         String tmpDesc = adapter.getNodeAsString( rootElement, new XPath( PRE + "description", nsContext ), null );
-        
+
         if ( tmpDesc != null ) {
             descriptions.add( tmpDesc );
         }
         // try to find the href
         OMElement descRef = adapter.getElement( rootElement, new XPath( PRE + "descriptionReference", nsContext ) );
         if ( descRef != null ) {
-            String href = descRef.getAttributeValue( new QName( CommonNamespaces.XLNNS, "href" ) );       
+            String href = descRef.getAttributeValue( new QName( CommonNamespaces.XLNNS, "href" ) );
             if ( !"".equals( href ) ) {
                 descriptions.add( href );
             }
@@ -420,7 +418,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             identifiers[0] = identifier;
             System.arraycopy( names, 0, identifiers, 1, names.length );
         }
-        
+
         // convert identifiers to codes
         CRSCodeType[] crsCodes = new CRSCodeType[ identifiers.length ];
         int n = identifiers.length;
@@ -439,10 +437,10 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * <ul>
      * <li> Projected CRS with VerticalCRS</li>
      * </ul>
-     * 
+     *
      * Geographic crs with a height axis can be mapped in a {@link CompoundCRS} by calling the
      * {@link #parseGeodeticCRS(Element)}
-     * 
+     *
      * @param rootElement
      *            containing a gml:CompoundCRS dom representation.
      * @return a {@link CompoundCRS} instance initialized with values from the given xml-dom gml:CompoundCRS fragment.
@@ -480,7 +478,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         OMElement crsElement2 = null;
 
         if ( xlinkedElem1 == null ) {
-        	crsElement1 = adapter.getRequiredElement( first, new XPath( "*[1]", nsContext ) );        	
+        	crsElement1 = adapter.getRequiredElement( first, new XPath( "*[1]", nsContext ) );
         }
         if ( xlinkedElem2 == null ) {
         	crsElement2 = adapter.getRequiredElement( first, new XPath( "*[2]", nsContext ) );
@@ -616,7 +614,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         OMElement csTypeProp = adapter.getElement( rootElement, new XPath( PRE + "ellipsoidalCS", nsContext ) );
         OMElement csTypeElement = null;
         if ( csTypeProp == null ) {
-        	csTypeProp = adapter.getElement( rootElement, new XPath(PRE + "cartesianCS", nsContext ) );        	
+        	csTypeProp = adapter.getElement( rootElement, new XPath(PRE + "cartesianCS", nsContext ) );
             if ( csTypeProp == null ) {
             	csTypeProp = adapter.getElement( rootElement, new XPath( PRE + "sphericalCS", nsContext ) );
                 if ( csTypeProp == null ) {
@@ -692,7 +690,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * For the ellipsoidal and cartesian cs Types, this method also checks the consistency of axis (radian, radian,
      * [metre] ) or (metre, metre, [metre] ). If the conditions are not met, an xml parsing exception will be thrown as
      * well.
-     * 
+     *
      * @param rootElement
      *            containing a (Ellipsoidal, Spherical, Cartesian) CS type dom representation.
      * @return a {@link Axis} array instance initialized with values from the given xml-dom fragment or
@@ -774,7 +772,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * @return an {@link Axis} instance initialized with values from the given xml-dom fragment or <code>null</code>
      *         if the given root element is <code>null</code> if the axis could not be mapped it's orientation will be
      *         {@link Axis#AO_OTHER}
-     * 
+     *
      * @throws XMLParsingException
      *             if the dom tree is not consistent or a required element is missing.
      */
@@ -800,7 +798,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      *         if the given root element is <code>null</code>
      * @throws XMLParsingException
      *             if the dom tree is not consistent or a required element is missing.
-     * 
+     *
      */
     protected Ellipsoid parseEllipsoid( OMElement rootElement )
                             throws XMLParsingException {
@@ -849,7 +847,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                 }
                 if ( secondUnit != null ) {
                     if ( !secondUnit.canConvert( unit ) ) {
-                    	throw new XMLParsingException(adapter, param,  
+                    	throw new XMLParsingException(adapter, param,
                                 "Ellispoid axis can only contain comparable unit, supplied are: "
                                                         + unit + " and " + secondUnit
                                                         + " which are not convertable." );
@@ -925,7 +923,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * @throws IOException
      * @throws XMLParsingException
      *             if the dom tree is not consistent or a required element is missing.
-     * 
+     *
      */
     protected VerticalCRS parseVerticalCRS( OMElement rootElement )
                             throws XMLParsingException, IOException {
@@ -958,7 +956,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      *         <code>null</code> if the given root element is <code>null</code>
      * @throws XMLParsingException
      *             if the dom tree is not consistent or a required element is missing.
-     * 
+     *
      */
     protected VerticalDatum parseVerticalDatum( OMElement rootElement )
                             throws XMLParsingException {
@@ -983,7 +981,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     /**
      * For now this method actually wraps all information in a gml:AbstractGeneralConversionType (or a derived subtype)
      * into an CRSIdentifiable Object (used for the Projections).
-     * 
+     *
      * @param rootElement
      *            a gml:GeneralConversion element
      * @param underlyingCRS
@@ -1181,7 +1179,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * Returns the unit defined by the uomAttribute given of the given element. This method will use a 'colon' heuristic
      * to determine if the given uom is actually an urn (and thus represents an xlink-type). This will then be resolved
      * and mapped onto an unit.
-     * 
+     *
      * @param elementContainingUOMAttribute
      *            an element containing the 'uom' attribute which will be mapped onto a known unit.
      * @return the mapped {@link Unit} or <code>null</code> if the given uomAttribute is empty or <code>null</code>,
@@ -1231,7 +1229,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     /**
      * convenience method to retrieve a given required element either by resolving a optional xlink or by evaluating the
      * required element denoted by the xpath.
-     * 
+     *
      * @param propertyElement
      *            to resolve an xlink from.
      * @param alternativeXPath
@@ -1258,7 +1256,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
 
     /**
      * Retrieves the xlink:href of the given rootElement and use the XLinkResolver to resolve the xlink if it was given.
-     * 
+     *
      * @param rootElement
      *            to retrieve and resolve
      * @return the resolved xlink:href attribute as an xml-dom element or <code>null</code> if the xlink could not be
@@ -1289,7 +1287,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
 
     /**
      * Find an xlink:href attribute and return it's value, if not found, the empty String will be returned.
-     * 
+     *
      * @param rootElement
      *            to get the attribute from.
      * @return the trimmed xlink:href attribute value or the empty String if not found or the rootElement is null;

@@ -1,40 +1,38 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.rendering.r3d.multiresolution.crit;
 
 import org.deegree.commons.utils.math.VectorUtils;
@@ -46,10 +44,10 @@ import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TextureManager;
 
 /**
  * {@link LODCriterion} for specifying LODs that are optimized for perspective rendering.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$
  */
 public class ViewFrustumCrit implements LODCriterion {
@@ -76,7 +74,7 @@ public class ViewFrustumCrit implements LODCriterion {
 
     /**
      * Creates a new {@link ViewFrustumCrit} instance.
-     * 
+     *
      * @param viewParams
      *            specifies the visible space volume (viewer position, view direction, etc.)
      * @param maxPixelError
@@ -106,7 +104,7 @@ public class ViewFrustumCrit implements LODCriterion {
     /**
      * Returns true, iff the region associated with the arc is inside the view frustum volume and the estimated screen
      * projection error is greater than the maximum tolerable error.
-     * 
+     *
      * @param arc
      *            arc to be checked
      * @return true, iff the arc's region is inside the view frustum and the estimated screen projection error is
@@ -132,7 +130,7 @@ public class ViewFrustumCrit implements LODCriterion {
     /**
      * Checks whether all fragments denoted by the given {@link Arc} are texturable with respect to the max texture size
      * and texture resolutions.
-     * 
+     *
      * @param arc
      * @return true, if all are texturable, false otherwise (at least one is not texturable)
      */
@@ -202,7 +200,7 @@ public class ViewFrustumCrit implements LODCriterion {
     /**
      * Checks whether the screen-space error (after perspective projection) introduced by the fragments of the
      * {@link Arc} is acceptable.
-     * 
+     *
      * @param arc
      * @return true, if all fragments are fine
      */
@@ -228,7 +226,7 @@ public class ViewFrustumCrit implements LODCriterion {
     /**
      * Returns a guaranteed upper bound for the size that a world-space unit (e.g. a line with length 1) has in pixels
      * after perspective projection, i.e. in pixels on the screen.
-     * 
+     *
      * @param dist
      *            distance of the object (from the point-of-view)
      * @return maximum number of pixels that an object of size 1 will cover

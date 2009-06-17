@@ -1,40 +1,38 @@
 //$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
- Copyright (C) 2001-2008 by:
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.deegree.db;
 
@@ -56,22 +54,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>DatabaseCRSProvider</code> class is the intermediate class for accessing 
- * the Deegree CRS via a database backend. It also initializes the CRSQuerier (for retrieving 
+ * The <code>DatabaseCRSProvider</code> class is the intermediate class for accessing
+ * the Deegree CRS via a database backend. It also initializes the CRSQuerier (for retrieving
  * CRSs from database), CRSExported (for inserting CRSs to database) and CRSRemover (for removing
- * CRSs from databse). 
- * 
+ * CRSs from databse).
+ *
  * In the constructor the database connection is realized in read-only mode (by default, using the
  * classpath subprotocol), but can be set so that database changes are possible (by setting the
  * envinronment variable CRS_DB_URL). The JDBC driver is also set (CRS_DB_DRIVER variable), as well as
- * the username and password.      
- * 
+ * the username and password.
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
+ *
  * @author last edited by: $Author: ionita $
- * 
+ *
  * @version $Revision: $, $Date: $
- * 
+ *
  */
 public class DatabaseCRSProvider implements CRSProvider {
 
@@ -80,21 +78,21 @@ public class DatabaseCRSProvider implements CRSProvider {
     private CRSQuerier querier;
 
     private CRSDBExporter exporter;
-    
+
     private CRSRemover remover;
 
     private static Connection conn = null;
 
     private static String dbConnectionURL = null;
-    
+
     private static String dbUser = "";
-    
+
     private static String dbPass = "";
 
     private static String dbDriver = null;
 
     /**
-     * Retrieve the internal database ID for the object supplied 
+     * Retrieve the internal database ID for the object supplied
      * @param identifiable
      *          the CRSIdentifiable object
      * @return
@@ -106,9 +104,9 @@ public class DatabaseCRSProvider implements CRSProvider {
     }
 
     /**
-     * Request an Update into the database for a new Code  
+     * Request an Update into the database for a new Code
      * @param internalID
-     *              the internal database ID of the object 
+     *              the internal database ID of the object
      * @param codeInt
      *              the Code that will be set
      * @throws SQLException
@@ -117,7 +115,7 @@ public class DatabaseCRSProvider implements CRSProvider {
         querier.setCode( internalID, code );
     }
 
-    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) throws CRSConfigurationException { 
+    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) throws CRSConfigurationException {
         return null;
     }
 
@@ -140,9 +138,9 @@ public class DatabaseCRSProvider implements CRSProvider {
         return result;
     }
 
-    /** 
+    /**
      * @throws CRSConfigurationException
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException
      */
     public DatabaseCRSProvider() throws CRSConfigurationException, ClassNotFoundException {
         dbConnectionURL = System.getenv( "CRS_DB_URL" );
@@ -150,7 +148,7 @@ public class DatabaseCRSProvider implements CRSProvider {
             // accessing database as read-only
             dbConnectionURL = "jdbc:derby:classpath:META-INF/deegreeCRS";
         }
-        
+
         dbUser = System.getenv( "CRS_DB_USER" );
         dbPass = System.getenv( "CRS_DB_PASS" );
         dbDriver = System.getenv( "CRS_DB_DRIVER" );
@@ -165,8 +163,8 @@ public class DatabaseCRSProvider implements CRSProvider {
             LOG.error( e.getMessage(), e );
         } catch ( SQLException e ) {
             LOG.error( e.getMessage(), e );
-        }        
-        
+        }
+
         querier = new CRSQuerier();
         querier.setConnection( conn );
         exporter = new CRSDBExporter();
@@ -174,7 +172,7 @@ public class DatabaseCRSProvider implements CRSProvider {
         remover = new CRSRemover();
         remover.setConnection( conn );
     }
-    
+
     public DatabaseCRSProvider( Properties properties ) throws CRSConfigurationException, ClassNotFoundException {
         this(); // currently properties are not needed but the CRSConfiguration instantiation mechanism forces this parameter
     }
@@ -190,8 +188,8 @@ public class DatabaseCRSProvider implements CRSProvider {
     public List<CoordinateSystem> getAvailableCRSs() {
         try {
             return querier.getAvailableCRSs();
-        } catch ( SQLException e ) {   
-            LOG.error( e.getMessage(), e ); 
+        } catch ( SQLException e ) {
+            LOG.error( e.getMessage(), e );
         }
         return null;
     }
@@ -199,22 +197,22 @@ public class DatabaseCRSProvider implements CRSProvider {
     public void export( StringBuilder sb, List<CoordinateSystem> crsToExport ) {
         // TODO modify the super-class signature since here we don't write into a StringBuilder
     }
-    
+
     public void remove( List<CoordinateSystem> crsList ) throws SQLException {
         remover.removeCRSList( crsList );
     }
 
     /**
-     * Method used by the synchronization-with-EPSG-database class to update the Axis with the EPSG code that it was lacking. 
-     * @param axisName         
+     * Method used by the synchronization-with-EPSG-database class to update the Axis with the EPSG code that it was lacking.
+     * @param axisName
      * @param axisOrientation
      * @param uom
      * @param code
      *         the EPSG code that will be assigned to the Axis
-     * @throws SQLException 
+     * @throws SQLException
      */
     public void changeAxisCode( String axisName, String axisOrientation, Unit uom, CRSCodeType code ) throws SQLException {
-        querier.changeAxisCode( axisName, axisOrientation, uom, code );        
+        querier.changeAxisCode( axisName, axisOrientation, uom, code );
     }
 
     /**
@@ -222,12 +220,12 @@ public class DatabaseCRSProvider implements CRSProvider {
      * @param crsList
      * @throws ClassNotFoundException
      * @throws SQLException
-     * @throws CRSException 
+     * @throws CRSException
      */
     public void export( List<CoordinateSystem> crsList ) throws ClassNotFoundException, SQLException, CRSException {
-        exporter.export( crsList );  
-    }    
-    
+        exporter.export( crsList );
+    }
+
     public Connection getConnection() {
         return conn;
     }

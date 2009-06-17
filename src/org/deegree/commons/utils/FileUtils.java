@@ -1,45 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
 import java.io.BufferedOutputStream;
@@ -56,11 +49,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class contains static utility methods for handling files and filenames.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class FileUtils {
@@ -69,7 +62,7 @@ public class FileUtils {
 
     /**
      * Returns the filename, without any extension and path (Eg. /tmp/foo.txt -> foo)
-     * 
+     *
      * @param file
      * @return the basename
      */
@@ -82,7 +75,7 @@ public class FileUtils {
 
     /**
      * Returns the filename, without any extension. (Eg. /tmp/foo.txt -> /tmp/foo)
-     * 
+     *
      * @param file
      * @return the basename
      */
@@ -92,7 +85,7 @@ public class FileUtils {
 
     /**
      * Returns the file extension (Eg. /tmp/foo.txt -> txt)
-     * 
+     *
      * @param file
      * @return the file extension
      */
@@ -110,7 +103,7 @@ public class FileUtils {
      * given fileName) from the root directory '/' (e.g. WEB-INF/classes in a serlvet environment)<br />
      * If this was unsuccessful this method will try to load the file from the given packageName with the relative
      * fileName appended to it.
-     * 
+     *
      * @param configurationClass
      *            will be used to read the stream from.
      * @param fileName
@@ -142,7 +135,7 @@ public class FileUtils {
 
     /**
      * Split a filename in basename and extension.
-     * 
+     *
      * @param file
      * @return a StringPair with basename and extension
      */
@@ -163,7 +156,7 @@ public class FileUtils {
 
     /**
      * Writes the given {@link String} to the specified file.
-     * 
+     *
      * @param file
      *            file to write to
      * @param content
@@ -188,7 +181,7 @@ public class FileUtils {
 
     /**
      * Writes the given {@link String} to a temporary file (created from specified prefix and suffix).
-     * 
+     *
      * @see File#createTempFile(String, String)
      * @param filePrefix
      *            prefix for the temp file name, must be at least three characters long
@@ -208,7 +201,7 @@ public class FileUtils {
 
     /**
      * Writes the given binary data to the specified file.
-     * 
+     *
      * @param file
      *            file to write to
      * @param data
@@ -234,7 +227,7 @@ public class FileUtils {
 
     /**
      * Writes the given binary data to a temporary file (created from specified prefix and suffix).
-     * 
+     *
      * @see File#createTempFile(String, String)
      * @param filePrefix
      *            prefix for the temp file name, must be at least three characters long
@@ -259,7 +252,7 @@ public class FileUtils {
      * NOTE: The implementation uses an idea from <a
      * href="http://weblogs.java.net/blog/kohsuke/archive/2007/04/how_to_convert.html">Kohsuke Kawaguchi</a>.
      * </p>
-     * 
+     *
      * @param url
      *            <code>file:/...</code> URL
      * @return corresponding file object
@@ -267,9 +260,9 @@ public class FileUtils {
      */
     public static File getAsFile( URL url )
                             throws IllegalArgumentException {
-        
+
         LOG.info ("Protocol: '" + url.getProtocol() + "'");
-        
+
         File f;
         try {
             f = new File( url.toURI() );

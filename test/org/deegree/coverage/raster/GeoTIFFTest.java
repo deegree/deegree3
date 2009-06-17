@@ -1,45 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
 import static org.junit.Assert.assertEquals;
@@ -63,12 +56,12 @@ import org.junit.Test;
 /**
  * This class tests the loading of GeoTIFF files. It doesn't test the various TIFF formats, but only the georeferencing
  * metadata.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class GeoTIFFTest {
 
@@ -78,7 +71,7 @@ public class GeoTIFFTest {
 
     /**
      * load the GeoTIFF file to test
-     * 
+     *
      * @throws IOException
      */
     @BeforeClass
@@ -91,7 +84,7 @@ public class GeoTIFFTest {
 
     /**
      * test the coordinate system of a GeoTIFF
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     @Test
     public void geoTIFFCRS() throws UnknownCRSException {
@@ -100,7 +93,7 @@ public class GeoTIFFTest {
 
     /**
      * test the envelope of a GeoTIFF
-     * 
+     *
      * @throws UnknownCRSException
      */
     @Test

@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.geometry;
 
@@ -96,38 +94,38 @@ import org.deegree.geometry.primitive.surfacepatches.Triangle;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 
 /**
- * 
- * 
+ *
+ *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version. $Revision$, $Date$
  */
 public interface GeometryFactory {
 
     /**
-     * 
+     *
      * @return name of a factory
      */
     public String getName();
 
     /**
      * sets the name of a factory
-     * 
+     *
      * @param name
      *            name of a factory
      */
     public void setName( String name );
 
     /**
-     * 
+     *
      * @return short description of a factory and provided geometry implementaion
      */
     public String getDescription();
 
     /**
      * sets a short description of a factory and provided geometry implementaion
-     * 
+     *
      * @param description
      */
     public void setDescription( String description );
@@ -143,7 +141,7 @@ public interface GeometryFactory {
      * <li>MultiCurve</li>
      * <li>MultiSurface</li>
      * </ul>
-     * 
+     *
      * @return list of supported geometry classes
      */
     public List<Class<?>> getSupportedGeometries();
@@ -168,7 +166,7 @@ public interface GeometryFactory {
      * <li>polynomialSpline</li>
      * <li>rationalSpline</li>
      * </ul>
-     * 
+     *
      * @return list of supported curve interpolations
      */
     public List<CurveSegment.Interpolation> getSupportedCurveInterpolations();
@@ -195,7 +193,7 @@ public interface GeometryFactory {
      * <li>rationalSpline</li>
      * <li>triangulatedSpline</li>
      * </ul>
-     * 
+     *
      * @return list of supported surface interpolations
      */
     public List<SurfacePatch.Interpolation> getSupportedSurfaceInterpolations();
@@ -208,7 +206,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a georeferenced point with a default precision.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param x
@@ -224,7 +222,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a georeferenced point with a default precision.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param x
@@ -242,7 +240,7 @@ public interface GeometryFactory {
 
     /**
      * creates a georeferenced point
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param coordinates
@@ -260,7 +258,7 @@ public interface GeometryFactory {
     /**
      * creates a georeferenced point with a default precision (
      * {@link #createPoint(String, double[], double, CRS)})
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param coordinates
@@ -274,7 +272,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link LineString} geometry.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -288,7 +286,7 @@ public interface GeometryFactory {
     /**
      * Creates a {@link Curve} from a two dimensional array of coordinates. Each field of the first dimension represents
      * one point.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param coordinates
@@ -303,7 +301,7 @@ public interface GeometryFactory {
     /**
      * Creates a segmented {@link Curve} from one or more {@link CurveSegment}s. The last {@link Point} of i'th segment
      * must equals first {@link Point} of i+1'th segment.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param segments
@@ -317,7 +315,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link LineStringSegment} curve segment.
-     * 
+     *
      * @param points
      *            list of points to create the {@link LineStringSegment} from
      * @return created {@link CurveSegment}
@@ -326,21 +324,21 @@ public interface GeometryFactory {
 
     /**
      * Creates an {@link Arc} curve segment.
-     * 
+     *
      * @param p1
      *            first control point
      * @param p2
      *            second control point
      * @param p3
      *            third control point
-     * 
+     *
      * @return created {@link Arc}
      */
     public Arc createArc( Point p1, Point p2, Point p3 );
 
     /**
      * Creates an {@link ArcByBulge} curve segment.
-     * 
+     *
      * @param p1
      *            first control point
      * @param p2
@@ -355,7 +353,7 @@ public interface GeometryFactory {
 
     /**
      * Creates an {@link ArcByCenterPoint} curve segment.
-     * 
+     *
      * @param midPoint
      * @param radius
      * @param startAngle
@@ -366,7 +364,7 @@ public interface GeometryFactory {
 
     /**
      * Creates an {@link ArcString} curve segment.
-     * 
+     *
      * @param points
      *            list of control points, must contain <code>2 * k + 1</code> points
      * @return created {@link ArcString}
@@ -378,7 +376,7 @@ public interface GeometryFactory {
      * <p>
      * This variant of the arc computes the mid points of the arcs instead of storing the coordinates directly. The
      * control point sequence consists of the start and end points of each arc plus the bulge.
-     * 
+     *
      * @param points
      *            list of control points, must contain at least two points
      * @param bulges
@@ -391,7 +389,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link Bezier} curve segment.
-     * 
+     *
      * @param points
      *            list of control points
      * @param degree
@@ -406,7 +404,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link BSpline} curve segment.
-     * 
+     *
      * @param points
      *            list of control points
      * @param degree
@@ -421,21 +419,21 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link Circle} curve segment.
-     * 
+     *
      * @param p1
      *            first control point
      * @param p2
      *            second control point
      * @param p3
      *            third control point
-     * 
+     *
      * @return created {@link Arc}
      */
     public Circle createCircle( Point p1, Point p2, Point p3 );
 
     /**
      * Creates an {@link CircleByCenterPoint} curve segment.
-     * 
+     *
      * @param midPoint
      * @param radius
      * @param startAngle
@@ -445,7 +443,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link Clothoid} curve segment.
-     * 
+     *
      * @param referenceLocation
      *            the affine mapping that places the curve defined by the Fresnel Integrals into the coordinate
      *            reference system of this object
@@ -459,28 +457,28 @@ public interface GeometryFactory {
      */
     public Clothoid createClothoid( AffinePlacement referenceLocation, double scaleFactor, double startParameter,
                                     double endParameter );
-        
+
     /**
      * Creates a {@link Cone} surface patch.
-     * 
+     *
      * @param grid
-     *             the grid of control points that defines the Cone 
-     * @return created {@link Cone} 
+     *             the grid of control points that defines the Cone
+     * @return created {@link Cone}
      */
     public Cone createCone( List<List<Point>> grid );
-    
+
     /**
      * Creates a {@link Cylidner} surface patch.
-     * 
+     *
      * @param grid
      *              the grid of control points that defines the Cylinder
      * @return created {@link Cylinder}
      */
     public Cylinder createCylinder( List<List<Point>> grid );
-    
+
     /**
      * Creates a {@link Sphere} surface patch.
-     * 
+     *
      * @param grid
      *              the grid of control points that defines the Sphere
      * @return created {@link Sphere}
@@ -489,7 +487,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link Clothoid} curve segment.
-     * 
+     *
      * @param points
      *            control points, at least two
      * @param vectorAtStart
@@ -502,7 +500,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link Geodesic} curve segment.
-     * 
+     *
      * @param p1
      *            first control point
      * @param p2
@@ -513,7 +511,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link GeodesicString} curve segment.
-     * 
+     *
      * @param points
      *            control points, at least two
      * @return created {@link GeodesicString}
@@ -522,7 +520,7 @@ public interface GeometryFactory {
 
     /**
      * Creates an {@link OffsetCurve} curve segment.
-     * 
+     *
      * @param baseCurve
      *            the base geometry
      * @param direction
@@ -536,7 +534,7 @@ public interface GeometryFactory {
     /**
      * creates a {@link Surface} from an array of {@link SurfacePatch}. The passed patches must touch in a topological
      * sense to form a valid {@link Surface}
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param patches
@@ -550,7 +548,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link Polygon} surface.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -566,7 +564,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link PolygonPatch} surface patch.
-     * 
+     *
      * @param exteriorRing
      *            ring that defines the outer boundary, this may be null (see section 9.2.2.5 of GML spec)
      * @param interiorRings
@@ -577,7 +575,7 @@ public interface GeometryFactory {
 
     /**
      * creates an {@link Envelope} with a defined precision
-     * 
+     *
      * @param min
      *            minimum corner coordinates
      * @param max
@@ -594,7 +592,7 @@ public interface GeometryFactory {
 
     /**
      * creates an {@link Envelope} with default precision
-     * 
+     *
      * @param min
      *            minimum corner coordinates
      * @param max
@@ -608,7 +606,7 @@ public interface GeometryFactory {
 
     /**
      * creates an {@link Envelope} with default precision
-     * 
+     *
      * @param minx
      *            minimum x corner coordinates
      * @param miny
@@ -620,7 +618,7 @@ public interface GeometryFactory {
      * @param precision
      *            precision of the corner coordinates in units of the used CRS. This value will be used for comparing
      *            two points to be equal or not.
-     * 
+     *
      * @param crs
      *            evenlopes coordinate reference system. If a point does not have a CRS or it is not known
      *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
@@ -631,7 +629,7 @@ public interface GeometryFactory {
 
     /**
      * creates an {@link Envelope} with default precision
-     * 
+     *
      * @param minx
      *            minimum x corner coordinates
      * @param miny
@@ -640,7 +638,7 @@ public interface GeometryFactory {
      *            miximum x corner coordinates
      * @param maxy
      *            miximum y corner coordinates
-     * 
+     *
      * @param crs
      *            evenlopes coordinate reference system. If a point does not have a CRS or it is not known
      *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
@@ -651,7 +649,7 @@ public interface GeometryFactory {
     /**
      * creates an envelope from a SurfacePatch representing a envelope by being constructed by five points: minx,miny
      * minx,maxy maxx,maxy maxx,miny minx,miny
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param patch
@@ -661,7 +659,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link Ring} from a list of passed {@link Curve}s.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -674,7 +672,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a simple {@link LinearRing} from a list of passed {@link Point}s.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -687,7 +685,7 @@ public interface GeometryFactory {
 
     /**
      * Creates an {@link OrientableCurve}.
-     * 
+     *
      * @param id
      *            identifier of the created geometry object
      * @param crs
@@ -702,7 +700,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link Triangle} surface patch.
-     * 
+     *
      * @param exterior
      *            ring that contains exactly four planar points, the first and last point must be coincident
      * @return created {@link Triangle}
@@ -711,7 +709,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link Rectangle} surface patch.
-     * 
+     *
      * @param exterior
      *            ring that contains exactly five planar points, the first and last point must be coincident
      * @return created {@link Rectangle}
@@ -720,7 +718,7 @@ public interface GeometryFactory {
 
     /**
      * Creates an {@link OrientableSurface}.
-     * 
+     *
      * @param id
      *            identifier of the created geometry object
      * @param crs
@@ -736,7 +734,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link PolyhedralSurface}.
-     * 
+     *
      * @param id
      *            identifier of the created geometry object
      * @param crs
@@ -749,7 +747,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link TriangulatedSurface}.
-     * 
+     *
      * @param id
      *            identifier of the created geometry object
      * @param crs
@@ -762,7 +760,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link Tin}.
-     * 
+     *
      * @param id
      *            identifier of the created geometry object
      * @param crs
@@ -779,7 +777,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link Solid}.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -795,7 +793,7 @@ public interface GeometryFactory {
 
     /**
      * Creates an untyped multi geometry from a list of {@link Geometry}s.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -808,7 +806,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link MultiPoint} from a list of passed {@link Point}s.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -822,7 +820,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link MultiCurve} from a list of passed {@link Curve}s.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -836,7 +834,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link MultiCurve} from a list of passed {@link LineString}s.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -850,7 +848,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link MultiSurface} from a list of passed {@link Surface}s.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -864,7 +862,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link MultiPolygon} from a list of passed {@link Polygon}s.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -878,7 +876,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link MultiSolid} from a list of passed {@link Solid}s.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -892,7 +890,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link CompositeCurve} from a list of passed {@link Curve}s.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -907,7 +905,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link CompositeSurface} from a list of passed {@link Surface}s.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -922,7 +920,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a {@link CompositeSolid} from a list of passed {@link Solid}s.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -937,7 +935,7 @@ public interface GeometryFactory {
 
     /**
      * Creates a general {@link CompositeGeometry} from a list of primitive geometries.
-     * 
+     *
      * @param id
      *            identifier of the new geometry instance
      * @param crs
@@ -951,7 +949,7 @@ public interface GeometryFactory {
 
     /**
      * Create an envelope of a list of Doubles
-     * 
+     *
      * @param lowerCorner
      * @param upperCorner
      * @param crs

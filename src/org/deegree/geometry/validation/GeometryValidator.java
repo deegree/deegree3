@@ -1,46 +1,38 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/feature/Feature.java $
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth  
- lat/lon GmbH 
- Aennchenstr. 19
- 53115 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
-
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.geometry.validation;
 
 import java.util.ArrayList;
@@ -118,10 +110,10 @@ import com.vividsolutions.jts.geom.Polygon;
  * <li><code>EXTERIOR_RING_WITHIN_INTERIOR</code>: The exterior ring lies inside an interior ring.</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GeometryValidator {
@@ -139,7 +131,7 @@ public class GeometryValidator {
     /**
      * Creates a new {@link GeometryValidator} which performs callbacks on the given
      * {@link GeometryValidationEventHandler} in case of errors.
-     * 
+     *
      * @param eventHandler
      *            callback handler for errors
      */
@@ -156,7 +148,7 @@ public class GeometryValidator {
      * Contained geometry objects and geometry particles are recursively checked (e.g. the members of a
      * {@link MultiGeometry}) and callbacks to the associated {@link GeometryValidationEventHandler} are performed for
      * each detected issue.
-     * 
+     *
      * @param geom
      *            geometry to be validated
      * @return true, if the geometry is valid, false otherwise (depends on the {@link GeometryValidationEventHandler}
@@ -188,10 +180,10 @@ public class GeometryValidator {
         }
         }
         return isValid;
-    }    
-    
+    }
+
     private boolean validate( GeometricPrimitive geom, List<Object> affectedGeometryParticles ) {
-        boolean isValid = true;       
+        boolean isValid = true;
         switch ( geom.getPrimitiveType() ) {
         case Point: {
             LOG.debug( "Point geometry. No validation necessary." );
@@ -267,7 +259,7 @@ public class GeometryValidator {
                 isValid = false;
             }
         }
-        
+
         if ( curve instanceof Ring ) {
             LOG.debug( "Ring geometry. Testing for self-intersection." );
             if ( selfIntersection ) {
@@ -276,7 +268,7 @@ public class GeometryValidator {
                     isValid = false;
                 }
             }
-            
+
             LOG.debug( "Ring geometry. Testing if it's closed. " );
             if ( !curve.isClosed() ) {
                 LOG.debug( "Not closed." );
@@ -440,7 +432,7 @@ public class GeometryValidator {
         LOG.warn( "Composite geometry found, but validation of inter-primitive topology is not available yet." );
         boolean isValid = true;
         List<Object> affectedGeometryParticles2 = new ArrayList<Object>(affectedGeometryParticles);
-        affectedGeometryParticles2.add (geom);        
+        affectedGeometryParticles2.add (geom);
         for ( GeometricPrimitive geometricPrimitive : geom ) {
             if ( !validate( geometricPrimitive, affectedGeometryParticles2 ) ) {
                 isValid = false;
@@ -453,7 +445,7 @@ public class GeometryValidator {
         LOG.debug( "MultiGeometry. Validating individual member geometries." );
         boolean isValid = true;
         List<Object> affectedGeometryParticles2 = new ArrayList<Object>(affectedGeometryParticles);
-        affectedGeometryParticles2.add (geom);        
+        affectedGeometryParticles2.add (geom);
         for ( Geometry member : geom ) {
             if ( !validateGeometry( member, affectedGeometryParticles2  ) ) {
                 isValid = false;
@@ -464,7 +456,7 @@ public class GeometryValidator {
 
     /**
      * Returns a JTS geometry for the given {@link Curve} (which is linearized first).
-     * 
+     *
      * @param curve
      *            {@link Curve} that consists of {@link LineStringSegment} and {@link Arc} segments only
      * @return linear JTS curve geometry
@@ -486,7 +478,7 @@ public class GeometryValidator {
 
     /**
      * Returns a JTS geometry for the given {@link Ring} (which is linearized first).
-     * 
+     *
      * @param ring
      *            {@link Ring} that consists of {@link LineStringSegment}, {@link Arc} and {@link Circle} segments only
      * @return linear JTS ring geometry, null if no

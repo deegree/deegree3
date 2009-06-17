@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs;
 
@@ -45,19 +43,19 @@ import org.deegree.crs.i18n.Messages;
 
 /**
  * The <code>CRSIdentifiable</code> class can be used to identify any crs, Ellipsoid, Geodetic Datum and Prime Meridian
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class CRSIdentifiable {
 
     private CRSCodeType[] codes;
-    
+
     private EPSGCode epsgCode;
 
     private String[] versions;
@@ -70,7 +68,7 @@ public class CRSIdentifiable {
 
     /**
      * Takes the references of the other object and stores them in this CRSIdentifiable Object.
-     * 
+     *
      * @param other
      *            identifiable object.
      */
@@ -80,7 +78,7 @@ public class CRSIdentifiable {
     }
 
     /**
-     * 
+     *
      * @param codes
      * @param names
      *            the human readable names of the object.
@@ -112,7 +110,7 @@ public class CRSIdentifiable {
 
     /**
      * Creates arrays fromt the given identifier and name without setting the versions, descriptions and areasOfUse.
-     * 
+     *
      * @param identifiers
      *            of the object.
      */
@@ -159,10 +157,10 @@ public class CRSIdentifiable {
     public final CRSCodeType getCode() {
         return codes[0];
     }
-    
+
     /**
      * Returns the {@link EPSGCode} of this {@link CRSIdentifiable}, if it exist.
-     * 
+     *
      * @return the EPSG code, or null if it does not exist
      */
     public final EPSGCode getEPSGCode () {
@@ -185,7 +183,7 @@ public class CRSIdentifiable {
 
     /**
      * throws an InvalidParameterException if the given object is null
-     * 
+     *
      * @param toBeChecked
      *            for <code>null</code>
      * @param message
@@ -207,7 +205,7 @@ public class CRSIdentifiable {
 
     /**
      * throws an InvalidParameterException if the given object is null
-     * 
+     *
      * @param toBeChecked
      *            for <code>null</code>
      * @param functionName
@@ -226,7 +224,7 @@ public class CRSIdentifiable {
 
     /**
      * throws an IllegalArgumentException if the given object array is null or empty
-     * 
+     *
      * @param toBeChecked
      *            for <code>null</code> or empty
      * @param message
@@ -307,10 +305,10 @@ public class CRSIdentifiable {
 
     @Override
     public boolean equals( Object other ) {
-        if ( other != null && other instanceof CRSIdentifiable 
+        if ( other != null && other instanceof CRSIdentifiable
                              && ((CRSIdentifiable) other).getCodes().length == getCodes().length ) {
-            
-            // compare the codes from each part as sets 
+
+            // compare the codes from each part as sets
             CRSCodeType[] thisArray = getCodes();
             CRSCodeType[] otherArray = ( (CRSIdentifiable) other).getCodes();
             Set<CRSCodeType> thisSet = new HashSet<CRSCodeType>();
@@ -320,13 +318,13 @@ public class CRSIdentifiable {
                 thisSet.add( thisArray[i] );
                 otherSet.add( otherArray[i] );
             }
-            
+
             if ( ! thisSet.equals( otherSet ) )
                 return false;
-            
+
             return true;
         }
-            
+
         return false;
     }
 
@@ -375,6 +373,6 @@ public class CRSIdentifiable {
             if ( code.equals( id ) )
                 return true;
         }
-        return false;        
+        return false;
     }
 }

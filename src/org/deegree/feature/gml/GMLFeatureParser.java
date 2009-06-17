@@ -1,46 +1,38 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/feature/Feature.java $
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth  
- lat/lon GmbH 
- Aennchenstr. 19
- 53115 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
-
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.feature.gml;
 
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -91,10 +83,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GMLFeatureParser extends XMLAdapter {
@@ -130,7 +122,7 @@ public class GMLFeatureParser extends XMLAdapter {
     /**
      * Creates a new <code>FeatureGMLAdapter</code> instance instance that is configured for building features with the
      * specified feature types.
-     * 
+     *
      * @param schema
      *            schema
      */
@@ -140,7 +132,7 @@ public class GMLFeatureParser extends XMLAdapter {
 
     /**
      * Registers a {@link CustomPropertyParser} that is invoked to parse properties of a certain type.
-     * 
+     *
      * @param pt
      * @param parser
      */
@@ -151,7 +143,7 @@ public class GMLFeatureParser extends XMLAdapter {
     /**
      * Returns the object representation for the feature element event that the cursor of the given
      * <code>XMLStreamReader</code> points at.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event of the feature element, afterwards points at
      *            the next event after the <code>END_ELEMENT</code> event of the feature element
@@ -279,7 +271,7 @@ public class GMLFeatureParser extends XMLAdapter {
 
     /**
      * Returns the object representation for the given property element.
-     * 
+     *
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event of the property, afterwards points at the
      *            next event after the <code>END_ELEMENT</code> of the property
@@ -377,9 +369,9 @@ public class GMLFeatureParser extends XMLAdapter {
      * Returns the feature type with the given name.
      * <p>
      * If no feature type with the given name is defined, an XMLParsingException is thrown.
-     * 
+     *
      * @param xmlStreamReader
-     * 
+     *
      * @param ftName
      *            feature type name to look up
      * @return the feature type with the given name
@@ -393,8 +385,8 @@ public class GMLFeatureParser extends XMLAdapter {
         if (ftName.equals( DefaultGMLTypes.GML311_FEATURECOLLECTION.getName() )) {
             return DefaultGMLTypes.GML311_FEATURECOLLECTION;
         }
-        
-        FeatureType ft = null;        
+
+        FeatureType ft = null;
         ft = schema.getFeatureType( ftName );
         if ( ft == null ) {
             String msg = Messages.getMessage( "ERROR_SCHEMA_FEATURE_TYPE_UNKNOWN", ftName );
@@ -408,7 +400,7 @@ public class GMLFeatureParser extends XMLAdapter {
      * <code>XMLStreamReader</code> points to.
      * <p>
      * Looks after 'gml:id' (GML 3) first, if no such attribute is present, the 'fid' (GML 2) attribute is used.
-     * 
+     *
      * @param xmlReader
      *            must point to the <code>START_ELEMENT</code> event of the feature
      * @return the feature id, or "" (empty string) if neither a 'gml:id' nor a 'fid' attribute is present

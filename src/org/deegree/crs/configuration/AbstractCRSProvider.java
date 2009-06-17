@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration;
 
@@ -72,15 +70,15 @@ import org.deegree.crs.i18n.Messages;
 
 /**
  * add class documentation here.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  * @param <T>
  *            the type of object the parse method awaits.
- * 
+ *
  */
 public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
@@ -171,7 +169,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     public CoordinateSystem getCRSByCode( CRSCodeType id )
                             throws CRSConfigurationException {
-        
+
         if ( resolver == null ) {
             throw new CRSConfigurationException( "No resolver initialized, this may not be." );
         }
@@ -259,10 +257,10 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         return result;
     }
-    
+
     /**
      * Set the resolver to the given resolver.
-     * 
+     *
      * @param newResolver
      */
     protected void setResolver( CRSResource<T> newResolver ) {
@@ -301,7 +299,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * The id are what they are, not trimming 'upcasing' or other modifications will be done in this method.
-     * 
+     *
      * @param expectedType
      *            The class of type T which is expected.
      * @param <V>
@@ -319,7 +317,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * The id are what they are, not trimming 'upcasing' or other modifications will be done in this method.
-     * 
+     *
      * @param expectedType
      *            The class of type T which is expected.
      * @param <V>
@@ -357,15 +355,15 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         return result;
     }
-    
+
     /**
      * The id is as it is, not trimming 'upcasing' or other modifications will be done in this method.
-     * 
+     *
      * @param expectedType
      *            The class of type T which is expected.
      * @param <V>
      *            the type to cast to if the casting fails, null will be returned.
-     * 
+     *
      * @param id
      *            to search the cache for
      * @return the {@link CRSIdentifiable} or <code>null</code> if it was not found or the wrong type was found.
@@ -388,7 +386,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         return result;
     }
-    
+
     // TODO add doc and replace the String-parameter version of it
     @SuppressWarnings("unchecked")
     public <V extends CRSIdentifiable> V getCachedIdentifiable( Class<V> expectedType, CRSCodeType id ) {
@@ -411,10 +409,10 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * The id is as it is, not trimming 'upcasing' or other modifications will be done in this method.
-     * 
+     *
      * @param <V>
      *            the type to cast to if the casting fails, null will be returned.
-     * 
+     *
      * @param id
      *            to search the cache for
      * @return the {@link CRSIdentifiable} or <code>null</code> if it was not found or the wrong type was found.
@@ -431,7 +429,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         return result;
     }
-    
+
     @SuppressWarnings("unchecked")
     public <V extends CRSIdentifiable> V getCachedIdentifiable( CRSCodeType id ) {
         if ( id == null ) {
@@ -447,7 +445,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * Add the id to the cache, by mapping it to all its identifiers.
-     * 
+     *
      * @param <V>
      *            type of CRSIdentifiable
      * @param identifiable
@@ -483,13 +481,13 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * The <code>SupportedTransformations</code> enumeration defines currently supported transformations
-     * 
+     *
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     * 
+     *
      * @author last edited by: $Author$
-     * 
+     *
      * @version $Revision$, $Date$
-     * 
+     *
      */
     public enum SupportedTransformations {
         /**
@@ -525,13 +523,13 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
     /**
      * The <code>SupportedTransformationParameters</code> enumeration defines currently supported transformation
      * parameters
-     * 
+     *
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     * 
+     *
      * @author last edited by: $Author$
-     * 
+     *
      * @version $Revision$, $Date$
-     * 
+     *
      */
     public enum SupportedTransformationParameters {
         /**
@@ -578,13 +576,13 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * The <code>SupportedProjections</code> enumeration defines currently supported projections
-     * 
+     *
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     * 
+     *
      * @author last edited by: $Author$
-     * 
+     *
      * @version $Revision$, $Date$
-     * 
+     *
      */
     public enum SupportedProjections {
         /**
@@ -615,13 +613,13 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * The <code>SupportedProjectionParameters</code> enumeration defines currently supported projection parameters
-     * 
+     *
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     * 
+     *
      * @author last edited by: $Author$
-     * 
+     *
      * @version $Revision$, $Date$
-     * 
+     *
      */
     public enum SupportedProjectionParameters {
         /**
@@ -666,7 +664,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
     }
 
     /**
-     * 
+     *
      * @param codes
      *            to check for.
      * @return a mapped projection or {@link SupportedProjections#NOT_SUPPORTED}, never <code>null</code>
@@ -710,7 +708,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
     }
 
     /**
-     * 
+     *
      * @param codes
      *            to check for.
      * @return a mapped projections parameters or {@link SupportedProjectionParameters#NOT_SUPPORTED}, never
@@ -781,7 +779,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
     }
 
     /**
-     * 
+     *
      * @param codes
      *            to check for.
      * @return a mapped transformation or {@link SupportedTransformations#NOT_SUPPORTED}, never <code>null</code>
@@ -819,7 +817,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
     }
 
     /**
-     * 
+     *
      * @param codes
      *            to check for.
      * @return a mapped transformation or {@link SupportedTransformations#NOT_SUPPORTED}, never <code>null</code>

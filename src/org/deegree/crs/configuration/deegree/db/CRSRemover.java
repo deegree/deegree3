@@ -1,40 +1,38 @@
 //$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
- Copyright (C) 2001-2008 by:
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.deegree.db;
 
@@ -65,18 +63,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>CRSRemover</code> class deletes a CRS from the database. The provided CRS if first 
+ * The <code>CRSRemover</code> class deletes a CRS from the database. The provided CRS if first
  * identified with the one in the database via its code (every CRS needs to have a code). Identifiable
- * objects other than CRSs (axes, datums, ellipsoids, etc.) happen to not have codes all the time and 
+ * objects other than CRSs (axes, datums, ellipsoids, etc.) happen to not have codes all the time and
  * thus will not be identified ( hence removed) in these cases.
- * Before an object is removed, a check that no other object references it is done.   
- * 
+ * Before an object is removed, a check that no other object references it is done.
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
+ *
  * @author last edited by: $Author: ionita $
- * 
+ *
  * @version $Revision: $, $Date: $
- * 
+ *
  */
 public class CRSRemover {
 
@@ -85,7 +83,7 @@ public class CRSRemover {
     Connection conn;
 
     int getInternalID( CRSIdentifiable identifiable ) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement( "SELECT ref_id FROM code WHERE code.code ='" + identifiable.getCode().getCode() + 
+        PreparedStatement ps = conn.prepareStatement( "SELECT ref_id FROM code WHERE code.code ='" + identifiable.getCode().getCode() +
                                                       "' AND code.codespace ='" + identifiable.getCode().getCodeSpace() + "'" );
         ResultSet rs = ps.executeQuery();
         rs.next();
@@ -96,7 +94,7 @@ public class CRSRemover {
         conn.prepareStatement( "DELETE FROM code WHERE ref_id = " + internalID ).execute();
         conn.prepareStatement( "DELETE FROM name WHERE ref_id = " + internalID ).execute();
         conn.prepareStatement( "DELETE FROM version WHERE ref_id = " + internalID ).execute();
-        conn.prepareStatement( "DELETE FROM description WHERE ref_id = " + internalID ).execute();        
+        conn.prepareStatement( "DELETE FROM description WHERE ref_id = " + internalID ).execute();
         conn.prepareStatement( "DELETE FROM area WHERE ref_id = " + internalID ).execute();
     }
 
@@ -118,7 +116,7 @@ public class CRSRemover {
         }
 
         conn.prepareStatement( "DELETE FROM ellipsoid WHERE id = " + internalID ).execute();
-        removeIdentifiableAttributes( internalID );            
+        removeIdentifiableAttributes( internalID );
     }
 
     void removePrimeMeridian( PrimeMeridian pm ) throws SQLException {
@@ -137,10 +135,10 @@ public class CRSRemover {
             LOG.info( "A Prime Meridian is referenced by Geodetic Datum(s) that are still in the " +
             "database");
             return;
-        }        
+        }
 
         conn.prepareStatement( "DELETE FROM prime_meridian WHERE id = " + internalID ).execute();
-        removeIdentifiableAttributes( internalID );            
+        removeIdentifiableAttributes( internalID );
     }
 
     void removeHelmert( Helmert helmert ) throws SQLException {
@@ -162,7 +160,7 @@ public class CRSRemover {
         }
         conn.prepareStatement( "DELETE FROM helmert_transformation WHERE id = " + internalID ).execute();
         conn.prepareStatement( "DELETE FROM transformation_lookup WHERE id = " + internalID ).execute();
-        removeIdentifiableAttributes( internalID );            
+        removeIdentifiableAttributes( internalID );
     }
 
     void removeGeodeticDatum( GeodeticDatum datum, String referencingIdentifiable ) throws SQLException {
@@ -218,32 +216,32 @@ public class CRSRemover {
 
         conn.prepareStatement( "DELETE FROM vertical_datum WHERE id = " + internalID ).execute();
         removeIdentifiableAttributes( internalID );
-    }    
+    }
 
     void removeProjection( Projection projection ) throws SQLException {
         if ( projection.getCode().getCode().equals( "NOT PROVIDED" ) ) {
-            LOG.info( "A referenced " + projection.getImplementationName() + 
+            LOG.info( "A referenced " + projection.getImplementationName() +
             " projection does not have a code. It will not be removed." );
             return;
         }
 
         int internalID = getInternalID( projection );
 
-        ResultSet 
+        ResultSet
         projectedCRSRef = conn.prepareStatement( "SELECT * FROM projected_crs WHERE" +
                                                  " projection_id = " + internalID ).executeQuery();
         if ( projectedCRSRef.next() )
             LOG.info( "A projection is referenced a ProjectedCRS(s) still in the database. ");
         else {
-            ResultSet 
-            rs = conn.prepareStatement( "SELECT table_name FROM projection_lookup WHERE id = " + 
+            ResultSet
+            rs = conn.prepareStatement( "SELECT table_name FROM projection_lookup WHERE id = " +
                                         internalID ).executeQuery();
             rs.next();
-            conn.prepareStatement( "DELETE FROM " + rs.getString( 1 ) + " WHERE id = " 
+            conn.prepareStatement( "DELETE FROM " + rs.getString( 1 ) + " WHERE id = "
                                    + internalID ).execute();
             conn.prepareStatement( "DELETE FROM projection_lookup WHERE id = " + internalID ).execute();
             removeCRS( projection.getGeographicCRS() );
-            removeIdentifiableAttributes( internalID );            
+            removeIdentifiableAttributes( internalID );
         }
     }
 
@@ -258,7 +256,7 @@ public class CRSRemover {
 
         ResultSet
         projectedCRSRef = conn.prepareStatement( "SELECT * FROM projected_crs WHERE axis1_id = " +
-                                                 internalID + " OR axis2_id = " + 
+                                                 internalID + " OR axis2_id = " +
                                                  internalID ).executeQuery();
         if ( projectedCRSRef.next() ) {
             LOG.info( "An axis is referenced by projectedCRS(s) that are still used in the " +
@@ -267,7 +265,7 @@ public class CRSRemover {
         }
         ResultSet
         geographicCRSRef = conn.prepareStatement( "SELECT * FROM geographic_crs WHERE axis1_id = " +
-                                                  internalID + " OR axis2_id = " + 
+                                                  internalID + " OR axis2_id = " +
                                                   internalID ).executeQuery();
         if ( geographicCRSRef.next() ) {
             LOG.info( "An axis is referenced by projectedCRS(s) that are still used in the " +
@@ -276,7 +274,7 @@ public class CRSRemover {
         }
         ResultSet
         geocentricCRSRef = conn.prepareStatement( "SELECT * FROM geocentric_crs WHERE axis1_id = " +
-                                                  internalID + " OR axis2_id = " + 
+                                                  internalID + " OR axis2_id = " +
                                                   internalID + " OR axis3_id = " +
                                                   internalID ).executeQuery();
         if ( geocentricCRSRef.next() ) {
@@ -307,15 +305,15 @@ public class CRSRemover {
     }
 
     /**
-     * Removes a CRS from the database. 
-     * Before deleting a crs, it is checked if any identifiables are referencing it 
-     * (with the exception of the referencing object that is given as parameter). 
+     * Removes a CRS from the database.
+     * Before deleting a crs, it is checked if any identifiables are referencing it
+     * (with the exception of the referencing object that is given as parameter).
      * @param crs                       to be removed
      * @param referencingIdentifiable   the name of the element that contains the crs
-     *                                  to be removed (e.g. compoundCRS that references a projectedCRS, 
-     *                                  transverseMercator that references a geographicCRS, etc. ), 
-     *                                  or empty string in case the crs to be removed is a top-level 
-     *                                  element. It should never be null. 
+     *                                  to be removed (e.g. compoundCRS that references a projectedCRS,
+     *                                  transverseMercator that references a geographicCRS, etc. ),
+     *                                  or empty string in case the crs to be removed is a top-level
+     *                                  element. It should never be null.
      * @throws SQLException
      */
     void removeCRS( CoordinateSystem crs) throws SQLException {
@@ -327,14 +325,14 @@ public class CRSRemover {
         if ( crs.getCode().getCode().equals( "NOT PROVIDED" ) ) {
             LOG.warn( "The CRS " + crs + " does not have a code. It will not be removed." );
             return;
-        }                
+        }
 
         if ( crs.getType() == CoordinateSystem.PROJECTED_CRS ) {
             ProjectedCRS projected = (ProjectedCRS) crs;
 
             int internalID = getInternalID( projected );
 
-            ResultSet             
+            ResultSet
             compoundRef = conn.prepareStatement( "SELECT * FROM compound_crs " +
                                                  "WHERE base_crs = " + internalID ).executeQuery();
             if ( compoundRef.next() ) {
@@ -346,10 +344,10 @@ public class CRSRemover {
             conn.prepareStatement( "DELETE FROM crs_lookup WHERE id = " + internalID ).execute();
             removeAxis( projected.getAxis()[0] );
             removeAxis( projected.getAxis()[1] );
-            removeProjection( projected.getProjection() );                
+            removeProjection( projected.getProjection() );
             removeIdentifiableAttributes( internalID );
 
-        } else if ( crs.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {            
+        } else if ( crs.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
             GeographicCRS geographic = (GeographicCRS) crs;
 
             int internalID = getInternalID( geographic );
@@ -361,9 +359,9 @@ public class CRSRemover {
                 LOG.info( "A geographicCRS is referenced by compoundCRS(s) that " +
                 "are still in the database." );
                 return;
-            }            
+            }
 
-            
+
             ResultSet
             tmRef = conn.prepareStatement( "SELECT * FROM transverse_mercator " +
                                            "WHERE geographic_crs_id = " + internalID ).executeQuery();
@@ -372,7 +370,7 @@ public class CRSRemover {
                 "are still in the database." );
                 return;
             }
-                
+
             ResultSet
             lccRef = conn.prepareStatement( "SELECT * FROM lambert_conformal_conic " +
                                             "WHERE geographic_crs_id = " + internalID ).executeQuery();
@@ -381,7 +379,7 @@ public class CRSRemover {
                 "are still in the database." );
                 return;
             }
-            
+
             ResultSet
             laeaRef = conn.prepareStatement( "SELECT * FROM lambert_azimuthal_equal_area " +
                                              "WHERE geographic_crs_id = " + internalID ).executeQuery();
@@ -390,7 +388,7 @@ public class CRSRemover {
                 "are still in the database." );
                 return;
             }
-            
+
             ResultSet
             salRef = conn.prepareStatement( "SELECT * FROM stereographic_alternative " +
                                             "WHERE geographic_crs_id = " + internalID ).executeQuery();
@@ -399,7 +397,7 @@ public class CRSRemover {
                 "are still in the database." );
                 return;
             }
-           
+
             ResultSet
             sazRef = conn.prepareStatement( "SELECT * FROM stereographic_azimuthal " +
                                             "WHERE geographic_crs_id = " + internalID ).executeQuery();
@@ -408,20 +406,20 @@ public class CRSRemover {
                 "are still in the database." );
                 return;
             }
-            
+
             LOG.info( "Removing the Geographic CRS: " + geographic.getCode() );
             conn.prepareStatement( "DELETE FROM geographic_crs WHERE id = " + internalID ).execute();
             conn.prepareStatement( "DELETE FROM crs_lookup WHERE id = " + internalID ).execute();
             removeGeodeticDatum( geographic.getGeodeticDatum(), "geographicCRS" );
             removeAxis( geographic.getAxis()[0] );
-            removeAxis( geographic.getAxis()[1] );                
+            removeAxis( geographic.getAxis()[1] );
             removeIdentifiableAttributes( internalID );
 
-        } else if ( crs.getType() == CoordinateSystem.GEOCENTRIC_CRS ) { 
+        } else if ( crs.getType() == CoordinateSystem.GEOCENTRIC_CRS ) {
             GeocentricCRS geocentric = (GeocentricCRS) crs;
 
             int internalID = getInternalID( geocentric );
-            
+
             ResultSet
             compoundRef = conn.prepareStatement( "SELECT * FROM compound_crs " +
                                             "WHERE base_crs = " + internalID ).executeQuery();
@@ -430,17 +428,17 @@ public class CRSRemover {
                 "are still in the database." );
                 return;
             }
-                        
+
             LOG.info( "Removing the Geocentric CRS: " + geocentric.getCode() );
             conn.prepareStatement( "DELETE FROM geocentric_crs WHERE id = " + internalID ).execute();
             conn.prepareStatement( "DELETE FROM crs_lookup WHERE id = " + internalID ).execute();
             removeGeodeticDatum( geocentric.getGeodeticDatum(), "geocentricCRS" );
             removeAxis( geocentric.getAxis()[0] );
-            removeAxis( geocentric.getAxis()[1] );                
+            removeAxis( geocentric.getAxis()[1] );
             removeAxis( geocentric.getAxis()[2] );
             removeIdentifiableAttributes( internalID );
 
-        } else if ( crs.getType() == CoordinateSystem.VERTICAL_CRS ) { 
+        } else if ( crs.getType() == CoordinateSystem.VERTICAL_CRS ) {
             VerticalCRS vertical = (VerticalCRS) crs;
 
             int internalID = getInternalID( vertical );
@@ -449,7 +447,7 @@ public class CRSRemover {
             conn.prepareStatement( "DELETE FROM vertical_crs WHERE id = " + internalID ).execute();
             conn.prepareStatement( "DELETE FROM crs_lookup WHERE id = " + internalID ).execute();
             removeAxis( vertical.getVerticalAxis() );
-            removeVerticalDatum( vertical.getVerticalDatum() ); 
+            removeVerticalDatum( vertical.getVerticalDatum() );
             removeIdentifiableAttributes( internalID );
 
         } else if ( crs.getType() == CoordinateSystem.COMPOUND_CRS ) {
@@ -469,9 +467,9 @@ public class CRSRemover {
     public void removeCRSList( List<CoordinateSystem> crsList ) throws SQLException {
         if ( crsList == null || crsList.size() == 0 )
             System.out.println( "No CRSs to export." );
-        for ( CoordinateSystem crs : crsList ) {            
+        for ( CoordinateSystem crs : crsList ) {
             removeCRS( crs );
-        }       
+        }
     }
 
     public void setConnection( Connection conn ) {
@@ -487,7 +485,7 @@ public class CRSRemover {
     }
 
     /**
-     * Command-line tool for removing a CRS given in WKT format, from a file ( provided as 
+     * Command-line tool for removing a CRS given in WKT format, from a file ( provided as
      * command-line argument).
      * @param args
      * @throws IOException
@@ -495,7 +493,7 @@ public class CRSRemover {
      * @throws SQLException
      */
     public static void main( String[] args ) throws IOException, ClassNotFoundException, SQLException {
-        // get the instantiated CRS from WKT format 
+        // get the instantiated CRS from WKT format
         WKTParser parser = new WKTParser( args[0] );
         CoordinateSystem crs = parser.parseCoordinateSystem();
 

@@ -1,45 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
 import java.io.File;
@@ -69,12 +62,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class transforms raster to a taget coordinate system .
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class RasterTransformer extends Transformer {
 
@@ -94,7 +87,7 @@ public class RasterTransformer extends Transformer {
 
     /**
      * Creates a new RasterTransformer with the given target CRS.
-     * 
+     *
      * @param targetCRS
      *            to transform incoming coordinates to.
      * @throws IllegalArgumentException
@@ -106,7 +99,7 @@ public class RasterTransformer extends Transformer {
 
     /**
      * Creates a new RasterTransformer with the given id as the target CRS.
-     * 
+     *
      * @param targetCRS
      *            an identifier to which all incoming coordinates shall be transformed.
      * @throws UnknownCRSException
@@ -120,12 +113,12 @@ public class RasterTransformer extends Transformer {
 
     /**
      * Creates a transformed raster from a given source raster.
-     * 
+     *
      * <p>
      * This method transforms the requested envelope and returns a new raster with the requested size. The source raster
      * can be larger than the requested envelope (like a large tiled raster), or smaller (the source raster nodata value
      * will be used outside the source raster).
-     * 
+     *
      * @param sourceRaster
      *            the source raster
      * @param dstEnvelope
@@ -138,7 +131,7 @@ public class RasterTransformer extends Transformer {
      *            the type of the interpolation
      * @return the transformed raster
      * @throws TransformationException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     public SimpleRaster transform( AbstractRaster sourceRaster, Envelope dstEnvelope, int dstWidth, int dstHeight,
                                    InterpolationType interpolationType )
@@ -255,18 +248,18 @@ public class RasterTransformer extends Transformer {
 
     /**
      * Transform a raster to the target coordinate system.
-     * 
+     *
      * <p>
      * This method transforms the whole raster into the target CRS of this RasterTransformer. The size of the output
      * raster will be calculated, so that the pixels keep the aspect ratio (i.e. keep square pixels).
-     * 
+     *
      * @param sourceRaster
      *            the raster to be transformed
      * @param interpolationType
      * @return the transformed raster
      * @throws IllegalArgumentException
      * @throws TransformationException
-     * @throws UnknownCRSException 
+     * @throws UnknownCRSException
      */
     public SimpleRaster transform( AbstractRaster sourceRaster, InterpolationType interpolationType )
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
@@ -291,7 +284,7 @@ public class RasterTransformer extends Transformer {
 
     /**
      * Sets the background for the raster transformation.
-     * 
+     *
      * @param backgroundValue
      */
     public void setBackgroundValue( byte[] backgroundValue ) {

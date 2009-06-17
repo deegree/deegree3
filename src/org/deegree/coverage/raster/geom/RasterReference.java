@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.geom;
 
 import static java.lang.Math.abs;
@@ -59,10 +57,10 @@ import org.deegree.geometry.GeometryFactoryCreator;
  * cover. This interpretation is image-oriented and used by the WMS specification.</li>
  * </ul>
  * </p>
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class RasterReference {
@@ -97,7 +95,7 @@ public class RasterReference {
 
     /**
      * Creates a new RasterReference with origin and resolution
-     * 
+     *
      * @param x0
      *            x world coordinate of the upper-left pixel (center)
      * @param y0
@@ -113,7 +111,7 @@ public class RasterReference {
 
     /**
      * Creates a new RasterReference with origin and resolution
-     * 
+     *
      * @param type
      *            type where the x, y coordinates lies
      * @param x0
@@ -140,7 +138,7 @@ public class RasterReference {
 
     /**
      * Creates a new RasterReference for given Envelope and size (yRes is negative)
-     * 
+     *
      * @param env
      * @param width
      * @param height
@@ -156,7 +154,7 @@ public class RasterReference {
 
     /**
      * Returns a new RasterReference with new raster size (resolution)
-     * 
+     *
      * @param env
      *            envelope for the RasterReference (origin and world size)
      * @param width
@@ -178,7 +176,7 @@ public class RasterReference {
 
     /**
      * Returns a new scaled RasterReference.
-     * 
+     *
      * @param env
      *            new Envelope for the RasterReference (origin)
      * @param xRes
@@ -194,7 +192,7 @@ public class RasterReference {
 
     /**
      * Returns new RasterReference for calculations within envelope.
-     * 
+     *
      * @param envelope
      * @return new RasterReference
      */
@@ -205,7 +203,7 @@ public class RasterReference {
 
     /**
      * Returns the new origin of a RasterReference with given Envelope.
-     * 
+     *
      * @param envelope
      * @return array with origin (x0, y0)
      */
@@ -220,7 +218,7 @@ public class RasterReference {
 
     /**
      * Converts raster coordinates to world coordinates (outer bound of pixel).
-     * 
+     *
      * @param x
      *            x coordinate
      * @param y
@@ -233,7 +231,7 @@ public class RasterReference {
 
     /**
      * Converts world coordinates to raster coordinates
-     * 
+     *
      * @param x
      *            x coordinate
      * @param y
@@ -250,7 +248,7 @@ public class RasterReference {
 
     /**
      * Converts world coordinates to raster coordinates.
-     * 
+     *
      * @param x
      *            x coordinate
      * @param y
@@ -263,7 +261,7 @@ public class RasterReference {
 
     /**
      * Converts envelope in world coordinates to raster coordinates
-     * 
+     *
      * @param envelope
      *            envelope in world coordinates
      * @return RasterRect
@@ -286,12 +284,12 @@ public class RasterReference {
 
     /**
      * Returns an Envelope for a raster with given size.
-     * 
+     *
      * The calculation considers the origin and resolution of the raster.
-     * 
+     *
      * @param width
      * @param height
-     * 
+     *
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height ) {
@@ -300,14 +298,14 @@ public class RasterReference {
 
     /**
      * Returns an Envelope for a raster with given size.
-     * 
+     *
      * The calculation considers the origin and resolution of the raster.
-     * 
+     *
      * @param width
      * @param height
      * @param crs
      *            the coordinate system for the envelope
-     * 
+     *
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height, CRS crs ) {
@@ -316,16 +314,16 @@ public class RasterReference {
 
     /**
      * Returns an Envelope for a raster with given size.
-     * 
+     *
      * The calculation considers the origin and resolution of the raster.
-     * 
+     *
      * @param width
      * @param height
      * @param crs
      *            the coordinate system for the envelope
      * @param type
      *            if the result envelope should span from pixel center or the outer pixel edge
-     * 
+     *
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height, CRS crs, RasterReference.Type type ) {
@@ -357,7 +355,7 @@ public class RasterReference {
 
     /**
      * Returns the size in pixel of a raster that extends within given Envelope.
-     * 
+     *
      * @param env
      *            Envelope for the
      * @return array with width and height of the raster
@@ -382,7 +380,7 @@ public class RasterReference {
 
     /**
      * Returns the x-coordinate of the upper-left pixel.
-     * 
+     *
      * @param type
      *            Return the center or outer pixel coordinate.
      * @return x coordinate
@@ -396,7 +394,7 @@ public class RasterReference {
 
     /**
      * Returns the y-coordinate of the upper-left pixel.
-     * 
+     *
      * @param type
      *            Return the center or outer pixel coordinate.
      * @return y coordinate
@@ -450,7 +448,7 @@ public class RasterReference {
      * Merge two RasterEnvelopes. Returns a new RasterReference where the upper-left corner is set to the values of the
      * furthest upper and furthest left corner. The resolution is set to the minimum value (i.e. the highest resolution
      * [unit/pixel])
-     * 
+     *
      * @param rasterEnv
      *            RasterReference to merge
      * @return new RasterReference

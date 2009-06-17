@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.crs.transformations.helmert;
 
 import static org.deegree.crs.projections.ProjectionUtils.EPS11;
@@ -54,14 +52,14 @@ import org.deegree.crs.transformations.Transformation;
  * Parameters for a geographic transformation into another datum. The Bursa Wolf parameters should be applied to
  * geocentric coordinates, where the X axis points towards the Greenwich Prime Meridian, the Y axis points East, and the
  * Z axis points North.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class Helmert extends Transformation {
 
@@ -158,12 +156,12 @@ public class Helmert extends Transformation {
 
     /**
      * Construct a conversion info with all parameters set to 0;
-     * 
+     *
      * @param sourceCRS
      *            of this helmert transformation
      * @param targetCRS
      *            of this helmert transformation
-     * 
+     *
      * @param identifiers
      * @param names
      * @param versions
@@ -178,7 +176,7 @@ public class Helmert extends Transformation {
 
     /**
      * Construct a conversion info with all parameters set to 0;
-     * 
+     *
      * @param sourceCRS
      *            of this helmert transformation
      * @param targetCRS
@@ -191,7 +189,7 @@ public class Helmert extends Transformation {
 
     /**
      * Construct a conversion info with all parameters set to 0;
-     * 
+     *
      * @param sourceCRS
      *            of this helmert transformation
      * @param targetCRS
@@ -321,25 +319,25 @@ public class Helmert extends Transformation {
     /**
      * Returns an affine transformation also known as the "Helmert" transformation. The matrix representation of this
      * transformation (also known as "Bursa Wolf" formula) is as follows:
-     * 
+     *
      * <blockquote>
-     * 
+     *
      * <pre>
      *       S = 1 + {@link #ppm}*1E-6
-     *      
+     *
      *       [ X ]     [ S          -{@link #ez}*S  +{@link #ey}*S   {@link #dx} ]  [ X ]
      *       [ Y ]  = [ +{@link #ez}*S  S          -{@link #ex}*S   {@link #dy} ]  [ Y ]
      *       [ Z ]     [ -{@link #ey}*S   +{@link #ex}*S   S         {@link #dz} ]  [ Z ]
      *       [ 1 ]     [ 0           0           0           1 ]  [ 1 ]
      * </pre>
-     * 
+     *
      * </blockquote>
-     * 
+     *
      * This affine transform can be applied to transform <code>geocentric</code> coordinates from one datum into
      * <code>geocentric</code> coordinates of an other datum. see <a
      * href="http://www.posc.org/Epicentre.2_2/DataModel/ExamplesofUsage/eu_cs35.html#CS3523_helmert">
      * http://www.posc.org/Epicentre.2_2/DataModel/ExamplesofUsage/eu_cs35.html</a> for more information.
-     * 
+     *
      * @return the affine "Helmert" transformation as a Matrix4d.
      */
     public Matrix4d getAsAffineTransform() {
@@ -383,7 +381,7 @@ public class Helmert extends Transformation {
     /**
      * Returns the Well Know Text (WKT) for this object. The WKT is part of OpenGIS's specification and looks like
      * <code>TOWGS84[dx, dy, dz, ex, ey, ez, ppm]</code>.
-     * 
+     *
      * @return the Well Know Text (WKT) for this object.
      */
     @Override
@@ -422,9 +420,9 @@ public class Helmert extends Transformation {
      * <p>
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
-     * 
+     *
      * @return (int) ( result >>> 32 ) ^ (int) result;
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override

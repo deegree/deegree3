@@ -1,46 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth  
- lat/lon GmbH 
- Aennchenstr. 19
- 53115 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
-
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
 import java.util.Arrays;
@@ -61,10 +53,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TODO add documentation here
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class FeatureNavigator extends DefaultNavigator {
@@ -82,7 +74,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the single <code>FeatureNavigator</code> instance.
-     * 
+     *
      * @return the single <code>FeatureNavigator</code> instance
      */
     public static Navigator getInstance() {
@@ -91,7 +83,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns an iterator over all attributes of an element node.
-     * 
+     *
      * @param node
      *            the context node for the attribute axis
      * @return a possibly-empty iterator (not null)
@@ -113,7 +105,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the local name of an attribute node.
-     * 
+     *
      * @param node
      *            the attribute node
      * @return a string representing the unqualified local name if the node is an attribute, or null otherwise
@@ -130,7 +122,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the namespace URI of an attribute node.
-     * 
+     *
      * @param node
      *            the attribute node
      * @return the namespace if the argument is an attribute, or null otherwise
@@ -147,7 +139,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the qualified (=prefixed) name of an attribute node.
-     * 
+     *
      * @param node
      *            the attribute node
      * @return a string representing the qualified (i.e. possibly prefixed) name if the argument is an attribute, or
@@ -165,7 +157,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the string value of an attribute node.
-     * 
+     *
      * @param node
      *            the attribute node
      * @return the text of the attribute value if the node is an attribute, null otherwise
@@ -181,7 +173,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns an iterator over all children of the given node.
-     * 
+     *
      * @param node
      *            the context node for the child axis
      * @return a possibly-empty iterator (not null)
@@ -215,7 +207,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the top-level document node.
-     * 
+     *
      * @param contextNode
      *            any node in the document
      * @return the root node
@@ -228,7 +220,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the local name of an element node.
-     * 
+     *
      * @param node
      *            the element node
      * @return a string representing the unqualified local name if the node is an element, or null otherwise
@@ -245,7 +237,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the namespace URI of an element node.
-     * 
+     *
      * @param node
      *            the element node
      * @return the namespace if the argument is an element, or null otherwise
@@ -262,7 +254,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the qualified (=prefixed) name of an element node.
-     * 
+     *
      * @param node
      *            the element node
      * @return a string representing the qualified (i.e. possibly prefixed) name if the argument is an element, or null
@@ -280,7 +272,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns the string value of an element node.
-     * 
+     *
      * @param node
      *            the target node
      * @return the text inside the node and its descendants if the node is an element, null otherwise
@@ -315,7 +307,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Returns a (single-member) iterator over this node's parent.
-     * 
+     *
      * @param contextNode
      *            the context node for the parent axis
      * @return a possibly-empty iterator (not null)
@@ -375,7 +367,7 @@ public class FeatureNavigator extends DefaultNavigator {
     /**
      * Returns a parsed form of the given XPath string, which will be suitable for queries on <code>Feature</code>
      * objects.
-     * 
+     *
      * @param xpath
      *            the XPath expression
      * @return a parsed form of the given XPath string
@@ -390,7 +382,7 @@ public class FeatureNavigator extends DefaultNavigator {
 
     /**
      * Translates a namespace prefix to a URI.
-     * 
+     *
      * @param prefix
      *            the namespace prefix
      * @param element

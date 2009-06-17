@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.crs.transformations;
 
 import static org.deegree.crs.projections.ProjectionUtils.EPS11;
@@ -87,13 +85,13 @@ import org.slf4j.LoggerFactory;
  * <li>Inverse geodetic - thus getting the lat/lon for epsg:4289</li>
  * <li>projection - getting the coordinates (in meters) for epsg:28992</li>
  * </ol>
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class TransformationFactory {
     private static Logger LOG = LoggerFactory.getLogger( TransformationFactory.class );
@@ -120,7 +118,7 @@ public class TransformationFactory {
     /**
      * Creates a transformation between two coordinate systems. This method will examine the coordinate systems in order
      * to construct a transformation between them.
-     * 
+     *
      * @param sourceCRS
      *            Input coordinate system.
      * @param targetCRS
@@ -131,7 +129,7 @@ public class TransformationFactory {
      *             if no transformation path has been found.
      * @throws IllegalArgumentException
      *             if the sourceCRS or targetCRS are <code>null</code>.
-     * 
+     *
      */
     public Transformation createFromCoordinateSystems( final CoordinateSystem sourceCRS,
                                                        final CoordinateSystem targetCRS )
@@ -168,7 +166,7 @@ public class TransformationFactory {
             PolynomialTransformation direct = sourceCRS.getDirectTransformation( targetCRS );
             LOG.debug( "Using direct (polynomial) transformation instead of a helmert transformation: "
                        + direct.getImplementationName() );
-            result = new DirectTransform( direct, sourceCRS, new CRSIdentifiable( 
+            result = new DirectTransform( direct, sourceCRS, new CRSIdentifiable(
                                                                new CRSCodeType[] { CRSCodeType.valueOf( direct.getCode()
                                                                                               + "-CRSTransformation" ) } ) );
         } else {
@@ -186,7 +184,7 @@ public class TransformationFactory {
                 } else if ( targetCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
                     CompoundCRS target = (CompoundCRS) targetCRS;
                     CompoundCRS sTmp = new CompoundCRS( target.getHeightAxis(), source, target.getDefaultHeight(),
-                                                        new CRSIdentifiable( 
+                                                        new CRSIdentifiable(
                                                           new CRSCodeType[] { CRSCodeType.valueOf( source.getCode()
                                                                                          + "_compound" ) } ) );
                     result = createTransformation( sTmp, target );
@@ -205,7 +203,7 @@ public class TransformationFactory {
                 } else if ( targetCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
                     CompoundCRS target = (CompoundCRS) targetCRS;
                     CompoundCRS sTmp = new CompoundCRS( target.getHeightAxis(), source, target.getDefaultHeight(),
-                                                        new CRSIdentifiable( 
+                                                        new CRSIdentifiable(
                                                              new CRSCodeType[] { CRSCodeType.valueOf( source.getCode()
                                                                                          + "_compound" ) } ) );
                     result = createTransformation( sTmp, target );
@@ -224,7 +222,7 @@ public class TransformationFactory {
                 } else if ( targetCRS.getType() == CoordinateSystem.COMPOUND_CRS ) {
                     CompoundCRS target = (CompoundCRS) targetCRS;
                     CompoundCRS sTmp = new CompoundCRS( target.getHeightAxis(), source, target.getDefaultHeight(),
-                                                        new CRSIdentifiable( 
+                                                        new CRSIdentifiable(
                                                           new CRSCodeType[] { CRSCodeType.valueOf( source.getCode()
                                                                                          + "_compound" ) } ) );
                     result = createTransformation( sTmp, target );
@@ -241,7 +239,7 @@ public class TransformationFactory {
                                               targetCRS,
                                               source.getDefaultHeight(),
                                               new CRSIdentifiable(
-                                                new CRSCodeType[] { CRSCodeType.valueOf( targetCRS.getCode() + 
+                                                new CRSCodeType[] { CRSCodeType.valueOf( targetCRS.getCode() +
                                                                                          "_compound" ) } ) );
                 } else {
                     target = (CompoundCRS) targetCRS;
@@ -278,7 +276,7 @@ public class TransformationFactory {
     /**
      * Creates a matrix, with which incoming values will be transformed to a standardized form. This means, to radians
      * and meters.
-     * 
+     *
      * @param sourceCRS
      *            to create the matrix for.
      * @param invert
@@ -348,7 +346,7 @@ public class TransformationFactory {
     /**
      * This method is valid for all transformations which use a compound crs, because the extra heightvalues need to be
      * considered throughout the transformation.
-     * 
+     *
      * @param sourceCRS
      * @param targetCRS
      * @return the transformation chain or <code>null</code> if the transformation operation is the identity.
@@ -382,7 +380,7 @@ public class TransformationFactory {
             if ( sourceType == CoordinateSystem.GEOCENTRIC_CRS ) {
                 sourceGeocentric = (GeocentricCRS) sourceCRS.getUnderlyingCRS();
             } else {
-                sourceGeocentric = new GeocentricCRS( sourceCRS.getGeodeticDatum(), 
+                sourceGeocentric = new GeocentricCRS( sourceCRS.getGeodeticDatum(),
                                                       CRSCodeType.valueOf( "tmp_" + sourceCRS.getCode()
                                                                                     + "_geocentric" ),
                                                       sourceCRS.getName() + "_Geocentric" );
@@ -391,7 +389,7 @@ public class TransformationFactory {
             if ( targetType == CoordinateSystem.GEOCENTRIC_CRS ) {
                 targetGeocentric = (GeocentricCRS) targetCRS.getUnderlyingCRS();
             } else {
-                targetGeocentric = new GeocentricCRS( targetCRS.getGeodeticDatum(), 
+                targetGeocentric = new GeocentricCRS( targetCRS.getGeodeticDatum(),
                                                       CRSCodeType.valueOf( "tmp_" + targetCRS.getCode()
                                                                                     + "_geocentric" ),
                                                       targetCRS.getName() + "_Geocentric" );
@@ -476,7 +474,7 @@ public class TransformationFactory {
      * {@link #createFromCoordinateSystems createFromCoordinateSystems(...)}. The default implementation can adjust
      * axis order and orientation (e.g. transforming from <code>(NORTH,WEST)</code> to <code>(EAST,NORTH)</code>),
      * performs units conversion and apply Bursa Wolf transformation if needed.
-     * 
+     *
      * @param sourceCRS
      *            Input coordinate system.
      * @param targetCRS
@@ -543,7 +541,7 @@ public class TransformationFactory {
     /**
      * Creates a transformation between a geographic and a projected coordinate systems. This method is automatically
      * invoked by {@link #createFromCoordinateSystems createFromCoordinateSystems(...)}.
-     * 
+     *
      * @param sourceCRS
      *            Input coordinate system.
      * @param targetCRS
@@ -579,7 +577,7 @@ public class TransformationFactory {
      * Creates a transformation between a geographic and a geocentric coordinate systems. Since the source coordinate
      * systems doesn't have a vertical axis, height above the ellipsoid is assumed equals to zero everywhere. This
      * method is automatically invoked by {@link #createFromCoordinateSystems createFromCoordinateSystems(...)}.
-     * 
+     *
      * @param sourceCRS
      *            Input geographic coordinate system.
      * @param targetCRS
@@ -598,7 +596,7 @@ public class TransformationFactory {
          * targetCRS.getGeodeticDatum().getPrimeMeridian().getIdentifier() + " to Greenwich prime meridian is not yet
          * implemented" ); }
          */
-        GeocentricCRS sourceGeocentric = new GeocentricCRS( sourceCRS.getGeodeticDatum(), 
+        GeocentricCRS sourceGeocentric = new GeocentricCRS( sourceCRS.getGeodeticDatum(),
                                                             CRSCodeType.valueOf( "tmp_"
                                                                                           + sourceCRS.getCode()
                                                                                           + "_geocentric" ),
@@ -631,14 +629,14 @@ public class TransformationFactory {
      * {@link #createFromCoordinateSystems createFromCoordinateSystems(...)}. The default implementation can adjust
      * axis order and orientation. It also performs units conversion if it is the only extra change needed. Otherwise,
      * it performs three steps:
-     * 
+     *
      * <ol>
      * <li>Unproject <code>sourceCRS</code>.</li>
      * <li>Transform from <code>sourceCRS.geographicCS</code> to <code>
      * targetCRS.geographicCS</code>.</li>
      * <li>Project <code>targetCRS</code>.</li>
      * </ol>
-     * 
+     *
      * @param sourceCRS
      *            Input coordinate system.
      * @param targetCRS
@@ -666,7 +664,7 @@ public class TransformationFactory {
      * Creates a transformation between a projected and a geocentric coordinate systems. This method is automatically
      * invoked by {@link #createFromCoordinateSystems createFromCoordinateSystems(...)}. This method doesn't need to be
      * public since its decomposition in two step should be general enough.
-     * 
+     *
      * @param sourceCRS
      *            Input projected coordinate system.
      * @param targetCRS
@@ -691,7 +689,7 @@ public class TransformationFactory {
      * invoked by {@link #createFromCoordinateSystems createFromCoordinateSystems(...)}. The default implementation
      * returns <code>{@link #createTransformation(GeographicCRS, ProjectedCRS)} createTransformation}(targetCRS,
      * sourceCRS) inverse)</code>.
-     * 
+     *
      * @param sourceCRS
      *            Input coordinate system.
      * @param targetCRS
@@ -718,7 +716,7 @@ public class TransformationFactory {
      * {@link #createFromCoordinateSystems createFromCoordinateSystems(...)}. The default implementation can adjust for
      * axis order and orientation, adjust for prime meridian, performs units conversion and apply Bursa Wolf
      * transformation if needed.
-     * 
+     *
      * @param sourceCRS
      *            Input coordinate system.
      * @param targetCRS
@@ -839,13 +837,13 @@ public class TransformationFactory {
 
     /**
      * Concatenates two existing transforms.
-     * 
+     *
      * @param first
      *            The first transform to apply to points.
      * @param second
      *            The second transform to apply to points.
      * @return The concatenated transform.
-     * 
+     *
      */
     private Transformation concatenateTransformations( Transformation first, Transformation second ) {
         if ( first == null ) {
@@ -928,13 +926,13 @@ public class TransformationFactory {
 
     /**
      * Creates an affine transform from a matrix.
-     * 
+     *
      * @param matrix
      *            The matrix used to define the affine transform.
      * @return The affine transform.
      * @throws TransformationException
      *             if the matrix is not affine.
-     * 
+     *
      */
     private MatrixTransform createMatrixTransform( CoordinateSystem sourceCRS, CoordinateSystem targetCRS,
                                                    final Matrix matrix )
@@ -965,7 +963,7 @@ public class TransformationFactory {
 
     /**
      * Concatenate two transformation steps.
-     * 
+     *
      * @param step1
      *            The first step, or <code>null</code> for the identity transform.
      * @param step2
@@ -982,7 +980,7 @@ public class TransformationFactory {
 
     /**
      * Concatenate three transformation steps.
-     * 
+     *
      * @param step1
      *            The first step, or <code>null</code> for the identity transform.
      * @param step2
@@ -1009,7 +1007,7 @@ public class TransformationFactory {
      * @return an affine transform between two coordinate systems. Only units and axis order (e.g. transforming from
      *         (NORTH,WEST) to (EAST,NORTH)) are taken in account. Other attributes (especially the datum) must be
      *         checked before invoking this method.
-     * 
+     *
      * @param sourceCRS
      *            The source coordinate system.
      * @param targetCRS
@@ -1035,7 +1033,7 @@ public class TransformationFactory {
      * @return an affine transform between two geographic coordinate systems. Only units, axis order (e.g. transforming
      *         from (NORTH,WEST) to (EAST,NORTH)) and prime meridian are taken in account. Other attributes (especially
      *         the datum) must be checked before invoking this method.
-     * 
+     *
      * @param sourceCRS
      *            The source coordinate system.
      * @param targetCRS

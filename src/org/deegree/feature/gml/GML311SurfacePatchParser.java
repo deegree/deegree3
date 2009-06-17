@@ -1,46 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth  
- lat/lon GmbH 
- Aennchenstr. 19
- 53115 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
-
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.feature.gml;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
@@ -82,10 +74,10 @@ import org.deegree.geometry.primitive.surfacepatches.Triangle;
  * <li><code>Sphere</code></li>
  * <li><code>Triangle</code></li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 class GML311SurfacePatchParser extends GML311BaseParser {
@@ -120,7 +112,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * <li><code>Sphere</code></li>
      * <li><code>Triangle</code></li>
      * </ul>
-     * 
+     *
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the "gml:_SurfacePatch" has no <code>srsName</code>
      *            attribute
@@ -185,15 +177,15 @@ class GML311SurfacePatchParser extends GML311BaseParser {
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "row" );
 
-        List<List<Point>> grid = new ArrayList<List<Point>>(); 
+        List<List<Point>> grid = new ArrayList<List<Point>>();
         while ( xmlStream.getLocalName().equals( "row" ) ) {
             xmlStream.nextTag();
             List<Point> currentRow = new LinkedList<Point>();
             if ( xmlStream.getLocalName().equals( "posList" ) ) {
-                currentRow = geometryParser.parsePosList( xmlStream, defaultCRS );                
+                currentRow = geometryParser.parsePosList( xmlStream, defaultCRS );
                 xmlStream.nextTag();
             } else {
-                while ( xmlStream.getLocalName().equals( "pos" ) || 
+                while ( xmlStream.getLocalName().equals( "pos" ) ||
                                         xmlStream.getLocalName().equals( "pointProperty" ) ) {
                     if ( xmlStream.getLocalName().equals( "pos" ) ) {
                         Point point = geometryParser.parsePoint( xmlStream, defaultCRS );
@@ -209,17 +201,17 @@ class GML311SurfacePatchParser extends GML311BaseParser {
             xmlStream.require( END_ELEMENT, GMLNS, "row" );
             xmlStream.nextTag();
         }
-        
-        xmlStream.require( START_ELEMENT, GMLNS, "rows" );        
-        int rows = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid 
+
+        xmlStream.require( START_ELEMENT, GMLNS, "rows" );
+        int rows = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
         xmlStream.require( END_ELEMENT, GMLNS, "rows" );
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "columns" );        
-        int columns = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid 
+        xmlStream.require( START_ELEMENT, GMLNS, "columns" );
+        int columns = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
         xmlStream.require( END_ELEMENT, GMLNS, "columns" );
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Cone" );
-        
+
         return geomFac.createCone( grid );
     }
 
@@ -243,11 +235,11 @@ class GML311SurfacePatchParser extends GML311BaseParser {
     private Cylinder parseCylinder( XMLStreamReaderWrapper xmlStream, CRS defaultCRS ) throws XMLStreamException, XMLParsingException, UnknownCRSException {
         validateAttribute( xmlStream, "horizontalCurveType", "circularArc3Points" );
         validateAttribute( xmlStream, "verticalCurveType", "linear" );
-        
+
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "row" );
 
-        List<List<Point>> grid = new ArrayList<List<Point>>(); 
+        List<List<Point>> grid = new ArrayList<List<Point>>();
         while ( xmlStream.getLocalName().equals( "row" ) ) {
             xmlStream.nextTag();
             List<Point> currentRow = new LinkedList<Point>();
@@ -255,7 +247,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
                 currentRow = geometryParser.parsePosList( xmlStream, defaultCRS );
                 xmlStream.nextTag();
             } else {
-                while ( xmlStream.getLocalName().equals( "pos" ) || 
+                while ( xmlStream.getLocalName().equals( "pos" ) ||
                                         xmlStream.getLocalName().equals( "pointProperty" ) ) {
                     if ( xmlStream.getLocalName().equals( "pos" ) ) {
                         Point point = geometryParser.parsePoint( xmlStream, defaultCRS );
@@ -271,18 +263,18 @@ class GML311SurfacePatchParser extends GML311BaseParser {
             xmlStream.require( END_ELEMENT, GMLNS, "row" );
             xmlStream.nextTag();
         }
-        
-        xmlStream.require( START_ELEMENT, GMLNS, "rows" );        
-        int rows = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid 
+
+        xmlStream.require( START_ELEMENT, GMLNS, "rows" );
+        int rows = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
         xmlStream.require( END_ELEMENT, GMLNS, "rows" );
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "columns" );        
-        int columns = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid 
+        xmlStream.require( START_ELEMENT, GMLNS, "columns" );
+        int columns = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
         xmlStream.require( END_ELEMENT, GMLNS, "columns" );
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Cylinder" );
-        
-        return geomFac.createCylinder( grid );       
+
+        return geomFac.createCylinder( grid );
     }
 
     /**
@@ -309,7 +301,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "row" );
 
-        List<List<Point>> grid = new ArrayList<List<Point>>(); 
+        List<List<Point>> grid = new ArrayList<List<Point>>();
         while ( xmlStream.getLocalName().equals( "row" ) ) {
             xmlStream.nextTag();
             List<Point> currentRow = new LinkedList<Point>();
@@ -317,7 +309,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
                 currentRow = geometryParser.parsePosList( xmlStream, defaultCRS );
                 xmlStream.nextTag();
             } else {
-                while ( xmlStream.getLocalName().equals( "pos" ) || 
+                while ( xmlStream.getLocalName().equals( "pos" ) ||
                                         xmlStream.getLocalName().equals( "pointProperty" ) ) {
                     if ( xmlStream.getLocalName().equals( "pos" ) ) {
                         Point point = geometryParser.parsePoint( xmlStream, defaultCRS );
@@ -333,18 +325,18 @@ class GML311SurfacePatchParser extends GML311BaseParser {
             xmlStream.require( END_ELEMENT, GMLNS, "row" );
             xmlStream.nextTag();
         }
-        
-        xmlStream.require( START_ELEMENT, GMLNS, "rows" );        
-        int rows = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid 
+
+        xmlStream.require( START_ELEMENT, GMLNS, "rows" );
+        int rows = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
         xmlStream.require( END_ELEMENT, GMLNS, "rows" );
         xmlStream.nextTag();
-        xmlStream.require( START_ELEMENT, GMLNS, "columns" );        
-        int columns = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid 
+        xmlStream.require( START_ELEMENT, GMLNS, "columns" );
+        int columns = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
         xmlStream.require( END_ELEMENT, GMLNS, "columns" );
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Sphere" );
-        
-        return geomFac.createSphere( grid );               
+
+        return geomFac.createSphere( grid );
     }
 
     /**
@@ -354,7 +346,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:PolygonPatch&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:PolygonPatch&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -413,7 +405,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Rectangle&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Rectangle&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -457,7 +449,7 @@ class GML311SurfacePatchParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Triangle&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Triangle&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultCRS
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified

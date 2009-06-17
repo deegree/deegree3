@@ -1,44 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53115 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
- Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: klaus.greve@uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
-
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
 import java.util.ArrayList;
@@ -69,11 +63,11 @@ import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 
 /**
  * class for transforming deegree geometries to new coordinate reference systems.
- * 
+ *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class GeometryTransformer extends Transformer {
@@ -82,7 +76,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * Creates a new GeometryTransformer object.
-     * 
+     *
      * @param targetCRS
      * @throws IllegalArgumentException
      *             if the given parameter is null.
@@ -93,7 +87,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * Creates a new GeometryTransformer object, with the given id as the target CRS.
-     * 
+     *
      * @param targetCRS
      *            an identifier to which all other CRS's shall be transformed.
      * @throws UnknownCRSException
@@ -107,7 +101,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the coordinates of a deegree geometry to the target coordinate reference system.
-     * 
+     *
      * @param geo
      *            to be transformed
      * @return the same geometry in a different crs.
@@ -127,7 +121,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the coordinates of a deegree geometry to the target coordinate reference system.
-     * 
+     *
      * @param geo
      *            to be transformed
      * @param sourceCRS
@@ -147,7 +141,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the coordinates of a deegree geometry to the target coordinate reference system.
-     * 
+     *
      * @param geo
      *            to be transformed
      * @param sourceCRS
@@ -165,7 +159,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the coordinates of a deegree geometry to the target coordinate reference system.
-     * 
+     *
      * @param geo
      *            to be transformed
      * @return the same geometry in a different crs.
@@ -214,7 +208,7 @@ public class GeometryTransformer extends Transformer {
      * Transform the geometry of an envelope. It substitutes the envelope (two points) with a polygon with
      * <code>numPoints</code> points. The points are distributed evenly on the boundary of the envelope to provide a
      * more accurate transformed envelope. This is useful if the transformation rotates and distorts.
-     * 
+     *
      * @param envelope
      * @param trans
      * @param numPoints
@@ -263,7 +257,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the submitted curve to the target coordinate reference system
-     * 
+     *
      * @throws TransformationException
      */
     private Curve transform( Curve geo, Transformation trans )
@@ -284,7 +278,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the submitted multi curve to the target coordinate reference system
-     * 
+     *
      * @throws TransformationException
      */
     private MultiCurve transform( MultiCurve geo, Transformation trans )
@@ -298,7 +292,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the submitted multi point to the target coordinate reference system
-     * 
+     *
      * @throws TransformationException
      */
     private MultiPoint transform( MultiPoint geo, Transformation trans )
@@ -312,7 +306,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the submitted multi surface to the target coordinate reference system
-     * 
+     *
      * @throws TransformationException
      */
     private MultiSurface transform( MultiSurface geo, Transformation trans )
@@ -336,7 +330,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the list of points
-     * 
+     *
      * @throws TransformationException
      */
     private List<Point> transform( List<Point> points, Transformation trans )
@@ -361,7 +355,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the submitted point to the target coordinate reference system
-     * 
+     *
      * @throws TransformationException
      */
     private Point transform( Point geo, Transformation trans )
@@ -382,7 +376,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the submitted surface to the target coordinate reference system
-     * 
+     *
      * @throws TransformationException
      */
     private Surface transform( Surface geo, Transformation trans )

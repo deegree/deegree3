@@ -1,45 +1,38 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/src/org/deegree/ogcwebservices/wfs/operation/DescribeFeatureType.java $
-/*----------------    FILE HEADER  ------------------------------------------
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
 
- This file is part of deegree.
- Copyright (C) 2001-2008 by:
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstraße 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
 import org.deegree.commons.filter.expression.Function;
@@ -49,12 +42,12 @@ import org.deegree.crs.CRS;
 
 /**
  * Represents a <code>Query</code> operation as a part of a {@link GetFeature} request.
- * 
+ *
  * @see GetFeature
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public abstract class Query {
@@ -77,7 +70,7 @@ public abstract class Query {
 
     /**
      * Creates a new {@link Query} instance.
-     * 
+     *
      * @param handle
      *            client-generated query identifier, may be null
      * @param typeNames
@@ -116,7 +109,7 @@ public abstract class Query {
 
     /**
      * Returns the client-generated identifier supplied with the query.
-     * 
+     *
      * @return the client-generated identifier, may be null
      */
     public String getHandle() {
@@ -125,7 +118,7 @@ public abstract class Query {
 
     /**
      * Returns the requested feature types (with optional aliases).
-     * 
+     *
      * @return the requested feature types, never null and contains always one entry
      */
     public TypeName[] getTypeNames() {
@@ -134,7 +127,7 @@ public abstract class Query {
 
     /**
      * Returns the version of the feature instances to be retrieved.
-     * 
+     *
      * @return the version of the feature instances to be retrieved, may be null
      */
     public String getFeatureVersion() {
@@ -143,7 +136,7 @@ public abstract class Query {
 
     /**
      * Returns the SRS that should be used for returned feature geometries.
-     * 
+     *
      * @return the SRS that should be used for returned feature geometries, may be null
      */
     public CRS getSrsName() {
@@ -160,7 +153,7 @@ public abstract class Query {
      * they are not, a Web Feature Service may add them automatically to the Query before processing it. Thus a client
      * application should, in general, be prepared to receive more properties than it requested.</i>
      * </p>
-     * 
+     *
      * @return the properties of the features that should be retrieved, may be null
      */
     public PropertyName[] getPropertyNames() {
@@ -169,7 +162,7 @@ public abstract class Query {
 
     /**
      * Returns the properties for which the the traversal of nested XLinks is selectively requested.
-     * 
+     *
      * @return the properties for which the the traversal of nested XLinks is selectively requested, may be null
      */
     public XLinkPropertyName[] getXLinkPropertyNames() {
@@ -178,7 +171,7 @@ public abstract class Query {
 
     /**
      * Returns the functions that should be fetched instead of the original property values.
-     * 
+     *
      * @return the functions that should be fetched instead of the original property values, may be null
      */
     public Function[] getFunctions() {
@@ -187,7 +180,7 @@ public abstract class Query {
 
     /**
      * Returns the properties whose values should be used to order the set of feature instances that satisfy the query.
-     * 
+     *
      * @return sort criteria, may be null
      */
     public SortProperty[] getSortBy() {

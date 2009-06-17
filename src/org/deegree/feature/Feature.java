@@ -1,46 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth  
- lat/lon GmbH 
- Aennchenstr. 19
- 53115 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
-
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
 import java.util.List;
@@ -69,7 +61,7 @@ import org.deegree.geometry.Geometry;
  * </p>
  * <p>
  * <h4>Notes on the representation of GML features</h4>
- * 
+ *
  * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
  * <code>gml:description</code>) which are inherited by any GML feature type definition are treated in a specific way. They
  * are modelled using the {@link StandardGMLObjectProperties} class and not as standard properties of the feature. This design decision
@@ -77,10 +69,10 @@ import org.deegree.geometry.Geometry;
  * to export a {@link Feature} instance as either GML 3.2.1 or GML 3.1.1 (different namespaces for the standard
  * properties).
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public interface Feature extends Identifiable<String>, MatchableObject {
@@ -91,7 +83,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
      * In an GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3 and later) or
      * <code>fid</code> (GML 2) attribute of the feature element.
      * </p>
-     * 
+     *
      * @return the id of the feature
      */
     public String getId();
@@ -102,7 +94,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
      * In an GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3) or <code>fid</code>
      * (GML 2) attribute of the feature element.
      * </p>
-     * 
+     *
      * @param id
      *            the id of the feature instance
      */
@@ -113,28 +105,28 @@ public interface Feature extends Identifiable<String>, MatchableObject {
      * <p>
      * In an GML representation of the feature, this corresponds to the feature element's name.
      * </p>
-     * 
+     *
      * @return the name of the feature instance
      */
     public QName getName();
 
     /**
      * Returns the type information for this feature.
-     * 
+     *
      * @return the type information
      */
     public FeatureType getType();
 
     /**
      * Returns all properties in order.
-     * 
+     *
      * @return all properties
      */
     public Property<?>[] getProperties();
 
     /**
      * Returns the values of the properties with the given name, in order.
-     * 
+     *
      * @param propName
      *            name of the requested property
      * @return the values of the properties with the given name, in order
@@ -143,7 +135,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
 
     /**
      * Returns the values of the property with the given name.
-     * 
+     *
      * @param propName
      *            name of the requested property
      * @return the values of the properties with the given name
@@ -154,7 +146,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
 
     /**
      * Returns the properties with the given name, in order.
-     * 
+     *
      * @param propName
      *            name of the requested properties
      * @return the properties with the given name, in order
@@ -163,7 +155,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
 
     /**
      * Returns the property with the given name.
-     * 
+     *
      * @param propName
      *            name of the requested property
      * @return the property with the given name
@@ -174,21 +166,21 @@ public interface Feature extends Identifiable<String>, MatchableObject {
 
     /**
      * Returns all geometry-valued properties in order.
-     * 
+     *
      * @return all geometry properties
      */
     public Property<Geometry>[] getGeometryProperties();
 
     /**
      * Returns the envelope of the feature.
-     * 
+     *
      * @return the envelope of the feature, or null if the feature has no geometry properties
      */
     public Envelope getEnvelope();
 
     /**
      * Sets the value of a specific occurence of a property with a given name.
-     * 
+     *
      * @param propName
      *            property name
      * @param occurence
@@ -203,7 +195,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
 
     /**
      * Called during construction to initialize the properties of the feature.
-     * 
+     *
      * @param props
      * @throws IllegalArgumentException
      *             if the property names or values are not compatible with the feature type
@@ -214,14 +206,14 @@ public interface Feature extends Identifiable<String>, MatchableObject {
     /**
      * Returns a representation of the standard GML properties (e.g. <code>gml:name</code> or
      * <code>gml:description</code).
-     * 
+     *
      * @return a representation of the standard GML properties, may be null
      */
     public StandardGMLObjectProperties getStandardGMLProperties();
 
     /**
      * Sets the standard GML properties (e.g. <code>gml:name</code> or <code>gml:description</code).
-     * 
+     *
      * @param standardProps
      *            representation of the standard GML properties
      */

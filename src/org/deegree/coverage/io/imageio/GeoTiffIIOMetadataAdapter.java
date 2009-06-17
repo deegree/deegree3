@@ -1,3 +1,37 @@
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 /*
  * (c) 2004 Mike Nidel
  *
@@ -84,17 +118,17 @@ public class GeoTiffIIOMetadataAdapter
      * registered PCS'S, but it uses one of the standard projections
      * and datums, then its should be documented as a PCS model with
      * "user-defined" type, requiring the specification of projection
-     * parameters, etc. 
+     * parameters, etc.
      *
      * GeoKey requirements for User-Defined Model Type (not advisable):
      *     GTCitationGeoKey
      *
      */
     public static final int GTModelTypeGeoKey = 1024;
-  
+
     /**
-     * GTRasterTypeGeoKey 
-     * Key ID = 1025  
+     * GTRasterTypeGeoKey
+     * Key ID = 1025
      * Type =  Section 6.3.1.2 codes
      *
      * This establishes the Raster Space coordinate system used;
@@ -108,8 +142,8 @@ public class GeoTiffIIOMetadataAdapter
     public static final int GTRasterTypeGeoKey = 1025;
 
     /**
-     * GTCitationGeoKey 
-     * Key ID = 1026  
+     * GTCitationGeoKey
+     * Key ID = 1026
      * Type = ASCII
      *
      * As with all the "Citation" GeoKeys, this is provided to give
@@ -123,18 +157,18 @@ public class GeoTiffIIOMetadataAdapter
     // Geographic Coordinate System Parameter GeoKeys
 
     /**
-     * GeographicTypeGeoKey 
-     * Key ID = 2048  
+     * GeographicTypeGeoKey
+     * Key ID = 2048
      * Type = SHORT (code)
      * Values =  Section 6.3.2.1 Codes
      * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.2.1
      *
      * This key may be used to specify the code for the geographic
      * coordinate system used to map lat-long to a specific ellipsoid
-     * over the earth. 
+     * over the earth.
      *
      * GeoKey Requirements for User-Defined geographic CS:
-     * 
+     *
      *  GeogCitationGeoKey
      *  GeogGeodeticDatumGeoKey
      *  GeogAngularUnitsGeoKey (if not degrees)
@@ -142,36 +176,36 @@ public class GeoTiffIIOMetadataAdapter
      *
      */
     public static final int GeographicTypeGeoKey = 2048;
-  
+
     /**
      * GeogCitationGeoKey
      * Key ID = 2049
      * Type = ASCII
      * Values = text
      *
-     * General citation and reference for all Geographic CS parameters. 
+     * General citation and reference for all Geographic CS parameters.
      *
      */
     public static final int GeogCitationGeoKey = 2049;
-  
+
     /**
-     * GeogGeodeticDatumGeoKey 
-     * Key ID = 2050  
+     * GeogGeodeticDatumGeoKey
+     * Key ID = 2050
      * Type = SHORT (code)
      * Values =  Section 6.3.2.2 Codes
      * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.2.2
      *
      * This key may be used to specify the horizontal datum,
      * defining the size, position and orientation of the reference
-     * ellipsoid used in user-defined geographic coordinate systems. 
+     * ellipsoid used in user-defined geographic coordinate systems.
      *
-     * GeoKey Requirements for User-Defined Horizontal Datum: 
+     * GeoKey Requirements for User-Defined Horizontal Datum:
      *        GeogCitationGeoKey
      *        GeogEllipsoidGeoKey
      *
      */
     public static final int GeogGeodeticDatumGeoKey = 2050;
-  
+
     /**
      * GeogPrimeMeridianGeoKey
      * Key ID = 2051
@@ -185,11 +219,11 @@ public class GeoTiffIIOMetadataAdapter
      *
      */
     public static final int GeogPrimeMeridianGeoKey = 2051;
-  
+
     /**
      * GeogPrimeMeridianLongGeoKey
-     * Key ID = 2061  
-     * Type = DOUBLE 
+     * Key ID = 2061
+     * Type = DOUBLE
      * Units =  GeogAngularUnits
      *
      * This key allows definition of user-defined Prime Meridians,
@@ -198,22 +232,22 @@ public class GeoTiffIIOMetadataAdapter
      *
      */
     public static final int GeogPrimeMeridianLongGeoKey = 2061;
-  
+
     /**
-     * GeogLinearUnitsGeoKey 
+     * GeogLinearUnitsGeoKey
      * Key ID = 2052
      * Type = SHORT
      * Values:  Section 6.3.1.3 Codes
      * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.3
      *
      * Allows the definition of geocentric CS linear units for
-     * user-defined GCS. 
+     * user-defined GCS.
      *
      */
     public static final int GeogLinearUnitsGeoKey = 2052;
-  
+
     /**
-     * GeogLinearUnitSizeGeoKey 
+     * GeogLinearUnitSizeGeoKey
      * Key ID = 2053
      * Type = DOUBLE
      * Units: meters
@@ -223,25 +257,25 @@ public class GeoTiffIIOMetadataAdapter
      *
      */
     public static final int GeogLinearUnitSizeGeoKey = 2053;
-  
+
     /**
      * GeogAngularUnitsGeoKey
-     * Key ID = 2054  
+     * Key ID = 2054
      * Type = SHORT (code)
-     * Values =   Section 6.3.1.4  Codes 
+     * Values =   Section 6.3.1.4  Codes
      *
      * Allows the definition of geocentric CS Linear units for user-defined GCS
      * and for ellipsoids.
      *
      * GeoKey Requirements for "user-defined" units:
      *     GeogCitationGeoKey
-     *     GeogAngularUnitSizeGeoKey 
+     *     GeogAngularUnitSizeGeoKey
      *
      */
     public static final int GeogAngularUnitsGeoKey = 2054;
-    
+
     /**
-     * GeogAngularUnitSizeGeoKey 
+     * GeogAngularUnitSizeGeoKey
      * Key ID = 2055
      * Type = DOUBLE
      * Units: radians
@@ -251,27 +285,27 @@ public class GeoTiffIIOMetadataAdapter
      *
      */
     public static final int GeogAngularUnitSizeGeoKey = 2055;
-  
+
     /**
      * GeogEllipsoidGeoKey
      * Key ID = 2056
      * Type = SHORT (code)
      * Values =  Section 6.3.2.3 Codes
      * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.2.3
-     *   
-     * This key may be used to specify the coded ellipsoid used in the
-     * geodetic datum of the Geographic Coordinate System. 
      *
-     * GeoKey Requirements for User-Defined Ellipsoid: 
+     * This key may be used to specify the coded ellipsoid used in the
+     * geodetic datum of the Geographic Coordinate System.
+     *
+     * GeoKey Requirements for User-Defined Ellipsoid:
      *    GeogCitationGeoKey
-     *    [GeogSemiMajorAxisGeoKey, 
+     *    [GeogSemiMajorAxisGeoKey,
      *            [GeogSemiMinorAxisGeoKey | GeogInvFlatteningGeoKey] ]
      *
      */
     public static final int GeogEllipsoidGeoKey = 2056;
-  
+
     /**
-     * GeogSemiMajorAxisGeoKey 
+     * GeogSemiMajorAxisGeoKey
      * Key ID = 2057
      * Type = DOUBLE
      * Units: Geocentric CS Linear Units
@@ -281,9 +315,9 @@ public class GeoTiffIIOMetadataAdapter
      *
      */
     public static final int GeogSemiMajorAxisGeoKey = 2057;
-  
+
     /**
-     * GeogSemiMinorAxisGeoKey 
+     * GeogSemiMinorAxisGeoKey
      * Key ID = 2058
      * Type = DOUBLE
      * Units: Geocentric CS Linear Units
@@ -293,7 +327,7 @@ public class GeoTiffIIOMetadataAdapter
      *
      */
     public static final int GeogSemiMinorAxisGeoKey = 2058;
-  
+
     /**
      * GeogInvFlatteningGeoKey
      * Key ID = 2059
@@ -302,21 +336,21 @@ public class GeoTiffIIOMetadataAdapter
      *
      * Allows the specification of the inverse of user-defined
      * Ellipsoid's flattening parameter (f). The eccentricity-squared
-     * e^2 of the ellipsoid is related to the non-inverted f by: 
+     * e^2 of the ellipsoid is related to the non-inverted f by:
      *      e^2  = 2*f  - f^2
-     * 
+     *
      *   Note: if the ellipsoid is spherical the inverse-flattening
      *   becomes infinite; use the GeogSemiMinorAxisGeoKey instead, and
      *   set it equal to the semi-major axis length.
      *
      */
     public static final int GeogInvFlatteningGeoKey = 2059;
-  
+
     /**
      * GeogAzimuthUnitsGeoKey
-     * Key ID = 2060  
+     * Key ID = 2060
      * Type = SHORT (code)
-     * Values =   Section 6.3.1.4 Codes 
+     * Values =   Section 6.3.1.4 Codes
      *
      * This key may be used to specify the angular units of
      * measurement used to defining azimuths, in geographic
@@ -329,13 +363,13 @@ public class GeoTiffIIOMetadataAdapter
 
 
     // Projected Coordinate System Parameter GeoKeys
-  
+
     /**
-     * ProjectedCSTypeGeoKey 
+     * ProjectedCSTypeGeoKey
      * Key ID = 3072
      * Type = SHORT (codes)
      * Values:  Section 6.3.3.1 codes
-     * This code is provided to specify the projected coordinate system. 
+     * This code is provided to specify the projected coordinate system.
      *
      * GeoKey requirements for "user-defined" PCS families:
      *    PCSCitationGeoKey
@@ -343,7 +377,7 @@ public class GeoTiffIIOMetadataAdapter
      *
      */
     public static final int ProjectedCSTypeGeoKey = 3072;
-  
+
     /**
      * PCSCitationGeoKey
      * Key ID = 3073
@@ -366,7 +400,7 @@ public class GeoTiffIIOMetadataAdapter
     // specific parameters for that projection, and so the keys below
     // will only be necessary for user-defined projected coordinate
     // systems.
-    
+
     /**
      * ProjectionGeoKey
      * Key ID = 3074
@@ -397,7 +431,7 @@ public class GeoTiffIIOMetadataAdapter
      * Allows specification of the coordinate transformation method used.
      * Note: this does not include the definition of the corresponding
      * Geographic Coordinate System to which the projected CS is related;
-     * only the transformation method is defined here. 
+     * only the transformation method is defined here.
      *
      * GeoKeys Required for "user-defined" Coordinate Transformations:
      *   PCSCitationGeoKey
@@ -409,19 +443,19 @@ public class GeoTiffIIOMetadataAdapter
 
     /**
      * ProjLinearUnitsGeoKey
-     * Key ID = 3076 
+     * Key ID = 3076
      * Type = SHORT (code)
-     * Values:  Section 6.3.1.3 codes 
+     * Values:  Section 6.3.1.3 codes
      *
      * Defines linear units used by this projection.
      * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.3
      *
      */
     public static final int ProjLinearUnitsGeoKey = 3076;
-    
+
     /**
      * ProjLinearUnitSizeGeoKey
-     * Key ID = 3077 
+     * Key ID = 3077
      * Type = DOUBLE
      * Units: meters
      *
@@ -432,9 +466,9 @@ public class GeoTiffIIOMetadataAdapter
 
     /**
      * ProjStdParallel1GeoKey
-     * Key ID = 3078 
+     * Key ID = 3078
      * Type = DOUBLE
-     * Units: GeogAngularUnit 
+     * Units: GeogAngularUnit
      * Alias: ProjStdParallelGeoKey (from Rev 0.2)
      *
      * Latitude of primary Standard Parallel.
@@ -446,18 +480,18 @@ public class GeoTiffIIOMetadataAdapter
      * ProjStdParallel2GeoKey
      * Key ID = 3079
      * Type = DOUBLE
-     * Units: GeogAngularUnit 
+     * Units: GeogAngularUnit
      *
-     * Latitude of second Standard Parallel. 
+     * Latitude of second Standard Parallel.
      *
      */
     public static final int ProjStdParallel2GeoKey = 3079;
-    
+
     /**
      * ProjNatOriginLongGeoKey
      * Key ID = 3080
      * Type = DOUBLE
-     * Units: GeogAngularUnit 
+     * Units: GeogAngularUnit
      * Alias: ProjOriginLongGeoKey
      *
      * Longitude of map-projection Natural origin.
@@ -472,7 +506,7 @@ public class GeoTiffIIOMetadataAdapter
      * Units: GeogAngularUnit
      * Alias: ProjOriginLatGeoKey
      *
-     * Latitude of map-projection Natural origin. 
+     * Latitude of map-projection Natural origin.
      *
      */
     public static final int ProjNatOriginLatGeoKey = 3081;
@@ -481,74 +515,74 @@ public class GeoTiffIIOMetadataAdapter
      * ProjFalseEastingGeoKey
      * Key ID = 3082
      * Type = DOUBLE
-     * Units: ProjLinearUnit 
+     * Units: ProjLinearUnit
      * Gives the easting coordinate of the map projection Natural origin.
      *
      */
     public static final int ProjFalseEastingGeoKey = 3082;
-    
+
     /**
      * ProjFalseNorthingGeoKey
      * Key ID = 3083
      * Type = DOUBLE
-     * Units: ProjLinearUnit 
+     * Units: ProjLinearUnit
      * Gives the northing coordinate of the map projection Natural origin.
      *
      */
     public static final int ProjFalseNorthingGeoKey = 3083;
-    
+
     /**
      * ProjFalseOriginLongGeoKey
      * Key ID = 3084
      * Type = DOUBLE
-     * Units: GeogAngularUnit 
-     * Gives the longitude of the False origin. 
+     * Units: GeogAngularUnit
+     * Gives the longitude of the False origin.
      *
      */
     public static final int ProjFalseOriginLongGeoKey = 3084;
-    
+
     /**
      * ProjFalseOriginLatGeoKey
      * Key ID = 3085
      * Type = DOUBLE
-     * Units: GeogAngularUnit 
-     * Gives the latitude of the False origin. 
+     * Units: GeogAngularUnit
+     * Gives the latitude of the False origin.
      *
      */
     public static final int ProjFalseOriginLatGeoKey = 3085;
-    
+
     /**
      * ProjFalseOriginEastingGeoKey
      * Key ID = 3086
      * Type = DOUBLE
-     * Units: ProjLinearUnit 
+     * Units: ProjLinearUnit
      * Gives the easting coordinate of the false origin. This is NOT
      * the False Easting, which is the easting attached to the Natural
      * origin.
      *
      */
     public static final int ProjFalseOriginEastingGeoKey = 3086;
-    
+
     /**
      * ProjFalseOriginNorthingGeoKey
      * Key ID = 3087
      * Type = DOUBLE
-     * Units: ProjLinearUnit 
+     * Units: ProjLinearUnit
      * Gives the northing coordinate of the False origin. This is NOT
      * the False Northing, which is the northing attached to the Natural
-     * origin. 
+     * origin.
      *
      */
     public static final int ProjFalseOriginNorthingGeoKey = 3087;
-    
+
     /**
      * ProjCenterLongGeoKey
      * Key ID = 3088
      * Type = DOUBLE
-     * Units: GeogAngularUnit 
+     * Units: GeogAngularUnit
      *
      * Longitude of Center of Projection. Note that this is not
-     * necessarily the origin of the projection. 
+     * necessarily the origin of the projection.
      *
      */
     public static final int ProjCenterLongGeoKey = 3088;
@@ -569,7 +603,7 @@ public class GeoTiffIIOMetadataAdapter
      * ProjCenterEastingGeoKey
      * Key ID = 3090
      * Type = DOUBLE
-     * Units: ProjLinearUnit 
+     * Units: ProjLinearUnit
      * Gives the easting coordinate of the center. This is NOT the
      * False Easting.
      *
@@ -580,7 +614,7 @@ public class GeoTiffIIOMetadataAdapter
      * ProjCenterNorthingGeoKey
      * Key ID = 3091
      * Type = DOUBLE
-     * Units: ProjLinearUnit 
+     * Units: ProjLinearUnit
      * Gives the northing coordinate of the center. This is NOT the
      * False Northing.
      *
@@ -604,7 +638,7 @@ public class GeoTiffIIOMetadataAdapter
 
     /**
      * ProjScaleAtCenterGeoKey
-     * Key ID = 3093 
+     * Key ID = 3093
      * Type = DOUBLE
      * Units: none
      *
@@ -612,7 +646,7 @@ public class GeoTiffIIOMetadataAdapter
      *
      */
     public static final int ProjScaleAtCenterGeoKey = 3093;
-    
+
     /**
      * ProjAzimuthAngleGeoKey
      * Key ID = 3094
@@ -620,36 +654,36 @@ public class GeoTiffIIOMetadataAdapter
      * Units: GeogAzimuthUnit
      *
      * Azimuth angle east of true north of the central line passing
-     * through the projection center (for elliptical (Hotine) Oblique 
+     * through the projection center (for elliptical (Hotine) Oblique
      * Mercator). Note that this is the standard method of measuring
      * azimuth, but is opposite the usual mathematical convention of
      * positive indicating counter-clockwise.
      *
      */
     public static final int ProjAzimuthAngleGeoKey = 3094;
-    
+
     /**
-     * ProjStraightVertPoleLongGeoKey 
-     * Key ID = 3095 
+     * ProjStraightVertPoleLongGeoKey
+     * Key ID = 3095
      * Type = DOUBLE
-     * Units: GeogAngularUnit 
+     * Units: GeogAngularUnit
      *
      * Longitude at Straight Vertical Pole. For polar stereographic.
      *
      */
     public static final int ProjStraightVertPoleLongGeoKey = 3095;
-    
+
 
     // Vertical CS Parameter Keys
     //
     // Note: Vertical coordinate systems are not yet implemented.
     // These sections are provided for future development, and any
     // vertical coordinate systems in the current revision must be
-    // defined using the VerticalCitationGeoKey. 
-    
+    // defined using the VerticalCitationGeoKey.
+
     /**
      * VerticalCSTypeGeoKey
-     * Key ID = 4096  
+     * Key ID = 4096
      * Type = SHORT (code)
      * Values =   Section 6.3.4.1  Codes
      * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.4.1
@@ -663,7 +697,7 @@ public class GeoTiffIIOMetadataAdapter
      * VerticalCitationGeoKey
      * Key ID = 4097
      * Type = ASCII
-     * Values =  text 
+     * Values =  text
      *
      * This key may be used to document the vertical coordinate system
      * used, and its parameters.
@@ -673,7 +707,7 @@ public class GeoTiffIIOMetadataAdapter
 
     /**
      * VerticalDatumGeoKey
-     * Key ID = 4098   
+     * Key ID = 4098
      * Type = SHORT (code)
      * Values =   Section 6.3.4.2  codes
      * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.4.2
@@ -686,7 +720,7 @@ public class GeoTiffIIOMetadataAdapter
 
     /**
      * VerticalUnitsGeoKey
-     * Key ID = 4099   
+     * Key ID = 4099
      * Type = SHORT (code)
      * Values =   Section 6.3.1.3  Codes
      * http://www.remotesensing.org/geotiff/spec/geotiff6.html#6.3.1.3
@@ -714,10 +748,10 @@ public class GeoTiffIIOMetadataAdapter
      *   32767          = user-defined
      *   [32768, 65535] = Private User Implementations
      * GeoTIFF defined CS Model Type Codes:
-     *   ModelTypeProjected   = 1    Projection Coordinate System         
-     *   ModelTypeGeographic  = 2    Geographic latitude-longitude System 
-     *   ModelTypeGeocentric  = 3    Geocentric (X,Y,Z) Coordinate System 
-     * 
+     *   ModelTypeProjected   = 1    Projection Coordinate System
+     *   ModelTypeGeographic  = 2    Geographic latitude-longitude System
+     *   ModelTypeGeocentric  = 3    Geocentric (X,Y,Z) Coordinate System
+     *
      * Notes:
      *   1. ModelTypeGeographic and ModelTypeProjected
      *      correspond to the FGDC metadata Geographic and
@@ -727,7 +761,7 @@ public class GeoTiffIIOMetadataAdapter
     public static final int ModelTypeProjected = 1;
     public static final int ModelTypeGeographic = 2;
     public static final int ModelTypeGeocentric = 3;
-    
+
     /**
      * 6.3.1.2 Raster Type Codes
      * Ranges:
@@ -752,7 +786,7 @@ public class GeoTiffIIOMetadataAdapter
      * geographically related raster data: linear units, angular units,
      * units of time (e.g. for radar-return), CCD-voltages, etc. For
      * this reason there will be a single, unique range for each kind
-     * of unit, broken down into the following currently defined ranges: 
+     * of unit, broken down into the following currently defined ranges:
      *
      * Ranges:
      *   0             = undefined
@@ -778,7 +812,7 @@ public class GeoTiffIIOMetadataAdapter
     public static final int Linear_Yard_Indian =  9013;
     public static final int Linear_Fathom = 9014;
     public static final int Linear_Mile_International_Nautical =  9015;
-    
+
     /**
      * 6.3.1.4 Angular Units Codes
      * These codes shall be used for any key that requires
@@ -801,7 +835,7 @@ public class GeoTiffIIOMetadataAdapter
      * differ only in the Prime Meridian, so be sure to use the correct
      * one. The codes beginning with GCSE_xxx are unspecified GCS which
      * use ellipsoid (xxx); it is recommended that only the codes
-     * beginning with GCS_ be used if possible. 
+     * beginning with GCS_ be used if possible.
      *
      * Ranges:
      *
@@ -829,7 +863,7 @@ public class GeoTiffIIOMetadataAdapter
     public static final int GCS_WGS_72BE = 4324;
     public static final int GCS_WGS_84 = 4326;
     public static final int GCSE_WGS84 = 4030;
-  
+
     /**
      * 6.3.3.1 Projected CS Type Codes
      * Ranges:
@@ -839,10 +873,10 @@ public class GeoTiffIIOMetadataAdapter
      *   [32768,  65535]  = Private User Implementations
      * Special Ranges:
      * 1. For PCS utilizing GeogCS with code in range 4201 through 4321: As far
-     * as is possible the PCS code will be of the format gggzz where ggg is 
+     * as is possible the PCS code will be of the format gggzz where ggg is
      * (geodetic datum code -4000) and zz is zone.
-     * 2. For PCS utilizing GeogCS with code out of range 4201 through 4321 
-     * (i.e. geodetic datum code 6201 through 6319). PCS code 20xxx where 
+     * 2. For PCS utilizing GeogCS with code out of range 4201 through 4321
+     * (i.e. geodetic datum code 6201 through 6319). PCS code 20xxx where
      * xxx is a sequential number.
      * 3. Other:
      *   WGS72 / UTM northern hemisphere: 322zz where zz is UTM zone number
@@ -851,7 +885,7 @@ public class GeoTiffIIOMetadataAdapter
      *   WGS72BE / UTM southern hemisphere: 325zz where zz is UTM zone number
      *   WGS84 / UTM northern hemisphere: 326zz where zz is UTM zone number
      *   WGS84 / UTM southern hemisphere: 327zz where zz is UTM zone number
-     *   US State Plane (NAD27):  267xx/320xx 
+     *   US State Plane (NAD27):  267xx/320xx
      *   US State Plane (NAD83):  269xx/321xx
      *  Note: These are only a subset of the possible values
      *
@@ -868,7 +902,7 @@ public class GeoTiffIIOMetadataAdapter
     public static final int PCS_WGS84_UTM_zone_60N =  32660;
     public static final int PCS_WGS84_UTM_zone_1S = 32701;
     public static final int PCS_WGS84_UTM_zone_60S =  32760;
-                         
+
 
     /**
      * An index into the geoKey directory for the directory version number
@@ -887,7 +921,7 @@ public class GeoTiffIIOMetadataAdapter
      * An index into the geoKey directory for the number of geoKeys
      */
     public static final int GEO_KEY_NUM_KEYS_INDEX = 3;
-    
+
     /**
      * The DOM element ID (tag) for a TIFF Image File Directory
      */
@@ -931,7 +965,7 @@ public class GeoTiffIIOMetadataAdapter
      * The DOM element ID (tag) for a single TIFF Ascii value
      */
     public static final String TIFF_ASCII_TAG = "TIFFAscii";
-    
+
     /**
      * The DOM attribute name for a TIFF Field Tag (number)
      */
@@ -941,7 +975,7 @@ public class GeoTiffIIOMetadataAdapter
      * Double, or Ascii)
      */
     public static final String VALUE_ATTR = "value";
-    
+
 
     /**
      * This class is a holder for a GeoKey record containing four
@@ -961,7 +995,7 @@ public class GeoTiffIIOMetadataAdapter
         private int myTiffTagLocation;
         private int myCount;
         private int myValueOffset;
-        
+
         public GeoKeyRecord(int keyID, int tagLoc, int count, int offset)
         {
             myKeyID = keyID;
@@ -969,7 +1003,7 @@ public class GeoTiffIIOMetadataAdapter
             myCount = count;
             myValueOffset = offset;
         }
-    
+
         public int getKeyID() { return myKeyID; }
         public int getTiffTagLocation() { return myTiffTagLocation; }
         public int getCount() { return myCount; }
@@ -981,7 +1015,7 @@ public class GeoTiffIIOMetadataAdapter
      * The root of the metadata DOM tree
      */
     private IIOMetadataNode myRootNode;
-    
+
     /**
      * The constructor builds a metadata adapter for the image metadata
      * root IIOMetadataNode.
@@ -1028,9 +1062,9 @@ public class GeoTiffIIOMetadataAdapter
             throw new UnsupportedOperationException(
                 "GeoKey directory does not exist");
         }
-        
+
         // Get the value from the correct TIFFShort
-        int result = getTiffShort(geoKeyDir, GEO_KEY_REVISION_INDEX);    
+        int result = getTiffShort(geoKeyDir, GEO_KEY_REVISION_INDEX);
         return result;
     }
 
@@ -1047,9 +1081,9 @@ public class GeoTiffIIOMetadataAdapter
             throw new UnsupportedOperationException(
                 "GeoKey directory does not exist");
         }
-        
+
         // Get the value from the correct TIFFShort
-        int result = getTiffShort(geoKeyDir, GEO_KEY_MINOR_REVISION_INDEX);    
+        int result = getTiffShort(geoKeyDir, GEO_KEY_MINOR_REVISION_INDEX);
         return result;
     }
 
@@ -1068,7 +1102,7 @@ public class GeoTiffIIOMetadataAdapter
         }
 
         // Get the value from the correct TIFFShort
-        int result = getTiffShort(geoKeyDir, GEO_KEY_NUM_KEYS_INDEX);    
+        int result = getTiffShort(geoKeyDir, GEO_KEY_NUM_KEYS_INDEX);
         return result;
     }
 
@@ -1085,9 +1119,9 @@ public class GeoTiffIIOMetadataAdapter
     public String getGeoKey(int keyID)
     {
         String result = null;
-        
+
         GeoKeyRecord rec = getGeoKeyRecord(keyID);
-        
+
         if(rec != null)
         {
             if(rec.getTiffTagLocation() == 0)
@@ -1123,7 +1157,7 @@ public class GeoTiffIIOMetadataAdapter
                 }
             }
         }
-        
+
         return result;
     }
 
@@ -1138,20 +1172,20 @@ public class GeoTiffIIOMetadataAdapter
         // First get the geokey directory in which to search for this geokey
         IIOMetadataNode geoKeyDir = getTiffField(
             GeoTIFFTagSet.TAG_GEO_KEY_DIRECTORY);
-        
+
         if(geoKeyDir == null)
         {
             throw new UnsupportedOperationException(
                 "GeoKey directory does not exist");
         }
-        
+
         GeoKeyRecord result = null;
-        
+
         // GeoKey IDs are at every 4th position starting at index 0
         IIOMetadataNode tiffShortsNode =
         (IIOMetadataNode)geoKeyDir.getFirstChild();
         NodeList keys = tiffShortsNode.getElementsByTagName(TIFF_SHORT_TAG);
-        
+
         // embed the exit condition in the for loop
         for(int i=4; i<keys.getLength() && result == null; i+=4)
         {
@@ -1163,7 +1197,7 @@ public class GeoTiffIIOMetadataAdapter
                 Node locNode = keys.item(i+1);
                 Node countNode = keys.item(i+2);
                 Node offsetNode = keys.item(i+3);
-                
+
                 int loc = getIntValueAttribute(locNode);
                 int count = getIntValueAttribute(countNode);
                 int offset = getIntValueAttribute(offsetNode);
@@ -1215,7 +1249,7 @@ public class GeoTiffIIOMetadataAdapter
         {
             result = getTiffDoubles(modelTransNode);
         }
-        
+
         return result;
     }
 
@@ -1231,7 +1265,7 @@ public class GeoTiffIIOMetadataAdapter
     {
         return node.getAttributes().getNamedItem(VALUE_ATTR).getNodeValue();
     }
-    
+
     /**
      * Gets the value attribute's contents and parses it as an int
      */
@@ -1279,7 +1313,7 @@ public class GeoTiffIIOMetadataAdapter
         IIOMetadataNode result = null;
         IIOMetadataNode tiffDirectory = getTiffDirectory();
         NodeList children = tiffDirectory.getElementsByTagName(TIFF_FIELD_TAG);
-        
+
         // embed the exit condition in the for loop
         for(int i=0; i<children.getLength() && result == null; i++)
         {
@@ -1308,7 +1342,7 @@ public class GeoTiffIIOMetadataAdapter
         // in the metadata, so just get it.
         return (IIOMetadataNode)myRootNode.getFirstChild();
     }
-    
+
     /**
      * Gets an array of int values stored in a TIFFShorts element that
      * contains a sequence of TIFFShort values.
@@ -1358,7 +1392,7 @@ public class GeoTiffIIOMetadataAdapter
         if ( tiffField == null ) {
             return new double[] {};
         }
-        IIOMetadataNode doublesElement = 
+        IIOMetadataNode doublesElement =
             (IIOMetadataNode)tiffField.getFirstChild();
         NodeList doubles = doublesElement.getElementsByTagName(TIFF_DOUBLE_TAG);
         double[] result = new double[doubles.getLength()];
@@ -1406,7 +1440,7 @@ public class GeoTiffIIOMetadataAdapter
         }
         return result;
     }
-    
+
     /**
      * Gets a single TIFFRational value at the given index.
      *

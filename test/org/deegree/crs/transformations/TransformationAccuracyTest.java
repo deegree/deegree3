@@ -1,40 +1,38 @@
 //$HeadURL: http://svn.wald.intevation.org/svn/deegree/deegree3/commons/trunk/test/org/deegree/model/crs/transformations/TransformationTest.java $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.transformations;
 
@@ -71,13 +69,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <code>TransformationTest</code> a junit test class for testing the accuracy of various transformations.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author: rbezema $
- * 
+ *
  * @version $Revision: 15508 $, $Date: 2009-01-06 12:08:22 +0100 (Tue, 06 Jan 2009) $
- * 
+ *
  */
 public class TransformationAccuracyTest extends TestCase {
 
@@ -205,7 +203,7 @@ public class TransformationAccuracyTest extends TestCase {
 
     /**
      * Creates a {@link CoordinateTransformer} for the given coordinate system.
-     * 
+     *
      * @param targetCrs
      *            to which incoming coordinates will be transformed.
      * @return the transformer which is able to transform coordinates to the given crs..
@@ -217,7 +215,7 @@ public class TransformationAccuracyTest extends TestCase {
 
     /**
      * Creates an epsilon string with following layout axis.getName: origPoint - resultPoint = epsilon Unit.getName().
-     * 
+     *
      * @param sourceCoordinate
      *            on the given axis
      * @param targetCoordinate
@@ -245,7 +243,7 @@ public class TransformationAccuracyTest extends TestCase {
     /**
      * Transforms the given coordinates in the sourceCRS to the given targetCRS and checks if they lie within the given
      * epsilon range to the reference point. If successful the transformed will be logged.
-     * 
+     *
      * @param sourcePoint
      *            to transform
      * @param targetPoint
@@ -309,7 +307,7 @@ public class TransformationAccuracyTest extends TestCase {
 
     /**
      * Do an forward and inverse accuracy test.
-     * 
+     *
      * @param sourceCRS
      * @param targetCRS
      * @param source
@@ -357,7 +355,7 @@ public class TransformationAccuracyTest extends TestCase {
     /**
      * Test the forward/inverse transformation from a compound_projected crs (EPSG:28992) to another compound_projected
      * crs (EPSG:25832)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
@@ -365,13 +363,13 @@ public class TransformationAccuracyTest extends TestCase {
     throws TransformationException {
         // Source crs espg:28992
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_28992, 20,
-                                                 new CRSIdentifiable( new CRSCodeType[] 
+                                                 new CRSIdentifiable( new CRSCodeType[]
                                                    { new CRSCodeType( projected_28992.getCode().getEquivalentString()
                                                                                      + "_compound" ) } ) );
 
         // Target crs espg:25832
         CompoundCRS targetCRS = new CompoundCRS( heightAxis, projected_25832, 20,
-                                                 new CRSIdentifiable( new CRSCodeType[] 
+                                                 new CRSIdentifiable( new CRSCodeType[]
                                                    { new CRSCodeType( projected_25832.getCode().getEquivalentString()
                                                                                      + "_compound" ) } ) );
 
@@ -384,7 +382,7 @@ public class TransformationAccuracyTest extends TestCase {
     /**
      * Test the transformation from a compound_projected crs (EPSG:28992_compound) to a geographic crs (EPSG:4258)
      * coordinate system .
-     * 
+     *
      * @throws TransformationException
      */
     @Test
@@ -392,7 +390,7 @@ public class TransformationAccuracyTest extends TestCase {
     throws TransformationException {
         // Source crs espg:28992
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_28992, 20,
-                                                 new CRSIdentifiable( new CRSCodeType[] 
+                                                 new CRSIdentifiable( new CRSCodeType[]
                                                   { new CRSCodeType( projected_28992.getCode().getEquivalentString()
                                                                                      + "_compound" ) } ) );
 
@@ -410,7 +408,7 @@ public class TransformationAccuracyTest extends TestCase {
     /**
      * Test the forward/inverse transformation from a compound_projected crs (EPSG:31467) to a geocentric crs
      * (EPSG:4964)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
@@ -419,8 +417,8 @@ public class TransformationAccuracyTest extends TestCase {
 
         // source crs epsg:31467
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_31467, 20,
-                                                 new CRSIdentifiable( 
-                                                  new CRSCodeType[] { 
+                                                 new CRSIdentifiable(
+                                                  new CRSCodeType[] {
                                                      new CRSCodeType( projected_31467.getCode().getEquivalentString()
                                                                                      + "_compound" ) } ) );
 
@@ -437,7 +435,7 @@ public class TransformationAccuracyTest extends TestCase {
     /**
      * Test the forward/inverse transformation from a compound_geographic crs (EPSG:4326) to a projected crs
      * (EPSG:31467)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
@@ -450,7 +448,7 @@ public class TransformationAccuracyTest extends TestCase {
                                                 GeographicCRS.WGS84,
                                                 20,
                                                 new CRSIdentifiable(
-                                                     new CRSCodeType[] { 
+                                                     new CRSCodeType[] {
                                                        new CRSCodeType( GeographicCRS.WGS84.getCode().getEquivalentString()
                                                                                    + "_compound" ) } ) );
 
@@ -466,7 +464,7 @@ public class TransformationAccuracyTest extends TestCase {
 
     /**
      * Test the forward/inverse transformation from a projected crs (EPSG:28992) to another projected crs (EPSG:25832)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
@@ -487,7 +485,7 @@ public class TransformationAccuracyTest extends TestCase {
 
     /**
      * Test the forward/inverse transformation from a projected crs (EPSG:31467) to a geographic crs (EPSG:4258)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
@@ -508,7 +506,7 @@ public class TransformationAccuracyTest extends TestCase {
 
     /**
      * Test the forward/inverse transformation from a projected crs (EPSG:28992) to a geocentric crs (EPSG:4964)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
@@ -528,7 +526,7 @@ public class TransformationAccuracyTest extends TestCase {
 
     /**
      * Test the forward/inverse transformation from a geographic crs (EPSG:4314) to another geographic crs (EPSG:4258)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
@@ -550,9 +548,9 @@ public class TransformationAccuracyTest extends TestCase {
 
     /**
      * Test the forward/inverse transformation from a geographic crs (EPSG:4314) to a geocentric crs (EPSG:4964)
-     * 
+     *
      * @throws TransformationException
-     * 
+     *
      * @throws TransformationException
      */
     @Test
@@ -573,7 +571,7 @@ public class TransformationAccuracyTest extends TestCase {
     /**
      * Test the forward/inverse transformation from a geocentric (dummy based on bessel) to another geocentric crs
      * (EPSG:4964 based on etrs89)
-     * 
+     *
      * @throws TransformationException
      */
     @Test

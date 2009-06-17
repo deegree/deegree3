@@ -1,45 +1,38 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/services/trunk/src/org/deegree/services/controller/ows/ServiceProviderXMLAdapter_1_1_0.java $
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.capabilities;
 
 import java.util.ArrayList;
@@ -66,10 +59,10 @@ import org.deegree.commons.types.ows.Version;
  * Supports multilingual services according to OWS Common change request OGC 08-016r2. This is already used by the WPS
  * Specification 1.0.0.
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class GetCapabilities {
@@ -88,7 +81,7 @@ public class GetCapabilities {
 
     /**
      * Constructs a new <code>GetCapabilities</code> request.
-     * 
+     *
      * @param acceptVersions
      *            acceptable protocol versions in order of client preference, may be empty or null
      * @param sections
@@ -120,7 +113,7 @@ public class GetCapabilities {
     /**
      * Constructs a new <code>GetCapabilities</code> request that specifies the requested version in a pre-OWS fashion
      * (see section D.11 of OGC 06-121r3).
-     * 
+     *
      * @param version
      *            old-style version information, may be null
      */
@@ -131,7 +124,7 @@ public class GetCapabilities {
     /**
      * Returns the old-style version information (used by pre-OWS GetCapabilities requests, see section D.11 of OGC
      * 06-121r3).
-     * 
+     *
      * @return old-style version information, may be null (if this is an OWS-style request or an pre-OWS request without
      *         version specification)
      */
@@ -141,7 +134,7 @@ public class GetCapabilities {
 
     /**
      * Returns the acceptable {@link Version}s in order of client preference (most preferred version comes first).
-     * 
+     *
      * @return the acceptable <code>Version</code>s, in order of preference, may be empty, but not null
      */
     public List<Version> getAcceptVersions() {
@@ -150,7 +143,7 @@ public class GetCapabilities {
 
     /**
      * Returns the sections requested by the client.
-     * 
+     *
      * @return the requested sections, may be empty, but not null
      */
     public Set<String> getSections() {
@@ -167,7 +160,7 @@ public class GetCapabilities {
 
     /**
      * Returns the languages for human readable text requested by the client.
-     * 
+     *
      * @return list of RFC 4646 language codes, may be empty, but not null
      */
     public List<String> getLanguages() {

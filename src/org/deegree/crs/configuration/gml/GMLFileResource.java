@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.gml;
 
@@ -70,18 +68,18 @@ import org.slf4j.LoggerFactory;
 /**
  * The <code>GMLFileResource</code> provides easy access to a gml3.2. dictionary file, which can be used together with
  * the {@link GMLCRSProvider}.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class GMLFileResource extends XMLFileResource {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -4389365894942107300L;
 
@@ -95,7 +93,7 @@ public class GMLFileResource extends XMLFileResource {
     private List<OMElement> transformations;
 
     private Map<CoordinateSystem, Helmert> cachedWGS84Transformations;
-    
+
     private XMLAdapter adapter;
 
     /**
@@ -193,7 +191,7 @@ public class GMLFileResource extends XMLFileResource {
         if ( targetCRS != null ) {
             targetIDs = new ArrayList<String>();
             List<CRSCodeType> targetCodes = Arrays.asList( targetCRS.getCodes() );
-            for ( CRSCodeType targetCode : targetCodes ) 
+            for ( CRSCodeType targetCode : targetCodes )
                 targetIDs.add( targetCode.getEquivalentString() );
         } else {
             targetIDs = new ArrayList<String>();
@@ -204,12 +202,12 @@ public class GMLFileResource extends XMLFileResource {
             if ( transElem != null ) {
                 try {
                 	OMElement sourceCRSProp = getRequiredElement( transElem, new XPath( PRE + "sourceCRS", nsContext  ) );
-                	
+
                     String transformSourceID = null;
                     String transformTargetID = null;
                     if ( sourceCRSProp != null ) {
                     	transformSourceID = sourceCRSProp.getAttribute( new QName( CommonNamespaces.XLNNS, "href" ) ).getNamespace().getNamespaceURI();
-                        
+
                         if ( "".equals( transformSourceID ) ) {
                         	transformSourceID = adapter.getRequiredNodeAsString( sourceCRSProp, new XPath( "*[1]/" + PRE
                                     + "identifier", nsContext ) );
@@ -273,7 +271,7 @@ public class GMLFileResource extends XMLFileResource {
         OMElement result = null;
         try {
         	result = adapter.getElement( getRootElement(), new XPath( "//gml3_2:dictionaryEntry/gml3_2:*[gml3_2:identifier='" + uri + "']" +
-        			" | //gml3_2:dictionaryEntry/gml3_2:*[gml3_2:name='" + uri + "']", nsContext ) );        		
+        			" | //gml3_2:dictionaryEntry/gml3_2:*[gml3_2:name='" + uri + "']", nsContext ) );
         } catch ( XMLParsingException e ) {
             LOG.error( e.getLocalizedMessage(), e );
         }

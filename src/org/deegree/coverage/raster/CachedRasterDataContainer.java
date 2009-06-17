@@ -1,40 +1,38 @@
 //$HeadURL: svn+ssh://otonnhofer@svn.wald.intevation.org/deegree/deegree3/model/trunk/src/org/deegree/model/coverage/raster/CachedRasterDataContainer.java $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
 import java.util.UUID;
@@ -53,10 +51,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class implements a cached RasterDataContainer.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author: otonnhofer $
- * 
+ *
  * @version $Revision: 10847 $, $Date: 2008-03-31 15:54:40 +0200 (Mon, 31 Mar 2008) $
  */
 public class CachedRasterDataContainer implements RasterDataContainer, RasterDataContainerProvider {
@@ -87,7 +85,7 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
 
     /**
      * Creates a RasterDataContainer that loads the data on first access.
-     * 
+     *
      * @param reader
      *            RasterReader for the raster source
      */
@@ -128,7 +126,7 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.deegree.model.raster.RasterDataContainer#getColumns()
      */
     public int getColumns() {
@@ -137,7 +135,7 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.deegree.model.raster.RasterDataContainer#getRows()
      */
     public int getRows() {

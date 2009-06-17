@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
@@ -43,7 +41,7 @@ import java.nio.ByteBuffer;
 import javax.media.opengl.GL;
 
 /**
- * 
+ *
  * The <code>TextureTile</code> define the parameters necessary to create, request and render a texture to the DEM.
  * Texture are created and rendered with following options:
  * <ul>
@@ -52,11 +50,11 @@ import javax.media.opengl.GL;
  * <li>gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR );</li>
  * <li>gl.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR );</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author: rbezema $
  * @version $Revision: $, $Date: $
- * 
+ *
  */
 public class TextureTile {
 
@@ -79,7 +77,7 @@ public class TextureTile {
 
     /**
      * Construct a new texture tile.
-     * 
+     *
      * @param minX
      * @param minY
      * @param maxX
@@ -151,7 +149,7 @@ public class TextureTile {
     }
 
     /**
-     * 
+     *
      * @return the width of the image.
      */
     public int getPixelsX() {
@@ -159,7 +157,7 @@ public class TextureTile {
     }
 
     /**
-     * 
+     *
      * @return the height of the image.
      */
     public int getPixelsY() {
@@ -179,7 +177,7 @@ public class TextureTile {
 
     /**
      * Remove the texture from the context.
-     * 
+     *
      * @param gl
      */
     public void disable( GL gl ) {
@@ -196,7 +194,7 @@ public class TextureTile {
 
     /**
      * load this texture to the gpu, using Texture Objects.
-     * 
+     *
      * @param gl
      */
     private void loadToGPU( GL gl ) {
@@ -229,7 +227,7 @@ public class TextureTile {
     }
 
     /**
-     * 
+     *
      * @return the GL-texture object id of this texture tile.
      */
     public int getId() {

@@ -1,40 +1,38 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.coverage.raster.container;
 
@@ -52,10 +50,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract base class for {@link TileContainer}s based on a rectangular grid of disjunct, equal-sized cells (raster
  * tiles).
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public abstract class GriddedTileContainer implements TileContainer {
@@ -88,7 +86,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     /**
      * Creates a new {@link GriddedTileContainer} instances.
-     * 
+     *
      * @param envelope
      *            area of the samples of the contained tiles (TODO: OUTER / INNER???)
      * @param rows
@@ -118,7 +116,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     /**
      * Returns the raster tile at the given grid position.
-     * 
+     *
      * @param rowId
      *            row id, must in the range [0 ... #rows - 1]
      * @param columnId
@@ -159,7 +157,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     /**
      * Returns the number of rows of the grid.
-     * 
+     *
      * @return the number of rows
      */
     public int getRows() {
@@ -168,7 +166,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     /**
      * Returns the number of columns of the grid.
-     * 
+     *
      * @return the number of columns
      */
     public int getColumns() {
@@ -177,7 +175,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     /**
      * Calculates the id for a tile at a given position in the grid.
-     * 
+     *
      * @param columnId
      *            column id, must be in the range [0 ... #columns - 1]
      * @param rowId
@@ -191,7 +189,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     /**
      * Calculates the envelope for a tile at a given position in the grid.
-     * 
+     *
      * @param columnId
      *            column id, must be in the range [0 ... #columns - 1]
      * @param rowId

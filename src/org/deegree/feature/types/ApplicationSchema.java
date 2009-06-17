@@ -1,46 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth  
- lat/lon GmbH 
- Aennchenstr. 19
- 53115 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
-
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
 import java.util.ArrayList;
@@ -66,10 +58,10 @@ import org.slf4j.LoggerFactory;
  * 3.2: gml:AbstractFeature). This is not necessary, as each {@link FeatureType} object is already identified as a
  * feature type by its class.</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 public class ApplicationSchema {
@@ -90,7 +82,7 @@ public class ApplicationSchema {
     /**
      * Creates a new <code>ApplicationSchema</code> from the given {@link FeatureType}s and their substitution group
      * relation.
-     * 
+     *
      * @param fts
      *            all feature types (abstract and non-abstract)
      * @param ftSubstitutionGroupRelation
@@ -148,7 +140,7 @@ public class ApplicationSchema {
 
     /**
      * Returns all feature types that are defined in this application schema.
-     * 
+     *
      * @return all feature types that are defined in this application schema
      */
     public FeatureType[] getFeatureTypes() {
@@ -162,7 +154,7 @@ public class ApplicationSchema {
 
     /**
      * Retrieves the feature type with the given name.
-     * 
+     *
      * @param ftName
      *            feature type name to look up
      * @return the feature type with the given name, or null if no such feature type exists
@@ -173,7 +165,7 @@ public class ApplicationSchema {
 
     /**
      * Retrieves all substitutions (abstract and non-abstract ones) for the given feature type.
-     * 
+     *
      * @param ft
      * @return all substitutions for the given feature type
      */
@@ -183,7 +175,7 @@ public class ApplicationSchema {
 
     /**
      * Retrieves all concrete substitutions for the given feature type.
-     * 
+     *
      * @param ft
      * @return all concrete substitutions for the given feature type
      */
@@ -200,7 +192,7 @@ public class ApplicationSchema {
      * <li>in the substitutionGroup of <code>ft</code></li>
      * <li>transititively substitutable for <code>ft</code></li>
      * </ul>
-     * 
+     *
      * @param ft
      * @param substitution
      * @return true, if the first feature type is a valid substitution for the second

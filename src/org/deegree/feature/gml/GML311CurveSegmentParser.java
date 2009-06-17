@@ -1,46 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth  
- lat/lon GmbH 
- Aennchenstr. 19
- 53115 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
-
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.feature.gml;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
@@ -106,10 +98,10 @@ import org.slf4j.LoggerFactory;
  * <li><code>LineStringSegment</code></li>
  * <li><code>OffsetCurve</code></li>
  * </p>
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
 class GML311CurveSegmentParser extends GML311BaseParser {
@@ -155,7 +147,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li><code>LineStringSegment</code></li>
      * <li><code>OffsetCurve</code></li>
      * </ul>
-     * 
+     *
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the "gml:_CurveSegment" has no <code>srsName</code>
      *            attribute
@@ -225,7 +217,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Arc&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Arc&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -256,7 +248,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:ArcByBulge&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:ArcByBulge&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -297,7 +289,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
      * (&lt;/gml:ArcByCenterPoint&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -348,7 +340,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:ArcString&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:ArcString&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -378,7 +370,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:ArcString&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:ArcString&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultCRS
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -429,7 +421,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Bezier&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Bezier&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultSrsName
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -483,7 +475,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:BSpline&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:BSpline&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultSrsName
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -550,7 +542,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Circle&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Circle&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultSrsName
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -582,7 +574,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
      * (&lt;/gml:CircleByCenterPoint&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultSrsName
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -643,7 +635,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Clothoid&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Clothoid&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultSrsName
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -682,7 +674,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
      * (&lt;/gml:AffinePlacement&gt;)</li>
      * </ul>
-     * 
+     *
      * @return corresponding {@link AffinePlacement} object
      * @throws XMLParsingException
      * @throws XMLStreamException
@@ -745,7 +737,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:CubicSpline&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:CubicSpline&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultSrsName
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -781,7 +773,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Geodesic&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Geodesic&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultSrsName
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -834,7 +826,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
      * (&lt;/gml:GeodesicString&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultSrsName
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -887,7 +879,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
      * (&lt;/gml:LineStringSegment&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -916,7 +908,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:OffsetCurve&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:OffsetCurve&gt;)</li>
      * </ul>
-     * 
+     *
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -951,7 +943,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * Parses the control points of a curve segment element.
      * <p>
      * The parsed structure is specified by the following XSD choice:
-     * 
+     *
      * <pre>
      * &lt;choice&gt;
      *   &lt;choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
@@ -964,7 +956,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      *   &lt;element ref=&quot;gml:coord&quot;/&gt;
      * &lt;/choice&gt;
      * </pre>
-     * 
+     *
      * </p>
      * <p>
      * Precondition: the <b>next</b> tag event is expected to be the first <code>START_ELEMENT</code> of the choice. If
@@ -972,10 +964,10 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * Postcondition: the current event is the first tag event after the last <code>END_ELEMENT</code> that belongs to
      * the choice
      * </p>
-     * 
+     *
      * @param crs
      *            default CRS for the points, this is used if no <code>srsName</code> attribute is specified
-     * 
+     *
      * @return control points of the curve segment, not null, but size may be zero
      * @throws XMLStreamException
      * @throws XMLParsingException

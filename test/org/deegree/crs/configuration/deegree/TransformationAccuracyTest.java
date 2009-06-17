@@ -1,40 +1,38 @@
 //$HeadURL: https://svn.wald.intevation.org/svn/deegree/deegree3/commons/trunk/test/org/deegree/model/crs/transformations/TransformationTest.java $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.deegree;
 
@@ -73,13 +71,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <code>TransformationTest</code> a junit test class for testing the accuracy of various transformations.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author: rbezema $
- * 
+ *
  * @version $Revision: 15508 $, $Date: 2009-01-06 12:08:22 +0100 (Tue, 06 Jan 2009) $
- * 
+ *
  */
 public class TransformationAccuracyTest extends TestCase {
 
@@ -208,7 +206,7 @@ public class TransformationAccuracyTest extends TestCase {
 
     /**
      * Creates a {@link CoordinateTransformer} for the given coordinate system.
-     * 
+     *
      * @param targetCrs
      *            to which incoming coordinates will be transformed.
      * @return the transformer which is able to transform coordinates to the given crs..
@@ -220,7 +218,7 @@ public class TransformationAccuracyTest extends TestCase {
 
     /**
      * Creates an epsilon string with following layout axis.getName: origPoint - resultPoint = epsilon Unit.getName().
-     * 
+     *
      * @param sourceCoordinate
      *            on the given axis
      * @param targetCoordinate
@@ -248,7 +246,7 @@ public class TransformationAccuracyTest extends TestCase {
     /**
      * Transforms the given coordinates in the sourceCRS to the given targetCRS and checks if they lie within the given
      * epsilon range to the reference point. If successful the transformed will be logged.
-     * 
+     *
      * @param sourcePoint
      *            to transform
      * @param targetPoint
@@ -312,7 +310,7 @@ public class TransformationAccuracyTest extends TestCase {
 
     /**
      * Do an forward and inverse accuracy test.
-     * 
+     *
      * @param sourceCRS
      * @param targetCRS
      * @param source
@@ -360,24 +358,24 @@ public class TransformationAccuracyTest extends TestCase {
     /**
      * Test the forward/inverse transformation from a compound_projected crs (EPSG:28992) to another compound_projected
      * crs (EPSG:25832)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
     public void testCompoundToCompound()
                             throws TransformationException {
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
-        
+
         ProjectedCRS projected_28992 = (ProjectedCRS) dbProvider.getCRSByCode( new CRSCodeType( "EPSG:28992" ) );
-                
+
         // Source crs espg:28992
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_28992, 20,
                                                  new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( projected_28992.getCode().getEquivalentString()
                                                                                      + "_compound" ) } ) );
 
         ProjectedCRS projected_25832 = (ProjectedCRS) dbProvider.getCRSByCode( new CRSCodeType( "EPSG:25832" ) );
-        
-        
+
+
         // Target crs espg:25832
         CompoundCRS targetCRS = new CompoundCRS( heightAxis, projected_25832, 20,
                                                  new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( projected_25832.getCode().getEquivalentString() + "_compound" ) } ) );
@@ -386,22 +384,22 @@ public class TransformationAccuracyTest extends TestCase {
         Point3d sourcePoint = new Point3d( 121397.572, 487325.817, 6.029 );
         Point3d targetPoint = new Point3d( 220513.823, 5810438.891, 49 );
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, epsilon, epsilon );
-        
+
     }
 
     /**
      * Test the transformation from a compound_projected crs (EPSG:28992_compound) to a geographic crs (EPSG:4258)
      * coordinate system .
-     * 
+     *
      * @throws TransformationException
      */
     @Test
     public void testCompoundToGeographic()
                             throws TransformationException {
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
-        
+
         ProjectedCRS projected_28992 = (ProjectedCRS) dbProvider.getCRSByCode( new CRSCodeType( "EPSG:28992" ) );
-                
+
         // Source crs espg:28992
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_28992, 20,
                                                  new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( projected_28992.getCode().getEquivalentString()
@@ -416,21 +414,21 @@ public class TransformationAccuracyTest extends TestCase {
 
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, epsilonDegree, new Point3d( METER_EPSILON,
                                                                                                          0.17, 0.6 ) );
-       
+
     }
 
     /**
      * Test the forward/inverse transformation from a compound_projected crs (EPSG:31467) to a geocentric crs
      * (EPSG:4964)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
     public void testCompoundToGeocentric()
                             throws TransformationException {
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
-        
-        CoordinateSystem projected_31467 = dbProvider.getCRSByCode( new CRSCodeType( "31467", "EPSG" ) ); 
+
+        CoordinateSystem projected_31467 = dbProvider.getCRSByCode( new CRSCodeType( "31467", "EPSG" ) );
         // source crs epsg:31467
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_31467 , 20,
                                                  new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( projected_31467.getCode().getEquivalentString()
@@ -444,20 +442,20 @@ public class TransformationAccuracyTest extends TestCase {
         Point3d targetPoint = new Point3d( 4230602.192492622, 702858.4858986374, 4706428.360722791 );
 
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, epsilon, epsilon );
-        
+
     }
 
     /**
      * Test the forward/inverse transformation from a compound_geographic crs (EPSG:4326) to a projected crs
      * (EPSG:31467)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
     public void testCompoundToProjected()
                             throws TransformationException {
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
-        
+
         // Source WGS:84_compound
         CompoundCRS sourceCRS = new CompoundCRS(
                                                  heightAxis,
@@ -475,19 +473,19 @@ public class TransformationAccuracyTest extends TestCase {
         Point3d targetPoint = new Point3d( 3532465.57, 5301523.49, 817 );
 
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, epsilon, epsilonDegree );
-        
+
     }
 
     /**
      * Test the forward/inverse transformation from a projected crs (EPSG:28992) to another projected crs (EPSG:25832)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
     public void testProjectedToProjected()
                             throws TransformationException {
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
-        
+
         // Source crs espg:28992
         ProjectedCRS sourceCRS = (ProjectedCRS) dbProvider.getCRSByCode( new CRSCodeType( "28992", "EPSG" ) );
 
@@ -499,19 +497,19 @@ public class TransformationAccuracyTest extends TestCase {
         Point3d targetPoint = new Point3d( 283065.845, 5646206.125, Double.NaN );
 
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, epsilon, epsilon );
-        
+
     }
 
     /**
      * Test the forward/inverse transformation from a projected crs (EPSG:31467) to a geographic crs (EPSG:4258)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
     public void testProjectedToGeographic()
                             throws TransformationException {
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
-        
+
         // Source crs espg:31467
         ProjectedCRS sourceCRS = (ProjectedCRS) dbProvider.getCRSByCode( new CRSCodeType( "31467", "EPSG" ) );
 
@@ -523,19 +521,19 @@ public class TransformationAccuracyTest extends TestCase {
         Point3d targetPoint = new Point3d( 9.432778, 47.851111, Double.NaN );
 
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, epsilonDegree, epsilon );
-        
+
     }
 
     /**
      * Test the forward/inverse transformation from a projected crs (EPSG:28992) to a geocentric crs (EPSG:4964)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
     public void testProjectedToGeocentric()
                             throws TransformationException {
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
-        
+
         ProjectedCRS sourceCRS = (ProjectedCRS) dbProvider.getCRSByCode( new CRSCodeType( "28992", "EPSG" ) );
 
         // Target crs EPSG:4964
@@ -546,19 +544,19 @@ public class TransformationAccuracyTest extends TestCase {
         Point3d targetPoint = new Point3d( 4006964.9993508584, 414997.8479008863, 4928439.8089122595 );
 
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, epsilon, epsilon );
-        
+
     }
 
     /**
      * Test the forward/inverse transformation from a geographic crs (EPSG:4314) to another geographic crs (EPSG:4258)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
     public void testGeographicToGeographic()
                             throws TransformationException {
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
-        
+
         // source crs epsg:4314
         GeographicCRS sourceCRS = (GeographicCRS) dbProvider.getCRSByCode( new CRSCodeType( "4314", "EPSG" ) );
         // target crs epsg:4258
@@ -570,21 +568,21 @@ public class TransformationAccuracyTest extends TestCase {
 
         // do the testing
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, epsilonDegree, epsilonDegree );
-        
+
     }
 
     /**
      * Test the forward/inverse transformation from a geographic crs (EPSG:4314) to a geocentric crs (EPSG:4964)
-     * 
+     *
      * @throws TransformationException
-     * 
+     *
      * @throws TransformationException
      */
     @Test
     public void testGeographicToGeocentric()
                             throws TransformationException {
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
-        
+
         // source crs epsg:4314
         GeographicCRS sourceCRS = (GeographicCRS) dbProvider.getCRSByCode( new CRSCodeType( "4314", "EPSG" ) ) ;
         // target crs epsg:4964
@@ -595,20 +593,20 @@ public class TransformationAccuracyTest extends TestCase {
         Point3d targetPoint = new Point3d( 3632280.522352362, 564392.6943947134, 5194921.3092999635 );
         // do the testing
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, epsilon, epsilonDegree );
-        
+
     }
 
     /**
      * Test the forward/inverse transformation from a geocentric (dummy based on bessel) to another geocentric crs
      * (EPSG:4964 based on etrs89)
-     * 
+     *
      * @throws TransformationException
      */
     @Test
     public void testGeocentricToGeocentric()
                             throws TransformationException {
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
-        
+
         // source crs is a dummy based on the epsg:4314 == bessel datum.
         GeocentricCRS sourceCRS = geocentric_dummy;
 
@@ -621,6 +619,6 @@ public class TransformationAccuracyTest extends TestCase {
 
         // do the testing
         doForwardAndInverse( sourceCRS, targetCRS, sourcePoint, targetPoint, epsilon, epsilonDegree );
-        
+
     }
 }

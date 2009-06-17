@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.projections;
 
@@ -42,13 +40,13 @@ import java.awt.geom.Rectangle2D;
 
 /**
  * The <code>Utils</code> class combines some helpful constants and forms.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class ProjectionUtils {
@@ -104,7 +102,7 @@ public class ProjectionUtils {
     /**
      * From the proj4 library, to determine small q which is needed to calculate the authalic (equal-areaed) latitude
      * beta, on a sphere having the same surface area as the ellipsoid, relative to the ellipsoid. Snyder (3 -12).
-     * 
+     *
      * @param sinphi
      *            the sine of the angle between the positive z-axis and the line formed between the origin and P.
      * @param e
@@ -120,7 +118,7 @@ public class ProjectionUtils {
     /**
      * From the proj4 library, to determine small q which is needed to calculate the authalic (equal-areaed) latitude
      * beta, on a sphere having the same surface area as the ellipsoid, relative to the ellipsoid. Snyder (3 -12).
-     * 
+     *
      * @param sinphi
      *            the sine of the angle between the positive z-axis and the line formed between the origin and P.
      * @param eccentricity
@@ -165,7 +163,7 @@ public class ProjectionUtils {
     /**
      * Pre-Calculates the values (used for the adams? series) which will be used to calculate the phi value of an
      * inverse projection. Snyder (3-5).
-     * 
+     *
      * @param eccentricitySquared
      *            the squared eccentricity from the ellipsoid to calculate the theta for.
      * @return the precalculated values.
@@ -198,7 +196,7 @@ public class ProjectionUtils {
     /**
      * Gets Phi from the given conformal latitude chi and the precalculated values (gotten from
      * {@link ProjectionUtils#preCalcedThetaSeries(double)} ) of the adams? serie. From Snyder (3-5).
-     * 
+     *
      * @param chi
      *            the conformal latitude
      * @param APA
@@ -236,7 +234,7 @@ public class ProjectionUtils {
     /**
      * Pre-Calculates the values (used for the adams? series) which will be used to calculate the authalic latitude.
      * Snyder (3-18).
-     * 
+     *
      * @param eccentricitySquared
      *            the squared eccentricity from the ellipsoid to calculate the authalic latitude for.
      * @return the precalculated values.
@@ -250,7 +248,7 @@ public class ProjectionUtils {
     /**
      * Pre-Calculates the values (used for the adams? series) which will be used to calculate the authalic latitude.
      * Snyder (3-18).
-     * 
+     *
      * @param eccentricitySquared
      *            the squared eccentricity from the ellipsoid to calculate the authalic latitude for.
      * @return the precalculated values [0] = e^2/3 + e^4*(31/180) + e^6*(517/5040), [1]= e^4*(23/360) + e^6*(251/3780)
@@ -271,7 +269,7 @@ public class ProjectionUtils {
 
     /**
      * Gets phi from the authalic latitude beta and the precalculated values of the adams? serie. From Snyder (3-18).
-     * 
+     *
      * @param beta
      *            authalic latitude.
      * @param APA
@@ -287,7 +285,7 @@ public class ProjectionUtils {
 
     /**
      * Gets phi from the authalic latitude beta and the precalculated values of the adams? serie. From Snyder (3-18).
-     * 
+     *
      * @param beta
      *            authalic latitude.
      * @param APA
@@ -302,7 +300,7 @@ public class ProjectionUtils {
 
     /**
      * Calcs the length of a vector given by two points x and y
-     * 
+     *
      * @param dx
      *            of the vector
      * @param dy
@@ -317,7 +315,7 @@ public class ProjectionUtils {
      * This method calculates the innerpart of the conformal latitude's definition (Snyder p.15 3-1). This formula is
      * almost equal to the calculation of the half colatitude from the conformal latitude (Snyder p.108 15-9). They only
      * differ a sign in the first term.
-     * 
+     *
      * @param phi
      *            to calculate the conformal latitude from
      * @param sinphi
@@ -335,7 +333,7 @@ public class ProjectionUtils {
      * This method calculates the innerpart of the conformal latitude's definition (Snyder p.15 3-1). This formula is
      * almost equal to the calculation of the half colatitude from the conformal latitude (Snyder p.108 15-9). They only
      * differ a sign in the first term.
-     * 
+     *
      * @param phi
      *            to calculate the conformal latitude from
      * @param sinphi
@@ -353,7 +351,7 @@ public class ProjectionUtils {
 
     /**
      * This method calculates the tangens of the half colatitude from the conformal latitude (Snyder p.108 15-9).
-     * 
+     *
      * @param phi
      *            to calculate the half of the co latitude of the conformal latitude from
      * @param sinphi
@@ -371,7 +369,7 @@ public class ProjectionUtils {
      * This method calculates the tangens of the half colatitude from the conformal latitude (Snyder p.108 15-9). This
      * formula is almost equal to the calculation of the innerpart of the conformal latitude's definition (Snyder p.15
      * 3-1). They only differ a sign in the first term.
-     * 
+     *
      * @param phi
      *            to calculate the half of the co latitude of the conformal latitude from
      * @param sinphi
@@ -389,7 +387,7 @@ public class ProjectionUtils {
 
     /**
      * This method can be used to calculate the value of a variable called 'm' by Snyder (Snyder p.101 14-15).
-     * 
+     *
      * @param sinphi
      *            the sinus of the phi
      * @param cosphi
@@ -406,7 +404,7 @@ public class ProjectionUtils {
 
     /**
      * This method can be used to calculate the value of a variable called 'm' by Snyder (Snyder p.101 14-15).
-     * 
+     *
      * @param sinphi
      *            the sinus of the phi
      * @param cosphi
@@ -451,7 +449,7 @@ public class ProjectionUtils {
      * Pre Calculates the values for the series to calculate for a given ellipsoid with given eccentricity the distance
      * along the meridian from the equator to a given latitude
      * {@link #getDistanceAlongMeridian(double, double, double, double[])}.
-     * 
+     *
      * @param es
      *            the squared eccentricity of the underlying ellipsoid.
      * @return the precalculated values for given ellipsoid.
@@ -466,7 +464,7 @@ public class ProjectionUtils {
      * Pre Calculates the values for the series to calculate for a given ellipsoid with given eccentricity the distance
      * along the meridian from the equator to a given latitude
      * {@link #getDistanceAlongMeridian(double, double, double, double[])}.
-     * 
+     *
      * @param es
      *            the squared eccentricity of the underlying ellipsoid.
      * @return the precalculated values for given ellipsoid.
@@ -490,7 +488,7 @@ public class ProjectionUtils {
     /**
      * This method calcs for a a given ellispoid the distance along the meridian from the equator to latitude phi Snyder
      * (p.17 3-21). It is used to calculate the rectifying latitude <i>mu</i>.
-     * 
+     *
      * @param phi
      *            the lattitude of the point in radians
      * @param sphi
@@ -511,7 +509,7 @@ public class ProjectionUtils {
     /**
      * This method calcs the distance along the meridian from the equator to latitude phi for a a given ellispoid Snyder
      * (p.17 3-21). It is used to calculate the rectifying latitude <i>mu</i>.
-     * 
+     *
      * @param phi
      *            the lattitude of the point in radians
      * @param sphi
@@ -533,7 +531,7 @@ public class ProjectionUtils {
      * This method calcs lattitude phi from a given distance along the meridian to the equator for a a given ellispoid
      * and is therefore the inverse of the {@link #getDistanceAlongMeridian(double, double, double, double[])}. Phi is
      * determined to EPS (1e-11) radians, which is about 1e-6 seconds.
-     * 
+     *
      * @param initialValue
      *            to calculate phi from, a good starting value is using the (distance along the meridian / y*scale) e.g.
      *            the scaled y value on the meridian.
@@ -554,7 +552,7 @@ public class ProjectionUtils {
      * This method calcs lattitude phi from a given distance along the meridian to the equator for a a given ellispoid
      * and is therefore the inverse of the {@link #getDistanceAlongMeridian(double, double, double, double[])}. Phi is
      * determined to EPS (1e-11) radians, which is about 1e-6 seconds.
-     * 
+     *
      * @param initialValue
      *            to calculate phi from, a good starting value is using the (distance along the meridian / y*scale) e.g.
      *            the scaled y value on the meridian.
@@ -583,7 +581,7 @@ public class ProjectionUtils {
 
     /**
      * A helper method, which returns the acos from value or if value < -1 pi or value>1 0.
-     * 
+     *
      * @param value
      *            (in radians) from which the acos must be calculated
      * @return the acos from value or if value < -1 pi or if value > 1 0.
@@ -594,7 +592,7 @@ public class ProjectionUtils {
 
     /**
      * A helper method, which returns the asin from value or if value < -1 (-pi/2) or value>1 (pi/2).
-     * 
+     *
      * @param value
      *            (in radians) from which the asin must be calculated
      * @return the asin from value or if value < -1 (-pi/2) or value>1 (pi/2).
@@ -605,7 +603,7 @@ public class ProjectionUtils {
 
     /**
      * A helper method modulos (pi)the given angle (in radians) until the result fits betwee -HALFPI and HALF_PI.
-     * 
+     *
      * @param angle
      *            in radians
      * @return the angle adjusted to -pi/2 + pi/2 or 0 if the angle is NaN or Infinite.
@@ -625,7 +623,7 @@ public class ProjectionUtils {
 
     /**
      * A helper method modulos (2*pi)the given angle (in radians) until the result fits betwee -PI and PI.
-     * 
+     *
      * @param angle
      *            to be normalized
      * @return the angle adjusted to -2*pi + pi*2 or 0 if the angle is NaN or Infinite.
@@ -647,7 +645,7 @@ public class ProjectionUtils {
      * Converts a Deegree.MinSec value into it's radian equivalent. <code>
      * for example 13.120637 dms -> 13.201769444444446° -> 0.23041434389473822 rd
      * </code>
-     * 
+     *
      * @param inCoord
      *            to be converted to radians.
      * @return the radian equivalent of the inCoord.
@@ -662,9 +660,9 @@ public class ProjectionUtils {
 
     /**
      * Converts a radian to its Deegree.MinSec equivalent.<code>
-     * For example 0.23041434389473822 rd -> 13.201769444444446° -> 13.120637 dms 
+     * For example 0.23041434389473822 rd -> 13.201769444444446° -> 13.120637 dms
      * </code>
-     * 
+     *
      * @param inCoord
      *            to be converted to degrees.minsec
      * @return the radian equivalent of the inCoord.
@@ -679,10 +677,10 @@ public class ProjectionUtils {
 
     /**
      * Retrieve the remainder of a given double value, e.g. value - Math.floor( value ).
-     * 
+     *
      * @param value
      *            to get the remainder from.
-     * 
+     *
      * @return the remainder of the given value.
      */
     private static double getRemainder( double value ) {

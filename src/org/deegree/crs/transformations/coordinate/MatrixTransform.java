@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.crs.transformations.coordinate;
 
 import static org.deegree.crs.projections.ProjectionUtils.EPS11;
@@ -52,16 +50,16 @@ import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 
 /**
- * 
+ *
  * The <code>MatrixTransform</code> class allows transformations using matrices. Although technically n &times; m
  * matrices are possible, at the moment only 2 &times; 2, 3 &times; 3 and 4 &times; 4 matrices are supported.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class MatrixTransform extends CRSTransformation {
 
@@ -96,7 +94,7 @@ public class MatrixTransform extends CRSTransformation {
 
     /**
      * Set super values and numRow,numCol.
-     * 
+     *
      * @param source
      * @param target
      * @param numRow
@@ -110,12 +108,12 @@ public class MatrixTransform extends CRSTransformation {
 
     /**
      * Construct a transform.
-     * 
+     *
      * @param source
      *            the source coordinate system
      * @param target
      *            the target coordinate system.
-     * 
+     *
      * @param matrix
      * @param id
      *            an identifiable instance containing information about this transformation
@@ -145,12 +143,12 @@ public class MatrixTransform extends CRSTransformation {
 
     /**
      * Construct a transform.
-     * 
+     *
      * @param source
      *            the source coordinate system
      * @param target
      *            the target coordinate system.
-     * 
+     *
      * @param matrix
      */
     public MatrixTransform( CoordinateSystem source, CoordinateSystem target, final GMatrix matrix ) {
@@ -159,12 +157,12 @@ public class MatrixTransform extends CRSTransformation {
 
     /**
      * Construct a 3d transform.
-     * 
+     *
      * @param source
      *            the source coordinate system
      * @param target
      *            the target coordinate system.
-     * 
+     *
      * @param matrix
      * @param id
      *            an identifiable instance containing information about this transformation
@@ -178,12 +176,12 @@ public class MatrixTransform extends CRSTransformation {
 
     /**
      * Construct a 3d transform.
-     * 
+     *
      * @param source
      *            the source coordinate system
      * @param target
      *            the target coordinate system.
-     * 
+     *
      * @param matrix
      */
     public MatrixTransform( CoordinateSystem source, CoordinateSystem target, final Matrix3d matrix ) {
@@ -192,12 +190,12 @@ public class MatrixTransform extends CRSTransformation {
 
     /**
      * Construct a 4d transform.
-     * 
+     *
      * @param source
      *            the source coordinate system
      * @param target
      *            the target coordinate system.
-     * 
+     *
      * @param matrix
      * @param id
      *            an identifiable instance containing information about this transformation
@@ -211,12 +209,12 @@ public class MatrixTransform extends CRSTransformation {
 
     /**
      * Construct a 4d transform.
-     * 
+     *
      * @param source
      *            the source coordinate system
      * @param target
      *            the target coordinate system.
-     * 
+     *
      * @param matrix
      */
     public MatrixTransform( CoordinateSystem source, CoordinateSystem target, Matrix4d matrix ) {
@@ -225,12 +223,12 @@ public class MatrixTransform extends CRSTransformation {
 
     /**
      * Construct a 4d transform.
-     * 
+     *
      * @param source
      *            the source coordinate system
      * @param target
      *            the target coordinate system.
-     * 
+     *
      * @param matrix
      * @param transformationName
      *            the 'optional' name of the transformation, which is useful to specify the 'helmert' transformation.
@@ -247,12 +245,12 @@ public class MatrixTransform extends CRSTransformation {
 
     /**
      * Construct a 4d transform.
-     * 
+     *
      * @param source
      *            the source coordinate system
      * @param target
      *            the target coordinate system.
-     * 
+     *
      * @param matrix
      * @param transformationName
      *            the 'optional' name of the transformation, which is useful to specify the 'helmert' transformation.
@@ -345,25 +343,25 @@ public class MatrixTransform extends CRSTransformation {
      * <li>Only inputDimension values of the incoming point will be taken into account.</li>
      * <li>If the input dimension == 4 the fourth value is assumed to be 1.</li>
      * </ol>
-     * 
+     *
      * <p>
      * For example, a square matrix of size 4&times;4. Is a three-dimensional transformation for incoming and outgoing
      * coordinates. The transformed points <code>(x',y',z')</code> are computed as below (note that this computation
      * is similar to {@link PerspectiveTransform}):
-     * 
+     *
      * <blockquote> <code>
      * <pre>
      *    [ a ]     [ m&lt;sub&gt;00&lt;/sub&gt;  m&lt;sub&gt;01&lt;/sub&gt;  m&lt;sub&gt;02&lt;/sub&gt;  m&lt;sub&gt;03&lt;/sub&gt; ] [ x ]
      *    [ b ]  =  [ m&lt;sub&gt;10&lt;/sub&gt;  m&lt;sub&gt;11&lt;/sub&gt;  m&lt;sub&gt;12&lt;/sub&gt;  m&lt;sub&gt;13&lt;/sub&gt; ] [ y ]
      *    [ c ]     [ m&lt;sub&gt;20&lt;/sub&gt;  m&lt;sub&gt;21&lt;/sub&gt;  m&lt;sub&gt;22&lt;/sub&gt;  m&lt;sub&gt;23&lt;/sub&gt; ] [ z ]
      *    [ w ]     [ m&lt;sub&gt;30&lt;/sub&gt;  m&lt;sub&gt;31&lt;/sub&gt;  m&lt;sub&gt;32&lt;/sub&gt;  m&lt;sub&gt;33&lt;/sub&gt; ] [ 1 ]
-     *                         
+     *
      *     x' = a/w
      *     y' = b/w
      *     z' = c/w
      * </pre>
      * </code> </blockquote>
-     * 
+     *
      * @param srcPts
      *            list containing the source point coordinates.
      */
@@ -415,7 +413,7 @@ public class MatrixTransform extends CRSTransformation {
 
     /**
      * Use the given GMatrix to transform the given points inplace.
-     * 
+     *
      * @param m4d
      *            the matrix to use (e.g. the inverse matrix or the forward matrix.
      * @param srcPts
@@ -429,7 +427,7 @@ public class MatrixTransform extends CRSTransformation {
 
     /**
      * Use the given GMatrix to transform the given points in-place.
-     * 
+     *
      * @param m3d
      *            the matrix to use (e.g. the inverse matrix or the forward matrix).
      * @param srcPts

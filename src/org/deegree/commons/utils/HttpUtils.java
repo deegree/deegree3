@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils;
 
@@ -64,29 +62,29 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 
 /**
  * <code>HttpUtils</code>
- * 
+ *
  * Example use from rhino:
- * 
+ *
  * <code>
  * var u = org.deegree.commons.utils.HttpUtils
  * u.retrieve(u.UTF8STRING, "http://demo.deegree.org/deegree-wms/services?request=capabilities&service=WMS")
  * </code>
- * 
+ *
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class HttpUtils {
 
     static final XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-    
+
     /**
      * <code>Worker</code> is used to specify how to return the stream from the remote location.
-     * 
+     *
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author$
-     * 
+     *
      * @version $Revision$, $Date$
      * @param <T>
      */
@@ -117,7 +115,7 @@ public class HttpUtils {
             return new XMLAdapter( in );
         }
     };
-    
+
     /**
      * Returns streaming XMLAdapter.
      */
@@ -127,9 +125,9 @@ public class HttpUtils {
                 return new XMLStreamReaderWrapper(xmlInputFactory.createXMLStreamReader(in ), "Post response" );
             } catch ( XMLStreamException e ) {
                 throw new IOException ("Error creating XMLStreamReader for POST response: " + e.getMessage());
-            }            
+            }
         }
-    };    
+    };
 
     /**
      * Returns a decoded String.
@@ -215,7 +213,7 @@ public class HttpUtils {
 
     /**
      * Performs an HTTP-Get request and provides typed access to the response.
-     * 
+     *
      * @param <T>
      * @param worker
      * @param url
@@ -232,15 +230,15 @@ public class HttpUtils {
         PostMethod post = new PostMethod( url );
         post.setRequestEntity( new InputStreamRequestEntity(postBody) );
         for ( String key : headers.keySet() ) {
-            post.setRequestHeader( key, headers.get( key ));    
-        }        
+            post.setRequestHeader( key, headers.get( key ));
+        }
         client.executeMethod( post );
         return worker.work( post.getResponseBodyAsStream() );
     }
 
     /**
      * Performs an HTTP-Get request and provides typed access to the response.
-     * 
+     *
      * @param <T>
      * @param worker
      * @param url
@@ -256,9 +254,9 @@ public class HttpUtils {
         HttpClient client = new HttpClient();
         GetMethod get = new GetMethod( url );
         for ( String key : headers.keySet() ) {
-            get.setRequestHeader( key, headers.get( key ));    
-        }        
+            get.setRequestHeader( key, headers.get( key ));
+        }
         client.executeMethod( get );
         return worker.work( get.getResponseBodyAsStream() );
-    }    
+    }
 }

@@ -1,45 +1,38 @@
 // $HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/branches/2.2_testing/src/org/deegree/framework/concurrent/Executor.java $
-/*----------------    FILE HEADER  ------------------------------------------
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
 
- This file is part of deegree.
- Copyright (C) 2001-2008 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.commons.concurrent;
 
 import java.util.ArrayList;
@@ -65,16 +58,16 @@ import java.util.concurrent.TimeUnit;
  * internally to minimize overhead for acquiring the necessary {@link Thread} instances and to
  * manage the number of concurrent threads.
  * </p>
- * 
+ *
  * @see java.util.concurrent.ExecutorService
  * @see ExecutionFinishedListener
- * 
+ *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: apoth $
- * 
+ *
  * @version $Revision: 9339 $, $Date: 2007-12-27 12:31:52 +0000 (Do, 27 Dez 2007) $
  */
 public class Executor {
@@ -92,7 +85,7 @@ public class Executor {
 
     /**
      * Returns the only instance of this class (singleton pattern).
-     * 
+     *
      * @return the only instance of this class
      */
     public synchronized static Executor getInstance() {
@@ -105,8 +98,8 @@ public class Executor {
 
     /**
      * Performs a task asynchronously (in an independent thread) without any time limit.
-     * 
-     * @param <T> 
+     *
+     * @param <T>
      *            type of return value
      * @param task
      *            task to be performed (specified in the {@link Callable#call()} method)
@@ -122,8 +115,8 @@ public class Executor {
 
     /**
      * Performs a task asynchronously (in an independent thread) with a given time limit.
-     * 
-     * @param <T> 
+     *
+     * @param <T>
      *            type of return value
      * @param task
      *            task to be performed (specified in the {@link Callable#call()}} method)
@@ -142,7 +135,7 @@ public class Executor {
 
     /**
      * Performs a task synchronously with a given timeout.
-     * 
+     *
      * @param <T>
      *            type of return value
      * @param task
@@ -152,7 +145,7 @@ public class Executor {
      * @return result value of the called method
      * @throws CancellationException
      *             if the execution time exceeds the specified timeout / thread has been cancelled
-     * @throws InterruptedException 
+     * @throws InterruptedException
      *             if interrupted while waiting, in which case unfinished tasks are cancelled
      * @throws Throwable
      *             if the tasks throws an exception itself
@@ -167,10 +160,10 @@ public class Executor {
         try {
             List<Future<T>> futures = this.execService.invokeAll(  tasks, timeout, TimeUnit.MILLISECONDS );
             Future<T> future = futures.get( 0 );
-            result = future.get();              
+            result = future.get();
         } catch ( ExecutionException e ) {
             throw ( e.getCause() );
-        } 
+        }
         return result;
     }
 
@@ -181,7 +174,7 @@ public class Executor {
      * each given {@link Callable}, an independent thread is used. For each task, an
      * {@link ExecutionFinishedEvent} is generated and returned.
      * @param <T> the result type of the callables
-     * 
+     *
      * @param tasks
      *            tasks to be performed (specified in the {@link Callable#call()} methods)
      * @return ExecutionFinishedEvents for all tasks
@@ -220,7 +213,7 @@ public class Executor {
      * each given {@link Callable}, an independent thread is used. For each task, an
      * {@link ExecutionFinishedEvent} is generated and returned.
      * @param <T> the result type of the tasks
-     * 
+     *
      * @param tasks
      *            tasks to be performed (specified in the {@link Callable#call()} methods)
      * @param timeout
@@ -262,7 +255,7 @@ public class Executor {
 
     /**
      * Inner class for performing task asynchronously.
-     * 
+     *
      * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>

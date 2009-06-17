@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
@@ -50,11 +48,11 @@ import com.sun.opengl.util.BufferUtil;
 /**
  * The <code>DirectGeometryBuffer</code> encapsulates the directbuffers (coordinate, normals and texture) for all
  * buildings defined in a scene.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class DirectGeometryBuffer {
 
@@ -137,7 +135,7 @@ public class DirectGeometryBuffer {
     /**
      * Add the given {@link FloatBuffer} to the direct coordinates buffer, if the direct coordinate buffer does not have
      * the capacity this method will return -1;
-     * 
+     *
      * @param coordBuffer
      *            to add to the coordinates direct buffer.
      * @return the position of the copy in the coordinate buffer or -1 if the given buffer could not be copied in the
@@ -150,7 +148,7 @@ public class DirectGeometryBuffer {
     /**
      * Add the given {@link FloatBuffer} to the direct coordinates buffer, if the direct normal buffer does not have the
      * capacity this method will return -1;
-     * 
+     *
      * @param normalBuffer
      *            to add to the normal direct buffer.
      * @return the position of the copy in the coordinate buffer or -1 if the given buffer could not be copied in the
@@ -163,7 +161,7 @@ public class DirectGeometryBuffer {
     /**
      * Add the given {@link FloatBuffer} to the direct texture buffer, if the direct texture buffer does not have the
      * capacity this method will return -1;
-     * 
+     *
      * @param textureBuffer
      *            to add to the texture direct buffer.
      * @return the position of the copy in the texture buffer or -1 if the given buffer could not be copied in the
@@ -175,7 +173,7 @@ public class DirectGeometryBuffer {
 
     /**
      * Add the values from the given buffer to the directbuffer.
-     * 
+     *
      * @param directBuffer
      * @param newBuffer
      * @return
@@ -193,7 +191,7 @@ public class DirectGeometryBuffer {
     /**
      * Read the floats from the given {@link DataInputStream} to the direct coordinates buffer, if the direct coordinate
      * buffer does not have the capacity this method will return -1,-1;
-     * 
+     *
      * @param in
      *            the stream to add to the coordinates from.
      * @return the position [0] of the copy in the coordinate buffer and the number of ordinates [1] inserted. Both will
@@ -208,7 +206,7 @@ public class DirectGeometryBuffer {
     /**
      * Read the floats from the given {@link DataInputStream} to the direct normal buffer, if the direct normal buffer
      * does not have the capacity this method will return -1,-1;
-     * 
+     *
      * @param in
      *            the stream to add to the coordinates from.
      * @return the position [0] of the copy in the normal buffer and the number of ordinates [1] inserted. Both will
@@ -223,7 +221,7 @@ public class DirectGeometryBuffer {
     /**
      * Read the floats from the given {@link DataInputStream} to the direct texture buffer, if the direct texture buffer
      * does not have the capacity this method will return -1,-1;
-     * 
+     *
      * @param in
      *            the stream to add to the coordinates from.
      * @return the position [0] of the copy in the texture buffer and the number of ordinates [1] inserted. Both will
@@ -260,7 +258,7 @@ public class DirectGeometryBuffer {
      * Add the floats read from the given {@link ObjectInputStream} to the direct coordinate {@link FloatBuffer}, if
      * the direct coordinate buffer does not have the capacity this method will return -1. This method assumes that the
      * stream is positioned so, that the next value is an int, declaring the size of the number of floats to be read.
-     * 
+     *
      * @param in
      *            the stream to get the floats from.
      * @return the position of the copy in the texture buffer or -1 if the given buffer could not be copied in the
@@ -286,7 +284,7 @@ public class DirectGeometryBuffer {
      * Add the floats read from the given {@link ObjectInputStream} to the direct normal {@link FloatBuffer}, if the
      * direct normal buffer does not have the capacity this method will return -1. This method assumes that the stream
      * is positioned so, that the next value is an int, declaring the size of the number of floats to be read.
-     * 
+     *
      * @param in
      *            the stream to get the floats from.
      * @return the position of the copy in the normal buffer or -1 if the given buffer could not be copied in the direct
@@ -311,7 +309,7 @@ public class DirectGeometryBuffer {
      * Add the floats read from the given {@link ObjectInputStream} to the direct texture {@link FloatBuffer}, if the
      * direct texture buffer does not have the capacity this method will return -1. This method assumes that the stream
      * is positioned so, that the next value is an int, declaring the size of the number of floats to be read.
-     * 
+     *
      * @param in
      *            the stream to get the floats from.
      * @return the position of the copy in the texture buffer or -1 if the given buffer could not be copied in the
@@ -326,7 +324,7 @@ public class DirectGeometryBuffer {
 
     /**
      * Read from the given stream the values into the given direct buffer.
-     * 
+     *
      * @param directBuffer
      * @param in
      * @return

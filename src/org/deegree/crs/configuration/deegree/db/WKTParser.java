@@ -1,40 +1,38 @@
 //$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
- Copyright (C) 2001-2008 by:
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.deegree.db;
 
@@ -76,13 +74,13 @@ import org.deegree.crs.transformations.helmert.Helmert;
  * The <code>WKTParser</code> class instantiates the Coordinate System given in a file, in WKT (Well Known Text) format.
  * The extendend Backus-Naur grammar of WKT as well as a detailed reference are available at the <a
  * href="http://www.opengeospatial.org/standards/ct">OGC website</a>.
- * 
+ *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
+ *
  * @author last edited by: $Author: ionita $
- * 
+ *
  * @version $Revision: $, $Date: $
- * 
+ *
  */
 public class WKTParser {
 
@@ -92,7 +90,7 @@ public class WKTParser {
 
     /**
      * Walk a character (comma or round/square bracket).
-     * 
+     *
      * @param ch
      * @throws IOException
      *             if an I/O error occurs.
@@ -109,7 +107,7 @@ public class WKTParser {
 
     /**
      * Walk an opening bracket (round or square).
-     * 
+     *
      * @throws IOException
      *             if an I/O error occurs.
      * @throws WKTParsingException
@@ -126,7 +124,7 @@ public class WKTParser {
 
     /**
      * Walk a closing bracket (round or square).
-     * 
+     *
      * @throws IOException
      *             if an I/O error occurs.
      * @throws WKTParsingException
@@ -143,7 +141,7 @@ public class WKTParser {
 
     /**
      * Walk a WKT keyword element (e.g. DATUM, AUTHORITY, UNIT, etc.)
-     * 
+     *
      * @param s
      *            the keyword element as a String
      * @throws IOException
@@ -725,7 +723,7 @@ public class WKTParser {
             if ( !params.containsKey( "standard_parallel2" ) )
                 params.put( "standard_parallel2", 0.0 );
 
-            if ( projectionType.equalsIgnoreCase( "transverse_mercator" ) || 
+            if ( projectionType.equalsIgnoreCase( "transverse_mercator" ) ||
                                     projectionType.equalsIgnoreCase( "Gauss_Kruger" ) )
                 return new ProjectedCRS(
                                          new TransverseMercator(
@@ -783,8 +781,8 @@ public class WKTParser {
                                          new Axis[] { axis1, axis2 }, new CRSIdentifiable( new CRSCodeType[] { code },
                                                                                            new String[] { name }, null,
                                                                                            null, null ) );
-            else if ( projectionType.equalsIgnoreCase( "Stereographic_Alternative" ) || 
-                                    projectionType.equalsIgnoreCase( "Double_Stereographic" ) || 
+            else if ( projectionType.equalsIgnoreCase( "Stereographic_Alternative" ) ||
+                                    projectionType.equalsIgnoreCase( "Double_Stereographic" ) ||
                                     projectionType.equalsIgnoreCase( "Oblique_Stereographic" ) )
                 return new ProjectedCRS(
                                         new StereographicAlternative(
@@ -1040,7 +1038,7 @@ public class WKTParser {
 
     /**
      * Constructor
-     * 
+     *
      * @param fileName
      *            the file that contains a Coordinate System definition
      * @throws IOException
@@ -1054,7 +1052,7 @@ public class WKTParser {
 
     /**
      * For testing purposes.
-     * 
+     *
      * @param args
      *            The first argument is the file containing the Coordinate System.
      * @throws IOException

@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.deegree.xml;
 
@@ -76,36 +74,36 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The <code>CRSExporter</code> exports to the old version format (no version attribute).
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class CRSExporter {
 
     private static Logger LOG = LoggerFactory.getLogger( CRSExporter.class );
 
     XMLStreamWriter xmlWriter = null ;
-    
+
     /**
-     * 
+     *
      * @param properties
      *            to read configuration from.
      */
     public CRSExporter( Properties properties ) {
         // nothing yet.
     }
-    
+
     public CRSExporter( ) {
 
     }
 
     /**
      * Export the given list of CoordinateSystems into the crs-definition format.
-     * 
+     *
      * @param writer
      * @param crsToExport
      */
@@ -113,7 +111,7 @@ public class CRSExporter {
     	if ( crsToExport != null ) {
             if ( crsToExport.size() != 0 ) {
                 LOG.debug( "Trying to export: " + crsToExport.size() + " coordinate systems." );
-                
+
                 //LinkedList<String> exportedIDs = new LinkedList<String>();
                 Set<Ellipsoid> ellipsoids = new HashSet<Ellipsoid>();
                 Set<GeodeticDatum> datums = new HashSet<GeodeticDatum>();
@@ -122,8 +120,8 @@ public class CRSExporter {
                 Set<ProjectedCRS> projecteds = new HashSet<ProjectedCRS>();
                 Set<CompoundCRS> compounds = new HashSet<CompoundCRS>();
                 Set<PrimeMeridian> primeMeridians = new HashSet<PrimeMeridian>();
-                Set<Helmert> wgs84s = new HashSet<Helmert>(); 
-                
+                Set<Helmert> wgs84s = new HashSet<Helmert>();
+
                 for ( CoordinateSystem crs : crsToExport ) {
                 	if ( crs != null ) {
                 		GeodeticDatum d = (GeodeticDatum) crs.getDatum();
@@ -133,7 +131,7 @@ public class CRSExporter {
                 		if ( crs.getType() == CoordinateSystem.GEOCENTRIC_CRS ) {
                 			geocentrics.add( (GeocentricCRS) crs );
                 		} else if ( crs.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
-                			geographics.add( (GeographicCRS) crs ); 
+                			geographics.add( (GeographicCRS) crs );
                 		} else if ( crs.getType() == CoordinateSystem.PROJECTED_CRS ) {
                 			projecteds.add( (ProjectedCRS) crs );
                 		} else if ( crs.getType() == CoordinateSystem.COMPOUND_CRS ) {
@@ -145,12 +143,12 @@ public class CRSExporter {
 
                 	}
                 }
-                
+
                 initDocument();
-                
+
                 for( Ellipsoid e : ellipsoids) {
                 	export( e );
-                }                
+                }
                 for ( GeodeticDatum d : datums ) {
                 	export( d );
                 }
@@ -171,7 +169,7 @@ public class CRSExporter {
                 }
                 for ( Helmert wgs84 : wgs84s ) {
                 	export( wgs84 );
-                }                
+                }
 
                 try {
                 	xmlWriter.writeEndElement(); // </crs:definitions>
@@ -181,7 +179,7 @@ public class CRSExporter {
                 } catch (XMLStreamException e1) {
                 	e1.printStackTrace();
                 }
-                                
+
 //                root.normalize();
 //                Document validDoc = createValidDocument( root );
 //                try {
@@ -204,7 +202,7 @@ public class CRSExporter {
 
     /*
      *  Open an XML document from stream for exporting
-     *  
+     *
      *  @param xmlWriter
      *  			xml stream for exporting
      */
@@ -221,7 +219,7 @@ public class CRSExporter {
     	} catch (XMLStreamException e) {
     		e.printStackTrace();
     	}
-    	
+
 //    	private Document createValidDocument( Element root ) {
 //            // List<Element> lastInput = new LinkedList<Element>( 100 );
 //            try {
@@ -257,7 +255,7 @@ public class CRSExporter {
 
 	/**
      * Export the confInvo to it's appropriate deegree-crs-definitions form.
-     * 
+     *
      * @param wgs84
      *            to be exported
      * @param xmlWriter
@@ -295,7 +293,7 @@ public class CRSExporter {
     		xmlWriter.writeStartElement( CRSNS, "scaleDifference" );
     		xmlWriter.writeCharacters( Double.toString( wgs84.ppm ) );
     		xmlWriter.writeEndElement();
-    		
+
     		xmlWriter.writeEndElement();
     	} catch (XMLStreamException e) {
     		e.printStackTrace();
@@ -330,12 +328,12 @@ public class CRSExporter {
 //                rootNode.appendChild( convElement );
 //            }
 //
-//        }	
+//        }
    	}
 
     /**
      * Export the PrimeMeridian to it's appropriate deegree-crs-definitions form.
-     * 
+     *
      * @param pm
      *            PrimeMeridian to be exported
      * @param xmlWriter
@@ -356,7 +354,7 @@ public class CRSExporter {
 		} catch (XMLStreamException e) {
 			e.printStackTrace();
 		}
-		
+
 //		private void export( PrimeMeridian pMeridian, Element rootNode, final List<String> exportedIds ) {
 //            if ( !exportedIds.contains( pMeridian.getIdentifier() ) ) {
 //                Element meridianElement = XMLTools.appendElement( rootNode, CommonNamespaces.CRSNS, PRE + "primeMeridian" );
@@ -378,7 +376,7 @@ public class CRSExporter {
 
 	/**
      * Export the compoundCRS to it's appropriate deegree-crs-definitions form.
-     * 
+     *
      * @param compoundCRS
      *            to be exported
      * @param xmlWriter
@@ -406,7 +404,7 @@ public class CRSExporter {
     	} catch (XMLStreamException e) {
     		e.printStackTrace();
     	}
-    	
+
 //        private void export( CompoundCRS compoundCRS, Element rootNode, List<String> exportedIds ) {
 //            if ( !exportedIds.contains( compoundCRS.getIdentifier() ) ) {
 //                Element crsElement = XMLTools.appendElement( rootNode, CommonNamespaces.CRSNS, PRE + "compoundCRS" );
@@ -432,12 +430,12 @@ public class CRSExporter {
 //                // finally add the crs node to the rootnode.
 //                rootNode.appendChild( crsElement );
 //            }
-//        }		
+//        }
 	}
-    
+
     /**
      * Export the projected CRS to it's appropriate deegree-crs-definitions form.
-     * 
+     *
      * @param projectedCRS
      *            to be exported
      * @param xmlWriter
@@ -447,11 +445,11 @@ public class CRSExporter {
 		try {
     		xmlWriter.writeStartElement( CRSNS, "projectedCRS" );
     		exportAbstractCRS( (CoordinateSystem) projectedCRS );
-    		
+
     		xmlWriter.writeStartElement(CRSNS, "usedGeographicCRS" );
     		xmlWriter.writeCharacters( projectedCRS.getGeographicCRS().getCode().getEquivalentString() );
     		xmlWriter.writeEndElement();
-    		
+
     		// projection
     		export( projectedCRS.getProjection() );
 
@@ -459,7 +457,7 @@ public class CRSExporter {
     	} catch (XMLStreamException e) {
     		e.printStackTrace();
     	}
-						
+
 //		if ( !exportedIds.contains( projectedCRS.getIdentifier() ) ) {
 //            Element crsElement = XMLTools.appendElement( rootNode, CommonNamespaces.CRSNS, PRE + "projectedCRS" );
 //            exportAbstractCRS( projectedCRS, crsElement );
@@ -483,7 +481,7 @@ public class CRSExporter {
 
 	/**
      * Export the projection to it's appropriate deegree-crs-definitions form.
-     * 
+     *
      * @param projection
      *            to be exported
      * @param xmlWriter
@@ -549,7 +547,7 @@ public class CRSExporter {
 		} catch (XMLStreamException e) {
 			e.printStackTrace();
 		}
-		
+
 //		private void export( Projection projection, Element rootNode ) {
 //	        Element rootElem = XMLTools.appendElement( rootNode, CommonNamespaces.CRSNS, PRE + "projection" );
 //	        String elementName = projection.getImplementationName();
@@ -600,7 +598,7 @@ public class CRSExporter {
 
 	/**
      * Export the geocentric/geographic CRS to it's appropriate deegree-crs-definitions form.
-     * 
+     *
      * @param geographicCRS
      *            to be exported
      * @param xmlWriter
@@ -618,7 +616,7 @@ public class CRSExporter {
 		} catch (XMLStreamException e) {
 			e.printStackTrace();
 		}
-		
+
 //	    private void export( GeographicCRS geographicCRS, Element rootNode, List<String> exportedIds ) {
 //	        if ( !exportedIds.contains( geographicCRS.getIdentifier() ) ) {
 //	            Element crsElement = XMLTools.appendElement( rootNode, CommonNamespaces.CRSNS, PRE + "geographicCRS" );
@@ -643,10 +641,10 @@ public class CRSExporter {
 //	    }
 	}
 
-	
+
 	/**
      * Export the geocentric CRS to it's appropriate deegree-crs-definitions form.
-     * 
+     *
      * @param geocentricCRS
      *            to be exported
      * @param xmlWriter
@@ -662,7 +660,7 @@ public class CRSExporter {
     	} catch (XMLStreamException e) {
     		e.printStackTrace();
     	}
-    	
+
 //    	private void export( GeocentricCRS geocentricCRS, Element rootNode, List<String> exportedIds ) {
 //            if ( !exportedIds.contains( geocentricCRS.getIdentifier() ) ) {
 //                Element crsElement = XMLTools.appendElement( rootNode, CommonNamespaces.CRSNS, PRE + "geocentricCRS" );
@@ -680,12 +678,12 @@ public class CRSExporter {
 //                // finally add the crs node to the rootnode.
 //                rootNode.appendChild( crsElement );
 //            }
-//        }	
+//        }
     }
 
 	/**
      * Export toplevel crs features.
-     * 
+     *
      * @param crs
      *            to be exported
      * @param xmlWriter
@@ -714,10 +712,10 @@ public class CRSExporter {
 
 			e.printStackTrace();
 		}
-		
+
 		// export transformations and recurse on their type
 		exportTransformations( crs.getTransformations() );
-			
+
 //	private void exportAbstractCRS( CoordinateSystem crs, Element crsElement ) {
 //        exportIdentifiable( crs, crsElement );
 //        Axis[] axis = crs.getAxis();
@@ -735,11 +733,11 @@ public class CRSExporter {
 //        export( crs.getTransformations(), crsElement );
 //
     }
-	
-	
+
+
 	/**
      * Export a list of transformations from the crs element to xml with respect to the crs-definitions schema layout.
-     * 
+     *
      * @param transformations
      *            to be exported.
      * @param xmlWriter
@@ -775,7 +773,7 @@ public class CRSExporter {
 	    		xmlWriter.writeEndElement();
 	    	} catch (XMLStreamException e) {
 	    		e.printStackTrace();
-	    	} 
+	    	}
 	    }
 
 //	    private void export( List<PolynomialTransformation> transformations, Element currentNode ) {
@@ -801,7 +799,7 @@ public class CRSExporter {
 
 	/**
      * Export an axis to xml in the crs-definitions schema layout.
-     * 
+     *
      * @param axis
      *            to be exported.
      * @param elName
@@ -826,7 +824,7 @@ public class CRSExporter {
 		} catch (XMLStreamException e) {
 			e.printStackTrace();
 		}
-		
+
 //		OLD CODE
 //    private void export( Axis axis, Element currentNode ) {
 //        Document doc = currentNode.getOwnerDocument();
@@ -845,7 +843,7 @@ public class CRSExporter {
 
 	/**
      * Export a unit to xml in the crs-definitions schema layout.
-     * 
+     *
      * @param units
      *            to be exported.
      * @param xmlWriter
@@ -861,17 +859,17 @@ public class CRSExporter {
 				e.printStackTrace();
 			}
 		}
-	
+
 //    private void export( Unit units, Element currentNode ) {
 //        if ( units != null && currentNode != null ) {
 //            XMLTools.appendElement( currentNode, CommonNamespaces.CRSNS, PRE + "units", units.getName() );
 //        }
-//    }	
+//    }
 	}
 
 	/**
      * Export the datum to it's appropriate deegree-crs-definitions form.
-     * 
+     *
      * @param datum
      *            to be exported
      * @param xmlWriter
@@ -903,7 +901,7 @@ public class CRSExporter {
 		} catch (XMLStreamException e) {
 			e.printStackTrace();
 		}
-		
+
 //	    private void export( GeodeticDatum datum, Element rootNode, List<String> exportedIds ) {
 //	        if ( !exportedIds.contains( datum.getIdentifier() ) ) {
 //	            Element datumElement = XMLTools.appendElement( rootNode, CommonNamespaces.CRSNS, PRE + "geodeticDatum" );
@@ -953,7 +951,7 @@ public class CRSExporter {
 
 	/**
      * Export the ellipsoid to it's appropriate deegree-crs-definitions form.
-     * 
+     *
      * @param ellipsoid
      *            to be exported
      * @param xmlWriter
@@ -968,34 +966,34 @@ public class CRSExporter {
     			 exportIdentifiable( ellipsoid );
 
     			 double sMajorAxis = ellipsoid.getSemiMajorAxis();
-    			 xmlWriter.writeStartElement( CRSNS, "semiMajorAxis" ); 
+    			 xmlWriter.writeStartElement( CRSNS, "semiMajorAxis" );
     			 xmlWriter.writeCharacters( Double.toString(sMajorAxis) );
     			 xmlWriter.writeEndElement();
-    			 
+
 //    			 double ecc = ellipsoid.getEccentricity();
 //    			 xmlWriter.writeStartElement( CRSNS, "eccentricity" );
 //    			 xmlWriter.writeCharacters( Double.toString(ecc) );
 //    			 xmlWriter.writeEndElement();
-    			 
-    			 double inverseF = ellipsoid.getInverseFlattening();    			 
+
+    			 double inverseF = ellipsoid.getInverseFlattening();
     			 xmlWriter.writeStartElement( CRSNS, "inverseFlattening" );
     			 xmlWriter.writeCharacters( Double.toString(inverseF) );
     			 xmlWriter.writeEndElement();
-    			 
+
 //    			 double sMinorAxis = ellipsoid.getSemiMinorAxis();
 //    			 xmlWriter.writeStartElement( CRSNS, "semiMinorAxis" );
 //    			 xmlWriter.writeCharacters( Double.toString(sMinorAxis) );
 //    			 xmlWriter.writeEndElement();
-    			 
+
     			 Unit u = ellipsoid.getUnits();
     			 export( u );
-    			 
+
     			 xmlWriter.writeEndElement();
     		 } catch (XMLStreamException e) {
     			 e.printStackTrace();
     		 }
     	 }
-                       
+
 //    	 private void export( Ellipsoid ellipsoid, Element rootNode, final List<String> exportedIds ) {
 //    	        if ( !exportedIds.contains( ellipsoid.getIdentifier() ) ) {
 //    	            Element ellipsoidElement = XMLTools.appendElement( rootNode, CommonNamespaces.CRSNS, PRE + "ellipsoid" );
@@ -1022,17 +1020,17 @@ public class CRSExporter {
 	 */
 	protected void setWriter( Writer writer ) {
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
-        factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );        
+        factory.setProperty( "javax.xml.stream.isRepairingNamespaces", Boolean.TRUE );
         try {
             xmlWriter = new FormattingXMLStreamWriter( factory.createXMLStreamWriter( writer ) );
         } catch (XMLStreamException e1) {
             LOG.error( e1.getMessage() );
         }
 	}
-	
+
 	/**
      * Creates the basic nodes of the identifiable object.
-     * 
+     *
      * @param crsIdentifiable
      *            object to be exported.
      * @param xmlWriter
@@ -1096,7 +1094,7 @@ public class CRSExporter {
 		} catch (XMLStreamException e) {
 			e.printStackTrace();
 		}
-		
+
 //	    private void exportIdentifiable( CRSIdentifiable id, Element currentNode ) {
 //	        for ( String i : id.getIdentifiers() ) {
 //	            if ( i != null ) {
@@ -1135,5 +1133,5 @@ public class CRSExporter {
 //	    }
 	}
 
-		
+
 }

@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.transformations;
 
@@ -51,7 +49,7 @@ import org.deegree.crs.i18n.Messages;
 
 /**
  * The <code>Transformation</code> class supplies the most basic method interface for any given transformation.
- * 
+ *
  * The change of coordinates from one CRS to another CRS based on different datum is 'currently' only possible via a
  * coordinate <code>Transformation</code>.
  * <p>
@@ -63,13 +61,13 @@ import org.deegree.crs.i18n.Messages;
  * <p>
  * An analytic derivation is precise but mostly too complex to evaluate.
  * </p>
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
 
@@ -104,7 +102,7 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
 
     /**
      * Do a transformation, e.g. the incoming data will be transformed into other coordinates.
-     * 
+     *
      * @param srcPts
      *            the points which must be transformed, expected are following values either, long_1, lat_1, height_1,
      *            long_2, lat_2, height_2. or long_1, lat_1, long_2, lat_2
@@ -122,7 +120,7 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
 
     /**
      * Little helper function to create a temporary id or name.
-     * 
+     *
      * @param source
      *            containing the value (id or name) of the 'src' coourdinateSystem
      * @param dest
@@ -138,7 +136,7 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
      * will be read according to the dimension of the source CRS {@link #getSourceDimension()} and the target
      * coordinates will be put according to the dimension of the targetCRS {@link #getTargetDimension()}. If the
      * sourceDim &lt; 2 or &gt; 3 a transformation exception will be thrown.
-     * 
+     *
      * @param srcCoords
      *            the array holding the source ('original') coordinates.
      * @param startPositionSrc
@@ -228,7 +226,7 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
 
     /**
      * Transforms a single point3d (by calling the doTransform( List<Point3d>).
-     * 
+     *
      * @param coordinate
      *            to transform, if <code>null</code> null will be returned.
      * @return the transformed coordinate.
@@ -301,7 +299,7 @@ public abstract class Transformation extends org.deegree.crs.CRSIdentifiable {
      * Checks if this transformation is the inverse of the other transformation, which means, this.sourceCRS equals
      * other.targetCRS && this.targetCRS == other.sourceCRS. If Both transformations are identity this method also
      * returns true.
-     * 
+     *
      * @param other
      *            the transformation to check
      * @return true if this and the other transformation are each others inverse.

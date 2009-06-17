@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.deegree.xml;
 
@@ -82,14 +80,14 @@ import org.slf4j.LoggerFactory;
  * <li>It must be a sub class of {@link org.deegree.crs.projections.Projection}</li>
  * <li>A constructor with following signature must be supplied: <br/> <code>
  * public MyProjection( <br/>
- * &emsp;&emsp;&emsp;&emsp;{@link org.deegree.crs.coordinatesystems.GeographicCRS} underlyingCRS,<br/> 
- * &emsp;&emsp;&emsp;&emsp;double falseNorthing,<br/> 
- * &emsp;&emsp;&emsp;&emsp;double falseEasting,<br/> 
- * &emsp;&emsp;&emsp;&emsp;javax.vecmath.Point2d naturalOrigin,<br/> 
- * &emsp;&emsp;&emsp;&emsp;{@link org.deegree.crs.components.Unit} units,<br/> 
- * &emsp;&emsp;&emsp;&emsp;double scale,<br/> 
+ * &emsp;&emsp;&emsp;&emsp;{@link org.deegree.crs.coordinatesystems.GeographicCRS} underlyingCRS,<br/>
+ * &emsp;&emsp;&emsp;&emsp;double falseNorthing,<br/>
+ * &emsp;&emsp;&emsp;&emsp;double falseEasting,<br/>
+ * &emsp;&emsp;&emsp;&emsp;javax.vecmath.Point2d naturalOrigin,<br/>
+ * &emsp;&emsp;&emsp;&emsp;{@link org.deegree.crs.components.Unit} units,<br/>
+ * &emsp;&emsp;&emsp;&emsp;double scale,<br/>
  * &emsp;&emsp;&emsp;&emsp;java.util.List&lt;org.w3c.dom.Element&gt; yourProjectionElements<br/>
- * );<br/> 
+ * );<br/>
  * </code>
  * <p>
  * The first six parameters are common to all projections (for an explanation of their meaning take a look at
@@ -104,11 +102,11 @@ import org.slf4j.LoggerFactory;
  * <li>It must be a sub class of {@link org.deegree.crs.transformations.polynomial.PolynomialTransformation}</li>
  * <li>A constructor with following signature must be supplied: <br/> <code>
  * public MyTransformation( <br/>
- * &emsp;&emsp;&emsp;&emsp;java.util.list&lt;Double&gt; aValues,<br/> 
- * &emsp;&emsp;&emsp;&emsp;java.util.list&lt;Double&gt; bValues,<br/> 
- * &emsp;&emsp;&emsp;&emsp;{@link org.deegree.crs.coordinatesystems.CoordinateSystem} targetCRS,<br/> 
- * &emsp;&emsp;&emsp;&emsp;java.util.List&lt;org.w3c.dom.Element&gt; yourTransformationElements<br/> 
- * );<br/> 
+ * &emsp;&emsp;&emsp;&emsp;java.util.list&lt;Double&gt; aValues,<br/>
+ * &emsp;&emsp;&emsp;&emsp;java.util.list&lt;Double&gt; bValues,<br/>
+ * &emsp;&emsp;&emsp;&emsp;{@link org.deegree.crs.coordinatesystems.CoordinateSystem} targetCRS,<br/>
+ * &emsp;&emsp;&emsp;&emsp;java.util.List&lt;org.w3c.dom.Element&gt; yourTransformationElements<br/>
+ * );<br/>
  * </code>
  * <p>
  * The first three parameters are common to all polynomial values (for an explanation of their meaning take a look at
@@ -119,13 +117,13 @@ import org.slf4j.LoggerFactory;
  * </p>
  * </li>
  * </ol>
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
@@ -344,7 +342,7 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
                     if ( count++ % percentage == 0 ) {
                         System.out.print( "\r" + ( number ) + ( ( number++ < 10 ) ? "  " : " " ) + "% created" );
                     }
-                    boolean createdAlready = false; 
+                    boolean createdAlready = false;
                     for( int i = 0; i < allSystems.size() && !createdAlready; ++i ){
                         CoordinateSystem c = allSystems.get( i );
                         createdAlready = ( c !=null && c.hasCode( CRSCodeType.valueOf( id ) ) ) ;

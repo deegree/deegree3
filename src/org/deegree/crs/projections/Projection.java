@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.projections;
 
@@ -66,14 +64,14 @@ import org.deegree.crs.exceptions.ProjectionException;
  * area of the actual earth as the same coin on any other part of the map. This can only be done by distorting shape,
  * scale and and angles of the original earth's layout.
  * </p>
- * 
- * 
+ *
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 
 public abstract class Projection extends CRSIdentifiable {
@@ -111,15 +109,15 @@ public abstract class Projection extends CRSIdentifiable {
     private final GeographicCRS geographicCRS;
 
     private boolean isSpherical;
-    
+
     /**
-     * For custom projections 
+     * For custom projections
      */
     private String className;
 
     /**
      * Creates a Projection. <b>Caution</b>, the given natural origin should be given in radians rather then degrees.
-     * 
+     *
      * @param geographicCRS
      *            which this projection uses.
      * @param falseNorthing
@@ -173,10 +171,10 @@ public abstract class Projection extends CRSIdentifiable {
 
         isSpherical = geographicCRS.getGeodeticDatum().getEllipsoid().getEccentricity() < 0.0000001;
     }
-    
+
     /**
      * Creates a Projection. <b>Caution</b>, the given natural origin should be given in radians rather then degrees.
-     * 
+     *
      * @param geographicCRS
      *            which this projection uses.
      * @param falseNorthing
@@ -196,7 +194,7 @@ public abstract class Projection extends CRSIdentifiable {
      * @param id
      *            an identifiable instance containing information about this projection.
      * @param className
-     *            the class for custom projections            
+     *            the class for custom projections
      */
     public Projection( GeographicCRS geographicCRS, double falseNorthing, double falseEasting, Point2d naturalOrigin,
                        Unit units, double scale, boolean conformal, boolean equalArea, CRSIdentifiable id, String className ) {
@@ -235,7 +233,7 @@ public abstract class Projection extends CRSIdentifiable {
 
     /**
      * The actual transform method doing a projection from geographic coordinates to map coordinates.
-     * 
+     *
      * @param lambda
      *            the longitude
      * @param phi
@@ -249,7 +247,7 @@ public abstract class Projection extends CRSIdentifiable {
 
     /**
      * Do an inverse projection from projected (map) coordinates to geographic coordinates.
-     * 
+     *
      * @param x
      *            coordinate on the map
      * @param y
@@ -289,7 +287,7 @@ public abstract class Projection extends CRSIdentifiable {
 
     /**
      * Sets the old scale to the given scale, also adjusts the scaleFactor.
-     * 
+     *
      * @param scale
      *            the new scale
      */
@@ -321,7 +319,7 @@ public abstract class Projection extends CRSIdentifiable {
 
     /**
      * sets the false easting to given value. (Used in for example transverse mercator, while setting the utm zone).
-     * 
+     *
      * @param newFalseEasting
      *            the new false easting parameter.
      */
@@ -398,8 +396,8 @@ public abstract class Projection extends CRSIdentifiable {
     public final boolean isSpherical() {
         return isSpherical;
     }
-    
-    
+
+
     public void makeSpherical() {
         isSpherical = true;
     }
@@ -488,9 +486,9 @@ public abstract class Projection extends CRSIdentifiable {
      * <p>
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
-     * 
+     *
      * @return (int) ( result >>> 32 ) ^ (int) result;
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override

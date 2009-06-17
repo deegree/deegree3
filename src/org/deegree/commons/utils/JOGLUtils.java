@@ -1,40 +1,38 @@
 //$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils;
 
@@ -52,10 +50,10 @@ import com.sun.opengl.util.BufferUtil;
 
 /**
  * JOGL-related utility methods.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- * 
+ *
  * @version $Revision: $, $Date: $
  */
 public class JOGLUtils {
@@ -100,7 +98,7 @@ public class JOGLUtils {
 
     /**
      * Returns maximum texture size support by the GL driver.
-     * 
+     *
      * @param gl
      * @return maximum texture size (pixels)
      */
@@ -117,7 +115,7 @@ public class JOGLUtils {
      * identical to <code>GL_MAX_TEXTURE_UNITS</code> which denotes the maximum number of texture units in fixed
      * shader functions.
      * </p>
-     * 
+     *
      * @param gl
      * @return number of texture image units
      */
@@ -129,7 +127,7 @@ public class JOGLUtils {
 
     /**
      * Returns the value of the symbolic constant TEXTURE0...TEXTURE31 for a certain texture unit id.
-     * 
+     *
      * @param textureId
      *            id of the requested texture unit (0...31)
      * @return value of the corresponding symbolic constant
@@ -143,7 +141,7 @@ public class JOGLUtils {
 
     /**
      * Get a string representation of the current modelview matrix of the given context.
-     * 
+     *
      * @param gl
      * @return the String representation of modelview matrix
      */
@@ -153,7 +151,7 @@ public class JOGLUtils {
 
     /**
      * Get a string representation of the current Projection matrix of the given context.
-     * 
+     *
      * @param gl
      * @return the String representation of projection matrix
      */
@@ -163,7 +161,7 @@ public class JOGLUtils {
 
     /**
      * Get a string representation of the given matrix type of the given context.
-     * 
+     *
      * @param gl
      * @param GL_MATRIX_TYPE
      *            one of {@link GL#GL_MODELVIEW_MATRIX}, {@link GL#GL_PROJECTION_MATRIX}
@@ -191,7 +189,7 @@ public class JOGLUtils {
 
     /**
      * Calculate the eye position from the given modelview, note, no scale may be applied.
-     * 
+     *
      * @param gl
      *            to get the modelview from.
      * @return the eye position of the modelview matrix.
@@ -210,7 +208,7 @@ public class JOGLUtils {
 
     /**
      * Create an int with rgba from the given color (which returns the argb values).
-     * 
+     *
      * @param color
      *            to be converted.
      * @return the color as an int holding rgba.
@@ -231,7 +229,7 @@ public class JOGLUtils {
 
     /**
      * Create an a float array from the given color object, which can be used for rendering with jogl.
-     * 
+     *
      * @param color
      *            to be converted.
      * @return the color as an float array holding rgba.
@@ -243,7 +241,7 @@ public class JOGLUtils {
 
     /**
      * The float array appropriate for opengl.
-     * 
+     *
      * @param color
      *            (rgba) to be converted into a float arra.
      * @return the float array ready to be rendered.
@@ -255,7 +253,7 @@ public class JOGLUtils {
 
     /**
      * Create an int value ([a]rgb) from the given color array (rgb[a]), the result can be used for buffered images.
-     * 
+     *
      * @param color
      *            to be converted may be of length 3 or 4, not <code>null</code>.
      * @return the color as an int holding argb.
@@ -279,7 +277,7 @@ public class JOGLUtils {
      * Read the framebuffer's rgb values and place them into a {@link BufferedImage}. If the resultImage was
      * <code>null</code> or it's height or width are to small a new BufferedImage is created. The resultImage type is
      * supposed to be {@link BufferedImage#TYPE_INT_RGB}.
-     * 
+     *
      * @param glContext
      *            to get the image from.
      * @param imageBuffer

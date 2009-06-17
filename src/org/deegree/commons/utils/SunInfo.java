@@ -1,45 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
 
- This file is part of deegree.
- Copyright (C) 2001-2008 by:
- EXSE, Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstraße 19
- 53177 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
+ Department of Geography, University of Bonn
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils;
 
@@ -51,11 +44,11 @@ import java.util.GregorianCalendar;
 /**
  * The <code>SunInfo</code> supplies methods for the calculation of the sun position at a given time and latitude. The
  * color of the sunlight may be requested as well.
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class SunInfo {
 
@@ -88,7 +81,7 @@ public class SunInfo {
 
     /**
      * Constructs a sunposition with the given Calendar
-     * 
+     *
      * @param calendar
      *            a given Calendar
      */
@@ -124,7 +117,7 @@ public class SunInfo {
 
     /**
      * calculates the solar altitude for given latitude, year, month, date, hour and minute
-     * 
+     *
      * @param latitude
      *            latitude of the the viewers position
      * @return the solar altitude in radians for the given latitude
@@ -149,7 +142,7 @@ public class SunInfo {
 
     /**
      * calculates the horizontal angle of the sun depending only on hour and minute!
-     * 
+     *
      * @return the horizontal angle in radians
      */
     public double getHorizontalSunPosition() {
@@ -176,7 +169,7 @@ public class SunInfo {
 
     /**
      * Get the euclidean position of the sun.
-     * 
+     *
      * @param latitude
      * @return the euclidean position of the sun.
      */
@@ -189,9 +182,9 @@ public class SunInfo {
     /**
      * This method calculates the color of the sunlight for the current time and the given latitude. This method is
      * taken from deegree2, the values are undocumented.
-     * 
+     *
      * @param latitude
-     * 
+     *
      * @return a the color of the sunlight for the given latitude.
      */
     public float[] calculateSunlight( double latitude ) {

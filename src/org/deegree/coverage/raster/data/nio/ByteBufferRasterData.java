@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data.nio;
 
 import java.nio.ByteBuffer;
@@ -49,32 +47,32 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This abstract class implements the RasterData interface for ByteBuffer based raster.
- * 
+ *
  * <p>
  * It is based on java.nio.ByteBuffer and implements common get- and set-operations on the data. The different
  * InterleaveTypes are implemented by additional subclasses.
- * 
+ *
  * <p>
  * get- and set-operations are implemented naive and access all data sample-wise. For efficiency subclasses should
  * overwrite methods that access more than one sample and leverage the knowledge of the internal storage format
  * (interleaving).
- * 
+ *
  * <p>
  * TODO: Only implements access to byte and float data at the moment. Copy float methods for other data types and change
  * 'Float/float' to short, int, long or double. These types are supported by ByteBuffer and the according methods only
  * differ in the name of the type (eg. getFloat, getInt, getDouble,...). Opposed to the methods for bytes, which lack
  * the type in the method names (eg. only get()).
- * 
+ *
  * <p>
  * Also this implementation is able to store a sub-view on another {@link ByteBufferRasterData}, resp. ByteBuffer. With
  * this feature you are able to create subsets without copying the data. Though the current deegree SimpleRaster
  * implementation makes no use of it.
- * 
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 public abstract class ByteBufferRasterData implements RasterData {
 
@@ -126,7 +124,7 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     /**
      * Creates a new ByteBufferRasterData instance.
-     * 
+     *
      * @param env
      *            the raster rectangle defining the sample domain of this raster data.
      * @param rasterWidth
@@ -145,7 +143,7 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     /**
      * Creates a new ByteBufferRasterData instance.
-     * 
+     *
      * @param env
      *            the raster rectangle defining the sample domain of this raster data.
      * @param rasterWidth
@@ -189,7 +187,7 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     /**
      * Implementation should create a view of this raster data.
-     * 
+     *
      * @param env
      * @param bands
      * @return a view or new raster data object, backed by a {@link java.nio.ByteBuffer}
@@ -246,7 +244,7 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     /**
      * Returns the size of the ByteBuffer in bytes.
-     * 
+     *
      * @return size of the buffer
      */
     public final int getBufferSize() {
@@ -257,21 +255,21 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     /**
      * Retruns the byte offset to the next pixel.
-     * 
+     *
      * @return byte offset to next pixel
      */
     public abstract int getPixelStride();
 
     /**
      * Returns the byte offset to the next sample of the same pixel.
-     * 
+     *
      * @return byte offset to sample in the next band (same pixel)
      */
     public abstract int getBandStride();
 
     /**
      * Returns the byte offset to the next row (same column, same sample)
-     * 
+     *
      * @return byte offset to next row (same column, same sample)
      */
     public abstract int getLineStride();
@@ -285,7 +283,7 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     /**
      * Checks whether a given rect is inside the raster, throws an exception if outside.
-     * 
+     *
      * @param x
      *            The x position of the rect.
      * @param y
@@ -306,7 +304,7 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     /**
      * Checks whether a given rect is inside the raster.
-     * 
+     *
      * @param x
      *            The x position of the rect.
      * @param y
@@ -327,10 +325,10 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     /**
      * Calculates the position of a pixel in the ByteBuffer.
-     * 
+     *
      * This method calculates the position of a pixel and returns the offset to this pixel in bytes. Use this method for
      * direct access to ByteBuffers.
-     * 
+     *
      * @param x
      *            x coordinate
      * @param y
@@ -343,10 +341,10 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     /**
      * Calculates the position of a sample in the ByteBuffer.
-     * 
+     *
      * This method calculates the position of a pixel and returns the offset to this pixel in bytes. Use this method for
      * direct access to ByteBuffers.
-     * 
+     *
      * @param x
      *            x coordinate
      * @param y
@@ -361,10 +359,10 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     /**
      * Calculates the position of a pixel in a view (FloatBuffer, etc.) of the ByteBuffer.
-     * 
+     *
      * This method considers different sample sizes (eg. byte, float) and returns the position in sample stides (not
      * byte strides). Use this method to get proper positions for ByteBuffer views like FloatBuffer, ShortBuffer, etc..
-     * 
+     *
      * @param x
      *            x coordinate
      * @param y
@@ -377,10 +375,10 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     /**
      * Calculates the position of a sample in a view (FloatBuffer, etc.) of the ByteBuffer.
-     * 
+     *
      * This method considers different sample sizes (eg. byte, float) and returns the position in sample stides (not
      * byte strides). Use this method to get proper positions for ByteBuffer-views like FloatBuffer, ShortBuffer, etc..
-     * 
+     *
      * @param x
      *            x coordinate
      * @param y
@@ -674,7 +672,7 @@ public abstract class ByteBufferRasterData implements RasterData {
 
     /**
      * Returns the smallest value of all <code>int</code>s.
-     * 
+     *
      * @param sizes
      * @return the smalles value
      */

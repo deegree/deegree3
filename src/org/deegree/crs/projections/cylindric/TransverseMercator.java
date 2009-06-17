@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.projections.cylindric;
 
@@ -72,13 +70,13 @@ import org.slf4j.LoggerFactory;
  * <li>Often used to show regions with greater north-south extent</li>
  * <li>presented by lambert in 1772</li>
  * </ul>
- * 
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 
 public class TransverseMercator extends CylindricalProjection {
@@ -139,7 +137,7 @@ public class TransverseMercator extends CylindricalProjection {
 
     /**
      * Sets the id to EPSG:9807
-     * 
+     *
      * @param northernHemisphere
      *            true if on the northern hemisphere false otherwise.
      * @param geographicCRS
@@ -159,7 +157,7 @@ public class TransverseMercator extends CylindricalProjection {
      * Sets the false-easting to 50000, false-northing to 0 or 10000000 (depending on the hemisphere), the
      * projection-longitude is calculated from the zone and the projection-latitude is set to 0. The scale will be
      * 0.9996.
-     * 
+     *
      * @param zone
      *            to add
      * @param northernHemisphere
@@ -191,7 +189,7 @@ public class TransverseMercator extends CylindricalProjection {
      * Sets the false-easting to 50000, false-northing to 0 or 10000000 (depending on the hemisphere), the
      * projection-longitude is calculated from the zone and the projection-latitude is set to 0. The scale will be
      * 0.9996.
-     * 
+     *
      * @param zone
      *            to add
      * @param northernHemisphere
@@ -205,7 +203,7 @@ public class TransverseMercator extends CylindricalProjection {
 
     /**
      * A northern hemisphere conformal transverse mercator projection with a scale of one. Using the given datum.
-     * 
+     *
      * @param geographicCRS
      * @param falseNorthing
      * @param falseEasting
@@ -219,7 +217,7 @@ public class TransverseMercator extends CylindricalProjection {
 
     /**
      * A northern hemisphere conformal transverse mercator projection with a scale of one. Using the given datum.
-     * 
+     *
      * @param geographicCRS
      * @param falseNorthing
      * @param falseEasting
@@ -330,7 +328,7 @@ public class TransverseMercator extends CylindricalProjection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.deegree.crs.projections.Projection#doProjection(double, double)
      */
     @Override
@@ -429,7 +427,7 @@ public class TransverseMercator extends CylindricalProjection {
 
     /**
      * the utm zone from a given meridian
-     * 
+     *
      * @param longitude
      *            in radians
      * @return the utm zone.

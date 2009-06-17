@@ -1,44 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
-
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
  lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
-
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
-
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53115 Bonn
+ Aennchenstr. 19, 53177 Bonn
  Germany
- E-Mail: poth@lat-lon.de
+ http://lat-lon.de/
 
- Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: klaus.greve@uni-bonn.de
+ http://www.geographie.uni-bonn.de/deegree/
 
-
- ---------------------------------------------------------------------------*/
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 package org.deegree.crs;
 
 import java.util.ArrayList;
@@ -56,11 +50,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Class for transforming coordinates to new a coordinate reference systems.
- * 
- * 
+ *
+ *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class CoordinateTransformer extends Transformer {
@@ -72,7 +66,7 @@ public class CoordinateTransformer extends Transformer {
 
     /**
      * Creates a new CoordinateTransformer object.
-     * 
+     *
      * @param targetCRS
      * @throws IllegalArgumentException
      *             if the given parameter is null.
@@ -83,7 +77,7 @@ public class CoordinateTransformer extends Transformer {
 
     /**
      * Creates a new CoordinateTransformer object, with the given id as the target CRS.
-     * 
+     *
      * @param targetCRS
      *            an identifier to which all other CRS's shall be transformed.
      * @throws UnknownCRSException
@@ -97,7 +91,7 @@ public class CoordinateTransformer extends Transformer {
 
     /**
      * Creates a new CoordinateTransformer object, with the given id as the target CRS.
-     * 
+     *
      * @param transformation
      *            to be used.
      * @throws IllegalArgumentException
@@ -109,7 +103,7 @@ public class CoordinateTransformer extends Transformer {
 
     /**
      * Transforms all points to the CoordinateTransformer`s coordinate system.
-     * 
+     *
      * @param sourceCRS
      *            in which the given points are referenced.
      * @param points

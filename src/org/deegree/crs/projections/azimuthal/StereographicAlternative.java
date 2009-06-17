@@ -1,40 +1,38 @@
 //$HeadURL$
-/*----------------    FILE HEADER  ------------------------------------------
- This file is part of deegree.
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
  Department of Geography, University of Bonn
- http://www.giub.uni-bonn.de/deegree/
- lat/lon GmbH
- http://www.lat-lon.de
-
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- Lesser General Public License for more details.
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- Contact:
-
- Andreas Poth
- lat/lon GmbH
- Aennchenstr. 19
- 53177 Bonn
- Germany
- E-Mail: poth@lat-lon.de
-
  Prof. Dr. Klaus Greve
- Department of Geography
- University of Bonn
- Meckenheimer Allee 166
- 53115 Bonn
+ Postfach 1147, 53001 Bonn
  Germany
- E-Mail: greve@giub.uni-bonn.de
- ---------------------------------------------------------------------------*/
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.projections.azimuthal;
 
@@ -72,7 +70,7 @@ import org.deegree.crs.exceptions.ProjectionException;
  * unity at the origin such that a unit scale factor applies on a near circle centered at the origin and some distance
  * from it.
  * </p>
- * 
+ *
  * <p>
  * The coordinate transformation from geographical to projected coordinates is executed via the distance and azimuth of
  * the point from the center point or origin. For a sphere the formulas are relatively simple. For the ellipsoid the
@@ -81,7 +79,7 @@ import org.deegree.crs.exceptions.ProjectionException;
  * </p>
  * <quote>from <a
  * href="http://www.posc.org/Epicentre.2_2/DataModel/ExamplesofUsage/eu_cs34j.html">http://www.posc.org/</a></quote>
- * 
+ *
  * <p>
  * Determinations of oblique projections on an ellipsoid can be difficult to solve and result in long, complex
  * computations. Because conformal transformations can be made multiple time without loss of the conformal property a
@@ -92,14 +90,14 @@ import org.deegree.crs.exceptions.ProjectionException;
  * </p>
  * From the <a href="http://members.verizon.net/~gerald.evenden/proj4/manual.pdf">libproj4-manual</a> by Gerald I.
  * Evenden
- * 
- * 
+ *
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * 
+ *
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
- * 
+ *
  */
 public class StereographicAlternative extends AzimuthalProjection {
 
@@ -174,7 +172,7 @@ public class StereographicAlternative extends AzimuthalProjection {
 
     /**
      * Sets the id of this projection to epsg::9809 (Oblique Stereographic)
-     * 
+     *
      * @param geographicCRS
      * @param falseNorthing
      * @param falseEasting
@@ -189,7 +187,7 @@ public class StereographicAlternative extends AzimuthalProjection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.deegree.crs.projections.Projection#doInverseProjection(double, double)
      */
     @Override
@@ -220,7 +218,7 @@ public class StereographicAlternative extends AzimuthalProjection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.deegree.crs.projections.Projection#doProjection(double, double)
      */
     @Override
@@ -244,7 +242,7 @@ public class StereographicAlternative extends AzimuthalProjection {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.deegree.crs.projections.Projection#getDeegreeSpecificName()
      */
     @Override
