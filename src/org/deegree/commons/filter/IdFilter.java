@@ -43,6 +43,7 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.commons.filter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -57,6 +58,19 @@ public class IdFilter implements Filter {
 
     private Set<String> matchingIds;
 
+    /**
+     * Creates a new {@link IdFilter} that matches the objects with the given ids.
+     * 
+     * @param ids
+     *            ids of the objects that the filter will match
+     */    
+    public IdFilter( String...ids ) {
+        this.matchingIds = new HashSet<String>();
+        for ( String id : ids ) {
+            matchingIds.add( id );
+        }
+    }    
+    
     /**
      * Creates a new {@link IdFilter} that matches the objects with the given ids.
      * 

@@ -116,6 +116,13 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     }
 
     /**
+     * Creates a new <code>GenericFeatureCollection</code> without type information and contents.
+     */
+    public GenericFeatureCollection() {
+    }
+        
+    
+    /**
      * Creates a new <code>GenericFeatureCollection</code> without type information that contains the given features.
      * 
      * @param fid
@@ -192,14 +199,12 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
 
     @Override
     public boolean contains( Object o ) {
-        // TODO Auto-generated method stub
-        return false;
+        return memberFeatures.contains( o );
     }
 
     @Override
     public boolean containsAll( Collection<?> c ) {
-        // TODO Auto-generated method stub
-        return false;
+        return memberFeatures.containsAll( c );
     }
 
     @Override
@@ -209,14 +214,12 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
 
     @Override
     public boolean remove( Object o ) {
-        // TODO Auto-generated method stub
-        return false;
+        return memberFeatures.remove( o );
     }
 
     @Override
     public boolean removeAll( Collection<?> c ) {
-        // TODO Auto-generated method stub
-        return false;
+        return memberFeatures.removeAll( c );
     }
 
     @Override

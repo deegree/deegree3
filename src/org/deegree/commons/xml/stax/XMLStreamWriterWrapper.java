@@ -55,7 +55,7 @@ import org.deegree.commons.xml.CommonNamespaces;
  * @version $Revision: $, $Date: $
  * 
  */
-public class XMLStreamWriterWrapper {
+public class XMLStreamWriterWrapper implements XMLStreamWriter {
 
     private XMLStreamWriter writer;
     

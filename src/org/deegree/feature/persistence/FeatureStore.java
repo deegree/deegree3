@@ -36,51 +36,50 @@
  E-Mail: greve@giub.uni-bonn.de
  ---------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wfs.getfeature;
+package org.deegree.feature.persistence;
 
-import org.deegree.commons.types.ows.Version;
-import org.deegree.commons.utils.kvp.InvalidParameterValueException;
-import org.deegree.commons.utils.kvp.MissingParameterException;
-import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.XPath;
-import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
+import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.geometry.Geometry;
+import org.deegree.protocol.wfs.getfeature.FilterQuery;
+import org.deegree.protocol.wfs.getfeature.Query;
 
 /**
- * Adapter between XML <code>GetFeature</code> requests and {@link GetFeature} objects.
- * <p>
- * TODO code for exporting to XML
+ * Provides access to persistent {@link Feature} instances.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
+public interface FeatureStore {
 
     /**
-     * Parses a WFS <code>GetFeature</code> document into a {@link GetFeature} object.
-     * <p>
-     * Supported versions:
-     * <ul>
-     * <li>WFS 1.0.0</li>
-     * <li>WFS 1.1.0</li>
-     * </ul>
+     * Returns the application schema that this {@link FeatureStore} serves.
      * 
-     * @return parsed {@link GetFeature} request
-     * @throws XMLParsingException
-     *             if a syntax error occurs in the XML
-     * @throws MissingParameterException
-     *             if the request version is unsupported
-     * @throws InvalidParameterValueException
-     *             if a parameter contains a syntax error
+     * @return the served application schema
      */
-    public GetFeature parse() {
+    public abstract ApplicationSchema getSchema();
 
-        Version version = Version.parseVersion( getRequiredNodeAsString( rootElement, new XPath( "@version", nsContext ) ) );
-        
-        GetFeature result = null;
-        // TODO
-        return result;
-    }
+    /**
+     * Performs the given {@link Query} and returns the matching features as a {@link FeatureCollection}.
+     * 
+     * @param query
+     *            query to be performed
+     * @return matching features
+     */
+    public abstract FeatureCollection performQuery( FilterQuery query );
+
+    /**
+     * Retrieves the stored object with a certain id.
+     * 
+     * TODO check if common interface for returned objects can be used here
+     * 
+     * @param id
+     *            identifier of the object to be retrieved
+     * @return the stored object (either a {@link Feature} or a {@link Geometry})
+     */
+    public abstract Object getObjectById( String id );
+
 }

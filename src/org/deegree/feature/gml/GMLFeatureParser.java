@@ -69,6 +69,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
 import org.deegree.feature.generic.GenericCustomPropertyParser;
+import org.deegree.feature.gml.schema.DefaultGMLTypes;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.refs.FeatureReference;
 import org.deegree.feature.types.ApplicationSchema;
@@ -284,7 +285,7 @@ public class GMLFeatureParser extends XMLAdapter {
      *            next event after the <code>END_ELEMENT</code> of the property
      * @param propDecl
      *            property declaration
-     * @param srsName
+     * @param crs
      *            default SRS for all a descendant geometry properties
      * @return object representation for the given property element.
      * @throws XMLParsingException
@@ -387,7 +388,13 @@ public class GMLFeatureParser extends XMLAdapter {
      */
     protected FeatureType lookupFeatureType( XMLStreamReaderWrapper xmlStreamReader, QName ftName )
                             throws XMLParsingException {
-        FeatureType ft = null;
+
+        // TODO implement this less hacky
+        if (ftName.equals( DefaultGMLTypes.GML311_FEATURECOLLECTION.getName() )) {
+            return DefaultGMLTypes.GML311_FEATURECOLLECTION;
+        }
+        
+        FeatureType ft = null;        
         ft = schema.getFeatureType( ftName );
         if ( ft == null ) {
             String msg = Messages.getMessage( "ERROR_SCHEMA_FEATURE_TYPE_UNKNOWN", ftName );

@@ -47,8 +47,8 @@ import java.util.List;
 import java.util.Set;
 
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.composite.CompositeCurve;
@@ -106,52 +106,51 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Exporter class for Geometries.
- * TODO add more details
+ * Exporter class for Geometries. TODO add more details
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: ionita $
  * 
  * @version $Revision: $, $Date: $
- * 
  */
 public class GML311GeometryExporter {
 
     private static final Logger LOG = LoggerFactory.getLogger( GML311GeometryExporter.class );
 
-    private XMLStreamWriterWrapper writer;
+    private XMLStreamWriter writer;
 
     private Set<String> exportedIds;
 
-    public GML311GeometryExporter( XMLStreamWriterWrapper writer ) {
+    public GML311GeometryExporter( XMLStreamWriter writer ) {
         this.writer = writer;
         exportedIds = new HashSet<String>();
     }
 
-    public GML311GeometryExporter( XMLStreamWriterWrapper writer, Set<String> exportedIds ) {
+    public GML311GeometryExporter( XMLStreamWriter writer, Set<String> exportedIds ) {
         this.writer = writer;
         this.exportedIds = exportedIds;
     }
 
-    void export( Geometry geometry ) throws XMLStreamException {
+    public void export( Geometry geometry )
+                            throws XMLStreamException {
         switch ( geometry.getGeometryType() ) {
         case COMPOSITE_GEOMETRY:
             if ( geometry instanceof CompositeCurve ) {
-                export( ( CompositeCurve ) geometry );
+                export( (CompositeCurve) geometry );
             } else if ( geometry instanceof CompositeSurface ) {
-                export( ( CompositeSurface ) geometry );
+                export( (CompositeSurface) geometry );
             } else if ( geometry instanceof CompositeSolid ) {
-                export( ( CompositeSolid ) geometry );
+                export( (CompositeSolid) geometry );
             } else { // should be GeometricComplex
                 export( (CompositeGeometry<GeometricPrimitive>) geometry );
             }
             break;
         case ENVELOPE:
-            export( (Envelope) geometry );            
+            export( (Envelope) geometry );
             break;
         case MULTI_GEOMETRY:
-            switch ( ( ( MultiGeometry<Geometry>) geometry ).getMultiGeometryType() ) {
+            switch ( ( (MultiGeometry<Geometry>) geometry ).getMultiGeometryType() ) {
             case MULTI_CURVE:
                 MultiCurve multiCurve = (MultiCurve) geometry;
                 writer.writeStartElement( GMLNS, "MultiCurve" );
@@ -165,7 +164,7 @@ public class GML311GeometryExporter {
                     if ( currentCurve instanceof CompositeCurve )
                         export( (CompositeCurve) currentCurve );
                     else if ( currentCurve instanceof Curve )
-                        export( (Curve) currentCurve );                            
+                        export( (Curve) currentCurve );
                 }
                 writer.writeEndElement();
                 writer.writeEndElement();
@@ -179,7 +178,7 @@ public class GML311GeometryExporter {
                 writer.writeStartElement( GMLNS, "geometryMembers" );
                 Iterator<Geometry> iteratorG = multiGeometry.iterator();
                 while ( iteratorG.hasNext() )
-                    export( iteratorG.next() );                            
+                    export( iteratorG.next() );
                 writer.writeEndElement();
                 writer.writeEndElement();
                 break;
@@ -188,7 +187,7 @@ public class GML311GeometryExporter {
                 writer.writeStartElement( GMLNS, "MultiLineString" );
                 if ( multiLineString.getId() != null )
                     writer.writeAttribute( GMLNS, "id", multiLineString.getId() );
-                writer.writeAttribute( "srsName", multiLineString.getCoordinateSystem().getName() );                    
+                writer.writeAttribute( "srsName", multiLineString.getCoordinateSystem().getName() );
                 Iterator<LineString> iteratorLS = multiLineString.iterator();
                 while ( iteratorLS.hasNext() ) {
                     writer.writeStartElement( GMLNS, "lineStringMember" );
@@ -202,7 +201,7 @@ public class GML311GeometryExporter {
                 writer.writeStartElement( GMLNS, "MultiPoint" );
                 if ( multiPoint.getId() != null )
                     writer.writeAttribute( GMLNS, "id", multiPoint.getId() );
-                writer.writeAttribute( "srsName", multiPoint.getCoordinateSystem().getName() );                    
+                writer.writeAttribute( "srsName", multiPoint.getCoordinateSystem().getName() );
                 Iterator<Point> iteratorP = multiPoint.iterator();
                 while ( iteratorP.hasNext() ) {
                     writer.writeStartElement( GMLNS, "pointMember" );
@@ -219,7 +218,7 @@ public class GML311GeometryExporter {
                 writer.writeStartElement( GMLNS, "MultiPolygon" );
                 if ( multiPolygon.getId() != null )
                     writer.writeAttribute( GMLNS, "id", multiPolygon.getId() );
-                writer.writeAttribute( "srsName", multiPolygon.getCoordinateSystem().getName() );                    
+                writer.writeAttribute( "srsName", multiPolygon.getCoordinateSystem().getName() );
                 Iterator<Polygon> iteratorPol = multiPolygon.iterator();
                 while ( iteratorPol.hasNext() ) {
                     writer.writeStartElement( GMLNS, "polygonMember" );
@@ -260,7 +259,7 @@ public class GML311GeometryExporter {
                     if ( currentSurface instanceof CompositeSurface )
                         export( (CompositeSurface) currentSurface );
                     else if ( currentSurface instanceof Surface )
-                        export( (Surface) currentSurface );                        
+                        export( (Surface) currentSurface );
                 }
                 writer.writeEndElement();
                 writer.writeEndElement();
@@ -268,13 +267,13 @@ public class GML311GeometryExporter {
             }
             break;
         case PRIMITIVE_GEOMETRY:
-            switch ( ( ( GeometricPrimitive ) geometry).getPrimitiveType() ) {
+            switch ( ( (GeometricPrimitive) geometry ).getPrimitiveType() ) {
             case Curve:
-                export( ( Curve ) geometry );
+                export( (Curve) geometry );
                 break;
             case Point:
                 writer.writeStartElement( GMLNS, "Point" );
-                Point point = ( Point ) geometry;                
+                Point point = (Point) geometry;
                 if ( point.getId() != null && exportedIds.contains( point.getId() ) ) {
                     writer.writeStartElement( GMLNS, "pointProperty" );
                     writer.writeAttribute( XLNNS, "href", "#" + point.getId() );
@@ -287,25 +286,102 @@ public class GML311GeometryExporter {
                     double[] array = point.getAsArray();
                     for ( int i = 0; i < array.length; i++ )
                         writer.writeCharacters( String.valueOf( array[i] ) + " " );
-                    writer.writeEndElement();                    
+                    writer.writeEndElement();
                 }
-                writer.writeEndElement();                
+                writer.writeEndElement();
                 break;
             case Solid:
-                export( ( Solid ) geometry );
+                export( (Solid) geometry );
                 break;
             case Surface:
-                export( ( Surface ) geometry );
+                export( (Surface) geometry );
                 break;
             }
-            break;              
+            break;
         }
     }
 
-    void export( Surface surface ) throws XMLStreamException {
+    public void export( Point point )
+                            throws XMLStreamException {
+        if ( point.getId() != null && exportedIds.contains( point.getId() ) ) {
+            writer.writeEmptyElement( GMLNS, "pointProperty" );
+            writer.writeAttribute( XLNNS, "href", "#" + point.getId() );
+        } else {
+            exportedIds.add( point.getId() );
+            writer.writeStartElement( GMLNS, "pos" );
+            double[] array = point.getAsArray();
+            for ( int i = 0; i < array.length; i++ )
+                writer.writeCharacters( String.valueOf( array[i] ) + " " );
+            writer.writeEndElement();
+        }
+    }
+
+    public void export( Curve curve )
+                            throws XMLStreamException {
+        switch ( curve.getCurveType() ) {
+        case CompositeCurve:
+            CompositeCurve compositeCurve = (CompositeCurve) curve;
+            writer.writeStartElement( GMLNS, "CompositeCurve" );
+            if ( compositeCurve.getId() != null )
+                writer.writeAttribute( GMLNS, "id", compositeCurve.getId() );
+            writer.writeAttribute( "srsName", compositeCurve.getCoordinateSystem().getName() );
+            Iterator<Curve> iterator = compositeCurve.iterator();
+            while ( iterator.hasNext() ) {
+                writer.writeStartElement( GMLNS, "curveMember" );
+                export( iterator.next() );
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+            break;
+        case Curve:
+            writer.writeStartElement( GMLNS, "Curve" );
+            if ( curve.getId() != null )
+                writer.writeAttribute( GMLNS, "id", curve.getId() );
+            writer.writeAttribute( "srsName", curve.getCoordinateSystem().getName() );
+            writer.writeStartElement( GMLNS, "segments" );
+            for ( CurveSegment curveSeg : curve.getCurveSegments() )
+                export( curveSeg );
+            writer.writeEndElement();
+            writer.writeEndElement();
+            break;
+        case LineString:
+            writer.writeStartElement( GMLNS, "LineString" );
+            LineString lineString = (LineString) curve;
+            if ( lineString.getId() != null )
+                writer.writeAttribute( GMLNS, "id", lineString.getId() );
+            int dim = ( lineString.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
+            export( lineString.getControlPoints(), dim );
+            writer.writeEndElement();
+            break;
+        case OrientableCurve:
+            writer.writeStartElement( GMLNS, "OrientableCurve" );
+            OrientableCurve orientableCurve = (OrientableCurve) curve;
+            if ( orientableCurve.getId() != null )
+                writer.writeAttribute( GMLNS, "id", orientableCurve.getId() );
+            writer.writeAttribute( "orientation", orientableCurve.isReversed() ? "-" : "+" );
+            Curve baseCurve = orientableCurve.getBaseCurve();
+            if ( baseCurve.getId() != null && exportedIds.contains( baseCurve.getId() ) ) {
+                writer.writeEmptyElement( GMLNS, "baseCurve" );
+                writer.writeAttribute( XLNNS, "href", "#" + baseCurve.getId() );
+                writer.writeEndElement();
+            } else {
+                writer.writeStartElement( GMLNS, "baseCurve" );
+                export( baseCurve );
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+            break;
+        case Ring:
+            export( (Ring) curve );
+            break;
+        }
+    }
+
+    public void export( Surface surface )
+                            throws XMLStreamException {
         switch ( surface.getSurfaceType() ) {
         case CompositeSurface:
-            CompositeSurface compSurface = ( CompositeSurface ) surface;
+            CompositeSurface compSurface = (CompositeSurface) surface;
             writer.writeStartElement( GMLNS, "CompositeSurface" );
             if ( compSurface.getId() != null )
                 writer.writeAttribute( GMLNS, "id", compSurface.getId() );
@@ -319,11 +395,10 @@ public class GML311GeometryExporter {
             writer.writeEndElement();
             break;
         case OrientableSurface:
-            OrientableSurface orientableSurface = ( OrientableSurface ) surface;
-            writer.writeStartElement( GMLNS, "OrientableSurface" );            
+            OrientableSurface orientableSurface = (OrientableSurface) surface;
+            writer.writeStartElement( GMLNS, "OrientableSurface" );
             Surface baseSurface = orientableSurface.getBaseSurface();
-            if ( baseSurface.getId() != null && 
-                                    exportedIds.contains( baseSurface.getId() ) ) {
+            if ( baseSurface.getId() != null && exportedIds.contains( baseSurface.getId() ) ) {
                 writer.writeEmptyElement( GMLNS, "baseSurface" );
                 writer.writeAttribute( XLNNS, "href", "#" + baseSurface.getId() );
             } else {
@@ -335,9 +410,9 @@ public class GML311GeometryExporter {
             writer.writeEndElement();
             break;
         case Polygon:
-            Polygon polygon = ( Polygon ) surface;
+            Polygon polygon = (Polygon) surface;
             writer.writeStartElement( GMLNS, "Polygon" );
-            if ( polygon.getId() != null)
+            if ( polygon.getId() != null )
                 writer.writeAttribute( GMLNS, "id", polygon.getId() );
             writer.writeAttribute( "srsName", polygon.getCoordinateSystem().getName() );
             Ring exteriorRing = polygon.getExteriorRing();
@@ -369,13 +444,13 @@ public class GML311GeometryExporter {
                 writer.writeAttribute( XLNNS, "href", "#" + surface.getId() );
             } else {
                 exportedIds.add( surface.getId() );
-                PolyhedralSurface polyhSurf = ( PolyhedralSurface ) surface;
+                PolyhedralSurface polyhSurf = (PolyhedralSurface) surface;
                 writer.writeStartElement( GMLNS, "PolyhedralSurface" );
                 writer.writeStartElement( GMLNS, "polygonPatches" );
                 for ( SurfacePatch surfacePatch : polyhSurf.getPatches() )
                     export( surfacePatch );
                 writer.writeEndElement();
-                writer.writeEndElement();                
+                writer.writeEndElement();
             }
             break;
         case Surface:
@@ -387,12 +462,11 @@ public class GML311GeometryExporter {
             writer.writeEndElement();
             break;
         case Tin:
-            Tin tin = ( Tin ) surface;            
+            Tin tin = (Tin) surface;
             writer.writeStartElement( GMLNS, "Tin" );
             if ( tin.getId() != null )
                 writer.writeAttribute( GMLNS, "id", tin.getId() );
-            writer.writeAttribute( "srsName", 
-                                   tin.getCoordinateSystem().getName() );
+            writer.writeAttribute( "srsName", tin.getCoordinateSystem().getName() );
             writer.writeStartElement( GMLNS, "trianglePatches" );
             for ( SurfacePatch sp : tin.getPatches() )
                 export( sp );
@@ -402,14 +476,14 @@ public class GML311GeometryExporter {
                 for ( LineStringSegment lsSeg : lsSegments )
                     export( lsSeg );
                 writer.writeEndElement();
-            }                           
+            }
             for ( List<LineStringSegment> lsSegments : tin.getBreakLines() ) {
                 writer.writeStartElement( GMLNS, "breakLines" );
-                for ( LineStringSegment lsSeg: lsSegments )
+                for ( LineStringSegment lsSeg : lsSegments )
                     export( lsSeg );
                 writer.writeEndElement();
             }
-            writer.writeStartElement( GMLNS, "maxLength" ); 
+            writer.writeStartElement( GMLNS, "maxLength" );
             writer.writeAttribute( "uom", tin.getMaxLength().getUomUri() );
             writer.writeCharacters( String.valueOf( tin.getMaxLength().getValue() ) );
             writer.writeEndElement();
@@ -426,18 +500,147 @@ public class GML311GeometryExporter {
                 writer.writeAttribute( XLNNS, "href", "#" + surface.getId() );
             } else {
                 exportedIds.add( surface.getId() );
-                TriangulatedSurface triangSurface = ( TriangulatedSurface ) surface;
+                TriangulatedSurface triangSurface = (TriangulatedSurface) surface;
                 writer.writeStartElement( GMLNS, "trianglePatches" );
                 for ( SurfacePatch surfacePatch : triangSurface.getPatches() )
                     export( surfacePatch );
-                writer.writeEndElement();                
+                writer.writeEndElement();
             }
             writer.writeEndElement();
             break;
         }
     }
 
-    void export( LineStringSegment lineStringSeg ) throws XMLStreamException {
+    void export( Solid solid )
+                            throws XMLStreamException {
+        switch ( solid.getSolidType() ) {
+        case Solid:
+            writer.writeStartElement( GMLNS, "Solid" );
+            if ( solid.getId() != null )
+                writer.writeAttribute( GMLNS, "id", solid.getId() );
+            writer.writeAttribute( "srsName", solid.getCoordinateSystem().getName() );
+            Surface exSurface = solid.getExteriorSurface();
+            writer.writeStartElement( GMLNS, "exterior" );
+            export( exSurface );
+            writer.writeEndElement();
+            for ( Surface inSurface : solid.getInteriorSurfaces() ) {
+                writer.writeStartElement( GMLNS, "interior" );
+                export( inSurface );
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+            break;
+        case CompositeSolid:
+            CompositeSolid compositeSolid = (CompositeSolid) solid;
+            writer.writeStartElement( GMLNS, "CompositeSolid" );
+            if ( compositeSolid.getId() != null )
+                writer.writeAttribute( GMLNS, "id", solid.getId() );
+            writer.writeAttribute( "srsName", compositeSolid.getCoordinateSystem().getName() );
+            Iterator<Solid> iterator = compositeSolid.iterator();
+            while ( iterator.hasNext() ) {
+                Solid solidMember = iterator.next();
+                if ( solidMember.getId() != null && exportedIds.contains( solidMember.getId() ) ) {
+                    writer.writeEmptyElement( GMLNS, "solidMember" );
+                    writer.writeAttribute( XLNNS, "href", "#" + solidMember.getId() );
+                } else {
+                    exportedIds.add( solidMember.getId() );
+                    writer.writeStartElement( GMLNS, "solidMember" );
+                    export( solidMember );
+                    writer.writeEndElement();
+                }
+            }
+            writer.writeEndElement();
+            break;
+        }
+    }
+
+    public void export( Ring ring )
+                            throws XMLStreamException {
+        switch ( ring.getRingType() ) {
+        case Ring:
+            writer.writeStartElement( GMLNS, "Ring" );
+            if ( ring.getId() != null )
+                writer.writeAttribute( GMLNS, "id", ring.getId() );
+            writer.writeAttribute( "srsName", ring.getCoordinateSystem().getName() );
+            for ( Curve c : ring.getMembers() ) {
+                writer.writeStartElement( GMLNS, "curveMember" );
+                export( c );
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+            break;
+        case LinearRing:
+            LinearRing linearRing = (LinearRing) ring;
+            writer.writeStartElement( GMLNS, "LinearRing" );
+            if ( linearRing.getCoordinateSystem() != null )
+                writer.writeAttribute( "srsName", linearRing.getCoordinateSystem().getName() );
+            int dim = ( linearRing.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
+            export( linearRing.getControlPoints(), dim );
+            writer.writeEndElement();
+            break;
+        }
+    }
+
+    public void export( CompositeCurve compositeCurve )
+                            throws XMLStreamException {
+        writer.writeStartElement( GMLNS, "CompositeCurve" );
+        if ( compositeCurve.getId() != null )
+            writer.writeAttribute( GMLNS, "id", compositeCurve.getId() );
+        Iterator<Curve> iterator = compositeCurve.iterator();
+        while ( iterator.hasNext() ) {
+            writer.writeStartElement( GMLNS, "curveMember" );
+            export( iterator.next() );
+            writer.writeEndElement();
+        }
+        writer.writeEndElement();
+    }
+
+    public void export( CompositeSurface compositeSurface )
+                            throws XMLStreamException {
+        writer.writeStartElement( GMLNS, "CompositeSurface" );
+        if ( compositeSurface.getId() != null )
+            writer.writeAttribute( GMLNS, "id", compositeSurface.getId() );
+        writer.writeStartElement( GMLNS, "surfaceMember" );
+        Iterator<Surface> iterator = compositeSurface.iterator();
+        while ( iterator.hasNext() ) {
+            export( iterator.next() );
+        }
+        writer.writeEndElement();
+        writer.writeEndElement();
+    }
+
+    public void export( CompositeSolid compositeSolid )
+                            throws XMLStreamException {
+        writer.writeStartElement( GMLNS, "CompositeSolid" );
+        if ( compositeSolid.getId() != null )
+            writer.writeAttribute( GMLNS, "id", compositeSolid.getId() );
+        writer.writeStartElement( GMLNS, "solidMember" );
+        Iterator<Solid> iterator = compositeSolid.iterator();
+        while ( iterator.hasNext() ) {
+            export( iterator.next() );
+        }
+        writer.writeEndElement();
+        writer.writeEndElement();
+    }
+
+    public void export( Envelope envelope )
+                            throws XMLStreamException {
+        writer.writeStartElement( GMLNS, "Envelope" );
+        writer.writeStartElement( GMLNS, "lowerCorner" );
+        double[] array = envelope.getMin().getAsArray();
+        for ( int i = 0; i < array.length; i++ )
+            writer.writeCharacters( String.valueOf( array[i] ) + " " );
+        writer.writeEndElement();
+        writer.writeStartElement( GMLNS, "upperCorner" );
+        array = envelope.getMax().getAsArray();
+        for ( int i = 0; i < array.length; i++ )
+            writer.writeCharacters( String.valueOf( array[i] ) + " " );
+        writer.writeEndElement();
+        writer.writeEndElement();
+    }
+
+    private void export( LineStringSegment lineStringSeg )
+                            throws XMLStreamException {
         writer.writeStartElement( GMLNS, "LineStringSegment" );
         writer.writeAttribute( "interpolation", lineStringSeg.getInterpolation().toString() );
         int dim = ( lineStringSeg.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
@@ -445,13 +648,14 @@ public class GML311GeometryExporter {
         writer.writeEndElement();
     }
 
-    void export( SurfacePatch surfacePatch ) throws XMLStreamException {
+    void export( SurfacePatch surfacePatch )
+                            throws XMLStreamException {
         switch ( surfacePatch.getSurfacePatchType() ) {
         case GRIDDED_SURFACE_PATCH:
             GriddedSurfacePatch gridded = (GriddedSurfacePatch) surfacePatch;
             switch ( gridded.getGriddedSurfaceType() ) {
             case GRIDDED_SURFACE_PATCH:
-                // gml:_GriddedSurfacePatch is abstract; only future custom defined types will be treated  
+                // gml:_GriddedSurfacePatch is abstract; only future custom defined types will be treated
                 break;
             case CONE:
                 writer.writeStartElement( GMLNS, "Cone" );
@@ -460,7 +664,7 @@ public class GML311GeometryExporter {
                 Cone cone = (Cone) surfacePatch;
                 for ( int i = 0; i < cone.getNumRows(); i++ ) {
                     writer.writeStartElement( GMLNS, "row" );
-                    export( cone.getRow( i ), 3 ); // srsDimension attribute in posList set to 3 
+                    export( cone.getRow( i ), 3 ); // srsDimension attribute in posList set to 3
                     writer.writeEndElement();
                 }
                 writer.writeStartElement( GMLNS, "rows" );
@@ -478,7 +682,7 @@ public class GML311GeometryExporter {
                 Cylinder cylinder = (Cylinder) surfacePatch;
                 for ( int i = 0; i < cylinder.getNumRows(); i++ ) {
                     writer.writeStartElement( GMLNS, "row" );
-                    export( cylinder.getRow( i ), 3 ); //srsDimension attribute in posList set to 3 
+                    export( cylinder.getRow( i ), 3 ); // srsDimension attribute in posList set to 3
                     writer.writeEndElement();
                 }
                 writer.writeStartElement( GMLNS, "rows" );
@@ -496,7 +700,7 @@ public class GML311GeometryExporter {
                 Sphere sphere = (Sphere) surfacePatch;
                 for ( int i = 0; i < sphere.getNumRows(); i++ ) {
                     writer.writeStartElement( GMLNS, "row" );
-                    export( sphere.getRow( i ), 3 ); //srsDimension attribute in posList set to 3 
+                    export( sphere.getRow( i ), 3 ); // srsDimension attribute in posList set to 3
                     writer.writeEndElement();
                 }
                 writer.writeStartElement( GMLNS, "rows" );
@@ -510,20 +714,20 @@ public class GML311GeometryExporter {
             }
             break;
         case POLYGON_PATCH:
-            PolygonPatch polygonPatch = ( PolygonPatch ) surfacePatch;
+            PolygonPatch polygonPatch = (PolygonPatch) surfacePatch;
             writer.writeStartElement( GMLNS, "PolygonPatch" );
             writer.writeStartElement( GMLNS, "exterior" );
             export( polygonPatch.getExteriorRing() );
-            writer.writeEndElement();            
+            writer.writeEndElement();
             for ( Ring ring : polygonPatch.getInteriorRings() ) {
                 writer.writeStartElement( GMLNS, "interior" );
                 export( ring );
                 writer.writeEndElement();
-            }            
+            }
             writer.writeEndElement();
             break;
         case RECTANGLE:
-            Rectangle rectangle = ( Rectangle ) surfacePatch;
+            Rectangle rectangle = (Rectangle) surfacePatch;
             writer.writeStartElement( GMLNS, "Rectangle" );
             writer.writeStartElement( GMLNS, "exterior" );
             export( rectangle.getExteriorRing() );
@@ -531,7 +735,7 @@ public class GML311GeometryExporter {
             writer.writeEndElement();
             break;
         case TRIANGLE:
-            Triangle triangle = ( Triangle ) surfacePatch;
+            Triangle triangle = (Triangle) surfacePatch;
             writer.writeStartElement( GMLNS, "Triangle" );
             writer.writeStartElement( GMLNS, "exterior" );
             export( triangle.getExteriorRing() );
@@ -541,178 +745,8 @@ public class GML311GeometryExporter {
         }
     }
 
-    void export( Solid solid ) throws XMLStreamException {
-        switch ( solid.getSolidType() ) {
-        case Solid:
-            writer.writeStartElement( GMLNS, "Solid" );
-            if ( solid.getId() != null )
-                writer.writeAttribute( GMLNS, "id", solid.getId() );
-            writer.writeAttribute( "srsName", 
-                                   solid.getCoordinateSystem().getName() );
-            Surface exSurface = solid.getExteriorSurface();
-            writer.writeStartElement( GMLNS, "exterior" );
-            export( exSurface );
-            writer.writeEndElement();
-            for ( Surface inSurface : solid.getInteriorSurfaces() ) {
-                writer.writeStartElement( GMLNS, "interior" );
-                export( inSurface );
-                writer.writeEndElement();
-            }
-            writer.writeEndElement();
-            break;
-        case CompositeSolid:
-            CompositeSolid compositeSolid = ( CompositeSolid ) solid;
-            writer.writeStartElement( GMLNS, "CompositeSolid" );
-            if ( compositeSolid.getId() != null )
-                writer.writeAttribute( GMLNS, "id", solid.getId() );
-            writer.writeAttribute( "srsName", 
-                                   compositeSolid.getCoordinateSystem().getName() );
-            Iterator<Solid> iterator = compositeSolid.iterator();
-            while ( iterator.hasNext() ) {
-                Solid solidMember = iterator.next();
-                if ( solidMember.getId() != null && exportedIds.contains( solidMember.getId() ) ) {
-                    writer.writeEmptyElement( GMLNS, "solidMember" );
-                    writer.writeAttribute( XLNNS, "href", "#" + solidMember.getId() );
-                } else {
-                    exportedIds.add( solidMember.getId() );
-                    writer.writeStartElement( GMLNS, "solidMember" );
-                    export( solidMember );
-                    writer.writeEndElement();
-                }
-            }
-            writer.writeEndElement();
-            break;
-        }
-    }    
-
-    void export( Ring ring ) throws XMLStreamException {
-        switch ( ring.getRingType() ) {
-        case Ring:
-            writer.writeStartElement( GMLNS, "Ring" );
-            if ( ring.getId() != null )
-                writer.writeAttribute( GMLNS, "id", ring.getId() );
-            writer.writeAttribute( "srsName", 
-                                   ring.getCoordinateSystem().getName() );
-            for ( Curve c: ring.getMembers() ) {
-                writer.writeStartElement( GMLNS, "curveMember" );
-                export( c );
-                writer.writeEndElement();
-            }
-            writer.writeEndElement();
-            break;
-        case LinearRing:
-            LinearRing linearRing = ( LinearRing ) ring;
-            writer.writeStartElement( GMLNS, "LinearRing" );
-            if ( linearRing.getCoordinateSystem() != null )
-                writer.writeAttribute( "srsName", linearRing.getCoordinateSystem().getName() );
-            int dim = ( linearRing.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
-            export( linearRing.getControlPoints(), dim );
-            writer.writeEndElement();
-            break;
-        }
-    }
-
-    void export( Curve curve ) throws XMLStreamException {
-        switch ( curve.getCurveType() ) {
-        case CompositeCurve:
-            CompositeCurve compositeCurve = ( CompositeCurve ) curve;            
-            writer.writeStartElement( GMLNS, "CompositeCurve" );
-            if ( compositeCurve.getId() != null )
-                writer.writeAttribute( GMLNS, "id", compositeCurve.getId() );
-            writer.writeAttribute( "srsName", compositeCurve.getCoordinateSystem().getName() );
-            Iterator<Curve> iterator = compositeCurve.iterator();
-            while ( iterator.hasNext() ) {
-                writer.writeStartElement( GMLNS, "curveMember" );
-                export( iterator.next() );
-                writer.writeEndElement();
-            }
-            writer.writeEndElement();
-            break;
-        case Curve:
-            writer.writeStartElement( GMLNS, "Curve" );
-            if ( curve.getId() != null )
-                writer.writeAttribute( GMLNS, "id", curve.getId() );
-            writer.writeAttribute( "srsName", 
-                                   curve.getCoordinateSystem().getName() );
-            writer.writeStartElement( GMLNS, "segments" );
-            for ( CurveSegment curveSeg: curve.getCurveSegments() )
-                export( curveSeg );                
-            writer.writeEndElement();
-            writer.writeEndElement();
-            break;
-        case LineString:
-            writer.writeStartElement( GMLNS, "LineString" );
-            LineString lineString = ( LineString ) curve;
-            if ( lineString.getId() != null )
-                writer.writeAttribute( GMLNS, "id", lineString.getId() );
-            int dim = ( lineString.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
-            export( lineString.getControlPoints(), dim );
-            writer.writeEndElement();
-            break;
-        case OrientableCurve:
-            writer.writeStartElement( GMLNS, "OrientableCurve" );
-            OrientableCurve orientableCurve = ( OrientableCurve ) curve;
-            if ( orientableCurve.getId() != null )
-                writer.writeAttribute( GMLNS, "id", orientableCurve.getId() );                     
-            writer.writeAttribute( "orientation", orientableCurve.isReversed() ? "-" : "+" );             
-            Curve baseCurve = orientableCurve.getBaseCurve();
-            if ( baseCurve.getId() != null && exportedIds.contains( baseCurve.getId() ) ) {
-                writer.writeEmptyElement( GMLNS, "baseCurve" );
-                writer.writeAttribute( XLNNS, "href", "#" + baseCurve.getId() );
-                writer.writeEndElement();
-            } else {
-                writer.writeStartElement( GMLNS, "baseCurve" );
-                export( baseCurve );
-                writer.writeEndElement();
-            }
-            writer.writeEndElement();
-            break;
-        case Ring:
-            export( (Ring) curve );
-            break;
-        }
-    }
-
-    void export( CompositeCurve compositeCurve ) throws XMLStreamException {
-        writer.writeStartElement( GMLNS, "CompositeCurve" );
-        if ( compositeCurve.getId() != null )
-            writer.writeAttribute( GMLNS, "id", compositeCurve.getId() );        
-        Iterator<Curve> iterator = compositeCurve.iterator();        
-        while ( iterator.hasNext() ) {
-            writer.writeStartElement( GMLNS, "curveMember" );
-            export( iterator.next() );
-            writer.writeEndElement();
-        }        
-        writer.writeEndElement();
-    }
-
-    void export( CompositeSurface compositeSurface ) throws XMLStreamException {
-        writer.writeStartElement( GMLNS, "CompositeSurface" );
-        if ( compositeSurface.getId() != null )
-            writer.writeAttribute( GMLNS, "id", compositeSurface.getId() );
-        writer.writeStartElement( GMLNS, "surfaceMember" );
-        Iterator<Surface> iterator = compositeSurface.iterator();        
-        while ( iterator.hasNext() ) {
-            export( iterator.next() );
-        }
-        writer.writeEndElement();
-        writer.writeEndElement();
-    }
-
-    void export( CompositeSolid compositeSolid ) throws XMLStreamException {
-        writer.writeStartElement( GMLNS, "CompositeSolid" );
-        if ( compositeSolid.getId() != null )
-            writer.writeAttribute( GMLNS, "id", compositeSolid.getId() );
-        writer.writeStartElement( GMLNS, "solidMember" );
-        Iterator<Solid> iterator = compositeSolid.iterator();        
-        while ( iterator.hasNext() ) {
-            export( iterator.next() );
-        }
-        writer.writeEndElement();
-        writer.writeEndElement();
-    }
-
-    void export( CompositeGeometry<GeometricPrimitive> geometryComplex ) throws XMLStreamException {                
+    void export( CompositeGeometry<GeometricPrimitive> geometryComplex )
+                            throws XMLStreamException {
         writer.writeStartElement( GMLNS, "GeometricComplex" );
         if ( geometryComplex.getId() != null )
             writer.writeAttribute( GMLNS, "id", geometryComplex.getId() );
@@ -722,24 +756,25 @@ public class GML311GeometryExporter {
             writer.writeStartElement( GMLNS, "element" );
             GeometricPrimitive member = iterator.next();
             export( member );
-            writer.writeEndElement();            
+            writer.writeEndElement();
         }
         writer.writeEndElement();
     }
 
-    void export( CurveSegment curveSeg ) throws XMLStreamException {
+    void export( CurveSegment curveSeg )
+                            throws XMLStreamException {
         switch ( curveSeg.getSegmentType() ) {
         case ARC:
             writer.writeStartElement( GMLNS, "Arc" );
-            Arc arc = ( Arc ) curveSeg;
+            Arc arc = (Arc) curveSeg;
             export( arc.getPoint1() );
             export( arc.getPoint2() );
             export( arc.getPoint3() );
-            writer.writeEndElement();                        
+            writer.writeEndElement();
             break;
         case ARC_BY_BULGE:
             writer.writeStartElement( GMLNS, "ArcByBulge" );
-            ArcByBulge arcBulge = ( ArcByBulge ) curveSeg;
+            ArcByBulge arcBulge = (ArcByBulge) curveSeg;
             export( arcBulge.getPoint1() );
             export( arcBulge.getPoint2() );
             writer.writeStartElement( GMLNS, "bulge" );
@@ -752,9 +787,9 @@ public class GML311GeometryExporter {
             break;
         case ARC_BY_CENTER_POINT:
             writer.writeStartElement( GMLNS, "ArcByCenterPoint" );
-            ArcByCenterPoint arcCenterP = ( ArcByCenterPoint ) curveSeg;
+            ArcByCenterPoint arcCenterP = (ArcByCenterPoint) curveSeg;
             writer.writeAttribute( "interpolation", arcCenterP.getInterpolation().toString() );
-            writer.writeAttribute( "numArc", "1" ); //TODO have a getNumArcs() method in ArcByCenterPoint ???
+            writer.writeAttribute( "numArc", "1" ); // TODO have a getNumArcs() method in ArcByCenterPoint ???
             export( arcCenterP.getMidPoint() );
             writer.writeStartElement( GMLNS, "radius" );
             writer.writeAttribute( "uom", arcCenterP.getRadius().getUomUri() );
@@ -772,7 +807,7 @@ public class GML311GeometryExporter {
             break;
         case ARC_STRING:
             writer.writeStartElement( GMLNS, "ArcString" );
-            ArcString arcString = ( ArcString ) curveSeg;
+            ArcString arcString = (ArcString) curveSeg;
             writer.writeAttribute( "interpolation", arcString.getInterpolation().toString() );
             writer.writeAttribute( "numArc", String.valueOf( arcString.getNumArcs() ) );
             int dim = ( arcString.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
@@ -781,17 +816,17 @@ public class GML311GeometryExporter {
             break;
         case ARC_STRING_BY_BULGE:
             writer.writeStartElement( GMLNS, "ArcStringByBulge" );
-            ArcStringByBulge arcStringBulge = ( ArcStringByBulge ) curveSeg;
+            ArcStringByBulge arcStringBulge = (ArcStringByBulge) curveSeg;
             writer.writeAttribute( "interpolation", arcStringBulge.getInterpolation().toString() );
             writer.writeAttribute( "numArc", String.valueOf( arcStringBulge.getNumArcs() ) );
             dim = ( arcStringBulge.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
             export( arcStringBulge.getControlPoints(), dim );
-            for ( double d: arcStringBulge.getBulges() ) {
+            for ( double d : arcStringBulge.getBulges() ) {
                 writer.writeStartElement( GMLNS, "bulge" );
                 writer.writeCharacters( String.valueOf( d ) );
                 writer.writeEndElement();
             }
-            for ( Point p: arcStringBulge.getNormals() ) {
+            for ( Point p : arcStringBulge.getNormals() ) {
                 writer.writeStartElement( GMLNS, "normal" );
                 double[] array = p.getAsArray();
                 int curveSegDim = ( curveSeg.is3D() ? 3 : 2 );
@@ -803,7 +838,7 @@ public class GML311GeometryExporter {
             break;
         case BEZIER:
             writer.writeStartElement( GMLNS, "Bezier" );
-            Bezier bezier = ( Bezier ) curveSeg;
+            Bezier bezier = (Bezier) curveSeg;
             writer.writeAttribute( "interpolation", bezier.getInterpolation().toString() );
             dim = ( bezier.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
             export( bezier.getControlPoints(), dim );
@@ -816,20 +851,20 @@ public class GML311GeometryExporter {
             break;
         case BSPLINE:
             writer.writeStartElement( GMLNS, "BSpline" );
-            BSpline bSpline = ( BSpline ) curveSeg;
+            BSpline bSpline = (BSpline) curveSeg;
             writer.writeAttribute( "interpolation", bSpline.getInterpolation().toString() );
             dim = ( bSpline.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
             export( bSpline.getControlPoints(), dim );
             writer.writeStartElement( GMLNS, "degree" );
             writer.writeCharacters( String.valueOf( bSpline.getPolynomialDegree() ) );
             writer.writeEndElement();
-            for( Knot knot: bSpline.getKnots() )
+            for ( Knot knot : bSpline.getKnots() )
                 export( knot );
             writer.writeEndElement();
             break;
         case CIRCLE:
             writer.writeStartElement( GMLNS, "Circle" );
-            Circle circle = ( Circle ) curveSeg;
+            Circle circle = (Circle) curveSeg;
             writer.writeAttribute( "interpolation", circle.getInterpolation().toString() );
             dim = ( circle.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
             export( circle.getControlPoints(), dim );
@@ -837,9 +872,9 @@ public class GML311GeometryExporter {
             break;
         case CIRCLE_BY_CENTER_POINT:
             writer.writeStartElement( GMLNS, "CircleByCenterPoint" );
-            CircleByCenterPoint circleCenterP = ( CircleByCenterPoint ) curveSeg;
+            CircleByCenterPoint circleCenterP = (CircleByCenterPoint) curveSeg;
             writer.writeAttribute( "interpolation", circleCenterP.getInterpolation().toString() );
-            writer.writeAttribute( "numArc", "1" );            
+            writer.writeAttribute( "numArc", "1" );
             export( circleCenterP.getMidPoint() );
             writer.writeStartElement( GMLNS, "radius" );
             writer.writeAttribute( "uom", circleCenterP.getRadius().getUomUri() );
@@ -853,11 +888,11 @@ public class GML311GeometryExporter {
             writer.writeAttribute( "uom", circleCenterP.getEndAngle().getUomUri() );
             writer.writeCharacters( String.valueOf( circleCenterP.getEndAngle().getValue() ) );
             writer.writeEndElement();
-            writer.writeEndElement();                               
+            writer.writeEndElement();
             break;
         case CLOTHOID:
             writer.writeStartElement( GMLNS, "Clothoid" );
-            Clothoid clothoid = ( Clothoid ) curveSeg;
+            Clothoid clothoid = (Clothoid) curveSeg;
             writer.writeStartElement( GMLNS, "refLocation" );
             writer.writeStartElement( GMLNS, "AffinePlacement" );
             AffinePlacement affinePlace = clothoid.getReferenceLocation();
@@ -866,11 +901,11 @@ public class GML311GeometryExporter {
             for ( int i = 0; i < array.length; i++ )
                 writer.writeCharacters( String.valueOf( array[i] ) + " " );
             writer.writeEndElement();
-            for ( Point p: affinePlace.getRefDirections() ) {
+            for ( Point p : affinePlace.getRefDirections() ) {
                 writer.writeStartElement( GMLNS, "refDirection" );
                 array = p.getAsArray();
                 for ( int i = 0; i < array.length; i++ )
-                    writer.writeCharacters( String.valueOf( array[i] ) + " " );                
+                    writer.writeCharacters( String.valueOf( array[i] ) + " " );
                 writer.writeEndElement();
             }
             writer.writeStartElement( GMLNS, "inDimension" );
@@ -894,7 +929,7 @@ public class GML311GeometryExporter {
             break;
         case CUBIC_SPLINE:
             writer.writeStartElement( GMLNS, "CubicSpline" );
-            CubicSpline cubicSpline = ( CubicSpline ) curveSeg;
+            CubicSpline cubicSpline = (CubicSpline) curveSeg;
             writer.writeAttribute( "interpolation", cubicSpline.getInterpolation().toString() );
             dim = ( cubicSpline.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
             export( cubicSpline.getControlPoints(), dim );
@@ -912,7 +947,7 @@ public class GML311GeometryExporter {
             break;
         case GEODESIC:
             writer.writeStartElement( GMLNS, "Geodesic" );
-            Geodesic geodesic = ( Geodesic ) curveSeg;
+            Geodesic geodesic = (Geodesic) curveSeg;
             writer.writeAttribute( "interpolation", geodesic.getInterpolation().toString() );
             int geodesicDim = ( geodesic.is3D() ? 3 : 2 );
             export( geodesic.getControlPoints(), geodesicDim );
@@ -920,18 +955,18 @@ public class GML311GeometryExporter {
             break;
         case GEODESIC_STRING:
             writer.writeStartElement( GMLNS, "GeodesicString" );
-            GeodesicString geodesicString = ( GeodesicString ) curveSeg;
+            GeodesicString geodesicString = (GeodesicString) curveSeg;
             writer.writeAttribute( "interpolation", geodesicString.getInterpolation().toString() );
             dim = ( geodesicString.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
             export( geodesicString.getControlPoints(), dim );
             writer.writeEndElement();
             break;
         case LINE_STRING_SEGMENT:
-            export( ( LineStringSegment ) curveSeg );
+            export( (LineStringSegment) curveSeg );
             break;
         case OFFSET_CURVE:
             writer.writeStartElement( GMLNS, "OffsetCurve" );
-            OffsetCurve offsetCurve = ( OffsetCurve ) curveSeg;
+            OffsetCurve offsetCurve = (OffsetCurve) curveSeg;
 
             Curve baseCurve = offsetCurve.getBaseCurve();
             if ( baseCurve.getId() != null && exportedIds.contains( baseCurve.getId() ) ) {
@@ -954,7 +989,8 @@ public class GML311GeometryExporter {
         }
     }
 
-    void export( Knot knot ) throws XMLStreamException {
+    void export( Knot knot )
+                            throws XMLStreamException {
         writer.writeStartElement( GMLNS, "knot" );
         writer.writeStartElement( GMLNS, "Knot" );
         writer.writeStartElement( GMLNS, "value" );
@@ -968,21 +1004,22 @@ public class GML311GeometryExporter {
         writer.writeEndElement();
         writer.writeEndElement();
         writer.writeEndElement();
-    }       
+    }
 
-    void export( List<Point> points, int srsDimension ) throws XMLStreamException {
+    void export( List<Point> points, int srsDimension )
+                            throws XMLStreamException {
         boolean hasID = false; // see if there exists a point that has an ID
         for ( Point p : points )
             if ( p.getId() != null && p.getId().trim().length() > 0 ) {
                 hasID = true;
                 break;
             }
-        if ( ! hasID ) { // if not then use the <posList> element to export the points
+        if ( !hasID ) { // if not then use the <posList> element to export the points
             writer.writeStartElement( GMLNS, "posList" );
             writer.writeAttribute( "srsDimension", String.valueOf( srsDimension ) );
             for ( Point p : points ) {
                 double[] array = p.getAsArray();
-                for ( int  i = 0; i < array.length; i++ )
+                for ( int i = 0; i < array.length; i++ )
                     writer.writeCharacters( String.valueOf( array[i] ) + " " );
             }
             writer.writeEndElement();
@@ -990,35 +1027,6 @@ public class GML311GeometryExporter {
             for ( Point p : points )
                 export( p );
         }
-    }
-
-    void export( Point point ) throws XMLStreamException {        
-        if ( point.getId() != null && exportedIds.contains( point.getId() ) ) {
-            writer.writeEmptyElement( GMLNS, "pointProperty" );
-            writer.writeAttribute( XLNNS, "href", "#" + point.getId() );
-        } else {
-            exportedIds.add( point.getId() );
-            writer.writeStartElement( GMLNS, "pos" );
-            double[] array = point.getAsArray();
-            for ( int i = 0; i < array.length; i++ )
-                writer.writeCharacters( String.valueOf( array[i] ) + " " );
-            writer.writeEndElement();
-        }
-    }
-
-    void export( Envelope envelope ) throws XMLStreamException {
-        writer.writeStartElement( GMLNS, "Envelope" );                
-        writer.writeStartElement( GMLNS, "lowerCorner" );
-        double[] array = envelope.getMin().getAsArray();
-        for ( int i = 0; i < array.length; i++ )
-            writer.writeCharacters( String.valueOf( array[i] ) + " " );
-        writer.writeEndElement();
-        writer.writeStartElement( GMLNS, "upperCorner" );
-        array = envelope.getMax().getAsArray();
-        for ( int i = 0; i < array.length; i++ )
-            writer.writeCharacters( String.valueOf( array[i] ) + " " );
-        writer.writeEndElement();
-        writer.writeEndElement();
     }
 
 }

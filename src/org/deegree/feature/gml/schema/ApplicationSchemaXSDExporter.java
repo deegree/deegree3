@@ -52,6 +52,7 @@ import static org.deegree.commons.xml.CommonNamespaces.XS_PREFIX;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
@@ -143,7 +144,7 @@ public class ApplicationSchemaXSDExporter {
         writer.writeNamespace( XS_PREFIX, XSNS );
         writer.writeNamespace( GML_PREFIX, gmlNsURI );
 
-        for ( String importNamespace : importURLs.keySet()) {
+        for ( String importNamespace : importURLs.keySet() ) {
             writer.writeEmptyElement( XSNS, "import" );
             writer.writeAttribute( "namespace", importNamespace );
             writer.writeAttribute( "schemaLocation", importURLs.get( importNamespace ) );
@@ -167,11 +168,11 @@ public class ApplicationSchemaXSDExporter {
         writer.writeStartElement( XSNS, "schema" );
         writer.writeNamespace( XS_PREFIX, XSNS );
         writer.writeNamespace( GML_PREFIX, gmlNsURI );
-        writer.writeAttribute( "targetNamespace", fts.get(0).getName().getNamespaceURI() );
+        writer.writeAttribute( "targetNamespace", fts.get( 0 ).getName().getNamespaceURI() );
         writer.writeAttribute( "elementFormDefault", "qualified" );
         writer.writeAttribute( "attributeFormDefault", "unqualified" );
 
-        for ( String importNamespace : importURLs.keySet()) {
+        for ( String importNamespace : importURLs.keySet() ) {
             writer.writeEmptyElement( XSNS, "import" );
             writer.writeAttribute( "namespace", importNamespace );
             writer.writeAttribute( "schemaLocation", importURLs.get( importNamespace ) );
@@ -221,7 +222,7 @@ public class ApplicationSchemaXSDExporter {
     private static void export( XMLStreamWriter writer, PropertyType pt, GMLVersion version )
                             throws XMLStreamException {
 
-        writer.writeEmptyElement( XSNS, "element" );
+        writer.writeStartElement( XSNS, "element" );
         // TODO (what about properties in other namespaces???)
         writer.writeAttribute( "name", pt.getName().getLocalPart() );
 
@@ -241,12 +242,27 @@ public class ApplicationSchemaXSDExporter {
         } else if ( pt instanceof GeometryPropertyType ) {
 
         } else if ( pt instanceof FeaturePropertyType ) {
-
+            QName containedFt = ( (FeaturePropertyType) pt ).getFTName();
+            if ( containedFt != null ) {
+                writer.writeStartElement( XSNS, "complexType" );
+                writer.writeStartElement( XSNS, "sequence" );
+                writer.writeEmptyElement( XSNS, "element" );
+                writer.writeAttribute( "ref", containedFt.getPrefix() + ":" + containedFt.getLocalPart() );
+                writer.writeAttribute( "minOccurs", "0" );
+                writer.writeEmptyElement( XSNS, "attributeGroup" );
+                writer.writeAttribute( "ref", "gml:AssociationAttributeGroup" );
+                // end 'xs:sequence'
+                writer.writeEndElement();
+                // end 'xs:complexType'
+                writer.writeEndElement();
+            } else {
+                writer.writeAttribute( "type", "gml:FeaturePropertyType" );
+            }
         } else if ( pt instanceof CustomComplexPropertyType ) {
 
         }
 
         // end 'xs:element'
-        // writer.writeEndElement();
+        writer.writeEndElement();
     }
 }

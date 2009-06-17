@@ -64,7 +64,7 @@ public class FeaturePropertyType extends AbstractPropertyType {
     private FeatureType valueFt;
 
     public FeaturePropertyType( QName name, int minOccurs, int maxOccurs, QName valueFtName ) {
-        super (name, minOccurs, maxOccurs);
+        super( name, minOccurs, maxOccurs );
         this.valueFtName = valueFtName;
     }
 
@@ -83,15 +83,20 @@ public class FeaturePropertyType extends AbstractPropertyType {
         return minOccurs;
     }
 
+    /**
+     * Returns the name of the contained feature type.
+     * 
+     * @return the name of the contained feature type, or null if unrestricted (any feature is allowed)
+     */
     public QName getFTName() {
         return valueFtName;
     }
 
     public FeatureType getValueFt() {
-//        if ( valueFt == null ) {
-//            String msg = "Internal error. Reference to feature type '" + valueFtName + "' has not been resolved.";
-//            throw new RuntimeException (msg);
-//        }
+        // if ( valueFt == null ) {
+        // String msg = "Internal error. Reference to feature type '" + valueFtName + "' has not been resolved.";
+        // throw new RuntimeException (msg);
+        // }
         return valueFt;
     }
 

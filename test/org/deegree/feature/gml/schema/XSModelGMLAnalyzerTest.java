@@ -76,13 +76,13 @@ public class XSModelGMLAnalyzerTest {
                                                               GMLVersion.GML_31 );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations(
                                                                                                  "http://www.deegree.org/app",
-                                                                                                 true );
+                                                                                                 false );
         for ( XSElementDeclaration featureElementDecl : featureElementDecls ) {
             System.out.println( "- Feature type: " + featureElementDecl.getName() );
         }
         List<XSElementDeclaration> featureCollectionElementDecls = analyzer.getFeatureCollectionElementDeclarations(
                                                                                                                      null,
-                                                                                                                     true );
+                                                                                                                     false );
         for ( XSElementDeclaration featureCollectionElementDecl : featureCollectionElementDecls ) {
             System.out.println( "- Feature collection type: " + featureCollectionElementDecl.getName() );
         }

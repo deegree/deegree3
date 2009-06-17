@@ -52,11 +52,11 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.types.Length;
 import org.deegree.commons.types.Measure;
 import org.deegree.commons.types.ows.CodeType;
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.LengthPropertyType;
@@ -73,7 +73,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Exporter class for Features and Properties, that delegates exporting tasks to the <code>GML311GeometryExporter</code>
+ * Exporter class for Features and properties that delegates exporting tasks to the <code>GML311GeometryExporter</code>
  * .
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -88,11 +88,11 @@ public class GMLFeatureExporter {
 
     private Set<String> exportedIds = new HashSet<String>();
 
-    private XMLStreamWriterWrapper writer;
+    private XMLStreamWriter writer;
 
     private GML311GeometryExporter geometryExporter;
 
-    public GMLFeatureExporter( XMLStreamWriterWrapper writer ) {
+    public GMLFeatureExporter( XMLStreamWriter writer ) {
         this.writer = writer;
         geometryExporter = new GML311GeometryExporter( writer, exportedIds );
     }

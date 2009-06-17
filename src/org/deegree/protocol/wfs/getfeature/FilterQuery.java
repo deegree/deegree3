@@ -42,6 +42,8 @@
  ---------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.filter.Filter;
 import org.deegree.commons.filter.expression.Function;
 import org.deegree.commons.filter.expression.PropertyName;
@@ -95,6 +97,10 @@ public class FilterQuery extends Query {
         this.filter = filter;
     }
 
+    public FilterQuery( QName typeName, CRS srsName, SortProperty[] sortBy, Filter filter ) {
+        this( null, new TypeName []{new TypeName(typeName, null)}, null, srsName, null,null, null, sortBy, filter );
+    }    
+    
     /**
      * Returns the filter constraint.
      * 

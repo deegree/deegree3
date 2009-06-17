@@ -107,6 +107,14 @@ public class GMLIdContext {
 
     public Feature getFeature( String fid ) {
         return idToFeature.get( fid );
+    }
+    
+    public Map<String,Feature> getFeatures () {
+        return idToFeature;
+    }
+    
+    public Map<String,Geometry> getGeometries () {
+        return idToGeometry;
     }    
     
     /**

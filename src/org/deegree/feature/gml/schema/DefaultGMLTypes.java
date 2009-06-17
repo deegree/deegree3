@@ -41,33 +41,29 @@
 
 
  ---------------------------------------------------------------------------*/
-package org.deegree.feature;
+package org.deegree.feature.gml.schema;
+
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.filter.Filter;
-import org.deegree.commons.filter.FilterEvaluationException;
+import javax.xml.namespace.QName;
 
-/**
- * Abstract base class for {@link FeatureCollection} implementations.
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
- */
-public abstract class AbstractFeatureCollection extends AbstractFeature implements FeatureCollection {
+import org.deegree.feature.types.FeatureCollectionType;
+import org.deegree.feature.types.GenericFeatureCollectionType;
+import org.deegree.feature.types.property.FeaturePropertyType;
+import org.deegree.feature.types.property.PropertyType;
 
-    @Override
-    public FeatureCollection getMembers( Filter filter )
-                            throws FilterEvaluationException {
-        List<Feature> matchingFeatures = new ArrayList<Feature>();
-        for ( Feature feature : this ) {
-            if ( filter.evaluate( feature ) ) {
-                matchingFeatures.add( feature );
-            }
-        }
-        return new GenericFeatureCollection( null, matchingFeatures );
+public class DefaultGMLTypes {
+
+    public static FeatureCollectionType GML311_FEATURECOLLECTION; 
+    
+    static {
+        QName name = new QName (GMLNS, "FeatureCollection");
+        List<PropertyType> props = new ArrayList<PropertyType>();
+        props.add( new FeaturePropertyType (new QName (GMLNS, "featureMember"), 0, -1, null) );
+        GML311_FEATURECOLLECTION = new GenericFeatureCollectionType (name, props, false);
     }
+    
 }
