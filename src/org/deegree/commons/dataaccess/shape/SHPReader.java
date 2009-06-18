@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.dataaccess.shape;
 
@@ -43,9 +43,11 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.commons.index.RTree;
 import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
@@ -69,10 +71,10 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * <code>SHPReader</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class SHPReader {
@@ -201,6 +203,8 @@ public class SHPReader {
 
     private Envelope bbox;
 
+    private RTree rtree;
+
     /**
      * @param in
      * @param crs
@@ -300,6 +304,8 @@ public class SHPReader {
                        + envelope[4] + "," + envelope[5] + " " + envelope[6] + "," + envelope[7] );
         }
 
+        this.rtree = new RTree( this );
+
     }
 
     /**
@@ -314,111 +320,120 @@ public class SHPReader {
 
         LinkedList<Pair<Integer, Geometry>> list = new LinkedList<Pair<Integer, Geometry>>();
 
-        in.seek( 100 );
+        LinkedList<Long> pointers = rtree.query( bbox );
+        for ( Long ptr : pointers ) {
+            in.seek( ptr - 8 );
 
-        while ( in.getFilePointer() + 1 < in.length() ) {
             int num = in.readInt() - 1;
             int length = in.readInt() * 2; // bah, 16 bit length units here as well!
-            LOG.trace( "Current record length: " + length );
-            long last = in.getFilePointer();
+
             int type = readLEInt( in );
             switch ( type ) {
             case NULL:
                 continue;
             case POINT: {
                 Point p = readPoint();
-                if ( bbox == null || bbox.intersects( p ) ) {
-                    list.add( new Pair<Integer, Geometry>( num, p ) );
-                }
+                list.add( new Pair<Integer, Geometry>( num, p ) );
                 break;
             }
             case POLYLINE: {
-                Envelope box = readEnvelope();
-                if ( bbox == null || bbox.intersects( box ) ) {
-                    list.add( new Pair<Integer, Geometry>( num, readPolyline( false, false, length ) ) );
-                }
+                in.skipBytes( 32 );
+                list.add( new Pair<Integer, Geometry>( num, readPolyline( false, false, length ) ) );
                 break;
             }
             case POLYGON: {
-                Envelope box = readEnvelope();
-                if ( bbox == null || bbox.intersects( box ) ) {
-                    list.add( new Pair<Integer, Geometry>( num, readPolygon( false, false, length ) ) );
-                }
+                in.skipBytes( 32 );
+                list.add( new Pair<Integer, Geometry>( num, readPolygon( false, false, length ) ) );
                 break;
             }
             case MULTIPOINT: {
-                Envelope box = readEnvelope();
-                if ( bbox == null || bbox.intersects( box ) ) {
-                    list.add( new Pair<Integer, Geometry>( num, readMultipoint() ) );
-                }
+                in.skipBytes( 32 );
+                list.add( new Pair<Integer, Geometry>( num, readMultipoint() ) );
                 break;
             }
             case POINTM: {
-                Envelope box = readEnvelope();
-                if ( bbox == null || bbox.intersects( box ) ) {
-                    list.add( new Pair<Integer, Geometry>( num, readPointM() ) );
-                }
+                in.skipBytes( 32 );
+                list.add( new Pair<Integer, Geometry>( num, readPointM() ) );
                 break;
             }
             case POLYLINEM: {
-                Envelope box = readEnvelope();
-                if ( bbox == null || bbox.intersects( box ) ) {
-                    list.add( new Pair<Integer, Geometry>( num, readPolyline( false, true, length ) ) );
-                }
+                in.skipBytes( 32 );
+                list.add( new Pair<Integer, Geometry>( num, readPolyline( false, true, length ) ) );
                 break;
             }
             case POLYGONM: {
-                Envelope box = readEnvelope();
-                if ( bbox == null || bbox.intersects( box ) ) {
-                    list.add( new Pair<Integer, Geometry>( num, readPolygon( false, true, length ) ) );
-                }
+                in.skipBytes( 32 );
+                list.add( new Pair<Integer, Geometry>( num, readPolygon( false, true, length ) ) );
                 break;
             }
             case MULTIPOINTM: {
-                Envelope box = readEnvelope();
-                if ( bbox == null || bbox.intersects( box ) ) {
-                    list.add( new Pair<Integer, Geometry>( num, readMultipointM( length ) ) );
-                }
+                in.skipBytes( 32 );
+                list.add( new Pair<Integer, Geometry>( num, readMultipointM( length ) ) );
                 break;
             }
             case POINTZ: {
-                Envelope box = readEnvelope();
-                if ( bbox == null || bbox.intersects( box ) ) {
-                    list.add( new Pair<Integer, Geometry>( num, readPointZ() ) );
-                }
+                in.skipBytes( 32 );
+                list.add( new Pair<Integer, Geometry>( num, readPointZ() ) );
                 break;
             }
             case POLYLINEZ: {
-                Envelope box = readEnvelope();
-                if ( bbox == null || bbox.intersects( box ) ) {
-                    list.add( new Pair<Integer, Geometry>( num, readPolyline( true, false, length ) ) );
-                }
+                in.skipBytes( 32 );
+                list.add( new Pair<Integer, Geometry>( num, readPolyline( true, false, length ) ) );
                 break;
             }
             case POLYGONZ: {
-                Envelope box = readEnvelope();
-                if ( bbox == null || bbox.intersects( box ) ) {
-                    list.add( new Pair<Integer, Geometry>( num, readPolygon( true, false, length ) ) );
-                }
+                in.skipBytes( 32 );
+                list.add( new Pair<Integer, Geometry>( num, readPolygon( true, false, length ) ) );
                 break;
             }
             case MULTIPOINTZ: {
-                Envelope box = readEnvelope();
-                if ( bbox == null || bbox.intersects( box ) ) {
-                    list.add( new Pair<Integer, Geometry>( num, readMultipointZ( length ) ) );
-                }
+                in.skipBytes( 32 );
+                list.add( new Pair<Integer, Geometry>( num, readMultipointZ( length ) ) );
                 break;
             }
             case MULTIPATCH: {
-                Envelope box = readEnvelope();
-                if ( bbox == null || bbox.intersects( box ) ) {
-                    list.add( new Pair<Integer, Geometry>( num, readMultipatch( length ) ) );
-                }
+                in.skipBytes( 32 );
+                list.add( new Pair<Integer, Geometry>( num, readMultipatch( length ) ) );
+                break;
+            }
+            }
+        }
+
+        return list;
+    }
+
+    /**
+     * @return a list of all envelopes (minx, miny, maxx, maxy)
+     * @throws IOException
+     */
+    public ArrayList<Pair<double[], Long>> readEnvelopes()
+                            throws IOException {
+        ArrayList<Pair<double[], Long>> list = new ArrayList<Pair<double[], Long>>();
+
+        in.seek( 100 );
+
+        while ( in.getFilePointer() + 1 < in.length() ) {
+            in.skipBytes( 4 );
+            int length = in.readInt() * 2; // bah, 16 bit length units here as well!
+            long pos = in.getFilePointer();
+            int type = readLEInt( in );
+            switch ( type ) {
+            case NULL:
+                continue;
+            case POINT: {
+                double x = readLEDouble( in );
+                double y = readLEDouble( in );
+                list.add( new Pair<double[], Long>( new double[] { x, y, x, y }, pos ) );
+                break;
+            }
+            default: {
+                list.add( new Pair<double[], Long>( new double[] { readLEDouble( in ), readLEDouble( in ),
+                                                                  readLEDouble( in ), readLEDouble( in ) }, pos ) );
                 break;
             }
             }
 
-            in.seek( last + length ); // in case the last one was skipped
+            in.seek( pos + length );
         }
 
         return list;
@@ -429,11 +444,6 @@ public class SHPReader {
      */
     public Envelope getEnvelope() {
         return bbox;
-    }
-
-    private Envelope readEnvelope()
-                            throws IOException {
-        return fac.createEnvelope( readLEDouble( in ), readLEDouble( in ), readLEDouble( in ), readLEDouble( in ), crs );
     }
 
     private Point readPoint()
@@ -892,7 +902,7 @@ public class SHPReader {
 
     /**
      * Closes the underlying input stream.
-     *
+     * 
      * @throws IOException
      */
     public void close()

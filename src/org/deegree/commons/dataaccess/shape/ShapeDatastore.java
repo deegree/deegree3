@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,10 +32,12 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.dataaccess.shape;
 
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
@@ -53,9 +55,6 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.dataaccess.dbase.DBFReader;
 import org.deegree.commons.filter.Filter;
 import org.deegree.commons.filter.FilterEvaluationException;
-import org.deegree.commons.filter.OperatorFilter;
-import org.deegree.commons.filter.logical.And;
-import org.deegree.commons.filter.spatial.BBOX;
 import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
@@ -71,8 +70,6 @@ import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
-import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
-import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;
@@ -80,10 +77,10 @@ import org.slf4j.Logger;
 
 /**
  * <code>ShapeDatastore</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class ShapeDatastore {
@@ -205,11 +202,14 @@ public class ShapeDatastore {
 
     /**
      * @param filter
+     * @param bbox
+     *            if the bbox filter is contained in the filter, it will be evaluated by deegree, if given here, the
+     *            backend will do it
      * @return a feature collection with matching features
      * @throws IOException
      * @throws FilterEvaluationException
      */
-    public FeatureCollection query( Filter filter )
+    public FeatureCollection query( Filter filter, Envelope bbox )
                             throws IOException, FilterEvaluationException {
 
         checkForUpdate();
@@ -218,21 +218,6 @@ public class ShapeDatastore {
             return null;
         }
 
-        Envelope bbox = null;
-        if ( filter instanceof OperatorFilter ) {
-            OperatorFilter of = (OperatorFilter) filter;
-            if ( of.getOperator() instanceof BBOX ) {
-                bbox = ( (BBOX) of.getOperator() ).getBoundingBox();
-            }
-            if ( of.getOperator() instanceof And ) {
-                if ( ( (And) of.getOperator() ).getParameter1() instanceof BBOX ) {
-                    bbox = ( (BBOX) of.getOperator() ).getBoundingBox();
-                }
-                if ( ( (And) of.getOperator() ).getParameter2() instanceof BBOX ) {
-                    bbox = ( (BBOX) of.getOperator() ).getBoundingBox();
-                }
-            }
-        }
         if ( bbox != null && transformer != null ) {
             try {
                 bbox = (Envelope) transformer.transform( bbox );
@@ -261,8 +246,7 @@ public class ShapeDatastore {
                 fields = dbf.getFields();
             }
         }
-        GeometryPropertyType geom = new GeometryPropertyType( new QName( "geometry" ), 0, 1, GeometryType.GEOMETRY,
-                                                              CoordinateDimension.DIM_2_OR_3 );
+        GeometryPropertyType geom = new GeometryPropertyType( new QName( "geometry" ), 0, 1, GEOMETRY, DIM_2_OR_3 );
         fields.add( geom );
 
         GenericFeatureType type = new GenericFeatureType( new QName( "feature" ), fields, false );
@@ -287,7 +271,7 @@ public class ShapeDatastore {
             props.add( new GenericProperty<Geometry>( geom, pair.second ) );
             GenericFeature feat = new GenericFeature( type, "shp_" + pair.first, props );
 
-            if ( filter.evaluate( feat ) ) {
+            if ( filter == null || filter.evaluate( feat ) ) {
                 feats.add( feat );
             }
         }
