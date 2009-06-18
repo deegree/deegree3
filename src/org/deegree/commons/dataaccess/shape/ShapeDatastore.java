@@ -117,6 +117,8 @@ public class ShapeDatastore {
             name = name.substring( 0, name.length() - 4 );
         }
 
+        LOG.debug( "Loading shape file '{}'", name );
+
         this.name = name;
         this.crs = crs;
         this.encoding = encoding;
