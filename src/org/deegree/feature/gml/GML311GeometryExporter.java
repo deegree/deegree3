@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.feature.gml;
 
@@ -105,11 +105,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Exporter class for Geometries. TODO add more details
- *
+ * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: ionita $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class GML311GeometryExporter {
@@ -423,15 +423,17 @@ public class GML311GeometryExporter {
                 export( exteriorRing );
                 writer.writeEndElement();
             }
-            for ( Ring ring : polygon.getInteriorRings() ) {
-                if ( ring.getId() != null && exportedIds.contains( ring.getId() ) ) {
-                    writer.writeEmptyElement( GMLNS, "interior" );
-                    writer.writeAttribute( XLNNS, "href", "#" + ring.getId() );
-                } else {
-                    exportedIds.add( ring.getId() );
-                    writer.writeStartElement( GMLNS, "interior" );
-                    export( ring );
-                    writer.writeEndElement();
+            if ( polygon.getInteriorRings() != null ) {
+                for ( Ring ring : polygon.getInteriorRings() ) {
+                    if ( ring.getId() != null && exportedIds.contains( ring.getId() ) ) {
+                        writer.writeEmptyElement( GMLNS, "interior" );
+                        writer.writeAttribute( XLNNS, "href", "#" + ring.getId() );
+                    } else {
+                        exportedIds.add( ring.getId() );
+                        writer.writeStartElement( GMLNS, "interior" );
+                        export( ring );
+                        writer.writeEndElement();
+                    }
                 }
             }
             writer.writeEndElement();
