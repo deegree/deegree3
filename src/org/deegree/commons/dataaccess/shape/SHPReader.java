@@ -304,7 +304,9 @@ public class SHPReader {
                        + envelope[4] + "," + envelope[5] + " " + envelope[6] + "," + envelope[7] );
         }
 
+        LOG.debug( "Building rtree index in memory..." );
         this.rtree = new RTree( this );
+        LOG.debug( "done." );
 
     }
 
