@@ -695,17 +695,30 @@ public class Filter110XMLAdapter extends XMLAdapter {
         }
         switch ( type ) {
         case AND: {
-            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
-            Operator parameter1 = parseOperator( childElementIter.next() );
-            Operator parameter2 = parseOperator( childElementIter.next() );
+            Iterator<OMElement> iterator = element.getChildElements();
+            // the AND operator here is defined over multiple arguments
+            // see BinaryLogicOpType on http://schemas.opengis.net/filter/1.1.0/filter.xsd                        
+            Operator parameter1 = parseOperator( iterator.next() );
+            Operator parameter2 = parseOperator( iterator.next() );
             logicalOperator = new And( parameter1, parameter2 );
+            while ( iterator.hasNext() ) {
+                Operator nextParameter = parseOperator( iterator.next() );
+                logicalOperator = new And( logicalOperator, nextParameter );
+            }            
             break;
         }
         case OR: {
-            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
-            Operator parameter1 = parseOperator( childElementIter.next() );
-            Operator parameter2 = parseOperator( childElementIter.next() );
+            Iterator<OMElement> iterator = element.getChildElements();
+            // the OR operator here is defined over multiple arguments
+            // see BinaryLogicOpType on http://schemas.opengis.net/filter/1.1.0/filter.xsd                        
+            Operator parameter1 = parseOperator( iterator.next() );
+            Operator parameter2 = parseOperator( iterator.next() );
             logicalOperator = new Or( parameter1, parameter2 );
+            while ( iterator.hasNext() ) {
+                Operator nextParameter = parseOperator( iterator.next() );
+                logicalOperator = new Or( logicalOperator, nextParameter );
+            }            
+            break;
         }
         case NOT: {
             FixedChildIterator childElementIter = new FixedChildIterator( element, 1 );
