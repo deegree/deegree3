@@ -51,6 +51,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -67,6 +68,7 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
+import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.xpath.AXIOMXPath;
@@ -1042,6 +1044,25 @@ public class XMLAdapter {
             compiledXPath.addNamespace( prefix, nsMap.get( prefix ) );
         }
         return compiledXPath;
+    }
+    
+    /**
+     * Constructs a {@link NamespaceContext} from all the namespaces available for an {@link OMElement}
+     * 
+     * @param element   the given element
+     * @return
+     *          the constructed namespace context
+     */
+    public NamespaceContext getNamespaceContext( OMElement element ) {
+        NamespaceContext nsContext = new NamespaceContext();
+        
+        Iterator<OMNamespace> iterator = element.getAllDeclaredNamespaces();
+        while ( iterator.hasNext() ) {
+            OMNamespace namespace = iterator.next();
+            nsContext.addNamespace( namespace.getPrefix(), namespace.getNamespaceURI() );
+        }
+            
+        return nsContext;
     }
 
     /**
