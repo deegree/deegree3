@@ -150,6 +150,7 @@ public class RTree {
             }
             cur.add( l.poll() );
         }
+        list.add( cur );
 
         return list;
     }
