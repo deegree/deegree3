@@ -231,13 +231,6 @@ public class CRSQuerier {
             p = (Projection) constructor.newInstance( getGeographicCRS( rs.getInt( 2 ) ) , rs.getDouble( 7 ), rs.getDouble( 6 ),
                                                       new Point2d ( rs.getDouble( 1 ), rs.getDouble( 2 ) ), projUnit, rs.getDouble( 5 ) );
 
-            // TODO THIS IS TENTATIVE as the only use-case for a custom projection is a mercator projection
-            // (OSM_Slippy_Map) which is meant to be spherical ( although from the data coming with it
-            // -- in the ellipsoid namely --  it results non-spherical ). Thus we are forcing it spherical
-            // until we can speak with our CRS expert. Contact us in case you need to load your custom projection.
-            Method makeSpherical = t.getDeclaredMethod( "makeMercatorSpherical", (Class<?>[]) null );
-            makeSpherical.invoke( p, (Object[]) null );
-
         } catch ( ClassNotFoundException e ) {
             LOG.error( Messages.getMessage( "CUSTOM_PROJECTION_CLASS_INSTANTIATION", projectionID, e.getMessage() ), e );
         } catch ( NoSuchMethodException e ) {

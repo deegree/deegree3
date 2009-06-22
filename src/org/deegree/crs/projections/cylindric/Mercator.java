@@ -46,7 +46,6 @@ import org.deegree.crs.EPSGCode;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.ProjectionException;
-import org.deegree.crs.projections.Projection;
 import org.deegree.crs.projections.ProjectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,10 +146,6 @@ public class Mercator extends CylindricalProjection{
     @Override
     public String getImplementationName() {
         return "mercator";
-    }
-
-    public void makeMercatorSpherical() {
-        this.makeSpherical();
     }
 
 }

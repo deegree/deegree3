@@ -1037,13 +1037,6 @@ public class CRSParser extends XMLFileResource {
                     // as it is a Custom projection, set the className attribute
                     result.setClassName( className );
 
-                    // TODO THIS IS TENTATIVE as the only use-case for a custom projection is a mercator projection
-                    // (OSM_Slippy_Map) which is meant to be spherical ( although from the data coming with it
-                    // -- in the ellipsoid namely --  it results non-spherical ). Thus we are forcing it spherical
-                    // until we can speak with our CRS expert. Contact us in case you need to load your custom projection.
-                    Method makeSpherical = t.getDeclaredMethod( "makeMercatorSpherical", (Class<?>[]) null );
-                    makeSpherical.invoke( result, (Object[]) null );
-
                 } catch ( ClassNotFoundException e ) {
                     LOG.error( e.getMessage(), e );
                 } catch ( SecurityException e ) {

@@ -398,10 +398,6 @@ public abstract class Projection extends CRSIdentifiable {
     }
 
 
-    public void makeSpherical() {
-        isSpherical = true;
-    }
-
     /**
      * @return the projectionLatitude also known as central-latitude or latitude-of-origin, in Snyder referenced as
      *         phi_1 for azimuthal, phi_0 for other projections.
