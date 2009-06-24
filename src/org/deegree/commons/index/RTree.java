@@ -73,7 +73,7 @@ public class RTree {
         try {
             // to work around Java's non-existent variant type
             ArrayList list = shape.readEnvelopes();
-            root = buildTree( list, 10 );
+            root = buildTree( list, 128 );
         } catch ( IOException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -85,15 +85,20 @@ public class RTree {
         return box[0] <= x && x <= box[2] && box[1] <= y && y <= box[3];
     }
 
-    private boolean intersects( double[] box1, double[] box2 ) {
+    private static final boolean noEdgeOverlap( final double[] box1, final double[] box2 ) {
+        return box1[0] <= box2[0] && box2[2] <= box1[2] && box2[1] <= box1[1] && box1[3] <= box2[3];
+    }
+
+    private boolean intersects( final double[] box1, final double[] box2 ) {
         return contained( box2, box1[0], box1[3] ) || contained( box2, box1[0], box1[1] )
                || contained( box2, box1[2], box1[3] ) || contained( box2, box1[2], box1[1] )
                || contained( box1, box2[0], box2[3] ) || contained( box1, box2[0], box2[1] )
-               || contained( box1, box2[2], box2[3] ) || contained( box1, box2[2], box2[1] );
+               || contained( box1, box2[2], box2[3] ) || contained( box1, box2[2], box2[1] )
+               || noEdgeOverlap( box1, box2 ) || noEdgeOverlap( box2, box1 );
 
     }
 
-    private LinkedList<Long> query( double[] bbox, Node node ) {
+    private LinkedList<Long> query( final double[] bbox, Node node ) {
         LinkedList<Long> list = new LinkedList<Long>();
 
         for ( Entry e : node.entries ) {
@@ -114,9 +119,12 @@ public class RTree {
      * @return a list of pointers
      */
     public LinkedList<Long> query( Envelope env ) {
-        double[] bbox = new double[] { env.getMin().getX(), env.getMin().getY(), env.getMax().getX(),
-                                      env.getMax().getY() };
-        return query( bbox, root );
+        final double[] bbox = new double[] { env.getMin().getX(), env.getMin().getY(), env.getMax().getX(),
+                                            env.getMax().getY() };
+        if ( intersects( bbox, this.bbox ) ) {
+            return query( bbox, root );
+        }
+        return new LinkedList<Long>();
     }
 
     private TreeMap<Double, LinkedList<Pair<double[], ?>>> sort( Collection<Pair<double[], ?>> rects, int byIdx ) {
