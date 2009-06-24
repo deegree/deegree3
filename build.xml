@@ -103,5 +103,10 @@
 			<transaction src="scripts/database/0.drop-all-in-order.SQL" />
 		</sql>
 	</target>
+    
+    
+    <target name="hudson-build" depends="publish-nightly">
+        <echo message="A nightly build has been created"/>
+    </target>
 
 </project>

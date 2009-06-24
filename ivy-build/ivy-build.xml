@@ -240,6 +240,11 @@
         <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" conf="${module-name}-release" status="integration" forcedeliver="true" overwrite="true" />
         <echo message="project ${module.name} released with version ${build.version}" />
     </target>
+    
+    <target name="publish-nightly" depends="build-jar" if="compile.change" description="-> publish ${module.name}-build in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
+        <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <echo message="project ${module.name}-build released with version ${build.version}" />
+    </target>
 
     <target name="publish" depends="publish-local-all" if="compile.change" description="-> publish ${module.name} in the global ivy repository.">
         <!-- this method should be reconfigured to put the jars in the official repository, for now it is the same as publish-local-->
