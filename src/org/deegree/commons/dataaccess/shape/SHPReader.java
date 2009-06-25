@@ -38,7 +38,6 @@ package org.deegree.commons.dataaccess.shape;
 
 import static org.deegree.commons.utils.ByteUtils.readLEDouble;
 import static org.deegree.commons.utils.ByteUtils.readLEInt;
-import static org.deegree.crs.coordinatesystems.GeographicCRS.WGS84;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -54,7 +53,6 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.GeometryFactoryCreator;
-import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.primitive.Curve;
@@ -289,15 +287,7 @@ public class SHPReader {
         envelope[7] = readLEDouble( in );
 
         // TODO do this for 3D as well
-        try {
-            bbox = fac.createEnvelope( envelope[0], envelope[2], envelope[1], envelope[3], crs );
-            GeometryTransformer t = new GeometryTransformer( WGS84 );
-            bbox = (Envelope) t.transform( bbox );
-        } catch ( Exception e ) {
-            LOG.warn( "Could not properly transform envelope of shape file." );
-            LOG.warn( "Using the envelope will likely yield problems." );
-            LOG.debug( "Stack trace: ", e );
-        }
+        bbox = fac.createEnvelope( envelope[0], envelope[2], envelope[1], envelope[3], crs );
 
         if ( LOG.isTraceEnabled() ) {
             LOG.trace( "Envelope: " + envelope[0] + "," + envelope[1] + " " + envelope[2] + "," + envelope[3] + " "
@@ -307,7 +297,6 @@ public class SHPReader {
         LOG.debug( "Building rtree index in memory..." );
         this.rtree = new RTree( this );
         LOG.debug( "done." );
-
     }
 
     /**
