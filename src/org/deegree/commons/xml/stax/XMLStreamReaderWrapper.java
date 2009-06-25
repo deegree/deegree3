@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.stax;
 
 import java.io.IOException;
@@ -52,10 +52,10 @@ import org.deegree.commons.xml.XMLParsingException;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class XMLStreamReaderWrapper implements XMLStreamReader {
@@ -81,7 +81,7 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
     /**
      * Creates printable (debug) information about the event that the cursor of the given <code>XMLStreamReader</code>
      * currently points at.
-     *
+     * 
      * @return printable information
      */
     public final String getCurrentEventInfo() {
@@ -128,7 +128,7 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
     /**
      * Skips all events that belong to the current element (including descendant elements), so that the
      * <code>XMLStreamReader</code> cursor points at the corresponding <code>END_ELEMENT</code> event.
-     *
+     * 
      * @throws XMLStreamException
      */
     public void skipElement()
@@ -216,12 +216,16 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
     @Override
     public void require( int type, String namespaceURI, String localName )
                             throws XMLStreamException {
-        // TODO provide better error messages
-        try {
-            reader.require( type, namespaceURI, localName );
-        } catch ( XMLStreamException e ) {
-            String msg = "Expected {" + namespaceURI + "}" + localName + ", but found: " + getCurrentEventInfo();
+        if ( getEventType() != type ) {
+            String msg = "Expected event type " + type + ", but found " + getCurrentEventInfo();
             throw new XMLParsingException( this, msg );
+        }
+
+        if ( type == START_ELEMENT || type == END_ELEMENT ) {
+            if ( !getName().equals( new QName( namespaceURI, localName ) ) ) {
+                String msg = "Expected {" + namespaceURI + "}" + localName + ", but found: " + getCurrentEventInfo();
+                throw new XMLParsingException( this, msg );
+            }
         }
     }
 
@@ -280,10 +284,34 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
         return reader.getCharacterEncodingScheme();
     }
 
+    /**
+     * Not piped to wrapped reader, because AXIOM provided reader (withoutCaching) behaves strange here.
+     */
     @Override
     public String getElementText()
                             throws XMLStreamException {
-        return reader.getElementText();
+        if ( getEventType() != XMLStreamConstants.START_ELEMENT ) {
+            throw new XMLStreamException( "parser must be on START_ELEMENT to read next text", getLocation() );
+        }
+        int eventType = next();
+        StringBuffer content = new StringBuffer();
+        while ( eventType != XMLStreamConstants.END_ELEMENT ) {
+            if ( eventType == XMLStreamConstants.CHARACTERS || eventType == XMLStreamConstants.CDATA
+                 || eventType == XMLStreamConstants.SPACE || eventType == XMLStreamConstants.ENTITY_REFERENCE ) {
+                content.append( getText() );
+            } else if ( eventType == XMLStreamConstants.PROCESSING_INSTRUCTION
+                        || eventType == XMLStreamConstants.COMMENT ) {
+                // skipping
+            } else if ( eventType == XMLStreamConstants.END_DOCUMENT ) {
+                throw new XMLStreamException( "unexpected end of document when reading element text content", getLocation() );
+            } else if ( eventType == XMLStreamConstants.START_ELEMENT ) {
+                throw new XMLStreamException( "element text content may not contain START_ELEMENT", getLocation() );
+            } else {
+                throw new XMLStreamException( "Unexpected event type " + eventType, getLocation() );
+            }
+            eventType = next();
+        }
+        return content.toString();
     }
 
     @Override
