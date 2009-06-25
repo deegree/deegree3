@@ -38,8 +38,8 @@
 
     <!-- xml framework build dependencies -->
     <dependency org="xml" name="jaxen" rev="1.1.1" conf="${module.name}-build" />    
-    <dependency org="xml" name="axiom-api" rev="1.2.8" conf="${module.name}-build" />
-    <dependency org="xml" name="axiom-impl" rev="1.2.8" conf="${module.name}-build" />   
+    <dependency org="xml" name="axiom-api" rev="1.2.9-SNAPSHOT" conf="${module.name}-build" />
+    <dependency org="xml" name="axiom-impl" rev="1.2.9-SNAPSHOT" conf="${module.name}-build" />   
     <dependency org="xerces" name="xercesImpl" rev="2.9.1" conf="${module.name}-build" />
     
     <!--  for rendering and working with 3d stuff -->
