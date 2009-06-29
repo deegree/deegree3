@@ -239,8 +239,9 @@ public class Java2DRenderer implements Renderer {
     }
 
     private void render( TextStyling styling, Font font, String text, Point p ) {
-        double x = p.getX() + styling.displacementX;
-        double y = p.getY() + styling.displacementY;
+        Point2D.Double pt = (Point2D.Double) worldToScreen.transform( new Point2D.Double( p.getX(), p.getY() ), null );
+        double x = pt.x + styling.displacementX;
+        double y = pt.y + styling.displacementY;
         graphics.setFont( font );
         AffineTransform transform = graphics.getTransform();
         graphics.rotate( styling.rotation, x, y );
