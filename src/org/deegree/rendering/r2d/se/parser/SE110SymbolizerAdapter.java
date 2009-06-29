@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r2d.se.parser;
 
@@ -68,10 +68,15 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation.Updater;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.PolygonStyling;
+import org.deegree.rendering.r2d.styling.TextStyling;
 import org.deegree.rendering.r2d.styling.components.Fill;
+import org.deegree.rendering.r2d.styling.components.Font;
 import org.deegree.rendering.r2d.styling.components.Graphic;
+import org.deegree.rendering.r2d.styling.components.Halo;
+import org.deegree.rendering.r2d.styling.components.LinePlacement;
 import org.deegree.rendering.r2d.styling.components.Mark;
 import org.deegree.rendering.r2d.styling.components.Stroke;
+import org.deegree.rendering.r2d.styling.components.Font.Style;
 import org.deegree.rendering.r2d.styling.components.Mark.SimpleMark;
 import org.deegree.rendering.r2d.styling.components.Stroke.LineCap;
 import org.deegree.rendering.r2d.styling.components.Stroke.LineJoin;
@@ -79,10 +84,10 @@ import org.slf4j.Logger;
 
 /**
  * <code>SE110SymbolizerAdapter</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class SE110SymbolizerAdapter extends XMLAdapter {
@@ -237,10 +242,270 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
     }
 
     /**
+     * @return the symbolizer
+     */
+    public Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>> parseTextSymbolizer() {
+        OMElement root = getRootElement();
+
+        String name = getNodeAsString( root, new XPath( "se:Name", nscontext ), null );
+
+        QName geom = getNodeAsQName( root, new XPath( "se:Geometry", nscontext ), null );
+        TextStyling baseOrEvaluated = new TextStyling();
+        Continuation<TextStyling> contn = null;
+
+        Filter110XMLAdapter parser = new Filter110XMLAdapter();
+        contn = updateOrContinue( root, "se:LabelPlacement/se:PointPlacement/se:AnchorPoint/se:AnchorPointX",
+                                  baseOrEvaluated, new Updater<TextStyling>() {
+                                      @Override
+                                      public void update( TextStyling obj, String val ) {
+                                          obj.anchorPointX = Double.parseDouble( val );
+                                      }
+                                  }, parser, contn );
+
+        contn = updateOrContinue( root, "se:LabelPlacement/se:PointPlacement/se:AnchorPoint/se:AnchorPointY",
+                                  baseOrEvaluated, new Updater<TextStyling>() {
+                                      @Override
+                                      public void update( TextStyling obj, String val ) {
+                                          obj.anchorPointY = Double.parseDouble( val );
+                                      }
+                                  }, parser, contn );
+
+        contn = updateOrContinue( root, "se:LabelPlacement/se:PointPlacement/se:Displacement/se:DisplacementX",
+                                  baseOrEvaluated, new Updater<TextStyling>() {
+                                      @Override
+                                      public void update( TextStyling obj, String val ) {
+                                          obj.displacementX = Double.parseDouble( val );
+                                      }
+                                  }, parser, contn );
+
+        contn = updateOrContinue( root, "se:LabelPlacement/se:PointPlacement/se:Displacement/se:DisplacementY",
+                                  baseOrEvaluated, new Updater<TextStyling>() {
+                                      @Override
+                                      public void update( TextStyling obj, String val ) {
+                                          obj.displacementY = Double.parseDouble( val );
+                                      }
+                                  }, parser, contn );
+
+        contn = updateOrContinue( root, "se:LabelPlacement/se:PointPlacement/se:Rotation", baseOrEvaluated,
+                                  new Updater<TextStyling>() {
+                                      @Override
+                                      public void update( TextStyling obj, String val ) {
+                                          obj.rotation = Double.parseDouble( val );
+                                      }
+                                  }, parser, contn );
+
+        final Pair<LinePlacement, Continuation<LinePlacement>> pair = parseLinePlacement( root );
+        if ( pair != null ) {
+            baseOrEvaluated.linePlacement = pair.first;
+
+            if ( pair.second != null ) {
+                contn = new Continuation<TextStyling>() {
+                    @Override
+                    public void updateStep( TextStyling base, Feature f ) {
+                        pair.second.evaluate( base.linePlacement, f );
+                    }
+                };
+            }
+        }
+
+        final Pair<Halo, Continuation<Halo>> haloPair = parseHalo( root );
+        if ( haloPair != null ) {
+            baseOrEvaluated.halo = haloPair.first;
+
+            if ( haloPair.second != null ) {
+                contn = new Continuation<TextStyling>() {
+                    @Override
+                    public void updateStep( TextStyling base, Feature f ) {
+                        haloPair.second.evaluate( base.halo, f );
+                    }
+                };
+            }
+        }
+
+        final Pair<Font, Continuation<Font>> fontPair = parseFont( root );
+        if ( fontPair != null ) {
+            baseOrEvaluated.font = fontPair.first;
+
+            if ( fontPair.second != null ) {
+                contn = new Continuation<TextStyling>() {
+                    @Override
+                    public void updateStep( TextStyling base, Feature f ) {
+                        fontPair.second.evaluate( base.font, f );
+                    }
+                };
+            }
+        }
+
+        final Pair<Fill, Continuation<Fill>> fillPair = parseFill( root );
+        if ( fillPair != null ) {
+            baseOrEvaluated.fill = fillPair.first;
+
+            if ( fillPair.second != null ) {
+                contn = new Continuation<TextStyling>() {
+                    @Override
+                    public void updateStep( TextStyling base, Feature f ) {
+                        fillPair.second.evaluate( base.fill, f );
+                    }
+                };
+            }
+        }
+
+        Continuation<StringBuffer> label = updateOrContinue( root, "se:Label", new StringBuffer(),
+                                                             new Updater<StringBuffer>() {
+                                                                 @Override
+                                                                 public void update( StringBuffer obj, String val ) {
+                                                                     obj.append( val );
+                                                                 }
+                                                             }, parser, null );
+
+        if ( contn == null ) {
+            Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, geom, name );
+            return new Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>>( sym, label );
+        }
+
+        Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, contn, geom, name );
+        return new Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>>( sym, label );
+    }
+
+    private Pair<Font, Continuation<Font>> parseFont( OMElement root ) {
+        root = getElement( root, new XPath( "se:Font", nsContext ) );
+        if ( root == null ) {
+            return null;
+        }
+
+        Font baseOrEvaluated = new Font();
+        Continuation<Font> contn = null;
+        Filter110XMLAdapter parser = new Filter110XMLAdapter();
+
+        contn = updateOrContinue( root, "se:SvgParameter[@name='font-family']", baseOrEvaluated, new Updater<Font>() {
+            @Override
+            public void update( Font obj, String val ) {
+                obj.fontFamily.add( val );
+            }
+        }, parser, contn );
+        contn = updateOrContinue( root, "se:SvgParameter[@name='font-style']", baseOrEvaluated, new Updater<Font>() {
+            @Override
+            public void update( Font obj, String val ) {
+                obj.fontStyle = Style.valueOf( val.toUpperCase() );
+            }
+        }, parser, contn );
+        contn = updateOrContinue( root, "se:SvgParameter[@name='font-weight']", baseOrEvaluated, new Updater<Font>() {
+            @Override
+            public void update( Font obj, String val ) {
+                obj.bold = val.equalsIgnoreCase( "bold" );
+            }
+        }, parser, contn );
+        contn = updateOrContinue( root, "se:SvgParameter[@name='font-size']", baseOrEvaluated, new Updater<Font>() {
+            @Override
+            public void update( Font obj, String val ) {
+                obj.fontSize = Integer.parseInt( val );
+            }
+        }, parser, contn );
+
+        return new Pair<Font, Continuation<Font>>( baseOrEvaluated, contn );
+
+    }
+
+    private Pair<Halo, Continuation<Halo>> parseHalo( OMElement root ) {
+        root = getElement( root, new XPath( "se:Halo", nsContext ) );
+        if ( root == null ) {
+            return null;
+        }
+
+        Halo baseOrEvaluated = new Halo();
+        Continuation<Halo> contn = null;
+
+        contn = updateOrContinue( root, "se:Radius", baseOrEvaluated, new Updater<Halo>() {
+            @Override
+            public void update( Halo obj, String val ) {
+                obj.radius = Double.parseDouble( val );
+
+            }
+        }, new Filter110XMLAdapter(), contn );
+
+        final Pair<Fill, Continuation<Fill>> fillPair = parseFill( root );
+
+        if ( fillPair != null ) {
+            baseOrEvaluated.fill = fillPair.first;
+
+            if ( fillPair.second != null ) {
+                contn = new Continuation<Halo>() {
+                    @Override
+                    public void updateStep( Halo base, Feature f ) {
+                        fillPair.second.evaluate( base.fill, f );
+                    }
+                };
+            }
+        }
+
+        return new Pair<Halo, Continuation<Halo>>( baseOrEvaluated, contn );
+    }
+
+    private Pair<LinePlacement, Continuation<LinePlacement>> parseLinePlacement( OMElement root ) {
+        root = getElement( root, new XPath( "se:LabelPlacement/se:LinePlacement", nsContext ) );
+        if ( root == null ) {
+            return null;
+        }
+
+        LinePlacement baseOrEvaluated = new LinePlacement();
+        Continuation<LinePlacement> contn = null;
+
+        contn = updateOrContinue( root, "se:PerpendicularOffset", baseOrEvaluated, new Updater<LinePlacement>() {
+            @Override
+            public void update( LinePlacement obj, String val ) {
+                obj.perpendicularOffset = Double.parseDouble( val );
+
+            }
+        }, new Filter110XMLAdapter(), contn );
+
+        contn = updateOrContinue( root, "se:InitialGap", baseOrEvaluated, new Updater<LinePlacement>() {
+            @Override
+            public void update( LinePlacement obj, String val ) {
+                obj.initialGap = Double.parseDouble( val );
+
+            }
+        }, new Filter110XMLAdapter(), contn );
+
+        contn = updateOrContinue( root, "se:Gap", baseOrEvaluated, new Updater<LinePlacement>() {
+            @Override
+            public void update( LinePlacement obj, String val ) {
+                obj.gap = Double.parseDouble( val );
+
+            }
+        }, new Filter110XMLAdapter(), contn );
+
+        contn = updateOrContinue( root, "se:GeneralizeLine", baseOrEvaluated, new Updater<LinePlacement>() {
+            @Override
+            public void update( LinePlacement obj, String val ) {
+                obj.generalizeLine = Boolean.parseBoolean( val );
+
+            }
+        }, new Filter110XMLAdapter(), contn );
+
+        contn = updateOrContinue( root, "se:IsAligned", baseOrEvaluated, new Updater<LinePlacement>() {
+            @Override
+            public void update( LinePlacement obj, String val ) {
+                obj.isAligned = Boolean.parseBoolean( val );
+
+            }
+        }, new Filter110XMLAdapter(), contn );
+
+        contn = updateOrContinue( root, "se:IsRepeated", baseOrEvaluated, new Updater<LinePlacement>() {
+            @Override
+            public void update( LinePlacement obj, String val ) {
+                obj.repeat = Boolean.parseBoolean( val );
+
+            }
+        }, new Filter110XMLAdapter(), contn );
+
+        return new Pair<LinePlacement, Continuation<LinePlacement>>( baseOrEvaluated, contn );
+    }
+
+    /**
      * @param root
      * @return a base graphic and a continuation, or an evaluated graphic
      */
-    public Pair<Graphic, Continuation<Graphic>> parseGraphic( OMElement root ) {
+    private Pair<Graphic, Continuation<Graphic>> parseGraphic( OMElement root ) {
         Filter110XMLAdapter parser = new Filter110XMLAdapter();
 
         OMElement graphic = getElement( root, new XPath( "se:Graphic", nscontext ) );
@@ -588,66 +853,69 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
      * @param contn
      * @return a continuation or null, if none was created and input
      */
-    private <T> Continuation<T> updateOrContinue( OMElement root, String name, final T obj, final Updater<T> updater,
-                                                  Filter110XMLAdapter parser, final Continuation<T> contn ) {
-        OMElement opacity = getElement( root, new XPath( name, nscontext ) );
-        if ( opacity != null ) {
-            Iterator<?> iter = opacity.getChildren();
-            final LinkedList<Pair<String, Pair<Expression, String>>> text = new LinkedList<Pair<String, Pair<Expression, String>>>(); // no
-            // real 'alternative', have we?
-            boolean textOnly = true;
-            while ( iter.hasNext() ) {
-                Object cur = iter.next();
-                if ( cur instanceof OMElement ) {
-                    OMElement om = (OMElement) cur;
-                    Expression expr = parser.parseExpression( (OMElement) cur );
-                    Pair<Expression, String> second = new Pair<Expression, String>( expr, get( "R2D.LINE",
-                                                                                               om.getLineNumber(), om ) );
-                    text.add( new Pair<String, Pair<Expression, String>>( null, second ) );
-                    textOnly = false;
-                }
-                if ( cur instanceof OMText ) {
-                    OMText t = (OMText) cur;
-                    if ( textOnly && !text.isEmpty() ) { // concat text in case of multiple text nodes from beginning
-                        String txt = text.removeLast().first;
-                        text.add( new Pair<String, Pair<Expression, String>>( txt + t.getText(), null ) );
-                    } else {
-                        text.add( new Pair<String, Pair<Expression, String>>( t.getText(), null ) );
+    private <T> Continuation<T> updateOrContinue( OMElement root, String name, T obj, final Updater<T> updater,
+                                                  Filter110XMLAdapter parser, Continuation<T> contn ) {
+        for ( OMElement elem : getElements( root, new XPath( name, nscontext ) ) ) {
+            if ( elem != null ) {
+                Iterator<?> iter = elem.getChildren();
+                final LinkedList<Pair<String, Pair<Expression, String>>> text = new LinkedList<Pair<String, Pair<Expression, String>>>(); // no
+                // real 'alternative', have we?
+                boolean textOnly = true;
+                while ( iter.hasNext() ) {
+                    Object cur = iter.next();
+                    if ( cur instanceof OMElement ) {
+                        OMElement om = (OMElement) cur;
+                        Expression expr = parser.parseExpression( (OMElement) cur );
+                        Pair<Expression, String> second = new Pair<Expression, String>( expr, get( "R2D.LINE",
+                                                                                                   om.getLineNumber(),
+                                                                                                   om ) );
+                        text.add( new Pair<String, Pair<Expression, String>>( null, second ) );
+                        textOnly = false;
+                    }
+                    if ( cur instanceof OMText ) {
+                        OMText t = (OMText) cur;
+                        if ( textOnly && !text.isEmpty() ) { // concat text in case of multiple text nodes from
+                            // beginning
+                            String txt = text.removeLast().first;
+                            text.add( new Pair<String, Pair<Expression, String>>( txt + t.getText(), null ) );
+                        } else {
+                            text.add( new Pair<String, Pair<Expression, String>>( t.getText(), null ) );
+                        }
                     }
                 }
-            }
 
-            if ( textOnly ) {
-                updater.update( obj, text.getFirst().first );
-            } else {
-                return new Continuation<T>( contn ) {
-                    @Override
-                    public void updateStep( T base, Feature f ) {
-                        String tmp = "";
-                        for ( Pair<String, Pair<Expression, String>> p : text ) {
-                            if ( p.first != null ) {
-                                tmp += p.first;
-                            }
-                            if ( p.second != null ) {
-                                try {
-                                    Object evald = p.second.first.evaluate( f );
-                                    if ( evald == null ) {
-                                        LOG.warn( get( "R2D.EXPRESSION_TO_NULL" ), p.second.second );
-                                    } else {
-                                        tmp += evald;
+                if ( textOnly ) {
+                    updater.update( obj, text.getFirst().first );
+                } else {
+                    contn = new Continuation<T>( contn ) {
+                        @Override
+                        public void updateStep( T base, Feature f ) {
+                            String tmp = "";
+                            for ( Pair<String, Pair<Expression, String>> p : text ) {
+                                if ( p.first != null ) {
+                                    tmp += p.first;
+                                }
+                                if ( p.second != null ) {
+                                    try {
+                                        Object evald = p.second.first.evaluate( f );
+                                        if ( evald == null ) {
+                                            LOG.warn( get( "R2D.EXPRESSION_TO_NULL" ), p.second.second );
+                                        } else {
+                                            tmp += evald;
+                                        }
+                                    } catch ( FilterEvaluationException e ) {
+                                        LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), p.second.second );
                                     }
-                                } catch ( FilterEvaluationException e ) {
-                                    LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), p.second.second );
                                 }
                             }
+
+                            updater.update( base, tmp );
                         }
-
-                        updater.update( obj, tmp );
-                    }
-                };
+                    };
+                }
             }
-        }
 
+        }
         return contn;
     }
 
