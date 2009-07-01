@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crs:definitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.deegree.org/crs ../../../../../resources/crs/schema/crsdefinition.xsd" version="0.1.0">
+<crs:definitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.deegree.org/crs ../../../../../../resources/crs/schema/crsdefinition.xsd">
   <crs:ellipsoid>
     <crs:id>ELLIPSOID_11</crs:id>
     <crs:name>Proj4 defined ellipsoid</crs:name>
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 28192</crs:description>
     <crs:semiMajorAxis>6378300.789</crs:semiMajorAxis>
-    <crs:inverseFlattening>293.4663155389811</crs:inverseFlattening>
+    <crs:inverseFlatting>293.4663155389811</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -16,7 +17,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7034</crs:id>
     <crs:name>Clarke 1880 mod.</crs:name>
     <crs:semiMajorAxis>6378249.145</crs:semiMajorAxis>
-    <crs:inverseFlattening>293.4663</crs:inverseFlattening>
+    <crs:inverseFlatting>293.4663</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -26,7 +27,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7022</crs:id>
     <crs:name>International 1909 (Hayford)</crs:name>
     <crs:semiMajorAxis>6378388.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>297.0</crs:inverseFlattening>
+    <crs:inverseFlatting>297.0</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -36,7 +37,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7019</crs:id>
     <crs:name>GRS 1980(IUGG, 1980)</crs:name>
     <crs:semiMajorAxis>6378137.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.257222101</crs:inverseFlattening>
+    <crs:inverseFlatting>298.257222101</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -46,7 +47,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7050</crs:id>
     <crs:name>Australian Natl &amp; S. Amer. 1969</crs:name>
     <crs:semiMajorAxis>6378160.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.25</crs:inverseFlattening>
+    <crs:inverseFlatting>298.25</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -55,7 +56,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4222</crs:description>
     <crs:semiMajorAxis>6378249.145</crs:semiMajorAxis>
-    <crs:inverseFlattening>293.4663076999949</crs:inverseFlattening>
+    <crs:inverseFlatting>293.4663076999949</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -65,7 +66,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7004</crs:id>
     <crs:name>Bessel 1841</crs:name>
     <crs:semiMajorAxis>6377397.155</crs:semiMajorAxis>
-    <crs:inverseFlattening>299.1528128</crs:inverseFlattening>
+    <crs:inverseFlatting>299.1528128</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -74,7 +75,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 26193</crs:description>
     <crs:semiMajorAxis>6378249.2</crs:semiMajorAxis>
-    <crs:inverseFlattening>293.4660212936269</crs:inverseFlattening>
+    <crs:inverseFlatting>293.4660212936269</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -84,7 +85,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7008</crs:id>
     <crs:name>Clarke 1866</crs:name>
     <crs:semiMajorAxis>6378206.4</crs:semiMajorAxis>
-    <crs:inverseFlattening>294.9786982138982</crs:inverseFlattening>
+    <crs:inverseFlatting>294.9786982138982</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -94,7 +95,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7043</crs:id>
     <crs:name>WGS 72</crs:name>
     <crs:semiMajorAxis>6378135.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.26</crs:inverseFlattening>
+    <crs:inverseFlatting>298.26</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -103,7 +104,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4299</crs:description>
     <crs:semiMajorAxis>6377340.189</crs:semiMajorAxis>
-    <crs:inverseFlattening>299.324964599999</crs:inverseFlattening>
+    <crs:inverseFlatting>299.324964599999</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -113,14 +114,14 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7024</crs:id>
     <crs:name>Krassowsky, 1942</crs:name>
     <crs:semiMajorAxis>6378245.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.3</crs:inverseFlattening>
+    <crs:inverseFlatting>298.3</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
     <crs:id>EPSG:7030</crs:id>
     <crs:name>WGS84_Ellipsoid</crs:name>
     <crs:semiMajorAxis>6378137.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.257223563</crs:inverseFlattening>
+    <crs:inverseFlatting>298.257223563</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -130,7 +131,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7020</crs:id>
     <crs:name>Helmert 1906</crs:name>
     <crs:semiMajorAxis>6378200.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.3</crs:inverseFlattening>
+    <crs:inverseFlatting>298.3</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -140,7 +141,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7036</crs:id>
     <crs:name>GRS 67(IUGG 1967)</crs:name>
     <crs:semiMajorAxis>6378160.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.247167427</crs:inverseFlattening>
+    <crs:inverseFlatting>298.247167427</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -149,7 +150,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 24377</crs:description>
     <crs:semiMajorAxis>6377301.243</crs:semiMajorAxis>
-    <crs:inverseFlattening>300.80172550000657</crs:inverseFlattening>
+    <crs:inverseFlatting>300.80172550000657</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -158,7 +159,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4732</crs:description>
     <crs:semiMajorAxis>6378270.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>296.99999999999557</crs:inverseFlattening>
+    <crs:inverseFlatting>296.99999999999557</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -168,7 +169,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7001</crs:id>
     <crs:name>Airy 1830</crs:name>
     <crs:semiMajorAxis>6377563.396</crs:semiMajorAxis>
-    <crs:inverseFlattening>299.3249753150345</crs:inverseFlattening>
+    <crs:inverseFlatting>299.3249753150345</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -177,7 +178,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 2160</crs:description>
     <crs:semiMajorAxis>6378300.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>295.999999999999</crs:inverseFlattening>
+    <crs:inverseFlatting>295.999999999999</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -186,7 +187,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4052</crs:description>
     <crs:semiMajorAxis>6370997.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>0.0</crs:inverseFlattening>
+    <crs:inverseFlatting>0.0</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -195,7 +196,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4015</crs:description>
     <crs:semiMajorAxis>6377276.345</crs:semiMajorAxis>
-    <crs:inverseFlattening>300.8016999999937</crs:inverseFlattening>
+    <crs:inverseFlatting>300.8016999999937</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -204,7 +205,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 2291</crs:description>
     <crs:semiMajorAxis>6378135.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.2569999999998</crs:inverseFlattening>
+    <crs:inverseFlatting>298.2569999999998</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -213,7 +214,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 26813</crs:description>
     <crs:semiMajorAxis>6378450.047548896</crs:semiMajorAxis>
-    <crs:inverseFlattening>294.97869716467716</crs:inverseFlattening>
+    <crs:inverseFlatting>294.97869716467716</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -222,7 +223,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4901</crs:description>
     <crs:semiMajorAxis>6376523.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>308.63999999999953</crs:inverseFlattening>
+    <crs:inverseFlatting>308.63999999999953</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -231,7 +232,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4028</crs:description>
     <crs:semiMajorAxis>6378298.3</crs:semiMajorAxis>
-    <crs:inverseFlattening>294.7300000000063</crs:inverseFlattening>
+    <crs:inverseFlatting>294.7300000000063</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -240,7 +241,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4035</crs:description>
     <crs:semiMajorAxis>6371000.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>0.0</crs:inverseFlattening>
+    <crs:inverseFlatting>0.0</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -249,7 +250,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4243</crs:description>
     <crs:semiMajorAxis>6377299.36559538</crs:semiMajorAxis>
-    <crs:inverseFlattening>300.80169999999447</crs:inverseFlattening>
+    <crs:inverseFlatting>300.80169999999447</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -258,7 +259,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 27394</crs:description>
     <crs:semiMajorAxis>6377492.018</crs:semiMajorAxis>
-    <crs:inverseFlattening>299.15281280000056</crs:inverseFlattening>
+    <crs:inverseFlatting>299.15281280000056</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -267,7 +268,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4157</crs:description>
     <crs:semiMajorAxis>6378293.645208759</crs:semiMajorAxis>
-    <crs:inverseFlattening>294.26067636926064</crs:inverseFlattening>
+    <crs:inverseFlatting>294.26067636926064</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -276,7 +277,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 23891</crs:description>
     <crs:semiMajorAxis>6378160.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.247</crs:inverseFlattening>
+    <crs:inverseFlatting>298.247</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -285,7 +286,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4014</crs:description>
     <crs:semiMajorAxis>6378249.2</crs:semiMajorAxis>
-    <crs:inverseFlattening>293.46598000000307</crs:inverseFlattening>
+    <crs:inverseFlatting>293.46598000000307</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -294,14 +295,14 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4748</crs:description>
     <crs:semiMajorAxis>6378306.3696</crs:semiMajorAxis>
-    <crs:inverseFlattening>293.4663076556355</crs:inverseFlattening>
+    <crs:inverseFlatting>293.4663076556355</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
     <crs:id>WGS66</crs:id>
     <crs:name>WGS 66</crs:name>
     <crs:semiMajorAxis>6378145.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.25</crs:inverseFlattening>
+    <crs:inverseFlatting>298.25</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -310,7 +311,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 24379</crs:description>
     <crs:semiMajorAxis>6377299.151</crs:semiMajorAxis>
-    <crs:inverseFlattening>300.8017255000053</crs:inverseFlattening>
+    <crs:inverseFlatting>300.8017255000053</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -320,7 +321,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7046</crs:id>
     <crs:name>Bessel 1841 (Namibia)</crs:name>
     <crs:semiMajorAxis>6377483.865</crs:semiMajorAxis>
-    <crs:inverseFlattening>299.1528128</crs:inverseFlattening>
+    <crs:inverseFlatting>299.1528128</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -329,7 +330,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 24547</crs:description>
     <crs:semiMajorAxis>6377304.063</crs:semiMajorAxis>
-    <crs:inverseFlattening>300.8017000000039</crs:inverseFlattening>
+    <crs:inverseFlatting>300.8017000000039</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -338,7 +339,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 2332</crs:description>
     <crs:semiMajorAxis>6378140.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.2569999999957</crs:inverseFlattening>
+    <crs:inverseFlatting>298.2569999999957</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -347,7 +348,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4740</crs:description>
     <crs:semiMajorAxis>6378136.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.2578393029947</crs:inverseFlattening>
+    <crs:inverseFlatting>298.2578393029947</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -356,7 +357,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4047</crs:description>
     <crs:semiMajorAxis>6371007.0</crs:semiMajorAxis>
-    <crs:inverseFlattening>0.0</crs:inverseFlattening>
+    <crs:inverseFlatting>0.0</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -365,7 +366,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4751</crs:description>
     <crs:semiMajorAxis>6377295.664</crs:semiMajorAxis>
-    <crs:inverseFlattening>300.80169999999714</crs:inverseFlattening>
+    <crs:inverseFlatting>300.80169999999714</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -374,7 +375,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4657</crs:description>
     <crs:semiMajorAxis>6377019.27</crs:semiMajorAxis>
-    <crs:inverseFlattening>300.0000000000021</crs:inverseFlattening>
+    <crs:inverseFlatting>300.0000000000021</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -384,7 +385,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::7016</crs:id>
     <crs:name>Everest (Sabah &amp; Sarawak)</crs:name>
     <crs:semiMajorAxis>6377298.556</crs:semiMajorAxis>
-    <crs:inverseFlattening>300.8017</crs:inverseFlattening>
+    <crs:inverseFlatting>300.8017</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -393,7 +394,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4032</crs:description>
     <crs:semiMajorAxis>6378136.2</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.2572235630046</crs:inverseFlattening>
+    <crs:inverseFlatting>298.2572235630046</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:ellipsoid>
@@ -402,7 +403,7 @@
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Handmade proj4 ellipsoid definition (parsed from nad/epsg) used by crs with id: 4033</crs:description>
     <crs:semiMajorAxis>6378136.3</crs:semiMajorAxis>
-    <crs:inverseFlattening>298.25722356299553</crs:inverseFlattening>
+    <crs:inverseFlatting>298.25722356299553</crs:inverseFlatting>
     <crs:units>metre</crs:units>
   </crs:ellipsoid>
   <crs:geodeticDatum>
@@ -583,7 +584,7 @@
     <crs:description>Handmade proj4 datum definition (parsed from nad/epsg) used by crs with id: EPSG:2508</crs:description>
     <crs:usedEllipsoid>EPSG:7024</crs:usedEllipsoid>
     <crs:usedPrimeMeridian>EPSG:8901</crs:usedPrimeMeridian>
-    <crs:usedWGS84ConversionInfo>EPSG:1188</crs:usedWGS84ConversionInfo>
+    <crs:usedWGS84ConversionInfo>PROJ4_NO_CONVERSION_INFO</crs:usedWGS84ConversionInfo>
   </crs:geodeticDatum>
   <crs:geodeticDatum>
     <crs:id>DATUM_1665</crs:id>
@@ -1464,7 +1465,10 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::6314</crs:id>
     <crs:name>Deutsches Hauptdreiecksnetz</crs:name>
     <crs:version>2006-06-12</crs:version>
-    <crs:description>Fundamental point: Rauenberg. Latitude: 52 deg 27 min 12.021 sec N; Longitude: 13 deg 22 min 04.928 sec E (of Greenwich). This station was destroyed in 1910 and the station at Potsdam substituted as the fundamental point.</crs:description>
+    <crs:description>
+      Fundamental point: Rauenberg. Latitude: 52 deg 27 min 12.021 sec N; Longitude: 13 deg 22 min 04.928 sec E (of Greenwich). This station was
+      destroyed in 1910 and the station at Potsdam substituted as the fundamental point.
+    </crs:description>
     <crs:usedEllipsoid>EPSG:7004</crs:usedEllipsoid>
     <crs:usedPrimeMeridian>EPSG:8901</crs:usedPrimeMeridian>
     <crs:usedWGS84ConversionInfo>EPSG:1777</crs:usedWGS84ConversionInfo>
@@ -1878,7 +1882,7 @@
   </crs:geodeticDatum>
   <crs:geodeticDatum>
     <crs:id>EPSG:6178</crs:id>
-    <crs:name>Pulkovo 1942/83 </crs:name>
+    <crs:name>Pulkovo 1942/83</crs:name>
     <crs:version>2008-1-16T9:49</crs:version>
     <crs:description>Fundamental point: Pulkovo observatory. Latitude: 59�46'18.550"N, longitude: 30�19'42.090"E (of Greenwich).</crs:description>
     <crs:usedEllipsoid>EPSG:7024</crs:usedEllipsoid>
@@ -2228,6 +2232,36 @@
     <crs:usedPrimeMeridian>EPSG:8901</crs:usedPrimeMeridian>
     <crs:usedWGS84ConversionInfo>TOWGS_190</crs:usedWGS84ConversionInfo>
   </crs:geodeticDatum>
+  <crs:projectedCRS>
+    <crs:id>EPSG:21781</crs:id>
+    <crs:id>URN:OGC:DEF:CRS:EPSG::21781</crs:id>
+    <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#21781</crs:id>
+    <crs:id>URN:OPENGIS:DEF:CRS:EPSG::21781</crs:id>
+    <crs:name>CH1903 / LV03</crs:name>
+    <crs:version>2008-1-16T9:49</crs:version>
+    <crs:Axis>
+      <crs:name>x</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>east</crs:axisOrientation>
+    </crs:Axis>
+    <crs:Axis>
+      <crs:name>y</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>north</crs:axisOrientation>
+    </crs:Axis>
+    <crs:axisOrder>x, y</crs:axisOrder>
+    <crs:usedGeographicCRS>EPSG:4149</crs:usedGeographicCRS>
+    <crs:projection>
+      <crs:transverseMercator>
+        <crs:latitudeOfNaturalOrigin inDegrees="true">46.95240555555556</crs:latitudeOfNaturalOrigin>
+        <crs:longitudeOfNaturalOrigin inDegrees="true">7.439583333333333</crs:longitudeOfNaturalOrigin>
+        <crs:scaleFactor>1.0</crs:scaleFactor>
+        <crs:falseEasting>600000.0</crs:falseEasting>
+        <crs:falseNorthing>200000.0</crs:falseNorthing>
+        <crs:northernHemisphere>true</crs:northernHemisphere>
+      </crs:transverseMercator>
+    </crs:projection>
+  </crs:projectedCRS>
   <crs:projectedCRS>
     <crs:id>EPSG:2201</crs:id>
     <crs:id>URN:OGC:DEF:CRS:EPSG::2201</crs:id>
@@ -33704,7 +33738,7 @@
     <crs:id>URN:OGC:DEF:CRS:EPSG::3068</crs:id>
     <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#3068</crs:id>
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::3068</crs:id>
-    <crs:name>DHDN / Soldner Berlin </crs:name>
+    <crs:name>DHDN / Soldner Berlin</crs:name>
     <crs:version>2004-04-22</crs:version>
     <crs:Axis>
       <crs:name>x</crs:name>
@@ -47700,23 +47734,23 @@
     <crs:axisOrder>x, y</crs:axisOrder>
     <!--crs:polynomialTransformation>
       <crs:leastsquare>
-        <crs:polynomialOrder>2</crs:polynomialOrder>
-        <crs:xParameters>108.029884 0.9988207 -0.006757177 5.1565574E-5 -3.5190485E-6 -4.002526E-5</crs:xParameters>
-        <crs:yParameters>1.2068206 0.012087965 0.99012643 -3.0174679E-5 1.2242106E-4 1.1114964E-5</crs:yParameters>
-        <crs:targetCRS>EPSG:31466</crs:targetCRS>
-        <crs:scaleX>4.597728E-5</crs:scaleX>
-        <crs:scaleY>5.7211128E-5</crs:scaleY>
+      <crs:polynomialOrder>2</crs:polynomialOrder>
+      <crs:xParameters>108.029884 0.9988207 -0.006757177 5.1565574E-5 -3.5190485E-6 -4.002526E-5</crs:xParameters>
+      <crs:yParameters>1.2068206 0.012087965 0.99012643 -3.0174679E-5 1.2242106E-4 1.1114964E-5</crs:yParameters>
+      <crs:targetCRS>EPSG:31466</crs:targetCRS>
+      <crs:scaleX>4.597728E-5</crs:scaleX>
+      <crs:scaleY>5.7211128E-5</crs:scaleY>
       </crs:leastsquare>
-    </crs:polynomialTransformation-->
+      </crs:polynomialTransformation-->
     <crs:usedGeographicCRS>EPSG:4258</crs:usedGeographicCRS>
     <!--crs:projection class="org.deegree.crs.projections.cylindric.TestMercator">
       <crs:testMercator>
-        <crs:latitudeOfNaturalOrigin inDegrees="true">0.0</crs:latitudeOfNaturalOrigin>
-        <crs:longitudeOfNaturalOrigin inDegrees="true">9.0</crs:longitudeOfNaturalOrigin>
-        <crs:scaleFactor>0.9996</crs:scaleFactor>
-        <crs:falseEasting>500000.0</crs:falseEasting>
-        <crs:falseNorthing>0.0</crs:falseNorthing>
-        <crs:northernHemisphere>true</crs:northernHemisphere>
+      <crs:latitudeOfNaturalOrigin inDegrees="true">0.0</crs:latitudeOfNaturalOrigin>
+      <crs:longitudeOfNaturalOrigin inDegrees="true">9.0</crs:longitudeOfNaturalOrigin>
+      <crs:scaleFactor>0.9996</crs:scaleFactor>
+      <crs:falseEasting>500000.0</crs:falseEasting>
+      <crs:falseNorthing>0.0</crs:falseNorthing>
+      <crs:northernHemisphere>true</crs:northernHemisphere>
       </crs:testMercator-->
     <crs:projection>
       <crs:transverseMercator>
@@ -61618,6 +61652,35 @@
     </crs:projection>
   </crs:projectedCRS>
   <crs:projectedCRS>
+    <crs:id>EPSG:3395</crs:id>
+    <crs:id>URN:OGC:DEF:CRS:EPSG::3395</crs:id>
+    <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#3395</crs:id>
+    <crs:id>URN:OPENGIS:DEF:CRS:EPSG::3395</crs:id>
+    <crs:name>World Mercator</crs:name>
+    <crs:version>2006-06-02</crs:version>
+    <crs:Axis>
+      <crs:name>x</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>east</crs:axisOrientation>
+    </crs:Axis>
+    <crs:Axis>
+      <crs:name>y</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>north</crs:axisOrientation>
+    </crs:Axis>
+    <crs:axisOrder>x, y</crs:axisOrder>
+    <crs:usedGeographicCRS>EPSG:4326</crs:usedGeographicCRS>
+    <crs:projection>
+      <crs:mercator>
+        <crs:latitudeOfNaturalOrigin inDegrees="true">0.0</crs:latitudeOfNaturalOrigin>
+        <crs:longitudeOfNaturalOrigin inDegrees="true">0.0</crs:longitudeOfNaturalOrigin>
+        <crs:scaleFactor>1.0</crs:scaleFactor>
+        <crs:falseEasting>0.0</crs:falseEasting>
+        <crs:falseNorthing>0.0</crs:falseNorthing>
+      </crs:mercator>
+    </crs:projection>
+  </crs:projectedCRS>
+  <crs:projectedCRS>
     <crs:id>EPSG:2850</crs:id>
     <crs:id>URN:OGC:DEF:CRS:EPSG::2850</crs:id>
     <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#2850</crs:id>
@@ -62521,6 +62584,64 @@
         <crs:falseNorthing>0.0</crs:falseNorthing>
         <crs:northernHemisphere>true</crs:northernHemisphere>
       </crs:transverseMercator>
+    </crs:projection>
+  </crs:projectedCRS>
+  <crs:projectedCRS>
+    <crs:id>EPSG:32661</crs:id>
+    <crs:id>URN:OGC:DEF:CRS:EPSG::32661</crs:id>
+    <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#32661</crs:id>
+    <crs:id>URN:OPENGIS:DEF:CRS:EPSG::32661</crs:id>
+    <crs:name>WGS 84 / UPS North</crs:name>
+    <crs:version>2002-12-23</crs:version>
+    <crs:Axis>
+      <crs:name>x</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>east</crs:axisOrientation>
+    </crs:Axis>
+    <crs:Axis>
+      <crs:name>y</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>north</crs:axisOrientation>
+    </crs:Axis>
+    <crs:axisOrder>y,x</crs:axisOrder>
+    <crs:usedGeographicCRS>EPSG:4326</crs:usedGeographicCRS>
+    <crs:projection>
+      <crs:stereographicAzimuthal>
+        <crs:latitudeOfNaturalOrigin inDegrees="true">90</crs:latitudeOfNaturalOrigin>
+        <crs:longitudeOfNaturalOrigin inDegrees="true">0</crs:longitudeOfNaturalOrigin>
+        <crs:scaleFactor>0.994</crs:scaleFactor>
+        <crs:falseEasting>2000000</crs:falseEasting>
+        <crs:falseNorthing>2000000</crs:falseNorthing>
+      </crs:stereographicAzimuthal>
+    </crs:projection>
+  </crs:projectedCRS>
+  <crs:projectedCRS>
+    <crs:id>EPSG:32761</crs:id>
+    <crs:id>URN:OGC:DEF:CRS:EPSG::32761</crs:id>
+    <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#32761</crs:id>
+    <crs:id>URN:OPENGIS:DEF:CRS:EPSG::332761</crs:id>
+    <crs:name>WGS 84 / UPS South</crs:name>
+    <crs:version>2002-12-23</crs:version>
+    <crs:Axis>
+      <crs:name>x</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>east</crs:axisOrientation>
+    </crs:Axis>
+    <crs:Axis>
+      <crs:name>y</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>north</crs:axisOrientation>
+    </crs:Axis>
+    <crs:axisOrder>y,x</crs:axisOrder>
+    <crs:usedGeographicCRS>EPSG:4326</crs:usedGeographicCRS>
+    <crs:projection>
+      <crs:stereographicAzimuthal>
+        <crs:latitudeOfNaturalOrigin inDegrees="true">-90</crs:latitudeOfNaturalOrigin>
+        <crs:longitudeOfNaturalOrigin inDegrees="true">0</crs:longitudeOfNaturalOrigin>
+        <crs:scaleFactor>0.994</crs:scaleFactor>
+        <crs:falseEasting>2000000</crs:falseEasting>
+        <crs:falseNorthing>2000000</crs:falseNorthing>
+      </crs:stereographicAzimuthal>
     </crs:projection>
   </crs:projectedCRS>
   <crs:projectedCRS>
@@ -80659,9 +80780,39 @@
     <crs:projection>
       <crs:transverseMercator>
         <crs:latitudeOfNaturalOrigin inDegrees="true">0.0</crs:latitudeOfNaturalOrigin>
-        <crs:longitudeOfNaturalOrigin inDegrees="true">14.999999999999982</crs:longitudeOfNaturalOrigin>
+        <crs:longitudeOfNaturalOrigin inDegrees="true">15</crs:longitudeOfNaturalOrigin>
         <crs:scaleFactor>0.9996</crs:scaleFactor>
         <crs:falseEasting>500000.0</crs:falseEasting>
+        <crs:falseNorthing>0.0</crs:falseNorthing>
+        <crs:northernHemisphere>true</crs:northernHemisphere>
+      </crs:transverseMercator>
+    </crs:projection>
+  </crs:projectedCRS>
+  <crs:projectedCRS>
+    <crs:id>EPSG:325833</crs:id>
+    <crs:id>URN:OGC:DEF:CRS:EPSG::325833</crs:id>
+    <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#325833</crs:id>
+    <crs:id>URN:OPENGIS:DEF:CRS:EPSG::325833</crs:id>
+    <crs:name>ETRS89 / UTM zone 33N</crs:name>
+    <crs:version>2008-1-16T9:49</crs:version>
+    <crs:Axis>
+      <crs:name>x</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>east</crs:axisOrientation>
+    </crs:Axis>
+    <crs:Axis>
+      <crs:name>y</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>north</crs:axisOrientation>
+    </crs:Axis>
+    <crs:axisOrder>x, y</crs:axisOrder>
+    <crs:usedGeographicCRS>EPSG:4258</crs:usedGeographicCRS>
+    <crs:projection>
+      <crs:transverseMercator>
+        <crs:latitudeOfNaturalOrigin inDegrees="true">0.0</crs:latitudeOfNaturalOrigin>
+        <crs:longitudeOfNaturalOrigin inDegrees="true">15</crs:longitudeOfNaturalOrigin>
+        <crs:scaleFactor>0.9996</crs:scaleFactor>
+        <crs:falseEasting>3500000.0</crs:falseEasting>
         <crs:falseNorthing>0.0</crs:falseNorthing>
         <crs:northernHemisphere>true</crs:northernHemisphere>
       </crs:transverseMercator>
@@ -82054,32 +82205,32 @@
       </crs:transverseMercator>
     </crs:projection>
   </crs:projectedCRS>
-	<crs:projectedCRS>
-		<crs:id>OSM_SLIPPY_MAP</crs:id>
-		<crs:name>OSM_Slippy_Map</crs:name>
-			<crs:Axis>
-				<crs:name>x</crs:name>
-				<crs:units>metre</crs:units>
-				<crs:axisOrientation>east</crs:axisOrientation>
-			</crs:Axis>
-		<crs:Axis>
-			<crs:name>y</crs:name>
-			<crs:units>metre</crs:units>
-			<crs:axisOrientation>north</crs:axisOrientation>
-		</crs:Axis>
-		<crs:axisOrder>x, y</crs:axisOrder>
-		<crs:usedGeographicCRS>EPSG:4326</crs:usedGeographicCRS>
-		<crs:projection class="org.deegree.crs.projections.cylindric.Mercator">
-			<crs:Mercator>
-				<crs:latitudeOfNaturalOrigin inDegrees="true">0.0</crs:latitudeOfNaturalOrigin>
-				<crs:longitudeOfNaturalOrigin inDegrees="true">0.0</crs:longitudeOfNaturalOrigin>
-				<crs:scaleFactor>1.0</crs:scaleFactor>
-				<crs:falseEasting>0</crs:falseEasting>
-				<crs:falseNorthing>0</crs:falseNorthing>
-			</crs:Mercator>
-		</crs:projection>
-	</crs:projectedCRS>
-	<crs:geographicCRS>
+  <crs:projectedCRS>
+    <crs:id>OSM_SLIPPY_MAP</crs:id>
+    <crs:name>OSM_Slippy_Map</crs:name>
+    <crs:Axis>
+      <crs:name>x</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>east</crs:axisOrientation>
+    </crs:Axis>
+    <crs:Axis>
+      <crs:name>y</crs:name>
+      <crs:units>metre</crs:units>
+      <crs:axisOrientation>north</crs:axisOrientation>
+    </crs:Axis>
+    <crs:axisOrder>x, y</crs:axisOrder>
+    <crs:usedGeographicCRS>EPSG:4326</crs:usedGeographicCRS>
+    <crs:projection>
+      <crs:Mercator>
+        <crs:latitudeOfNaturalOrigin inDegrees="true">0.0</crs:latitudeOfNaturalOrigin>
+        <crs:longitudeOfNaturalOrigin inDegrees="true">0.0</crs:longitudeOfNaturalOrigin>
+        <crs:scaleFactor>1.0</crs:scaleFactor>
+        <crs:falseEasting>0</crs:falseEasting>
+        <crs:falseNorthing>0</crs:falseNorthing>
+      </crs:Mercator>
+    </crs:projection>
+  </crs:projectedCRS>
+  <crs:geographicCRS>
     <crs:id>EPSG:4010</crs:id>
     <crs:id>URN:OGC:DEF:CRS:EPSG::4010</crs:id>
     <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4010</crs:id>
@@ -87791,7 +87942,7 @@
   </crs:compoundCRS>
   <crs:geographicCRS>
     <crs:id>CRS:84</crs:id>
-    <crs:id>URN:OGC:DEF:CRS:OGC:1.3:CRS84</crs:id>
+    <crs:id>urn:ogc:def:crs:OGC:1.3:CRS84</crs:id>
     <crs:id>WGS84(DD)</crs:id>
     <crs:name>WGS 84</crs:name>
     <crs:version>2008-6-10T8:28</crs:version>
@@ -88783,7 +88934,10 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::4178</crs:id>
     <crs:name>Pulkovo 1942(83)</crs:name>
     <crs:version>2004-01-06</crs:version>
-    <crs:description>In Brandenburg replaced by ETRS89. In Sachsen and Thuringen replaced by RD83 and PD/83 which for practical purposes may be considered to be the same as DHDN.</crs:description>
+    <crs:description>
+      In Brandenburg replaced by ETRS89. In Sachsen and Thuringen replaced by RD83 and PD/83 which for practical purposes may be considered to be the
+      same as DHDN.
+    </crs:description>
     <crs:Axis>
       <crs:name>longitude</crs:name>
       <crs:units>degree</crs:units>
@@ -90540,7 +90694,10 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::4258</crs:id>
     <crs:name>ETRS89</crs:name>
     <crs:version>2008-1-16T9:49</crs:version>
-    <crs:description>The distinction in usage between ETRF89 and ETRS89 is confused: although in principle conceptually different in practice both are used as synonyms.</crs:description>
+    <crs:description>
+      The distinction in usage between ETRF89 and ETRS89 is confused: although in principle conceptually different in practice both are used as
+      synonyms.
+    </crs:description>
     <crs:Axis>
       <crs:name>longitude</crs:name>
       <crs:units>degree</crs:units>
@@ -90718,7 +90875,10 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::8903</crs:id>
     <crs:name>Paris</crs:name>
     <crs:version>1995-06-02</crs:version>
-    <crs:description>Value adopted by IGN (Paris) in 1936. Equivalent to 2 deg 20min 14.025sec. Preferred by EPSG to earlier value of 2deg 20min 13.95sec (2.596898 grads) used by RGS London.</crs:description>
+    <crs:description>
+      Value adopted by IGN (Paris) in 1936. Equivalent to 2 deg 20min 14.025sec. Preferred by EPSG to earlier value of 2deg 20min 13.95sec (2.596898
+      grads) used by RGS London.
+    </crs:description>
     <crs:units>degree</crs:units>
     <crs:longitude>1.2426058677457693E-5</crs:longitude>
   </crs:primeMeridian>
@@ -90729,7 +90889,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::8909</crs:id>
     <crs:name>Ferro</crs:name>
     <crs:version>1995-06-02</crs:version>
-    <crs:description>Used in Austria and former Czechoslovakia. </crs:description>
+    <crs:description>Used in Austria and former Czechoslovakia.</crs:description>
     <crs:units>degree</crs:units>
     <crs:longitude>-9.392619250433758E-5</crs:longitude>
   </crs:primeMeridian>
@@ -90751,7 +90911,10 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::8905</crs:id>
     <crs:name>Madrid</crs:name>
     <crs:version>1995-06-02</crs:version>
-    <crs:description>Value adopted by IGN (Paris) in 1936. Equivalent to 2 deg 20min 14.025sec. Preferred by EPSG to earlier value of 2deg 20min 13.95sec (2.596898 grads) used by RGS London.</crs:description>
+    <crs:description>
+      Value adopted by IGN (Paris) in 1936. Equivalent to 2 deg 20min 14.025sec. Preferred by EPSG to earlier value of 2deg 20min 13.95sec (2.596898
+      grads) used by RGS London.
+    </crs:description>
     <crs:units>degree</crs:units>
     <crs:longitude>-1.9607210831434566E-5</crs:longitude>
   </crs:primeMeridian>
@@ -90824,7 +90987,7 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::8902</crs:id>
     <crs:name>lisbon</crs:name>
     <crs:version>1995-06-02</crs:version>
-    <crs:description>Information Source: Instituto Geografico e Cadastral; Lisbon </crs:description>
+    <crs:description>Information Source: Instituto Geografico e Cadastral; Lisbon</crs:description>
     <crs:units>degree</crs:units>
     <crs:longitude>-4.8550481395684486E-5</crs:longitude>
   </crs:primeMeridian>
@@ -90952,6 +91115,16 @@
     <crs:xAxisTranslation>-70.9</crs:xAxisTranslation>
     <crs:yAxisTranslation>-151.8</crs:yAxisTranslation>
     <crs:zAxisTranslation>-41.4</crs:zAxisTranslation>
+    <crs:xAxisRotation>0.0</crs:xAxisRotation>
+    <crs:yAxisRotation>0.0</crs:yAxisRotation>
+    <crs:zAxisRotation>0.0</crs:zAxisRotation>
+    <crs:scaleDifference>0.0</crs:scaleDifference>
+  </crs:wgs84Transformation>
+  <crs:wgs84Transformation>
+    <crs:id>PROJ4_NO_CONVERSION_INFO</crs:id>
+    <crs:xAxisTranslation>0.0</crs:xAxisTranslation>
+    <crs:yAxisTranslation>0.0</crs:yAxisTranslation>
+    <crs:zAxisTranslation>0.0</crs:zAxisTranslation>
     <crs:xAxisRotation>0.0</crs:xAxisRotation>
     <crs:yAxisRotation>0.0</crs:yAxisRotation>
     <crs:zAxisRotation>0.0</crs:zAxisRotation>
@@ -91848,7 +92021,10 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::1777</crs:id>
     <crs:name>DHDN to WGS 84</crs:name>
     <crs:version>EPSG-Deu W 3m</crs:version>
-    <crs:description>Parameter values from DHDN to ETRS89 (2) (code 1776) assuming that ETRS89 is equivalent to WGS 84 within the accuracy of the transformation. Replaces DHDN to WGS 84 (1) (tfm code 1673).</crs:description>
+    <crs:description>
+      Parameter values from DHDN to ETRS89 (2) (code 1776) assuming that ETRS89 is equivalent to WGS 84 within the accuracy of the transformation.
+      Replaces DHDN to WGS 84 (1) (tfm code 1673).
+    </crs:description>
     <crs:xAxisTranslation>598.1</crs:xAxisTranslation>
     <crs:yAxisTranslation>73.7</crs:yAxisTranslation>
     <crs:zAxisTranslation>418.2</crs:zAxisTranslation>
@@ -91890,7 +92066,10 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::1564</crs:id>
     <crs:name>NZGD49 to WGS 84 (2)</crs:name>
     <crs:version>OSG-Nzl 4m</crs:version>
-    <crs:description>hese parameter values are taken from NZGD49 to NZGD2000 (4) (code 1701) and assume that NZGD2000 and WGS 84 are coincident to within the accuracy of the transformation. For improved accuracy use NZGD49 to WGS 84 (4) (code 1670).</crs:description>
+    <crs:description>
+      hese parameter values are taken from NZGD49 to NZGD2000 (4) (code 1701) and assume that NZGD2000 and WGS 84 are coincident to within the
+      accuracy of the transformation. For improved accuracy use NZGD49 to WGS 84 (4) (code 1670).
+    </crs:description>
     <crs:xAxisTranslation>59.47</crs:xAxisTranslation>
     <crs:yAxisTranslation>-5.04</crs:yAxisTranslation>
     <crs:zAxisTranslation>187.44</crs:zAxisTranslation>
@@ -92281,7 +92460,10 @@
     <crs:id>EPSG:1775</crs:id>
     <crs:name>Pulkovo 1942(83) to ETRS89 (2)</crs:name>
     <crs:version>2007-03-22</crs:version>
-    <crs:description>Derived at 35 points of the German GPS Network DREF. From 2001 replaces Pulkovo 1942(83) to ETRS89 (1) (code 1674) within Mecklenburg-Vorpommern and Sachsen-Anhalt</crs:description>
+    <crs:description>
+      Derived at 35 points of the German GPS Network DREF. From 2001 replaces Pulkovo 1942(83) to ETRS89 (1) (code 1674) within Mecklenburg-Vorpommern
+      and Sachsen-Anhalt
+    </crs:description>
     <crs:xAxisTranslation>24.9</crs:xAxisTranslation>
     <crs:yAxisTranslation>-126.4</crs:yAxisTranslation>
     <crs:zAxisTranslation>-93.2</crs:zAxisTranslation>
@@ -92336,7 +92518,10 @@
     <crs:id>URN:OPENGIS:DEF:CRS:EPSG::15955</crs:id>
     <crs:name>RD/83 to WGS 84 (1)</crs:name>
     <crs:version>OGP-Deu BeTA2007</crs:version>
-    <crs:description>These parameter values are taken from DHDN to ETRS89 (8) (code 15948) as RD/83 and ETRS89 may be considered equivalent to DHDN and WGS 84 respectively within the accuracy of the transformation.</crs:description>
+    <crs:description>
+      These parameter values are taken from DHDN to ETRS89 (8) (code 15948) as RD/83 and ETRS89 may be considered equivalent to DHDN and WGS 84
+      respectively within the accuracy of the transformation.
+    </crs:description>
     <crs:xAxisTranslation>606.0</crs:xAxisTranslation>
     <crs:yAxisTranslation>23.0</crs:yAxisTranslation>
     <crs:zAxisTranslation>413.0</crs:zAxisTranslation>
