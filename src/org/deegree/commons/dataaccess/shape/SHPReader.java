@@ -206,11 +206,13 @@ public class SHPReader {
     /**
      * @param in
      * @param crs
+     * @param rtree 
      * @throws IOException
      */
-    public SHPReader( RandomAccessFile in, CRS crs ) throws IOException {
+    public SHPReader( RandomAccessFile in, CRS crs, RTree rtree ) throws IOException {
         this.in = in;
         this.crs = crs;
+        this.rtree = rtree;
         if ( in.readInt() != FILETYPE ) {
             LOG.warn( "File type is wrong, unexpected things might happen, continuing anyway..." );
         }
@@ -294,9 +296,6 @@ public class SHPReader {
                        + envelope[4] + "," + envelope[5] + " " + envelope[6] + "," + envelope[7] );
         }
 
-        LOG.debug( "Building rtree index in memory..." );
-        this.rtree = new RTree( this );
-        LOG.debug( "done." );
     }
 
     /**

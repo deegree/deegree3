@@ -42,6 +42,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -55,6 +56,7 @@ import javax.xml.namespace.QName;
 import org.deegree.commons.dataaccess.dbase.DBFReader;
 import org.deegree.commons.filter.Filter;
 import org.deegree.commons.filter.FilterEvaluationException;
+import org.deegree.commons.index.RTree;
 import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
@@ -171,7 +173,8 @@ public class ShapeDatastore {
         }
         dbfLastModified = dbfFile.lastModified();
 
-        shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs );
+        shp = getSHP();
+
         try {
             dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding );
         } catch ( IOException e ) {
@@ -179,12 +182,46 @@ public class ShapeDatastore {
         }
     }
 
+    private SHPReader getSHP()
+                            throws IOException {
+        shp = null;
+
+        File rtfile = new File( name + ".rti" );
+        if ( rtfile.exists() ) {
+            try {
+                RTree rtree = new RTree( new FileInputStream( name + ".rti" ) );
+                shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, rtree );
+            } catch ( IOException e ) {
+                LOG.debug( "Stack trace:", e );
+                LOG.warn( "Existing rtree index could not be read. Generating a new one..." );
+            } catch ( ClassNotFoundException e ) {
+                LOG.debug( "Stack trace:", e );
+                LOG.warn( "Existing rtree index could not be read. Generating a new one..." );
+            }
+            if ( shp != null ) {
+                return shp;
+            }
+        }
+
+        shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, null );
+
+        LOG.debug( "Building rtree index in memory..." );
+        RTree rtree = new RTree( shp );
+        shp.close();
+        LOG.debug( "done." );
+        shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, rtree );
+        RandomAccessFile output = new RandomAccessFile( name + ".rti", "rw" );
+        rtree.write( output );
+        output.close();
+        return shp;
+    }
+
     private void checkForUpdate() {
         try {
             synchronized ( shpFile ) {
                 if ( shpLastModified != shpFile.lastModified() ) {
                     shp.close();
-                    shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs );
+                    shp = getSHP();
                     LOG.debug( "Re-opening the shape file {}", name );
                 }
             }

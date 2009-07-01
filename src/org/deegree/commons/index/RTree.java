@@ -38,7 +38,13 @@ package org.deegree.commons.index;
 
 import static java.lang.Math.min;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.RandomAccessFile;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -59,9 +65,11 @@ import org.deegree.geometry.Envelope;
  */
 public class RTree {
 
-    private Node root;
+    private Entry[] root;
 
     private double[] bbox;
+
+    int size = 128;
 
     /**
      * @param shape
@@ -73,12 +81,24 @@ public class RTree {
         try {
             // to work around Java's non-existent variant type
             ArrayList list = shape.readEnvelopes();
-            root = buildTree( list, 128 );
+            root = buildTree( list, size );
         } catch ( IOException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * @param is
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    public RTree( InputStream is ) throws IOException, ClassNotFoundException {
+        ObjectInputStream in = new ObjectInputStream( is );
+        bbox = (double[]) in.readObject();
+        root = (Entry[]) in.readObject();
+        in.close();
     }
 
     private static final boolean contained( final double[] box, final double x, final double y ) {
@@ -98,10 +118,10 @@ public class RTree {
 
     }
 
-    private LinkedList<Long> query( final double[] bbox, Node node ) {
+    private LinkedList<Long> query( final double[] bbox, Entry[] node ) {
         LinkedList<Long> list = new LinkedList<Long>();
 
-        for ( Entry e : node.entries ) {
+        for ( Entry e : node ) {
             if ( intersects( bbox, e.bbox ) ) {
                 if ( e.next == null ) {
                     list.add( e.pointer );
@@ -163,16 +183,16 @@ public class RTree {
         return list;
     }
 
-    private Node buildTree( ArrayList<Pair<double[], ?>> rects, int limit ) {
+    private Entry[] buildTree( ArrayList<Pair<double[], ?>> rects, int limit ) {
         if ( rects.size() <= limit ) {
-            Node node = new Node( rects.size() );
+            Entry[] node = new Entry[rects.size()];
             for ( int i = 0; i < rects.size(); ++i ) {
-                node.entries[i] = new Entry();
-                node.entries[i].bbox = rects.get( i ).first;
+                node[i] = new Entry();
+                node[i].bbox = rects.get( i ).first;
                 if ( rects.get( i ).second instanceof Long ) {
-                    node.entries[i].pointer = (Long) rects.get( i ).second;
+                    node[i].pointer = (Long) rects.get( i ).second;
                 } else {
-                    node.entries[i].next = (Node) rects.get( i ).second;
+                    node[i].next = (Entry[]) rects.get( i ).second;
                 }
             }
             return node;
@@ -188,7 +208,7 @@ public class RTree {
             LinkedList<Pair<double[], ?>> list = iter.next();
             int idx = 0;
             while ( idx < slice.size() ) {
-                Node node = new Node( min( limit, slice.size() - idx ) );
+                Entry[] node = new Entry[min( limit, slice.size() - idx )];
                 double[] bbox = null;
                 for ( int i = 0; i < limit; ++i, ++idx ) {
                     if ( idx < slice.size() ) {
@@ -196,12 +216,12 @@ public class RTree {
                             list = iter.next();
                         }
                         Pair<double[], ?> p = list.poll();
-                        node.entries[i] = new Entry();
-                        node.entries[i].bbox = p.first;
+                        node[i] = new Entry();
+                        node[i].bbox = p.first;
                         if ( p.second instanceof Long ) {
-                            node.entries[i].pointer = (Long) p.second;
+                            node[i].pointer = (Long) p.second;
                         } else {
-                            node.entries[i].next = (Node) p.second;
+                            node[i].next = (Entry[]) p.second;
                         }
                         if ( bbox == null ) {
                             bbox = new double[] { p.first[0], p.first[1], p.first[2], p.first[3] };
@@ -219,27 +239,36 @@ public class RTree {
                         }
                     }
                 }
-                newRects.add( new Pair<double[], Node>( bbox, node ) );
+                newRects.add( new Pair<double[], Entry[]>( bbox, node ) );
             }
         }
 
         return buildTree( newRects, limit );
     }
 
-    static class Entry {
+    /**
+     * @param output
+     * @throws IOException
+     */
+    public void write( RandomAccessFile output )
+                            throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream out = new ObjectOutputStream( bos );
+        out.writeObject( bbox );
+        out.writeObject( root );
+        out.close();
+        output.write( bos.toByteArray() );
+        output.close();
+    }
+
+    static class Entry implements Serializable {
+        private static final long serialVersionUID = -4272761420705520561L;
+
         double[] bbox;
 
         long pointer;
 
-        Node next;
-    }
-
-    static class Node {
-        Node( int num ) {
-            entries = new Entry[num];
-        }
-
-        Entry[] entries;
+        Entry[] next;
     }
 
 }
