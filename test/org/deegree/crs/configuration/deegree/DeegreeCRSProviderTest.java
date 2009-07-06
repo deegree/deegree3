@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.deegree;
 
@@ -58,13 +58,13 @@ import org.junit.Test;
 /**
  * <code>DeegreeCRSProviderTest</code> test the loading of a projected crs as well as the loading of the default
  * configuration.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class DeegreeCRSProviderTest extends TestCase {
 
@@ -84,15 +84,35 @@ public class DeegreeCRSProviderTest extends TestCase {
     /**
      * Tries to create a crs by id.
      */
-    @Test
     public void testCRSByID() {
         CRSProvider provider = CRSConfiguration.getCRSConfiguration(
                                                                      "org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider" ).getProvider();
         assertNotNull( provider );
         assertTrue( provider instanceof DeegreeCRSProvider );
         DeegreeCRSProvider dProvider = (DeegreeCRSProvider) provider;
-        // try loading the gaus krueger zone 2.
-        CoordinateSystem testCRS = dProvider.getCRSByCode( new CRSCodeType( "31466", "EPSG" ) );
+        // try loading the gaus krueger zone 2. (transverse mercator)
+        CoordinateSystem testCRS = dProvider.getCRSByCode( new CRSCodeType( "EPSG:31466" ) );
+        testCRS_31466( testCRS );
+        testCRS = dProvider.getCRSByCode( new CRSCodeType( "SOME_DUMMY_CODE" ) );
+        assertTrue( testCRS == null );
+        // test mercator reading
+        testCRS = dProvider.getCRSByCode( new CRSCodeType( "EPSG:3395" ) );
+        assertTrue( testCRS != null );
+
+        // stereographic alternative
+        testCRS = dProvider.getCRSByCode( new CRSCodeType( "EPSG:2172" ) );
+        assertTrue( testCRS != null );
+
+        // lambertAzimuthal
+        testCRS = dProvider.getCRSByCode( new CRSCodeType( "EPSG:2163" ) );
+        assertTrue( testCRS != null );
+
+        // lambert conformal conic
+        testCRS = dProvider.getCRSByCode( new CRSCodeType( "EPSG:2851" ) );
+        assertTrue( testCRS != null );
+    }
+
+    private void testCRS_31466( CoordinateSystem testCRS ) {
         assertNotNull( testCRS );
         assertTrue( testCRS instanceof ProjectedCRS );
         ProjectedCRS realCRS = (ProjectedCRS) testCRS;
@@ -111,13 +131,13 @@ public class DeegreeCRSProviderTest extends TestCase {
         // test the datum.
         GeodeticDatum datum = realCRS.getGeodeticDatum();
         assertNotNull( datum );
-        assertEquals( new CRSCodeType( "6314", "EPSG" ), datum.getCode() );
+        assertEquals( "6314", datum.getCode().getCode() );
         assertEquals( PrimeMeridian.GREENWICH, datum.getPrimeMeridian() );
 
         // test the ellips
         Ellipsoid ellips = datum.getEllipsoid();
         assertNotNull( ellips );
-        assertEquals( new CRSCodeType( "7004", "EPSG" ), ellips.getCode() );
+        assertEquals( "7004", ellips.getCode().getCode() );
         assertEquals( Unit.METRE, ellips.getUnits() );
         assertEquals( 6377397.155, ellips.getSemiMajorAxis() );
         assertEquals( 299.1528128, ellips.getInverseFlattening() );
@@ -126,7 +146,7 @@ public class DeegreeCRSProviderTest extends TestCase {
         Helmert toWGS = datum.getWGS84Conversion();
         assertNotNull( toWGS );
         assertTrue( toWGS.hasValues() );
-        assertEquals( new CRSCodeType( "1777", "EPSG" ), toWGS.getCode() );
+        assertEquals( "1777", toWGS.getCode().getCode() );
         assertEquals( 598.1, toWGS.dx );
         assertEquals( 73.7, toWGS.dy );
         assertEquals( 418.2, toWGS.dz );
@@ -138,16 +158,29 @@ public class DeegreeCRSProviderTest extends TestCase {
         // test the geographic
         GeographicCRS geographic = realCRS.getGeographicCRS();
         assertNotNull( geographic );
-        assertEquals( new CRSCodeType( "4314", "EPSG" ), geographic.getCode() );
+        assertEquals( "4314", geographic.getCode().getCode() );
         Axis[] ax = geographic.getAxis();
         assertEquals( 2, ax.length );
         assertEquals( Axis.AO_EAST, ax[0].getOrientation() );
         assertEquals( Unit.DEGREE, ax[0].getUnits() );
         assertEquals( Axis.AO_NORTH, ax[1].getOrientation() );
         assertEquals( Unit.DEGREE, ax[1].getUnits() );
+    }
 
-        testCRS = dProvider.getCRSByCode( new CRSCodeType( "SOME_DUMMY_CODE", "" ) );
-        assertTrue( testCRS == null );
+    /**
+     * Test a cache
+     */
+    public void testCache() {
+        CRSProvider provider = CRSConfiguration.getCRSConfiguration(
+                                                                     "org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider" ).getProvider();
+        assertNotNull( provider );
+        assertTrue( provider instanceof DeegreeCRSProvider );
+        DeegreeCRSProvider dProvider = (DeegreeCRSProvider) provider;
 
+        CoordinateSystem testCRS = dProvider.getCRSByCode( new CRSCodeType( "EPSG:31466" ) );
+        testCRS_31466( testCRS );
+
+        testCRS = dProvider.getCRSByCode( new CRSCodeType( "EPSG:31466" ) );
+        testCRS_31466( testCRS );
     }
 }

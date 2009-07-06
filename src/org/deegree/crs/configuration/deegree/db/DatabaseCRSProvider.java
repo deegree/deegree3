@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.deegree.db;
 
@@ -54,22 +54,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>DatabaseCRSProvider</code> class is the intermediate class for accessing
- * the Deegree CRS via a database backend. It also initializes the CRSQuerier (for retrieving
- * CRSs from database), CRSExported (for inserting CRSs to database) and CRSRemover (for removing
- * CRSs from databse).
- *
- * In the constructor the database connection is realized in read-only mode (by default, using the
- * classpath subprotocol), but can be set so that database changes are possible (by setting the
- * envinronment variable CRS_DB_URL). The JDBC driver is also set (CRS_DB_DRIVER variable), as well as
- * the username and password.
- *
+ * The <code>DatabaseCRSProvider</code> class is the intermediate class for accessing the Deegree CRS via a database
+ * backend. It also initializes the CRSQuerier (for retrieving CRSs from database), CRSExported (for inserting CRSs to
+ * database) and CRSRemover (for removing CRSs from database).
+ * 
+ * In the constructor the database connection is realized in read-only mode (by default, using the classpath
+ * subprotocol), but can be set so that database changes are possible (by setting the environment variable CRS_DB_URL).
+ * The JDBC driver is also set (CRS_DB_DRIVER variable), as well as the username and password.
+ * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- *
+ * 
  * @author last edited by: $Author: ionita $
- *
+ * 
  * @version $Revision: $, $Date: $
- *
+ * 
  */
 public class DatabaseCRSProvider implements CRSProvider {
 
@@ -93,40 +91,45 @@ public class DatabaseCRSProvider implements CRSProvider {
 
     /**
      * Retrieve the internal database ID for the object supplied
+     * 
      * @param identifiable
-     *          the CRSIdentifiable object
-     * @return
-     *          the internal database ID
+     *            the CRSIdentifiable object
+     * @return the internal database ID
      * @throws SQLException
      */
-    public int getInternalID( CRSIdentifiable identifiable ) throws SQLException {
+    public int getInternalID( CRSIdentifiable identifiable )
+                            throws SQLException {
         return querier.getInternalID( identifiable );
     }
 
     /**
      * Request an Update into the database for a new Code
+     * 
      * @param internalID
-     *              the internal database ID of the object
+     *            the internal database ID of the object
      * @param codeInt
-     *              the Code that will be set
+     *            the Code that will be set
      * @throws SQLException
      */
-    public void setCode( int internalID, String code ) throws SQLException {
+    public void setCode( int internalID, String code )
+                            throws SQLException {
         querier.setCode( internalID, code );
     }
 
-    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) throws CRSConfigurationException {
+    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
+                            throws CRSConfigurationException {
         return null;
     }
 
     /**
      * Retrieves the CRS via its code
+     * 
      * @param epsgCode
-     * @return
-     *          the CoordinateSystem identified
+     * @return the CoordinateSystem identified
      * @throws CRSConfigurationException
      */
-    public CoordinateSystem getCRSByCode( CRSCodeType code ) throws CRSConfigurationException {
+    public CoordinateSystem getCRSByCode( CRSCodeType code )
+                            throws CRSConfigurationException {
         CoordinateSystem result = null;
         try {
             result = querier.getCRSByCode( code );
@@ -174,7 +177,8 @@ public class DatabaseCRSProvider implements CRSProvider {
     }
 
     public DatabaseCRSProvider( Properties properties ) throws CRSConfigurationException, ClassNotFoundException {
-        this(); // currently properties are not needed but the CRSConfiguration instantiation mechanism forces this parameter
+        this(); // currently properties are not needed but the CRSConfiguration instantiation mechanism forces this
+        // parameter
     }
 
     public boolean canExport() {
@@ -198,31 +202,42 @@ public class DatabaseCRSProvider implements CRSProvider {
         // TODO modify the super-class signature since here we don't write into a StringBuilder
     }
 
-    public void remove( List<CoordinateSystem> crsList ) throws SQLException {
+    public void remove( List<CoordinateSystem> crsList )
+                            throws SQLException {
         remover.removeCRSList( crsList );
     }
 
     /**
-     * Method used by the synchronization-with-EPSG-database class to update the Axis with the EPSG code that it was lacking.
+     * Method used by the synchronization-with-EPSG-database class to update the Axis with the EPSG code that it was
+     * lacking.
+     * 
      * @param axisName
      * @param axisOrientation
      * @param uom
      * @param code
-     *         the EPSG code that will be assigned to the Axis
+     *            the EPSG code that will be assigned to the Axis
      * @throws SQLException
      */
-    public void changeAxisCode( String axisName, String axisOrientation, Unit uom, CRSCodeType code ) throws SQLException {
+    public void changeAxisCode( String axisName, String axisOrientation, Unit uom, CRSCodeType code )
+                            throws SQLException {
         querier.changeAxisCode( axisName, axisOrientation, uom, code );
     }
 
     /**
      * Export a list of CoordianteSystems to the database
+     * 
      * @param crsList
      * @throws ClassNotFoundException
      * @throws SQLException
      * @throws CRSException
      */
-    public void export( List<CoordinateSystem> crsList ) throws ClassNotFoundException, SQLException, CRSException {
+    public void export( List<CoordinateSystem> crsList )
+                            throws ClassNotFoundException, SQLException, CRSException {
+        String url = System.getenv( "CRS_DB_URL" );
+        if ( url == null ) {
+            throw new SQLException(
+                                    "Please specify the database connection by setting the CRS_DB_URL property (environment setting, for example derby: -DCRS_DB_URL=jdbc:derby:META-INF/deegreeCRS)" );
+        }
         exporter.export( crsList );
     }
 
