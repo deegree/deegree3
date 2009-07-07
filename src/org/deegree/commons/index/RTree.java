@@ -39,6 +39,7 @@ package org.deegree.commons.index;
 import static java.lang.Math.min;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -101,7 +102,7 @@ public class RTree {
      * @throws ClassNotFoundException
      */
     public RTree( InputStream is ) throws IOException, ClassNotFoundException {
-        ObjectInputStream in = new ObjectInputStream( is );
+        ObjectInputStream in = new ObjectInputStream( new BufferedInputStream( is ) );
         bbox = (float[]) in.readObject();
         root = (Entry[]) in.readObject();
         in.close();
