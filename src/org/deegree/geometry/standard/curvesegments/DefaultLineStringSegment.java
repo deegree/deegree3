@@ -35,9 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 
@@ -51,7 +49,7 @@ import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
  */
 public class DefaultLineStringSegment implements LineStringSegment {
 
-    private List<Point> points;
+    private Points points;
 
     /**
      * Creates a new <code>DefaultLineStringSegment</code> instance from the given parameters.
@@ -59,13 +57,13 @@ public class DefaultLineStringSegment implements LineStringSegment {
      * @param points
      *            interpolation points
      */
-    public DefaultLineStringSegment( List<Point> points ) {
-        this.points = new ArrayList<Point>( points );
+    public DefaultLineStringSegment( Points points ) {
+        this.points = points;
     }
 
     @Override
     public int getCoordinateDimension() {
-        return points.get(0).getCoordinateDimension();
+        return points.getCoordinateDimension();
     }
 
     @Override
@@ -74,7 +72,7 @@ public class DefaultLineStringSegment implements LineStringSegment {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return points;
     }
 

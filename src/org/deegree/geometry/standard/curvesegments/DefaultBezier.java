@@ -37,10 +37,10 @@ package org.deegree.geometry.standard.curvesegments;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.Bezier;
 import org.deegree.geometry.primitive.curvesegments.Knot;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link Bezier} segments.
@@ -52,7 +52,7 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentTyp
  */
 public class DefaultBezier implements Bezier {
 
-    private List<Point> controlPoints;
+    private Points controlPoints;
 
     private int polynomialDegree;
 
@@ -67,7 +67,7 @@ public class DefaultBezier implements Bezier {
      * @param knot1
      * @param knot2
      */
-    public DefaultBezier( List<Point> controlPoints, int polynomialDegree, Knot knot1, Knot knot2 ) {
+    public DefaultBezier( Points controlPoints, int polynomialDegree, Knot knot1, Knot knot2 ) {
         this.controlPoints = controlPoints;
         this.polynomialDegree = polynomialDegree;
         knots = new ArrayList<Knot>( 2 );
@@ -96,7 +96,7 @@ public class DefaultBezier implements Bezier {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return controlPoints;
     }
 

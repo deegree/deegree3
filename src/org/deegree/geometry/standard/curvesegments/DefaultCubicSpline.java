@@ -35,9 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CubicSpline;
 
@@ -51,7 +49,7 @@ import org.deegree.geometry.primitive.curvesegments.CubicSpline;
  */
 public class DefaultCubicSpline implements CubicSpline {
 
-    private List<Point> controlPoints = new ArrayList<Point>();
+    private Points controlPoints;
 
     private Point vectorAtStart;
 
@@ -67,8 +65,8 @@ public class DefaultCubicSpline implements CubicSpline {
      * @param vectorAtEnd
      *            the unit tangent vector at the end point of the spline
      */
-    public DefaultCubicSpline( List<Point> points, Point vectorAtStart, Point vectorAtEnd ) {
-        this.controlPoints.addAll( points );
+    public DefaultCubicSpline( Points points, Point vectorAtStart, Point vectorAtEnd ) {
+        this.controlPoints = points;
         this.vectorAtStart = vectorAtStart;
         this.vectorAtEnd = vectorAtEnd;
     }
@@ -94,7 +92,7 @@ public class DefaultCubicSpline implements CubicSpline {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return controlPoints;
     }
 

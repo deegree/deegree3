@@ -37,10 +37,10 @@ package org.deegree.geometry.standard.curvesegments;
 
 import java.util.List;
 
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.BSpline;
 import org.deegree.geometry.primitive.curvesegments.Knot;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link BSpline} segments.
@@ -52,7 +52,7 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentTyp
  */
 public class DefaultBSpline implements BSpline {
 
-    private List<Point> controlPoints;
+    private Points controlPoints;
 
     private int polynomialDegree;
 
@@ -68,7 +68,7 @@ public class DefaultBSpline implements BSpline {
      * @param knots
      * @param isPolynomial
      */
-    public DefaultBSpline( List<Point> controlPoints, int polynomialDegree, List<Knot> knots, boolean isPolynomial ) {
+    public DefaultBSpline( Points controlPoints, int polynomialDegree, List<Knot> knots, boolean isPolynomial ) {
         this.controlPoints = controlPoints;
         this.polynomialDegree = polynomialDegree;
         this.knots = knots;
@@ -89,7 +89,7 @@ public class DefaultBSpline implements BSpline {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return controlPoints;
     }
 

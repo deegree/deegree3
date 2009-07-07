@@ -35,12 +35,9 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.GeodesicString;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link GeodesicString} segments.
@@ -52,7 +49,7 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentTyp
  */
 public class DefaultGeodesicString implements GeodesicString {
 
-    private List<Point> points;
+    private Points points;
 
     /**
      * Creates a new <code>DefaultGeodesicString</code> instance from the given parameters.
@@ -60,8 +57,8 @@ public class DefaultGeodesicString implements GeodesicString {
      * @param points
      *            interpolation points
      */
-    public DefaultGeodesicString( List<Point> points ) {
-        this.points = new ArrayList<Point>( points );
+    public DefaultGeodesicString( Points points ) {
+        this.points = points;
     }
 
     @Override
@@ -75,7 +72,7 @@ public class DefaultGeodesicString implements GeodesicString {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return points;
     }
 

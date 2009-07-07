@@ -35,11 +35,10 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.Arc;
+import org.deegree.geometry.standard.points.PointsBuilder;
 
 /**
  * Default implementation of {@link Arc} segments.
@@ -51,7 +50,7 @@ import org.deegree.geometry.primitive.curvesegments.Arc;
  */
 public class DefaultArc implements Arc {
 
-    protected final List<Point> controlPoints = new ArrayList<Point>( 3 );
+    protected final PointsBuilder controlPoints = new PointsBuilder( 3 );
 
     /**
      * Creates a new <code>DefaultArc</code> instance from the given parameters.
@@ -95,7 +94,7 @@ public class DefaultArc implements Arc {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return controlPoints;
     }
 

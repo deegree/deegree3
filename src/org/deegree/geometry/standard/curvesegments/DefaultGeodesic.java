@@ -35,12 +35,10 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.Geodesic;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
+import org.deegree.geometry.standard.points.PointsBuilder;
 
 /**
  * Default implementation of {@link Geodesic} segments.
@@ -52,7 +50,7 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentTyp
  */
 public class DefaultGeodesic implements Geodesic {
 
-    private List<Point> controlPoints = new ArrayList<Point>(2);
+    private PointsBuilder controlPoints = new PointsBuilder();
 
     /**
      * Creates a new <code>DefaultGeodesic</code> instance from the given parameters.
@@ -87,7 +85,7 @@ public class DefaultGeodesic implements Geodesic {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return controlPoints;
     }
 

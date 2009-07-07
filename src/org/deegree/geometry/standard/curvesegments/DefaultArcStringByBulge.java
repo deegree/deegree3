@@ -35,12 +35,10 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
-import java.util.List;
-
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.ArcStringByBulge;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link ArcStringByBulge} segments.
@@ -52,11 +50,11 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentTyp
  */
 public class DefaultArcStringByBulge implements ArcStringByBulge {
 
-    private List<Point> controlPoints;
+    private Points controlPoints;
 
     private double[] bulges;
 
-    private List<Point> normals;
+    private Points normals;
 
     /**
      *
@@ -66,7 +64,7 @@ public class DefaultArcStringByBulge implements ArcStringByBulge {
      *
      * @param normals
      */
-    public DefaultArcStringByBulge( List<Point> controlPoints, double[] bulges, List<Point> normals ) {
+    public DefaultArcStringByBulge( Points controlPoints, double[] bulges, Points normals ) {
         if ( controlPoints.size() < 2 ) {
             String msg = "An ArcStringByBulge must contain at least 2 control points.";
             throw new IllegalArgumentException( msg );
@@ -90,7 +88,7 @@ public class DefaultArcStringByBulge implements ArcStringByBulge {
     }
 
     @Override
-    public List<Point> getNormals() {
+    public Points getNormals() {
         return normals;
     }
 
@@ -110,7 +108,7 @@ public class DefaultArcStringByBulge implements ArcStringByBulge {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return controlPoints;
     }
 

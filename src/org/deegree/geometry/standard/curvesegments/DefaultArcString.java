@@ -35,8 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
-import java.util.List;
-
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.ArcString;
 
@@ -52,7 +51,7 @@ public class DefaultArcString implements ArcString {
 
     protected int numArcs;
 
-    protected List<Point> controlPoints;
+    protected Points controlPoints;
 
     /**
      * Creates a new <code>DefaultArcString</code> instance from the given parameters.
@@ -60,7 +59,7 @@ public class DefaultArcString implements ArcString {
      * @param controlPoints
      *            interpolation points
      */
-    public DefaultArcString( List<Point> controlPoints ) {
+    public DefaultArcString( Points controlPoints ) {
         if ( controlPoints.size() < 3 || controlPoints.size() % 2 != 1 ) {
             throw new IllegalArgumentException( "Invalid number of points." );
         }
@@ -79,7 +78,7 @@ public class DefaultArcString implements ArcString {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return controlPoints;
     }
 

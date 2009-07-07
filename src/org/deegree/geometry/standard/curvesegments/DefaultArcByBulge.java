@@ -35,12 +35,10 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.ArcByBulge;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
+import org.deegree.geometry.standard.points.PointsBuilder;
 
 /**
  * Default implementation of {@link ArcByBulge} segments.
@@ -52,7 +50,7 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentTyp
  */
 public class DefaultArcByBulge implements ArcByBulge {
 
-    private List<Point> controlPoints;
+    private PointsBuilder controlPoints = new PointsBuilder (2);
 
     private double bulge;
 
@@ -69,7 +67,6 @@ public class DefaultArcByBulge implements ArcByBulge {
      * @param normal
      */
     public DefaultArcByBulge( Point p1, Point p2, double bulge, Point normal ) {
-        this.controlPoints = new ArrayList<Point>();
         controlPoints.add( p1 );
         controlPoints.add( p2 );
         this.bulge = bulge;
@@ -102,8 +99,8 @@ public class DefaultArcByBulge implements ArcByBulge {
     }
 
     @Override
-    public List<Point> getNormals() {
-        List<Point> normals = new ArrayList<Point>( 1 );
+    public Points getNormals() {
+        PointsBuilder normals = new PointsBuilder( 1 );
         normals.add( normal );
         return normals;
     }
@@ -124,7 +121,7 @@ public class DefaultArcByBulge implements ArcByBulge {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return controlPoints;
     }
 
