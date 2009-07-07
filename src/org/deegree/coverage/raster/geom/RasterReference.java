@@ -326,7 +326,7 @@ public class RasterReference {
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height, CRS crs, RasterReference.Type type ) {
-        GeometryFactory geomFactory = GeometryFactory.getInstance();
+        GeometryFactory geomFactory = new GeometryFactory();
 
         double x0, y0, x1, y1;
 

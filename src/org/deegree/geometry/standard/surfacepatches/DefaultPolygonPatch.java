@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.surfacepatches;
 
 import java.util.Collections;
@@ -44,10 +44,10 @@ import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 
 /**
  * Default implementation of {@link PolygonPatch}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultPolygonPatch implements PolygonPatch {
@@ -60,30 +60,30 @@ public class DefaultPolygonPatch implements PolygonPatch {
 
     /**
      * Creates a new {@link DefaultPolygonPatch} instance from the given parameters.
-     *
+     * 
      * @param exteriorRing
      *            ring that defines the outer boundary, may be null (see section 9.2.2.5 of GML spec)
      * @param interiorRings
      *            list of rings that define the inner boundaries, may be empty or null
      */
-    public DefaultPolygonPatch ( Ring exteriorRing, List<Ring> interiorRings) {
+    public DefaultPolygonPatch( Ring exteriorRing, List<Ring> interiorRings ) {
         this.exteriorRing = exteriorRing;
         this.interiorRings = interiorRings;
-        if (interiorRings == null) {
+        if ( interiorRings == null ) {
             this.interiorRings = Collections.emptyList();
         }
         this.allBoundaries = new LinkedList<Ring>();
-        if (exteriorRing != null) {
+        if ( exteriorRing != null ) {
             allBoundaries.add( exteriorRing );
         }
-        if (interiorRings != null) {
+        if ( interiorRings != null ) {
             allBoundaries.addAll( interiorRings );
         }
     }
 
     @Override
-    public boolean is3D() {
-        return exteriorRing.is3D();
+    public int getCoordinateDimension() {
+        return exteriorRing.getCoordinateDimension();
     }
 
     @Override

@@ -103,8 +103,8 @@ public class SurfaceReference extends GeometryReference implements Surface {
         return geometry.getConvexHull();
     }
 
-    public boolean is3D() {
-        return geometry.is3D();
+    public int getCoordinateDimension() {
+        return geometry.getCoordinateDimension();
     }
 
     public CRS getCoordinateSystem() {

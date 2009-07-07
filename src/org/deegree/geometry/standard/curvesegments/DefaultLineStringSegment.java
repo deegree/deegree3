@@ -40,7 +40,6 @@ import java.util.List;
 
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link LineStringSegment} segments.
@@ -65,8 +64,8 @@ public class DefaultLineStringSegment implements LineStringSegment {
     }
 
     @Override
-    public boolean is3D() {
-        return points.get( 0 ).is3D();
+    public int getCoordinateDimension() {
+        return points.get(0).getCoordinateDimension();
     }
 
     @Override

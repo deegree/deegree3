@@ -188,7 +188,7 @@ public class SHPReader {
 
     private static final Logger LOG = getLogger( SHPReader.class );
 
-    private static final GeometryFactory fac = GeometryFactory.getInstance();
+    private static final GeometryFactory fac = new GeometryFactory();
 
     private double[] envelope;
 

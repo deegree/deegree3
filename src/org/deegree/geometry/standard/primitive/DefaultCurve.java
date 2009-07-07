@@ -86,8 +86,8 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
     }
 
     @Override
-    public boolean is3D() {
-        return segments.get( 0 ).is3D();
+    public int getCoordinateDimension() {
+        return segments.get( 0 ).getCoordinateDimension();
     }
 
     @Override
@@ -160,7 +160,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
 
     @Override
     protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
-        CurveLinearizer linearizer = new CurveLinearizer( GeometryFactory.getInstance() );
+        CurveLinearizer linearizer = new CurveLinearizer( new GeometryFactory() );
         // TODO how to determine a feasible linearization criterion?
         LinearizationCriterion crit = new NumPointsCriterion( 100 );
         List<Coordinate> coords = new LinkedList<Coordinate>();

@@ -111,8 +111,8 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
     }
 
     @Override
-    public boolean is3D() {
-        return patches.get( 0 ).is3D();
+    public int getCoordinateDimension() {
+        return patches.get( 0 ).getCoordinateDimension();
     }
 
     @Override

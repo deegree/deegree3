@@ -60,9 +60,7 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
  */
 public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope {
 
-    private static GeometryFactory geomFactory = GeometryFactory.getInstance();
-
-    private static double DELTA = 0.001;
+    private static GeometryFactory geomFactory = new GeometryFactory();
 
     private Point max;
 
@@ -89,8 +87,8 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
     }
 
     @Override
-    public boolean is3D() {
-        return min.is3D();
+    public int getCoordinateDimension() {
+        return min.getCoordinateDimension();
     }
 
     @Override
@@ -348,7 +346,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
     @Override
     public Envelope merge( Envelope other ) {
-        int coordinateDimension = ( max.is3D() ? 3 : 2 );
+        int coordinateDimension = getCoordinateDimension();
         double[] min = new double[coordinateDimension];
         double[] max = new double[coordinateDimension];
         for ( int i = 0; i < coordinateDimension; i++ ) {
@@ -380,7 +378,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
      */
     public Point getCentroid() {
         if ( centroid == null ) {
-            GeometryFactory gf = GeometryFactory.getInstance();
+            GeometryFactory gf = new GeometryFactory();
             double[] coordinates = new double[max.getAsArray().length];
             for ( int i = 0; i < coordinates.length; i++ ) {
                 coordinates[i] = min.getAsArray()[i] + ( max.getAsArray()[i] - min.getAsArray()[i] ) / 2d;

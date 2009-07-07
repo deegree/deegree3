@@ -80,8 +80,8 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
     }
 
     @Override
-    public boolean is3D(){
-        return members.get( 0 ).is3D();
+    public int getCoordinateDimension() {
+        return members.get( 0 ).getCoordinateDimension();
     }
 
     @Override

@@ -51,7 +51,7 @@ import org.junit.Test;
  */
 public class GeometryTest {
 
-    private static GeometryFactory geomFactory = GeometryFactory.getInstance();
+    private static GeometryFactory geomFactory = new GeometryFactory();
 
     private static double DELTA = 0.001;
 

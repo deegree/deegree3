@@ -179,8 +179,8 @@ public class DefaultOrientableCurve implements OrientableCurve {
     }
 
     @Override
-    public boolean is3D() {
-        return baseCurve.is3D();
+    public int getCoordinateDimension () {
+        return baseCurve.getCoordinateDimension();
     }
 
     @Override

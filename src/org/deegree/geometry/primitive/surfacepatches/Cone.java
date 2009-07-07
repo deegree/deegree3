@@ -36,8 +36,6 @@
 
 package org.deegree.geometry.primitive.surfacepatches;
 
-import org.deegree.geometry.primitive.surfacepatches.GriddedSurfacePatch.GriddedSurfaceType;
-
 /**
  * The <code>Cone</code> class represents (according to GML-3.1 spec ) a gridded surface given as a family of
  * conic sections whose control points vary linearly.
@@ -48,11 +46,9 @@ import org.deegree.geometry.primitive.surfacepatches.GriddedSurfacePatch.Gridded
  * P4>>.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- *
  * @author last edited by: $Author: ionita $
  *
  * @version $Revision: $, $Date: $
- *
  */
 public interface Cone extends GriddedSurfacePatch {
 

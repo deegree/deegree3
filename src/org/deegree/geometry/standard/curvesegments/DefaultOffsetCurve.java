@@ -39,7 +39,6 @@ import org.deegree.commons.types.Length;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.OffsetCurve;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link OffsetCurve} segments.
@@ -89,8 +88,8 @@ public class DefaultOffsetCurve implements OffsetCurve {
     }
 
     @Override
-    public boolean is3D() {
-        return baseCurve.is3D();
+    public int getCoordinateDimension() {
+        return baseCurve.getCoordinateDimension();
     }
 
     @Override

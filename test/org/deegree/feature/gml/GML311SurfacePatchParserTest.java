@@ -72,7 +72,7 @@ public class GML311SurfacePatchParserTest {
     @Before
     public void setUp()
                             throws Exception {
-        geomFac = GeometryFactory.getInstance();
+        geomFac = new GeometryFactory();
     }
 
     @Test
@@ -140,7 +140,7 @@ public class GML311SurfacePatchParserTest {
     }
 
     private GML311SurfacePatchParser getPatchParser() {
-        GeometryFactory geomFac = GeometryFactory.getInstance();
+        GeometryFactory geomFac = new GeometryFactory();
         return new GML311SurfacePatchParser( new GML311GeometryParser(), geomFac );
     }
 }

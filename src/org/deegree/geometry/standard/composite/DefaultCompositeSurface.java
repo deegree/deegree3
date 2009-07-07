@@ -80,8 +80,8 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
     }
 
     @Override
-    public boolean is3D() {
-        return memberSurfaces.get( 0 ).is3D();
+    public int getCoordinateDimension() {
+        return memberSurfaces.get( 0 ).getCoordinateDimension();
     }
 
     @Override

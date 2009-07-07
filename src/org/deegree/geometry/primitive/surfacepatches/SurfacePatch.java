@@ -120,10 +120,11 @@ public interface SurfacePatch {
     public double getArea();
 
     /**
-     *
-     * @return whether the dimension of the surface's coordinates is 3 or 2 (2 for flat surfaces; 3 for surfaces in a 3D space)
+     * Returns the coordinate dimension, i.e. the dimension of the space that the patch is embedded in.
+     * 
+     * @return the coordinate dimension
      */
-    public boolean is3D();
+    public int getCoordinateDimension();
 
     /**
      * @return the kind of SurfacePatch the object represents, an element of {@link SurfacePatchType}

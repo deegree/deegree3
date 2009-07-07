@@ -39,7 +39,6 @@ import java.util.List;
 
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.ArcString;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link ArcString} segments.
@@ -70,8 +69,8 @@ public class DefaultArcString implements ArcString {
     }
 
     @Override
-    public boolean is3D() {
-        return controlPoints.get( 0 ).is3D();
+    public int getCoordinateDimension() {
+        return controlPoints.get( 0 ).getCoordinateDimension();
     }
 
     @Override

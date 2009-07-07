@@ -47,21 +47,15 @@ import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
 import org.deegree.geometry.composite.CompositeSurface;
 import org.deegree.geometry.multi.MultiCurve;
-import org.deegree.geometry.multi.MultiGeometry;
-import org.deegree.geometry.multi.MultiLineString;
-import org.deegree.geometry.multi.MultiPoint;
-import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSolid;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
-import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.OrientableCurve;
 import org.deegree.geometry.primitive.OrientableSurface;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.PolyhedralSurface;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Solid;
@@ -96,10 +90,6 @@ import org.deegree.geometry.primitive.surfacepatches.Sphere;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
 import org.deegree.geometry.standard.aggregate.DefaultMultiCurve;
-import org.deegree.geometry.standard.aggregate.DefaultMultiGeometry;
-import org.deegree.geometry.standard.aggregate.DefaultMultiLineString;
-import org.deegree.geometry.standard.aggregate.DefaultMultiPoint;
-import org.deegree.geometry.standard.aggregate.DefaultMultiPolygon;
 import org.deegree.geometry.standard.aggregate.DefaultMultiSolid;
 import org.deegree.geometry.standard.aggregate.DefaultMultiSurface;
 import org.deegree.geometry.standard.composite.DefaultCompositeCurve;
@@ -123,13 +113,9 @@ import org.deegree.geometry.standard.curvesegments.DefaultGeodesicString;
 import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
 import org.deegree.geometry.standard.curvesegments.DefaultOffsetCurve;
 import org.deegree.geometry.standard.primitive.DefaultCurve;
-import org.deegree.geometry.standard.primitive.DefaultEnvelope;
-import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultLinearRing;
 import org.deegree.geometry.standard.primitive.DefaultOrientableCurve;
 import org.deegree.geometry.standard.primitive.DefaultOrientableSurface;
-import org.deegree.geometry.standard.primitive.DefaultPoint;
-import org.deegree.geometry.standard.primitive.DefaultPolygon;
 import org.deegree.geometry.standard.primitive.DefaultPolyhedralSurface;
 import org.deegree.geometry.standard.primitive.DefaultRing;
 import org.deegree.geometry.standard.primitive.DefaultSolid;
@@ -141,102 +127,24 @@ import org.deegree.geometry.standard.surfacepatches.DefaultRectangle;
 import org.deegree.geometry.standard.surfacepatches.DefaultTriangle;
 
 /**
- * Supplies utility methods for building {@link Geometry} and geometry-related objects (e.g. {@link CurveSegment})s.
+ * Augments the {@link SimpleGeometryFactory} with additional methods for building complex {@link Geometry} and
+ * geometry-related objects (e.g. {@link CurveSegment})s.
  * 
+ * @see SimpleGeometryFactory
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
  * 
  * @version. $Revision$, $Date$
  */
-public class GeometryFactory {
+public class GeometryFactory extends SimpleGeometryFactory {
 
-    private PrecisionModel pm;
-
-    private GeometryFactory( PrecisionModel pm ) {
+    public GeometryFactory () {
+        this.pm = PrecisionModel.DEFAULT_PRECISION_MODEL;
+    }
+    
+    public GeometryFactory (PrecisionModel pm) {
         this.pm = pm;
-    }
-
-    public static GeometryFactory getInstance() {
-        return new GeometryFactory( PrecisionModel.DEFAULT_PRECISION_MODEL );
-    }
-
-    public static GeometryFactory getInstance( PrecisionModel pm ) {
-        return new GeometryFactory( pm );
-    }
-
-    public static GeometryFactory getInstance( String name ) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static GeometryFactory getInstance( String name, PrecisionModel pm ) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Creates a {@link Point} in 2D space.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param x
-     *            value for first coordinate
-     * @param y
-     *            value for second coordinate
-     * @param crs
-     *            coordinate reference system, may be null
-     * @return created {@link Point}
-     */
-    public Point createPoint( String id, double x, double y, CRS crs ) {
-        return new DefaultPoint( id, crs, pm, new double[] { x, y } );
-    }
-
-    /**
-     * Creates a {@link Point} in 3D space.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param x
-     *            value for first coordinate
-     * @param y
-     *            value for second coordinate
-     * @param z
-     *            value for third coordinate
-     * @param crs
-     *            coordinate reference system, may be null
-     * @return created {@link Point}
-     */
-    public Point createPoint( String id, double x, double y, double z, CRS crs ) {
-        return new DefaultPoint( id, crs, pm, new double[] { x, y, z } );
-    }
-
-    /**
-     * Creates a {@link Point} with an arbitrary number of coordinates.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param coordinates
-     *            coordinate values
-     * @param crs
-     *            coordinate reference system, may be null
-     * @return created {@link Point}
-     */
-    public Point createPoint( String id, double[] coordinates, CRS crs ) {
-        return new DefaultPoint( id, crs, pm, coordinates );
-    }
-
-    /**
-     * Creates a {@link LineString} geometry.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system
-     * @param points
-     *            list of control points for the line string
-     * @return created {@link LineString}
-     */
-    public LineString createLineString( String id, CRS crs, List<Point> points ) {
-        return new DefaultLineString( id, crs, pm, points );
     }
 
     /**
@@ -526,23 +434,6 @@ public class GeometryFactory {
     }
 
     /**
-     * Creates a {@link Polygon} surface.
-     * 
-     * @param id
-     *            identifier of the new geometry instance
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param exteriorRing
-     *            ring that defines the outer boundary, this may be null (see section 9.2.2.5 of GML spec)
-     * @param interiorRings
-     *            list of rings that define the inner boundaries, may be empty or null
-     * @return created {@link Polygon}
-     */
-    public Polygon createPolygon( String id, CRS crs, Ring exteriorRing, List<Ring> interiorRings ) {
-        return new DefaultPolygon( id, crs, pm, exteriorRing, interiorRings );
-    }
-
-    /**
      * Creates a {@link PolygonPatch} surface patch.
      * 
      * @param exteriorRing
@@ -553,41 +444,6 @@ public class GeometryFactory {
      */
     public PolygonPatch createPolygonPatch( Ring exteriorRing, List<Ring> interiorRings ) {
         return new DefaultPolygonPatch( exteriorRing, interiorRings );
-    }
-
-    /**
-     * Creates an {@link Envelope}.
-     * 
-     * @param min
-     *            minimum corner coordinates
-     * @param max
-     *            maximum corner coordinates
-     * @param crs
-     *            coordinate reference system, may be null
-     * @return created {@link Envelope}
-     */
-    public Envelope createEnvelope( double[] min, double[] max, CRS crs ) {
-        return new DefaultEnvelope( null, crs, pm, new DefaultPoint( null, crs, pm, min ), new DefaultPoint( null, crs,
-                                                                                                             pm, max ) );
-    }
-
-    /**
-     * Creates an {@link Envelope} in 2D space.
-     * 
-     * @param minx
-     *            minimum x corner coordinate
-     * @param miny
-     *            minimum y corner coordinate
-     * @param maxx
-     *            maximum x corner coordinate
-     * @param maxy
-     *            maximum y corner coordinate
-     * @param crs
-     *            coordinate reference system, may be null
-     * @return created {@link Envelope}
-     */
-    public Envelope createEnvelope( double minx, double miny, double maxx, double maxy, CRS crs ) {
-        return createEnvelope( new double[] { minx, miny }, new double[] { maxx, maxy }, crs );
     }
 
     /**
@@ -743,35 +599,6 @@ public class GeometryFactory {
     }
 
     /**
-     * Creates an untyped multi geometry from a list of {@link Geometry}s.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param members
-     * @return created {@link MultiGeometry}
-     */
-    public MultiGeometry<Geometry> createMultiGeometry( String id, CRS crs, List<Geometry> members ) {
-        return new DefaultMultiGeometry<Geometry>( id, crs, pm, members );
-    }
-
-    /**
-     * Creates a {@link MultiPoint} from a list of passed {@link Point}s.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param members
-     *            points that constitute the collection
-     * @return created {@link MultiPoint}
-     */
-    public MultiPoint createMultiPoint( String id, CRS crs, List<Point> members ) {
-        return new DefaultMultiPoint( id, crs, pm, members );
-    }
-
-    /**
      * Creates a {@link MultiCurve} from a list of passed {@link Curve}s.
      * 
      * @param id
@@ -784,21 +611,6 @@ public class GeometryFactory {
      */
     public MultiCurve createMultiCurve( String id, CRS crs, List<Curve> members ) {
         return new DefaultMultiCurve( id, crs, pm, members );
-    }
-
-    /**
-     * Creates a {@link MultiCurve} from a list of passed {@link LineString}s.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param members
-     *            curves that constitute the collection
-     * @return created {@link MultiLineString}
-     */
-    public MultiLineString createMultiLineString( String id, CRS crs, List<LineString> members ) {
-        return new DefaultMultiLineString( id, crs, pm, members );
     }
 
     /**
@@ -817,21 +629,6 @@ public class GeometryFactory {
     }
 
     /**
-     * Creates a {@link MultiPolygon} from a list of passed {@link Polygon}s.
-     * 
-     * @param id
-     *            identifier, may be null
-     * @param crs
-     *            coordinate reference system, may be null
-     * @param members
-     *            polygons that constitute the collection
-     * @return created {@link MultiPolygon}
-     */
-    public MultiPolygon createMultiPolygon( String id, CRS crs, List<Polygon> members ) {
-        return new DefaultMultiPolygon( id, crs, pm, members );
-    }
-
-    /**
      * Creates a {@link MultiSolid} from a list of passed {@link Solid}s.
      * 
      * @param id
@@ -844,8 +641,8 @@ public class GeometryFactory {
      */
     public MultiSolid createMultiSolid( String id, CRS crs, List<Solid> members ) {
         return new DefaultMultiSolid( id, crs, pm, members );
-    }
-
+    }    
+    
     /**
      * Creates a {@link CompositeCurve} from a list of passed {@link Curve}s.
      * 
@@ -907,27 +704,5 @@ public class GeometryFactory {
     public CompositeGeometry<GeometricPrimitive> createCompositeGeometry( String id, CRS crs,
                                                                           List<GeometricPrimitive> memberPrimitives ) {
         return new DefaultCompositeGeometry( id, crs, pm, memberPrimitives );
-    }
-
-    /**
-     * Create an {@link Envelope} from a list of Doubles.
-     * 
-     * @param lowerCorner
-     * @param upperCorner
-     * @param crs
-     *            coordinate reference system, may be null
-     * @return the envelope
-     */
-    public Envelope createEnvelope( List<Double> lowerCorner, List<Double> upperCorner, CRS crs ) {
-        if ( lowerCorner.size() != upperCorner.size() ) {
-            throw new IllegalArgumentException( "LowerCorner must be of same dimension as upperCorner." );
-        }
-        double[] lc = new double[lowerCorner.size()];
-        double[] uc = new double[upperCorner.size()];
-        for ( int i = 0; i < lc.length; ++i ) {
-            lc[i] = lowerCorner.get( i );
-            uc[i] = upperCorner.get( i );
-        }
-        return createEnvelope( lc, uc, crs );
     }
 }

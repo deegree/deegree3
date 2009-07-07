@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,11 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.feature.gml;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -65,13 +64,13 @@ import org.xml.sax.InputSource;
 
 /**
  * Exporting all types of geometries and validating them.
- *
+ * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- *
+ * 
  * @author last edited by: $Author: ionita $
- *
+ * 
  * @version $Revision: $, $Date: $
- *
+ * 
  */
 public class GMLGeometryExporterTest {
 
@@ -91,8 +90,7 @@ public class GMLGeometryExporterTest {
 
     private static List<String> envelopeSources = new ArrayList<String>();
 
-    final String SCHEMA_LOCATION_ATTRIBUTE =
-        "http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
+    final String SCHEMA_LOCATION_ATTRIBUTE = "http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
 
     final String SCHEMA_LOCATION = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
 
@@ -129,12 +127,12 @@ public class GMLGeometryExporterTest {
         sources.add( "Tin.gml" );
         sources.add( "TriangulatedSurface.gml" );
 
-        patchSources.add( "Cone.gml");
-        patchSources.add( "Cylinder.gml");
-        patchSources.add( "PolygonPatch.gml");
-        patchSources.add( "Rectangle.gml");
-        patchSources.add( "Sphere.gml");
-        patchSources.add( "Triangle.gml");
+        patchSources.add( "Cone.gml" );
+        patchSources.add( "Cylinder.gml" );
+        patchSources.add( "PolygonPatch.gml" );
+        patchSources.add( "Rectangle.gml" );
+        patchSources.add( "Sphere.gml" );
+        patchSources.add( "Triangle.gml" );
 
         segmentSources.add( "Arc.gml" );
         segmentSources.add( "ArcByBulge.gml" );
@@ -158,13 +156,13 @@ public class GMLGeometryExporterTest {
     }
 
     @Test
-    public void testValidatingExportedAbstractGeometryTypes() throws XMLStreamException, XMLParsingException, UnknownCRSException,
-    FactoryConfigurationError, IOException {
+    public void testValidatingExportedAbstractGeometryTypes()
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException,
+                            FactoryConfigurationError, IOException {
         for ( String source : sources ) {
-            LOG.info( "Exporting " +  DIR + source );
+            LOG.info( "Exporting " + DIR + source );
             GMLIdContext idContext = new GMLIdContext();
-            GML311GeometryParser parser =
-                new GML311GeometryParser( GeometryFactory.getInstance(), idContext );
+            GML311GeometryParser parser = new GML311GeometryParser( new GeometryFactory(), idContext );
             URL docURL = GMLGeometryExporterTest.class.getResource( DIR + source );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
             xmlReader.nextTag();
@@ -187,17 +185,19 @@ public class GMLGeometryExporterTest {
             writer.close();
             out.close();
 
-            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new InputSource( new FileReader( "/tmp/exported_" + source ) ) );
+            XMLAssert.assertValidDocument( SCHEMA_LOCATION,
+                                           new InputSource( new FileReader( "/tmp/exported_" + source ) ) );
         }
     }
 
     @Test
-    public void testValidatingExportedSurfacePatches() throws XMLStreamException, XMLParsingException, UnknownCRSException,
-    FactoryConfigurationError, IOException {
+    public void testValidatingExportedSurfacePatches()
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException,
+                            FactoryConfigurationError, IOException {
         for ( String patchSource : patchSources ) {
-            LOG.info( "Exporting " +  PATCH_DIR + patchSource );
+            LOG.info( "Exporting " + PATCH_DIR + patchSource );
             GMLIdContext idContext = new GMLIdContext();
-            GeometryFactory geomFactory = GeometryFactory.getInstance();
+            GeometryFactory geomFactory = new GeometryFactory();
             GML311GeometryParser geometryParser = new GML311GeometryParser( geomFactory, idContext );
             GML311SurfacePatchParser parser = new GML311SurfacePatchParser( geometryParser, geomFactory );
             URL docURL = GMLGeometryExporterTest.class.getResource( PATCH_DIR + patchSource );
@@ -224,17 +224,19 @@ public class GMLGeometryExporterTest {
             writer.close();
             out.close();
 
-            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new InputSource( new FileReader( "/tmp/exported_" + patchSource ) ) );
+            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new InputSource( new FileReader( "/tmp/exported_"
+                                                                                             + patchSource ) ) );
         }
     }
 
     @Test
-    public void testValidatingExportedCurveSegments() throws XMLStreamException, XMLParsingException, UnknownCRSException,
-    FactoryConfigurationError, IOException {
+    public void testValidatingExportedCurveSegments()
+                            throws XMLStreamException, XMLParsingException, UnknownCRSException,
+                            FactoryConfigurationError, IOException {
         for ( String segmentSource : segmentSources ) {
-            LOG.info( "Exporting " +  SEGMENT_DIR + segmentSource );
+            LOG.info( "Exporting " + SEGMENT_DIR + segmentSource );
             GMLIdContext idContext = new GMLIdContext();
-            GeometryFactory geomFactory = GeometryFactory.getInstance();
+            GeometryFactory geomFactory = new GeometryFactory();
             GML311GeometryParser geometryParser = new GML311GeometryParser( geomFactory, idContext );
             GML311CurveSegmentParser parser = new GML311CurveSegmentParser( geometryParser, geomFactory );
             URL docURL = GMLGeometryExporterTest.class.getResource( SEGMENT_DIR + segmentSource );
@@ -259,17 +261,19 @@ public class GMLGeometryExporterTest {
             writer.close();
             out.close();
 
-            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new InputSource( new FileReader( "/tmp/exported_" + segmentSource ) ) );
+            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new InputSource( new FileReader( "/tmp/exported_"
+                                                                                             + segmentSource ) ) );
         }
     }
 
     @Test
-    public void testValidatingExportedEnvelope() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+    public void testValidatingExportedEnvelope()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
         for ( String envelopeSource : envelopeSources ) {
-            LOG.info( "Exporting " +  DIR + envelopeSource );
+            LOG.info( "Exporting " + DIR + envelopeSource );
             GMLIdContext idContext = new GMLIdContext();
-            GML311GeometryParser parser =
-                new GML311GeometryParser( GeometryFactory.getInstance(), idContext );
+            GML311GeometryParser parser = new GML311GeometryParser( new GeometryFactory(), idContext );
             URL docURL = GMLGeometryExporterTest.class.getResource( DIR + envelopeSource );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
             xmlReader.nextTag();
@@ -292,17 +296,19 @@ public class GMLGeometryExporterTest {
             writer.close();
             out.close();
 
-            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new InputSource( new FileReader( "/tmp/exported_" + envelopeSource ) ) );
+            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new InputSource( new FileReader( "/tmp/exported_"
+                                                                                             + envelopeSource ) ) );
         }
     }
 
     @Test
-    public void testValidatingExportedXLinkMultiGeometry1() throws XMLParsingException, XMLStreamException, UnknownCRSException, FactoryConfigurationError, IOException {
-        String source =  "XLinkMultiGeometry1.gml";
-        LOG.info( "Exporting " +  DIR + source );
+    public void testValidatingExportedXLinkMultiGeometry1()
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException,
+                            FactoryConfigurationError, IOException {
+        String source = "XLinkMultiGeometry1.gml";
+        LOG.info( "Exporting " + DIR + source );
         GMLIdContext idContext = new GMLIdContext();
-        GML311GeometryParser parser =
-            new GML311GeometryParser( GeometryFactory.getInstance(), idContext );
+        GML311GeometryParser parser = new GML311GeometryParser( new GeometryFactory(), idContext );
         URL docURL = GMLGeometryExporterTest.class.getResource( DIR + source );
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
         xmlReader.nextTag();

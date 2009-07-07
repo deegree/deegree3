@@ -66,7 +66,7 @@ public class GeoTIFFTest {
 
     private static AbstractRaster raster;
 
-    private static GeometryFactory geomFactory = GeometryFactory.getInstance();
+    private static GeometryFactory geomFactory = new GeometryFactory();
 
     /**
      * load the GeoTIFF file to test

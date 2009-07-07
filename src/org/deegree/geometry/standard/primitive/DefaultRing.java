@@ -132,8 +132,8 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     }
 
     @Override
-    public boolean is3D() {
-        return members.get( 0 ).is3D();
+    public int getCoordinateDimension() {
+        return members.get( 0 ).getCoordinateDimension();
     }
 
     @Override
@@ -212,7 +212,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
 
     @Override
     protected com.vividsolutions.jts.geom.LinearRing buildJTSGeometry() {
-        CurveLinearizer linearizer = new CurveLinearizer( GeometryFactory.getInstance() );
+        CurveLinearizer linearizer = new CurveLinearizer( new GeometryFactory() );
         // TODO how to determine a feasible linearization criterion?
         LinearizationCriterion crit = new NumPointsCriterion( 100 );
         List<Coordinate> coords = new LinkedList<Coordinate>();

@@ -280,7 +280,7 @@ public class WMSClient111 {
                     min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
                     max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
                     max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
-                    return GeometryFactory.getInstance().createEnvelope( min, max, new CRS( WGS84 ) );
+                    return new GeometryFactory().createEnvelope( min, max, new CRS( WGS84 ) );
                 } catch ( NumberFormatException nfe ) {
                     LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
                 }
@@ -331,7 +331,7 @@ public class WMSClient111 {
                     min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
                     max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
                     max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
-                    return GeometryFactory.getInstance().createEnvelope( min, max, new CRS( srs ) );
+                    return new GeometryFactory().createEnvelope( min, max, new CRS( srs ) );
                 } catch ( NumberFormatException nfe ) {
                     LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
                 }
@@ -659,7 +659,7 @@ public class WMSClient111 {
             double[] min = rasterEnv.convertToCRS( xMin, yMin + height );
             double[] max = rasterEnv.convertToCRS( xMin + width, yMin );
 
-            Envelope env = GeometryFactory.getInstance().createEnvelope( min, max, crs );
+            Envelope env = new GeometryFactory().createEnvelope( min, max, crs );
             Pair<BufferedImage, String> response = getMap( layers, width, height, env, crs, format, transparent,
                                                            errorsInImage, false, null );
             if ( response.second != null ) {

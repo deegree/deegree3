@@ -81,7 +81,7 @@ public class GML311CurveSegmentParserTest {
     @Before
     public void setUp()
                             throws Exception {
-        geomFac = GeometryFactory.getInstance();
+        geomFac = new GeometryFactory();
     }
 
     @Test
@@ -124,7 +124,7 @@ public class GML311CurveSegmentParserTest {
                             UnknownCRSException {
         ArcByCenterPoint arc = (ArcByCenterPoint) getParser().parseCurveSegment( getReader( "ArcByCenterPoint.gml" ),
                                                                                  new CRS( "EPSG:4326" ) );
-        Assert.assertFalse( arc.getMidPoint().is3D() );
+        Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
         Assert.assertEquals( 47.0, arc.getMidPoint().getX() );
         Assert.assertEquals( 11.0, arc.getMidPoint().getY() );
         Assert.assertEquals( 1.0, arc.getRadius().getValue() );
@@ -248,7 +248,7 @@ public class GML311CurveSegmentParserTest {
         ArcByCenterPoint arc = (ArcByCenterPoint) getParser().parseCurveSegment(
                                                                                  getReader( "CircleByCenterPoint.gml" ),
                                                                                  new CRS( "EPSG:4326" ) );
-        Assert.assertFalse( arc.getMidPoint().is3D() );
+        Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
         Assert.assertEquals( 47.0, arc.getMidPoint().getX() );
         Assert.assertEquals( 11.0, arc.getMidPoint().getY() );
         Assert.assertEquals( 1.0, arc.getRadius().getValue() );
@@ -366,7 +366,7 @@ public class GML311CurveSegmentParserTest {
     private GML311CurveSegmentParser getParser()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         GMLIdContext idContext = new GMLIdContext();
-        GeometryFactory geomFac = GeometryFactory.getInstance();
+        GeometryFactory geomFac = new GeometryFactory();
         return new GML311CurveSegmentParser( new GML311GeometryParser(), geomFac );
     }
 }

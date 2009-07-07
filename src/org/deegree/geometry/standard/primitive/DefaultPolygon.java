@@ -130,7 +130,7 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
                     }
                 }
             }
-            GeometryFactory gf = GeometryFactory.getInstance();
+            GeometryFactory gf = new GeometryFactory ();
             envelope = gf.createEnvelope( min, max, getCoordinateSystem() );
         }
         return envelope;

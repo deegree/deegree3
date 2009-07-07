@@ -78,8 +78,8 @@ public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
     }
 
     @Override
-    public boolean is3D() {
-        return exteriorSurface.is3D();
+    public int getCoordinateDimension() {
+        return exteriorSurface.getCoordinateDimension();
     }
 
     @Override

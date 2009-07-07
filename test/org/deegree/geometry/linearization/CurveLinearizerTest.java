@@ -72,7 +72,7 @@ public class CurveLinearizerTest {
 
     @Before
     public void setUp() {
-        geomFac = org.deegree.geometry.GeometryFactory.getInstance();
+        geomFac = new org.deegree.geometry.GeometryFactory();
         linearizer = new CurveLinearizer( geomFac );
     }
 

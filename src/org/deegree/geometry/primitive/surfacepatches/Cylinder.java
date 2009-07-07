@@ -36,19 +36,15 @@
 
 package org.deegree.geometry.primitive.surfacepatches;
 
-import org.deegree.geometry.primitive.surfacepatches.GriddedSurfacePatch.GriddedSurfaceType;
-
 /**
  * The <code>Cylinder</code> class represents (according to the GML-3.1 spec) a gridded surface given as a
  * family of circles whose positions vary along a set of parallel lines, keeping the cross sectional horizontal
  * curves of a constant shape.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- *
  * @author last edited by: $Author: ionita $
  *
  * @version $Revision: $, $Date: $
- *
  */
 public interface Cylinder extends GriddedSurfacePatch {
 

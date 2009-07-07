@@ -696,13 +696,13 @@ class GML311CurveSegmentParser extends GML311BaseParser {
             if ( "refDirection".equals( localName ) ) {
                 Point refDirection = parseDirectPositionType( xmlStream, defaultCRS );
                 if ( refDirectionOutDimension != -1 ) {
-                    int refDirectionDim = ( refDirection.is3D() ? 3 : 2 );
+                    int refDirectionDim = refDirection.getCoordinateDimension();
                     if ( refDirectionOutDimension != refDirectionDim ) {
                         String msg = "Inconsistent dimensions in 'gml:refDirection' positions.";
                         throw new XMLParsingException( xmlStream, msg );
                     }
                 } else {
-                    int refDirectionDim = ( refDirection.is3D() ? 3 : 2 );
+                    int refDirectionDim = refDirection.getCoordinateDimension();
                     refDirectionOutDimension = refDirectionDim;
                 }
                 refDirections.add( refDirection );

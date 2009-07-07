@@ -77,8 +77,8 @@ public class DefaultGeodesic implements Geodesic {
     }
 
     @Override
-    public boolean is3D() {
-        return controlPoints.get( 0 ).is3D();
+    public int getCoordinateDimension() {
+        return controlPoints.get(0).getCoordinateDimension();
     }
 
     @Override

@@ -94,7 +94,7 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
      */
     public static final String XML_PREFIX = "xml";
 
-    private static final GeometryFactory geomFac = GeometryFactory.getInstance();
+    private static final GeometryFactory geomFac = new GeometryFactory();
 
     static {
         // add to common namespaces from xml adapter
@@ -177,7 +177,7 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
         }
 
         // "dimensions" attribute (optional)
-        writer.writeAttribute( "dimensions", "" + ( bbox.getMin().is3D() ? 3 : 2 ) );
+        writer.writeAttribute( "dimensions", "" + bbox.getCoordinateDimension() );
 
         // "ows:LowerCorner" element (minOccurs="1", maxOccurs="1")
         writer.writeStartElement( OWS110_NS, "LowerCorner" );

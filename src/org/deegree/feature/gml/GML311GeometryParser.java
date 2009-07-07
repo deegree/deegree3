@@ -211,7 +211,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     public GML311GeometryParser() {
-        this( GeometryFactory.getInstance(), new GMLIdContext() );
+        this( new GeometryFactory(), new GMLIdContext() );
     }
 
     /**

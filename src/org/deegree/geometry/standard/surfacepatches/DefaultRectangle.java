@@ -42,7 +42,6 @@ import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.surfacepatches.Rectangle;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch.SurfacePatchType;
 
 /**
  * Default implementation of {@link Rectangle}.
@@ -101,8 +100,8 @@ public class DefaultRectangle implements Rectangle {
     }
 
     @Override
-    public boolean is3D() {
-        return getPoint1().is3D();
+    public int getCoordinateDimension() {
+        return getPoint1().getCoordinateDimension();
     }
 
     @Override

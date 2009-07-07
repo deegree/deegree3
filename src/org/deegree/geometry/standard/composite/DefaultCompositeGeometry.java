@@ -75,9 +75,9 @@ public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements
     }
 
     @Override
-    public boolean is3D(){
-        return memberPrimitives.get( 0 ).is3D();
-    }
+    public int getCoordinateDimension() {
+        return memberPrimitives.get( 0 ).getCoordinateDimension();
+    }  
 
     public boolean add( GeometricPrimitive e ) {
         return memberPrimitives.add( e );

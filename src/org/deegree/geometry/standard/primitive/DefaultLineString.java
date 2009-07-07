@@ -81,8 +81,8 @@ public class DefaultLineString extends DefaultCurve implements LineString {
     }
 
     @Override
-    public boolean is3D() {
-        return singleSegment.is3D();
+    public int getCoordinateDimension() {
+        return singleSegment.getCoordinateDimension();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class DefaultLineString extends DefaultCurve implements LineString {
         List<Point> points = getControlPoints();
         double[] result = null;
         if ( points != null && !points.isEmpty() ) {
-            int dim = ( is3D() ? 3 : 2 );
+            int dim = getCoordinateDimension();
             result = new double[points.size() * dim];
             int i = 0;
             for ( Point p : points ) {

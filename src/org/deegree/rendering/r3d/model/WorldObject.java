@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.model;
 
@@ -54,17 +54,17 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The <code>WorldRenderableObject</code> top level class, all data objects can be stored in a dbase.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  * @param <G>
  *            the geometry type of the quality model
  * @param <QM>
  *            the quality model type
- *
+ * 
  */
 public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>> implements Serializable, MemoryAware,
                                                                                  PositionableModel {
@@ -126,11 +126,12 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
         Point p = bbox.getCentroid();
         double[] min = bbox.getMin().getAsArray();
         double[] max = bbox.getMax().getAsArray();
-        position = new float[] { (float) p.getX(), (float) p.getY(), (float) ( ( p.is3D() ) ? p.getZ() : 0 ) };
-        if ( !bbox.getMin().is3D() ) {
+        position = new float[] { (float) p.getX(), (float) p.getY(),
+                                (float) ( ( p.getCoordinateDimension() == 3 ) ? p.getZ() : 0 ) };
+        if ( bbox.getMin().getCoordinateDimension() == 2 ) {
             min = new double[] { min[0], min[1], 0 };
         }
-        if ( !bbox.getMax().is3D() ) {
+        if ( bbox.getMax().getCoordinateDimension() == 2 ) {
             max = new double[] { max[0], max[1], 0 };
         }
         error = (float) Vectors3d.length( Vectors3d.sub( max, min ) );
@@ -192,7 +193,7 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
     /**
      * Set the model at the given quality level. If the index is out of bounds nothing will happen, if the model is
      * <code>null</code> the array at given location will be null (deleted).
-     *
+     * 
      * @param index
      *            to place the model at
      * @param model
@@ -266,11 +267,12 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
         Point p = bbox.getCentroid();
         double[] min = bbox.getMin().getAsArray();
         double[] max = bbox.getMax().getAsArray();
-        position = new float[] { (float) p.getX(), (float) p.getY(), (float) ( ( p.is3D() ) ? p.getZ() : 0 ) };
-        if ( !bbox.getMin().is3D() ) {
+        position = new float[] { (float) p.getX(), (float) p.getY(),
+                                (float) ( ( p.getCoordinateDimension() == 3 ) ? p.getZ() : 0 ) };
+        if ( bbox.getMin().getCoordinateDimension() == 2 ) {
             min = new double[] { min[0], min[1], 0 };
         }
-        if ( !bbox.getMax().is3D() ) {
+        if ( bbox.getMax().getCoordinateDimension() == 2 ) {
             max = new double[] { max[0], max[1], 0 };
         }
         this.error = (float) Vectors3d.length( Vectors3d.sub( max, min ) );
@@ -280,7 +282,7 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
 
     /**
      * Method called while serializing this object
-     *
+     * 
      * @param out
      *            to write to.
      * @throws IOException
@@ -293,7 +295,7 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
 
     /**
      * Method called while de-serializing (instancing) this object.
-     *
+     * 
      * @param in
      *            to create the methods from.
      * @throws IOException

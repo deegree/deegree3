@@ -60,7 +60,7 @@ public class RasterReferenceTest {
 
     static final double DELTA = 0.001;
 
-    static GeometryFactory geomFactory = GeometryFactory.getInstance();
+    static GeometryFactory geomFactory = new GeometryFactory();
 
     /**
      *

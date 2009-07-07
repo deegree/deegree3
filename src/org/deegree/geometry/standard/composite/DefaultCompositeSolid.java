@@ -77,9 +77,9 @@ public class DefaultCompositeSolid extends AbstractDefaultGeometry implements Co
     }
 
     @Override
-    public boolean is3D() {
-        return memberSolids.get( 0 ).is3D();
-    }
+    public int getCoordinateDimension() {
+        return memberSolids.get( 0 ).getCoordinateDimension();
+    }  
 
     @Override
     public GeometryType getGeometryType() {

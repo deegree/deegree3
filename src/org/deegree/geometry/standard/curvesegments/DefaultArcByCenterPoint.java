@@ -39,7 +39,6 @@ import org.deegree.commons.types.Length;
 import org.deegree.feature.gml.Angle;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.ArcByCenterPoint;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link ArcByCenterPoint} segments.
@@ -95,8 +94,8 @@ public class DefaultArcByCenterPoint implements ArcByCenterPoint {
     }
 
     @Override
-    public boolean is3D() {
-        return false; // even if the point has 3 coordinates, there isn't any plane defined in which the arcByCenterPoint is drawn
+    public int getCoordinateDimension() {
+        return midPoint.getCoordinateDimension();
     }
 
     @Override

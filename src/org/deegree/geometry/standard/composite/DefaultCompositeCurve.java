@@ -135,9 +135,9 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
     }
 
     @Override
-    public boolean is3D() {
-        return memberCurves.get( 0 ).is3D();
-    }
+    public int getCoordinateDimension() {
+        return memberCurves.get( 0 ).getCoordinateDimension();
+    }    
 
     // -----------------------------------------------------------------------
     // delegate methods for List<Curve>

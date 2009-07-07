@@ -111,7 +111,7 @@ public class PrototypePool {
 
         RenderableGeometry rg = new BOXGeometry();
         rqm.addQualityModelPart( rg );
-        Envelope env = GeometryFactory.getInstance().createEnvelope( 0, 0, 1, 1, null );
+        Envelope env = new GeometryFactory().createEnvelope( 0, 0, 1, 1, null );
         return new RenderablePrototype( "box", "yeah", env, rqm );
     }
 

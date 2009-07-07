@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.geometry.primitive.surfacepatches;
 
@@ -42,13 +42,11 @@ import org.deegree.geometry.primitive.Point;
 
 /**
  * TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- *
  * @author last edited by: $Author: ionita $
- *
+ * 
  * @version $Revision: $, $Date: $
- *
  */
 public class DefaultCone implements Cone {
 
@@ -97,13 +95,8 @@ public class DefaultCone implements Cone {
 
     @Override
     public double getArea() {
-        //TODO
+        // TODO
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean is3D() {
-        return grid.get( 0 ).get( 0 ).is3D();
     }
 
     @Override
@@ -111,4 +104,8 @@ public class DefaultCone implements Cone {
         return SurfacePatchType.GRIDDED_SURFACE_PATCH;
     }
 
+    @Override
+    public int getCoordinateDimension() {
+        return grid.get( 0 ).get( 0 ).getCoordinateDimension();
+    }
 }

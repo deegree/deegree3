@@ -133,7 +133,7 @@ public class OpenGLEventHandler implements GLEventListener {
     }
 
     private Envelope getDefaultBBox() {
-        return GeometryFactory.getInstance().createEnvelope( new double[] { -1, -1, -1 }, new double[] { 1, 1, 1 },
+        return new GeometryFactory().createEnvelope( new double[] { -1, -1, -1 }, new double[] { 1, 1, 1 },
                                                              null );
     }
 

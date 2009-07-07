@@ -61,7 +61,7 @@ import org.junit.Test;
  */
 public class GML311GeometryValidatorTest {
 
-    private static GeometryFactory geomFac = GeometryFactory.getInstance();
+    private static GeometryFactory geomFac = new GeometryFactory();
 
     private static final String BASE_DIR = "testdata/geometries/";
 

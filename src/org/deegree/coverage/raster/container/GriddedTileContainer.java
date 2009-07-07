@@ -108,7 +108,7 @@ public abstract class GriddedTileContainer implements TileContainer {
         this.tileWidth = envelopeWidth / columns;
         this.tileHeight = envelopeHeight / rows;
         this.rasterReference = new RasterReference( envelope, tileSamplesX * columns, tileSamplesY * rows );
-        geomFac = GeometryFactory.getInstance();
+        geomFac = new GeometryFactory();
         LOG.debug( "envelope: " + envelope );
         LOG.debug( "raster envelope: " + rasterReference );
     }

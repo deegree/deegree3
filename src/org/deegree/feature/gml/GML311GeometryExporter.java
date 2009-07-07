@@ -347,7 +347,7 @@ public class GML311GeometryExporter {
             LineString lineString = (LineString) curve;
             if ( lineString.getId() != null )
                 writer.writeAttribute( GMLNS, "id", lineString.getId() );
-            int dim = ( lineString.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
+            int dim =  lineString.getCoordinateDimension();
             export( lineString.getControlPoints(), dim );
             writer.writeEndElement();
             break;
@@ -488,7 +488,7 @@ public class GML311GeometryExporter {
             writer.writeCharacters( String.valueOf( tin.getMaxLength().getValue() ) );
             writer.writeEndElement();
             writer.writeStartElement( GMLNS, "controlPoint" );
-            int dim = ( tin.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
+            int dim = tin.getCoordinateDimension();
             export( tin.getControlPoints(), dim );
             writer.writeEndElement();
             writer.writeEndElement();
@@ -574,7 +574,7 @@ public class GML311GeometryExporter {
             writer.writeStartElement( GMLNS, "LinearRing" );
             if ( linearRing.getCoordinateSystem() != null )
                 writer.writeAttribute( "srsName", linearRing.getCoordinateSystem().getName() );
-            int dim = ( linearRing.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
+            int dim = linearRing.getCoordinateDimension();
             export( linearRing.getControlPoints(), dim );
             writer.writeEndElement();
             break;
@@ -643,7 +643,7 @@ public class GML311GeometryExporter {
                             throws XMLStreamException {
         writer.writeStartElement( GMLNS, "LineStringSegment" );
         writer.writeAttribute( "interpolation", lineStringSeg.getInterpolation().toString() );
-        int dim = ( lineStringSeg.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
+        int dim = lineStringSeg.getCoordinateDimension();
         export( lineStringSeg.getControlPoints(), dim );
         writer.writeEndElement();
     }
@@ -810,7 +810,7 @@ public class GML311GeometryExporter {
             ArcString arcString = (ArcString) curveSeg;
             writer.writeAttribute( "interpolation", arcString.getInterpolation().toString() );
             writer.writeAttribute( "numArc", String.valueOf( arcString.getNumArcs() ) );
-            int dim = ( arcString.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
+            int dim = arcString.getCoordinateDimension();
             export( arcString.getControlPoints(), dim );
             writer.writeEndElement();
             break;
@@ -819,7 +819,7 @@ public class GML311GeometryExporter {
             ArcStringByBulge arcStringBulge = (ArcStringByBulge) curveSeg;
             writer.writeAttribute( "interpolation", arcStringBulge.getInterpolation().toString() );
             writer.writeAttribute( "numArc", String.valueOf( arcStringBulge.getNumArcs() ) );
-            dim = ( arcStringBulge.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
+            dim = arcStringBulge.getCoordinateDimension();
             export( arcStringBulge.getControlPoints(), dim );
             for ( double d : arcStringBulge.getBulges() ) {
                 writer.writeStartElement( GMLNS, "bulge" );
@@ -829,7 +829,7 @@ public class GML311GeometryExporter {
             for ( Point p : arcStringBulge.getNormals() ) {
                 writer.writeStartElement( GMLNS, "normal" );
                 double[] array = p.getAsArray();
-                int curveSegDim = ( curveSeg.is3D() ? 3 : 2 );
+                int curveSegDim = curveSeg.getCoordinateDimension();
                 for ( int i = 0; i < curveSegDim - 1; i++ )
                     writer.writeCharacters( String.valueOf( array[i] ) + " " );
                 writer.writeEndElement();
@@ -840,7 +840,7 @@ public class GML311GeometryExporter {
             writer.writeStartElement( GMLNS, "Bezier" );
             Bezier bezier = (Bezier) curveSeg;
             writer.writeAttribute( "interpolation", bezier.getInterpolation().toString() );
-            dim = ( bezier.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
+            dim = bezier.getCoordinateDimension();
             export( bezier.getControlPoints(), dim );
             writer.writeStartElement( GMLNS, "degree" );
             writer.writeCharacters( String.valueOf( bezier.getPolynomialDegree() ) );
@@ -853,7 +853,7 @@ public class GML311GeometryExporter {
             writer.writeStartElement( GMLNS, "BSpline" );
             BSpline bSpline = (BSpline) curveSeg;
             writer.writeAttribute( "interpolation", bSpline.getInterpolation().toString() );
-            dim = ( bSpline.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
+            dim = bSpline.getCoordinateDimension();
             export( bSpline.getControlPoints(), dim );
             writer.writeStartElement( GMLNS, "degree" );
             writer.writeCharacters( String.valueOf( bSpline.getPolynomialDegree() ) );
@@ -866,7 +866,7 @@ public class GML311GeometryExporter {
             writer.writeStartElement( GMLNS, "Circle" );
             Circle circle = (Circle) curveSeg;
             writer.writeAttribute( "interpolation", circle.getInterpolation().toString() );
-            dim = ( circle.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
+            dim = circle.getCoordinateDimension();
             export( circle.getControlPoints(), dim );
             writer.writeEndElement();
             break;
@@ -931,7 +931,7 @@ public class GML311GeometryExporter {
             writer.writeStartElement( GMLNS, "CubicSpline" );
             CubicSpline cubicSpline = (CubicSpline) curveSeg;
             writer.writeAttribute( "interpolation", cubicSpline.getInterpolation().toString() );
-            dim = ( cubicSpline.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
+            dim = cubicSpline.getCoordinateDimension();
             export( cubicSpline.getControlPoints(), dim );
             writer.writeStartElement( GMLNS, "vectorAtStart" );
             array = cubicSpline.getVectorAtStart().getAsArray();
@@ -949,7 +949,7 @@ public class GML311GeometryExporter {
             writer.writeStartElement( GMLNS, "Geodesic" );
             Geodesic geodesic = (Geodesic) curveSeg;
             writer.writeAttribute( "interpolation", geodesic.getInterpolation().toString() );
-            int geodesicDim = ( geodesic.is3D() ? 3 : 2 );
+            int geodesicDim = geodesic.getCoordinateDimension();
             export( geodesic.getControlPoints(), geodesicDim );
             writer.writeEndElement();
             break;
@@ -957,7 +957,7 @@ public class GML311GeometryExporter {
             writer.writeStartElement( GMLNS, "GeodesicString" );
             GeodesicString geodesicString = (GeodesicString) curveSeg;
             writer.writeAttribute( "interpolation", geodesicString.getInterpolation().toString() );
-            dim = ( geodesicString.getControlPoints().get( 0 ).is3D() ? 3 : 2 );
+            dim = geodesicString.getCoordinateDimension();
             export( geodesicString.getControlPoints(), dim );
             writer.writeEndElement();
             break;

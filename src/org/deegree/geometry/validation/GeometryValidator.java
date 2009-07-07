@@ -135,7 +135,7 @@ public class GeometryValidator {
      *            callback handler for errors
      */
     public GeometryValidator( GeometryValidationEventHandler eventHandler ) {
-        linearizer = new CurveLinearizer( org.deegree.geometry.GeometryFactory.getInstance() );
+        linearizer = new CurveLinearizer( new org.deegree.geometry.GeometryFactory() );
         crit = new NumPointsCriterion( 150 );
         jtsFactory = new GeometryFactory();
         this.eventHandler = eventHandler;

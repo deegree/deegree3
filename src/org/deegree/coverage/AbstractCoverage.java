@@ -49,7 +49,7 @@ import org.deegree.geometry.GeometryFactory;
  */
 public abstract class AbstractCoverage {
 
-    private GeometryFactory geomFactory = GeometryFactory.getInstance();
+    private GeometryFactory geomFactory = new GeometryFactory();
 
     private CRS crs;
 

@@ -36,14 +36,13 @@ package org.deegree.geometry.standard.curvesegments;
 
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.Clothoid;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 
 /**
  * Default implementation of {@link Clothoid} segments.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultClothoid implements Clothoid {
@@ -58,7 +57,7 @@ public class DefaultClothoid implements Clothoid {
 
     /**
      * Creates a new <code>DefaultClothoid</code> instance from the given parameters.
-     *
+     * 
      * @param referenceLocation
      *            the affine mapping that places the curve defined by the Fresnel Integrals into the coordinate
      *            reference system of this object
@@ -98,8 +97,8 @@ public class DefaultClothoid implements Clothoid {
     }
 
     @Override
-    public boolean is3D() {
-        return ( referenceLocation.getOutDimension() == 3 ) ? true : false;
+    public int getCoordinateDimension() {
+        return referenceLocation.getOutDimension();
     }
 
     @Override

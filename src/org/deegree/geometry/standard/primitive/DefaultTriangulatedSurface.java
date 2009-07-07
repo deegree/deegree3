@@ -74,8 +74,8 @@ public class DefaultTriangulatedSurface extends AbstractDefaultGeometry implemen
     }
 
     @Override
-    public boolean is3D() {
-        return patches.get( 0 ).is3D();
+    public int getCoordinateDimension() {
+        return patches.get( 0 ).getCoordinateDimension();
     }
 
     @Override

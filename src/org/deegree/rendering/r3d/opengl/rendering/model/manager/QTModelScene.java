@@ -439,7 +439,7 @@ public class QTModelScene<T extends PositionableModel> {
 
         Point min = env.getMin();
         Point max = env.getMax();
-        int dim = ( min.is3D() ? 3 : 2 );
+        int dim = min.getCoordinateDimension();
         getObjects( new float[] { (float) min.get( 0 ), (float) min.get( 1 ),
                                  ( ( dim == 2 ) ? 0 : (float) min.get( 2 ) ) },
                     new float[] { (float) max.get( 0 ), (float) max.get( 1 ),
@@ -460,7 +460,7 @@ public class QTModelScene<T extends PositionableModel> {
 
         Point min = env.getMin();
         Point max = env.getMax();
-        int dim = ( min.is3D() ? 3 : 2 );
+        int dim = min.getCoordinateDimension();
         getObjects( new float[] { (float) min.get( 0 ), (float) min.get( 1 ),
                                  ( ( dim == 2 ) ? 0 : (float) min.get( 2 ) ) },
                     new float[] { (float) max.get( 0 ), (float) max.get( 1 ),

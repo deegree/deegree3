@@ -73,7 +73,7 @@ import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
  */
 public class GeometryTransformer extends Transformer {
 
-    private static final GeometryFactory geomFactory = GeometryFactory.getInstance();
+    private static final GeometryFactory geomFactory = new GeometryFactory();
 
     /**
      * Creates a new GeometryTransformer object.

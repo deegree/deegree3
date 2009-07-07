@@ -91,7 +91,7 @@ public class GML311GeometryValidator extends XMLAdapter {
      */
     public GML311GeometryValidator( XMLStreamReaderWrapper xmlStream, GMLValidationEventHandler gmlErrorHandler ) {
         this.xmlStream = xmlStream;
-        geomParser = new GML311GeometryParser( GeometryFactory.getInstance(), new GMLIdContext() );
+        geomParser = new GML311GeometryParser( new GeometryFactory(), new GMLIdContext() );
         this.gmlErrorHandler = gmlErrorHandler;
     }
 

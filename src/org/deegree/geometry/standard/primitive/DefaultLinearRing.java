@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
@@ -47,10 +47,10 @@ import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
 
 /**
  * Default implementation of {@link Ring}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultLinearRing extends DefaultRing implements LinearRing {
@@ -59,7 +59,7 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
 
     /**
      * Creates a new <code>DefaultLinearRing</code> instance from the given parameters.
-     *
+     * 
      * @param id
      *            identifier, may be null
      * @param crs
@@ -69,13 +69,13 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
      * @param controlPoints
      */
     public DefaultLinearRing( String id, CRS crs, PrecisionModel pm, List<Point> controlPoints ) {
-        super( id, crs, pm, new DefaultLineStringSegment(controlPoints));
+        super( id, crs, pm, new DefaultLineStringSegment( controlPoints ) );
         this.controlPoints = controlPoints;
     }
 
     @Override
-    public boolean is3D(){
-        return controlPoints.get( 0 ).is3D();
+    public int getCoordinateDimension() {
+        return controlPoints.get( 0 ).getCoordinateDimension();
     }
 
     @Override
@@ -100,6 +100,6 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
 
     @Override
     public List<Point> getControlPoints() {
-        return ((LineString) members.get( 0 )).getControlPoints();
+        return ( (LineString) members.get( 0 ) ).getControlPoints();
     }
 }

@@ -113,7 +113,7 @@ public class GMLFeatureParser extends XMLAdapter {
     public GMLFeatureParser( ApplicationSchema schema, GMLIdContext idContext ) {
         this.schema = schema;
         this.xsModel = schema.getXSModel();
-        this.geomFac = GeometryFactory.getInstance();
+        this.geomFac = new GeometryFactory();
         this.idContext = idContext;
         this.geomParser = new GML311GeometryParser( geomFac, idContext );
     }

@@ -42,7 +42,6 @@ import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.PolyhedralSurface;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
@@ -74,9 +73,9 @@ public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements
         this.patches = patches;
     }
 
-    @Override
-    public boolean is3D() {
-        return ( (SurfacePatch) patches.get( 0 ) ).is3D();
+    @Override    
+    public int getCoordinateDimension() {
+        return patches.get(0).getCoordinateDimension();
     }
 
     @Override

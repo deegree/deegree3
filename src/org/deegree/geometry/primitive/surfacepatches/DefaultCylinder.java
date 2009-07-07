@@ -102,8 +102,8 @@ public class DefaultCylinder implements Cylinder {
     }
 
     @Override
-    public boolean is3D() {
-        return grid.get( 0 ).get( 0 ).is3D();
+    public int getCoordinateDimension() {
+        return grid.get( 0 ).get( 0 ).getCoordinateDimension();
     }
 
     @Override

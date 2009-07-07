@@ -57,7 +57,7 @@ public class GeometryGenerator {
 
     private static final Random rnd = new Random();
 
-    private static final GeometryFactory fac = GeometryFactory.getInstance();
+    private static final GeometryFactory fac = new GeometryFactory();
 
     /**
      * @param max

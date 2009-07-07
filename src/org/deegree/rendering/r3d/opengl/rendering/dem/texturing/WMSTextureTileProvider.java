@@ -63,7 +63,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( WMSTextureTileProvider.class );
 
-    private static GeometryFactory fac = GeometryFactory.getInstance();
+    private static GeometryFactory fac = new GeometryFactory();
 
     private final WMSClient111 client;
 

@@ -76,7 +76,7 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
      * @throws IOException
      */
     public RasterAPITextureTileProvider( File file, double res ) throws IOException {
-        fac = GeometryFactory.getInstance();
+        fac = new GeometryFactory();
         raster = new TiledRaster( GriddedBlobTileContainer.create( file ) );
         this.res = res;
     }

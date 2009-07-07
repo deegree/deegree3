@@ -65,8 +65,8 @@ public class DefaultGeodesicString implements GeodesicString {
     }
 
     @Override
-    public boolean is3D() {
-        return points.get( 0 ).is3D();
+    public int getCoordinateDimension() {
+        return points.get(0).getCoordinateDimension();
     }
 
     @Override

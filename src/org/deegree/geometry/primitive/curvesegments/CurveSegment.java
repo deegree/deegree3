@@ -106,10 +106,11 @@ public interface CurveSegment {
     }
 
     /**
-     *
-     * @return whether the curve segment has 3 or 2 coordinates (2 for flat surfaces; 3 for surfaces in a 3D space)
+     * Returns the coordinate dimension, i.e. the dimension of the space that the curve is embedded in.
+     * 
+     * @return the coordinate dimension
      */
-    public boolean is3D();
+    public int getCoordinateDimension();
 
     /**
      *

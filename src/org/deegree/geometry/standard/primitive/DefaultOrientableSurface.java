@@ -148,8 +148,9 @@ public class DefaultOrientableSurface implements OrientableSurface {
         return baseSurface.getConvexHull();
     }
 
-    public boolean is3D() {
-        return baseSurface.is3D();
+    @Override
+    public int getCoordinateDimension () {
+        return baseSurface.getCoordinateDimension();
     }
 
     public Envelope getEnvelope() {

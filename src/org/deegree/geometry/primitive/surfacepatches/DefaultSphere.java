@@ -102,13 +102,12 @@ public class DefaultSphere implements Sphere {
     }
 
     @Override
-    public boolean is3D() {
-        return grid.get( 0 ).get( 0 ).is3D();
+    public int getCoordinateDimension() {
+        return grid.get( 0 ).get( 0 ).getCoordinateDimension();
     }
 
     @Override
     public SurfacePatchType getSurfacePatchType() {
         return SurfacePatchType.GRIDDED_SURFACE_PATCH;
     }
-
 }
