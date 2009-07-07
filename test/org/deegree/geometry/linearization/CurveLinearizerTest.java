@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,18 +32,19 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.geometry.linearization;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Assert;
 
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.Arc;
 import org.deegree.geometry.primitive.curvesegments.Circle;
+import org.deegree.geometry.standard.points.PointsBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -56,10 +57,10 @@ import com.vividsolutions.jts.geomgraph.Position;
 
 /**
  * Tests for {@link CurveLinearizer}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class CurveLinearizerTest {
@@ -95,7 +96,7 @@ public class CurveLinearizerTest {
         double radius = getDistance( center, p0 );
 
         Circle circle = geomFac.createCircle( p0, p1, p2 );
-        List<Point> positions = linearizer.linearize( circle, new NumPointsCriterion( numPositions ) ).getControlPoints();
+        Points positions = linearizer.linearize( circle, new NumPointsCriterion( numPositions ) ).getControlPoints();
         for ( Point point : positions ) {
             double dist = getDistance( center, point );
             Assert.assertEquals( radius, dist, 1E-9 );
@@ -170,7 +171,7 @@ public class CurveLinearizerTest {
         double[] p1 = new double[] { -.5, -.2 };
         double[] p2 = new double[] { -2, -0.6 };
 
-        List<Point> positions = createLinearArc( p0, p1, p2, false );
+        Points positions = createLinearArc( p0, p1, p2, false );
 
         Point lastPoint = null;
         for ( Point point : positions ) {
@@ -198,7 +199,7 @@ public class CurveLinearizerTest {
         double[] p1 = new double[] { 0, 1 };
         double[] p2 = new double[] { 0, 2 };
 
-        List<Point> positions = createLinearArc( p0, p1, p2, false );
+        Points positions = createLinearArc( p0, p1, p2, false );
 
         Assert.assertEquals( 2, positions.size() );
         Assert.assertEquals( p0[0], positions.get( 0 ).getX() );
@@ -217,7 +218,7 @@ public class CurveLinearizerTest {
         double[] p1 = new double[] { 0, 1 };
         double[] p2 = new double[] { 0, 2 };
 
-        List<Point> positions = createLinearArc( p0, p1, p2, true );
+        Points positions = createLinearArc( p0, p1, p2, true );
 
         Assert.assertEquals( 3, positions.size() );
         Assert.assertEquals( p0[0], positions.get( 0 ).getX() );
@@ -230,7 +231,7 @@ public class CurveLinearizerTest {
 
     /**
      * creates a circle or a an arc and outputs them to wkt.
-     *
+     * 
      * @param first
      * @param second
      * @param third
@@ -238,25 +239,25 @@ public class CurveLinearizerTest {
      * @param isCircle
      * @return
      */
-    private List<Point> createLinearArc( double[] first, double[] second, double[] third, boolean isCircle ) {
+    private Points createLinearArc( double[] first, double[] second, double[] third, boolean isCircle ) {
 
         Point p0 = geomFac.createPoint( null, first, null );
         Point p1 = geomFac.createPoint( null, second, null );
         Point p2 = geomFac.createPoint( null, third, null );
         Arc arc = isCircle ? geomFac.createCircle( p0, p1, p2 ) : geomFac.createArc( p0, p1, p2 );
 
-        List<Point> output = new ArrayList<Point>( 3 );
+        PointsBuilder output = new PointsBuilder( 3 );
         if ( outputWKT ) {
             output.add( p0 );
             output.add( p1 );
             output.add( p2 );
             System.out.println( exportToWKT( output ) );
         }
-        output = linearizer.linearize( arc, new NumPointsCriterion( 15 ) ).getControlPoints();
+        Points output2 = linearizer.linearize( arc, new NumPointsCriterion( 15 ) ).getControlPoints();
         if ( outputWKT ) {
-            System.out.println( exportToWKT( output ) );
+            System.out.println( exportToWKT( output2 ) );
         }
-        return output;
+        return output2;
     }
 
     /**
@@ -274,7 +275,7 @@ public class CurveLinearizerTest {
         double[] p0 = new double[] { -1.7, 2.5 };
         double[] p1 = new double[] { -3, 0.5 };
         double[] p2 = new double[] { -2.3, -2.5 };
-        List<Point> positions = createLinearArc( p0, p1, p2, false );
+        Points positions = createLinearArc( p0, p1, p2, false );
         Assert.assertEquals(
                              exportToWKT( positions ),
                              "LINESTRING (-1.7 2.5, -2.0062688872329746 2.240298830592299, -2.2806895272878576 1.9471458995298256, -2.5196312406291184 1.6244197210066158, -2.7199327461350467 1.276390073461021, -2.878943985935244 0.907661508937122, -2.9945611865885216 0.5231124332760928, -3.06525469272973 0.1278305631275681, -3.090089204936819 -0.272954386293051, -3.0687361540641622 -0.6739398921371924, -3.0014780483254606 -1.069820778125759, -2.889204735612823 -1.455359403857582, -2.733401630502831 -1.825454960594941, -2.536130061710343 -2.1752109567191003, -2.3 -2.5)" );
@@ -301,7 +302,7 @@ public class CurveLinearizerTest {
         double[] p0 = new double[] { 1.7, 2.5 };
         double[] p1 = new double[] { 3, 0.5 };
         double[] p2 = new double[] { 2.3, -2.5 };
-        List<Point> positions = createLinearArc( p0, p1, p2, false );
+        Points positions = createLinearArc( p0, p1, p2, false );
         Assert.assertEquals(
                              exportToWKT( positions ),
                              "LINESTRING (1.7 2.5, 2.0062688872329746 2.240298830592299, 2.2806895272878585 1.9471458995298248, 2.519631240629119 1.6244197210066154, 2.7199327461350467 1.2763900734610207, 2.8789439859352446 0.9076615089371209, 2.994561186588522 0.523112433276092, 3.06525469272973 0.1278305631275676, 3.090089204936819 -0.272954386293051, 3.0687361540641622 -0.673939892137192, 3.0014780483254606 -1.0698207781257594, 2.8892047356128225 -1.4553594038575823, 2.7334016305028306 -1.8254549605949422, 2.5361300617103426 -2.175210956719101, 2.3 -2.5)" );
@@ -328,7 +329,7 @@ public class CurveLinearizerTest {
         double[] p0 = new double[] { 1.7, 2.5 };
         double[] p1 = new double[] { 1, 3.5 };
         double[] p2 = new double[] { -2.3, 2.3 };
-        List<Point> positions = createLinearArc( p0, p1, p2, false );
+        Points positions = createLinearArc( p0, p1, p2, false );
         Assert.assertEquals(
                              exportToWKT( positions ),
                              "LINESTRING (1.7 2.5, 1.5473395210137388 2.855706401706767, 1.3312176406936835 3.176835034666232, 1.0591681063567637 3.452191743185483, 0.740674235686257 3.6721779254897573, 0.3868383397488121 3.8291251293693946, 0.0099947098605334 3.917562365147752, -0.3767203408881685 3.9344068177633686, -0.7598263936166157 3.8790713099738943, -1.1259688347495058 3.753484770644479, -1.4623843816917876 3.562024994620855, -1.7573459954208683 3.3113660380966015, -2.000571670881369 3.0102455690874796, -2.1835828552437717 2.6691602828938925, -2.3 2.3)" );
@@ -355,7 +356,7 @@ public class CurveLinearizerTest {
         double[] p0 = new double[] { 2.3, -2.5 };
         double[] p1 = new double[] { 1, -3.5 };
         double[] p2 = new double[] { -2.3, -2.5 };
-        List<Point> positions = createLinearArc( p0, p1, p2, false );
+        Points positions = createLinearArc( p0, p1, p2, false );
         Assert.assertEquals(
                              exportToWKT( positions ),
                              "LINESTRING (2.3 -2.5, 2.056305411080411 -2.796039169198144, 1.7748006780263827 -3.056387642664756, 1.4606619456235808 -3.2762582845717096, 1.1196654135971809 -3.4516082418405465, 0.7580811272214825 -3.57921328176606, 0.3825576873857042 -3.6567270773260736, 0.0000000000000002 -3.682724350073748, -0.3825576873857038 -3.6567270773260736, -0.7580811272214822 -3.5792132817660605, -1.1196654135971806 -3.4516082418405465, -1.4606619456235796 -3.2762582845717096, -1.774800678026382 -3.056387642664757, -2.05630541108041 -2.7960391691981448, -2.3 -2.5)" );
@@ -382,7 +383,7 @@ public class CurveLinearizerTest {
         double[] p0 = new double[] { 1.7, 2.5 };
         double[] p1 = new double[] { 3, 0.5 };
         double[] p2 = new double[] { -2.3, 2.5 };
-        List<Point> positions = createLinearArc( p0, p1, p2, false );
+        Points positions = createLinearArc( p0, p1, p2, false );
         Assert.assertEquals(
                              exportToWKT( positions ),
                              "LINESTRING (1.7 2.5, 2.527698122123212 1.62577746297488, 2.9962725289439462 0.5168197311917763, 3.046213267629344 -0.6860331892554771, 2.671177757448691 -1.8300164022933552, 1.9187963111049968 -2.7698415907229377, 0.8846229830504091 -3.386148943550589, -0.2999999999999993 -3.600666107520471, -1.4846229830504079 -3.38614894355059, -2.5187963111049965 -2.7698415907229386, -3.2711777574486907 -1.8300164022933576, -3.646213267629344 -0.6860331892554783, -3.5962725289439477 0.5168197311917736, -3.1276981221232147 1.6257774629748767, -2.3 2.5)" );
@@ -402,7 +403,7 @@ public class CurveLinearizerTest {
         double[] p0 = new double[] { -1.7, 2.5 };
         double[] p1 = new double[] { -3, 0.5 };
         double[] p2 = new double[] { -2.3, -2.5 };
-        List<Point> positions = createLinearArc( p0, p1, p2, true );
+        Points positions = createLinearArc( p0, p1, p2, true );
         Assert.assertEquals(
                              exportToWKT( positions ).trim(),
                              "LINESTRING (-1.7 2.5, -2.7016581805723763 1.3123248162113281, -3.0888080679485044 -0.1923367462669825, -2.784769878851768 -1.7159680115230473, -1.8497621054164615 -2.956795121361711, -0.4689745042892599 -3.669057048933589, 1.0841110058779782 -3.711681584163786, 2.501886792452831 -3.0762264150943412, 3.5035449730252077 -1.888551231305669, 3.8906948604013363 -0.3838896688273583, 3.5866566713046 1.1397415964287065, 2.651648897869294 2.3805687062673706, 1.2708612967420923 3.092830633839249, -0.2822242134251457 3.1354551690694454, -1.7 2.5)" );
@@ -417,11 +418,11 @@ public class CurveLinearizerTest {
 
     /**
      * Little helper method to create a WKT.
-     *
+     * 
      * @param points
      * @return the WKT
      */
-    private String exportToWKT( List<Point> points ) {
+    private String exportToWKT( Points points ) {
         Coordinate[] coords = new Coordinate[points.size()];
         for ( int i = 0; i < points.size(); ++i ) {
             Point p = points.get( i );

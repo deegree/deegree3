@@ -63,11 +63,11 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Path2D.Double;
 import java.awt.image.BufferedImage;
-import java.util.List;
 
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiGeometry;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
@@ -410,16 +410,14 @@ public class Java2DRenderer implements Renderer {
     private Double fromCurve( Curve curve ) {
         Double line = new Double();
 
-        for ( CurveSegment seg : curve.getCurveSegments() ) {
-            List<Point> points = ( (LineStringSegment) seg ).getControlPoints();
-            Point p = points.get( 0 );
-            line.moveTo( p.getX(), p.getY() );
-            for ( Point point : points ) {
-                if ( point == p ) {
-                    continue;
-                }
-                line.lineTo( point.getX(), point.getY() );
+        Points points = curve.getControlPoints();
+        Point p = points.get( 0 );
+        line.moveTo( p.getX(), p.getY() );
+        for ( Point point : points ) {
+            if ( point == p ) {
+                continue;
             }
+            line.lineTo( point.getX(), point.getY() );
         }
 
         line.transform( worldToScreen );
