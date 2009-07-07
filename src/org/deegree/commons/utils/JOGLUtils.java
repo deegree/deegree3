@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils;
 
@@ -50,10 +50,10 @@ import com.sun.opengl.util.BufferUtil;
 
 /**
  * JOGL-related utility methods.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class JOGLUtils {
@@ -98,7 +98,7 @@ public class JOGLUtils {
 
     /**
      * Returns maximum texture size support by the GL driver.
-     *
+     * 
      * @param gl
      * @return maximum texture size (pixels)
      */
@@ -115,7 +115,7 @@ public class JOGLUtils {
      * identical to <code>GL_MAX_TEXTURE_UNITS</code> which denotes the maximum number of texture units in fixed
      * shader functions.
      * </p>
-     *
+     * 
      * @param gl
      * @return number of texture image units
      */
@@ -127,7 +127,7 @@ public class JOGLUtils {
 
     /**
      * Returns the value of the symbolic constant TEXTURE0...TEXTURE31 for a certain texture unit id.
-     *
+     * 
      * @param textureId
      *            id of the requested texture unit (0...31)
      * @return value of the corresponding symbolic constant
@@ -141,7 +141,7 @@ public class JOGLUtils {
 
     /**
      * Get a string representation of the current modelview matrix of the given context.
-     *
+     * 
      * @param gl
      * @return the String representation of modelview matrix
      */
@@ -151,7 +151,7 @@ public class JOGLUtils {
 
     /**
      * Get a string representation of the current Projection matrix of the given context.
-     *
+     * 
      * @param gl
      * @return the String representation of projection matrix
      */
@@ -161,7 +161,7 @@ public class JOGLUtils {
 
     /**
      * Get a string representation of the given matrix type of the given context.
-     *
+     * 
      * @param gl
      * @param GL_MATRIX_TYPE
      *            one of {@link GL#GL_MODELVIEW_MATRIX}, {@link GL#GL_PROJECTION_MATRIX}
@@ -189,7 +189,7 @@ public class JOGLUtils {
 
     /**
      * Calculate the eye position from the given modelview, note, no scale may be applied.
-     *
+     * 
      * @param gl
      *            to get the modelview from.
      * @return the eye position of the modelview matrix.
@@ -208,7 +208,7 @@ public class JOGLUtils {
 
     /**
      * Create an int with rgba from the given color (which returns the argb values).
-     *
+     * 
      * @param color
      *            to be converted.
      * @return the color as an int holding rgba.
@@ -229,7 +229,7 @@ public class JOGLUtils {
 
     /**
      * Create an a float array from the given color object, which can be used for rendering with jogl.
-     *
+     * 
      * @param color
      *            to be converted.
      * @return the color as an float array holding rgba.
@@ -241,7 +241,7 @@ public class JOGLUtils {
 
     /**
      * The float array appropriate for opengl.
-     *
+     * 
      * @param color
      *            (rgba) to be converted into a float arra.
      * @return the float array ready to be rendered.
@@ -253,7 +253,7 @@ public class JOGLUtils {
 
     /**
      * Create an int value ([a]rgb) from the given color array (rgb[a]), the result can be used for buffered images.
-     *
+     * 
      * @param color
      *            to be converted may be of length 3 or 4, not <code>null</code>.
      * @return the color as an int holding argb.
@@ -277,7 +277,7 @@ public class JOGLUtils {
      * Read the framebuffer's rgb values and place them into a {@link BufferedImage}. If the resultImage was
      * <code>null</code> or it's height or width are to small a new BufferedImage is created. The resultImage type is
      * supposed to be {@link BufferedImage#TYPE_INT_RGB}.
-     *
+     * 
      * @param glContext
      *            to get the image from.
      * @param imageBuffer
@@ -303,6 +303,7 @@ public class JOGLUtils {
         if ( resultImage == null || resultImage.getWidth() < width || resultImage.getHeight() < height ) {
             resultImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
         }
+        imageBuffer.rewind();
         byte[] color = new byte[3];
         for ( int y = height - 1; y >= 0; --y ) {
             for ( int x = 0; x < width; x++ ) {
@@ -310,6 +311,25 @@ public class JOGLUtils {
                 resultImage.setRGB( x, y, convertBytesToColorInt( color ) );
             }
         }
+
+        // ByteBuffer bb = ByteBuffer.allocateDirect( width * height * 4 );
+        //
+        // BufferedImage tImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
+        //
+        // glContext.glReadPixels( viewPortX, viewPortY, width, height, GL.GL_RGBA, GL_UNSIGNED_BYTE, bb );
+        // bb.rewind();
+        // color = new byte[4];
+        // for ( int y = height - 1; y >= 0; --y ) {
+        // for ( int x = 0; x < width; x++ ) {
+        // bb.get( color );
+        // tImage.setRGB( x, y, convertBytesToColorInt( color ) );
+        // }
+        // }
+        // try {
+        // ImageIO.write( tImage, "jpg", new File( "/tmp/test.jpg" ) );
+        // } catch ( Exception e ) {
+        // System.out.println( e.getLocalizedMessage() );
+        // }
         return resultImage;
     }
 }
