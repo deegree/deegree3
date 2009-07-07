@@ -107,7 +107,7 @@ public class DatabaseCRSProvider implements CRSProvider {
      * 
      * @param internalID
      *            the internal database ID of the object
-     * @param codeInt
+     * @param code
      *            the Code that will be set
      * @throws SQLException
      */
@@ -116,7 +116,14 @@ public class DatabaseCRSProvider implements CRSProvider {
         querier.setCode( internalID, code );
     }
 
-    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
+    /**
+     * @param sourceCRS
+     * @param targetCRS
+     * @return
+     * @throws CRSConfigurationException
+     */
+    public Transformation getTransformation( CoordinateSystem sourceCRS, 
+                                             CoordinateSystem targetCRS )
                             throws CRSConfigurationException {
         return null;
     }
@@ -124,7 +131,7 @@ public class DatabaseCRSProvider implements CRSProvider {
     /**
      * Retrieves the CRS via its code
      * 
-     * @param epsgCode
+     * @param code
      * @return the CoordinateSystem identified
      * @throws CRSConfigurationException
      */
@@ -176,19 +183,36 @@ public class DatabaseCRSProvider implements CRSProvider {
         remover.setConnection( conn );
     }
 
+    /**
+     * 
+     * @param properties
+     * @throws CRSConfigurationException
+     * @throws ClassNotFoundException
+     */
     public DatabaseCRSProvider( Properties properties ) throws CRSConfigurationException, ClassNotFoundException {
-        this(); // currently properties are not needed but the CRSConfiguration instantiation mechanism forces this
-        // parameter
+        this(); // currently properties are not needed but the CRSConfiguration instantiation mechanism forces this parameter
     }
 
+    /**
+     * @return 
+     *          whether there is an exported or not  
+     */
     public boolean canExport() {
         return exporter != null;
     }
 
+    /**
+     * @return
+     *          a list of {@link CRSCodeType}s from all the available CRSs
+     */
     public List<CRSCodeType> getAvailableCRSCodes() {
         return querier.getAvailableCRSCodes();
     }
 
+    /**
+     * @return
+     *          a list of {@link CoordinateSystem}s of all the available CRSs. 
+     */
     public List<CoordinateSystem> getAvailableCRSs() {
         try {
             return querier.getAvailableCRSs();
@@ -198,10 +222,19 @@ public class DatabaseCRSProvider implements CRSProvider {
         return null;
     }
 
+    /**
+     * @param sb
+     * @param crsToExport
+     */
     public void export( StringBuilder sb, List<CoordinateSystem> crsToExport ) {
         // TODO modify the super-class signature since here we don't write into a StringBuilder
     }
 
+    /**
+     * 
+     * @param crsList
+     * @throws SQLException
+     */
     public void remove( List<CoordinateSystem> crsList )
                             throws SQLException {
         remover.removeCRSList( crsList );
@@ -241,10 +274,18 @@ public class DatabaseCRSProvider implements CRSProvider {
         exporter.export( crsList );
     }
 
+    /**
+     * 
+     * @return
+     */
     public Connection getConnection() {
         return conn;
     }
 
+    
+    /**
+     * 
+     */
     @Override
     public CRSIdentifiable getIdentifiable( CRSCodeType id )
                             throws CRSConfigurationException {
