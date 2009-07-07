@@ -60,6 +60,7 @@ import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSolid;
 import org.deegree.geometry.multi.MultiSurface;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.LineString;
@@ -1006,7 +1007,7 @@ public class GML311GeometryExporter {
         writer.writeEndElement();
     }
 
-    void export( List<Point> points, int srsDimension )
+    void export( Points points, int srsDimension )
                             throws XMLStreamException {
         boolean hasID = false; // see if there exists a point that has an ID
         for ( Point p : points )

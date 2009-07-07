@@ -38,6 +38,7 @@ package org.deegree.geometry.primitive;
 import java.util.List;
 
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
@@ -123,7 +124,7 @@ public interface Surface extends GeometricPrimitive {
      *             if the surface has more than one patch, the patch is not planar or the exterior boundary is not
      *             completely described by linear interpolated segments
      */
-    public List<Point> getExteriorRingCoordinates();
+    public Points getExteriorRingCoordinates();
 
     /**
      * Convenience method for accessing the control points of the interior rings of a simple polygon surface.
@@ -137,5 +138,5 @@ public interface Surface extends GeometricPrimitive {
      *             if the surface has more than one patch, the patch is not planar or the interior boundaries are not
      *             completely described by linear interpolated segments
      */
-    public List<List<Point>> getInteriorRingsCoordinates();
+    public List<Points> getInteriorRingsCoordinates();
 }

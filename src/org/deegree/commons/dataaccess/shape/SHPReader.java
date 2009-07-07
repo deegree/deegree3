@@ -44,7 +44,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.utils.Pair;
@@ -54,6 +53,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiSurface;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
@@ -61,6 +61,7 @@ import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
@@ -458,9 +459,11 @@ public class SHPReader {
                 pos.add( fac.createPoint( null, ps[i][j], crs ) );
             }
             if ( outer == null ) {
-                outer = fac.createLinearRing( null, crs, pos );
+                // TODO use PackedPoints (more efficient)
+                outer = fac.createLinearRing( null, crs, new PointsList(pos) );
             } else {
-                Ring ring = fac.createLinearRing( null, crs, pos );
+                // TODO use PackedPoints (more efficient)                
+                Ring ring = fac.createLinearRing( null, crs, new PointsList(pos) );
                 if ( outer.contains( ring ) ) {
                     inners.add( ring );
                 } else {
@@ -542,7 +545,8 @@ public class SHPReader {
             for ( int j = 0; j < ps[i].length; ++j ) {
                 points.add( fac.createPoint( null, ps[i][j], crs ) );
             }
-            segs[i] = fac.createLineStringSegment( points );
+            // TODO use PackedPoints (more efficient)
+            segs[i] = fac.createLineStringSegment( new PointsList(points) );
         }
 
         return fac.createCurve( null, segs, crs );
@@ -670,7 +674,7 @@ public class SHPReader {
             ring.add( ps.get( 2 ) );
             ring.add( ring.getFirst() );
             ps.poll();
-            Ring r = fac.createLinearRing( null, crs, ring );
+            Ring r = fac.createLinearRing( null, crs, new PointsList(ring) );
             ss.add( fac.createPolygon( null, crs, r, null ) );
         }
 
@@ -696,7 +700,7 @@ public class SHPReader {
             ringps.add( ps.get( 1 ) );
             ringps.add( center );
             ps.poll();
-            LinearRing ring = fac.createLinearRing( null, crs, ringps );
+            LinearRing ring = fac.createLinearRing( null, crs, new PointsList(ringps) );
             ss.add( fac.createPolygon( null, crs, ring, null ) );
         }
 
@@ -718,12 +722,12 @@ public class SHPReader {
             ps.add( ps.getFirst() );
         }
 
-        return fac.createLinearRing( null, crs, ps );
+        return fac.createLinearRing( null, crs, new PointsList(ps) );
     }
 
     // bad: do it by hand using JTS
     private boolean isCCW( Curve c ) {
-        List<Point> ps = c.getControlPoints();
+        Points ps = c.getControlPoints();
         Coordinate[] cs = new Coordinate[ps.size()];
         int i = 0;
         for ( Point p : ps ) {

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils;
 
@@ -52,6 +52,7 @@ import java.util.List;
 
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
@@ -59,21 +60,22 @@ import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.rendering.r2d.strokes.TextStroke;
 
 /**
  * <code>GeometryUtils</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class GeometryUtils {
 
     /**
      * Moves the coordinates of a geometry.
-     *
+     * 
      * @param geom
      *            use only surfaces, line strings or points, and only with dim == 2
      * @param offx
@@ -93,7 +95,7 @@ public class GeometryUtils {
             for ( Point p : c.getAsLineString().getControlPoints() ) {
                 ps.add( (Point) move( p, offx, offy ) );
             }
-            return fac.createLineString( geom.getId(), c.getCoordinateSystem(), ps );
+            return fac.createLineString( geom.getId(), c.getCoordinateSystem(), new PointsList( ps ) );
         }
         if ( geom instanceof Surface ) {
             Surface s = (Surface) geom;
@@ -127,14 +129,14 @@ public class GeometryUtils {
         return geom;
     }
 
-    private static List<Point> move( List<Point> points, double offx, double offy ) {
+    private static Points move( Points points, double offx, double offy ) {
         List<Point> movedPoints = new ArrayList<Point>( points.size() );
         GeometryFactory fac = new GeometryFactory();
         for ( Point point : points ) {
             double[] movedCoordinates = new double[] { point.getX() + offx, point.getY() + offy };
             movedPoints.add( fac.createPoint( point.getId(), movedCoordinates, point.getCoordinateSystem() ) );
         }
-        return movedPoints;
+        return new PointsList( movedPoints );
     }
 
     /**
@@ -192,7 +194,7 @@ public class GeometryUtils {
 
     /**
      * This method flattens the path with a flatness parameter of 1.
-     *
+     * 
      * @author Jerry Huxtable
      * @see TextStroke
      * @param shape

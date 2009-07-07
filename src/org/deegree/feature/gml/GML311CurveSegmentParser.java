@@ -52,6 +52,7 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.Arc;
@@ -73,6 +74,7 @@ import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.curvesegments.OffsetCurve;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment.Interpolation;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
+import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -231,7 +233,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc3Points" );
-        List<Point> points = parseControlPoints( xmlStream, defaultCRS );
+        Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() != 3 ) {
             String msg = "Error in 'gml:Arc' element. Must specify exactly three control points, but contains "
                          + points.size() + ".";
@@ -262,7 +264,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc2PointWithBulge" );
-        List<Point> points = parseControlPoints( xmlStream, defaultCRS );
+        Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() != 2 ) {
             String msg = "Error in 'gml:ArcByBulge' element. Must contain exactly two control points.";
             throw new XMLParsingException( xmlStream, msg );
@@ -303,7 +305,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArcCenterPointWithRadius" );
-        List<Point> points = parseControlPoints( xmlStream, defaultCRS );
+        Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() != 1 ) {
             String msg = "Error in 'gml:ArcByCenterPoint' element. Must contain one control point (the center point), but contains "
                          + points.size() + ".";
@@ -354,7 +356,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc3Points" );
-        List<Point> points = parseControlPoints( xmlStream, defaultCRS );
+        Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() < 3 || points.size() % 2 != 1 ) {
             String msg = "Error in 'gml:ArcString' element. Invalid number of points (=" + points.size() + ").";
             throw new XMLParsingException( xmlStream, msg );
@@ -384,7 +386,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc2PointWithBulge" );
-        List<Point> points = parseControlPoints( xmlStream, defaultCRS );
+        Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() < 2 ) {
             String msg = "Error in 'gml:ArcStringByBulge' element. Must contain at least two points.";
             throw new XMLParsingException( xmlStream, msg );
@@ -411,7 +413,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
         }
 
         xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "ArcStringByBulge" );
-        return geomFac.createArcStringByBulge( points, bulges, normals );
+        return geomFac.createArcStringByBulge( points, bulges, new PointsList(normals) );
     }
 
     /**
@@ -422,7 +424,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Bezier&gt;)</li>
      * </ul>
      *
-     * @param defaultSrsName
+     * @param defaultCRS
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
      * @return corresponding {@link Bezier} object
@@ -435,7 +437,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "polynomialSpline" );
-        List<Point> points = parseControlPoints( xmlStream, defaultCRS );
+        Points points = parseControlPoints( xmlStream, defaultCRS );
 
         // TODO are the any more semantic constraints to be considered?
 
@@ -476,7 +478,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:BSpline&gt;)</li>
      * </ul>
      *
-     * @param defaultSrsName
+     * @param defaultCRS
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
      * @return corresponding {@link BSpline} object
@@ -502,7 +504,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
 
         // TODO what about the knotType attribute??
 
-        List<Point> points = parseControlPoints( xmlStream, defaultCRS );
+        Points points = parseControlPoints( xmlStream, defaultCRS );
 
         // TODO are the any more semantic constraints to be considered?
 
@@ -543,7 +545,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Circle&gt;)</li>
      * </ul>
      *
-     * @param defaultSrsName
+     * @param defaultCRS
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
      * @return corresponding {@link Circle} object
@@ -556,7 +558,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc3Points" );
-        List<Point> points = parseControlPoints( xmlStream, defaultCRS );
+        Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() != 3 ) {
             String msg = "Error in 'gml:Circle' element. Must specify exactly three control points, but contains "
                          + points.size() + ".";
@@ -588,7 +590,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArcCenterPointWithRadius" );
-        List<Point> points = parseControlPoints( xmlStream, defaultCRS );
+        Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() != 1 ) {
             String msg = "Error in 'gml:CircleByCenterPoint' element. Must contain one control point (the center point), but contains "
                          + points.size() + ".";
@@ -750,7 +752,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "cubicSpline" );
-        List<Point> points = parseControlPoints( xmlStream, defaultCRS );
+        Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() < 2 ) {
             String msg = "Error in 'gml:CubicSpline' element. Must consist of two points at least.";
             throw new XMLParsingException( xmlStream, msg );
@@ -868,7 +870,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
             throw new XMLParsingException( xmlStream, msg );
         }
         xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "GeodesicString" );
-        return geomFac.createGeodesicString( points );
+        return geomFac.createGeodesicString( new PointsList(points) );
     }
 
     /**
@@ -892,7 +894,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "linear" );
-        List<Point> points = parseControlPoints( xmlStream, defaultCRS );
+        Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() < 2 ) {
             String msg = "Error in 'gml:LineStringSegment' element. Must consist of two points at least.";
             throw new XMLParsingException( xmlStream, msg );
@@ -973,7 +975,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
      * @throws XMLParsingException
      * @throws UnknownCRSException
      */
-    List<Point> parseControlPoints( XMLStreamReaderWrapper xmlStream, CRS crs )
+    Points parseControlPoints( XMLStreamReaderWrapper xmlStream, CRS crs )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         List<Point> controlPoints = null;
@@ -1007,7 +1009,7 @@ class GML311CurveSegmentParser extends GML311BaseParser {
                 } while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT );
             }
         }
-        return controlPoints;
+        return new PointsList(controlPoints);
     }
 
     private void validateInterpolationAttribute( XMLStreamReaderWrapper xmlStream, String expected )

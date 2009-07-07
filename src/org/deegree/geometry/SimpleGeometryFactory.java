@@ -44,15 +44,16 @@ import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.standard.aggregate.DefaultMultiGeometry;
-import org.deegree.geometry.standard.aggregate.DefaultMultiLineString;
-import org.deegree.geometry.standard.aggregate.DefaultMultiPoint;
-import org.deegree.geometry.standard.aggregate.DefaultMultiPolygon;
+import org.deegree.geometry.standard.multi.DefaultMultiGeometry;
+import org.deegree.geometry.standard.multi.DefaultMultiLineString;
+import org.deegree.geometry.standard.multi.DefaultMultiPoint;
+import org.deegree.geometry.standard.multi.DefaultMultiPolygon;
 import org.deegree.geometry.standard.primitive.DefaultEnvelope;
 import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
@@ -155,10 +156,10 @@ public class SimpleGeometryFactory {
      * @param crs
      *            coordinate reference system
      * @param points
-     *            list of control points for the line string
+     *            control points
      * @return created {@link LineString}
      */
-    public LineString createLineString( String id, CRS crs, List<Point> points ) {
+    public LineString createLineString( String id, CRS crs, Points points ) {
         return new DefaultLineString( id, crs, pm, points );
     }
 

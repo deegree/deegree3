@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.gml;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
@@ -69,6 +69,7 @@ import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSolid;
 import org.deegree.geometry.multi.MultiSurface;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.LineString;
@@ -100,6 +101,7 @@ import org.deegree.geometry.refs.PointReference;
 import org.deegree.geometry.refs.PolygonReference;
 import org.deegree.geometry.refs.SolidReference;
 import org.deegree.geometry.refs.SurfaceReference;
+import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,10 +112,10 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <ul>
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GML311GeometryParser extends GML311BaseParser {
@@ -217,7 +219,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns whether the given element name denotes a GML 3.1.1 geometry element (a concrete element substitutable for
      * "gml:_Geometry").
-     *
+     * 
      * @param elName
      *            qualified element name to check
      * @return true, if the element is a GML 3.1.1 geometry element, false otherwise
@@ -248,7 +250,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>GeometricComplex</code></li>
      * <li><code>_ImplicitGeometry</code></li>
      * </ul>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Geometry&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt;) afterwards
@@ -308,7 +310,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>_Surface</code></li>
      * <li><code>_Solid</code></li>
      * </ul>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_GeometricPrimitive&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_GeometricPrimitive&gt;) afterwards
@@ -371,7 +373,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>MultiSolid</code></li>
      * <li><code>MultiSurface</code></li>
      * </ul>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_GeometricAggregate&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_GeometricAggregate&gt;) afterwards
@@ -440,7 +442,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <p>
      * NOTE: For technical reasons (XML Schema does not support multiple inheritance), there is no substitution group
      * <code>gml:_GeometricComplex</code> defined in the GML schemas. However, it is described in the comments.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -496,7 +498,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>Grid</code></li>
      * <li><code>RectifiedGrid</code></li>
      * </ul>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_ImplicitGeometry&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_ImplicitGeometry&gt;) afterwards
@@ -544,7 +546,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>LineString</code></li>
      * <li><code>OrientableCurve</code></li>
      * </ul>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Curve&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Curve&gt;) afterwards
@@ -609,7 +611,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>LinearRing</code></li>
      * <li><code>Ring</code></li>
      * </ul>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Ring&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Ring&gt;) afterwards
@@ -671,7 +673,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>Tin</code></li>
      * <li><code>TriangulatedSurface</code></li>
      * </ul>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Surface&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Surface&gt;) afterwards
@@ -748,7 +750,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li><code>CompositeSolid</code></li>
      * <li><code>Solid</code></li>
      * </ul>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Solid&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Solid&gt;) afterwards
@@ -804,7 +806,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Point&gt;)</li>
      * <li>Postcondition: cursor points at the next event after the <code>END_ELEMENT</code> (&lt;/gml:Point&gt;)</li>
      * </ul>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Point&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Point&gt;) afterwards
@@ -860,7 +862,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:LineString</code> element. Consumes all corresponding events
      * from the given <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:LineString&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:LineString&gt;) afterwards
@@ -917,7 +919,7 @@ public class GML311GeometryParser extends GML311BaseParser {
             String msg = "Error in 'gml:LineString' element. Must consist of two points at least.";
             throw new XMLParsingException( xmlStream, msg );
         }
-        LineString lineString = geomFac.createLineString( gid, crs, points );
+        LineString lineString = geomFac.createLineString( gid, crs, new PointsList( points ) );
         idContext.addGeometry( lineString );
         return lineString;
     }
@@ -925,7 +927,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:Curve</code> element. Consumes all corresponding events from the
      * associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Curve&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Curve&gt;) afterwards
@@ -961,7 +963,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:OrientableCurve</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:OrientableCurve&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:OrientableCurve&gt;) afterwards
@@ -994,7 +996,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:LinearRing</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:LinearRing&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:LinearRing&gt;) afterwards
@@ -1012,7 +1014,7 @@ public class GML311GeometryParser extends GML311BaseParser {
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
 
-        List<Point> points = curveSegmentParser.parseControlPoints( xmlStream, crs );
+        Points points = curveSegmentParser.parseControlPoints( xmlStream, crs );
         if ( points.size() < 4 ) {
             String msg = "Error in 'gml:LinearRing' element. Must specify at least four points.";
             throw new XMLParsingException( xmlStream, msg );
@@ -1026,7 +1028,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:Ring</code> element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Ring&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Ring&gt;) afterwards
@@ -1064,7 +1066,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a (&lt;gml:Polygon&gt;) element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Polygon&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Polygon&gt;) afterwards
@@ -1143,7 +1145,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a (&lt;gml:Surface&gt;) element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Surface&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Surface&gt;) afterwards
@@ -1178,7 +1180,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a (&lt;gml:PolyhedralSurface&gt;) element. Consumes all corresponding events
      * from the given <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:PolyhedralSurface&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:PolyhedralSurface&gt;) afterwards
@@ -1213,7 +1215,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a (&lt;gml:TriangulatedSurface&gt;) element. Consumes all corresponding
      * events from the given <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:TriangulatedSurface&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:TriangulatedSurface&gt;) afterwards
@@ -1252,7 +1254,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * Note: GML 3.1.1 specifies both "gml:trianglePatches" and "gml:controlPoint" properties for "gml:Tin". This is
      * apparently redundant, and consequently (?) GML 3.2.1 only allows the controlPoint property here. This method
      * copes with this by only using the controlPoints for building the {@link Tin} object.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Tin&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Tin&gt;) afterwards
@@ -1342,7 +1344,8 @@ public class GML311GeometryParser extends GML311BaseParser {
         }
 
         xmlStream.require( END_ELEMENT, GMLNS, "Tin" );
-        Tin tin = geomFac.createTin( gid, crs, stopLines, breakLines, maxLength, controlPoints, memberPatches );
+        Tin tin = geomFac.createTin( gid, crs, stopLines, breakLines, maxLength, new PointsList( controlPoints ),
+                                     memberPatches );
         idContext.addGeometry( tin );
         return tin;
     }
@@ -1350,7 +1353,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:OrientableSurface</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:OrientableSurface&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:OrientableSurface&gt;) afterwards
@@ -1384,7 +1387,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a (&lt;gml:Solid&gt;) element. Consumes all corresponding events from the
      * given <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Solid&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Solid&gt;) afterwards
@@ -1435,7 +1438,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:CompositeCurve</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:CompositeCurve&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:CompositeCurve&gt;) afterwards
@@ -1473,7 +1476,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:CompositeSurface</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:CompositeSurface&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:CompositeSurface&gt;) afterwards
@@ -1511,7 +1514,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:CompositeSolid</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:CompositeSolid&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:CompositeSolid&gt;) afterwards
@@ -1549,7 +1552,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:GeometricComplex</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:GeometricComplex&gt;), points at
      *            the corresponding <code>END_ELEMENT</code> event (&lt;/gml:GeometricComplex&gt;) afterwards
@@ -1588,7 +1591,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:MultiPoint</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiPoint&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiPoint&gt;) afterwards
@@ -1636,7 +1639,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:MultiCurve</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiCurve&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiCurve&gt;) afterwards
@@ -1683,7 +1686,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:MultiLineString</code> element. Consumes all corresponding
      * events from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiLineString&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiLineString&gt;) afterwards
@@ -1723,7 +1726,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:MultiSurface</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiSurface&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiSurface&gt;) afterwards
@@ -1770,7 +1773,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:MultiPolygon</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiPolygon&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiPolygon&gt;) afterwards
@@ -1810,7 +1813,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:MultiSolid</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiSolid&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiSolid&gt;) afterwards
@@ -1857,7 +1860,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:MultiGeometry</code> element. Consumes all corresponding events
      * from the associated <code>XMLStream</code>.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:MultiGeometry&gt;), points at the
      *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:MultiGeometry&gt;) afterwards
@@ -1903,7 +1906,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     /**
      * Returns the object representation of a <code>gml:Envelope</code> element. Consumes all corresponding events from
      * the associated <code>XMLStream</code>.
-     *
+     * 
      * @param defaultCRS
      *            default CRS for the envelope, this is only used if the <code>gml:Envelope</code> has no
      *            <code>srsName</code> attribute itself
@@ -1975,7 +1978,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * The point value may be specified using an inline <code>gml:Point</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link PointReference} object is returned.
      * </p>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2028,7 +2031,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * The LineString value may be specified using an inline <code>gml:LineString</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link LineStringReference} object is returned.
      * </p>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2081,7 +2084,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * The curve value may be specified using an inline <code>gml:_Curve</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link CurveReference} object is returned.
      * </p>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2129,7 +2132,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * The polygon value may be specified using an inline <code>gml:Polygon</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link PolygonReference} object is returned.
      * </p>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2182,7 +2185,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * The curve value may be specified using an inline <code>gml:_Surface</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link SurfaceReference} object is returned.
      * </p>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2230,7 +2233,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * The solid value may be specified using an inline <code>gml:Solid</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link SolidReference} object is returned.
      * </p>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2283,7 +2286,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * The solid value may be specified using an inline <code>gml:_GeometricPrimitive</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link GeometricPrimitiveReference} object is returned.
      * </p>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2331,7 +2334,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * The geometry value may be specified using an inline <code>gml:_Geometry</code> element or using an
      * <code>xlink:href</code> attribute. In the latter case, a {@link GeometryReference} object is returned.
      * </p>
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event, points at the corresponding
      *            <code>END_ELEMENT</code> event afterwards
@@ -2377,7 +2380,7 @@ public class GML311GeometryParser extends GML311BaseParser {
      * <code>XMLStreamReader</code> points to.
      * <p>
      * Looks after 'gml:id' (GML 3) first, if no such attribute is present, the 'gid' (GML 2) attribute is used.
-     *
+     * 
      * @return the geometry id, or "" (empty string) if neither a 'gml:id' nor a 'gid' attribute is present
      */
     private String parseGeometryId( XMLStreamReaderWrapper xmlStream ) {

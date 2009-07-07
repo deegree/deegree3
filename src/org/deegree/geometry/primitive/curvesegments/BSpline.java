@@ -37,7 +37,7 @@ package org.deegree.geometry.primitive.curvesegments;
 
 import java.util.List;
 
-import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.points.Points;
 
 /**
  * A <code>BSpline</code> is a {@link CurveSegment} that uses either polynomial or rational interpolation.
@@ -62,7 +62,7 @@ public interface BSpline extends CurveSegment {
      *
      * @return the control points of the segment
      */
-    public List<Point> getControlPoints();
+    public Points getControlPoints();
 
     /**
      * Returns the degree of the polynomial used for interpolation in this spline.

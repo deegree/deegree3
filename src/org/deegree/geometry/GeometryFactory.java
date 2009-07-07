@@ -49,6 +49,7 @@ import org.deegree.geometry.composite.CompositeSurface;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiSolid;
 import org.deegree.geometry.multi.MultiSurface;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
@@ -82,16 +83,11 @@ import org.deegree.geometry.primitive.curvesegments.OffsetCurve;
 import org.deegree.geometry.primitive.surfacepatches.Cone;
 import org.deegree.geometry.primitive.surfacepatches.Cylinder;
 import org.deegree.geometry.primitive.surfacepatches.DefaultCone;
-import org.deegree.geometry.primitive.surfacepatches.DefaultCylinder;
-import org.deegree.geometry.primitive.surfacepatches.DefaultSphere;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.Rectangle;
 import org.deegree.geometry.primitive.surfacepatches.Sphere;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
-import org.deegree.geometry.standard.aggregate.DefaultMultiCurve;
-import org.deegree.geometry.standard.aggregate.DefaultMultiSolid;
-import org.deegree.geometry.standard.aggregate.DefaultMultiSurface;
 import org.deegree.geometry.standard.composite.DefaultCompositeCurve;
 import org.deegree.geometry.standard.composite.DefaultCompositeGeometry;
 import org.deegree.geometry.standard.composite.DefaultCompositeSolid;
@@ -112,6 +108,9 @@ import org.deegree.geometry.standard.curvesegments.DefaultGeodesic;
 import org.deegree.geometry.standard.curvesegments.DefaultGeodesicString;
 import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
 import org.deegree.geometry.standard.curvesegments.DefaultOffsetCurve;
+import org.deegree.geometry.standard.multi.DefaultMultiCurve;
+import org.deegree.geometry.standard.multi.DefaultMultiSolid;
+import org.deegree.geometry.standard.multi.DefaultMultiSurface;
 import org.deegree.geometry.standard.primitive.DefaultCurve;
 import org.deegree.geometry.standard.primitive.DefaultLinearRing;
 import org.deegree.geometry.standard.primitive.DefaultOrientableCurve;
@@ -122,8 +121,10 @@ import org.deegree.geometry.standard.primitive.DefaultSolid;
 import org.deegree.geometry.standard.primitive.DefaultSurface;
 import org.deegree.geometry.standard.primitive.DefaultTin;
 import org.deegree.geometry.standard.primitive.DefaultTriangulatedSurface;
+import org.deegree.geometry.standard.surfacepatches.DefaultCylinder;
 import org.deegree.geometry.standard.surfacepatches.DefaultPolygonPatch;
 import org.deegree.geometry.standard.surfacepatches.DefaultRectangle;
+import org.deegree.geometry.standard.surfacepatches.DefaultSphere;
 import org.deegree.geometry.standard.surfacepatches.DefaultTriangle;
 
 /**
@@ -167,10 +168,10 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * Creates a {@link LineStringSegment} curve segment.
      * 
      * @param points
-     *            list of points to create the {@link LineStringSegment} from
+     *            points to create the {@link LineStringSegment} from
      * @return created {@link CurveSegment}
      */
-    public LineStringSegment createLineStringSegment( List<Point> points ) {
+    public LineStringSegment createLineStringSegment( Points points ) {
         return new DefaultLineStringSegment( points );
     }
 
@@ -224,10 +225,10 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * Creates an {@link ArcString} curve segment.
      * 
      * @param points
-     *            list of control points, must contain <code>2 * k + 1</code> points
+     *            control points, must contain <code>2 * k + 1</code> points
      * @return created {@link ArcString}
      */
-    public ArcString createArcString( List<Point> points ) {
+    public ArcString createArcString( Points points ) {
         return new DefaultArcString( points );
     }
 
@@ -245,7 +246,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            normal vectors
      * @return created {@link ArcStringByBulge}
      */
-    public ArcStringByBulge createArcStringByBulge( List<Point> points, double[] bulges, List<Point> normals ) {
+    public ArcStringByBulge createArcStringByBulge( Points points, double[] bulges, Points normals ) {
         return new DefaultArcStringByBulge( points, bulges, normals );
     }
 
@@ -262,7 +263,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            second of the two knots that define the spline basis functions
      * @return created {@link Bezier}
      */
-    public Bezier createBezier( List<Point> points, int degree, Knot knot1, Knot knot2 ) {
+    public Bezier createBezier( Points points, int degree, Knot knot1, Knot knot2 ) {
         return new DefaultBezier( points, degree, knot1, knot2 );
     }
 
@@ -279,7 +280,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            set to true if this is a polynomial spline, otherwise it's a rational spline
      * @return created {@link BSpline}
      */
-    public BSpline createBSpline( List<Point> points, int degree, List<Knot> knots, boolean isPolynomial ) {
+    public BSpline createBSpline( Points points, int degree, List<Knot> knots, boolean isPolynomial ) {
         return new DefaultBSpline( points, degree, knots, isPolynomial );
     }
 
@@ -312,73 +313,6 @@ public class GeometryFactory extends SimpleGeometryFactory {
     }
 
     /**
-     * Creates a {@link Clothoid} curve segment.
-     * 
-     * @param referenceLocation
-     *            the affine mapping that places the curve defined by the Fresnel Integrals into the coordinate
-     *            reference system of this object
-     * @param scaleFactor
-     *            the value for the constant in the Fresnel's integrals
-     * @param startParameter
-     *            the arc length distance from the inflection point that will be the start point for this curve segment
-     * @param endParameter
-     *            the arc length distance from the inflection point that will be the end point for this curve segment
-     * @return created {@link Clothoid}
-     */
-    public Clothoid createClothoid( AffinePlacement referenceLocation, double scaleFactor, double startParameter,
-                                    double endParameter ) {
-        return new DefaultClothoid( referenceLocation, scaleFactor, startParameter, endParameter );
-    }
-
-    /**
-     * Creates a {@link Cone} surface patch.
-     * 
-     * @param grid
-     *            the grid of control points that defines the Cone
-     * @return created {@link Cone}
-     */
-    public Cone createCone( List<List<Point>> grid ) {
-        return new DefaultCone( grid );
-    }
-
-    /**
-     * Creates a {@link Cylinder} surface patch.
-     * 
-     * @param grid
-     *            the grid of control points that defines the Cylinder
-     * @return created {@link Cylinder}
-     */
-    public Cylinder createCylinder( List<List<Point>> grid ) {
-        return new DefaultCylinder( grid );
-    }
-
-    /**
-     * Creates a {@link Sphere} surface patch.
-     * 
-     * @param grid
-     *            the grid of control points that defines the Sphere
-     * @return created {@link Sphere}
-     */
-    public Sphere createSphere( List<List<Point>> grid ) {
-        return new DefaultSphere( grid );
-    }
-
-    /**
-     * Creates a {@link Clothoid} curve segment.
-     * 
-     * @param points
-     *            control points, at least two
-     * @param vectorAtStart
-     *            the unit tangent vector at the start point of the spline
-     * @param vectorAtEnd
-     *            the unit tangent vector at the end point of the spline
-     * @return created {@link Clothoid}
-     */
-    public CubicSpline createCubicSpline( List<Point> points, Point vectorAtStart, Point vectorAtEnd ) {
-        return new DefaultCubicSpline( points, vectorAtStart, vectorAtEnd );
-    }
-
-    /**
      * Creates a {@link Geodesic} curve segment.
      * 
      * @param p1
@@ -398,7 +332,7 @@ public class GeometryFactory extends SimpleGeometryFactory {
      *            control points, at least two
      * @return created {@link GeodesicString}
      */
-    public GeodesicString createGeodesicString( List<Point> points ) {
+    public GeodesicString createGeodesicString( Points points ) {
         return new DefaultGeodesicString( points );
     }
 
@@ -469,10 +403,10 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @param crs
      *            coordinate reference system, may be null
      * @param points
-     *            the control points
+     *            control points
      * @return created {@link Ring}
      */
-    public LinearRing createLinearRing( String id, CRS crs, List<Point> points ) {
+    public LinearRing createLinearRing( String id, CRS crs, Points points ) {
         return new DefaultLinearRing( id, crs, pm, points );
     }
 
@@ -573,14 +507,82 @@ public class GeometryFactory extends SimpleGeometryFactory {
      * @param breakLines
      * @param maxLength
      * @param controlPoints
+     * @param patches 
      * @return created {@link Tin}
      */
     public Tin createTin( String id, CRS crs, List<List<LineStringSegment>> stopLines,
-                          List<List<LineStringSegment>> breakLines, Length maxLength, List<Point> controlPoints,
+                          List<List<LineStringSegment>> breakLines, Length maxLength, Points controlPoints,
                           List<Triangle> patches ) {
         return new DefaultTin( id, crs, pm, stopLines, breakLines, maxLength, controlPoints, patches );
     }
 
+    /**
+     * Creates a {@link Clothoid} curve segment.
+     * 
+     * @param referenceLocation
+     *            the affine mapping that places the curve defined by the Fresnel Integrals into the coordinate
+     *            reference system of this object
+     * @param scaleFactor
+     *            the value for the constant in the Fresnel's integrals
+     * @param startParameter
+     *            the arc length distance from the inflection point that will be the start point for this curve segment
+     * @param endParameter
+     *            the arc length distance from the inflection point that will be the end point for this curve segment
+     * @return created {@link Clothoid}
+     */
+    public Clothoid createClothoid( AffinePlacement referenceLocation, double scaleFactor, double startParameter,
+                                    double endParameter ) {
+        return new DefaultClothoid( referenceLocation, scaleFactor, startParameter, endParameter );
+    }
+
+    /**
+     * Creates a {@link Cone} surface patch.
+     * 
+     * @param grid
+     *            the grid of control points that defines the Cone
+     * @return created {@link Cone}
+     */
+    public Cone createCone( List<Points> grid ) {
+        return new DefaultCone( grid );
+    }
+
+    /**
+     * Creates a {@link Cylinder} surface patch.
+     * 
+     * @param grid
+     *            the grid of control points that defines the Cylinder
+     * @return created {@link Cylinder}
+     */
+    public Cylinder createCylinder( List<Points> grid ) {
+        return new DefaultCylinder( grid );
+    }
+
+    /**
+     * Creates a {@link Sphere} surface patch.
+     * 
+     * @param grid
+     *            the grid of control points that defines the Sphere
+     * @return created {@link Sphere}
+     */
+    public Sphere createSphere( List<Points> grid ) {
+        return new DefaultSphere( grid );
+    }
+
+    /**
+     * Creates a {@link Clothoid} curve segment.
+     * 
+     * @param points
+     *            control points, at least two
+     * @param vectorAtStart
+     *            the unit tangent vector at the start point of the spline
+     * @param vectorAtEnd
+     *            the unit tangent vector at the end point of the spline
+     * @return created {@link Clothoid}
+     */
+    public CubicSpline createCubicSpline( Points points, Point vectorAtStart, Point vectorAtEnd ) {
+        return new DefaultCubicSpline( points, vectorAtStart, vectorAtEnd );
+    }    
+    
     /**
      * Creates a {@link Solid}.
      * 

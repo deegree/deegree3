@@ -51,6 +51,7 @@ import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSurface;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LinearRing;
@@ -61,6 +62,7 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.standard.points.PointsList;
 
 /**
  * class for transforming deegree geometries to new coordinate reference systems.
@@ -270,7 +272,7 @@ public class GeometryTransformer extends Transformer {
                 // TODO handle non-linear curve segments
                 throw new IllegalArgumentException();
             }
-            List<Point> pos = ( (LineStringSegment) segment ).getControlPoints();
+            Points pos = ( (LineStringSegment) segment ).getControlPoints();
             pos = transform( pos, trans );
             curveSegments[i++] = geomFactory.createLineStringSegment( pos );
         }
@@ -334,7 +336,7 @@ public class GeometryTransformer extends Transformer {
      * 
      * @throws TransformationException
      */
-    private List<Point> transform( List<Point> points, Transformation trans )
+    private Points transform( Points points, Transformation trans )
                             throws TransformationException {
 
         List<Point> result = new ArrayList<Point>( points.size() );
@@ -351,7 +353,7 @@ public class GeometryTransformer extends Transformer {
             result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y, tmp.z },
                                                  new CRS( trans.getTargetCRS() ) ) );
         }
-        return result;
+        return new PointsList(result);
     }
 
     /**

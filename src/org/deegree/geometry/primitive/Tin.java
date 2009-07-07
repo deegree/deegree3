@@ -38,8 +38,8 @@ package org.deegree.geometry.primitive;
 import java.util.List;
 
 import org.deegree.commons.types.Length;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.geometry.primitive.surfacepatches.Triangle;
 
 /**
  * A {@link Tin} is a {@link TriangulatedSurface} that uses the Delauny algorithm or a similar algorithm complemented
@@ -73,6 +73,6 @@ public interface Tin extends TriangulatedSurface {
 
     public Length getMaxLength();
 
-    public List<Point> getControlPoints();
+    public Points getControlPoints();
 
 }

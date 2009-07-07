@@ -45,6 +45,7 @@ import javax.vecmath.Vector3d;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
@@ -52,6 +53,7 @@ import org.deegree.geometry.primitive.curvesegments.Arc;
 import org.deegree.geometry.primitive.curvesegments.Circle;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.geometry.standard.points.PointsList;
 
 /**
  * Provides methods for the linearization of {@link Curve}s and {@link CurveSegment}s.
@@ -188,11 +190,11 @@ public class CurveLinearizer {
         LineStringSegment lineSegment = null;
 
         if ( arePointsCollinear( arc.getPoint1(), arc.getPoint2(), arc.getPoint3() ) ) {
-            List<Point> points = null;
+            Points points = null;
             if ( arc instanceof Circle ) {
-                points = Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint2(), arc.getPoint1() } );
+                points = new PointsList(Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint2(), arc.getPoint1() } ));
             } else {
-                points = Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint3() } );
+                points = new PointsList(Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint3() } ));
             }
             lineSegment = geomFac.createLineStringSegment( points );
         } else {
@@ -238,7 +240,7 @@ public class CurveLinearizer {
         return angleStep;
     }
 
-    private List<Point> interpolate( Point p0, Point p1, Point p2, int numPoints, boolean isCircle ) {
+    private Points interpolate( Point p0, Point p1, Point p2, int numPoints, boolean isCircle ) {
         List<Point> interpolationPoints = new ArrayList<Point>( numPoints );
         Point center = calcCircleCenter( p0, p1, p2 );
 
@@ -267,7 +269,7 @@ public class CurveLinearizer {
         }
         // ensure numerical stability for end point (= use original circle start point)
         interpolationPoints.add( isCircle ? p0 : p2 );
-        return interpolationPoints;
+        return new PointsList(interpolationPoints);
     }
 
     /**

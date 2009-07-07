@@ -35,7 +35,6 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
-import java.util.List;
 
 /**
  * The most common case of a {@link Curve}: consist of just one curve segment with linear interpolation between the
@@ -62,11 +61,4 @@ public interface LineString extends Curve {
      *         segements points. For a three dimensional case it looks like: [x0,y0,z0,x1,y1,z1, ... ,xn,yn,zn]
      */
     public double[] getAsArray();
-
-    /**
-     * Returns the control points of the <code>LineString</code>.
-     *
-     * @return the control points
-     */
-    public List<Point> getControlPoints();
 }

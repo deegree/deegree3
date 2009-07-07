@@ -35,9 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive.curvesegments;
 
-import java.util.List;
-
-import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.points.Points;
 
 /**
  * An <code>ArcStringByBulge</code> is a circular {@link CurveSegment}.
@@ -62,12 +60,12 @@ public interface ArcStringByBulge extends CurveSegment {
 
     public double [] getBulges();
 
-    public List<Point> getNormals();
+    public Points getNormals();
 
     /**
      * Returns the control points of the segment.
      *
      * @return the control points of the segment
      */
-    public List<Point> getControlPoints();
+    public Points getControlPoints();
 }

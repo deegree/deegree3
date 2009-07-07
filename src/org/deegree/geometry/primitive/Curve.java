@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.composite.CompositeCurve;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 
@@ -142,7 +143,7 @@ public interface Curve extends GeometricPrimitive {
      * @throws IllegalArgumentException
      *             if the curve is not linear interpolated
      */
-    public List<Point> getControlPoints();
+    public Points getControlPoints();
 
     /**
      * Returns a linear interpolated representation of the curve.

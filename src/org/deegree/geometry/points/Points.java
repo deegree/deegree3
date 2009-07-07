@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/geometry/primitive/CurveSegment.java $
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,26 +33,39 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
 
-import org.deegree.geometry.points.Points;
+package org.deegree.geometry.points;
+
+import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * A <code>LineStringSegment</code> is a {@link CurveSegment} that is defined by two or more {@link Point}s, with linear
- * interpolation between them.
+ * Encapsulates a sequence of {@link Point}s, which may be uniquely identifiable or not.
+ * <p>
+ * The motivation for this interface is to provide a more compact and efficient representation than using lists or
+ * arrays of {@link Point} objects. This is essential, as geometries are usually build from many points, e.g. a detailed
+ * {@link LineString} may consist of thousands of points.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision: $, $Date: $
  */
-public interface LineStringSegment extends CurveSegment {
+public interface Points extends Iterable<Point> {
 
     /**
-     * Returns the control points of the string.
+     * Returns the coordinate dimension, i.e. the dimension of the space that the points are embedded in.
      * 
-     * @return the control points of the string
+     * @return the coordinate dimension
      */
-    public Points getControlPoints();
+    public int getCoordinateDimension();
+
+    /**
+     * Returns the number of represented {@link Point}s.
+     * 
+     * @return the number of points
+     */
+    public int size();
+
+    public Point get( int i );
 }

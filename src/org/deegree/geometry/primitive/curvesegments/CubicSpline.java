@@ -35,8 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive.curvesegments;
 
-import java.util.List;
-
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
 /**
@@ -55,7 +54,7 @@ public interface CubicSpline extends CurveSegment {
      *
      * @return the control points of the spline
      */
-    public List<Point> getControlPoints();
+    public Points getControlPoints();
 
     /**
      * Returns the unit tangent vector at the start point of the spline.
