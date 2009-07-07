@@ -232,7 +232,7 @@ public class DatabaseCRSProvider implements CRSProvider {
 
     /**
      * 
-     * @param crsList
+     * @param crsList   a list of {@link CoordinateSystem}s to be removed
      * @throws SQLException
      */
     public void remove( List<CoordinateSystem> crsList )
@@ -276,7 +276,7 @@ public class DatabaseCRSProvider implements CRSProvider {
 
     /**
      * 
-     * @return
+     * @return      database connection
      */
     public Connection getConnection() {
         return conn;
@@ -284,7 +284,8 @@ public class DatabaseCRSProvider implements CRSProvider {
 
     
     /**
-     * 
+     * @param   the {@link CRSCodeType} of the wanted identifiable 
+     * @return  the {@link CRSIdentifiable} object
      */
     @Override
     public CRSIdentifiable getIdentifiable( CRSCodeType id )
