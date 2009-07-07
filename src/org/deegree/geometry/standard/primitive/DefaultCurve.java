@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
 import java.util.ArrayList;
@@ -41,9 +41,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.crs.CRS;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.linearization.CurveLinearizer;
 import org.deegree.geometry.linearization.LinearizationCriterion;
 import org.deegree.geometry.linearization.NumPointsCriterion;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
@@ -51,16 +53,15 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.standard.DefaultGeometryFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * Default implementation of {@link Curve}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
@@ -69,21 +70,23 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
 
     /**
      * Creates a new {@link DefaultCurve} instance from the given parameters.
-     *
+     * 
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param segments
-     *            segments that constitute the curve
+     *            segments that constitute the curve (never null)
      */
-    public DefaultCurve( String id, CRS crs, List<CurveSegment> segments ) {
-        super( id, crs );
+    public DefaultCurve( String id, CRS crs, PrecisionModel pm, List<CurveSegment> segments ) {
+        super( id, crs, pm );
         this.segments = new ArrayList<CurveSegment>( segments );
     }
 
     @Override
-    public boolean is3D(){
+    public boolean is3D() {
         return segments.get( 0 ).is3D();
     }
 
@@ -112,7 +115,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
         if ( segments.size() != 1 && !( segments.get( 0 ) instanceof LineString ) ) {
             throw new UnsupportedOperationException();
         }
-        return new DefaultLineString( null, getCoordinateSystem(),
+        return new DefaultLineString( null, getCoordinateSystem(), pm, 
                                       ( (LineStringSegment) segments.get( 0 ) ).getControlPoints() );
     }
 
@@ -157,7 +160,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
 
     @Override
     protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
-        CurveLinearizer linearizer = new CurveLinearizer( new DefaultGeometryFactory() );
+        CurveLinearizer linearizer = new CurveLinearizer( GeometryFactory.getInstance() );
         // TODO how to determine a feasible linearization criterion?
         LinearizationCriterion crit = new NumPointsCriterion( 100 );
         List<Coordinate> coords = new LinkedList<Coordinate>();

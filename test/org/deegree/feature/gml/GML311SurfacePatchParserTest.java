@@ -47,7 +47,6 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.primitive.surfacepatches.Cone;
 import org.deegree.geometry.primitive.surfacepatches.Cylinder;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
@@ -73,7 +72,7 @@ public class GML311SurfacePatchParserTest {
     @Before
     public void setUp()
                             throws Exception {
-        geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
+        geomFac = GeometryFactory.getInstance();
     }
 
     @Test
@@ -141,7 +140,7 @@ public class GML311SurfacePatchParserTest {
     }
 
     private GML311SurfacePatchParser getPatchParser() {
-        GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
+        GeometryFactory geomFac = GeometryFactory.getInstance();
         return new GML311SurfacePatchParser( new GML311GeometryParser(), geomFac );
     }
 }

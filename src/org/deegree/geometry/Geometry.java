@@ -38,6 +38,7 @@ package org.deegree.geometry;
 import org.deegree.commons.types.gml.StandardGMLObjectProperties;
 import org.deegree.commons.types.identifier.Identifiable;
 import org.deegree.crs.CRS;
+import org.deegree.geometry.precision.PrecisionModel;
 
 /**
  *
@@ -117,6 +118,9 @@ public interface Geometry extends Identifiable<String> {
      * than or equal to the "distance" passed as a parameter. The Geometry returned is in the same reference system as
      * this original Geometry. The dimension of the returned Geometry is normally the same as the coordinate dimension -
      * a collection of Surfaces in 2D space and a collection of Solids in 3D space, but this may be application defined.
+     * <p>
+     * How to cope with uom in meters? Supply distance function?
+     * </p>
      *
      * @param distance
      * @return buffer geometry
@@ -222,11 +226,11 @@ public interface Geometry extends Identifiable<String> {
     public boolean isWithin( Geometry geometry );
 
     /**
-     * returns the precision coordinates of a geometry are stored
+     * Returns the {@link PrecisionModel} of the geometry.
      *
-     * @return precision coordinates of a geometry are stored
+     * @return the precision model
      */
-    public double getPrecision();
+    public PrecisionModel getPrecision();
 
     /**
      * Returns an equivalent (or best-fit) JTS geometry object.
@@ -249,5 +253,5 @@ public interface Geometry extends Identifiable<String> {
      * @param standardProps
      *            representation of the standard GML properties
      */
-    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps );
+    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps );   
 }

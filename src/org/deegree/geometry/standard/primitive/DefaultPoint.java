@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
 import java.util.Arrays;
@@ -40,6 +40,7 @@ import java.util.Arrays;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
@@ -47,10 +48,10 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * Default implementation of {@link Point}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultPoint extends AbstractDefaultGeometry implements Point {
@@ -59,16 +60,18 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
 
     /**
      * Creates a new <code>DefaultPoint</code> instance from the given parameters.
-     *
+     * 
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param coordinates
      *            coordinates of the point
      */
-    public DefaultPoint( String id, CRS crs, double[] coordinates ) {
-        super( id, crs );
+    public DefaultPoint( String id, CRS crs, PrecisionModel pm, double[] coordinates ) {
+        super( id, crs, pm );
         this.coordinates = Arrays.copyOf( coordinates, coordinates.length );
     }
 
@@ -132,12 +135,12 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
 
     @Override
     public boolean is3D() {
-        return (coordinates.length == 3) ? true : false ;
+        return ( coordinates.length == 3 ) ? true : false;
     }
 
     @Override
     public Envelope getEnvelope() {
-        return new DefaultEnvelope( null, crs, this, this );
+        return new DefaultEnvelope( null, crs, pm, this, this );
     }
 
     @Override
@@ -153,13 +156,13 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
     @Override
     protected com.vividsolutions.jts.geom.Point buildJTSGeometry() {
         Coordinate coords = null;
-        if (coordinates.length == 2) {
-            coords = new Coordinate(coordinates[0], coordinates[1]);
-        } else if (coordinates.length == 3) {
-            coords = new Coordinate(coordinates[0], coordinates[1], coordinates[2]);
+        if ( coordinates.length == 2 ) {
+            coords = new Coordinate( coordinates[0], coordinates[1] );
+        } else if ( coordinates.length == 3 ) {
+            coords = new Coordinate( coordinates[0], coordinates[1], coordinates[2] );
         } else {
             throw new UnsupportedOperationException();
         }
-        return jtsFactory.createPoint (coords);
+        return jtsFactory.createPoint( coords );
     }
 }

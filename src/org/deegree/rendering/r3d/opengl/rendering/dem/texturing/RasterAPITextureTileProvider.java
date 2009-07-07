@@ -47,7 +47,6 @@ import org.deegree.coverage.raster.container.GriddedBlobTileContainer;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +76,7 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
      * @throws IOException
      */
     public RasterAPITextureTileProvider( File file, double res ) throws IOException {
-        fac = GeometryFactoryCreator.getInstance().getGeometryFactory();
+        fac = GeometryFactory.getInstance();
         raster = new TiledRaster( GriddedBlobTileContainer.create( file ) );
         this.res = res;
     }

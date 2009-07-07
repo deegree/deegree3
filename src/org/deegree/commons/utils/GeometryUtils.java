@@ -42,7 +42,6 @@ import static java.awt.geom.PathIterator.SEG_LINETO;
 import static java.awt.geom.PathIterator.SEG_MOVETO;
 import static java.awt.geom.PathIterator.SEG_QUADTO;
 import static java.lang.Math.sqrt;
-import static org.deegree.geometry.GeometryFactoryCreator.getInstance;
 
 import java.awt.Shape;
 import java.awt.geom.FlatteningPathIterator;
@@ -82,7 +81,7 @@ public class GeometryUtils {
      * @return the moved geometry
      */
     public static Geometry move( Geometry geom, double offx, double offy ) {
-        GeometryFactory fac = getInstance().getGeometryFactory();
+        GeometryFactory fac = GeometryFactory.getInstance();
         if ( geom instanceof Point ) {
             Point p = (Point) geom;
             return fac.createPoint( geom.getId(), new double[] { p.getX() + offx, p.getY() + offy },
@@ -130,7 +129,7 @@ public class GeometryUtils {
 
     private static List<Point> move( List<Point> points, double offx, double offy ) {
         List<Point> movedPoints = new ArrayList<Point>( points.size() );
-        GeometryFactory fac = getInstance().getGeometryFactory();
+        GeometryFactory fac = GeometryFactory.getInstance();
         for ( Point point : points ) {
             double[] movedCoordinates = new double[] { point.getX() + offx, point.getY() + offy };
             movedPoints.add( fac.createPoint( point.getId(), movedCoordinates, point.getCoordinateSystem() ) );

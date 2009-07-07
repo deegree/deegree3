@@ -52,7 +52,6 @@ import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.primitive.Point;
 
 /**
@@ -95,7 +94,7 @@ public class OWSCommonXMLAdapter extends XMLAdapter {
      */
     public static final String XML_PREFIX = "xml";
 
-    private static final GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
+    private static final GeometryFactory geomFac = GeometryFactory.getInstance();
 
     static {
         // add to common namespaces from xml adapter

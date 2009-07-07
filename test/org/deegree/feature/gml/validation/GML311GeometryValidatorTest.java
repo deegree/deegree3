@@ -46,7 +46,6 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.gml.GML311GeometryParserTest;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
@@ -62,7 +61,7 @@ import org.junit.Test;
  */
 public class GML311GeometryValidatorTest {
 
-    private static GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory( "Standard" );
+    private static GeometryFactory geomFac = GeometryFactory.getInstance();
 
     private static final String BASE_DIR = "testdata/geometries/";
 

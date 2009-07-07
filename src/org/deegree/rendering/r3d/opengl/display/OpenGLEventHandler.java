@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.display;
 
@@ -50,7 +50,7 @@ import javax.vecmath.Vector3d;
 import org.deegree.commons.utils.JOGLUtils;
 import org.deegree.commons.utils.math.Vectors3f;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactoryCreator;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.ViewFrustum;
 import org.deegree.rendering.r3d.ViewParams;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
@@ -63,13 +63,13 @@ import com.sun.opengl.util.GLUT;
 /**
  * The <code>OpenGLEventHandler</code> class renders a list of DataObjects and handles opengl callback functions
  * delivered by a GLCanvas. It possesses a trackball which can roate the scene.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author: rbezema $
- *
+ * 
  * @version $Revision: 15632 $, $Date: 2009-01-14 13:12:54 +0100 (Mi, 14 Jan 2009) $
- *
+ * 
  */
 public class OpenGLEventHandler implements GLEventListener {
 
@@ -119,7 +119,7 @@ public class OpenGLEventHandler implements GLEventListener {
     private int height;
 
     /**
-     *
+     * 
      * @param renderTestObject
      */
     public OpenGLEventHandler( boolean renderTestObject ) {
@@ -133,8 +133,8 @@ public class OpenGLEventHandler implements GLEventListener {
     }
 
     private Envelope getDefaultBBox() {
-        return GeometryFactoryCreator.getInstance().getGeometryFactory().createEnvelope( new double[] { -1, -1, -1 },
-                                                                                         new double[] { 1, 1, 1 }, null );
+        return GeometryFactory.getInstance().createEnvelope( new double[] { -1, -1, -1 }, new double[] { 1, 1, 1 },
+                                                             null );
     }
 
     /**
@@ -188,7 +188,7 @@ public class OpenGLEventHandler implements GLEventListener {
     /**
      * Add the given branch group to the scene and set the appropriate distance etc. After adding the branch group to
      * the rotation group which is controlled by the mouse rotator.
-     *
+     * 
      * @param b
      */
     public void addDataObjectToScene( WorldRenderableObject b ) {
@@ -217,7 +217,7 @@ public class OpenGLEventHandler implements GLEventListener {
 
     /**
      * Update the view by evaluating the given key,
-     *
+     * 
      * @param keyTyped
      *            x/X , y/Y, z/Z, move along positive/negative axis, r/R(reset view), all thers will be ignored.
      * @return true if the view should be redrawn, false otherwise.

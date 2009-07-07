@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,23 +32,23 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
 
 import org.deegree.crs.CRS;
-import org.deegree.crs.CRSRegistry;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link Solid}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
@@ -59,19 +59,20 @@ public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
 
     /**
      * Creates a new {@link DefaultSolid} instance from the given parameters.
-     *
+     * 
      * @param id
-     *            identifier of the new geometry instance
+     *            identifier, may be null
      * @param crs
-     *            solids coordinate reference system. If a point does not have a CRS or it is not known
-     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of <code>null</code>
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param exteriorSurface
      *            the exterior surface (shell) of the solid, may be null
      * @param interiorSurfaces
      *            the interior surfaces of the solid, may be null or empty
      */
-    public DefaultSolid (String id, CRS crs, Surface exteriorSurface, List<Surface> interiorSurfaces) {
-        super (id, crs);
+    public DefaultSolid( String id, CRS crs, PrecisionModel pm, Surface exteriorSurface, List<Surface> interiorSurfaces ) {
+        super( id, crs, pm );
         this.exteriorSurface = exteriorSurface;
         this.interiorSurfaces = interiorSurfaces;
     }
@@ -108,7 +109,7 @@ public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
 
     @Override
     public double getArea() {
-       throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     @Override

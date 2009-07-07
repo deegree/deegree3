@@ -41,7 +41,6 @@ import static org.deegree.commons.utils.HttpUtils.IMAGE;
 import static org.deegree.commons.utils.HttpUtils.XML;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 import static org.deegree.crs.coordinatesystems.GeographicCRS.WGS84;
-import static org.deegree.geometry.GeometryFactoryCreator.getInstance;
 import static org.deegree.protocol.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -74,7 +73,7 @@ import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactoryCreator;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.protocol.wms.WMSConstants;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.slf4j.Logger;
@@ -281,8 +280,7 @@ public class WMSClient111 {
                     min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
                     max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
                     max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
-                    return GeometryFactoryCreator.getInstance().getGeometryFactory().createEnvelope( min, max,
-                                                                                                     new CRS( WGS84 ) );
+                    return GeometryFactory.getInstance().createEnvelope( min, max, new CRS( WGS84 ) );
                 } catch ( NumberFormatException nfe ) {
                     LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
                 }
@@ -333,7 +331,7 @@ public class WMSClient111 {
                     min[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "miny" ) ) );
                     max[0] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxx" ) ) );
                     max[1] = Double.parseDouble( bbox.getAttributeValue( new QName( "maxy" ) ) );
-                    return getInstance().getGeometryFactory().createEnvelope( min, max, new CRS( srs ) );
+                    return GeometryFactory.getInstance().createEnvelope( min, max, new CRS( srs ) );
                 } catch ( NumberFormatException nfe ) {
                     LOG.warn( get( "WMSCLIENT.SERVER_INVALID_NUMERIC_VALUE", nfe.getLocalizedMessage() ) );
                 }
@@ -661,7 +659,7 @@ public class WMSClient111 {
             double[] min = rasterEnv.convertToCRS( xMin, yMin + height );
             double[] max = rasterEnv.convertToCRS( xMin + width, yMin );
 
-            Envelope env = GeometryFactoryCreator.getInstance().getGeometryFactory().createEnvelope( min, max, crs );
+            Envelope env = GeometryFactory.getInstance().createEnvelope( min, max, crs );
             Pair<BufferedImage, String> response = getMap( layers, width, height, env, crs, format, transparent,
                                                            errorsInImage, false, null );
             if ( response.second != null ) {

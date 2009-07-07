@@ -41,6 +41,7 @@ import java.util.List;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
@@ -139,7 +140,7 @@ public class CurveReference extends GeometryReference implements Curve {
         return geometry.getLength();
     }
 
-    public double getPrecision() {
+    public PrecisionModel getPrecision() {
         return geometry.getPrecision();
     }
 

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.composite;
 
 import java.util.Collection;
@@ -43,19 +43,18 @@ import java.util.ListIterator;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.composite.CompositeSurface;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.primitive.GeometricPrimitive.PrimitiveType;
-import org.deegree.geometry.primitive.Surface.SurfaceType;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link CompositeSurface}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultCompositeSurface extends AbstractDefaultGeometry implements CompositeSurface {
@@ -64,22 +63,24 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
 
     /**
      * Creates a new {@link DefaultCompositeSurface} from the given parameters.
-     *
+     * 
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param memberSurfaces
      *            surfaces that constitute the composited surface, the surfaces must join in pairs on common boundary
      *            curves and must, when considered as
      */
-    public DefaultCompositeSurface( String id, CRS crs, List<Surface> memberSurfaces ) {
-        super( id, crs );
+    public DefaultCompositeSurface( String id, CRS crs, PrecisionModel pm, List<Surface> memberSurfaces ) {
+        super( id, crs, pm );
         this.memberSurfaces = memberSurfaces;
     }
 
     @Override
-    public boolean is3D(){
+    public boolean is3D() {
         return memberSurfaces.get( 0 ).is3D();
     }
 

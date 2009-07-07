@@ -49,7 +49,6 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
 import org.deegree.geometry.composite.CompositeSurface;
@@ -93,7 +92,7 @@ import org.junit.Test;
  */
 public class GML311GeometryParserTest {
 
-    private static GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory( "Standard" );
+    private static GeometryFactory geomFac = GeometryFactory.getInstance();
 
     private static final String BASE_DIR = "testdata/geometries/";
 
@@ -774,7 +773,7 @@ public class GML311GeometryParserTest {
         Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
         GMLIdContext idContext = new GMLIdContext();
-        MultiGeometry<Geometry> geom = new GML311GeometryParser(GeometryFactoryCreator.getInstance().getGeometryFactory(), idContext).parseMultiGeometry( xmlReader, null );
+        MultiGeometry<Geometry> geom = new GML311GeometryParser(GeometryFactory.getInstance(), idContext).parseMultiGeometry( xmlReader, null );
         Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
         Assert.assertEquals( new QName( "http://www.opengis.net/gml", "MultiGeometry" ), xmlReader.getName() );
         Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), geom.getCoordinateSystem().getWrappedCRS() );

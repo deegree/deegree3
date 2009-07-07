@@ -42,6 +42,7 @@ import org.deegree.commons.types.gml.StandardGMLObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.OrientableSurface;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
@@ -71,9 +72,9 @@ public class DefaultOrientableSurface implements OrientableSurface {
      * Creates a new <code>DefaultOrientableSurface</code> instance from the given parameters.
      *
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
      * @param baseSurface
      *            base surface
      * @param isReversed
@@ -167,7 +168,7 @@ public class DefaultOrientableSurface implements OrientableSurface {
         return baseSurface.getPerimeter();
     }
 
-    public double getPrecision() {
+    public PrecisionModel getPrecision() {
         return baseSurface.getPrecision();
     }
 

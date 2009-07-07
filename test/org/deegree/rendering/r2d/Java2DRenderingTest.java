@@ -48,7 +48,6 @@ import static java.lang.System.getProperty;
 import static javax.imageio.ImageIO.read;
 import static javax.imageio.ImageIO.write;
 import static org.deegree.commons.utils.GeometryUtils.move;
-import static org.deegree.geometry.GeometryFactoryCreator.getInstance;
 import static org.deegree.rendering.r2d.GeometryGenerator.randomCurve;
 import static org.deegree.rendering.r2d.GeometryGenerator.randomQuad;
 import static org.deegree.rendering.r2d.styling.components.Font.Style.ITALIC;
@@ -81,7 +80,6 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.rendering.r2d.Java2DRenderer;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.PolygonStyling;
@@ -165,7 +163,7 @@ public class Java2DRenderingTest extends TestCase {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
-        GeometryFactory geomFac = getInstance().getGeometryFactory();
+        GeometryFactory geomFac = GeometryFactory.getInstance();
         Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
                                                geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
                                                                                                             5000d },
@@ -266,7 +264,7 @@ public class Java2DRenderingTest extends TestCase {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
-        GeometryFactory geomFac = getInstance().getGeometryFactory();
+        GeometryFactory geomFac = GeometryFactory.getInstance();
         Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
                                                geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
                                                                                                             5000d },
@@ -343,7 +341,7 @@ public class Java2DRenderingTest extends TestCase {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
-        GeometryFactory geomFac = getInstance().getGeometryFactory();
+        GeometryFactory geomFac = GeometryFactory.getInstance();
         Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
                                                geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
                                                                                                             5000d },
@@ -433,7 +431,7 @@ public class Java2DRenderingTest extends TestCase {
 
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
-        GeometryFactory geomFac = getInstance().getGeometryFactory();
+        GeometryFactory geomFac = GeometryFactory.getInstance();
         Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
                                                geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
                                                                                                             5000d },
@@ -481,7 +479,7 @@ public class Java2DRenderingTest extends TestCase {
 
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
-        GeometryFactory geomFac = getInstance().getGeometryFactory();
+        GeometryFactory geomFac = GeometryFactory.getInstance();
         Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
                                                geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
                                                                                                             5000d },
@@ -574,7 +572,7 @@ public class Java2DRenderingTest extends TestCase {
 
         long time = currentTimeMillis();
         Graphics2D g = img.createGraphics();
-        GeometryFactory geomFac = getInstance().getGeometryFactory();
+        GeometryFactory geomFac = GeometryFactory.getInstance();
         Java2DRenderer r = new Java2DRenderer( g, img.getWidth(), img.getHeight(),
                                                geomFac.createEnvelope( new double[] { 0, 0 }, new double[] { 5000d,
                                                                                                             5000d },

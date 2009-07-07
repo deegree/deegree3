@@ -43,7 +43,6 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,7 +108,7 @@ public abstract class GriddedTileContainer implements TileContainer {
         this.tileWidth = envelopeWidth / columns;
         this.tileHeight = envelopeHeight / rows;
         this.rasterReference = new RasterReference( envelope, tileSamplesX * columns, tileSamplesY * rows );
-        geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
+        geomFac = GeometryFactory.getInstance();
         LOG.debug( "envelope: " + envelope );
         LOG.debug( "raster envelope: " + rasterReference );
     }

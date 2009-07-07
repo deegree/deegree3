@@ -49,7 +49,6 @@ import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -67,7 +66,7 @@ public class GeoTIFFTest {
 
     private static AbstractRaster raster;
 
-    private static GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
+    private static GeometryFactory geomFactory = GeometryFactory.getInstance();
 
     /**
      * load the GeoTIFF file to test
@@ -99,11 +98,12 @@ public class GeoTIFFTest {
     @Test
     public void geoTIFFEnvelope()
                             throws UnknownCRSException {
-        double precision = raster.getRasterReference().getDelta();
+        // TODO handle precision
+//        double precision = raster.getRasterReference().getDelta();
         CRS crs = new CRS( "EPSG:4326" );
 
         Envelope env = geomFactory.createEnvelope( new double[] { -113.69474315, 39.10223806 },
-                                                   new double[] { -110.35882409, 41.54129761 }, precision, crs );
+                                                   new double[] { -110.35882409, 41.54129761 }, crs );
         assertTrue( env.equals( raster.getEnvelope() ) );
     }
 

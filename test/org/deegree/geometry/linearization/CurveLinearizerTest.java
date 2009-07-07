@@ -41,9 +41,6 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.deegree.geometry.GeometryFactoryCreator;
-import org.deegree.geometry.linearization.CurveLinearizer;
-import org.deegree.geometry.linearization.NumPointsCriterion;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.Arc;
 import org.deegree.geometry.primitive.curvesegments.Circle;
@@ -75,7 +72,7 @@ public class CurveLinearizerTest {
 
     @Before
     public void setUp() {
-        geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
+        geomFac = org.deegree.geometry.GeometryFactory.getInstance();
         linearizer = new CurveLinearizer( geomFac );
     }
 

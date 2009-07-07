@@ -177,8 +177,8 @@ public class SimpleRaster extends AbstractRaster {
 
     @Override
     public SimpleRaster getSubRaster( double x, double y, double x2, double y2 ) {
-        Envelope env = getGeometryFactory().createEnvelope( new double[] { x, y }, new double[] { x2, y2 },
-                                                            getRasterReference().getDelta(), null );
+        // what about the precision model? Formerly: getRasterReference().getDelta() was used
+        Envelope env = getGeometryFactory().createEnvelope( new double[] { x, y }, new double[] { x2, y2 }, null );
         return getSubRaster( env );
     }
 

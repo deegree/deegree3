@@ -39,6 +39,7 @@ package org.deegree.geometry.refs;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 
 /**
@@ -106,7 +107,7 @@ public class GeometricPrimitiveReference extends GeometryReference implements Ge
         return geometry.getGeometryType();
     }
 
-    public double getPrecision() {
+    public PrecisionModel getPrecision() {
         return geometry.getPrecision();
     }
 

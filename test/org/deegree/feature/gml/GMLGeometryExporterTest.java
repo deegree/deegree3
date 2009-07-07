@@ -36,6 +36,7 @@
 
 package org.deegree.feature.gml;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -54,7 +55,6 @@ import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.junit.XMLAssert;
@@ -164,7 +164,7 @@ public class GMLGeometryExporterTest {
             LOG.info( "Exporting " +  DIR + source );
             GMLIdContext idContext = new GMLIdContext();
             GML311GeometryParser parser =
-                new GML311GeometryParser( GeometryFactoryCreator.getInstance().getGeometryFactory(), idContext );
+                new GML311GeometryParser( GeometryFactory.getInstance(), idContext );
             URL docURL = GMLGeometryExporterTest.class.getResource( DIR + source );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
             xmlReader.nextTag();
@@ -197,7 +197,7 @@ public class GMLGeometryExporterTest {
         for ( String patchSource : patchSources ) {
             LOG.info( "Exporting " +  PATCH_DIR + patchSource );
             GMLIdContext idContext = new GMLIdContext();
-            GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
+            GeometryFactory geomFactory = GeometryFactory.getInstance();
             GML311GeometryParser geometryParser = new GML311GeometryParser( geomFactory, idContext );
             GML311SurfacePatchParser parser = new GML311SurfacePatchParser( geometryParser, geomFactory );
             URL docURL = GMLGeometryExporterTest.class.getResource( PATCH_DIR + patchSource );
@@ -234,7 +234,7 @@ public class GMLGeometryExporterTest {
         for ( String segmentSource : segmentSources ) {
             LOG.info( "Exporting " +  SEGMENT_DIR + segmentSource );
             GMLIdContext idContext = new GMLIdContext();
-            GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
+            GeometryFactory geomFactory = GeometryFactory.getInstance();
             GML311GeometryParser geometryParser = new GML311GeometryParser( geomFactory, idContext );
             GML311CurveSegmentParser parser = new GML311CurveSegmentParser( geometryParser, geomFactory );
             URL docURL = GMLGeometryExporterTest.class.getResource( SEGMENT_DIR + segmentSource );
@@ -269,7 +269,7 @@ public class GMLGeometryExporterTest {
             LOG.info( "Exporting " +  DIR + envelopeSource );
             GMLIdContext idContext = new GMLIdContext();
             GML311GeometryParser parser =
-                new GML311GeometryParser( GeometryFactoryCreator.getInstance().getGeometryFactory(), idContext );
+                new GML311GeometryParser( GeometryFactory.getInstance(), idContext );
             URL docURL = GMLGeometryExporterTest.class.getResource( DIR + envelopeSource );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
             xmlReader.nextTag();
@@ -302,7 +302,7 @@ public class GMLGeometryExporterTest {
         LOG.info( "Exporting " +  DIR + source );
         GMLIdContext idContext = new GMLIdContext();
         GML311GeometryParser parser =
-            new GML311GeometryParser( GeometryFactoryCreator.getInstance().getGeometryFactory(), idContext );
+            new GML311GeometryParser( GeometryFactory.getInstance(), idContext );
         URL docURL = GMLGeometryExporterTest.class.getResource( DIR + source );
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
         xmlReader.nextTag();

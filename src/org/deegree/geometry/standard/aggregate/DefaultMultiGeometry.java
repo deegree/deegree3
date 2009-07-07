@@ -44,6 +44,7 @@ import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.multi.MultiGeometry;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
@@ -66,13 +67,15 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
      * Creates a new {@link DefaultMultiGeometry} from the given parameters.
      *
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param members
      */
-    public DefaultMultiGeometry( String id, CRS crs, List<T> members ) {
-        super( id, crs );
+    public DefaultMultiGeometry( String id, CRS crs, PrecisionModel pm, List<T> members ) {
+        super( id, crs, pm );
         this.members = members;
     }
 

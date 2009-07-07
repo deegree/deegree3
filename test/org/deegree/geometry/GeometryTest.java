@@ -37,9 +37,6 @@ package org.deegree.geometry;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,7 +51,7 @@ import org.junit.Test;
  */
 public class GeometryTest {
 
-    private static GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
+    private static GeometryFactory geomFactory = GeometryFactory.getInstance();
 
     private static double DELTA = 0.001;
 
@@ -79,7 +76,7 @@ public class GeometryTest {
     }
 
     private Envelope createEnvelope( int x1, int y1, int x2, int y2 ) {
-        return geomFactory.createEnvelope( new double[] { x1, y1 }, new double[] { x2, y2 }, DELTA, null );
+        return geomFactory.createEnvelope( new double[] { x1, y1 }, new double[] { x2, y2 }, null );
     }
 
     /**

@@ -40,6 +40,7 @@ import org.deegree.commons.types.gml.StandardGMLObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.precision.PrecisionModel;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -119,7 +120,7 @@ public class GeometryReference implements Geometry {
         return gid;
     }
 
-    public double getPrecision() {
+    public PrecisionModel getPrecision() {
         return geometry.getPrecision();
     }
 

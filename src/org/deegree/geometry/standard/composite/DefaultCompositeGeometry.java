@@ -42,6 +42,7 @@ import java.util.ListIterator;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.composite.CompositeGeometry;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
@@ -61,13 +62,15 @@ public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements
      * Creates a new {@link DefaultCompositeGeometry} from the given parameters.
      *
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param memberPrimitives
      */
-    public DefaultCompositeGeometry( String id, CRS crs, List<GeometricPrimitive> memberPrimitives ) {
-        super( id, crs );
+    public DefaultCompositeGeometry( String id, CRS crs, PrecisionModel pm, List<GeometricPrimitive> memberPrimitives ) {
+        super( id, crs, pm );
         this.memberPrimitives = memberPrimitives;
     }
 

@@ -41,6 +41,7 @@ import java.util.List;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
@@ -143,7 +144,7 @@ public class PolygonReference extends GeometryReference implements Polygon {
         return geometry.getPerimeter();
     }
 
-    public double getPrecision() {
+    public PrecisionModel getPrecision() {
         return geometry.getPrecision();
     }
 

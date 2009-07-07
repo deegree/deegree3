@@ -40,7 +40,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.linearization.CurveLinearizer;
 import org.deegree.geometry.linearization.LinearizationCriterion;
@@ -136,7 +135,7 @@ public class GeometryValidator {
      *            callback handler for errors
      */
     public GeometryValidator( GeometryValidationEventHandler eventHandler ) {
-        linearizer = new CurveLinearizer( GeometryFactoryCreator.getInstance().getGeometryFactory() );
+        linearizer = new CurveLinearizer( org.deegree.geometry.GeometryFactory.getInstance() );
         crit = new NumPointsCriterion( 150 );
         jtsFactory = new GeometryFactory();
         this.eventHandler = eventHandler;

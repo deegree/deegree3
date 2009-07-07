@@ -47,9 +47,7 @@ import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.protocol.wms.client.WMSClient111;
-import org.deegree.rendering.r3d.opengl.rendering.dem.manager.TerrainRenderingManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +63,7 @@ public class WMSTextureTileProvider implements TextureTileProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger( WMSTextureTileProvider.class );
 
-    private static GeometryFactory fac = GeometryFactoryCreator.getInstance().getGeometryFactory();
+    private static GeometryFactory fac = GeometryFactory.getInstance();
 
     private final WMSClient111 client;
 

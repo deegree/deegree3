@@ -52,7 +52,6 @@ import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiSurface;
 import org.deegree.geometry.primitive.Curve;
@@ -189,7 +188,7 @@ public class SHPReader {
 
     private static final Logger LOG = getLogger( SHPReader.class );
 
-    private static final GeometryFactory fac = GeometryFactoryCreator.getInstance().getGeometryFactory();
+    private static final GeometryFactory fac = GeometryFactory.getInstance();
 
     private double[] envelope;
 

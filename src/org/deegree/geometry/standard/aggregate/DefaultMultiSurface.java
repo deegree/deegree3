@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,36 +32,39 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.aggregate;
 
 import java.util.List;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.multi.MultiSurface;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Surface;
 
 /**
  * Default implementation of {@link MultiSurface}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultMultiSurface extends DefaultMultiGeometry<Surface> implements MultiSurface {
 
     /**
      * Creates a new {@link DefaultMultiSurface} from the given parameters.
-     *
+     * 
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param members
      */
-    public DefaultMultiSurface( String id, CRS crs, List<Surface> members ) {
-        super( id, crs, members);
+    public DefaultMultiSurface( String id, CRS crs, PrecisionModel pm, List<Surface> members ) {
+        super( id, crs, pm, members );
     }
 
     @Override

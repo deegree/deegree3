@@ -41,6 +41,7 @@ import java.util.List;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
@@ -134,7 +135,7 @@ public class SurfaceReference extends GeometryReference implements Surface {
         return geometry.getPerimeter();
     }
 
-    public double getPrecision() {
+    public PrecisionModel getPrecision() {
         return geometry.getPrecision();
     }
 

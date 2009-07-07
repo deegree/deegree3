@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,13 +32,14 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.crs.CRS;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
@@ -48,10 +49,10 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link Surface}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
@@ -60,16 +61,18 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
 
     /**
      * Creates a new {@link DefaultSurface} instance from the given parameters.
-     *
+     * 
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param patches
      *            patches that constitute the surface
      */
-    public DefaultSurface( String id, CRS crs, List<? extends SurfacePatch> patches ) {
-        super( id, crs );
+    public DefaultSurface( String id, CRS crs, PrecisionModel pm, List<? extends SurfacePatch> patches ) {
+        super( id, crs, pm );
         this.patches = patches;
     }
 
@@ -133,7 +136,7 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
 
     @Override
     public List<List<Point>> getInteriorRingsCoordinates() {
-       List<List<Point>> controlPoints = new ArrayList<List<Point>>();
+        List<List<Point>> controlPoints = new ArrayList<List<Point>>();
         if ( patches.size() == 1 ) {
             if ( patches.get( 0 ) instanceof PolygonPatch ) {
                 PolygonPatch patch = (PolygonPatch) patches.get( 0 );

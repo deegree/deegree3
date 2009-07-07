@@ -44,6 +44,7 @@ import java.util.ListIterator;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.composite.CompositeCurve;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
@@ -66,15 +67,17 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
      * Creates a new {@link DefaultCompositeCurve} from the given parameters.
      *
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param memberCurves
      *            curves that constitute the composited curve, each curve must end at the start point of the subsequent
      *            curve in the list
      */
-    public DefaultCompositeCurve( String id, CRS crs, List<Curve> memberCurves ) {
-        super( id, crs );
+    public DefaultCompositeCurve( String id, CRS crs, PrecisionModel pm, List<Curve> memberCurves ) {
+        super( id, crs, pm );
         this.memberCurves = memberCurves;
     }
 

@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.multi.MultiPoint;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 
 /**
@@ -55,13 +56,15 @@ public class DefaultMultiPoint extends DefaultMultiGeometry<Point> implements Mu
      * Creates a new {@link DefaultMultiPoint} from the given parameters.
      *
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be nul
      * @param members
      */
-    public DefaultMultiPoint( String id, CRS crs, List<Point> members ) {
-        super( id, crs, members );
+    public DefaultMultiPoint( String id, CRS crs, PrecisionModel pm, List<Point> members ) {
+        super( id, crs, pm, members );
     }
 
     @Override

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
 import java.util.ArrayList;
@@ -41,9 +41,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.deegree.crs.CRS;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.linearization.CurveLinearizer;
 import org.deegree.geometry.linearization.LinearizationCriterion;
 import org.deegree.geometry.linearization.NumPointsCriterion;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
@@ -52,16 +54,15 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.standard.DefaultGeometryFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * Default implementation of {@link Ring}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultRing extends AbstractDefaultGeometry implements Ring {
@@ -74,16 +75,18 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
 
     /**
      * Creates a new <code>DefaultRing</code> instance from the given parameters.
-     *
+     * 
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param members
      *            the <code>Curve</code>s that compose the <code>Ring</code>
      */
-    public DefaultRing( String id, CRS crs, List<Curve> members ) {
-        super( id, crs );
+    public DefaultRing( String id, CRS crs, PrecisionModel pm, List<Curve> members ) {
+        super( id, crs, pm );
         this.members = members;
         for ( Curve curve : members ) {
             segments.addAll( curve.getCurveSegments() );
@@ -91,29 +94,38 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     }
 
     /**
+     * Creates a new <code>DefaultRing</code> instance from the given parameters.
+     * 
      * @param id
+     *            identifier, may be null
      * @param crs
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param segment
+     *            the segment that composes the <code>Ring</code>
      */
-    public DefaultRing( String id, CRS crs, LineStringSegment segment ) {
-        super( id, crs );
+    public DefaultRing( String id, CRS crs, PrecisionModel pm, LineStringSegment segment ) {
+        super( id, crs, pm );
         this.members = new ArrayList<Curve>( 1 );
-        this.members.add( new DefaultLineString( null, crs, segment.getControlPoints() ) );
+        this.members.add( new DefaultLineString( null, crs, pm, segment.getControlPoints() ) );
         this.segments.add( segment );
     }
 
     /**
      * Creates a new <code>DefaultRing</code> instance from a closed {@link DefaultLineString}.
-     *
+     * 
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param singleCurve
      *            closed line string
      */
-    protected DefaultRing( String id, CRS crs, DefaultLineString singleCurve ) {
-        super( id, crs );
+    protected DefaultRing( String id, CRS crs, PrecisionModel pm, DefaultLineString singleCurve ) {
+        super( id, crs, pm );
         members = new ArrayList<Curve>( 1 );
         members.add( singleCurve );
         segments.addAll( singleCurve.getCurveSegments() );
@@ -200,7 +212,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
 
     @Override
     protected com.vividsolutions.jts.geom.LinearRing buildJTSGeometry() {
-        CurveLinearizer linearizer = new CurveLinearizer( new DefaultGeometryFactory() );
+        CurveLinearizer linearizer = new CurveLinearizer( GeometryFactory.getInstance() );
         // TODO how to determine a feasible linearization criterion?
         LinearizationCriterion crit = new NumPointsCriterion( 100 );
         List<Coordinate> coords = new LinkedList<Coordinate>();

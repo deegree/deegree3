@@ -43,7 +43,6 @@ import static java.lang.Math.signum;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 
 /**
  * This class maps a 2D raster to another cartesian world coordinate system.
@@ -327,7 +326,7 @@ public class RasterReference {
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height, CRS crs, RasterReference.Type type ) {
-        GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
+        GeometryFactory geomFactory = GeometryFactory.getInstance();
 
         double x0, y0, x1, y1;
 
@@ -348,8 +347,7 @@ public class RasterReference {
         double ymin = min( y0, y1 );
         double ymax = max( y0, y1 );
 
-        Envelope envelope = geomFactory.createEnvelope( new double[] { xmin, ymin }, new double[] { xmax, ymax },
-                                                        delta, crs );
+        Envelope envelope = geomFactory.createEnvelope( new double[] { xmin, ymin }, new double[] { xmax, ymax }, crs );
         return envelope;
     }
 

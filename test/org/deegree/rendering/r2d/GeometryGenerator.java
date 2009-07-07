@@ -37,7 +37,6 @@
 package org.deegree.rendering.r2d;
 
 import static java.util.Arrays.asList;
-import static org.deegree.geometry.GeometryFactoryCreator.getInstance;
 
 import java.util.Random;
 
@@ -58,7 +57,7 @@ public class GeometryGenerator {
 
     private static final Random rnd = new Random();
 
-    private static final GeometryFactory fac = getInstance().getGeometryFactory();
+    private static final GeometryFactory fac = GeometryFactory.getInstance();
 
     /**
      * @param max

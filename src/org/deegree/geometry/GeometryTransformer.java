@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
 import java.util.ArrayList;
@@ -51,6 +51,7 @@ import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiPoint;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.multi.MultiSurface;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
@@ -63,20 +64,20 @@ import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 
 /**
  * class for transforming deegree geometries to new coordinate reference systems.
- *
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class GeometryTransformer extends Transformer {
 
-    private static final GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
+    private static final GeometryFactory geomFactory = GeometryFactory.getInstance();
 
     /**
      * Creates a new GeometryTransformer object.
-     *
+     * 
      * @param targetCRS
      * @throws IllegalArgumentException
      *             if the given parameter is null.
@@ -87,7 +88,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * Creates a new GeometryTransformer object, with the given id as the target CRS.
-     *
+     * 
      * @param targetCRS
      *            an identifier to which all other CRS's shall be transformed.
      * @throws UnknownCRSException
@@ -101,7 +102,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the coordinates of a deegree geometry to the target coordinate reference system.
-     *
+     * 
      * @param geo
      *            to be transformed
      * @return the same geometry in a different crs.
@@ -121,7 +122,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the coordinates of a deegree geometry to the target coordinate reference system.
-     *
+     * 
      * @param geo
      *            to be transformed
      * @param sourceCRS
@@ -141,7 +142,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the coordinates of a deegree geometry to the target coordinate reference system.
-     *
+     * 
      * @param geo
      *            to be transformed
      * @param sourceCRS
@@ -159,7 +160,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the coordinates of a deegree geometry to the target coordinate reference system.
-     *
+     * 
      * @param geo
      *            to be transformed
      * @return the same geometry in a different crs.
@@ -208,7 +209,7 @@ public class GeometryTransformer extends Transformer {
      * Transform the geometry of an envelope. It substitutes the envelope (two points) with a polygon with
      * <code>numPoints</code> points. The points are distributed evenly on the boundary of the envelope to provide a
      * more accurate transformed envelope. This is useful if the transformation rotates and distorts.
-     *
+     * 
      * @param envelope
      * @param trans
      * @param numPoints
@@ -235,18 +236,18 @@ public class GeometryTransformer extends Transformer {
         double xStep = width / ( pointsPerSide + 1 );
         double yStep = height / ( pointsPerSide + 1 );
 
-        double precision = envelope.getPrecision();
+        PrecisionModel precision = envelope.getPrecision();
 
         List<Point> points = new ArrayList<Point>( pointsPerSide * 4 + 4 );
 
         for ( int i = 0; i <= pointsPerSide + 1; i++ ) {
-            points.add( geomFactory.createPoint( null, new double[] { x1 + i * xStep, y1 }, precision, null ) );
-            points.add( geomFactory.createPoint( null, new double[] { x1 + i * xStep, y2 }, precision, null ) );
+            points.add( geomFactory.createPoint( null, new double[] { x1 + i * xStep, y1 }, null ) );
+            points.add( geomFactory.createPoint( null, new double[] { x1 + i * xStep, y2 }, null ) );
         }
 
         for ( int i = 1; i <= pointsPerSide; i++ ) {
-            points.add( geomFactory.createPoint( null, new double[] { x1, y1 + i * yStep }, precision, null ) );
-            points.add( geomFactory.createPoint( null, new double[] { x2, y1 + i * yStep }, precision, null ) );
+            points.add( geomFactory.createPoint( null, new double[] { x1, y1 + i * yStep }, null ) );
+            points.add( geomFactory.createPoint( null, new double[] { x2, y1 + i * yStep }, null ) );
         }
 
         MultiPoint envGeometry = geomFactory.createMultiPoint( null, envelope.getCoordinateSystem(), points );
@@ -257,7 +258,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the submitted curve to the target coordinate reference system
-     *
+     * 
      * @throws TransformationException
      */
     private Curve transform( Curve geo, Transformation trans )
@@ -278,7 +279,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the submitted multi curve to the target coordinate reference system
-     *
+     * 
      * @throws TransformationException
      */
     private MultiCurve transform( MultiCurve geo, Transformation trans )
@@ -292,7 +293,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the submitted multi point to the target coordinate reference system
-     *
+     * 
      * @throws TransformationException
      */
     private MultiPoint transform( MultiPoint geo, Transformation trans )
@@ -306,7 +307,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the submitted multi surface to the target coordinate reference system
-     *
+     * 
      * @throws TransformationException
      */
     private MultiSurface transform( MultiSurface geo, Transformation trans )
@@ -330,7 +331,7 @@ public class GeometryTransformer extends Transformer {
 
     /**
      * transforms the list of points
-     *
+     * 
      * @throws TransformationException
      */
     private List<Point> transform( List<Point> points, Transformation trans )
@@ -345,17 +346,17 @@ public class GeometryTransformer extends Transformer {
 
             if ( Double.isNaN( point.getZ() ) ) {
                 result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y },
-                                                     point.getPrecision(), new CRS( trans.getTargetCRS() ) ) );
+                                                     new CRS( trans.getTargetCRS() ) ) );
             }
             result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y, tmp.z },
-                                                 point.getPrecision(), new CRS( trans.getTargetCRS() ) ) );
+                                                 new CRS( trans.getTargetCRS() ) ) );
         }
         return result;
     }
 
     /**
      * transforms the submitted point to the target coordinate reference system
-     *
+     * 
      * @throws TransformationException
      */
     private Point transform( Point geo, Transformation trans )
@@ -367,16 +368,16 @@ public class GeometryTransformer extends Transformer {
         result = trans.doTransform( coord );
 
         if ( Double.isNaN( geo.getZ() ) ) {
-            return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y }, geo.getPrecision(),
+            return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y },
                                             new CRS( trans.getTargetCRS() ) );
         }
-        return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y, result.z }, geo.getPrecision(),
+        return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y, result.z },
                                         new CRS( trans.getTargetCRS() ) );
     }
 
     /**
      * transforms the submitted surface to the target coordinate reference system
-     *
+     * 
      * @throws TransformationException
      */
     private Surface transform( Surface geo, Transformation trans )

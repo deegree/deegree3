@@ -42,7 +42,7 @@ import java.util.Map;
 import javax.media.opengl.GL;
 
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactoryCreator;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.DirectGeometryBuffer;
 import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeometry;
@@ -111,7 +111,7 @@ public class PrototypePool {
 
         RenderableGeometry rg = new BOXGeometry();
         rqm.addQualityModelPart( rg );
-        Envelope env = GeometryFactoryCreator.getInstance().getGeometryFactory().createEnvelope( 0, 0, 1, 1, null );
+        Envelope env = GeometryFactory.getInstance().createEnvelope( 0, 0, 1, 1, null );
         return new RenderablePrototype( "box", "yeah", env, rqm );
     }
 

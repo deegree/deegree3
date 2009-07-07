@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.multi.MultiLineString;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.LineString;
 
 /**
@@ -55,13 +56,15 @@ public class DefaultMultiLineString extends DefaultMultiGeometry<LineString> imp
      * Creates a new {@link DefaultMultiLineString} from the given parameters.
      *
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param members
      */
-    public DefaultMultiLineString( String id, CRS crs, List<LineString> members ) {
-        super( id, crs, members );
+    public DefaultMultiLineString( String id, CRS crs, PrecisionModel pm, List<LineString> members ) {
+        super( id, crs, pm, members );
     }
 
     @Override

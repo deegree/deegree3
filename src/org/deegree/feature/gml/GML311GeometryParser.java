@@ -58,7 +58,6 @@ import org.deegree.feature.i18n.Messages;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
@@ -212,7 +211,7 @@ public class GML311GeometryParser extends GML311BaseParser {
     }
 
     public GML311GeometryParser() {
-        this( GeometryFactoryCreator.getInstance().getGeometryFactory(), new GMLIdContext() );
+        this( GeometryFactory.getInstance(), new GMLIdContext() );
     }
 
     /**

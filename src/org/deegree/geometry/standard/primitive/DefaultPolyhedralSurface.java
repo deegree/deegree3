@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,12 +32,13 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
 
 import org.deegree.crs.CRS;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.PolyhedralSurface;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
@@ -46,33 +47,35 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link PolyhedralSurface}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements PolyhedralSurface {
 
-    private List<?> patches;
+    private List<PolygonPatch> patches;
 
     /**
      * Creates a new {@link DefaultPolyhedralSurface} instance from the given parameters.
-     *
+     * 
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param patches
      *            patches that constitute the surface
      */
-    public DefaultPolyhedralSurface (String id, CRS crs, List<PolygonPatch> patches) {
-        super (id, crs);
+    public DefaultPolyhedralSurface( String id, CRS crs, PrecisionModel pm, List<PolygonPatch> patches ) {
+        super( id, crs, pm );
         this.patches = patches;
     }
 
     @Override
-    public boolean is3D(){
+    public boolean is3D() {
         return ( (SurfacePatch) patches.get( 0 ) ).is3D();
     }
 
@@ -86,10 +89,9 @@ public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public List<SurfacePatch> getPatches() {
-        return (List<SurfacePatch>) patches;
+    public List<PolygonPatch> getPatches() {
+        return patches;
     }
 
     @Override

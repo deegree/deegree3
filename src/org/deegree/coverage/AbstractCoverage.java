@@ -38,21 +38,18 @@ package org.deegree.coverage;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 
 /**
- *
  * This class represents an abstract coverage.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  *
  * @version $Revision$, $Date$
- *
  */
 public abstract class AbstractCoverage {
 
-    private GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
+    private GeometryFactory geomFactory = GeometryFactory.getInstance();
 
     private CRS crs;
 
@@ -130,8 +127,7 @@ public abstract class AbstractCoverage {
         this.crs = crs;
         if ( envelope != null ) {
             // rb: this is not correct, the values of the envelope should be converted to the given crs, shouldn't they.
-            this.envelope = geomFactory.createEnvelope( envelope.getMin().getAsArray(), envelope.getMax().getAsArray(),
-                                                        envelope.getPrecision(), crs );
+            this.envelope = geomFactory.createEnvelope( envelope.getMin().getAsArray(), envelope.getMax().getAsArray(), crs );
         }
     }
 }

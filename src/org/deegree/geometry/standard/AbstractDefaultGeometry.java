@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,13 +32,14 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard;
 
 import org.deegree.commons.types.gml.StandardGMLObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 
@@ -51,10 +52,10 @@ import org.deegree.geometry.primitive.LineString;
  * approximates the original geometry. See <a
  * href="https://wiki.deegree.org/deegreeWiki/deegree3/MappingComplexGeometries">this page</a> for a discussion.
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public abstract class AbstractDefaultGeometry implements Geometry {
@@ -71,15 +72,19 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     protected CRS crs;
 
+    protected PrecisionModel pm;    
+
     private StandardGMLObjectProperties standardProps;
 
     /**
      * @param id
      * @param crs
+     * @param pm
      */
-    public AbstractDefaultGeometry( String id, CRS crs ) {
+    public AbstractDefaultGeometry( String id, CRS crs, PrecisionModel pm ) {
         this.id = id;
         this.crs = crs;
+        this.pm = pm;
     }
 
     @Override
@@ -93,9 +98,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
-    public double getPrecision() {
-        // TODO return real precision
-        return 0.0000001;
+    public PrecisionModel getPrecision() {
+        return pm;
     }
 
     @Override

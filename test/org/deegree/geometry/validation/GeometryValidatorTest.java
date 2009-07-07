@@ -52,7 +52,6 @@ import org.deegree.feature.gml.GML311GeometryParserTest;
 import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
@@ -69,7 +68,7 @@ import org.junit.Test;
  */
 public class GeometryValidatorTest {
 
-    private static GeometryFactory geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory( "Standard" );
+    private static GeometryFactory geomFac = GeometryFactory.getInstance();
 
     private static final String BASE_DIR = "testdata/geometries/";
 

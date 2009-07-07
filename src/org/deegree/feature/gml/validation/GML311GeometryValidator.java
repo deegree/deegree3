@@ -52,7 +52,7 @@ import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.gml.GML311GeometryParser;
 import org.deegree.feature.gml.GMLIdContext;
-import org.deegree.geometry.GeometryFactoryCreator;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
@@ -91,7 +91,7 @@ public class GML311GeometryValidator extends XMLAdapter {
      */
     public GML311GeometryValidator( XMLStreamReaderWrapper xmlStream, GMLValidationEventHandler gmlErrorHandler ) {
         this.xmlStream = xmlStream;
-        geomParser = new GML311GeometryParser( GeometryFactoryCreator.getInstance().getGeometryFactory(), new GMLIdContext() );
+        geomParser = new GML311GeometryParser( GeometryFactory.getInstance(), new GMLIdContext() );
         this.gmlErrorHandler = gmlErrorHandler;
     }
 

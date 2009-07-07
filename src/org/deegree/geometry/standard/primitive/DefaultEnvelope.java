@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
@@ -42,8 +42,8 @@ import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.deegree.geometry.multi.MultiGeometry;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.Point;
@@ -52,15 +52,15 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
  * Default implementation of {@link Envelope}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope {
 
-    private static GeometryFactory geomFactory = GeometryFactoryCreator.getInstance().getGeometryFactory();
+    private static GeometryFactory geomFactory = GeometryFactory.getInstance();
 
     private static double DELTA = 0.001;
 
@@ -72,16 +72,18 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
     /**
      * Creates a new <code>DefaultEnvelope</code> instance from the given parameters.
-     *
+     * 
      * @param id
-     *            identifier of the created geometry object
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param min
      * @param max
      */
-    public DefaultEnvelope( String id, CRS crs, Point min, Point max ) {
-        super( id, crs );
+    public DefaultEnvelope( String id, CRS crs, PrecisionModel pm, Point min, Point max ) {
+        super( id, crs, pm );
         this.min = min;
         this.max = max;
     }
@@ -162,7 +164,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
                 }
 
                 result = geomFactory.createEnvelope( new double[] { newMinX, newMinY },
-                                                     new double[] { newMaxX, newMaxY }, DELTA, null );
+                                                     new double[] { newMaxX, newMaxY }, null );
             } else {
 
             }
@@ -291,7 +293,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.geometry.standard.AbstractDefaultGeometry#contains(org.deegree.geometry.Geometry)
      */
     @Override
@@ -324,7 +326,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.geometry.standard.AbstractDefaultGeometry#equals(org.deegree.geometry.Geometry)
      */
     @Override
@@ -361,9 +363,9 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
                 max[i] = other.getMax().getAsArray()[i];
             }
         }
-        Point newMin = new DefaultPoint( null, getCoordinateSystem(), min );
-        Point newMax = new DefaultPoint( null, getCoordinateSystem(), max );
-        return new DefaultEnvelope( null, getCoordinateSystem(), newMin, newMax );
+        Point newMin = new DefaultPoint( null, getCoordinateSystem(), pm, min );
+        Point newMax = new DefaultPoint( null, getCoordinateSystem(), pm, max );
+        return new DefaultEnvelope( null, getCoordinateSystem(), pm, newMin, newMax );
     }
 
     @Override
@@ -373,12 +375,12 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.geometry.Envelope#getCentroid()
      */
     public Point getCentroid() {
         if ( centroid == null ) {
-            GeometryFactory gf = GeometryFactoryCreator.getInstance().getGeometryFactory();
+            GeometryFactory gf = GeometryFactory.getInstance();
             double[] coordinates = new double[max.getAsArray().length];
             for ( int i = 0; i < coordinates.length; i++ ) {
                 coordinates[i] = min.getAsArray()[i] + ( max.getAsArray()[i] - min.getAsArray()[i] ) / 2d;

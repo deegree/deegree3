@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.geometry.standard.primitive;
 
@@ -42,6 +42,7 @@ import org.deegree.commons.types.gml.StandardGMLObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.OrientableCurve;
@@ -50,10 +51,10 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 
 /**
  * Default implementation of {@link OrientableCurve}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultOrientableCurve implements OrientableCurve {
@@ -70,7 +71,7 @@ public class DefaultOrientableCurve implements OrientableCurve {
 
     /**
      * Creates a new <code>DefaultOrientableCurve</code> instance from the given parameters.
-     *
+     * 
      * @param id
      *            identifier of the created geometry object
      * @param crs
@@ -193,7 +194,7 @@ public class DefaultOrientableCurve implements OrientableCurve {
     }
 
     @Override
-    public double getPrecision() {
+    public PrecisionModel getPrecision() {
         return baseCurve.getPrecision();
     }
 

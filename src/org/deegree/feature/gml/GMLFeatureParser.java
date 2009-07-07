@@ -77,7 +77,6 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,7 +113,7 @@ public class GMLFeatureParser extends XMLAdapter {
     public GMLFeatureParser( ApplicationSchema schema, GMLIdContext idContext ) {
         this.schema = schema;
         this.xsModel = schema.getXSModel();
-        this.geomFac = GeometryFactoryCreator.getInstance().getGeometryFactory();
+        this.geomFac = GeometryFactory.getInstance();
         this.idContext = idContext;
         this.geomParser = new GML311GeometryParser( geomFac, idContext );
     }

@@ -39,10 +39,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.crs.CRS;
-import org.deegree.crs.CRSRegistry;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.GeometryFactoryCreator;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
@@ -69,19 +68,16 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
      * Creates a new {@link DefaultPolygon} instance from the given parameters.
      *
      * @param id
-     *            identifier of the new geometry instance
+     *            identifier, may be null
      * @param crs
-     *            coordinate reference system. If the polygon does not have a CRS or it is not known
-     *            {@link CRSRegistry#lookupDummyCRS(String)} shall be used instead of
-     *            <code>null</code>
-     * @param exteriorRing
-     *            ring that defines the outer boundary, may be null (see section 9.2.2.5 of GML
-     *            spec)
+     *            coordinate reference system, may be null
+     * @param pm
+     *            precision model, may be null
      * @param interiorRings
      *            list of rings that define the inner boundaries, may be empty or null
      */
-    public DefaultPolygon( String id, CRS crs, Ring exteriorRing, List<Ring> interiorRings ) {
-        super( id, crs, createPatchList( exteriorRing, interiorRings ) );
+    public DefaultPolygon( String id, CRS crs, PrecisionModel pm, Ring exteriorRing, List<Ring> interiorRings ) {
+        super( id, crs, pm, createPatchList( exteriorRing, interiorRings ) );
         this.exteriorRing = exteriorRing;
         this.interiorRings = interiorRings;
     }
@@ -134,7 +130,7 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
                     }
                 }
             }
-            GeometryFactory gf = GeometryFactoryCreator.getInstance().getGeometryFactory();
+            GeometryFactory gf = GeometryFactory.getInstance();
             envelope = gf.createEnvelope( min, max, getCoordinateSystem() );
         }
         return envelope;

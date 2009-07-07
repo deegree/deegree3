@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,13 +32,14 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
 import java.util.Collections;
 import java.util.List;
 
 import org.deegree.crs.CRS;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
@@ -47,10 +48,10 @@ import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
 
 /**
  * Default implementation of {@link LineString}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultLineString extends DefaultCurve implements LineString {
@@ -58,13 +59,14 @@ public class DefaultLineString extends DefaultCurve implements LineString {
     private LineStringSegment singleSegment;
 
     /**
-     *
+     * 
      * @param id
      * @param crs
+     * @param pm
      * @param controlPoints
      */
-    public DefaultLineString( String id, CRS crs, List<Point> controlPoints ) {
-        super( id, crs, Collections.singletonList( (CurveSegment) new DefaultLineStringSegment( controlPoints ) ) );
+    public DefaultLineString( String id, CRS crs, PrecisionModel pm, List<Point> controlPoints ) {
+        super( id, crs, pm, Collections.singletonList( (CurveSegment) new DefaultLineStringSegment( controlPoints ) ) );
         singleSegment = (LineStringSegment) getCurveSegments().get( 0 );
     }
 
