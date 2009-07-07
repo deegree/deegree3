@@ -35,7 +35,6 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.composite;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -44,12 +43,14 @@ import java.util.ListIterator;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.composite.CompositeCurve;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.standard.points.PointsBuilder;
 
 /**
  * Default implementation of {@link CompositeCurve}.
@@ -242,10 +243,10 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
     }
 
     @Override
-    public List<Point> getControlPoints() {
-        List<Point> controlPoints = new ArrayList<Point>();
+    public Points getControlPoints() {
+        PointsBuilder controlPoints = new PointsBuilder();
         for ( Curve curve : memberCurves ) {
-            controlPoints.addAll( curve.getControlPoints() );
+            controlPoints.add( curve.getControlPoints() );
         }
         return controlPoints;
     }

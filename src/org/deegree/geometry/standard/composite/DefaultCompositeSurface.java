@@ -43,6 +43,7 @@ import java.util.ListIterator;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.composite.CompositeSurface;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
@@ -225,12 +226,12 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
     }
 
     @Override
-    public List<Point> getExteriorRingCoordinates() {
+    public Points getExteriorRingCoordinates() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<List<Point>> getInteriorRingsCoordinates() {
+    public List<Points> getInteriorRingsCoordinates() {
         throw new UnsupportedOperationException();
     }
 }

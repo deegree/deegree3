@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.deegree.crs.CRS;
@@ -43,6 +42,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.multi.MultiGeometry;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
@@ -258,7 +258,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
                         }
                     }
 
-                    for ( List<Point> list : p.getInteriorRingsCoordinates() ) {
+                    for ( Points list : p.getInteriorRingsCoordinates() ) {
                         for ( Point pt : list ) {
                             if ( minx <= pt.getX() && pt.getX() <= maxx && miny <= pt.getY() && pt.getY() <= maxy ) {
                                 return true;

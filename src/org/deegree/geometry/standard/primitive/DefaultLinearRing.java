@@ -38,6 +38,7 @@ package org.deegree.geometry.standard.primitive;
 import java.util.List;
 
 import org.deegree.crs.CRS;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.LinearRing;
@@ -55,7 +56,7 @@ import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
  */
 public class DefaultLinearRing extends DefaultRing implements LinearRing {
 
-    private List<Point> controlPoints;
+    private Points controlPoints;
 
     /**
      * Creates a new <code>DefaultLinearRing</code> instance from the given parameters.
@@ -68,7 +69,7 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
      *            precision model, may be null
      * @param controlPoints
      */
-    public DefaultLinearRing( String id, CRS crs, PrecisionModel pm, List<Point> controlPoints ) {
+    public DefaultLinearRing( String id, CRS crs, PrecisionModel pm, Points controlPoints ) {
         super( id, crs, pm, new DefaultLineStringSegment( controlPoints ) );
         this.controlPoints = controlPoints;
     }
@@ -99,7 +100,7 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return ( (LineString) members.get( 0 ) ).getControlPoints();
     }
 }

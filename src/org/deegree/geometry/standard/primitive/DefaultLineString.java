@@ -36,9 +36,9 @@
 package org.deegree.geometry.standard.primitive;
 
 import java.util.Collections;
-import java.util.List;
 
 import org.deegree.crs.CRS;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
@@ -65,7 +65,7 @@ public class DefaultLineString extends DefaultCurve implements LineString {
      * @param pm
      * @param controlPoints
      */
-    public DefaultLineString( String id, CRS crs, PrecisionModel pm, List<Point> controlPoints ) {
+    public DefaultLineString( String id, CRS crs, PrecisionModel pm, Points controlPoints ) {
         super( id, crs, pm, Collections.singletonList( (CurveSegment) new DefaultLineStringSegment( controlPoints ) ) );
         singleSegment = (LineStringSegment) getCurveSegments().get( 0 );
     }
@@ -76,7 +76,7 @@ public class DefaultLineString extends DefaultCurve implements LineString {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return singleSegment.getControlPoints();
     }
 
@@ -87,9 +87,9 @@ public class DefaultLineString extends DefaultCurve implements LineString {
 
     @Override
     public double[] getAsArray() {
-        List<Point> points = getControlPoints();
+        Points points = getControlPoints();
         double[] result = null;
-        if ( points != null && !points.isEmpty() ) {
+        if ( points != null && points.size() != 0 ) {
             int dim = getCoordinateDimension();
             result = new double[points.size() * dim];
             int i = 0;

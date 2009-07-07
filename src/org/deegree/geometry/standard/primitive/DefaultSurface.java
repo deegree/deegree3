@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.crs.CRS;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
@@ -46,6 +47,7 @@ import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.standard.points.PointsBuilder;
 
 /**
  * Default implementation of {@link Surface}.
@@ -117,12 +119,12 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     }
 
     @Override
-    public List<Point> getExteriorRingCoordinates() {
-        List<Point> controlPoints = new ArrayList<Point>();
+    public Points getExteriorRingCoordinates() {
+        PointsBuilder controlPoints = new PointsBuilder();
         if ( patches.size() == 1 ) {
             if ( patches.get( 0 ) instanceof PolygonPatch ) {
                 PolygonPatch patch = (PolygonPatch) patches.get( 0 );
-                controlPoints.addAll( patch.getExteriorRing().getControlPoints() );
+                controlPoints.add( patch.getExteriorRing().getControlPoints() );
             } else {
                 String msg = "Cannot determine control points for surface exterior ring, surface is non-planar.";
                 throw new IllegalArgumentException( msg );
@@ -135,8 +137,8 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     }
 
     @Override
-    public List<List<Point>> getInteriorRingsCoordinates() {
-        List<List<Point>> controlPoints = new ArrayList<List<Point>>();
+    public List<Points> getInteriorRingsCoordinates() {
+        List<Points> controlPoints = new ArrayList<Points>();
         if ( patches.size() == 1 ) {
             if ( patches.get( 0 ) instanceof PolygonPatch ) {
                 PolygonPatch patch = (PolygonPatch) patches.get( 0 );

@@ -38,6 +38,7 @@ package org.deegree.geometry.standard.primitive;
 import java.util.List;
 
 import org.deegree.crs.CRS;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.TriangulatedSurface;
@@ -114,12 +115,12 @@ public class DefaultTriangulatedSurface extends AbstractDefaultGeometry implemen
     }
 
     @Override
-    public List<Point> getExteriorRingCoordinates() {
+    public Points getExteriorRingCoordinates() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<List<Point>> getInteriorRingsCoordinates() {
+    public List<Points> getInteriorRingsCoordinates() {
         throw new UnsupportedOperationException();
     }
 }

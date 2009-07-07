@@ -42,6 +42,7 @@ import org.deegree.commons.types.gml.StandardGMLObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.OrientableSurface;
 import org.deegree.geometry.primitive.Point;
@@ -202,12 +203,12 @@ public class DefaultOrientableSurface implements OrientableSurface {
     }
 
     @Override
-    public List<Point> getExteriorRingCoordinates() {
+    public Points getExteriorRingCoordinates() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<List<Point>> getInteriorRingsCoordinates() {
+    public List<Points> getInteriorRingsCoordinates() {
         throw new UnsupportedOperationException();
     }
 

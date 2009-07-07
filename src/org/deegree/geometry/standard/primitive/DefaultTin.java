@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.deegree.commons.types.Length;
 import org.deegree.crs.CRS;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Tin;
@@ -64,7 +65,7 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
 
     private Length maxLength;
 
-    private List<Point> controlPoints;
+    private Points controlPoints;
 
     /**
      * Creates a new {@link DefaultTin} instance from the given parameters.
@@ -100,7 +101,7 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
      *            the triangle that constitute the result of the triangulation
      */
     public DefaultTin( String id, CRS crs, PrecisionModel pm, List<List<LineStringSegment>> stopLines,
-                       List<List<LineStringSegment>> breakLines, Length maxLength, List<Point> controlPoints,
+                       List<List<LineStringSegment>> breakLines, Length maxLength, Points controlPoints,
                        List<Triangle> patches ) {
         super( id, crs, pm );
         this.stopLines = stopLines;
@@ -168,17 +169,17 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return controlPoints;
     }
 
     @Override
-    public List<Point> getExteriorRingCoordinates() {
+    public Points getExteriorRingCoordinates() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<List<Point>> getInteriorRingsCoordinates() {
+    public List<Points> getInteriorRingsCoordinates() {
         throw new UnsupportedOperationException();
     }
 }

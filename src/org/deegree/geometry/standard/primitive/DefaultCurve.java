@@ -45,6 +45,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.linearization.CurveLinearizer;
 import org.deegree.geometry.linearization.LinearizationCriterion;
 import org.deegree.geometry.linearization.NumPointsCriterion;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
@@ -53,6 +54,7 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.standard.points.PointsBuilder;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -145,11 +147,11 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
     }
 
     @Override
-    public List<Point> getControlPoints() {
-        List<Point> controlPoints = new ArrayList<Point>();
+    public Points getControlPoints() {
+        PointsBuilder controlPoints = new PointsBuilder();
         for ( CurveSegment segment : segments ) {
             if ( segment.getSegmentType() == CurveSegmentType.LINE_STRING_SEGMENT ) {
-                controlPoints.addAll( ( (LineStringSegment) segment ).getControlPoints() );
+                controlPoints.add( ( (LineStringSegment) segment ).getControlPoints() );
             } else {
                 String msg = "Cannot determine control points for curve, contains non-linear segments.";
                 throw new IllegalArgumentException( msg );
@@ -172,7 +174,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
     }
 
     private Collection<Coordinate> getCoordinates( LineStringSegment lsSegment ) {
-        List<Point> points = lsSegment.getControlPoints();
+        Points points = lsSegment.getControlPoints();
         List<Coordinate> coordinates = new ArrayList<Coordinate>( points.size() );
         for ( Point point : points ) {
             coordinates.add( new Coordinate( point.getX(), point.getY(), point.getZ() ) );

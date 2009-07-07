@@ -42,6 +42,7 @@ import org.deegree.commons.types.gml.StandardGMLObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
@@ -244,7 +245,7 @@ public class DefaultOrientableCurve implements OrientableCurve {
     }
 
     @Override
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         throw new RuntimeException( "not implemented yet" );
     }
 

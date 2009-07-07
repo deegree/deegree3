@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
 import java.util.ArrayList;
@@ -41,6 +41,7 @@ import java.util.List;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
@@ -50,10 +51,10 @@ import org.deegree.geometry.standard.surfacepatches.DefaultPolygonPatch;
 
 /**
  * Default implementation of {@link Polygon}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultPolygon extends DefaultSurface implements Polygon {
@@ -66,7 +67,7 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
 
     /**
      * Creates a new {@link DefaultPolygon} instance from the given parameters.
-     *
+     * 
      * @param id
      *            identifier, may be null
      * @param crs
@@ -105,15 +106,15 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.geometry.standard.AbstractDefaultGeometry#getEnvelope()
      */
     @Override
     public Envelope getEnvelope() {
         if ( envelope == null ) {
-            List<Point> points = exteriorRing.getControlPoints();
-            double[] min = new double[points.get(0).getAsArray().length];
-            double[] max = new double[points.get(0).getAsArray().length];
+            Points points = exteriorRing.getControlPoints();
+            double[] min = new double[points.get( 0 ).getAsArray().length];
+            double[] max = new double[points.get( 0 ).getAsArray().length];
             double[] d = points.get( 0 ).getAsArray();
             for ( int i = 0; i < d.length; i++ ) {
                 min[i] = d[i];
@@ -130,7 +131,7 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
                     }
                 }
             }
-            GeometryFactory gf = new GeometryFactory ();
+            GeometryFactory gf = new GeometryFactory();
             envelope = gf.createEnvelope( min, max, getCoordinateSystem() );
         }
         return envelope;
