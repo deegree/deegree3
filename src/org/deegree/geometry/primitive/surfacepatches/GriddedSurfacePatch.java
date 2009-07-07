@@ -37,7 +37,7 @@ package org.deegree.geometry.primitive.surfacepatches;
 
 import java.util.List;
 
-import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.points.Points;
 
 /**
  * A {@link GriddedSurfacePatch} is a (usually non-planar) parametric {@link SurfacePatch} derived from a rectangular
@@ -102,12 +102,12 @@ public interface GriddedSurfacePatch extends SurfacePatch {
      *            row to be returned
      * @return the specified row
      */
-    public List<Point> getRow( int rownum );
+    public Points getRow( int rownum );
 
     /**
      * Returns all rows of the parameter grid.
      *
      * @return all rows
      */
-    public List<List<Point>> getRows();
+    public List<Points> getRows();
 }

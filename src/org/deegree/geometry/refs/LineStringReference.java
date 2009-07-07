@@ -41,6 +41,7 @@ import java.util.List;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
@@ -103,7 +104,7 @@ public class LineStringReference extends GeometryReference implements LineString
         return geometry.getBuffer( distance );
     }
 
-    public List<Point> getControlPoints() {
+    public Points getControlPoints() {
         return geometry.getControlPoints();
     }
 

@@ -41,6 +41,7 @@ import java.util.List;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
@@ -115,7 +116,7 @@ public class SurfaceReference extends GeometryReference implements Surface {
         return geometry.getEnvelope();
     }
 
-    public List<Point> getExteriorRingCoordinates() {
+    public Points getExteriorRingCoordinates() {
         return geometry.getExteriorRingCoordinates();
     }
 
@@ -123,7 +124,7 @@ public class SurfaceReference extends GeometryReference implements Surface {
         return geometry.getGeometryType();
     }
 
-    public List<List<Point>> getInteriorRingsCoordinates() {
+    public List<Points> getInteriorRingsCoordinates() {
         return geometry.getInteriorRingsCoordinates();
     }
 

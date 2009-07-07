@@ -38,7 +38,7 @@ package org.deegree.geometry.primitive.surfacepatches;
 
 import java.util.List;
 
-import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.points.Points;
 
 /**
  * TODO add class documentation here.
@@ -50,19 +50,19 @@ import org.deegree.geometry.primitive.Point;
  */
 public class DefaultCone implements Cone {
 
-    private List<List<Point>> grid;
+    private List<Points> grid;
 
     private int rows;
 
     private int columns;
 
-    public DefaultCone( List<List<Point>> grid ) {
+    public DefaultCone( List<Points> grid ) {
         this.grid = grid;
         this.rows = getNumRows();
         this.columns = getNumColumns();
     }
 
-    public DefaultCone( List<List<Point>> grid, int rows, int columns ) {
+    public DefaultCone( List<Points> grid, int rows, int columns ) {
         this.grid = grid;
         this.rows = rows;
         this.columns = columns;
@@ -84,12 +84,12 @@ public class DefaultCone implements Cone {
     }
 
     @Override
-    public List<Point> getRow( int rownum ) {
+    public Points getRow( int rownum ) {
         return grid.get( rownum );
     }
 
     @Override
-    public List<List<Point>> getRows() {
+    public List<Points> getRows() {
         return grid;
     }
 
