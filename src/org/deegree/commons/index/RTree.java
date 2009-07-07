@@ -37,6 +37,7 @@
 package org.deegree.commons.index;
 
 import static java.lang.Math.min;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -54,6 +55,7 @@ import java.util.TreeMap;
 import org.deegree.commons.dataaccess.shape.SHPReader;
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
+import org.slf4j.Logger;
 
 /**
  * <code>RTree</code>
@@ -65,9 +67,11 @@ import org.deegree.geometry.Envelope;
  */
 public class RTree {
 
+    private static final Logger LOG = getLogger( RTree.class );
+
     private Entry[] root;
 
-    private double[] bbox;
+    private float[] bbox;
 
     int size = 128;
 
@@ -76,11 +80,13 @@ public class RTree {
      */
     public RTree( SHPReader shape ) {
         Envelope bbox = shape.getEnvelope();
-        this.bbox = new double[] { bbox.getMin().getX(), bbox.getMin().getY(), bbox.getMax().getX(),
-                                  bbox.getMax().getY() };
+        this.bbox = new float[] { (float) bbox.getMin().getX(), (float) bbox.getMin().getY(),
+                                 (float) bbox.getMax().getX(), (float) bbox.getMax().getY() };
         try {
             // to work around Java's non-existent variant type
+            LOG.debug( "Read envelopes from shape file..." );
             ArrayList list = shape.readEnvelopes();
+            LOG.debug( "done." );
             root = buildTree( list, size );
         } catch ( IOException e ) {
             // TODO Auto-generated catch block
@@ -96,20 +102,20 @@ public class RTree {
      */
     public RTree( InputStream is ) throws IOException, ClassNotFoundException {
         ObjectInputStream in = new ObjectInputStream( is );
-        bbox = (double[]) in.readObject();
+        bbox = (float[]) in.readObject();
         root = (Entry[]) in.readObject();
         in.close();
     }
 
-    private static final boolean contained( final double[] box, final double x, final double y ) {
+    private static final boolean contained( final float[] box, final float x, final float y ) {
         return box[0] <= x && x <= box[2] && box[1] <= y && y <= box[3];
     }
 
-    private static final boolean noEdgeOverlap( final double[] box1, final double[] box2 ) {
+    private static final boolean noEdgeOverlap( final float[] box1, final float[] box2 ) {
         return box1[0] <= box2[0] && box2[2] <= box1[2] && box2[1] <= box1[1] && box1[3] <= box2[3];
     }
 
-    private boolean intersects( final double[] box1, final double[] box2 ) {
+    private boolean intersects( final float[] box1, final float[] box2 ) {
         return contained( box2, box1[0], box1[3] ) || contained( box2, box1[0], box1[1] )
                || contained( box2, box1[2], box1[3] ) || contained( box2, box1[2], box1[1] )
                || contained( box1, box2[0], box2[3] ) || contained( box1, box2[0], box2[1] )
@@ -118,15 +124,23 @@ public class RTree {
 
     }
 
-    private LinkedList<Long> query( final double[] bbox, Entry[] node ) {
+    private LinkedList<Long> query( final float[] bbox, Entry[] node ) {
         LinkedList<Long> list = new LinkedList<Long>();
 
         for ( Entry e : node ) {
             if ( intersects( bbox, e.bbox ) ) {
                 if ( e.next == null ) {
                     list.add( e.pointer );
+                    if ( list.size() >= size * 10 ) {
+                        LOG.warn( "Stopped collecting features when {} were loaded.", list.size() );
+                        return list;
+                    }
                 } else {
                     list.addAll( query( bbox, e.next ) );
+                    if ( list.size() >= size * 10 ) {
+                        LOG.warn( "Stopped collecting features when {} were loaded.", list.size() );
+                        return list;
+                    }
                 }
             }
         }
@@ -139,21 +153,21 @@ public class RTree {
      * @return a list of pointers
      */
     public LinkedList<Long> query( Envelope env ) {
-        final double[] bbox = new double[] { env.getMin().getX(), env.getMin().getY(), env.getMax().getX(),
-                                            env.getMax().getY() };
+        final float[] bbox = new float[] { (float) env.getMin().getX(), (float) env.getMin().getY(),
+                                          (float) env.getMax().getX(), (float) env.getMax().getY() };
         if ( intersects( bbox, this.bbox ) ) {
             return query( bbox, root );
         }
         return new LinkedList<Long>();
     }
 
-    private TreeMap<Double, LinkedList<Pair<double[], ?>>> sort( Collection<Pair<double[], ?>> rects, int byIdx ) {
-        TreeMap<Double, LinkedList<Pair<double[], ?>>> map = new TreeMap<Double, LinkedList<Pair<double[], ?>>>();
+    private TreeMap<Float, LinkedList<Pair<float[], ?>>> sort( Collection<Pair<float[], ?>> rects, int byIdx ) {
+        TreeMap<Float, LinkedList<Pair<float[], ?>>> map = new TreeMap<Float, LinkedList<Pair<float[], ?>>>();
 
-        for ( Pair<double[], ?> p : rects ) {
-            double d = p.first[byIdx] + ( p.first[byIdx + 2] - p.first[byIdx] ) / 2;
+        for ( Pair<float[], ?> p : rects ) {
+            float d = p.first[byIdx] + ( p.first[byIdx + 2] - p.first[byIdx] ) / 2;
             if ( !map.containsKey( d ) ) {
-                map.put( d, new LinkedList<Pair<double[], ?>>() );
+                map.put( d, new LinkedList<Pair<float[], ?>>() );
             }
             map.get( d ).add( p );
         }
@@ -161,17 +175,16 @@ public class RTree {
         return map;
     }
 
-    private LinkedList<LinkedList<Pair<double[], ?>>> slice( TreeMap<Double, LinkedList<Pair<double[], ?>>> map,
-                                                             int limit ) {
-        LinkedList<LinkedList<Pair<double[], ?>>> list = new LinkedList<LinkedList<Pair<double[], ?>>>();
+    private LinkedList<LinkedList<Pair<float[], ?>>> slice( TreeMap<Float, LinkedList<Pair<float[], ?>>> map, int limit ) {
+        LinkedList<LinkedList<Pair<float[], ?>>> list = new LinkedList<LinkedList<Pair<float[], ?>>>();
 
-        LinkedList<Pair<double[], ?>> cur = new LinkedList<Pair<double[], ?>>();
-        Iterator<LinkedList<Pair<double[], ?>>> iter = map.values().iterator();
-        LinkedList<Pair<double[], ?>> l = iter.next();
+        LinkedList<Pair<float[], ?>> cur = new LinkedList<Pair<float[], ?>>();
+        Iterator<LinkedList<Pair<float[], ?>>> iter = map.values().iterator();
+        LinkedList<Pair<float[], ?>> l = iter.next();
         while ( iter.hasNext() || l.size() > 0 ) {
             if ( cur.size() == limit ) {
                 list.add( cur );
-                cur = new LinkedList<Pair<double[], ?>>();
+                cur = new LinkedList<Pair<float[], ?>>();
             }
             if ( l.isEmpty() ) {
                 l = iter.next();
@@ -183,7 +196,7 @@ public class RTree {
         return list;
     }
 
-    private Entry[] buildTree( ArrayList<Pair<double[], ?>> rects, int limit ) {
+    private Entry[] buildTree( ArrayList<Pair<float[], ?>> rects, int limit ) {
         if ( rects.size() <= limit ) {
             Entry[] node = new Entry[rects.size()];
             for ( int i = 0; i < rects.size(); ++i ) {
@@ -198,24 +211,24 @@ public class RTree {
             return node;
         }
 
-        LinkedList<LinkedList<Pair<double[], ?>>> slices = slice( sort( rects, 0 ), limit * limit );
-        ArrayList<Pair<double[], ?>> newRects = new ArrayList<Pair<double[], ?>>();
+        LinkedList<LinkedList<Pair<float[], ?>>> slices = slice( sort( rects, 0 ), limit * limit );
+        ArrayList<Pair<float[], ?>> newRects = new ArrayList<Pair<float[], ?>>();
 
-        for ( LinkedList<Pair<double[], ?>> slice : slices ) {
-            TreeMap<Double, LinkedList<Pair<double[], ?>>> map = sort( slice, 1 );
+        for ( LinkedList<Pair<float[], ?>> slice : slices ) {
+            TreeMap<Float, LinkedList<Pair<float[], ?>>> map = sort( slice, 1 );
 
-            Iterator<LinkedList<Pair<double[], ?>>> iter = map.values().iterator();
-            LinkedList<Pair<double[], ?>> list = iter.next();
+            Iterator<LinkedList<Pair<float[], ?>>> iter = map.values().iterator();
+            LinkedList<Pair<float[], ?>> list = iter.next();
             int idx = 0;
             while ( idx < slice.size() ) {
                 Entry[] node = new Entry[min( limit, slice.size() - idx )];
-                double[] bbox = null;
+                float[] bbox = null;
                 for ( int i = 0; i < limit; ++i, ++idx ) {
                     if ( idx < slice.size() ) {
                         if ( list.isEmpty() ) {
                             list = iter.next();
                         }
-                        Pair<double[], ?> p = list.poll();
+                        Pair<float[], ?> p = list.poll();
                         node[i] = new Entry();
                         node[i].bbox = p.first;
                         if ( p.second instanceof Long ) {
@@ -224,7 +237,7 @@ public class RTree {
                             node[i].next = (Entry[]) p.second;
                         }
                         if ( bbox == null ) {
-                            bbox = new double[] { p.first[0], p.first[1], p.first[2], p.first[3] };
+                            bbox = new float[] { p.first[0], p.first[1], p.first[2], p.first[3] };
                         } else {
                             for ( int k = 0; k < 2; ++k ) {
                                 if ( bbox[k] > p.first[k] ) {
@@ -239,7 +252,7 @@ public class RTree {
                         }
                     }
                 }
-                newRects.add( new Pair<double[], Entry[]>( bbox, node ) );
+                newRects.add( new Pair<float[], Entry[]>( bbox, node ) );
             }
         }
 
@@ -264,7 +277,7 @@ public class RTree {
     static class Entry implements Serializable {
         private static final long serialVersionUID = -4272761420705520561L;
 
-        double[] bbox;
+        float[] bbox;
 
         long pointer;
 

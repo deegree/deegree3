@@ -205,7 +205,7 @@ public class SHPReader {
     /**
      * @param in
      * @param crs
-     * @param rtree 
+     * @param rtree
      * @throws IOException
      */
     public SHPReader( RandomAccessFile in, CRS crs, RTree rtree ) throws IOException {
@@ -392,12 +392,14 @@ public class SHPReader {
     }
 
     /**
+     * He Who Needs It As Double, is welcome to implement/copy it.
+     * 
      * @return a list of all envelopes (minx, miny, maxx, maxy)
      * @throws IOException
      */
-    public ArrayList<Pair<double[], Long>> readEnvelopes()
+    public ArrayList<Pair<float[], Long>> readEnvelopes()
                             throws IOException {
-        ArrayList<Pair<double[], Long>> list = new ArrayList<Pair<double[], Long>>();
+        ArrayList<Pair<float[], Long>> list = new ArrayList<Pair<float[], Long>>();
 
         in.seek( 100 );
 
@@ -412,12 +414,13 @@ public class SHPReader {
             case POINT: {
                 double x = readLEDouble( in );
                 double y = readLEDouble( in );
-                list.add( new Pair<double[], Long>( new double[] { x, y, x, y }, pos ) );
+                list.add( new Pair<float[], Long>( new float[] { (float) x, (float) y, (float) x, (float) y }, pos ) );
                 break;
             }
             default: {
-                list.add( new Pair<double[], Long>( new double[] { readLEDouble( in ), readLEDouble( in ),
-                                                                  readLEDouble( in ), readLEDouble( in ) }, pos ) );
+                list.add( new Pair<float[], Long>( new float[] { (float) readLEDouble( in ),
+                                                                (float) readLEDouble( in ), (float) readLEDouble( in ),
+                                                                (float) readLEDouble( in ) }, pos ) );
                 break;
             }
             }
