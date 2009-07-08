@@ -45,11 +45,9 @@ import org.deegree.geometry.primitive.surfacepatches.GriddedSurfacePatch;
  * TODO add class documentation here.
  *
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- *
  * @author last edited by: $Author: ionita $
  *
  * @version $Revision: $, $Date: $
- *
  */
 public class DefaultGriddedSurfacePatch implements GriddedSurfacePatch {
 
@@ -104,12 +102,11 @@ public class DefaultGriddedSurfacePatch implements GriddedSurfacePatch {
 
     @Override
     public int getCoordinateDimension() {
-        return grid.get( 0 ).get( 0 ).getCoordinateDimension();
+        return grid.get( 0 ).getCoordinateDimension();
     }
 
     @Override
     public SurfacePatchType getSurfacePatchType() {
         return SurfacePatchType.GRIDDED_SURFACE_PATCH;
     }
-
 }

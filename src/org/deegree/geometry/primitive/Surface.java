@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
 import java.util.List;
@@ -46,10 +46,10 @@ import org.deegree.geometry.primitive.surfacepatches.Triangle;
 /**
  * <code>Surface</code> instances are 2D-geometries that consist of an arbitrary number of surface patches which are not
  * necessarily planar.
- *
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version. $Revision$, $Date$
  */
 public interface Surface extends GeometricPrimitive {
@@ -74,7 +74,7 @@ public interface Surface extends GeometricPrimitive {
 
     /**
      * Must always return {@link GeometricPrimitive.PrimitiveType#Surface}.
-     *
+     * 
      * @return {@link GeometricPrimitive.PrimitiveType#Surface}
      */
     @Override
@@ -82,32 +82,32 @@ public interface Surface extends GeometricPrimitive {
 
     /**
      * Returns the type of surface.
-     *
+     * 
      * @return the type of surface
      */
     public SurfaceType getSurfaceType();
 
     /**
-     *
+     * 
      * @return area of a Surface measured in units of the assigned {@link CoordinateSystem}
      */
     public double getArea();
 
     /**
-     *
+     * 
      * @return perimeter of a Surface measured in units of the assigned {@link CoordinateSystem}
      */
     public double getPerimeter();
 
     /**
-     *
+     * 
      * @return centroid of a Surface
      */
     public Point getCentroid();
 
     /**
      * Returns the patches that constitute this surface.
-     *
+     * 
      * @return the patches that constitute this surface
      */
     public List<? extends SurfacePatch> getPatches();
@@ -118,7 +118,7 @@ public interface Surface extends GeometricPrimitive {
      * NOTE: This method is only safe to use when the surface consists of a single planar patch that has a linear
      * interpolated exterior ring.
      * </p>
-     *
+     * 
      * @return the control points
      * @throws IllegalArgumentException
      *             if the surface has more than one patch, the patch is not planar or the exterior boundary is not
@@ -132,7 +132,7 @@ public interface Surface extends GeometricPrimitive {
      * NOTE: This method is only safe to use when the surface consists of a single planar patch that has linear
      * interpolated interior rings.
      * </p>
-     *
+     * 
      * @return the control points
      * @throws IllegalArgumentException
      *             if the surface has more than one patch, the patch is not planar or the interior boundaries are not

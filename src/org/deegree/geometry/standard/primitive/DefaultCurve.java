@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.linearization.CurveLinearizer;
@@ -93,7 +94,7 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
     }
 
     @Override
-    public List<Point> getBoundary() {
+    public Pair<Point,Point> getBoundary() {
         throw new UnsupportedOperationException();
     }
 

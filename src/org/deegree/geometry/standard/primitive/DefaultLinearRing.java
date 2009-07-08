@@ -35,14 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
-import java.util.List;
-
 import org.deegree.crs.CRS;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.LinearRing;
-import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
 
@@ -76,7 +73,7 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
 
     @Override
     public int getCoordinateDimension() {
-        return controlPoints.get( 0 ).getCoordinateDimension();
+        return controlPoints.getCoordinateDimension();
     }
 
     @Override
@@ -92,11 +89,6 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
     @Override
     public LineString getAsLineString() {
         return (LineString) members.get( 0 );
-    }
-
-    @Override
-    public double[] getAsArray() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

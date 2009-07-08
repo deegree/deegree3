@@ -54,11 +54,4 @@ public interface LineString extends Curve {
      */
     @Override
     public CurveType getCurveType();
-
-    /**
-     *
-     * @return all coordinated as an array. The array will be constructed an concatination of the arrays of the
-     *         segements points. For a three dimensional case it looks like: [x0,y0,z0,x1,y1,z1, ... ,xn,yn,zn]
-     */
-    public double[] getAsArray();
 }

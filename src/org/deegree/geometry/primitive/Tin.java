@@ -74,5 +74,4 @@ public interface Tin extends TriangulatedSurface {
     public Length getMaxLength();
 
     public Points getControlPoints();
-
 }

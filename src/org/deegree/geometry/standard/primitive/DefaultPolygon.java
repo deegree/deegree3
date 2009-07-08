@@ -113,21 +113,25 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
     public Envelope getEnvelope() {
         if ( envelope == null ) {
             Points points = exteriorRing.getControlPoints();
-            double[] min = new double[points.get( 0 ).getAsArray().length];
-            double[] max = new double[points.get( 0 ).getAsArray().length];
-            double[] d = points.get( 0 ).getAsArray();
-            for ( int i = 0; i < d.length; i++ ) {
-                min[i] = d[i];
-                max[i] = d[i];
-            }
+            double[] min = new double[points.getCoordinateDimension()];
+            double[] max = new double[points.getCoordinateDimension()];
+            boolean first = true;
             for ( Point point : points ) {
-                d = point.getAsArray();
-                for ( int i = 0; i < d.length; i++ ) {
-                    if ( d[i] < min[i] ) {
+                double[] d = point.getAsArray();
+                if ( first ) {
+                    for ( int i = 0; i < d.length; i++ ) {
                         min[i] = d[i];
-                    }
-                    if ( d[i] > max[i] ) {
                         max[i] = d[i];
+                    }
+                    first = false;
+                } else {
+                    for ( int i = 0; i < d.length; i++ ) {
+                        if ( d[i] < min[i] ) {
+                            min[i] = d[i];
+                        }
+                        if ( d[i] > max[i] ) {
+                            max[i] = d[i];
+                        }
                     }
                 }
             }
@@ -141,5 +145,4 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
     public List<PolygonPatch> getPatches() {
         return (List<PolygonPatch>) patches;
     }
-
 }

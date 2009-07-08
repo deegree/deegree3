@@ -41,6 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.points.Points;
@@ -98,7 +99,7 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
     }
 
     @Override
-    public List<Point> getBoundary() {
+    public Pair<Point,Point> getBoundary() {
         throw new UnsupportedOperationException();
     }
 

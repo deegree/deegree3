@@ -37,6 +37,7 @@ package org.deegree.geometry.primitive;
 
 import java.util.List;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.points.Points;
@@ -98,7 +99,7 @@ public interface Curve extends GeometricPrimitive {
 
     /**
      *
-     * @return length of a curve measured in units of the assigend {@link CoordinateSystem}
+     * @return length of a curve measured in units of the assigned {@link CoordinateSystem}
      */
     public double getLength();
 
@@ -109,7 +110,7 @@ public interface Curve extends GeometricPrimitive {
      * @return boundary of a curve. If a curve does not have a boundary because it is closed an empty {@link List} shall
      *         be retruned
      */
-    public List<Point> getBoundary();
+    public Pair<Point,Point> getBoundary();
 
     /**
      * Returns the start point of the curve.

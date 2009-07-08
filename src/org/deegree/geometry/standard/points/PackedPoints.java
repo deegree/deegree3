@@ -35,8 +35,97 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.points;
 
-public class PackedPoints {
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-    private double [] coordinates;
-    
+import org.deegree.geometry.points.Points;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
+
+/**
+ * {@link Points} implementation based on a coordinate array.
+ * <p>
+ * This implementation is quite memory efficient, but only allows to hold anonymous {@link Point} objects.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
+ */
+public class PackedPoints implements Points {
+
+    private int coordinatesDimension;
+
+    private double[] coordinates;
+
+    public PackedPoints( double[] coordinates, int coordinatesDimension ) {
+        this.coordinates = coordinates;
+        this.coordinatesDimension = coordinatesDimension;
+    }
+
+    @Override
+    public int getCoordinateDimension() {
+        return coordinatesDimension;
+    }
+
+    @Override
+    public int size() {
+        return coordinates.length / coordinatesDimension;
+    }
+
+    /**
+     * Provides acccess to an arbitrary {@link Point} in the sequence (expensive!).
+     */
+    @Override
+    public Point get( int i ) {
+
+        double[] pointCoordinates = new double[coordinatesDimension];
+        int idx = i * coordinatesDimension;
+        for ( int d = 0; d < coordinatesDimension; d++ ) {
+            pointCoordinates[i] = coordinates[idx + d];
+        }
+        DefaultPoint point = new DefaultPoint( null, null, null, pointCoordinates );
+
+        return point;
+    }
+
+    @Override
+    public Iterator<Point> iterator() {
+
+        return new Iterator<Point>() {
+
+            private int idx = 0;
+
+            private double[] pointCoordinates = new double[coordinatesDimension];
+
+            private DefaultPoint point = new DefaultPoint( null, null, null, pointCoordinates );
+
+            @Override
+            public boolean hasNext() {
+                return idx < coordinates.length;
+            }
+
+            @Override
+            public Point next() {
+                if ( !hasNext() ) {
+                    throw new NoSuchElementException();
+                }
+                for ( int i = 0; i < coordinatesDimension; i++ ) {
+                    pointCoordinates[i] = coordinates[idx + i];
+                }
+                idx += coordinatesDimension;
+                return null;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    @Override
+    public double[] getAsArray() {       
+        return coordinates;
+    }
 }

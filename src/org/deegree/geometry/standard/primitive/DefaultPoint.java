@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.primitive;
 
-import java.util.Arrays;
-
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -72,7 +70,7 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
      */
     public DefaultPoint( String id, CRS crs, PrecisionModel pm, double[] coordinates ) {
         super( id, crs, pm );
-        this.coordinates = Arrays.copyOf( coordinates, coordinates.length );
+        this.coordinates = coordinates;
     }
 
     @Override

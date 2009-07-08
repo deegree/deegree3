@@ -44,7 +44,7 @@ import org.deegree.geometry.primitive.Point;
  * <p>
  * The motivation for this interface is to provide a more compact and efficient representation than using lists or
  * arrays of {@link Point} objects. This is essential, as geometries are usually build from many points, e.g. a detailed
- * {@link LineString} may consist of thousands of points.
+ * {@link LineString} may consist of tens or hundreds thousands of points.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -67,5 +67,25 @@ public interface Points extends Iterable<Point> {
      */
     public int size();
 
+    /**
+     * Returns the {@link Point} at the specified position.
+     * <p>
+     * NOTE: It is generally more expensive to use this method than to access a {@link Point} by iterating over this
+     * object, because a new {@link Point} object may have to be created (depending on the implementation). Use with
+     * care!
+     * 
+     * @param i
+     * @return the point at the specified position
+     */
     public Point get( int i );
+
+    /**
+     * Returns all coordinates of the contained {@link Point}s as an array.
+     * <p>
+     * NOTE: This method should be avoided, as it may involve expensive operations.
+     * </p>
+     * 
+     * @return coordinates as a one-dimensional array
+     */
+    public double[] getAsArray();
 }

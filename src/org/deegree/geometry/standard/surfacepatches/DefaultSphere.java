@@ -102,7 +102,7 @@ public class DefaultSphere implements Sphere {
 
     @Override
     public int getCoordinateDimension() {
-        return grid.get( 0 ).get( 0 ).getCoordinateDimension();
+        return grid.get( 0 ).getCoordinateDimension();
     }
 
     @Override

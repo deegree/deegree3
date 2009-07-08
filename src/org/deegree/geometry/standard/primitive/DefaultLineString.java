@@ -41,7 +41,6 @@ import org.deegree.crs.CRS;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.LineString;
-import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
@@ -83,25 +82,6 @@ public class DefaultLineString extends DefaultCurve implements LineString {
     @Override
     public int getCoordinateDimension() {
         return singleSegment.getCoordinateDimension();
-    }
-
-    @Override
-    public double[] getAsArray() {
-        Points points = getControlPoints();
-        double[] result = null;
-        if ( points != null && points.size() != 0 ) {
-            int dim = getCoordinateDimension();
-            result = new double[points.size() * dim];
-            int i = 0;
-            for ( Point p : points ) {
-                if ( p != null ) {
-                    for ( int d = 0; d < dim; ++d ) {
-                        result[i++] = p.get( d );
-                    }
-                }
-            }
-        }
-        return result;
     }
 
     @Override

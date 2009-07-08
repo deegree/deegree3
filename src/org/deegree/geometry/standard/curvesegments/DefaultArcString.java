@@ -69,7 +69,7 @@ public class DefaultArcString implements ArcString {
 
     @Override
     public int getCoordinateDimension() {
-        return controlPoints.get( 0 ).getCoordinateDimension();
+        return controlPoints.getCoordinateDimension();
     }
 
     @Override

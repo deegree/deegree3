@@ -39,6 +39,7 @@ package org.deegree.geometry.standard.primitive;
 import java.util.List;
 
 import org.deegree.commons.types.gml.StandardGMLObjectProperties;
+import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -165,7 +166,7 @@ public class DefaultOrientableCurve implements OrientableCurve {
     }
 
     @Override
-    public List<Point> getBoundary() {
+    public Pair<Point,Point> getBoundary() {
         return baseCurve.getBoundary();
     }
 

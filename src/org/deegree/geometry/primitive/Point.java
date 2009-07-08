@@ -55,19 +55,19 @@ public interface Point extends GeometricPrimitive {
 
     /**
      *
-     * @return x coordinate of a point
+     * @return x coordinate
      */
     public double getX();
 
     /**
      *
-     * @return y coordinate of a point
+     * @return y coordinate
      */
     public double getY();
 
     /**
      *
-     * @return z coordinate of a point
+     * @return z coordinate
      */
     public double getZ();
 
@@ -84,5 +84,4 @@ public interface Point extends GeometricPrimitive {
      * @return a points coordinates as an array
      */
     public double[] getAsArray();
-
 }

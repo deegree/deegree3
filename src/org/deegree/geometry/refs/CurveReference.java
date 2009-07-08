@@ -38,6 +38,7 @@ package org.deegree.geometry.refs;
 
 import java.util.List;
 
+import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -93,7 +94,7 @@ public class CurveReference extends GeometryReference implements Curve {
         return geometry.getAsLineString();
     }
 
-    public List<Point> getBoundary() {
+    public Pair<Point,Point> getBoundary() {
         return geometry.getBoundary();
     }
 

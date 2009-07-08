@@ -35,125 +35,65 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.points;
 
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
+/**
+ * {@link Points} implementation based on a <code>List</code> that allows to hold identifiable {@link Point} objects
+ * (with id or that are references to point objects}.
+ * <p>
+ * This implementation is rather expensive, as every contained {@link Point} is represented as an object.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class PointsList implements Points {
 
-    protected List<Point> points; 
-    
-    public PointsList (List<Point> points) {
+    protected List<Point> points;
+
+    /**
+     * Creates a new {@link PointsList} instance based on the given list.
+     * 
+     * @param points
+     */
+    public PointsList( List<Point> points ) {
         this.points = points;
     }
 
     @Override
     public int getCoordinateDimension() {
-        return points.get(0).getCoordinateDimension();
-    }    
-    
-    public void add( int index, Point element ) {
-        points.add( index, element );
+        return points.get( 0 ).getCoordinateDimension();
     }
 
-    public boolean add( Point e ) {
-        return points.add( e );
-    }
-
-    public boolean addAll( Collection<? extends Point> c ) {
-        return points.addAll( c );
-    }
-
-    public boolean addAll( int index, Collection<? extends Point> c ) {
-        return points.addAll( index, c );
-    }
-
-    public void clear() {
-        points.clear();
-    }
-
-    public boolean contains( Object o ) {
-        return points.contains( o );
-    }
-
-    public boolean containsAll( Collection<?> c ) {
-        return points.containsAll( c );
-    }
-
-    public boolean equals( Object o ) {
-        return points.equals( o );
-    }
-
-    public Point get( int index ) {
-        return points.get( index );
-    }
-
-    public int hashCode() {
-        return points.hashCode();
-    }
-
-    public int indexOf( Object o ) {
-        return points.indexOf( o );
-    }
-
-    public boolean isEmpty() {
-        return points.isEmpty();
-    }
-
-    public Iterator<Point> iterator() {
-        return points.iterator();
-    }
-
-    public int lastIndexOf( Object o ) {
-        return points.lastIndexOf( o );
-    }
-
-    public ListIterator<Point> listIterator() {
-        return points.listIterator();
-    }
-
-    public ListIterator<Point> listIterator( int index ) {
-        return points.listIterator( index );
-    }
-
-    public Point remove( int index ) {
-        return points.remove( index );
-    }
-
-    public boolean remove( Object o ) {
-        return points.remove( o );
-    }
-
-    public boolean removeAll( Collection<?> c ) {
-        return points.removeAll( c );
-    }
-
-    public boolean retainAll( Collection<?> c ) {
-        return points.retainAll( c );
-    }
-
-    public Point set( int index, Point element ) {
-        return points.set( index, element );
-    }
-
+    @Override
     public int size() {
         return points.size();
     }
 
-    public List<Point> subList( int fromIndex, int toIndex ) {
-        return points.subList( fromIndex, toIndex );
+    @Override
+    public Iterator<Point> iterator() {
+        return points.iterator();
     }
 
-    public Object[] toArray() {
-        return points.toArray();
+    @Override
+    public Point get( int i ) {
+        return points.get( i );
     }
 
-    public <T> T[] toArray( T[] a ) {
-        return points.toArray( a );
-    }
+    @Override
+    public double[] getAsArray() {
+        double [] coords = new double [getCoordinateDimension() * size()];
+        int i = 0;
+        for ( Point p : this ) {
+            for (double coord : p.getAsArray()) {
+                coords [i++] = coord;
+            }
+        }
+        return coords;
+    }   
 }
