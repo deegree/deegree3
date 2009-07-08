@@ -219,7 +219,11 @@ public class CRSRegistry {
     }
 
     public static void main( String args[] ) throws UnknownCRSException {
-        System.out.println( ( (ProjectedCRS) CRSRegistry.lookup( new EPSGCode( 25832 ) ) ).getProjection() );
+        
+//        System.out.println( ( (ProjectedCRS) CRSRegistry.lookup( new EPSGCode( 25832 ) ) ).getProjection() );
+        CRSProvider crsProvider = getProvider( null );
+        CoordinateSystem realCRS = crsProvider.getCRSByCode( CRSCodeType.valueOf( "EPSG:4326" ) );
+        System.out.println( realCRS );
     }
 
 }
