@@ -159,7 +159,6 @@ public class CRSConfiguration {
      * @param providerName
      *            the canonical name of the class, e.g. org.deegree.crs.MyProvider
      * @return an instance of a CRS-Configuration with the configured CRSProvider.
-     * @throws ClassNotFoundException
      * @throws CRSConfigurationException
      *             if --anything-- went wrong while instantiating the CRSProvider.
      */
@@ -329,7 +328,8 @@ public class CRSConfiguration {
         } else if ( "database".equalsIgnoreCase( inFormat ) ) {
             in = new DatabaseCRSProvider();
         } else {
-            throw new Exception( "-inFormat argument (" + inFormat + ") is not recognized. Known values are deegree, proj4, database." );             
+            throw new Exception( "-inFormat argument (" + inFormat
+                                 + ") is not recognized. Known values are deegree, proj4, database." );
         }
 
         CRSProvider out = null;
@@ -340,12 +340,13 @@ public class CRSConfiguration {
         } else if ( "deegree".equalsIgnoreCase( outFormat ) ) {
             out = new DeegreeCRSProvider( new Properties( configuredProperties ) );
         } else {
-            throw new Exception( "-outFormat argument (" + outFormat + ") is not recognized. Known values are deegree, proj4, database." );
+            throw new Exception( "-outFormat argument (" + outFormat
+                                 + ") is not recognized. Known values are deegree, proj4, database." );
         }
 
         try {
-//             List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
-//             allSystems.add( in.getCRSByCode( new CRSCodeType( "3395", "EPSG" ) ) );
+            // List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
+            // allSystems.add( in.getCRSByCode( new CRSCodeType( "3395", "EPSG" ) ) );
             List<CoordinateSystem> allSystems = in.getAvailableCRSs();
 
             if ( remove ) {
@@ -453,8 +454,8 @@ public class CRSConfiguration {
     }
 
     /**
-     * @return a text that specifies whether a crs is provided or not (and the canonical name of the provider,
-     * if that is the case)
+     * @return a text that specifies whether a crs is provided or not (and the canonical name of the provider, if that
+     *         is the case)
      */
     @Override
     public String toString() {

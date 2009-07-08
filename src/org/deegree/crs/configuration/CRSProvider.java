@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,11 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.deegree.crs.CRSCodeType;
@@ -49,13 +48,13 @@ import org.deegree.crs.transformations.Transformation;
  * The <code>CRSProvider</code> will allow the support for different crs-definitions formats within the crs package.
  * All implementation should consider the fact that the deegree-crs package will assume all incoming and outgoing
  * latitude/longitude coordinates in <u>radians</u>.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public interface CRSProvider {
@@ -78,10 +77,10 @@ public interface CRSProvider {
                             throws CRSConfigurationException;
 
     /**
-     * This method is more general than the {@link #getCRSByCode(String)}, because it represents a possibility to return
-     * an arbitrary {@link CRSIdentifiable} Object from the providers backend.
-     *
-     *
+     * This method is more general than the {@link #getCRSByCode(CRSCodeType)}, because it represents a possibility to
+     * return an arbitrary {@link CRSIdentifiable} Object from the providers backend.
+     * 
+     * 
      * @param id
      *            string representation of the resource to retrieve
      * @return the {@link CRSIdentifiable} Object or <code>null</code> if no such Object was found.
@@ -105,17 +104,15 @@ public interface CRSProvider {
     public CoordinateSystem getCRSByCode( CRSCodeType id )
                             throws CRSConfigurationException;
 
-
     /**
      * This method should be called to see if the provider is able to create all defined crs's, thus verifying the
      * correctness of the configuration.
-     *
+     * 
      * @return all configured CRSs.
      * @throws CRSConfigurationException
      *             if the implementation was confronted by an exception and could not deliver the requested crs. This
      *             exception should not be thrown if no CoordinateSystems were found, in the latter case an empty List (
      *             a list with size == 0 ) should be returned.
-     * @throws SQLException
      */
     public List<CoordinateSystem> getAvailableCRSs()
                             throws CRSConfigurationException;
@@ -123,7 +120,7 @@ public interface CRSProvider {
     /**
      * This method should be called if one is only interested in the available identifiers and not in the
      * coordinatesystems themselves.
-     *
+     * 
      * @return the identifiers of all configured CRSs.
      * @throws CRSConfigurationException
      *             if the implementation was confronted by an exception and could not deliver the requested crs. This
@@ -135,7 +132,7 @@ public interface CRSProvider {
 
     /**
      * Exports the crs to the implemented format. Try calling {@link #canExport()} before executing this method.
-     *
+     * 
      * @param sb
      *            the StringBuilder which will contain the exported version of the given crs.
      * @param crsToExport

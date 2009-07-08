@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration;
 
@@ -54,6 +54,7 @@ import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.exceptions.CRSConfigurationException;
+import org.deegree.crs.i18n.Messages;
 import org.deegree.crs.projections.azimuthal.LambertAzimuthalEqualArea;
 import org.deegree.crs.projections.azimuthal.StereographicAlternative;
 import org.deegree.crs.projections.azimuthal.StereographicAzimuthal;
@@ -66,25 +67,25 @@ import org.deegree.crs.transformations.helmert.Helmert;
 import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.deegree.crs.i18n.Messages;
 
 /**
  * add class documentation here.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  * @param <T>
  *            the type of object the parse method awaits.
- *
+ * 
  */
 public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     private static Logger LOG = LoggerFactory.getLogger( AbstractCRSProvider.class );
 
-    private static Map<CRSCodeType, CRSIdentifiable> cachedIdentifiables = new HashMap<CRSCodeType, CRSIdentifiable>( 42124 );
+    private static Map<CRSCodeType, CRSIdentifiable> cachedIdentifiables = new HashMap<CRSCodeType, CRSIdentifiable>(
+                                                                                                                      42124 );
 
     private CRSResource<T> resolver;
 
@@ -104,7 +105,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         if ( className == null || "".equals( className.trim() ) ) {
             if ( defaultResolver != null ) {
                 LOG.warn( "Found no configured CRS-Resource to use, trying default: "
-                                + defaultResolver.getClass().getCanonicalName() );
+                          + defaultResolver.getClass().getCanonicalName() );
                 resolver = defaultResolver;
             } else {
                 LOG.debug( "Found no configured CRS-Resource and no default crs resource supplied, hoping for the set method." );
@@ -132,7 +133,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
                 Constructor<?> constructor = t.getConstructor( this.getClass(), Properties.class );
                 if ( constructor == null ) {
                     LOG.error( "No constructor ( " + this.getClass() + ", Properties.class) found in class:"
-                                  + className );
+                               + className );
                 } else {
                     resolver = (K) constructor.newInstance( this, properties );
                 }
@@ -157,7 +158,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
                     LOG.info( "The configured class: " + className + " was not instantiated." );
                     if ( defaultResolver != null ) {
                         LOG.info( "Trying to instantiate the default resolver: "
-                                     + defaultResolver.getClass().getCanonicalName() );
+                                  + defaultResolver.getClass().getCanonicalName() );
                         resolver = defaultResolver;
                     } else {
                         LOG.warn( "No default crs resource supplied, hoping for the set method." );
@@ -168,12 +169,12 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
     }
 
     /**
-     * Retrieves the {@link CoordinateSystem} from the set provider that is identified by the 
-     * given {@link CRSCodeType} id.  
+     * Retrieves the {@link CoordinateSystem} from the set provider that is identified by the given {@link CRSCodeType}
+     * id.
      * 
-     * @param id    the {@link CRSCodeType} of the wanted crs
-     * @return
-     *          the {@link CoordianteSystem} that corresponds to the id
+     * @param id
+     *            the {@link CRSCodeType} of the wanted crs
+     * @return the {@link CoordinateSystem} that corresponds to the id
      * @throws CRSConfigurationException
      */
     public CoordinateSystem getCRSByCode( CRSCodeType id )
@@ -193,7 +194,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
                 LOG.debug( "Found CRSIdentifiable: " + r.getCodeAndName() + " from given id: " + id );
                 if ( !( r instanceof CoordinateSystem ) ) {
                     LOG.error( "Found CRSIdentifiable: " + r.getCodeAndName()
-                                  + " but it is not a coordinate system, your db is inconsistent return null." );
+                               + " but it is not a coordinate system, your db is inconsistent return null." );
                     r = null;
                 }
                 result = (CoordinateSystem) r;
@@ -247,8 +248,8 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         if ( result == null ) {
             LOG.debug( "The id: "
-                          + id
-                          + " could not be mapped to a valid deegree-crs, currently projectedCRS, geographicCRS, compoundCRS and geocentricCRS are supported." );
+                       + id
+                       + " could not be mapped to a valid deegree-crs, currently projectedCRS, geographicCRS, compoundCRS and geocentricCRS are supported." );
         } else {
             /**
              * Adding the used underlying crs's to the cache.
@@ -269,7 +270,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * Set the resolver to the given resolver.
-     *
+     * 
      * @param newResolver
      */
     protected void setResolver( CRSResource<T> newResolver ) {
@@ -308,7 +309,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * The id are what they are, not trimming 'upcasing' or other modifications will be done in this method.
-     *
+     * 
      * @param expectedType
      *            The class of type T which is expected.
      * @param <V>
@@ -326,7 +327,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * The id are what they are, not trimming 'upcasing' or other modifications will be done in this method.
-     *
+     * 
      * @param expectedType
      *            The class of type T which is expected.
      * @param <V>
@@ -344,22 +345,23 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
             result = getCachedIdentifiable( expectedType, ids[i] );
             if ( LOG.isDebugEnabled() ) {
                 LOG.debug( "Searched for id: " + ids[i] + " resulted in: "
-                              + ( ( result == null ) ? "null" : result.getCode() ) );
+                           + ( ( result == null ) ? "null" : result.getCode() ) );
             }
         }
         return result;
     }
 
     /**
-     * Get a {@link CRSIdentifiable} (actually a type V that extends it) from the cache that corresponds to
-     * the a {@link CRSCodeType}. An array of code types is given; the first identifiable that is found in 
-     * (for a code, when they are checked in order) is returned
-     *  
-     * @param <V> 
-     * @param expectedType  the type of the sought object
-     * @param ids   an array of {@link CRSCodeType}s
-     * @return
-     *          the identifiable found in the cache corresponding to the (first) id  
+     * Get a {@link CRSIdentifiable} (actually a type V that extends it) from the cache that corresponds to the a
+     * {@link CRSCodeType}. An array of code types is given; the first identifiable that is found in (for a code, when
+     * they are checked in order) is returned
+     * 
+     * @param <V>
+     * @param expectedType
+     *            the type of the sought object
+     * @param ids
+     *            an array of {@link CRSCodeType}s
+     * @return the identifiable found in the cache corresponding to the (first) id
      */
     public <V extends CRSIdentifiable> V getCachedIdentifiable( Class<V> expectedType, CRSCodeType[] ids ) {
         if ( ids == null || ids.length == 0 ) {
@@ -370,7 +372,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
             result = getCachedIdentifiable( expectedType, ids[i] );
             if ( LOG.isDebugEnabled() ) {
                 LOG.debug( "Searched for id: " + ids[i] + " resulted in: "
-                              + ( ( result == null ) ? "null" : result.getCode() ) );
+                           + ( ( result == null ) ? "null" : result.getCode() ) );
             }
         }
         return result;
@@ -378,12 +380,12 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * The id is as it is, not trimming 'upcasing' or other modifications will be done in this method.
-     *
+     * 
      * @param expectedType
      *            The class of type T which is expected.
      * @param <V>
      *            the type to cast to if the casting fails, null will be returned.
-     *
+     * 
      * @param id
      *            to search the cache for
      * @return the {@link CRSIdentifiable} or <code>null</code> if it was not found or the wrong type was found.
@@ -398,24 +400,24 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
             result = (V) cachedIdentifiables.get( CRSCodeType.valueOf( id ) );
         } catch ( ClassCastException cce ) {
             LOG.error( "Given id is not of type: " + expectedType.getCanonicalName() + " found following error: "
-                          + cce.getLocalizedMessage() );
+                       + cce.getLocalizedMessage() );
         }
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Searched for id: " + id + " resulted in: "
-                          + ( ( result == null ) ? "null" : result.getCode() ) );
+            LOG.debug( "Searched for id: " + id + " resulted in: " + ( ( result == null ) ? "null" : result.getCode() ) );
         }
         return result;
     }
 
     /**
-     * Get a {@link CRSIdentifiable} (actually a type V that extends it) from the cache that corresponds to
-     * the a {@link CRSCodeType}. 
+     * Get a {@link CRSIdentifiable} (actually a type V that extends it) from the cache that corresponds to the a
+     * {@link CRSCodeType}.
      * 
-     * @param <V> 
-     * @param expectedType  the type of the sought object
-     * @param id   a {@link CRSCodeType}
-     * @return
-     *          the identifiable found in the cache corresponding to the id    
+     * @param <V>
+     * @param expectedType
+     *            the type of the sought object
+     * @param id
+     *            a {@link CRSCodeType}
+     * @return the identifiable found in the cache corresponding to the id
      */
     @SuppressWarnings("unchecked")
     public <V extends CRSIdentifiable> V getCachedIdentifiable( Class<V> expectedType, CRSCodeType id ) {
@@ -427,21 +429,20 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
             result = (V) cachedIdentifiables.get( id );
         } catch ( ClassCastException cce ) {
             LOG.error( "Given id is not of type: " + expectedType.getCanonicalName() + " found following error: "
-                          + cce.getLocalizedMessage() );
+                       + cce.getLocalizedMessage() );
         }
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Searched for id: " + id + " resulted in: "
-                          + ( ( result == null ) ? "null" : result.getCode() ) );
+            LOG.debug( "Searched for id: " + id + " resulted in: " + ( ( result == null ) ? "null" : result.getCode() ) );
         }
         return result;
     }
 
     /**
      * The id is as it is, not trimming 'upcasing' or other modifications will be done in this method.
-     *
+     * 
      * @param <V>
      *            the type to cast to if the casting fails, null will be returned.
-     *
+     * 
      * @param id
      *            to search the cache for
      * @return the {@link CRSIdentifiable} or <code>null</code> if it was not found or the wrong type was found.
@@ -453,20 +454,19 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         V result = (V) cachedIdentifiables.get( CRSCodeType.valueOf( id ) );
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Searched for id: " + id + " resulted in: "
-                          + ( ( result == null ) ? "null" : result.getCode() ) );
+            LOG.debug( "Searched for id: " + id + " resulted in: " + ( ( result == null ) ? "null" : result.getCode() ) );
         }
         return result;
     }
 
     /**
-     * Get a {@link CRSIdentifiable} (actually a type V that extends it) from the cache that corresponds to
-     * the a {@link CRSCodeType}.
+     * Get a {@link CRSIdentifiable} (actually a type V that extends it) from the cache that corresponds to the a
+     * {@link CRSCodeType}.
      * 
      * @param <V>
-     * @param id    a {@link CRSCodeType}
-     * @return
-     *          a {@link CRSIdentifiable}-extending object that corresponds to the given id
+     * @param id
+     *            a {@link CRSCodeType}
+     * @return a {@link CRSIdentifiable}-extending object that corresponds to the given id
      */
     @SuppressWarnings("unchecked")
     public <V extends CRSIdentifiable> V getCachedIdentifiable( CRSCodeType id ) {
@@ -475,15 +475,14 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         V result = (V) cachedIdentifiables.get( id );
         if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Searched for id: " + id + " resulted in: "
-                          + ( ( result == null ) ? "null" : result.getCode() ) );
+            LOG.debug( "Searched for id: " + id + " resulted in: " + ( ( result == null ) ? "null" : result.getCode() ) );
         }
         return result;
     }
 
     /**
      * Add the id to the cache, by mapping it to all its identifiers.
-     *
+     * 
      * @param <V>
      *            type of CRSIdentifiable
      * @param identifiable
@@ -497,7 +496,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
             return null;
         }
         for ( CRSCodeType idString : identifiable.getCodes() ) {
-//            if ( idString != null && !"".equals( idString.trim() ) ) {
+            // if ( idString != null && !"".equals( idString.trim() ) ) {
             if ( idString != null ) {
                 if ( cachedIdentifiables.containsKey( idString ) && cachedIdentifiables.get( idString ) != null ) {
                     if ( update ) {
@@ -509,8 +508,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
                     cachedIdentifiables.put( idString, identifiable );
                 }
             } else {
-                LOG.warn( "Not adding the null string id to the cache of identifiable: "
-                                + identifiable.getCode() );
+                LOG.warn( "Not adding the null string id to the cache of identifiable: " + identifiable.getCode() );
             }
 
         }
@@ -519,13 +517,13 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * The <code>SupportedTransformations</code> enumeration defines currently supported transformations
-     *
+     * 
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     *
+     * 
      * @author last edited by: $Author$
-     *
+     * 
      * @version $Revision$, $Date$
-     *
+     * 
      */
     public enum SupportedTransformations {
         /**
@@ -561,13 +559,13 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
     /**
      * The <code>SupportedTransformationParameters</code> enumeration defines currently supported transformation
      * parameters
-     *
+     * 
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     *
+     * 
      * @author last edited by: $Author$
-     *
+     * 
      * @version $Revision$, $Date$
-     *
+     * 
      */
     public enum SupportedTransformationParameters {
         /**
@@ -614,13 +612,13 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * The <code>SupportedProjections</code> enumeration defines currently supported projections
-     *
+     * 
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     *
+     * 
      * @author last edited by: $Author$
-     *
+     * 
      * @version $Revision$, $Date$
-     *
+     * 
      */
     public enum SupportedProjections {
         /**
@@ -651,13 +649,13 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
 
     /**
      * The <code>SupportedProjectionParameters</code> enumeration defines currently supported projection parameters
-     *
+     * 
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     *
+     * 
      * @author last edited by: $Author$
-     *
+     * 
      * @version $Revision$, $Date$
-     *
+     * 
      */
     public enum SupportedProjectionParameters {
         /**
@@ -702,7 +700,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
     }
 
     /**
-     *
+     * 
      * @param codes
      *            to check for.
      * @return a mapped projection or {@link SupportedProjections#NOT_SUPPORTED}, never <code>null</code>
@@ -746,7 +744,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
     }
 
     /**
-     *
+     * 
      * @param codes
      *            to check for.
      * @return a mapped projections parameters or {@link SupportedProjectionParameters#NOT_SUPPORTED}, never
@@ -817,7 +815,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
     }
 
     /**
-     *
+     * 
      * @param codes
      *            to check for.
      * @return a mapped transformation or {@link SupportedTransformations#NOT_SUPPORTED}, never <code>null</code>
@@ -855,7 +853,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
     }
 
     /**
-     *
+     * 
      * @param codes
      *            to check for.
      * @return a mapped transformation or {@link SupportedTransformations#NOT_SUPPORTED}, never <code>null</code>
