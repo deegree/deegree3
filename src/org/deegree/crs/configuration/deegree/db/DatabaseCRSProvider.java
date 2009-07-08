@@ -156,7 +156,9 @@ public class DatabaseCRSProvider implements CRSProvider {
         dbConnectionURL = System.getenv( "CRS_DB_URL" );
         if ( dbConnectionURL == null ) {
             // accessing database as read-only
-            dbConnectionURL = "jdbc:derby:classpath:META-INF/deegreeCRS";
+            String pathToBinURL = this.getClass().getResource( "/" ).toString();
+            String pathToBin = pathToBinURL.substring( pathToBinURL.indexOf( "file:/" ) + 5 );
+            dbConnectionURL = "jdbc:derby:" + pathToBin + "../src/META-INF/deegreeCRS";
         }
         LOG.debug( "using the connection protocol: " + dbConnectionURL );
         
