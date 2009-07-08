@@ -44,6 +44,18 @@ CREATE TABLE transverse_mercator (
 )
 ;
 
+CREATE TABLE mercator (
+  id INTEGER NOT NULL,
+	natural_origin_lat DOUBLE,
+	natural_origin_long DOUBLE,
+	scale DOUBLE,
+	false_easting DOUBLE,
+	false_northing DOUBLE,
+	geographic_crs_id INTEGER NOT NULL,
+  units VARCHAR(50) NOT NULL
+)
+;
+
 CREATE TABLE stereographic_alternative ( 
 	id INTEGER NOT NULL,
 	natural_origin_lat DOUBLE NOT NULL,
@@ -119,6 +131,10 @@ ALTER TABLE transverse_mercator ADD CONSTRAINT PK_transverse_mercator
 ;
 
 
+ALTER TABLE mercator ADD CONSTRAINT PK_mercator 
+	PRIMARY KEY (id)
+;
+
 ALTER TABLE stereographic_alternative ADD CONSTRAINT PK_stereographic_alternative 
 	PRIMARY KEY (id)
 ;
@@ -151,6 +167,14 @@ ALTER TABLE transverse_mercator ADD CONSTRAINT FK_transverse_mercator_geographic
 ;
 
 ALTER TABLE transverse_mercator ADD CONSTRAINT FK_transverse_mercator_projection_lookup 
+	FOREIGN KEY (id) REFERENCES projection_lookup (id)
+;
+
+ALTER TABLE mercator ADD CONSTRAINT FK_mercator_geographic_crs 
+	FOREIGN KEY (geographic_crs_id) REFERENCES geographic_crs (id)
+;
+
+ALTER TABLE mercator ADD CONSTRAINT FK_mercator_projection_lookup 
 	FOREIGN KEY (id) REFERENCES projection_lookup (id)
 ;
 

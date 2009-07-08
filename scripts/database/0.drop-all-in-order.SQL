@@ -31,6 +31,8 @@ DROP TABLE stereographic_azimuthal ;
 
 DROP TABLE transverse_mercator ;
 
+DROP TABLE mercator ;
+
 DROP TABLE stereographic_alternative ;
 
 DROP TABLE lambert_azimuthal_equal_area ;
