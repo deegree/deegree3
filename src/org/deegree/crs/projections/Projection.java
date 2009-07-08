@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.projections;
 
@@ -64,14 +64,14 @@ import org.deegree.crs.exceptions.ProjectionException;
  * area of the actual earth as the same coin on any other part of the map. This can only be done by distorting shape,
  * scale and and angles of the original earth's layout.
  * </p>
- *
- *
+ * 
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public abstract class Projection extends CRSIdentifiable {
@@ -111,13 +111,8 @@ public abstract class Projection extends CRSIdentifiable {
     private boolean isSpherical;
 
     /**
-     * For custom projections
-     */
-    private String className;
-
-    /**
      * Creates a Projection. <b>Caution</b>, the given natural origin should be given in radians rather then degrees.
-     *
+     * 
      * @param geographicCRS
      *            which this projection uses.
      * @param falseNorthing
@@ -147,66 +142,6 @@ public abstract class Projection extends CRSIdentifiable {
         this.falseNorthing = falseNorthing;
         this.falseEasting = falseEasting;
         this.units = units;
-        this.setClassName( null );
-
-        checkForNullObject( geographicCRS, "Projection", "geographicCRS" );
-        checkForNullObject( geographicCRS.getGeodeticDatum(), "Projection", "geographicCRS.datum" );
-        checkForNullObject( geographicCRS.getGeodeticDatum().getEllipsoid(), "Projection",
-                            "geographicCRS.datum.ellipsoid" );
-        checkForNullObject( naturalOrigin, "Projection", "naturalOrigin" );
-        checkForNullObject( units, "Projection", "units" );
-
-        this.scaleFactor = scale * getSemiMajorAxis();
-
-        this.naturalOrigin = new Point2d( normalizeLongitude( naturalOrigin.x ), normalizeLatitude( naturalOrigin.y ) );
-
-        // uses different library
-        // this.projectionLongitude = this.naturalOrigin.getX();
-        // this.projectionLatitude = this.naturalOrigin.getY();
-        this.projectionLongitude = this.naturalOrigin.x;
-        this.projectionLatitude = this.naturalOrigin.y;
-
-        sinphi0 = Math.sin( projectionLatitude );
-        cosphi0 = Math.cos( projectionLatitude );
-
-        isSpherical = geographicCRS.getGeodeticDatum().getEllipsoid().getEccentricity() < 0.0000001;
-    }
-
-    /**
-     * Creates a Projection. <b>Caution</b>, the given natural origin should be given in radians rather then degrees.
-     *
-     * @param geographicCRS
-     *            which this projection uses.
-     * @param falseNorthing
-     *            in given units
-     * @param falseEasting
-     *            in given units
-     * @param naturalOrigin
-     *            in radians longitude, latitude.
-     * @param units
-     *            of the map projection
-     * @param scale
-     *            at the prime meridian (e.g. 0.9996 for UTM)
-     * @param conformal
-     *            if the projection is conformal
-     * @param equalArea
-     *            if the projection result in an equal area map
-     * @param id
-     *            an identifiable instance containing information about this projection.
-     * @param className
-     *            the class for custom projections
-     */
-    public Projection( GeographicCRS geographicCRS, double falseNorthing, double falseEasting, Point2d naturalOrigin,
-                       Unit units, double scale, boolean conformal, boolean equalArea, CRSIdentifiable id, String className ) {
-        super( id );
-        this.scale = scale;
-        this.conformal = conformal;
-        this.equalArea = equalArea;
-        this.geographicCRS = geographicCRS;
-        this.falseNorthing = falseNorthing;
-        this.falseEasting = falseEasting;
-        this.units = units;
-        this.setClassName( className );
 
         checkForNullObject( geographicCRS, "Projection", "geographicCRS" );
         checkForNullObject( geographicCRS.getGeodeticDatum(), "Projection", "geographicCRS.datum" );
@@ -233,7 +168,7 @@ public abstract class Projection extends CRSIdentifiable {
 
     /**
      * The actual transform method doing a projection from geographic coordinates to map coordinates.
-     *
+     * 
      * @param lambda
      *            the longitude
      * @param phi
@@ -247,7 +182,7 @@ public abstract class Projection extends CRSIdentifiable {
 
     /**
      * Do an inverse projection from projected (map) coordinates to geographic coordinates.
-     *
+     * 
      * @param x
      *            coordinate on the map
      * @param y
@@ -287,7 +222,7 @@ public abstract class Projection extends CRSIdentifiable {
 
     /**
      * Sets the old scale to the given scale, also adjusts the scaleFactor.
-     *
+     * 
      * @param scale
      *            the new scale
      */
@@ -319,7 +254,7 @@ public abstract class Projection extends CRSIdentifiable {
 
     /**
      * sets the false easting to given value. (Used in for example transverse mercator, while setting the utm zone).
-     *
+     * 
      * @param newFalseEasting
      *            the new false easting parameter.
      */
@@ -396,7 +331,6 @@ public abstract class Projection extends CRSIdentifiable {
     public final boolean isSpherical() {
         return isSpherical;
     }
-
 
     /**
      * @return the projectionLatitude also known as central-latitude or latitude-of-origin, in Snyder referenced as
@@ -482,9 +416,9 @@ public abstract class Projection extends CRSIdentifiable {
      * <p>
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
-     *
+     * 
      * @return (int) ( result >>> 32 ) ^ (int) result;
-     *
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -519,11 +453,4 @@ public abstract class Projection extends CRSIdentifiable {
         return (int) ( code >>> 32 ) ^ (int) code;
     }
 
-    public void setClassName( String className ) {
-        this.className = className;
-    }
-
-    public String getClassName() {
-        return className;
-    }
 }
