@@ -90,6 +90,9 @@ public class CRSConfiguration {
 
     private CRSProvider provider;
 
+    /**
+     * 
+     */
     public static final Map<String, CRSConfiguration> DEFINED_CONFIGURATIONS = new HashMap<String, CRSConfiguration>();
 
     // Load from XML file
@@ -320,15 +323,13 @@ public class CRSConfiguration {
         }
         CRSProvider in = null;
         if ( "deegree".equalsIgnoreCase( inFormat ) ) {
-            try {
-                in = new DeegreeCRSProvider( new Properties( configuredProperties ) );
-            } catch ( CRSConfigurationException e ) {
-                e.printStackTrace();
-            }
+            in = new DeegreeCRSProvider( new Properties( configuredProperties ) );
         } else if ( "proj4".equalsIgnoreCase( inFormat ) ) {
             in = new PROJ4CRSProvider( inProps );
         } else if ( "database".equalsIgnoreCase( inFormat ) ) {
             in = new DatabaseCRSProvider();
+        } else {
+            throw new Exception( "-inFormat argument (" + inFormat + ") is not recognized. Known values are deegree, proj4, database." );             
         }
 
         CRSProvider out = null;
@@ -338,11 +339,13 @@ public class CRSConfiguration {
             out = new DatabaseCRSProvider();
         } else if ( "deegree".equalsIgnoreCase( outFormat ) ) {
             out = new DeegreeCRSProvider( new Properties( configuredProperties ) );
+        } else {
+            throw new Exception( "-outFormat argument (" + outFormat + ") is not recognized. Known values are deegree, proj4, database." );
         }
 
         try {
-            // List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
-            // allSystems.add( in.getCRSByCode( new CRSCodeType( "25832", "EPSG" ) ) );
+//             List<CoordinateSystem> allSystems = new LinkedList<CoordinateSystem>();
+//             allSystems.add( in.getCRSByCode( new CRSCodeType( "3395", "EPSG" ) ) );
             List<CoordinateSystem> allSystems = in.getAvailableCRSs();
 
             if ( remove ) {
@@ -449,6 +452,10 @@ public class CRSConfiguration {
         return provider;
     }
 
+    /**
+     * @return a text that specifies whether a crs is provided or not (and the canonical name of the provider,
+     * if that is the case)
+     */
     @Override
     public String toString() {
         return "CRSConfiguration is using "

@@ -167,6 +167,15 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
     }
 
+    /**
+     * Retrieves the {@link CoordinateSystem} from the set provider that is identified by the 
+     * given {@link CRSCodeType} id.  
+     * 
+     * @param id    the {@link CRSCodeType} of the wanted crs
+     * @return
+     *          the {@link CoordianteSystem} that corresponds to the id
+     * @throws CRSConfigurationException
+     */
     public CoordinateSystem getCRSByCode( CRSCodeType id )
                             throws CRSConfigurationException {
 
@@ -341,6 +350,17 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         return result;
     }
 
+    /**
+     * Get a {@link CRSIdentifiable} (actually a type V that extends it) from the cache that corresponds to
+     * the a {@link CRSCodeType}. An array of code types is given; the first identifiable that is found in 
+     * (for a code, when they are checked in order) is returned
+     *  
+     * @param <V> 
+     * @param expectedType  the type of the sought object
+     * @param ids   an array of {@link CRSCodeType}s
+     * @return
+     *          the identifiable found in the cache corresponding to the (first) id  
+     */
     public <V extends CRSIdentifiable> V getCachedIdentifiable( Class<V> expectedType, CRSCodeType[] ids ) {
         if ( ids == null || ids.length == 0 ) {
             return null;
@@ -387,7 +407,16 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         return result;
     }
 
-    // TODO add doc and replace the String-parameter version of it
+    /**
+     * Get a {@link CRSIdentifiable} (actually a type V that extends it) from the cache that corresponds to
+     * the a {@link CRSCodeType}. 
+     * 
+     * @param <V> 
+     * @param expectedType  the type of the sought object
+     * @param id   a {@link CRSCodeType}
+     * @return
+     *          the identifiable found in the cache corresponding to the id    
+     */
     @SuppressWarnings("unchecked")
     public <V extends CRSIdentifiable> V getCachedIdentifiable( Class<V> expectedType, CRSCodeType id ) {
         if ( id == null ) {
@@ -430,6 +459,15 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         return result;
     }
 
+    /**
+     * Get a {@link CRSIdentifiable} (actually a type V that extends it) from the cache that corresponds to
+     * the a {@link CRSCodeType}.
+     * 
+     * @param <V>
+     * @param id    a {@link CRSCodeType}
+     * @return
+     *          a {@link CRSIdentifiable}-extending object that corresponds to the given id
+     */
     @SuppressWarnings("unchecked")
     public <V extends CRSIdentifiable> V getCachedIdentifiable( CRSCodeType id ) {
         if ( id == null ) {
