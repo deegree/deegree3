@@ -74,6 +74,7 @@ import org.deegree.crs.projections.azimuthal.LambertAzimuthalEqualArea;
 import org.deegree.crs.projections.azimuthal.StereographicAlternative;
 import org.deegree.crs.projections.azimuthal.StereographicAzimuthal;
 import org.deegree.crs.projections.conic.LambertConformalConic;
+import org.deegree.crs.projections.cylindric.Mercator;
 import org.deegree.crs.projections.cylindric.TransverseMercator;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
@@ -446,6 +447,50 @@ public class CRSDBExporter {
             ps.setShort( 7, (short) ( transMercator.getHemisphere() ? 1 : 0 ) );
             ps.setInt( 8, geographicID );
             ps.setString( 9, transMercator.getUnits().getName() );
+            ps.execute();
+        } catch ( SQLException e ) {
+            throw new CRSExportingException( "Exporting failed: " + e.getMessage(), e );
+        }
+
+        return internalID++;
+    }
+    
+    /**
+     * Inserts the Mercator projection into the database
+     * 
+     * @param mercator
+     *          the Mercator projection object              
+     * @return 
+     *          the internal database ID assigned to the object
+     * @throws SQLException
+     */
+    protected int export( Mercator mercator )
+                            throws SQLException {
+
+        int geographicID = export( mercator.getGeographicCRS() );
+
+        try {
+            exportIdentifiableProperties( mercator );
+
+            // insert into projection_lookup table
+            PreparedStatement ps = connection.prepareStatement( "INSERT INTO projection_lookup VALUES (?, ? )" );
+            ps.setInt( 1, internalID );
+            ps.setString( 2, "transverse_mercator" );
+            ps.execute();
+
+            // insert into mercator
+            ps = connection.prepareStatement( "INSERT INTO mercator VALUES (?, ?, ?, ?, ?, ?, ?, ? )" );
+            ps.setInt( 1, internalID );
+
+            Point2d p2d = mercator.getNaturalOrigin();
+            setNullDoubleIf( p2d.y, 2, ps ); // y for latitude (of natural origin)
+            setNullDoubleIf( p2d.x, 3, ps ); // x for longitude (of natural origin)
+            setNullDoubleIf( mercator.getScale(), 4, ps );
+            setNullDoubleIf( mercator.getFalseEasting(), 5, ps );
+            setNullDoubleIf( mercator.getFalseNorthing(), 6, ps );
+
+            ps.setInt( 7, geographicID );
+            ps.setString( 8, mercator.getUnits().getName() );
             ps.execute();
         } catch ( SQLException e ) {
             throw new CRSExportingException( "Exporting failed: " + e.getMessage(), e );
@@ -946,6 +991,9 @@ public class CRSDBExporter {
 
         if ( projection instanceof StereographicAlternative )
             return export( (StereographicAlternative) projection );
+        
+        if ( projection instanceof Mercator )
+            return export( (Mercator) projection );
 
         //
         // Export a custom projection
