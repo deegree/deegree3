@@ -836,9 +836,9 @@ public class WKTParser {
             GeodeticDatum datum = null;
             PrimeMeridian pm = null;
             Unit unit = null;
-            Axis axis1 = new Axis( "Lon", Axis.AO_EAST ); // the default values for GEOGCS axes, based on the OGC
+            Axis axis1 = new Axis( Unit.DEGREE, "Lon", Axis.AO_EAST ); // the default values for GEOGCS axes, based on the OGC
             // specification
-            Axis axis2 = new Axis( "Lat", Axis.AO_NORTH );
+            Axis axis2 = new Axis( Unit.DEGREE, "Lat", Axis.AO_NORTH );
             CRSCodeType code = CRSCodeType.getUndefined();
             while ( true ) {
                 tokenizer.nextToken();
