@@ -36,32 +36,14 @@
 
 package org.deegree.rendering.r2d.styling;
 
-import org.deegree.rendering.r2d.styling.components.Graphic;
-
 /**
- * <code>PointStyling</code>
+ * <code>Styling</code>
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
  */
-public class PointStyling implements Copyable<PointStyling>, Styling {
-
-    /**
-     * Default is a SQUARE mark graphic.
-     */
-    public Graphic graphic = new Graphic();
-
-    public PointStyling copy() {
-        PointStyling other = new PointStyling();
-        other.graphic = graphic.copy();
-        return other;
-    }
-
-    @Override
-    public String toString() {
-        return "PointStyling [" + graphic + "]";
-    }
-
+public interface Styling {
+    // just to introduce a common type name not based on generics
 }

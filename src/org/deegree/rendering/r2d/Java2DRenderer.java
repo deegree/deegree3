@@ -71,7 +71,6 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
@@ -80,6 +79,7 @@ import org.deegree.rendering.r2d.strokes.TextStroke;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.PolygonStyling;
+import org.deegree.rendering.r2d.styling.Styling;
 import org.deegree.rendering.r2d.styling.TextStyling;
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Graphic;
@@ -514,6 +514,18 @@ public class Java2DRenderer implements Renderer {
             for ( Geometry g : (MultiGeometry<?>) geom ) {
                 render( styling, g );
             }
+        }
+    }
+
+    public void render( Styling styling, Geometry geom ) {
+        if ( styling instanceof PointStyling ) {
+            render( (PointStyling) styling, geom );
+        }
+        if ( styling instanceof LineStyling ) {
+            render( (LineStyling) styling, geom );
+        }
+        if ( styling instanceof PolygonStyling ) {
+            render( (PolygonStyling) styling, geom );
         }
     }
 

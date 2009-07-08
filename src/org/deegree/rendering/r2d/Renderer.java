@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r2d;
 
@@ -40,14 +40,15 @@ import org.deegree.geometry.Geometry;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.PolygonStyling;
+import org.deegree.rendering.r2d.styling.Styling;
 import org.deegree.rendering.r2d.styling.TextStyling;
 
 /**
  * <code>Renderer</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public interface Renderer {
@@ -78,4 +79,11 @@ public interface Renderer {
     public void render( PolygonStyling styling, Geometry geom );
 
     // public void render( RasterStyling styling );
+
+    /**
+     * @param styling
+     * @param geom
+     */
+    public void render( Styling styling, Geometry geom );
+
 }
