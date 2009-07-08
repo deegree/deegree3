@@ -82,8 +82,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The <code>CRSDBExporter</code> class inserts a CRS object in the database. In order not to introduce an object
- * twice, the codetype( sometimes - when the code is not provided - the objects's data) is checked not to exist 
- * already in the database.
+ * twice, the codetype( sometimes - when the code is not provided - the objects's data) is checked not to exist already
+ * in the database.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -109,9 +109,9 @@ public class CRSDBExporter {
 
     /**
      * Set the database connection (that is usually obtained from {@link DatabaseCRSProvider})
-     *  
+     * 
      * @param connection
-     *          the database connection
+     *            the database connection
      * @throws ClassNotFoundException
      */
     protected void setConnection( Connection connection )
@@ -209,9 +209,8 @@ public class CRSDBExporter {
      * Insert into the database the Lambert Azimuthal Equal Area projection properties
      * 
      * @param lambertAzimuthal
-     *          the Lambert Azimuthal Equal Area projection object
-     * @return 
-     *          the internal database ID assigned to the supplied object
+     *            the Lambert Azimuthal Equal Area projection object
+     * @return the internal database ID assigned to the supplied object
      * @throws SQLException
      */
     protected int export( LambertAzimuthalEqualArea lambertAzimuthal )
@@ -254,9 +253,8 @@ public class CRSDBExporter {
      * Inserts into the database the Stereographic Alternative projection properties
      * 
      * @param stereographicAl
-     *          the Stereographic Alternative projection object
-     * @return 
-     *          the internal database ID assigned to the object
+     *            the Stereographic Alternative projection object
+     * @return the internal database ID assigned to the object
      * @throws SQLException
      */
     protected int export( StereographicAlternative stereographicAl )
@@ -298,9 +296,8 @@ public class CRSDBExporter {
      * Insert into the database the Stereographic Azimuthal projection properties
      * 
      * @param stereographicAz
-     *          the Stereographic Azimuthal projection object
-     * @return 
-     *          the internal database ID assigned to the object
+     *            the Stereographic Azimuthal projection object
+     * @return the internal database ID assigned to the object
      * @throws SQLException
      */
     protected int export( StereographicAzimuthal stereographicAz )
@@ -343,9 +340,8 @@ public class CRSDBExporter {
      * Insert into the database the Lambert Conformal Conic projection properties
      * 
      * @param lambertConformal
-     *          the Lambert Conformal projection object              
-     * @return 
-     *          the internal database ID assigned to the object
+     *            the Lambert Conformal projection object
+     * @return the internal database ID assigned to the object
      * @throws SQLException
      */
     protected int export( LambertConformalConic lambertConformal )
@@ -387,9 +383,8 @@ public class CRSDBExporter {
     }
 
     /**
-     * Checks if the double variable to be inserted in the database is NULL, and if so,
-     * sets the database value to NULL. Otherwise simply fill the insert statement with 
-     * the double variable.
+     * Checks if the double variable to be inserted in the database is NULL, and if so, sets the database value to NULL.
+     * Otherwise simply fill the insert statement with the double variable.
      * 
      * @param d
      *            the double variable from the insert statement
@@ -414,9 +409,8 @@ public class CRSDBExporter {
      * Inserts the Transverse Mercator projection into the database
      * 
      * @param transMercator
-     *          the Transform Mercator projection object              
-     * @return 
-     *          the internal database ID assigned to the object
+     *            the Transform Mercator projection object
+     * @return the internal database ID assigned to the object
      * @throws SQLException
      */
     protected int export( TransverseMercator transMercator )
@@ -454,14 +448,13 @@ public class CRSDBExporter {
 
         return internalID++;
     }
-    
+
     /**
      * Inserts the Mercator projection into the database
      * 
      * @param mercator
-     *          the Mercator projection object              
-     * @return 
-     *          the internal database ID assigned to the object
+     *            the Mercator projection object
+     * @return the internal database ID assigned to the object
      * @throws SQLException
      */
     protected int export( Mercator mercator )
@@ -503,9 +496,8 @@ public class CRSDBExporter {
      * Inserts the Axis properties into the database
      * 
      * @param axis
-     *          the Axis object
-     * @return 
-     *          the internal database ID assigned to the Axis object
+     *            the Axis object
+     * @return the internal database ID assigned to the Axis object
      * @throws SQLException
      */
     protected int export( Axis axis )
@@ -541,20 +533,19 @@ public class CRSDBExporter {
      * Export the Vertical Datum to the database
      * 
      * @param vDatum
-     *          the Vertical Datum object
-     * @return 
-     *          the internal database ID assigned to the Vertical Datum
+     *            the Vertical Datum object
+     * @return the internal database ID assigned to the Vertical Datum
      * @throws SQLException
      */
     protected int export( VerticalDatum vDatum )
                             throws SQLException {
         LOG.info( "Exporting Vertical Datum..." );
         ResultSet rs = connection.prepareStatement(
-                                              "SELECT ref_id FROM code, vertical_datum " + "WHERE code.code= '"
-                                                                      + vDatum.getCode().getCode()
-                                                                      + "' AND code.codespace = '"
-                                                                      + vDatum.getCode().getCodeSpace()
-                                                                      + "' AND vertical_datum.id = code.ref_id" ).executeQuery();
+                                                    "SELECT ref_id FROM code, vertical_datum " + "WHERE code.code= '"
+                                                                            + vDatum.getCode().getCode()
+                                                                            + "' AND code.codespace = '"
+                                                                            + vDatum.getCode().getCodeSpace()
+                                                                            + "' AND vertical_datum.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
             return rs.getInt( 1 );
@@ -579,20 +570,19 @@ public class CRSDBExporter {
      * Insert the Vertical CRS data into the database
      * 
      * @param vertical
-     *          the Vertical CRS object
-     * @return 
-     *          the database internal ID assigned to the Vertical CRS
+     *            the Vertical CRS object
+     * @return the database internal ID assigned to the Vertical CRS
      * @throws SQLException
      */
     protected int export( VerticalCRS vertical )
                             throws SQLException {
         LOG.info( "Exporting Vertical CRS..." );
         ResultSet rs = connection.prepareStatement(
-                                              "SELECT ref_id FROM code, vertical_crs " + "WHERE code.code= '"
-                                                                      + vertical.getCode().getCode()
-                                                                      + "' AND code.codespace = '"
-                                                                      + vertical.getCode().getCodeSpace()
-                                                                      + "' AND vertical_crs.id = code.ref_id" ).executeQuery();
+                                                    "SELECT ref_id FROM code, vertical_crs " + "WHERE code.code= '"
+                                                                            + vertical.getCode().getCode()
+                                                                            + "' AND code.codespace = '"
+                                                                            + vertical.getCode().getCodeSpace()
+                                                                            + "' AND vertical_crs.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
             return rs.getInt( 1 );
@@ -634,14 +624,14 @@ public class CRSDBExporter {
                             throws SQLException {
         LOG.info( "Exporting Helmert Transformation..." );
         ResultSet rs = connection.prepareStatement(
-                                              "SELECT id FROM helmert_transformation WHERE x_axis_translation = "
-                                                                      + helmert.dx + " AND y_axis_translation = "
-                                                                      + helmert.dy + " AND z_axis_translation = "
-                                                                      + helmert.dz + " AND x_axis_rotation = "
-                                                                      + helmert.ex + " AND y_axis_rotation = "
-                                                                      + helmert.ey + " AND z_axis_rotation = "
-                                                                      + helmert.ez + " AND scale_difference = "
-                                                                      + helmert.ppm ).executeQuery();
+                                                    "SELECT id FROM helmert_transformation WHERE x_axis_translation = "
+                                                                            + helmert.dx + " AND y_axis_translation = "
+                                                                            + helmert.dy + " AND z_axis_translation = "
+                                                                            + helmert.dz + " AND x_axis_rotation = "
+                                                                            + helmert.ex + " AND y_axis_rotation = "
+                                                                            + helmert.ey + " AND z_axis_rotation = "
+                                                                            + helmert.ez + " AND scale_difference = "
+                                                                            + helmert.ppm ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
             return rs.getInt( 1 );
@@ -682,19 +672,19 @@ public class CRSDBExporter {
      * Insert the Prime Meridian properties into the database
      * 
      * @param pm
-     *          the Prime Meridian object
-     * @return 
-     *          the internal database ID assigned to the object
+     *            the Prime Meridian object
+     * @return the internal database ID assigned to the object
      * @throws SQLException
      */
     protected int export( PrimeMeridian pm )
                             throws SQLException {
         LOG.info( "Exporting Prime Meridian..." );
         ResultSet rs = connection.prepareStatement(
-                                              "SELECT id FROM prime_meridian " + "WHERE prime_meridian.longitude = "
-                                                                      + pm.getLongitude()
-                                                                      + " AND  upper( prime_meridian.unit ) = upper('"
-                                                                      + pm.getAngularUnit().getName() + "') " ).executeQuery();
+                                                    "SELECT id FROM prime_meridian "
+                                                                            + "WHERE prime_meridian.longitude = "
+                                                                            + pm.getLongitude()
+                                                                            + " AND  upper( prime_meridian.unit ) = upper('"
+                                                                            + pm.getAngularUnit().getName() + "') " ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
             return rs.getInt( 1 );
@@ -720,20 +710,19 @@ public class CRSDBExporter {
      * Insert the Ellipsoid object data into the database
      * 
      * @param ellipsoid
-     *          the ellipsoid object
-     * @return 
-     *          the internal database ID assigned to the ellipsoid
+     *            the ellipsoid object
+     * @return the internal database ID assigned to the ellipsoid
      * @throws SQLException
      */
     protected int export( Ellipsoid ellipsoid )
                             throws SQLException {
         LOG.info( "Exporting Ellipsoid..." );
         ResultSet rs = connection.prepareStatement(
-                                              "SELECT ref_id FROM code, ellipsoid " + "WHERE code.code= '"
-                                                                      + ellipsoid.getCode().getCode()
-                                                                      + "' AND code.codespace = '"
-                                                                      + ellipsoid.getCode().getCodeSpace()
-                                                                      + "' AND ellipsoid.id = code.ref_id" ).executeQuery();
+                                                    "SELECT ref_id FROM code, ellipsoid " + "WHERE code.code= '"
+                                                                            + ellipsoid.getCode().getCode()
+                                                                            + "' AND code.codespace = '"
+                                                                            + ellipsoid.getCode().getCodeSpace()
+                                                                            + "' AND ellipsoid.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
             return rs.getInt( 1 );
@@ -767,9 +756,8 @@ public class CRSDBExporter {
      * Insert the Geodetic Datum properties into the database
      * 
      * @param gdatum
-     *          the Geodetic Datum object
-     * @return 
-     *          the internal database ID assigned to the Geodetic Datum
+     *            the Geodetic Datum object
+     * @return the internal database ID assigned to the Geodetic Datum
      * @throws SQLException
      */
     protected int export( GeodeticDatum gdatum )
@@ -777,57 +765,58 @@ public class CRSDBExporter {
         LOG.info( "Exporting Geodetic Datum ..." );
         if ( !gdatum.getCode().getCode().equalsIgnoreCase( "NOT PROVIDED" ) ) {
             ResultSet rs = connection.prepareStatement(
-                                                  "SELECT ref_id FROM code, geodetic_datum " + "WHERE code.code= '"
-                                                                          + gdatum.getCode().getCode()
-                                                                          + "' AND code.codespace = '"
-                                                                          + gdatum.getCode().getCodeSpace()
-                                                                          + "' AND geodetic_datum.id = code.ref_id" ).executeQuery();
+                                                        "SELECT ref_id FROM code, geodetic_datum "
+                                                                                + "WHERE code.code= '"
+                                                                                + gdatum.getCode().getCode()
+                                                                                + "' AND code.codespace = '"
+                                                                                + gdatum.getCode().getCodeSpace()
+                                                                                + "' AND geodetic_datum.id = code.ref_id" ).executeQuery();
             if ( rs.next() ) {
                 LOG.info( "...found in the database already." );
                 return rs.getInt( 1 );
             }
         } else {
             ResultSet rs1 = connection.prepareStatement(
-                                                   "SELECT geodetic_datum.id FROM geodetic_datum, ellipsoid, code "
-                                                                           + "WHERE geodetic_datum.ellipsoid_id = ellipsoid.id "
-                                                                           + "AND ellipsoid.id = code.ref_id "
-                                                                           + "AND code.code ='"
-                                                                           + gdatum.getEllipsoid().getCode().getCode()
-                                                                           + "' AND code.codespace = '"
-                                                                           + gdatum.getEllipsoid().getCode().getCodeSpace()
-                                                                           + "'" ).executeQuery();
+                                                         "SELECT geodetic_datum.id FROM geodetic_datum, ellipsoid, code "
+                                                                                 + "WHERE geodetic_datum.ellipsoid_id = ellipsoid.id "
+                                                                                 + "AND ellipsoid.id = code.ref_id "
+                                                                                 + "AND code.code ='"
+                                                                                 + gdatum.getEllipsoid().getCode().getCode()
+                                                                                 + "' AND code.codespace = '"
+                                                                                 + gdatum.getEllipsoid().getCode().getCodeSpace()
+                                                                                 + "'" ).executeQuery();
             Set<Integer> ellipsoidMatches = new HashSet<Integer>();
             while ( rs1.next() )
                 ellipsoidMatches.add( rs1.getInt( 1 ) );
 
             ResultSet rs2 = connection.prepareStatement(
-                                                   "SELECT geodetic_datum.id FROM geodetic_datum, prime_meridian "
-                                                                           + "WHERE geodetic_datum.prime_meridian_id = prime_meridian.id "
-                                                                           + "AND prime_meridian.longitude = "
-                                                                           + gdatum.getPrimeMeridian().getLongitude()
-                                                                           + " AND upper( prime_meridian.unit ) = upper('"
-                                                                           + gdatum.getPrimeMeridian().getAngularUnit().getName()
-                                                                           + "') " ).executeQuery();
+                                                         "SELECT geodetic_datum.id FROM geodetic_datum, prime_meridian "
+                                                                                 + "WHERE geodetic_datum.prime_meridian_id = prime_meridian.id "
+                                                                                 + "AND prime_meridian.longitude = "
+                                                                                 + gdatum.getPrimeMeridian().getLongitude()
+                                                                                 + " AND upper( prime_meridian.unit ) = upper('"
+                                                                                 + gdatum.getPrimeMeridian().getAngularUnit().getName()
+                                                                                 + "') " ).executeQuery();
             Set<Integer> pmMatches = new HashSet<Integer>();
             while ( rs2.next() )
                 pmMatches.add( rs2.getInt( 1 ) );
 
             ResultSet rs3 = connection.prepareStatement(
-                                                   "SELECT geodetic_datum.id FROM geodetic_datum, helmert_transformation WHERE geodetic_datum.helmert_id = helmert_transformation.id "
-                                                                           + "AND x_axis_translation = "
-                                                                           + gdatum.getWGS84Conversion().dx
-                                                                           + " AND y_axis_translation = "
-                                                                           + gdatum.getWGS84Conversion().dy
-                                                                           + " AND z_axis_translation = "
-                                                                           + gdatum.getWGS84Conversion().dz
-                                                                           + " AND x_axis_rotation = "
-                                                                           + gdatum.getWGS84Conversion().ex
-                                                                           + " AND y_axis_rotation = "
-                                                                           + gdatum.getWGS84Conversion().ey
-                                                                           + " AND z_axis_rotation = "
-                                                                           + gdatum.getWGS84Conversion().ez
-                                                                           + " AND scale_difference = "
-                                                                           + gdatum.getWGS84Conversion().ppm ).executeQuery();
+                                                         "SELECT geodetic_datum.id FROM geodetic_datum, helmert_transformation WHERE geodetic_datum.helmert_id = helmert_transformation.id "
+                                                                                 + "AND x_axis_translation = "
+                                                                                 + gdatum.getWGS84Conversion().dx
+                                                                                 + " AND y_axis_translation = "
+                                                                                 + gdatum.getWGS84Conversion().dy
+                                                                                 + " AND z_axis_translation = "
+                                                                                 + gdatum.getWGS84Conversion().dz
+                                                                                 + " AND x_axis_rotation = "
+                                                                                 + gdatum.getWGS84Conversion().ex
+                                                                                 + " AND y_axis_rotation = "
+                                                                                 + gdatum.getWGS84Conversion().ey
+                                                                                 + " AND z_axis_rotation = "
+                                                                                 + gdatum.getWGS84Conversion().ez
+                                                                                 + " AND scale_difference = "
+                                                                                 + gdatum.getWGS84Conversion().ppm ).executeQuery();
             Set<Integer> helmertMatches = new HashSet<Integer>();
             while ( rs3.next() )
                 helmertMatches.add( rs3.getInt( 1 ) );
@@ -867,20 +856,19 @@ public class CRSDBExporter {
      * Insert the Geocentric CRS data into the database
      * 
      * @param geocentric
-     *          the Geocentric CRS object
-     * @return 
-     *          the database internal ID assigned to the Geocentric CRS
+     *            the Geocentric CRS object
+     * @return the database internal ID assigned to the Geocentric CRS
      * @throws SQLException
      */
     protected int export( GeocentricCRS geocentric )
                             throws SQLException {
         LOG.info( "Exporting Geocentric CRS..." );
         ResultSet rs = connection.prepareStatement(
-                                              "SELECT ref_id FROM code, geocentric_crs " + "WHERE code.code= '"
-                                                                      + geocentric.getCode().getCode()
-                                                                      + "' AND code.codespace = '"
-                                                                      + geocentric.getCode().getCodeSpace()
-                                                                      + "' AND geocentric_crs.id = code.ref_id" ).executeQuery();
+                                                    "SELECT ref_id FROM code, geocentric_crs " + "WHERE code.code= '"
+                                                                            + geocentric.getCode().getCode()
+                                                                            + "' AND code.codespace = '"
+                                                                            + geocentric.getCode().getCodeSpace()
+                                                                            + "' AND geocentric_crs.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
             return rs.getInt( 1 );
@@ -919,20 +907,19 @@ public class CRSDBExporter {
      * Inserts the GeographicCRS data into the database
      * 
      * @param geographic
-     *          the Geographic CRS object
-     * @return 
-     *          the internal database ID for the Geographic CRS
+     *            the Geographic CRS object
+     * @return the internal database ID for the Geographic CRS
      * @throws SQLException
      */
     protected int export( GeographicCRS geographic )
                             throws SQLException {
         LOG.info( "Exporting Geographic CRS..." );
         ResultSet rs = connection.prepareStatement(
-                                              "SELECT ref_id FROM code, geographic_crs " + "WHERE code.code= '"
-                                                                      + geographic.getCode().getCode()
-                                                                      + "' AND code.codespace = '"
-                                                                      + geographic.getCode().getCodeSpace()
-                                                                      + "' AND geographic_crs.id = code.ref_id" ).executeQuery();
+                                                    "SELECT ref_id FROM code, geographic_crs " + "WHERE code.code= '"
+                                                                            + geographic.getCode().getCode()
+                                                                            + "' AND code.codespace = '"
+                                                                            + geographic.getCode().getCodeSpace()
+                                                                            + "' AND geographic_crs.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
             return rs.getInt( 1 );
@@ -966,13 +953,11 @@ public class CRSDBExporter {
     }
 
     /**
-     * Checks for the type of projection that is supplied and delegates the insertion to 
-     * the specific methods.
+     * Checks for the type of projection that is supplied and delegates the insertion to the specific methods.
      * 
      * @param projection
-     *          the Projection object
-     * @return 
-     *          the internal database ID that was assigned to the projection
+     *            the Projection object
+     * @return the internal database ID that was assigned to the projection
      * @throws SQLException
      */
     protected int export( Projection projection )
@@ -991,7 +976,7 @@ public class CRSDBExporter {
 
         if ( projection instanceof StereographicAlternative )
             return export( (StereographicAlternative) projection );
-        
+
         if ( projection instanceof Mercator )
             return export( (Mercator) projection );
 
@@ -1033,7 +1018,7 @@ public class CRSDBExporter {
 
             ps.setInt( 7, geographicID );
             ps.setString( 8, projection.getUnits().getName() );
-            ps.setString( 9, projection.getClassName() );
+            ps.setString( 9, projection.getClass().getCanonicalName() );
             ps.execute();
         } catch ( SQLException e ) {
             throw new CRSExportingException( "Exporting failed: " + e.getMessage(), e );
@@ -1046,20 +1031,19 @@ public class CRSDBExporter {
      * Inserts the Projected CRS data into the database
      * 
      * @param geocentric
-     *          the Geocentric CRS object
-     * @return 
-     *          the database internal ID assigned to the Geocentric CRS
+     *            the Geocentric CRS object
+     * @return the database internal ID assigned to the Geocentric CRS
      * @throws SQLException
      */
     protected int export( ProjectedCRS projected )
                             throws SQLException {
         LOG.info( "Exporting Projected CRS..." );
         ResultSet rs = connection.prepareStatement(
-                                              "SELECT ref_id FROM code, projected_crs " + "WHERE code.code= '"
-                                                                      + projected.getCode().getCode()
-                                                                      + "' AND code.codespace = '"
-                                                                      + projected.getCode().getCodeSpace()
-                                                                      + "' AND projected_crs.id = code.ref_id" ).executeQuery();
+                                                    "SELECT ref_id FROM code, projected_crs " + "WHERE code.code= '"
+                                                                            + projected.getCode().getCode()
+                                                                            + "' AND code.codespace = '"
+                                                                            + projected.getCode().getCodeSpace()
+                                                                            + "' AND projected_crs.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
             return rs.getInt( 1 );
@@ -1092,9 +1076,8 @@ public class CRSDBExporter {
      * Insert into the database the supplied Compound CRS
      * 
      * @param compound
-     *          the Compound CRS object
-     * @return 
-     *          the internal database ID assigned to the Compound CRS
+     *            the Compound CRS object
+     * @return the internal database ID assigned to the Compound CRS
      * @throws SQLException
      * @throws CRSException
      */
@@ -1102,11 +1085,11 @@ public class CRSDBExporter {
                             throws SQLException, CRSException {
         LOG.info( "Exporting Compound CRS..." );
         ResultSet rs = connection.prepareStatement(
-                                              "SELECT ref_id FROM code, compound_crs " + "WHERE code.code= '"
-                                                                      + compound.getCode().getCode()
-                                                                      + "' AND code.codespace = '"
-                                                                      + compound.getCode().getCodeSpace()
-                                                                      + "' AND compound_crs.id = code.ref_id" ).executeQuery();
+                                                    "SELECT ref_id FROM code, compound_crs " + "WHERE code.code= '"
+                                                                            + compound.getCode().getCode()
+                                                                            + "' AND code.codespace = '"
+                                                                            + compound.getCode().getCodeSpace()
+                                                                            + "' AND compound_crs.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
             return rs.getInt( 1 );
@@ -1141,9 +1124,8 @@ public class CRSDBExporter {
      * Delegate the CRS to the specific exporting method
      * 
      * @param crs
-     *          the CRS object
-     * @return 
-     *          the internal database id that was assigned to the supplied CoordinateSystem
+     *            the CRS object
+     * @return the internal database id that was assigned to the supplied CoordinateSystem
      * @throws SQLException
      * @throws CRSException
      */
@@ -1195,8 +1177,8 @@ public class CRSDBExporter {
     }
 
     /**
-     * Command-line tool for inserting a CRS that is provided in a either in WKT 
-     * format (via a filename argument), or in XML format (through its codetype).
+     * Command-line tool for inserting a CRS that is provided in a either in WKT format (via a filename argument), or in
+     * XML format (through its codetype).
      * 
      * @param args
      * @throws IOException
@@ -1232,7 +1214,7 @@ public class CRSDBExporter {
     }
 
     /**
-     * Method for inserting an Identifiable object into the database. 
+     * Method for inserting an Identifiable object into the database.
      * 
      * @param crsID
      *            the type to add to the database
