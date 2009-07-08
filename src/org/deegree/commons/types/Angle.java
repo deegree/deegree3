@@ -32,9 +32,8 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.feature.gml;
+package org.deegree.commons.types;
 
-import org.deegree.commons.types.Measure;
 
 public class Angle extends Measure {
 

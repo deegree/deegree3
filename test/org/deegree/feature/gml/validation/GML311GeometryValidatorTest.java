@@ -44,8 +44,8 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.feature.gml.GML311GeometryParserTest;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.gml.GML311GeometryParserTest;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;

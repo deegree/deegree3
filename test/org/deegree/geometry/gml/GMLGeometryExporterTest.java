@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.feature.gml;
+package org.deegree.geometry.gml;
 
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -52,8 +52,13 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.gml.GML311CurveSegmentParser;
+import org.deegree.geometry.gml.GML311GeometryExporter;
+import org.deegree.geometry.gml.GML311GeometryParser;
+import org.deegree.geometry.gml.GML311SurfacePatchParser;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.junit.XMLAssert;
@@ -66,11 +71,9 @@ import org.xml.sax.InputSource;
  * Exporting all types of geometries and validating them.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author: ionita $
  * 
  * @version $Revision: $, $Date: $
- * 
  */
 public class GMLGeometryExporterTest {
 

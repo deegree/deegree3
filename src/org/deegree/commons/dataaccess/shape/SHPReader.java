@@ -61,6 +61,7 @@ import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
 
@@ -446,24 +447,18 @@ public class SHPReader {
 
     private Geometry readPolygon( boolean z, boolean m, int length )
                             throws IOException {
-        double[][][] ps = readLines( m, z, length );
+
+        Points [] ps = readLines( m, z, length );
 
         Ring outer = null;
         LinkedList<Ring> inners = new LinkedList<Ring>();
-
         LinkedList<Polygon> polys = new LinkedList<Polygon>();
 
-        for ( int i = 0; i < ps.length; ++i ) {
-            LinkedList<Point> pos = new LinkedList<Point>();
-            for ( int j = 0; j < ps[i].length; ++j ) {
-                pos.add( fac.createPoint( null, ps[i][j], crs ) );
-            }
-            if ( outer == null ) {
-                // TODO use PackedPoints (more efficient)
-                outer = fac.createLinearRing( null, crs, new PointsList(pos) );
+        for (Points p : ps) {
+            if (outer == null) {
+                outer = fac.createLinearRing( null, crs, p );
             } else {
-                // TODO use PackedPoints (more efficient)                
-                Ring ring = fac.createLinearRing( null, crs, new PointsList(pos) );
+                Ring ring = fac.createLinearRing( null, crs, p );
                 if ( outer.contains( ring ) ) {
                     inners.add( ring );
                 } else {
@@ -536,20 +531,19 @@ public class SHPReader {
 
     private Curve readPolyline( boolean z, boolean m, int length )
                             throws IOException {
-        double[][][] ps = readLines( m, z, length );
 
-        LineStringSegment[] segs = new LineStringSegment[ps.length];
-
-        for ( int i = 0; i < segs.length; ++i ) {
-            LinkedList<Point> points = new LinkedList<Point>();
-            for ( int j = 0; j < ps[i].length; ++j ) {
-                points.add( fac.createPoint( null, ps[i][j], crs ) );
+        Points[] ps = readLines( m, z, length );
+        Curve curve = null;
+        if ( ps.length == 1 ) {
+            curve = fac.createLineString( null, crs, ps[0] );
+        } else {
+            LineStringSegment[] segs = new LineStringSegment[ps.length];
+            for ( int i = 0; i < segs.length; ++i ) {
+                segs[i] = fac.createLineStringSegment( ps[i] );
             }
-            // TODO use PackedPoints (more efficient)
-            segs[i] = fac.createLineStringSegment( new PointsList(points) );
+            curve = fac.createCurve( null, segs, crs );
         }
-
-        return fac.createCurve( null, segs, crs );
+        return curve;
     }
 
     private MultiPoint readMultipointZ( int length )
@@ -674,7 +668,7 @@ public class SHPReader {
             ring.add( ps.get( 2 ) );
             ring.add( ring.getFirst() );
             ps.poll();
-            Ring r = fac.createLinearRing( null, crs, new PointsList(ring) );
+            Ring r = fac.createLinearRing( null, crs, new PointsList( ring ) );
             ss.add( fac.createPolygon( null, crs, r, null ) );
         }
 
@@ -700,7 +694,7 @@ public class SHPReader {
             ringps.add( ps.get( 1 ) );
             ringps.add( center );
             ps.poll();
-            LinearRing ring = fac.createLinearRing( null, crs, new PointsList(ringps) );
+            LinearRing ring = fac.createLinearRing( null, crs, new PointsList( ringps ) );
             ss.add( fac.createPolygon( null, crs, ring, null ) );
         }
 
@@ -722,7 +716,7 @@ public class SHPReader {
             ps.add( ps.getFirst() );
         }
 
-        return fac.createLinearRing( null, crs, new PointsList(ps) );
+        return fac.createLinearRing( null, crs, new PointsList( ps ) );
     }
 
     // bad: do it by hand using JTS
@@ -837,12 +831,15 @@ public class SHPReader {
         return fac.createMultiSurface( null, crs, ss );
     }
 
-    private double[][][] readLines( boolean m, boolean z, int length )
+    private Points[] readLines( boolean m, boolean z, int length )
                             throws IOException {
+
+        int coordDim = m ? 4 : ( z ? 3 : 2 );
+
         int numParts = readLEInt( in );
         int numPoints = readLEInt( in );
 
-        double[][][] res = new double[numParts][][];
+        PackedPoints[] res = new PackedPoints[numParts];
         int[] parts = new int[numParts];
 
         for ( int i = 0; i < numParts; ++i ) {
@@ -858,14 +855,18 @@ public class SHPReader {
                 num = parts[i + 1] - parts[i];
             }
 
-            res[i] = new double[num][];
+            double[] coords = new double[num * coordDim];
+            int idx = 0;
             for ( int j = 0; j < num; ++j ) {
-                if ( !z && !m ) {
-                    res[i][j] = new double[] { readLEDouble( in ), readLEDouble( in ) };
-                } else {
-                    res[i][j] = new double[] { readLEDouble( in ), readLEDouble( in ), 0, 0 };
+                coords[idx++] = readLEDouble( in );
+                coords[idx++] = readLEDouble( in );
+                if ( coordDim == 3 ) {
+                    idx += 1;
+                } else if ( coordDim == 4 ) {
+                    idx += 2;
                 }
             }
+            res[i] = new PackedPoints( coords, coordDim );
         }
 
         if ( !z && !m ) {
@@ -878,8 +879,9 @@ public class SHPReader {
         if ( z ) {
             in.skipBytes( 16 );
             for ( int i = 0; i < numParts; ++i ) {
-                for ( int j = 0; j < res[i].length; ++j ) {
-                    res[i][j][2] = readLEDouble( in );
+                double[] coords = res[i].getAsArray();
+                for ( int j = 0; j < res[i].size(); ++j ) {
+                    coords[2 + j * coordDim] = readLEDouble( in );
                 }
             }
         }
@@ -887,8 +889,9 @@ public class SHPReader {
         if ( ( m && mlen != length ) || ( z && zlen != length ) ) {
             in.skipBytes( 16 );
             for ( int i = 0; i < numParts; ++i ) {
-                for ( int j = 0; j < res[i].length; ++j ) {
-                    res[i][j][3] = readLEDouble( in );
+                double[] coords = res[i].getAsArray();
+                for ( int j = 0; j < res[i].size(); ++j ) {
+                    coords[3 + j * coordDim] = readLEDouble( in );
                 }
             }
         }

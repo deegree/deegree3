@@ -39,9 +39,9 @@ package org.deegree.geometry;
 import java.util.Arrays;
 import java.util.List;
 
+import org.deegree.commons.types.Angle;
 import org.deegree.commons.types.Length;
 import org.deegree.crs.CRS;
-import org.deegree.feature.gml.Angle;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;

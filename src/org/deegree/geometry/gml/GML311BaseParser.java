@@ -32,7 +32,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.feature.gml;
+package org.deegree.geometry.gml;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
@@ -45,6 +45,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.types.Angle;
 import org.deegree.commons.types.Length;
 import org.deegree.commons.types.Measure;
 import org.deegree.commons.xml.XMLParsingException;
@@ -58,10 +59,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 class GML311BaseParser {
@@ -76,7 +77,7 @@ class GML311BaseParser {
 
     protected final GeometryFactory geomFac;
 
-    protected GML311BaseParser( GeometryFactory geomFac) {
+    protected GML311BaseParser( GeometryFactory geomFac ) {
         this.geomFac = geomFac;
     }
 
@@ -113,7 +114,7 @@ class GML311BaseParser {
         }
         if ( coordDim == -1 ) {
             LOG.warn( "No coordinate dimension information available. Defaulting to 2." );
-            coordDim =2;
+            coordDim = 2;
         }
 
         String s = xmlStream.getElementText();
@@ -291,7 +292,7 @@ class GML311BaseParser {
     /**
      * Determines the active {@link CRS} using the value of the <code>srsName</code> attribute of the current geometry
      * element.
-     *
+     * 
      * @param defaultCRS
      *            default CSR for the geometry, this is returned if the geometry element has no <code>srsName</code>
      *            attribute
@@ -332,7 +333,7 @@ class GML311BaseParser {
     /**
      * Parses the <code>orientation</code> attribute from element that the associated <code>XMLStreamReader</code>
      * points to.
-     *
+     * 
      * @return true, if the <code>orientation</attribute> is '+' or not present, false if the attribute is '-'
      */
     protected boolean parseOrientation( XMLStreamReaderWrapper xmlStream ) {
@@ -349,7 +350,7 @@ class GML311BaseParser {
 
     /**
      * Applies a simple heuristic to determine the number of coordinate dimensions.
-     *
+     * 
      * @param defaultCoordDimensions
      *            default coordinate dimensionality, this is returned if the element has no <code>srsDimension</code>
      *            attribute

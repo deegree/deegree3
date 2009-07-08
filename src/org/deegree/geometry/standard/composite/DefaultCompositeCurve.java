@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,9 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.composite;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -51,14 +52,15 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.standard.points.PointsBuilder;
+import org.deegree.geometry.standard.points.PointsPoints;
+import org.deegree.geometry.standard.primitive.DefaultLineString;
 
 /**
  * Default implementation of {@link CompositeCurve}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultCompositeCurve extends AbstractDefaultGeometry implements CompositeCurve {
@@ -67,7 +69,7 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
 
     /**
      * Creates a new {@link DefaultCompositeCurve} from the given parameters.
-     *
+     * 
      * @param id
      *            identifier, may be null
      * @param crs
@@ -99,7 +101,7 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
     }
 
     @Override
-    public Pair<Point,Point> getBoundary() {
+    public Pair<Point, Point> getBoundary() {
         throw new UnsupportedOperationException();
     }
 
@@ -139,7 +141,7 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
     @Override
     public int getCoordinateDimension() {
         return memberCurves.get( 0 ).getCoordinateDimension();
-    }    
+    }
 
     // -----------------------------------------------------------------------
     // delegate methods for List<Curve>
@@ -239,16 +241,15 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
 
     @Override
     public LineString getAsLineString() {
-        // TODO Auto-generated method stub
-        return null;
+        return new DefaultLineString( id, crs, pm, getControlPoints() );
     }
 
     @Override
     public Points getControlPoints() {
-        PointsBuilder controlPoints = new PointsBuilder();
+        List<Points> pointsList = new ArrayList<Points>( memberCurves.size() );
         for ( Curve curve : memberCurves ) {
-            controlPoints.add( curve.getControlPoints() );
+            pointsList.add( curve.getControlPoints() );
         }
-        return controlPoints;
+        return new PointsPoints( pointsList );
     }
 }

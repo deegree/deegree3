@@ -77,6 +77,7 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.gml.GML311GeometryParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

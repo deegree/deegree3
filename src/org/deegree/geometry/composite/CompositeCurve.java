@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.composite;
 
 import java.util.List;
@@ -43,17 +43,17 @@ import org.deegree.geometry.primitive.Curve;
  * <code>CompositeCurve</code> is a geometry type with the same geometric properties as the (primitive) {@link Curve}
  * type. It is defined by a sequence of member curves such that the each curve in the sequence ends at the start point
  * of the subsequent curve in the list.
- *
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version. $Revision$, $Date$
  */
-public interface CompositeCurve extends Curve,List<Curve> {
+public interface CompositeCurve extends Curve, List<Curve> {
 
     /**
      * Must always return {@link Curve.CurveType#CompositeCurve}.
-     *
+     * 
      * @return {@link Curve.CurveType#CompositeCurve}
      */
     @Override

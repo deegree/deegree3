@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.gml;
+package org.deegree.geometry.gml;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
@@ -54,6 +54,7 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;

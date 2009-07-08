@@ -33,60 +33,47 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
+
 package org.deegree.geometry.standard.points;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * <code>List</code>-based {@link Points} implementation that allows to hold identifiable {@link Point} objects (with id
- * or even references to local or remote {@link Point} instances}.
- * <p>
- * This implementation is rather expensive, as every contained point is represented as an individual {@link Point}
- * object. Whenever possible, {@link PackedPoints} or {@link PointsPoints} should be used instead.
- * </p>
+ * {@link Points} implementation that aggregates the members from a sequence of {@link Points} objects.
  * 
- * @see PackedPoints
- * @see PointsPoints
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class PointsList implements Points {
+public class PointsPoints implements Points {
 
-    protected List<Point> points;
+    private List<Points> pointsList;
 
     /**
-     * Creates a new {@link PointsList} instance based on the given list.
+     * Creates a new {@link PointsPoints} instance from the given list of {@link Points}.
      * 
-     * @param points
+     * @param pointsList
      */
-    public PointsList( List<Point> points ) {
-        this.points = points;
-    }
-
-    @Override
-    public int getCoordinateDimension() {
-        return points.get( 0 ).getCoordinateDimension();
-    }
-
-    @Override
-    public int size() {
-        return points.size();
-    }
-
-    @Override
-    public Iterator<Point> iterator() {
-        return points.iterator();
+    public PointsPoints( List<Points> pointsList ) {
+        this.pointsList = pointsList;
     }
 
     @Override
     public Point get( int i ) {
-        return points.get( i );
+        int offset = 0;
+        for ( Points points : pointsList ) {
+            if ( i - offset < points.size() ) {
+                return points.get( i - offset );
+            }
+            offset += points.size();
+        }
+        throw new NoSuchElementException();
     }
 
     @Override
@@ -99,5 +86,54 @@ public class PointsList implements Points {
             }
         }
         return coords;
+    }
+
+    @Override
+    public int getCoordinateDimension() {
+        return pointsList.get( 0 ).getCoordinateDimension();
+    }
+
+    @Override
+    public int size() {
+        int size = 0;
+        for ( Points points : pointsList ) {
+            size += points.size();
+        }
+        return size;
+    }
+
+    @Override
+    public Iterator<Point> iterator() {
+        return new Iterator<Point>() {
+
+            private Iterator<Points> pointsListIter = pointsList.iterator();
+
+            private Iterator<Point> currentIter = pointsListIter.next().iterator();
+
+            @Override
+            public boolean hasNext() {
+                if ( currentIter.hasNext() ) {
+                    return true;
+                }
+                return pointsListIter.hasNext();
+            }
+
+            @Override
+            public Point next() {
+                if ( !hasNext() ) {
+                    throw new NoSuchElementException();
+                }
+                if ( currentIter.hasNext() ) {
+                    return currentIter.next();
+                }
+                currentIter = pointsListIter.next().iterator();
+                return currentIter.next();
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 }
