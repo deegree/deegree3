@@ -1050,10 +1050,6 @@ public class CRSParser extends XMLFileResource {
                                                                    Point2d.class, Unit.class, double.class, List.class );
                     result = (Projection) constructor.newInstance( underlyingCRS, falseNorthing, falseEasting,
                                                                    naturalOrigin, units, scaleFactor, otherValues );
-
-                    // as it is a Custom projection, set the className attribute
-                    result.setClassName( className );
-
                 } catch ( ClassNotFoundException e ) {
                     LOG.error( e.getMessage(), e );
                 } catch ( SecurityException e ) {
@@ -1244,6 +1240,11 @@ public class CRSParser extends XMLFileResource {
         return result;
     }
 
+    /**
+     * 
+     * @return all available codetypes
+     * @throws CRSConfigurationException
+     */
     public List<CRSCodeType> getAvailableCRSCodes()
                             throws CRSConfigurationException {
         List<OMElement> allCRSIDs = getAvailableCRSs();
@@ -1256,7 +1257,12 @@ public class CRSParser extends XMLFileResource {
         return result;
     }
 
-    public List<OMElement> getAvailableCRSs()
+    /**
+     * 
+     * @return the elements which contain crs's
+     * @throws CRSConfigurationException
+     */
+    private List<OMElement> getAvailableCRSs()
                             throws CRSConfigurationException {
         List<OMElement> allCRSIDs = new LinkedList<OMElement>();
         if ( getRootElement() != null ) {

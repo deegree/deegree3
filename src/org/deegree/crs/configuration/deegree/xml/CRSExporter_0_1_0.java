@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,16 +32,29 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.deegree.xml;
 
 import java.util.Properties;
 
-
+/**
+ * 
+ * The <code>CRSExporter_0_1_0</code> will export to the 0_1_0 xml format (the default)
+ * 
+ * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+ * @author last edited by: $Author: rbezema $
+ * @version $Revision: $, $Date: $
+ * 
+ */
 public class CRSExporter_0_1_0 extends CRSExporter {
 
-	public CRSExporter_0_1_0( Properties properties ) {
-		super( properties);
-	}
+    /**
+     * 
+     * @param properties
+     *            which can be used to read configuration parameters from.
+     */
+    public CRSExporter_0_1_0( Properties properties ) {
+        super( properties );
+    }
 }
