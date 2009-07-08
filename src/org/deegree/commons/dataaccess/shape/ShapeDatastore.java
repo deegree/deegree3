@@ -173,7 +173,7 @@ public class ShapeDatastore {
         }
         dbfLastModified = dbfFile.lastModified();
 
-        shp = getSHP();
+        shp = getSHP( false );
 
         try {
             dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding );
@@ -182,12 +182,12 @@ public class ShapeDatastore {
         }
     }
 
-    private SHPReader getSHP()
+    private SHPReader getSHP( boolean forceIndexRebuild )
                             throws IOException {
         shp = null;
 
         File rtfile = new File( name + ".rti" );
-        if ( rtfile.exists() ) {
+        if ( rtfile.exists() && !( rtfile.lastModified() < shpFile.lastModified() ) && !forceIndexRebuild ) {
             try {
                 RTree rtree = new RTree( new FileInputStream( name + ".rti" ) );
                 shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, rtree );
@@ -205,7 +205,7 @@ public class ShapeDatastore {
 
         shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, null );
 
-        LOG.debug( "Building rtree index in memory..." );
+        LOG.debug( "Building rtree index in memory for '{}'", new File( name ).getName() );
         RTree rtree = new RTree( shp );
         shp.close();
         LOG.debug( "done." );
@@ -221,15 +221,17 @@ public class ShapeDatastore {
             synchronized ( shpFile ) {
                 if ( shpLastModified != shpFile.lastModified() ) {
                     shp.close();
-                    shp = getSHP();
                     LOG.debug( "Re-opening the shape file {}", name );
+                    shp = getSHP( true );
+                    shpLastModified = shpFile.lastModified();
                 }
             }
             synchronized ( dbfFile ) {
                 if ( dbf != null && dbfLastModified != dbfFile.lastModified() ) {
                     dbf.close();
-                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding );
                     LOG.debug( "Re-opening the dbf file {}", name );
+                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding );
+                    dbfLastModified = dbfFile.lastModified();
                 }
             }
         } catch ( IOException e ) {
@@ -323,6 +325,9 @@ public class ShapeDatastore {
      */
     public Envelope getEnvelope() {
         checkForUpdate();
+        if ( shp == null ) {
+            return null;
+        }
         return shp.getEnvelope();
     }
 
