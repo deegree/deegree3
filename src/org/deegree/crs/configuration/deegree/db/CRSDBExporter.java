@@ -962,23 +962,28 @@ public class CRSDBExporter {
      */
     protected int export( Projection projection )
                             throws SQLException {
-        if ( projection instanceof TransverseMercator )
+        if ( projection instanceof TransverseMercator ) {
             return export( (TransverseMercator) projection );
+        }
 
-        if ( projection instanceof LambertConformalConic )
+        if ( projection instanceof LambertConformalConic ) {
             return export( (LambertConformalConic) projection );
+        }
 
-        if ( projection instanceof LambertAzimuthalEqualArea )
+        if ( projection instanceof LambertAzimuthalEqualArea ) {
             return export( (LambertAzimuthalEqualArea) projection );
+        }
 
-        if ( projection instanceof StereographicAzimuthal )
+        if ( projection instanceof StereographicAzimuthal ) {
             return export( (StereographicAzimuthal) projection );
+        }
 
-        if ( projection instanceof StereographicAlternative )
+        if ( projection instanceof StereographicAlternative ) {
             return export( (StereographicAlternative) projection );
-
-        if ( projection instanceof Mercator )
+        }
+        if ( projection instanceof Mercator ) {
             return export( (Mercator) projection );
+        }
 
         //
         // Export a custom projection
@@ -987,7 +992,6 @@ public class CRSDBExporter {
         String statementStr = "SELECT ref_id FROM code, custom_projection " + "WHERE code.code= '"
                               + projection.getCode().getCode() + "' AND code.codespace = '"
                               + projection.getCode().getCodeSpace() + "'";
-        System.out.println( statementStr );
         ResultSet rs = connection.prepareStatement( statementStr ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
