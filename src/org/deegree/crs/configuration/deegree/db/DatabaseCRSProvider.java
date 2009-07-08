@@ -155,7 +155,6 @@ public class DatabaseCRSProvider implements CRSProvider {
     public DatabaseCRSProvider() throws CRSConfigurationException, ClassNotFoundException {
         dbConnectionURL = System.getenv( "CRS_DB_URL" );
         if ( dbConnectionURL == null ) {
-            // accessing database as read-only
             String pathToBinURL = this.getClass().getResource( "/" ).toString();
             String pathToBin = pathToBinURL.substring( pathToBinURL.indexOf( "file:/" ) + 5 );
             dbConnectionURL = "jdbc:derby:" + pathToBin + "../src/META-INF/deegreeCRS";
