@@ -18,6 +18,15 @@ libs please add your package to the "Used for:" list.
 
 NOTE: Necessary libraries that are also used by one of the dependent modules are not listed here again.
 
+=== JTS ===
+Files: jts-1.10.jar
+URL: http://tsusiatsoftware.net/jts/main.html
+Version 1.1.0
+Description:
+Used for: Implementation of geometry model (org.deegree.geometry.standard).
+License: LGPL 2.1
+Origin of files: http://sourceforge.net/projects/jts-topo-suite/files/
+Responsible: schneider
 
 === slf4j ===
 Files: sl4fj-api-1.5.8.jar,slf4j-log4j12-1.5.8.jar,jcl-over-slf4j-1.5.8.jar

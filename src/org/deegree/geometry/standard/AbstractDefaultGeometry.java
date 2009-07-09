@@ -46,10 +46,10 @@ import org.deegree.geometry.primitive.LineString;
 /**
  * Abstract base class for the default {@link Geometry} implementation.
  * <p>
- * This implementation is built around JTS geometries which are used to evaluate topological predicates (e.g.
- * intersects) and spatial functions (e.g union). Simple geometries (e.g. {@link LineString}s are represented directly
- * by a corresponding JTS object, for complex ones (e.g. {@link Curve}s with non-linear segments), the JTS geometry only
- * approximates the original geometry. See <a
+ * This implementation is built around <a href="http://tsusiatsoftware.net/jts/main.html">JTS (Java Topology Suite)</a>
+ * geometries which are used to evaluate topological predicates (e.g. intersects) and spatial functions (e.g union).
+ * Simple geometries (e.g. {@link LineString}s are represented directly by a corresponding JTS object, for complex ones
+ * (e.g. {@link Curve}s with non-linear segments), the JTS geometry only approximates the original geometry. See <a
  * href="https://wiki.deegree.org/deegreeWiki/deegree3/MappingComplexGeometries">this page</a> for a discussion.
  * </p>
  * 
@@ -72,7 +72,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     protected CRS crs;
 
-    protected PrecisionModel pm;    
+    protected PrecisionModel pm;
 
     private StandardGMLObjectProperties standardProps;
 

@@ -25,7 +25,7 @@
     <dependency org="java3d" name="vecmath" rev="1.5.2" conf="${module.name}-build" />
 
     <!--  The geometry package depends on jts -->
-    <dependency org="jts" name="jts" rev="1.8" conf="${module.name}-build" />
+    <dependency org="jts" name="jts" rev="1.10" conf="${module.name}-build" />
 
     <!-- Needed for the api -->
     <dependency org="logging" name="slf4j-api" rev="1.5.8" conf="${module.name}-build" />
