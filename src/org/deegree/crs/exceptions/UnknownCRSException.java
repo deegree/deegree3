@@ -43,15 +43,11 @@ import org.deegree.crs.i18n.Messages;
  * requested CRS is not known to the CRSPovider.
  *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
  * @author last edited by: $Author$
  *
  * @version $Revision$, $Date$
- *
  */
 public class UnknownCRSException extends Exception {
-
-    private static final String MSG = Messages.getMessage( "CRS_UNKNOWNCRS_DEFAULT" );
 
     /**
      * the serializable id.
@@ -65,6 +61,6 @@ public class UnknownCRSException extends Exception {
      *            the name of the requested crs.
      */
     public UnknownCRSException( String crsName ) {
-        super( MSG + crsName );
+        super( Messages.getMessage( "CRS_UNKNOWN_CRS", crsName ) );
     }
 }
