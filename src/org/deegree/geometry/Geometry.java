@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
-import org.deegree.commons.types.gml.StandardGMLObjectProperties;
+import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.commons.types.identifier.Identifiable;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.precision.PrecisionModel;
@@ -46,7 +46,7 @@ import org.deegree.geometry.precision.PrecisionModel;
  * <h4>Notes on the representation of GML geometries</h4>
  * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
  * <code>gml:description</code>) which are inherited by any GML geometry type definition are treated in a specific way.
- * They are modelled using the {@link StandardGMLObjectProperties} class. This design decision has been driven by the
+ * They are modelled using the {@link StandardObjectProperties} class. This design decision has been driven by the
  * goal to make the implementation less GML (and GML-version) specific and to allow for example to export a
  * {@link Geometry} instance as either GML 3.2.1 or GML 3.1.1 (different namespaces for the standard properties).
  * </p>
@@ -242,7 +242,7 @@ public interface Geometry extends Identifiable<String> {
      * 
      * @return a representation of the standard GML properties, may be null
      */
-    public StandardGMLObjectProperties getStandardGMLProperties();
+    public StandardObjectProperties getStandardGMLProperties();
 
     /**
      * Sets the standard GML properties (e.g. <code>gml:name</code> or <code>gml:description</code).
@@ -250,7 +250,7 @@ public interface Geometry extends Identifiable<String> {
      * @param standardProps
      *            representation of the standard GML properties
      */
-    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps );
+    public void setStandardGMLProperties( StandardObjectProperties standardProps );
     
     /**
      * Returns an equivalent (or best-fit) JTS geometry object.

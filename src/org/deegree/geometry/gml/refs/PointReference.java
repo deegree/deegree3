@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.refs;
+package org.deegree.geometry.gml.refs;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;

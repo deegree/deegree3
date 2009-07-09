@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,16 +32,16 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
-package org.deegree.feature.refs;
+package org.deegree.feature.gml;
 
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.filter.expression.PropertyName;
-import org.deegree.commons.types.gml.StandardGMLObjectProperties;
+import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.FeatureType;
@@ -50,11 +50,12 @@ import org.deegree.geometry.Geometry;
 import org.jaxen.JaxenException;
 
 /**
- * The <code></code> class TODO add class documentation here.
- *
+ * Represents a reference to the GML representation of a feature, which is usually expressed using an
+ * <code>xlink:href</code> attribute in GML (may be document-local or remote).
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class FeatureReference implements Feature {
@@ -67,25 +68,25 @@ public class FeatureReference implements Feature {
 
     private FeatureType ft;
 
-    public FeatureReference (String href) {
+    public FeatureReference( String href ) {
         this.href = href;
         int pos = href.lastIndexOf( '#' );
-        if (pos < 0) {
+        if ( pos < 0 ) {
             String msg = "Reference string (='" + href + "') does not contain a '#' character.";
-            throw new IllegalArgumentException(msg);
+            throw new IllegalArgumentException( msg );
         }
         fid = href.substring( pos + 1 );
     }
 
-    public FeatureReference (String href, FeatureType ft) {
-        this (href);
+    public FeatureReference( String href, FeatureType ft ) {
+        this( href );
         this.ft = ft;
     }
 
-    public void resolve (Feature feature) {
-        if (this.feature != null) {
+    public void resolve( Feature feature ) {
+        if ( this.feature != null ) {
             String msg = "Internal error: Feature reference (" + href + ") has already been resolved.";
-            throw new RuntimeException(msg);
+            throw new RuntimeException( msg );
         }
         this.feature = feature;
     }
@@ -148,11 +149,11 @@ public class FeatureReference implements Feature {
         feature.setPropertyValue( propName, occurence, value );
     }
 
-    public StandardGMLObjectProperties getStandardGMLProperties() {
+    public StandardObjectProperties getStandardGMLProperties() {
         return feature.getStandardGMLProperties();
     }
 
-    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps ) {
+    public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
         feature.setStandardGMLProperties( standardProps );
     }
 

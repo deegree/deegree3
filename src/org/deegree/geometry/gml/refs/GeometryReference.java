@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,45 +32,50 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.refs;
+package org.deegree.geometry.gml.refs;
 
-import java.util.List;
-
+import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
-import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.Polygon;
-import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 
 /**
- * The <code></code> class TODO add class documentation here.
- *
+ * Represents a reference to the GML representation of a geometry, which is usually expressed using an
+ * <code>xlink:href</code> attribute in GML (may be document-local or remote). </p>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
-public class PolygonReference extends GeometryReference implements Polygon {
+public class GeometryReference implements Geometry {
 
-    protected Polygon geometry;
+    protected String href;
 
-    public PolygonReference (String href) {
-        super (href);
+    private final String gid;
+
+    protected Geometry geometry;
+
+    public GeometryReference( String href ) {
+        this.href = href;
+        int pos = href.lastIndexOf( '#' );
+        if ( pos < 0 ) {
+            // TODO support remote references as well
+            String msg = "Reference string (='" + href + "') does not contain a '#' character.";
+            throw new IllegalArgumentException( msg );
+        }
+        gid = href.substring( pos + 1 );
     }
 
-    @Override
-    public void resolve (Geometry geometry) {
-        if (this.geometry != null) {
+    public void resolve( Geometry geometry ) {
+        if ( this.geometry != null ) {
             String msg = "Internal error: Geometry reference (" + href + ") has already been resolved.";
-            throw new RuntimeException(msg);
+            throw new RuntimeException( msg );
         }
-        this.geometry = (Polygon) geometry;
+        this.geometry = geometry;
     }
 
     public boolean contains( Geometry geometry ) {
@@ -89,16 +94,8 @@ public class PolygonReference extends GeometryReference implements Polygon {
         return geometry.equals( geometry );
     }
 
-    public double getArea() {
-        return geometry.getArea();
-    }
-
     public Geometry getBuffer( double distance ) {
         return geometry.getBuffer( distance );
-    }
-
-    public Point getCentroid() {
-        return geometry.getCentroid();
     }
 
     public Geometry getConvexHull() {
@@ -117,44 +114,16 @@ public class PolygonReference extends GeometryReference implements Polygon {
         return geometry.getEnvelope();
     }
 
-    public Ring getExteriorRing() {
-        return geometry.getExteriorRing();
-    }
-
-    public Points getExteriorRingCoordinates() {
-        return geometry.getExteriorRingCoordinates();
-    }
-
     public GeometryType getGeometryType() {
         return geometry.getGeometryType();
     }
 
-    public List<Ring> getInteriorRings() {
-        return geometry.getInteriorRings();
-    }
-
-    public List<Points> getInteriorRingsCoordinates() {
-        return geometry.getInteriorRingsCoordinates();
-    }
-
-    public List<PolygonPatch> getPatches() {
-        return geometry.getPatches();
-    }
-
-    public double getPerimeter() {
-        return geometry.getPerimeter();
+    public String getId() {
+        return gid;
     }
 
     public PrecisionModel getPrecision() {
         return geometry.getPrecision();
-    }
-
-    public PrimitiveType getPrimitiveType() {
-        return geometry.getPrimitiveType();
-    }
-
-    public SurfaceType getSurfaceType() {
-        return geometry.getSurfaceType();
     }
 
     public Geometry intersection( Geometry geometry ) {
@@ -179,5 +148,20 @@ public class PolygonReference extends GeometryReference implements Polygon {
 
     public Geometry union( Geometry geometry ) {
         return geometry.union( geometry );
+    }
+
+    @Override
+    public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
+        return geometry.getJTSGeometry();
+    }
+
+    @Override
+    public StandardObjectProperties getStandardGMLProperties() {
+        return geometry.getStandardGMLProperties();
+    }
+
+    @Override
+    public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
+        geometry.setStandardGMLProperties( standardProps );
     }
 }

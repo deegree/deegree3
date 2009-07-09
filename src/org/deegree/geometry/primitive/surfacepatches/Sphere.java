@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,31 +32,30 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.geometry.primitive.surfacepatches;
 
-import org.deegree.geometry.primitive.surfacepatches.GriddedSurfacePatch.GriddedSurfaceType;
-
 /**
- * The <code>Sphere</code> class represents (according to GML-3.1 spec) a gridded surface given as a family of
- * circles whose positions vary linearly along the axis of the sphere, and whose radius varies in proportions
- * to the cosine function of the central angle. The horizontal circles resemble lines of constant latitude, and
- * the vertical arcs resemble lines of constant longitude.
- *
+ * The <code>Sphere</code> class represents (according to GML-3.1 spec) a gridded surface given as a family of circles
+ * whose positions vary linearly along the axis of the sphere, and whose radius varies in proportions to the cosine
+ * function of the central angle. The horizontal circles resemble lines of constant latitude, and the vertical arcs
+ * resemble lines of constant longitude.
+ * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- *
+ * 
  * @author last edited by: $Author: ionita $
- *
+ * 
  * @version $Revision: $, $Date: $
- *
+ * 
  */
 public interface Sphere extends GriddedSurfacePatch {
+
     // nothing new here, this interface is only necessary for a type-based differentiation
 
     /**
      * Must always return {@link GriddedSurfacePatch.GriddedSurfaceType#SPHERE}.
-     *
+     * 
      * @return {@link GriddedSurfacePatch.GriddedSurfaceType#SPHERE}
      */
     @Override

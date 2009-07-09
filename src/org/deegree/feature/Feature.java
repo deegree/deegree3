@@ -40,7 +40,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.filter.MatchableObject;
-import org.deegree.commons.types.gml.StandardGMLObjectProperties;
+import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.commons.types.identifier.Identifiable;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
@@ -64,7 +64,7 @@ import org.deegree.geometry.Geometry;
  *
  * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
  * <code>gml:description</code>) which are inherited by any GML feature type definition are treated in a specific way. They
- * are modelled using the {@link StandardGMLObjectProperties} class and not as standard properties of the feature. This design decision
+ * are modelled using the {@link StandardObjectProperties} class and not as standard properties of the feature. This design decision
  * has been driven by the goal to make the implementation less GML (and GML-version) specific and to allow for example
  * to export a {@link Feature} instance as either GML 3.2.1 or GML 3.1.1 (different namespaces for the standard
  * properties).
@@ -209,7 +209,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
      *
      * @return a representation of the standard GML properties, may be null
      */
-    public StandardGMLObjectProperties getStandardGMLProperties();
+    public StandardObjectProperties getStandardGMLProperties();
 
     /**
      * Sets the standard GML properties (e.g. <code>gml:name</code> or <code>gml:description</code).
@@ -217,5 +217,5 @@ public interface Feature extends Identifiable<String>, MatchableObject {
      * @param standardProps
      *            representation of the standard GML properties
      */
-    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps );
+    public void setStandardGMLProperties( StandardObjectProperties standardProps );
 }

@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard;
 
-import org.deegree.commons.types.gml.StandardGMLObjectProperties;
+import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -74,7 +74,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     protected PrecisionModel pm;
 
-    private StandardGMLObjectProperties standardProps;
+    private StandardObjectProperties standardProps;
 
     /**
      * @param id
@@ -181,12 +181,12 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
-    public StandardGMLObjectProperties getStandardGMLProperties() {
+    public StandardObjectProperties getStandardGMLProperties() {
         return standardProps;
     }
 
     @Override
-    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps ) {
+    public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
         this.standardProps = standardProps;
     }
 }

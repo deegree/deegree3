@@ -97,7 +97,7 @@ import org.deegree.geometry.Geometry;
  *
  * @version $Revision: $, $Date: $
  */
-public class StandardGMLObjectProperties {
+public class StandardObjectProperties {
 
     // TODO
 

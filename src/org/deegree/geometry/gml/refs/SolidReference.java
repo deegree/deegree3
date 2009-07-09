@@ -34,13 +34,16 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.refs;
+package org.deegree.geometry.gml.refs;
 
-import org.deegree.commons.types.gml.StandardGMLObjectProperties;
+import java.util.List;
+
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.precision.PrecisionModel;
+import org.deegree.geometry.primitive.Solid;
+import org.deegree.geometry.primitive.Surface;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -50,30 +53,21 @@ import org.deegree.geometry.precision.PrecisionModel;
  *
  * @version $Revision: $, $Date: $
  */
-public class GeometryReference implements Geometry {
+public class SolidReference extends GeometryReference implements Solid {
 
-    protected String href;
+    protected Solid geometry;
 
-    private final String gid;
-
-    protected Geometry geometry;
-
-    public GeometryReference (String href) {
-        this.href = href;
-        int pos = href.lastIndexOf( '#' );
-        if (pos < 0) {
-            String msg = "Reference string (='" + href + "') does not contain a '#' character.";
-            throw new IllegalArgumentException(msg);
-        }
-        gid = href.substring( pos + 1 );
+    public SolidReference (String href) {
+        super (href);
     }
 
+    @Override
     public void resolve (Geometry geometry) {
         if (this.geometry != null) {
             String msg = "Internal error: Geometry reference (" + href + ") has already been resolved.";
             throw new RuntimeException(msg);
         }
-        this.geometry = geometry;
+        this.geometry = (Solid) geometry;
     }
 
     public boolean contains( Geometry geometry ) {
@@ -90,6 +84,10 @@ public class GeometryReference implements Geometry {
 
     public boolean equals( Geometry geometry ) {
         return geometry.equals( geometry );
+    }
+
+    public double getArea() {
+        return geometry.getArea();
     }
 
     public Geometry getBuffer( double distance ) {
@@ -112,16 +110,32 @@ public class GeometryReference implements Geometry {
         return geometry.getEnvelope();
     }
 
+    public Surface getExteriorSurface() {
+        return geometry.getExteriorSurface();
+    }
+
     public GeometryType getGeometryType() {
         return geometry.getGeometryType();
     }
 
-    public String getId() {
-        return gid;
+    public List<Surface> getInteriorSurfaces() {
+        return geometry.getInteriorSurfaces();
     }
 
     public PrecisionModel getPrecision() {
         return geometry.getPrecision();
+    }
+
+    public PrimitiveType getPrimitiveType() {
+        return geometry.getPrimitiveType();
+    }
+
+    public SolidType getSolidType() {
+        return geometry.getSolidType();
+    }
+
+    public double getVolume() {
+        return geometry.getVolume();
     }
 
     public Geometry intersection( Geometry geometry ) {
@@ -146,20 +160,5 @@ public class GeometryReference implements Geometry {
 
     public Geometry union( Geometry geometry ) {
         return geometry.union( geometry );
-    }
-
-    @Override
-    public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
-        return geometry.getJTSGeometry();
-    }
-
-    @Override
-    public StandardGMLObjectProperties getStandardGMLProperties() {
-        return geometry.getStandardGMLProperties();
-    }
-
-    @Override
-    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps ) {
-        geometry.setStandardGMLProperties( standardProps );
     }
 }

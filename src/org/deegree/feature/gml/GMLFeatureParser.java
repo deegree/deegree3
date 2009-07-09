@@ -63,7 +63,6 @@ import org.deegree.feature.Property;
 import org.deegree.feature.generic.GenericCustomPropertyParser;
 import org.deegree.feature.gml.schema.DefaultGMLTypes;
 import org.deegree.feature.i18n.Messages;
-import org.deegree.feature.refs.FeatureReference;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.CodePropertyType;

@@ -34,13 +34,19 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.refs;
+package org.deegree.geometry.gml.refs;
+
+import java.util.List;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
-import org.deegree.geometry.primitive.GeometricPrimitive;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Polygon;
+import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -50,11 +56,11 @@ import org.deegree.geometry.primitive.GeometricPrimitive;
  *
  * @version $Revision: $, $Date: $
  */
-public class GeometricPrimitiveReference extends GeometryReference implements GeometricPrimitive {
+public class PolygonReference extends GeometryReference implements Polygon {
 
-    protected GeometricPrimitive geometry;
+    protected Polygon geometry;
 
-    public GeometricPrimitiveReference (String href) {
+    public PolygonReference (String href) {
         super (href);
     }
 
@@ -64,7 +70,7 @@ public class GeometricPrimitiveReference extends GeometryReference implements Ge
             String msg = "Internal error: Geometry reference (" + href + ") has already been resolved.";
             throw new RuntimeException(msg);
         }
-        this.geometry = (GeometricPrimitive) geometry;
+        this.geometry = (Polygon) geometry;
     }
 
     public boolean contains( Geometry geometry ) {
@@ -83,8 +89,16 @@ public class GeometricPrimitiveReference extends GeometryReference implements Ge
         return geometry.equals( geometry );
     }
 
+    public double getArea() {
+        return geometry.getArea();
+    }
+
     public Geometry getBuffer( double distance ) {
         return geometry.getBuffer( distance );
+    }
+
+    public Point getCentroid() {
+        return geometry.getCentroid();
     }
 
     public Geometry getConvexHull() {
@@ -103,8 +117,32 @@ public class GeometricPrimitiveReference extends GeometryReference implements Ge
         return geometry.getEnvelope();
     }
 
+    public Ring getExteriorRing() {
+        return geometry.getExteriorRing();
+    }
+
+    public Points getExteriorRingCoordinates() {
+        return geometry.getExteriorRingCoordinates();
+    }
+
     public GeometryType getGeometryType() {
         return geometry.getGeometryType();
+    }
+
+    public List<Ring> getInteriorRings() {
+        return geometry.getInteriorRings();
+    }
+
+    public List<Points> getInteriorRingsCoordinates() {
+        return geometry.getInteriorRingsCoordinates();
+    }
+
+    public List<PolygonPatch> getPatches() {
+        return geometry.getPatches();
+    }
+
+    public double getPerimeter() {
+        return geometry.getPerimeter();
     }
 
     public PrecisionModel getPrecision() {
@@ -113,6 +151,10 @@ public class GeometricPrimitiveReference extends GeometryReference implements Ge
 
     public PrimitiveType getPrimitiveType() {
         return geometry.getPrimitiveType();
+    }
+
+    public SurfaceType getSurfaceType() {
+        return geometry.getSurfaceType();
     }
 
     public Geometry intersection( Geometry geometry ) {

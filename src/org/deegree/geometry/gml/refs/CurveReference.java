@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.refs;
+package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 

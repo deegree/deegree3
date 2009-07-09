@@ -34,19 +34,13 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.refs;
+package org.deegree.geometry.gml.refs;
 
-import java.util.List;
-
-import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
-import org.deegree.geometry.primitive.LineString;
-import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment;
+import org.deegree.geometry.primitive.GeometricPrimitive;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -56,11 +50,11 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment;
  *
  * @version $Revision: $, $Date: $
  */
-public class LineStringReference extends GeometryReference implements LineString {
+public class GeometricPrimitiveReference extends GeometryReference implements GeometricPrimitive {
 
-    protected LineString geometry;
+    protected GeometricPrimitive geometry;
 
-    public LineStringReference (String href) {
+    public GeometricPrimitiveReference (String href) {
         super (href);
     }
 
@@ -70,7 +64,7 @@ public class LineStringReference extends GeometryReference implements LineString
             String msg = "Internal error: Geometry reference (" + href + ") has already been resolved.";
             throw new RuntimeException(msg);
         }
-        this.geometry = (LineString) geometry;
+        this.geometry = (GeometricPrimitive) geometry;
     }
 
     public boolean contains( Geometry geometry ) {
@@ -89,20 +83,8 @@ public class LineStringReference extends GeometryReference implements LineString
         return geometry.equals( geometry );
     }
 
-    public LineString getAsLineString() {
-        return geometry.getAsLineString();
-    }
-
-    public Pair<Point,Point> getBoundary() {
-        return geometry.getBoundary();
-    }
-
     public Geometry getBuffer( double distance ) {
         return geometry.getBuffer( distance );
-    }
-
-    public Points getControlPoints() {
-        return geometry.getControlPoints();
     }
 
     public Geometry getConvexHull() {
@@ -117,18 +99,6 @@ public class LineStringReference extends GeometryReference implements LineString
         return geometry.getCoordinateSystem();
     }
 
-    public List<CurveSegment> getCurveSegments() {
-        return geometry.getCurveSegments();
-    }
-
-    public CurveType getCurveType() {
-        return geometry.getCurveType();
-    }
-
-    public Point getEndPoint() {
-        return geometry.getEndPoint();
-    }
-
     public Envelope getEnvelope() {
         return geometry.getEnvelope();
     }
@@ -137,20 +107,12 @@ public class LineStringReference extends GeometryReference implements LineString
         return geometry.getGeometryType();
     }
 
-    public double getLength() {
-        return geometry.getLength();
-    }
-
     public PrecisionModel getPrecision() {
         return geometry.getPrecision();
     }
 
     public PrimitiveType getPrimitiveType() {
         return geometry.getPrimitiveType();
-    }
-
-    public Point getStartPoint() {
-        return geometry.getStartPoint();
     }
 
     public Geometry intersection( Geometry geometry ) {
@@ -163,10 +125,6 @@ public class LineStringReference extends GeometryReference implements LineString
 
     public boolean isBeyond( Geometry geometry, double distance ) {
         return geometry.isBeyond( geometry, distance );
-    }
-
-    public boolean isClosed() {
-        return geometry.isClosed();
     }
 
     public boolean isWithin( Geometry geometry ) {

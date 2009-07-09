@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.deegree.commons.filter.expression.PropertyName;
-import org.deegree.commons.types.gml.StandardGMLObjectProperties;
+import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.feature.xpath.FeatureNode;
 import org.deegree.feature.xpath.FeatureXPath;
 import org.deegree.feature.xpath.Node;
@@ -60,7 +60,7 @@ import org.jaxen.XPath;
  */
 public abstract class AbstractFeature implements Feature {
 
-    private StandardGMLObjectProperties standardProps;
+    private StandardObjectProperties standardProps;
 
     /**
      * Returns the value of a certain property of this object.
@@ -134,12 +134,12 @@ public abstract class AbstractFeature implements Feature {
     }
 
     @Override
-    public StandardGMLObjectProperties getStandardGMLProperties() {
+    public StandardObjectProperties getStandardGMLProperties() {
         return standardProps;
     }
 
     @Override
-    public void setStandardGMLProperties( StandardGMLObjectProperties standardProps ) {
+    public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
         this.standardProps = standardProps;
     }
 }
