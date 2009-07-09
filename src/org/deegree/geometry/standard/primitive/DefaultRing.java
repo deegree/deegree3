@@ -43,6 +43,7 @@ import java.util.List;
 import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.linearization.CurveLinearizer;
 import org.deegree.geometry.linearization.LinearizationCriterion;
 import org.deegree.geometry.linearization.NumPointsCriterion;
@@ -56,7 +57,7 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.standard.points.PointsBuilder;
+import org.deegree.geometry.standard.points.PointsPoints;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -160,7 +161,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
     }
 
     @Override
-    public Pair<Point,Point> getBoundary() {
+    public Pair<Point, Point> getBoundary() {
         throw new UnsupportedOperationException();
     }
 
@@ -201,16 +202,23 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
 
     @Override
     public Points getControlPoints() {
-        PointsBuilder controlPoints = new PointsBuilder();
+        if ( segments.size() == 1 ) {
+            CurveSegment segment = segments.get( 0 );
+            if ( segment.getSegmentType() == CurveSegmentType.LINE_STRING_SEGMENT ) {
+                return ( (LineStringSegment) segment ).getControlPoints();
+            }
+            throw new IllegalArgumentException( Messages.getMessage( "RING_CONTAINS_LINEAR_SEGMENT" ) );
+        }
+
+        List<Points> pointsList = new ArrayList<Points>( segments.size() );
         for ( CurveSegment segment : segments ) {
             if ( segment.getSegmentType() == CurveSegmentType.LINE_STRING_SEGMENT ) {
-                controlPoints.add( ( (LineStringSegment) segment ).getControlPoints() );
+                pointsList.add( ( (LineStringSegment) segment ).getControlPoints() );
             } else {
-                String msg = "Cannot determine control points for curve, contains non-linear segments.";
-                throw new IllegalArgumentException( msg );
+                throw new IllegalArgumentException( Messages.getMessage( "RING_CONTAINS_LINEAR_SEGMENTS" ) );
             }
         }
-        return controlPoints;
+        return new PointsPoints( pointsList );
     }
 
     @Override

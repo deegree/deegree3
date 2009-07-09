@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,29 +32,29 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.Arc;
-import org.deegree.geometry.standard.points.PointsBuilder;
+import org.deegree.geometry.standard.points.PointsArray;
 
 /**
  * Default implementation of {@link Arc} segments.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultArc implements Arc {
 
-    protected final PointsBuilder controlPoints = new PointsBuilder( 3 );
+    protected final Points points;
 
     /**
      * Creates a new <code>DefaultArc</code> instance from the given parameters.
-     *
+     * 
      * @param p1
      *            first control point
      * @param p2
@@ -63,29 +63,27 @@ public class DefaultArc implements Arc {
      *            third control point
      */
     public DefaultArc( Point p1, Point p2, Point p3 ) {
-        this.controlPoints.add( p1 );
-        this.controlPoints.add( p2 );
-        this.controlPoints.add( p3 );
+        points = new PointsArray( p1, p2, p3 );
     }
 
     @Override
     public Point getPoint1() {
-        return controlPoints.get( 0 );
+        return points.get( 0 );
     }
 
     @Override
     public Point getPoint2() {
-        return controlPoints.get( 1 );
+        return points.get( 1 );
     }
 
     @Override
     public Point getPoint3() {
-        return controlPoints.get( 2 );
+        return points.get( 2 );
     }
 
     @Override
     public int getCoordinateDimension() {
-        return controlPoints.get( 0 ).getCoordinateDimension();
+        return points.getCoordinateDimension();
     }
 
     @Override
@@ -95,7 +93,7 @@ public class DefaultArc implements Arc {
 
     @Override
     public Points getControlPoints() {
-        return controlPoints;
+        return points;
     }
 
     @Override
@@ -105,12 +103,12 @@ public class DefaultArc implements Arc {
 
     @Override
     public Point getStartPoint() {
-        return controlPoints.get( 0 );
+        return points.getStartPoint();
     }
 
     @Override
     public Point getEndPoint() {
-        return controlPoints.get( 2 );
+        return points.getEndPoint();
     }
 
     @Override

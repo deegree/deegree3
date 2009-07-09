@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.crs.CRS;
+import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
@@ -47,7 +48,6 @@ import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.standard.points.PointsBuilder;
 
 /**
  * Default implementation of {@link Surface}.
@@ -120,20 +120,14 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
 
     @Override
     public Points getExteriorRingCoordinates() {
-        PointsBuilder controlPoints = new PointsBuilder();
         if ( patches.size() == 1 ) {
             if ( patches.get( 0 ) instanceof PolygonPatch ) {
                 PolygonPatch patch = (PolygonPatch) patches.get( 0 );
-                controlPoints.add( patch.getExteriorRing().getControlPoints() );
-            } else {
-                String msg = "Cannot determine control points for surface exterior ring, surface is non-planar.";
-                throw new IllegalArgumentException( msg );
+                return patch.getExteriorRing().getControlPoints();
             }
-        } else {
-            String msg = "Cannot determine control points for surface exterior ring, surface has more than one patch.";
-            throw new IllegalArgumentException( msg );
+            throw new IllegalArgumentException( Messages.getMessage( "SURFACE_IS_NON_PLANAR" ) );
         }
-        return controlPoints;
+        throw new IllegalArgumentException( Messages.getMessage( "SURFACE_MORE_THAN_ONE_PATCH" ) );
     }
 
     @Override
@@ -147,12 +141,10 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
                     controlPoints.add( ring.getControlPoints() );
                 }
             } else {
-                String msg = "Cannot determine control points for surface exterior ring, surface is non-planar.";
-                throw new IllegalArgumentException( msg );
+                throw new IllegalArgumentException( Messages.getMessage( "SURFACE_IS_NON_PLANAR" ) );
             }
         } else {
-            String msg = "Cannot determine control points for surface exterior ring, surface has more than one patch.";
-            throw new IllegalArgumentException( msg );
+            throw new IllegalArgumentException( Messages.getMessage( "SURFACE_MORE_THAN_ONE_PATCH" ) );
         }
         return controlPoints;
     }

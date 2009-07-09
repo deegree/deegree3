@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,37 +32,35 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.Geodesic;
-import org.deegree.geometry.standard.points.PointsBuilder;
+import org.deegree.geometry.standard.points.PointsArray;
 
 /**
  * Default implementation of {@link Geodesic} segments.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultGeodesic implements Geodesic {
 
-    private PointsBuilder controlPoints = new PointsBuilder();
+    private final Points controlPoints;
 
     /**
      * Creates a new <code>DefaultGeodesic</code> instance from the given parameters.
-     *
+     * 
      * @param p1
      * @param p2
      */
     public DefaultGeodesic( Point p1, Point p2 ) {
-        this.controlPoints.add( p1 );
-        this.controlPoints.add( p2 );
+        controlPoints = new PointsArray( p1, p2 );
     }
-
 
     @Override
     public Point getPoint1() {
@@ -76,7 +74,7 @@ public class DefaultGeodesic implements Geodesic {
 
     @Override
     public int getCoordinateDimension() {
-        return controlPoints.get(0).getCoordinateDimension();
+        return controlPoints.get( 0 ).getCoordinateDimension();
     }
 
     @Override

@@ -40,95 +40,88 @@ import java.util.NoSuchElementException;
 
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.standard.primitive.DefaultPoint;
 
 /**
- * {@link Points} implementation based on a coordinate array.
+ * <code>Array</code>-based {@link Points} implementation that allows to hold identifiable {@link Point} objects (with id
+ * or even references to local or remote {@link Point} instances}.
  * <p>
- * This implementation is quite memory efficient, but only allows to hold anonymous {@link Point} objects.
+ * This implementation is rather expensive, as every contained point is represented as an individual {@link Point}
+ * object. Whenever possible, {@link PackedPoints} or {@link PointsPoints} should be used instead.
+ * </p>
  * 
+ * @see PackedPoints
+ * @see PointsPoints
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class PackedPoints implements Points {
+public class PointsArray implements Points {
 
-    private int coordinatesDimension;
+    private Point[] points;
 
-    private double[] coordinates;
-
-    public PackedPoints( double[] coordinates, int coordinatesDimension ) {
-        this.coordinates = coordinates;
-        this.coordinatesDimension = coordinatesDimension;
+    /**
+     * Creates a new {@link PointsArray} instance based on the given array.
+     * 
+     * @param points
+     */
+    public PointsArray( Point...points ) {
+        this.points = points;
     }
 
     @Override
     public int getCoordinateDimension() {
-        return coordinatesDimension;
+        return points[0].getCoordinateDimension();
     }
 
     @Override
     public int size() {
-        return coordinates.length / coordinatesDimension;
-    }
-
-    /**
-     * Provides acccess to an arbitrary {@link Point} in the sequence (expensive!).
-     */
-    @Override
-    public Point get( int i ) {
-
-        double[] pointCoordinates = new double[coordinatesDimension];
-        int idx = i * coordinatesDimension;
-        for ( int d = 0; d < coordinatesDimension; d++ ) {
-            pointCoordinates[i] = coordinates[idx + d];
-        }
-        DefaultPoint point = new DefaultPoint( null, null, null, pointCoordinates );
-
-        return point;
+        return points.length;
     }
 
     @Override
     public Iterator<Point> iterator() {
-
         return new Iterator<Point>() {
 
-            private int idx = 0;
-
-            private double[] pointCoordinates = new double[coordinatesDimension];
-
-            private DefaultPoint point = new DefaultPoint( null, null, null, pointCoordinates );
-
+            int i = 0;
+            
             @Override
             public boolean hasNext() {
-                return idx < coordinates.length;
+                return i < points.length;
             }
 
             @Override
             public Point next() {
-                if ( !hasNext() ) {
+                if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-                for ( int i = 0; i < coordinatesDimension; i++ ) {
-                    pointCoordinates[i] = coordinates[idx + i];
-                }
-                idx += coordinatesDimension;
-                return point;
+                return points[i++];
             }
 
             @Override
             public void remove() {
                 throw new UnsupportedOperationException();
-            }
+            }            
         };
     }
 
     @Override
-    public double[] getAsArray() {
-        return coordinates;
+    public Point get( int i ) {
+        return points[i];
     }
 
+    @Override
+    public double[] getAsArray() {
+        double[] coords = new double[getCoordinateDimension() * size()];
+        int i = 0;
+        for ( Point p : this ) {
+            for ( double coord : p.getAsArray() ) {
+                coords[i++] = coord;
+            }
+        }
+        return coords;
+    }
+    
     @Override
     public Point getEndPoint() {
         return get( size() - 1 );
@@ -137,5 +130,5 @@ public class PackedPoints implements Points {
     @Override
     public Point getStartPoint() {
         return get( 0 );
-    }
+    }    
 }

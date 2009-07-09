@@ -36,6 +36,7 @@
 
 package org.deegree.geometry.linearization;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -44,7 +45,7 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.Arc;
 import org.deegree.geometry.primitive.curvesegments.Circle;
-import org.deegree.geometry.standard.points.PointsBuilder;
+import org.deegree.geometry.standard.points.PointsList;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -235,7 +236,6 @@ public class CurveLinearizerTest {
      * @param first
      * @param second
      * @param third
-     * @param outputWKT
      * @param isCircle
      * @return
      */
@@ -246,12 +246,12 @@ public class CurveLinearizerTest {
         Point p2 = geomFac.createPoint( null, third, null );
         Arc arc = isCircle ? geomFac.createCircle( p0, p1, p2 ) : geomFac.createArc( p0, p1, p2 );
 
-        PointsBuilder output = new PointsBuilder( 3 );
+        List<Point> output = new ArrayList<Point>( 3 );
         if ( outputWKT ) {
             output.add( p0 );
             output.add( p1 );
             output.add( p2 );
-            System.out.println( exportToWKT( output ) );
+            System.out.println( exportToWKT( new PointsList( output ) ) );
         }
         Points output2 = linearizer.linearize( arc, new NumPointsCriterion( 15 ) ).getControlPoints();
         if ( outputWKT ) {

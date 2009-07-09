@@ -136,4 +136,15 @@ public class PointsPoints implements Points {
             }
         };
     }
+
+    @Override
+    public Point getEndPoint() {
+        Points p = pointsList.get( pointsList.size() - 1 );
+        return p.getEndPoint();
+    }
+
+    @Override
+    public Point getStartPoint() {
+        return get( 0 );
+    }
 }

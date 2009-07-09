@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,33 +32,36 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.ArcByBulge;
-import org.deegree.geometry.standard.points.PointsBuilder;
+import org.deegree.geometry.standard.points.PointsArray;
+import org.deegree.geometry.standard.points.PointsList;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Default implementation of {@link ArcByBulge} segments.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultArcByBulge implements ArcByBulge {
 
-    private PointsBuilder controlPoints = new PointsBuilder (2);
+    private final Points controlPoints;
 
-    private double bulge;
+    private final double bulge;
 
-    private Point normal;
+    private final Point normal;
 
     /**
      * Creates a new <code>DefaultArcByBulge</code> instance from the given parameters.
-     *
+     * 
      * @param p1
      *            first control point
      * @param p2
@@ -67,8 +70,7 @@ public class DefaultArcByBulge implements ArcByBulge {
      * @param normal
      */
     public DefaultArcByBulge( Point p1, Point p2, double bulge, Point normal ) {
-        controlPoints.add( p1 );
-        controlPoints.add( p2 );
+        controlPoints = new PointsArray( p1, p2 );
         this.bulge = bulge;
         this.normal = normal;
     }
@@ -98,11 +100,10 @@ public class DefaultArcByBulge implements ArcByBulge {
         return new double[] { bulge };
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Points getNormals() {
-        PointsBuilder normals = new PointsBuilder( 1 );
-        normals.add( normal );
-        return normals;
+        return new PointsList( Collections.singletonList( normal ) );
     }
 
     @Override

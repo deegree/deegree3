@@ -66,7 +66,7 @@ public interface Points extends Iterable<Point> {
      * @return the number of points
      */
     public int size();
-
+  
     /**
      * Returns the {@link Point} at the specified position.
      * <p>
@@ -79,6 +79,20 @@ public interface Points extends Iterable<Point> {
      */
     public Point get( int i );
 
+    /**
+     * Returns the first point of the sequence.
+     * 
+     * @return the first point
+     */
+    public Point getStartPoint();
+
+    /**
+     * Returns the last point of the sequence.
+     * 
+     * @return the last point
+     */    
+    public Point getEndPoint();    
+    
     /**
      * Returns all coordinates of the contained {@link Point}s as an array.
      * <p>

@@ -100,4 +100,14 @@ public class PointsList implements Points {
         }
         return coords;
     }
+    
+    @Override
+    public Point getEndPoint() {
+        return get( size() - 1 );
+    }
+
+    @Override
+    public Point getStartPoint() {
+        return get( 0 );
+    }    
 }
