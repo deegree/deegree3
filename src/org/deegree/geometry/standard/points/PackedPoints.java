@@ -114,7 +114,7 @@ public class PackedPoints implements Points {
                     pointCoordinates[i] = coordinates[idx + i];
                 }
                 idx += coordinatesDimension;
-                return null;
+                return point;
             }
 
             @Override
