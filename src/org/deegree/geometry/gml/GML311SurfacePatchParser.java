@@ -78,6 +78,7 @@ import org.deegree.geometry.standard.points.PointsList;
  * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
@@ -205,11 +206,11 @@ class GML311SurfacePatchParser extends GML311BaseParser {
         }
 
         xmlStream.require( START_ELEMENT, GMLNS, "rows" );
-        int rows = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
+        xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
         xmlStream.require( END_ELEMENT, GMLNS, "rows" );
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "columns" );
-        int columns = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
+        xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
         xmlStream.require( END_ELEMENT, GMLNS, "columns" );
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Cone" );
@@ -267,11 +268,11 @@ class GML311SurfacePatchParser extends GML311BaseParser {
         }
 
         xmlStream.require( START_ELEMENT, GMLNS, "rows" );
-        int rows = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
+        xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
         xmlStream.require( END_ELEMENT, GMLNS, "rows" );
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "columns" );
-        int columns = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
+        xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
         xmlStream.require( END_ELEMENT, GMLNS, "columns" );
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Cylinder" );
@@ -329,11 +330,11 @@ class GML311SurfacePatchParser extends GML311BaseParser {
         }
 
         xmlStream.require( START_ELEMENT, GMLNS, "rows" );
-        int rows = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
+        xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
         xmlStream.require( END_ELEMENT, GMLNS, "rows" );
         xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "columns" );
-        int columns = xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
+        xmlStream.getElementTextAsPositiveInteger(); // redundant; one can determine it from the grid
         xmlStream.require( END_ELEMENT, GMLNS, "columns" );
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Sphere" );

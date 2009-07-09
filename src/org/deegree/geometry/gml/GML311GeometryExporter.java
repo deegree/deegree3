@@ -131,6 +131,7 @@ public class GML311GeometryExporter {
         this.exportedIds = exportedIds;
     }
 
+    @SuppressWarnings("unchecked")
     public void export( Geometry geometry )
                             throws XMLStreamException {
         switch ( geometry.getGeometryType() ) {

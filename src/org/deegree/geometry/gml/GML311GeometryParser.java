@@ -109,9 +109,37 @@ import org.slf4j.LoggerFactory;
 /**
  * Parser for geometry and geometry-related constructs from the GML 3.1.1 specification.
  * <p>
- * Supports all abstract (8) and concrete (24) geometry elements:
+ * Supports the following geometry elements:
+ * <p>
  * <ul>
- * <ul>
+ * <li><code>Point</code></li>
+ * <li><code>LineString</code></li>
+ * <li><code>Curve</code></li>
+ * <li><code>OrientableCurve</code></li>
+ * <li><code>CompositeCurve</code></li>
+ * <li><code>LinearRing</code></li>
+ * <li><code>Ring</code></li>
+ * <li><code>Polygon</code></li>
+ * <li><code>Surface</code></li>
+ * <li><code>CompositeSurface</code></li>
+ * <li><code>OrientableSurface</code></li>
+ * <li><code>PolyhedralSurface</code></li>
+ * <li><code>Surface</code></li>
+ * <li><code>Tin</code></li>
+ * <li><code>TriangulatedSurface</code></li>
+ * <li><code>Solid</code></li>
+ * <li><code>CompositeSolid</code></li>
+ * <li><code>GeometricComplex</code></li>
+ * <li><code>MultiPoint</code></li>
+ * <li><code>MultiLineString</code></li>
+ * <li><code>MultiCurve</code></li>
+ * <li><code>MultiPolygon</code></li>
+ * <li><code>MultiSurface</code></li>
+ * <li><code>MultiGeometry</code></li>
+ * </p>
+ * <p>
+ * Currently unsupported are the elements from the <code>_ImplicitGeometry</code> substitution group, i.e.
+ * <code>Grid</code> and <code>RectifiedGrid</code>):
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
