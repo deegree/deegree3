@@ -142,6 +142,10 @@
         <fileset dir="${src.dir}" id="sources.resources">
             <exclude name="**/package.html" />
             <exclude name="**/*.java" />
+						<exclude name="META-INF/deegreeCRS/log/*" />
+						<exclude name="META-INF/deegreeCRS/tmp" />
+						<exclude name="META-INF/deegreeCRS/db.lck" />
+						<exclude name="META-INF/deegreeCRS/dbex.lck" />																								
         </fileset>
         <dependset>
             <srcfileset refid="sources.resources" />
