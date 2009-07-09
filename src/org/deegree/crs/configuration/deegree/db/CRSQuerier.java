@@ -930,6 +930,7 @@ public class CRSQuerier {
         CRSIdentifiable result = cachedCRSs.get( crsCode );
         if ( result == null ) {
             result = getNotCachedCRS( crsCode );
+            return (CoordinateSystem) result;
         }
         if ( result instanceof CoordinateSystem ) {
             return (CoordinateSystem) result;
@@ -954,7 +955,10 @@ public class CRSQuerier {
         PreparedStatement ps;
         ps = conn.prepareStatement( "SELECT ref_id, code, codespace FROM code WHERE code = '" + crsCode.getCode()
                                     + "' AND codespace = '" + crsCode.getCodeSpace() + "'" );
+        System.out.println( "SELECT ref_id, code, codespace FROM code WHERE code = '" + crsCode.getCode()
+                                    + "' AND codespace = '" + crsCode.getCodeSpace() + "'" );
 
+        
         ResultSet rs = ps.executeQuery();
         if ( !rs.next() ) {
             LOG.warn( "The database does not contain a crs with the code " + crsCode );
