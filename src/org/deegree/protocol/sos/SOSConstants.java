@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.sos;
 
@@ -44,10 +44,10 @@ import org.deegree.protocol.i18n.Messages;
 
 /**
  * Important constants from the SOS specifications.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class SOSConstants {
@@ -75,12 +75,18 @@ public class SOSConstants {
 
     private static final Map<String, SOSRequestType> requestNameToSOSRequest = new HashMap<String, SOSRequestType>();
 
+    static {
+        requestNameToSOSRequest.put( DESCRIBE_SENSOR_NAME, SOSRequestType.DESCRIBE_SENSOR );
+        requestNameToSOSRequest.put( GET_CAPABILITIES_NAME, SOSRequestType.GET_CAPABILITIES );
+        requestNameToSOSRequest.put( GET_OBSERVATION_NAME, SOSRequestType.GET_OBSERVATION );
+    }
+
     /**
      * Enum type for discriminating between the different types of SensorObservationService (SOS) requests.
-     *
+     * 
      * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
      * @author last edited by: $Author: schneider $
-     *
+     * 
      * @version $Revision: $, $Date: $
      */
     public enum SOSRequestType {
@@ -95,7 +101,7 @@ public class SOSConstants {
 
     /**
      * Retrieves the corresponding {@link SOSRequestType} for a given SOS request name.
-     *
+     * 
      * @param requestName
      *            name of the request (case-sensitive)
      * @return corresponding type from
