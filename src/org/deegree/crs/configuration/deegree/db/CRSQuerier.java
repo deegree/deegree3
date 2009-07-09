@@ -955,9 +955,6 @@ public class CRSQuerier {
         PreparedStatement ps;
         ps = conn.prepareStatement( "SELECT ref_id, code, codespace FROM code WHERE code = '" + crsCode.getCode()
                                     + "' AND codespace = '" + crsCode.getCodeSpace() + "'" );
-        System.out.println( "SELECT ref_id, code, codespace FROM code WHERE code = '" + crsCode.getCode()
-                                    + "' AND codespace = '" + crsCode.getCodeSpace() + "'" );
-
         
         ResultSet rs = ps.executeQuery();
         if ( !rs.next() ) {
