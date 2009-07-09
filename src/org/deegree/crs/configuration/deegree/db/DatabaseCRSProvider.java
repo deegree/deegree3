@@ -36,6 +36,9 @@
 
 package org.deegree.crs.configuration.deegree.db;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -155,9 +158,16 @@ public class DatabaseCRSProvider implements CRSProvider {
     public DatabaseCRSProvider() throws CRSConfigurationException, ClassNotFoundException {
         dbConnectionURL = System.getenv( "CRS_DB_URL" );
         if ( dbConnectionURL == null ) {
-            String pathToBinURL = this.getClass().getResource( "/" ).toString();
-            String pathToBin = pathToBinURL.substring( pathToBinURL.indexOf( "file:/" ) + 5 );
-            dbConnectionURL = "jdbc:derby:" + pathToBin + "../src/META-INF/deegreeCRS";
+            
+            // TODO clean up the accessing of database code  
+            URL url = DatabaseCRSProvider.class.getResource( "/META-INF/deegreeCRS" );
+            if ( url != null ) {
+                String dbConnectString= parseJARURL(  url );
+                dbConnectionURL = "jdbc:derby:" +dbConnectString;
+            } else {
+                throw new CRSConfigurationException(
+                                                     "Could not load the database at /META-INF/deegreeCRS, please set the CRS_DB_URL environment variable to the location of your crs database." );
+            }
         }
         LOG.debug( "using the connection protocol: " + dbConnectionURL );
         
@@ -184,6 +194,34 @@ public class DatabaseCRSProvider implements CRSProvider {
         exporter.setConnection( conn );
         remover = new CRSRemover();
         remover.setConnection( conn );
+    }
+    
+    private String parseJARURL( URL url ){
+        if( url == null ){
+            throw new CRSConfigurationException( "URL should not be null.");
+        }
+        String protocol = url.getProtocol();
+        if( "jar".equals( protocol ) ){
+            //Target->'jdbc:derby:jar:(/home/ionita/workspace/d3_commons/build/deegree-commons.jar)META-INF/deegreeCRS';
+            String urlString = url.getFile();
+            String fileString = "file:";
+            int index = urlString.indexOf( fileString );
+            if( index != -1 ){
+                urlString = urlString.substring( index + fileString.length() );
+            }
+            
+            index = urlString.indexOf(  "!" );
+            if( index != -1 ){
+                String realFSPath = urlString.substring(0, index);
+                //remove the / from /META-INF
+                String dbPath = urlString.substring( index +2);
+                return "jar:("+realFSPath+")"+dbPath;
+            } 
+            throw new CRSConfigurationException( "no ! found in path, are we using a jar?");
+            
+        }
+        throw new CRSConfigurationException( "URL must have a jar protocol we found: " + protocol);
+    
     }
 
     /**
