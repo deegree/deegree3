@@ -34,11 +34,16 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.primitive.surfacepatches;
+package org.deegree.geometry.standard.surfacepatches;
 
 import java.util.List;
 
 import org.deegree.geometry.points.Points;
+import org.deegree.geometry.primitive.surfacepatches.Cone;
+import org.deegree.geometry.primitive.surfacepatches.GriddedSurfacePatch;
+import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.primitive.surfacepatches.GriddedSurfacePatch.GriddedSurfaceType;
+import org.deegree.geometry.primitive.surfacepatches.SurfacePatch.SurfacePatchType;
 
 /**
  * TODO add class documentation here.

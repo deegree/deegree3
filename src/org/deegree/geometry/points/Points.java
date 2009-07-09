@@ -40,9 +40,9 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * Encapsulates a sequence of {@link Point}s, which may be uniquely identifiable or not.
+ * Encapsulates a sequence of {@link Point}s that each may be uniquely identifiable or not.
  * <p>
- * The motivation for this interface is to provide a more compact and efficient representation than using lists or
+ * The motivation for this interface is to allow more compact and efficient representations than using lists or
  * arrays of {@link Point} objects. This is essential, as geometries are usually build from many points, e.g. a detailed
  * {@link LineString} may consist of tens or hundreds thousands of points.
  * 

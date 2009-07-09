@@ -35,13 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
+import java.util.Collections;
+
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.ArcByBulge;
 import org.deegree.geometry.standard.points.PointsArray;
 import org.deegree.geometry.standard.points.PointsList;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Default implementation of {@link ArcByBulge} segments.

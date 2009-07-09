@@ -114,6 +114,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     @Override
     public boolean isWithinDistance( Geometry geometry, double distance ) {
+        // TODO what about the UOM?
         return getJTSGeometry().isWithinDistance( geometry.getJTSGeometry(), distance );
     }
 
