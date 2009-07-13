@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils.nio;
 
@@ -46,10 +46,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The <code>DirectByteBufferPool</code> pools a number of direct 'native' bytebuffers so they can be reused.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class DirectByteBufferPool {
@@ -70,7 +70,7 @@ public class DirectByteBufferPool {
 
     /**
      * Construct a direct byte buffer which may allocate buffers with given capacity
-     *
+     * 
      * @param capacityLimit
      *            total capacity of this pool.
      * @param bufferLimit
@@ -84,7 +84,7 @@ public class DirectByteBufferPool {
     /**
      * @param capacity
      * @return the requested byte buffer
-     *
+     * 
      * @throws OutOfMemoryError
      *             if no PooledByteBuffer with the given capacity is available and allocating it from the system would
      *             exceed the assigned resources
@@ -104,7 +104,7 @@ public class DirectByteBufferPool {
                 String msg = "Maximum number of direct buffers (=" + MAX_NUM_OF_BUFFERS + ") exceeded";
                 throw new OutOfMemoryError( msg );
             }
-            if ( totalCapacity + capacity >= MAX_MEMORY_CAPACITY ) {
+            if ( totalCapacity + capacity > MAX_MEMORY_CAPACITY ) {
                 String msg = "Maximum memory size for direct buffers (=" + MAX_MEMORY_CAPACITY + ") exceeded";
                 throw new OutOfMemoryError( msg );
             }
@@ -120,7 +120,7 @@ public class DirectByteBufferPool {
 
     /**
      * Notifies the pool the given buffer is free for use.
-     *
+     * 
      * @param buffer
      *            to be freed.
      */
