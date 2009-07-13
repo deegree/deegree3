@@ -258,12 +258,24 @@ public class JOGLUtils {
      *            to be converted may be of length 3 or 4, not <code>null</code>.
      * @return the color as an int holding argb.
      */
-    public static int convertBytesToColorInt( byte[] color ) {
-        int result = 0;
+    public static int convertBytesToARGBInt( byte[] color ) {
+        int result = convertBytesToRGBInt( color );
         if ( color.length == 4 ) {
             result = color[3] & 0x000000FF;
             result <<= 8;
         }
+        return result;
+    }
+
+    /**
+     * Create an int value (rgb) from the given color array (rgb), the result can be used for buffered images.
+     * 
+     * @param color
+     *            to be converted may be only be of length 3, not <code>null</code>.
+     * @return the color as an int holding rgb.
+     */
+    public static int convertBytesToRGBInt( byte[] color ) {
+        int result = 0;
         result |= ( color[0] & 0x000000FF );
         result <<= 8;
         result |= ( color[1] & 0x000000FF );
@@ -299,37 +311,21 @@ public class JOGLUtils {
         if ( imageBuffer == null || ( imageBuffer.capacity() < ( width * height * 3 ) ) ) {
             imageBuffer = BufferUtil.newByteBuffer( width * height * 3 );
         }
+        imageBuffer.rewind();
+        glContext.glPixelStorei( GL.GL_PACK_ALIGNMENT, 1 );
         glContext.glReadPixels( viewPortX, viewPortY, width, height, GL.GL_RGB, GL_UNSIGNED_BYTE, imageBuffer );
         if ( resultImage == null || resultImage.getWidth() < width || resultImage.getHeight() < height ) {
-            resultImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
+            resultImage = new BufferedImage( width, height, BufferedImage.TYPE_3BYTE_BGR );
         }
         imageBuffer.rewind();
         byte[] color = new byte[3];
         for ( int y = height - 1; y >= 0; --y ) {
             for ( int x = 0; x < width; x++ ) {
                 imageBuffer.get( color );
-                resultImage.setRGB( x, y, convertBytesToColorInt( color ) );
+                resultImage.setRGB( x, y, convertBytesToRGBInt( color ) );
             }
         }
 
-        // ByteBuffer bb = ByteBuffer.allocateDirect( width * height * 4 );
-        //
-        // BufferedImage tImage = new BufferedImage( width, height, BufferedImage.TYPE_INT_ARGB );
-        //
-        // glContext.glReadPixels( viewPortX, viewPortY, width, height, GL.GL_RGBA, GL_UNSIGNED_BYTE, bb );
-        // bb.rewind();
-        // color = new byte[4];
-        // for ( int y = height - 1; y >= 0; --y ) {
-        // for ( int x = 0; x < width; x++ ) {
-        // bb.get( color );
-        // tImage.setRGB( x, y, convertBytesToColorInt( color ) );
-        // }
-        // }
-        // try {
-        // ImageIO.write( tImage, "jpg", new File( "/tmp/test.jpg" ) );
-        // } catch ( Exception e ) {
-        // System.out.println( e.getLocalizedMessage() );
-        // }
         return resultImage;
     }
 }
