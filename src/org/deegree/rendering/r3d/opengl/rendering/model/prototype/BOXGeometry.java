@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.prototype;
 
@@ -44,16 +44,16 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.RenderableGeome
 
 /**
  * The <code>BOXGeometry</code> a simple box, which might be used as a prototype reference.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class BOXGeometry extends RenderableGeometry {
 
     /**
-     *
+     * 
      */
     private static final long serialVersionUID = 1698575727921120208L;
 
@@ -87,12 +87,13 @@ public class BOXGeometry extends RenderableGeometry {
         super( new float[] { 0, 0, 0 }, GL.GL_QUADS, null, true );
     }
 
-    /*
-     * Draws a colored cube with cubeHalf length defined by the ObjectSize.
+    /**
+     * draws the cube
+     * 
+     * @param gl
      */
-    private void drawCube( GL gl ) {
+    public void drawCube( GL gl ) {
         gl.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
-        gl.glDisable( GL.GL_BLEND );
         gl.glMaterialfv( GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE, color, 0 );
 
         gl.glBegin( GL.GL_QUADS );
@@ -103,6 +104,7 @@ public class BOXGeometry extends RenderableGeometry {
         gl.glVertex3fv( cubeData[2], 0 );
         gl.glVertex3fv( cubeData[3], 0 );
         gl.glEnd();
+
         gl.glMaterialfv( GL.GL_FRONT, GL.GL_AMBIENT_AND_DIFFUSE, color, 0 );
 
         gl.glBegin( GL.GL_QUADS );
@@ -135,7 +137,6 @@ public class BOXGeometry extends RenderableGeometry {
         gl.glVertex3fv( cubeData[1], 0 );
         gl.glVertex3fv( cubeData[0], 0 );
         gl.glEnd();
-        gl.glEnable( GL.GL_BLEND );
         gl.glPopAttrib();
     }
 }
