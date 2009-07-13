@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.projections.azimuthal;
 
@@ -46,40 +46,47 @@ import org.deegree.crs.components.Unit;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.ProjectionException;
 import org.deegree.crs.projections.ProjectionTest;
-import org.deegree.crs.projections.azimuthal.StereographicAlternative;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.junit.Test;
 
 /**
  * <code>StereographicAlternativeTest</code> test the accuracy of the stereographic alternative projection by checking
  * against a reference point created with proj4.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class StereographicAlternativeTest extends ProjectionTest {
 
-    private static final Ellipsoid ellipsoid_7004 = new Ellipsoid( 6377397.155, Unit.METRE, 299.1528128,
+    private static final Ellipsoid ellipsoid_7004 = new Ellipsoid(
+                                                                   6377397.155,
+                                                                   Unit.METRE,
+                                                                   299.1528128,
                                                                    new CRSCodeType[] { new CRSCodeType( "7004", "ESPG" ) } );
 
     private static final Helmert wgs_56 = new Helmert( 565.04, 49.91, 465.84, -0.40941295127179994, 0.3608190255680464,
                                                        -1.8684910003505757, 4.0772, GeographicCRS.WGS84,
-                                                       GeographicCRS.WGS84, new CRSCodeType[] { new CRSCodeType( "TOWGS_56" ) } );
+                                                       GeographicCRS.WGS84,
+                                                       new CRSCodeType[] { new CRSCodeType( "TOWGS_56" ) } );
 
-    private static final GeodeticDatum datum_171 = new GeodeticDatum( ellipsoid_7004, wgs_56,
+    private static final GeodeticDatum datum_171 = new GeodeticDatum(
+                                                                      ellipsoid_7004,
+                                                                      wgs_56,
                                                                       new CRSCodeType[] { new CRSCodeType( "DATUM_171" ) } );
 
-    private static final GeographicCRS geographic_204 = new GeographicCRS( datum_171,
+    private static final GeographicCRS geographic_204 = new GeographicCRS(
+                                                                           datum_171,
                                                                            new Axis[] {
                                                                                        new Axis( "longitude",
                                                                                                  Axis.AO_EAST ),
                                                                                        new Axis( "latitude",
                                                                                                  Axis.AO_NORTH ) },
-                                                                           new CRSCodeType[] { new CRSCodeType( "GEO_CRS_204" ) } );
+                                                                           new CRSCodeType[] { new CRSCodeType(
+                                                                                                                "GEO_CRS_204" ) } );
 
     private static final StereographicAlternative projection_28992 = new StereographicAlternative(
                                                                                                    geographic_204,
@@ -91,6 +98,15 @@ public class StereographicAlternativeTest extends ProjectionTest {
                                                                                                    Unit.METRE,
                                                                                                    0.9999079 );
 
+    private static final StereographicAlternative projection_32661 = new StereographicAlternative(
+                                                                                                   GeographicCRS.WGS84,
+                                                                                                   200000,
+                                                                                                   2000000,
+                                                                                                   new Point2d(
+                                                                                                                Math.toRadians( 0 ),
+                                                                                                                Math.toRadians( 90 ) ),
+                                                                                                   Unit.METRE, 0.994 );
+
     /**
      * reference point created with proj4 command : <code>
      * proj -f "%.8f" +proj=sterea +ellps=bessel +lon_0=5.38763888888889 +lat_0=52.15616055555555 +k=0.9999079
@@ -98,7 +114,7 @@ public class StereographicAlternativeTest extends ProjectionTest {
      * 6.610765 53.235916
      * 236655.91462443 583827.76880699
      * </code>
-     *
+     * 
      * @throws IllegalArgumentException
      * @throws ProjectionException
      */
@@ -110,6 +126,27 @@ public class StereographicAlternativeTest extends ProjectionTest {
         Point2d targetPoint = new Point2d( 236655.91462443, 583827.76880699 );
 
         doForwardAndInverse( projection_28992, sourcePoint, targetPoint );
+    }
+
+    /**
+     * reference point created with proj4 command : <code>
+     * proj -f "%.8f" +proj=sterea +ellps=bessel +lon_0=5.38763888888889 +lat_0=52.15616055555555 +k=0.9999079
+     * +x_0=155000 +y_0=463000.0
+     * 6.610765 53.235916
+     * 236655.91462443 583827.76880699
+     * </code>
+     * 
+     * @throws IllegalArgumentException
+     * @throws ProjectionException
+     */
+    @Test
+    public void testAccuracy2()
+                            throws IllegalArgumentException, ProjectionException {
+
+        Point2d sourcePoint = new Point2d( Math.toRadians( 2 ), Math.toRadians( 70 ) );
+        Point2d targetPoint = new Point2d( -29798.33199, 853312.58225 );
+
+        doForwardAndInverse( projection_32661, sourcePoint, targetPoint );
     }
 
     /**
