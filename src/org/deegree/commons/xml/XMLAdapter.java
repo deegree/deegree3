@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.xml;
 
@@ -101,10 +101,10 @@ import org.slf4j.LoggerFactory;
  * Technically, the XML handling is based on <a href="http://ws.apache.org/commons/axiom/">AXIOM (AXis Object
  * Model)</a>.
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class XMLAdapter {
@@ -144,7 +144,7 @@ public class XMLAdapter {
 
     /**
      * Creates a new <code>XMLAdapter</code> with the given OMElement as root element;
-     *
+     * 
      * @param rootElement
      *            the root element of the xml adapter
      */
@@ -154,7 +154,7 @@ public class XMLAdapter {
 
     /**
      * Creates a new instance that loads its content from the given <code>URL</code>.
-     *
+     * 
      * @param url
      *            source of the xml content
      * @throws XMLProcessingException
@@ -165,7 +165,7 @@ public class XMLAdapter {
 
     /**
      * Creates a new instance that loads its content from the given <code>File</code>.
-     *
+     * 
      * @param file
      *            source of the xml content
      * @throws XMLProcessingException
@@ -182,10 +182,10 @@ public class XMLAdapter {
 
     /**
      * Creates a new instance that loads its content from the given <code>Reader</code> using the default url.
-     *
+     * 
      * @param reader
      *            source of the xml content
-     *
+     * 
      * @throws XMLProcessingException
      */
     public XMLAdapter( Reader reader ) throws XMLProcessingException {
@@ -194,13 +194,13 @@ public class XMLAdapter {
 
     /**
      * Creates a new instance that loads its content from the given <code>Reader</code>.
-     *
+     * 
      * @param reader
      *            source of the xml content
      * @param systemId
      *            this string should represent a URL that is related to the passed reader. If this URL is not available
      *            or unknown, the string should contain the value of XMLAdapter.DEFAULT_URL
-     *
+     * 
      * @throws XMLProcessingException
      */
     public XMLAdapter( Reader reader, String systemId ) throws XMLProcessingException {
@@ -209,10 +209,10 @@ public class XMLAdapter {
 
     /**
      * Creates a new instance that loads its content from the given <code>InputStream</code> using the default url.
-     *
+     * 
      * @param in
      *            source of the xml content
-     *
+     * 
      * @throws XMLProcessingException
      */
     public XMLAdapter( InputStream in ) throws XMLProcessingException {
@@ -221,13 +221,13 @@ public class XMLAdapter {
 
     /**
      * Creates a new instance that loads its content from the given <code>InputStream</code>.
-     *
+     * 
      * @param in
      *            source of the xml content
      * @param systemId
      *            this string should represent a URL that is related to the passed reader. If this URL is not available
      *            or unknown, the string should contain the value of XMLAdapter.DEFAULT_URL
-     *
+     * 
      * @throws XMLProcessingException
      */
     public XMLAdapter( InputStream in, String systemId ) throws XMLProcessingException {
@@ -236,7 +236,7 @@ public class XMLAdapter {
 
     /**
      * Creates a new instance that wraps the submitted XML document.
-     *
+     * 
      * @param doc
      *            xml content
      * @param systemId
@@ -249,7 +249,7 @@ public class XMLAdapter {
 
     /**
      * Creates a new instance that wraps the given XML element.
-     *
+     * 
      * @param rootElement
      *            xml content
      * @param systemId
@@ -263,7 +263,7 @@ public class XMLAdapter {
 
     /**
      * Returns the systemId (the physical location of the wrapped XML content).
-     *
+     * 
      * @return the systemId
      */
     public String getSystemId() {
@@ -272,7 +272,7 @@ public class XMLAdapter {
 
     /**
      * Sets the systemId (the physical location of the wrapped XML content).
-     *
+     * 
      * @param systemId
      *            systemId (physical location) to set
      */
@@ -282,7 +282,7 @@ public class XMLAdapter {
 
     /**
      * Returns whether the wrapped XML element contains schema references.
-     *
+     * 
      * @return true, if the element contains schema references, false otherwise
      */
     public boolean hasSchemas() {
@@ -292,7 +292,7 @@ public class XMLAdapter {
     /**
      * Determines the namespace <code>URI</code>s and the bound schema <code>URL</code>s from the 'xsi:schemaLocation'
      * attribute of the wrapped XML element.
-     *
+     * 
      * @return keys are URIs (namespaces), values are URLs (schema locations)
      * @throws XMLProcessingException
      */
@@ -342,7 +342,7 @@ public class XMLAdapter {
     /**
      * Initializes this <code>XMLAdapter</code> with the content from the given <code>URL</code>. Sets the SystemId,
      * too.
-     *
+     * 
      * @param url
      *            source of the xml content
      * @throws XMLProcessingException
@@ -362,13 +362,13 @@ public class XMLAdapter {
     /**
      * Initializes this <code>XMLAdapter</code> with the content from the given <code>InputStream</code>. Sets the
      * SystemId, too.
-     *
+     * 
      * @param istream
      *            source of the xml content
      * @param systemId
      *            cannot be null. This string should represent a URL that is related to the passed istream. If this URL
      *            is not available or unknown, the string should contain the value of XMLFragment.DEFAULT_URL
-     *
+     * 
      * @throws XMLProcessingException
      */
     public void load( InputStream istream, String systemId )
@@ -408,7 +408,7 @@ public class XMLAdapter {
     /**
      * Initializes this <code>XMLAdapter</code> with the content from the given <code>InputStream</code> and sets the
      * system id to the {@link #DEFAULT_URL}
-     *
+     * 
      * @param resourceStream
      *            to load the xml from.
      * @throws XMLProcessingException
@@ -421,7 +421,7 @@ public class XMLAdapter {
     /**
      * Determines the encoding of an XML document from its header. If no header available
      * <code>CharsetUtils.getSystemCharset()</code> will be returned
-     *
+     * 
      * @param pbis
      * @return encoding of a XML document
      * @throws XMLProcessingException
@@ -459,13 +459,13 @@ public class XMLAdapter {
     /**
      * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code>. Sets the SystemId,
      * too.
-     *
+     * 
      * @param reader
      *            source of the XML content
      * @param systemId
      *            can not be null. This string should represent a URL that is related to the passed reader. If this URL
      *            is not available or unknown, the string should contain the value of XMLFragment.DEFAULT_URL
-     *
+     * 
      * @throws XMLProcessingException
      */
     public void load( Reader reader, String systemId )
@@ -498,7 +498,7 @@ public class XMLAdapter {
     /**
      * Initializes this <code>XMLAdapter</code> with the content from the given <code>Reader</code> and sets the system
      * id to the {@link #DEFAULT_URL}
-     *
+     * 
      * @param reader
      *            to load the xml from.
      * @throws XMLProcessingException
@@ -510,7 +510,7 @@ public class XMLAdapter {
 
     /**
      * Sets the root element, i.e. the XML element encapsulated by this <code>XMLAdapter</code>.
-     *
+     * 
      * @param rootElement
      *            the root element
      */
@@ -520,7 +520,7 @@ public class XMLAdapter {
 
     /**
      * Returns the root element, i.e. the XML element encapsulated by this <code>XMLAdapter</code>.
-     *
+     * 
      * @return the root element
      */
     public OMElement getRootElement() {
@@ -530,7 +530,7 @@ public class XMLAdapter {
     /**
      * Resolves the given URL (which may be relative) against the SystemID of this <code>XMLAdapter</code> into an
      * absolute <code>URL</code>.
-     *
+     * 
      * @param url
      *            <code>URL</code> to be resolved (may be relative or absolute)
      * @return the resolved URL
@@ -568,7 +568,7 @@ public class XMLAdapter {
      * <p>
      * Possible escaping of the attributes "xlink:href", "xlink:role" and "xlink:arcrole" is performed automatically.
      * </p>
-     *
+     * 
      * @param element
      * @return the object representation of the element
      * @throws XMLParsingException
@@ -606,7 +606,7 @@ public class XMLAdapter {
 
     /**
      * Parses the given <code>String</code> as an <code>xsd:boolean</code> value.
-     *
+     * 
      * @param s
      *            the <code>String</code> to be parsed
      * @return corresponding boolean value
@@ -630,7 +630,7 @@ public class XMLAdapter {
 
     /**
      * Parses the given <code>String</code> as an <code>xsd:double</code> value.
-     *
+     * 
      * @param s
      *            the <code>String</code> to be parsed
      * @return corresponding double value
@@ -652,7 +652,7 @@ public class XMLAdapter {
 
     /**
      * Parses the given <code>String</code> as an <code>xsd:float</code> value.
-     *
+     * 
      * @param s
      *            the <code>String</code> to be parsed
      * @return corresponding float value
@@ -674,7 +674,7 @@ public class XMLAdapter {
 
     /**
      * Parses the given <code>String</code> as an <code>xsd:integer</code> value.
-     *
+     * 
      * @param s
      *            the <code>String</code> to be parsed
      * @return corresponding integer value
@@ -696,7 +696,7 @@ public class XMLAdapter {
 
     /**
      * Parses the given <code>String</code> as an {@link URL}.
-     *
+     * 
      * @param s
      *            the <code>String</code> to be parsed
      * @return corresponding URL value
@@ -718,7 +718,7 @@ public class XMLAdapter {
 
     /**
      * Parses the given <code>String</code> as an <code>xsd:QName</code> value.
-     *
+     * 
      * @param s
      *            the <code>String</code> to be parsed
      * @param element
@@ -929,7 +929,7 @@ public class XMLAdapter {
                     String msg = "Unexpected node type '" + node.getClass() + "'.";
                     throw new XMLParsingException( this, contextNode, msg );
                 }
-                values [i] = value;
+                values[i] = value;
             }
         } else {
             values = new QName[0];
@@ -1045,23 +1045,23 @@ public class XMLAdapter {
         }
         return compiledXPath;
     }
-    
+
     /**
      * Constructs a {@link NamespaceContext} from all the namespaces available for an {@link OMElement}
      * 
-     * @param element   the given element
-     * @return
-     *          the constructed namespace context
+     * @param element
+     *            the given element
+     * @return the constructed namespace context
      */
     public NamespaceContext getNamespaceContext( OMElement element ) {
         NamespaceContext nsContext = new NamespaceContext();
-        
+
         Iterator<OMNamespace> iterator = element.getAllDeclaredNamespaces();
         while ( iterator.hasNext() ) {
             OMNamespace namespace = iterator.next();
             nsContext.addNamespace( namespace.getPrefix(), namespace.getNamespaceURI() );
         }
-            
+
         return nsContext;
     }
 
@@ -1069,12 +1069,12 @@ public class XMLAdapter {
      * Write an element with simple text content into the XMLStream.
      * <p>
      * Convenience method to write simple elements like:
-     *
+     * 
      * <pre>
      * &lt;ogc:GeometryOperand&gt;gml:Envelope&lt;/ogc:GeometryOperand&gt;
      * &lt;gml:upperCorner&gt;90 180&lt;/gml:upperCorner&gt;
      * </pre>
-     *
+     * 
      * @param writer
      * @param namespace
      *            the namespace of the element
@@ -1095,15 +1095,15 @@ public class XMLAdapter {
 
     /**
      * Write an element with a single attribute into the XMLStream.
-     *
+     * 
      * <p>
      * Convenience method to write simple elements like:
-     *
+     * 
      * <pre>
      * &lt;ows:Post xlink:href=&quot;http://localhost/&quot; /&gt;
      * &lt;ogc:TemporalOperator name=&quot;TM_Begins&quot; /&gt;
      * </pre>
-     *
+     * 
      * @param writer
      * @param namespace
      *            the namespace of the element
@@ -1132,15 +1132,15 @@ public class XMLAdapter {
     /**
      * Write an optional element with simple text content into the XMLStream. If the value is <code>null</code>, than
      * the element is omitted.
-     *
+     * 
      * <p>
      * Convenience method to write simple elements like:
-     *
+     * 
      * <pre>
      * &lt;ogc:GeometryOperand&gt;gml:Envelope&lt;/ogc:GeometryOperand&gt;
      * &lt;gml:upperCorner&gt;10 -42&lt;/gml:upperCorner&gt;
      * </pre>
-     *
+     * 
      * @param writer
      * @param namespace
      *            the namespace of the element
@@ -1162,7 +1162,7 @@ public class XMLAdapter {
     /**
      * Copies an XML element (including all attributes and subnodes) from an {@link XMLStreamReader} into the given
      * {@link XMLStreamWriter}.
-     *
+     * 
      * @param writer
      *            {@link XMLStreamWriter} that the xml is appended to
      * @param inStream
@@ -1194,7 +1194,7 @@ public class XMLAdapter {
                 break;
             }
             case START_ELEMENT: {
-                if ( inStream.getNamespaceURI() == null ) {
+                if ( inStream.getNamespaceURI() == null || inStream.getPrefix() == null ) {
                     writer.writeStartElement( inStream.getLocalName() );
                 } else {
                     writer.writeStartElement( inStream.getPrefix(), inStream.getLocalName(), inStream.getNamespaceURI() );
@@ -1234,7 +1234,7 @@ public class XMLAdapter {
 
     /**
      * Writes an element without namespace, and with an (optional) text
-     *
+     * 
      * @param writer
      * @param name
      * @param text
@@ -1251,7 +1251,7 @@ public class XMLAdapter {
 
     /**
      * Writes an element without namespace, only if text not null
-     *
+     * 
      * @param writer
      * @param name
      * @param text
