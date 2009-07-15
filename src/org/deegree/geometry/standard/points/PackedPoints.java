@@ -78,15 +78,12 @@ public class PackedPoints implements Points {
      */
     @Override
     public Point get( int i ) {
-
         double[] pointCoordinates = new double[coordinatesDimension];
         int idx = i * coordinatesDimension;
         for ( int d = 0; d < coordinatesDimension; d++ ) {
             pointCoordinates[i] = coordinates[idx + d];
         }
-        DefaultPoint point = new DefaultPoint( null, null, null, pointCoordinates );
-
-        return point;
+        return new DefaultPoint( null, null, null, pointCoordinates );
     }
 
     @Override

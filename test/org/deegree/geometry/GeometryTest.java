@@ -1,9 +1,10 @@
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -31,37 +32,45 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.deegree.crs.CRS;
+import org.deegree.geometry.primitive.Point;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Some very basic tests. Just to make sure we can create a GeometryFactory and do some simple
- * operations.
- *
+ * Some very basic tests. Just to make sure we can create a GeometryFactory and do some simple operations.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$ }
  */
 public class GeometryTest {
 
     private static GeometryFactory geomFactory = new GeometryFactory();
 
-    private static double DELTA = 0.001;
+    private Point p1, p2, p3;
 
-    Envelope env1, env2, env3, env4, env5, env6, env7, env8, env9, env10;
+    private Envelope env1, env2, env3, env4, env5, env6, env7, env8, env9, env10;
 
     /**
      * common envelopes as test geometry
      */
     @Before
     public void setUp() {
+
+        CRS crs = new CRS( "EPSG:4326" );
+        p1 = geomFactory.createPoint( "p1", 0.0, 0.0, crs );
+        p2 = geomFactory.createPoint( "p2", 10.0, 10.0, crs );
+        p3 = geomFactory.createPoint( "p3", 10.0, 10.0, crs );
+
         env1 = createEnvelope( 10, 10, 20, 20 );
         env2 = createEnvelope( 30, 30, 40, 40 ); // disjoint
         env3 = createEnvelope( 15, 15, 20, 20 ); // covers env1
@@ -79,63 +88,72 @@ public class GeometryTest {
         return geomFactory.createEnvelope( new double[] { x1, y1 }, new double[] { x2, y2 }, null );
     }
 
-    /**
-     *
-     */
     @Test
-    public void testContains() {
-        assertTrue( env1.contains( env1 ) );
-        assertTrue( env1.contains( env4 ) );
-        assertTrue( env1.contains( env3 ) );
-        assertFalse( env4.contains( env1 ) );
-        assertFalse( env3.contains( env1 ) );
-        assertFalse( env1.contains( env2 ) );
-        assertFalse( env1.contains( env5 ) );
+    public void testIntersects () {
+        assertTrue( !p1.intersects( p2 ) );
+        assertTrue( !p1.intersects( p3 ) );
+        assertTrue( p2.intersects( p3 ) );
     }
-
-    /**
-     *
-     */
-    @Test
-    public void testIntersects() {
-        assertTrue( env1.intersects( env1 ) );
-        assertFalse( env1.intersects( env2 ) );
-        assertFalse( env2.intersects( env1 ) );
-        assertTrue( env1.intersects( env3 ) );
-        assertTrue( env3.intersects( env1 ) );
-        assertTrue( env1.intersects( env4 ) );
-        assertTrue( env4.intersects( env1 ) );
-        assertTrue( env1.intersects( env5 ) );
-        assertTrue( env5.intersects( env1 ) );
-        assertTrue( env6.intersects( env1 ) );
-        assertTrue( env6.intersects( env3 ) );
-        assertTrue( env6.intersects( env4 ) );
-        assertTrue( env6.intersects( env5 ) );
-        assertTrue( env7.intersects( env2 ) );
-        assertTrue( env7.intersects( env9 ) );
-        assertTrue( env8.intersects( env2 ) );
-        assertTrue( env8.intersects( env7 ) );
-        assertTrue( env9.intersects( env2 ) );
-        assertTrue( env9.intersects( env7 ) );
-        assertTrue( env9.intersects( env8 ) );
-
-        assertFalse( env9.intersects( env5 ) );
-        assertFalse( env5.intersects( env9 ) );
-    }
-
-    /**
-     *
-     */
-    @Test
-    public void testIntersection() {
-        assertTrue( env1.intersection( env4 ).equals( env4 ) );
-        assertTrue( env4.intersection( env1 ).equals( env4 ) );
-        assertTrue( env1.intersection( env6 ).equals( createEnvelope( 15, 15, 20, 20 ) ) );
-        assertTrue( env2.intersection( env9 ).equals( createEnvelope( 34, 30, 40, 40 ) ) );
-        assertTrue( env1.intersection( env1 ).equals( env1 ) );
-        assertTrue( env2.intersection( env7 ).equals( createEnvelope( 30, 34, 40, 36 ) ) );
-        assertTrue( env5.intersection( env2 ).equals( createEnvelope( 30, 30, 30, 30 ) ) );
-        assertTrue( env10.intersection( env9 ).equals( createEnvelope( 45, 10, 45, 45 ) ) );
-        assertTrue( env9.intersection( env10 ).equals( createEnvelope( 45, 10, 45, 45 ) ) );
-    }
+    
+//    
+//
+//    /**
+//     *
+//     */
+//    @Test
+//    public void testContains() {
+//        assertTrue( env1.contains( env1 ) );
+//        assertTrue( env1.contains( env4 ) );
+//        assertTrue( env1.contains( env3 ) );
+//        assertFalse( env4.contains( env1 ) );
+//        assertFalse( env3.contains( env1 ) );
+//        assertFalse( env1.contains( env2 ) );
+//        assertFalse( env1.contains( env5 ) );
+//    }
+//
+//    /**
+//     *
+//     */
+//    @Test
+//    public void testIntersects() {
+//        assertTrue( env1.intersects( env1 ) );
+//        assertFalse( env1.intersects( env2 ) );
+//        assertFalse( env2.intersects( env1 ) );
+//        assertTrue( env1.intersects( env3 ) );
+//        assertTrue( env3.intersects( env1 ) );
+//        assertTrue( env1.intersects( env4 ) );
+//        assertTrue( env4.intersects( env1 ) );
+//        assertTrue( env1.intersects( env5 ) );
+//        assertTrue( env5.intersects( env1 ) );
+//        assertTrue( env6.intersects( env1 ) );
+//        assertTrue( env6.intersects( env3 ) );
+//        assertTrue( env6.intersects( env4 ) );
+//        assertTrue( env6.intersects( env5 ) );
+//        assertTrue( env7.intersects( env2 ) );
+//        assertTrue( env7.intersects( env9 ) );
+//        assertTrue( env8.intersects( env2 ) );
+//        assertTrue( env8.intersects( env7 ) );
+//        assertTrue( env9.intersects( env2 ) );
+//        assertTrue( env9.intersects( env7 ) );
+//        assertTrue( env9.intersects( env8 ) );
+//
+//        assertFalse( env9.intersects( env5 ) );
+//        assertFalse( env5.intersects( env9 ) );
+//    }
+//
+//    /**
+//     *
+//     */
+//    @Test
+//    public void testIntersection() {
+//        assertTrue( env1.intersection( env4 ).equals( env4 ) );
+//        assertTrue( env4.intersection( env1 ).equals( env4 ) );
+//        assertTrue( env1.intersection( env6 ).equals( createEnvelope( 15, 15, 20, 20 ) ) );
+//        assertTrue( env2.intersection( env9 ).equals( createEnvelope( 34, 30, 40, 40 ) ) );
+//        assertTrue( env1.intersection( env1 ).equals( env1 ) );
+//        assertTrue( env2.intersection( env7 ).equals( createEnvelope( 30, 34, 40, 36 ) ) );
+//        assertTrue( env5.intersection( env2 ).equals( createEnvelope( 30, 30, 30, 30 ) ) );
+//        assertTrue( env10.intersection( env9 ).equals( createEnvelope( 45, 10, 45, 45 ) ) );
+//        assertTrue( env9.intersection( env10 ).equals( createEnvelope( 45, 10, 45, 45 ) ) );
+//    }
 }

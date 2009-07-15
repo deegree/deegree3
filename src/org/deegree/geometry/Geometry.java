@@ -41,7 +41,10 @@ import org.deegree.crs.CRS;
 import org.deegree.geometry.precision.PrecisionModel;
 
 /**
- * 
+ * Base interface for all vector geometry types.
+ * <p>
+ * This is the root of an ISO 19107/GML 3.1.1/GML 3.2.1 compliant geometry type hierarchy.
+ * </p>
  * <p>
  * <h4>Notes on the representation of GML geometries</h4>
  * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
@@ -51,6 +54,7 @@ import org.deegree.geometry.precision.PrecisionModel;
  * {@link Geometry} instance as either GML 3.2.1 or GML 3.1.1 (different namespaces for the standard properties).
  * </p>
  * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
  * 

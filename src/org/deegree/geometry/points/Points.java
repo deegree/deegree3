@@ -42,9 +42,14 @@ import org.deegree.geometry.primitive.Point;
 /**
  * Encapsulates a sequence of {@link Point}s that each may be uniquely identifiable or not.
  * <p>
- * The motivation for this interface is to allow more compact and efficient representations than using lists or
- * arrays of {@link Point} objects. This is essential, as geometries are usually build from many points, e.g. a detailed
+ * The motivation for this interface is to allow more compact and efficient representations than using lists or arrays
+ * of {@link Point} objects. This is essential, as geometries are usually build from many points, e.g. a detailed
  * {@link LineString} may consist of tens or hundreds thousands of points.
+ * </p>
+ * <p>
+ * Note that this extends JTS <code>CoordinateSequence</code> interface, so it's possible to use it for the efficient
+ * construction of JTS geometries.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -66,13 +71,12 @@ public interface Points extends Iterable<Point> {
      * @return the number of points
      */
     public int size();
-  
+
     /**
      * Returns the {@link Point} at the specified position.
      * <p>
      * NOTE: It is generally more expensive to use this method than to access a {@link Point} by iterating over this
-     * object, because a new {@link Point} object may have to be created (depending on the implementation). Use with
-     * care!
+     * object, because a new {@link Point} object may have to be created (depending on the implementation).
      * 
      * @param i
      * @return the point at the specified position
@@ -90,9 +94,9 @@ public interface Points extends Iterable<Point> {
      * Returns the last point of the sequence.
      * 
      * @return the last point
-     */    
-    public Point getEndPoint();    
-    
+     */
+    public Point getEndPoint();
+
     /**
      * Returns all coordinates of the contained {@link Point}s as an array.
      * <p>
