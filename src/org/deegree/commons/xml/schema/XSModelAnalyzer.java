@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.schema;
 
 import java.util.ArrayList;
@@ -60,11 +60,11 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
  * <p>
  * This functionality is used to extract higher-level structures defined using XML schema, such as GML feature types.
  * </p>
- *
+ * 
  * @see XSModelGMLAnalyzer
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class XSModelAnalyzer {
@@ -76,7 +76,7 @@ public class XSModelAnalyzer {
 
     /**
      * Creates a new <code>XSModelAnalyzer</code> for a given XML schema infoset.
-     *
+     * 
      * @param xmlSchema
      *            schema infoset
      */
@@ -86,7 +86,7 @@ public class XSModelAnalyzer {
 
     /**
      * Creates a new <code>XSModelAnalyzer</code> that reads a schema document from the given URL.
-     *
+     * 
      * @param url
      *            location of the schema document
      * @throws ClassCastException
@@ -133,7 +133,7 @@ public class XSModelAnalyzer {
 
     /**
      * Returns the XML schema infoset (represented as a Xerces {@link XSModel}).
-     *
+     * 
      * @return the XML schema infoset
      */
     public XSModel getXSModel() {
@@ -142,28 +142,32 @@ public class XSModelAnalyzer {
 
     /**
      * Returns the declarations of all elements that are substitutable for a given element declaration.
-     *
+     * 
      * @param elementDecl
      *            element declaration
      * @param namespace
      *            only element declarations in this namespace are returned, set to null for all namespaces
+     * @param transitive
+     *            if true, also substitutions for substitutions (and so one) are included
      * @param onlyConcrete
      *            if true, only concrete (non-abstract) declarations are returned
      * @return the declarations of all substitution elements in the requested namespace
      */
     public List<XSElementDeclaration> getSubstitutions( XSElementDeclaration elementDecl, String namespace,
-                                                        boolean onlyConcrete ) {
+                                                        boolean transitive, boolean onlyConcrete ) {
         XSObjectList xsObjectList = xmlSchema.getSubstitutionGroup( elementDecl );
         List<XSElementDeclaration> substitutions = new ArrayList<XSElementDeclaration>( xsObjectList.getLength() );
         for ( int i = 0; i < xsObjectList.getLength(); i++ ) {
             XSElementDeclaration substitution = (XSElementDeclaration) xsObjectList.item( i );
-            if ( !substitution.getAbstract() || !onlyConcrete ) {
-                if ( namespace == null || namespace.equals( substitution.getNamespace() ) ) {
-                    substitutions.add( (XSElementDeclaration) xsObjectList.item( i ) );
+            if ( transitive || substitution.getSubstitutionGroupAffiliation().equals( elementDecl ) ) {
+                if ( !substitution.getAbstract() || !onlyConcrete ) {
+                    if ( namespace == null || namespace.equals( substitution.getNamespace() ) ) {
+                        substitutions.add( (XSElementDeclaration) xsObjectList.item( i ) );
+                    }
                 }
             }
         }
-        if ( !onlyConcrete || !elementDecl.getAbstract() ) {
+        if ( transitive && ( !onlyConcrete || !elementDecl.getAbstract() ) ) {
             substitutions.add( elementDecl );
         }
         return substitutions;
@@ -171,22 +175,25 @@ public class XSModelAnalyzer {
 
     /**
      * Returns the declarations of all elements that are substitutable for a given element name.
-     *
+     * 
      * @param elementName
      *            qualified name of the element
      * @param namespace
      *            only element declarations in this namespace are returned, set to null for all namespaces
+     * @param transitive
+     *            if true, also substitutions for substitutions (and so one) are included
      * @param onlyConcrete
      *            if true, only concrete (non-abstract) declarations are returned
      * @return the declarations of all substitution elements in the requested namespace
      */
-    public List<XSElementDeclaration> getSubstitutions( QName elementName, String namespace, boolean onlyConcrete ) {
+    public List<XSElementDeclaration> getSubstitutions( QName elementName, String namespace, boolean transitive,
+                                                        boolean onlyConcrete ) {
         XSElementDeclaration elementDecl = xmlSchema.getElementDeclaration( elementName.getLocalPart(),
                                                                             elementName.getNamespaceURI() );
         if ( elementDecl == null ) {
             String msg = "The schema does not declare a top-level element with name '" + elementName + "'.";
             throw new IllegalArgumentException( msg );
         }
-        return getSubstitutions( elementDecl, namespace, onlyConcrete );
+        return getSubstitutions( elementDecl, namespace, transitive, onlyConcrete );
     }
 }

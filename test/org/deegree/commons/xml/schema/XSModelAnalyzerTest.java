@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.schema;
 
 import java.util.List;
@@ -43,10 +43,10 @@ import org.apache.xerces.xs.XSElementDeclaration;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class XSModelAnalyzerTest {
@@ -60,7 +60,8 @@ public class XSModelAnalyzerTest {
         List<XSElementDeclaration> featureElements = analyzer.getSubstitutions(
                                                                                 new QName(
                                                                                            "http://www.opengis.net/gml",
-                                                                                           "_Feature" ), null, true );
+                                                                                           "_Feature" ), null, true,
+                                                                                true );
         for ( XSElementDeclaration elementDeclaration : featureElements ) {
             System.out.println( elementDeclaration.getName() );
         }

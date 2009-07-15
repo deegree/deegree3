@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.gml.schema;
 
 import java.util.HashSet;
@@ -50,10 +50,10 @@ import org.junit.Test;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class XSModelGMLAnalyzerTest {
@@ -93,9 +93,9 @@ public class XSModelGMLAnalyzerTest {
         XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.GML_31 );
         Set<String> substitutionts = getConcreteSubstitutions( "_GeometricAggregate", analyzer );
         for ( String string : substitutionts ) {
-            System.out.println (string);
+            System.out.println( string );
         }
-        System.out.println (substitutionts.size());
+        System.out.println( substitutionts.size() );
     }
 
     @Test
@@ -107,9 +107,9 @@ public class XSModelGMLAnalyzerTest {
         XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.GML_31 );
         Set<String> substitutionts = getConcreteSubstitutions( "_GeometricPrimitive", analyzer );
         for ( String string : substitutionts ) {
-            System.out.println (string);
+            System.out.println( string );
         }
-        System.out.println (substitutionts.size());
+        System.out.println( substitutionts.size() );
     }
 
     @Test
@@ -121,9 +121,9 @@ public class XSModelGMLAnalyzerTest {
         XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.GML_31 );
         Set<String> substitutionts = getConcreteSubstitutions( "_ImplicitGeometry", analyzer );
         for ( String string : substitutionts ) {
-            System.out.println (string);
+            System.out.println( string );
         }
-        System.out.println (substitutionts.size());
+        System.out.println( substitutionts.size() );
     }
 
     @Test
@@ -135,9 +135,9 @@ public class XSModelGMLAnalyzerTest {
         XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.GML_31 );
         Set<String> substitutionts = getConcreteSubstitutions( "_Curve", analyzer );
         for ( String string : substitutionts ) {
-            System.out.println (string);
+            System.out.println( string );
         }
-        System.out.println (substitutionts.size());
+        System.out.println( substitutionts.size() );
     }
 
     @Test
@@ -208,7 +208,7 @@ public class XSModelGMLAnalyzerTest {
         XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.GML_31 );
         List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml",
                                                                                         "_CurveSegment" ),
-                                                                             "http://www.opengis.net/gml", true );
+                                                                             "http://www.opengis.net/gml", true, true );
         for ( XSElementDeclaration elementDecl : elementDecls ) {
             System.out.println( elementDecl.getName() );
         }
@@ -223,7 +223,7 @@ public class XSModelGMLAnalyzerTest {
         XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.GML_31 );
         List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml",
                                                                                         "_SurfacePatch" ),
-                                                                             "http://www.opengis.net/gml", true );
+                                                                             "http://www.opengis.net/gml", true, true );
         for ( XSElementDeclaration elementDecl : elementDecls ) {
             System.out.println( elementDecl.getName() );
         }
@@ -240,7 +240,8 @@ public class XSModelGMLAnalyzerTest {
                                                                              new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
                                                                                         "AbstractCurveSegment" ),
-                                                                             "http://www.opengis.net/gml/3.2", true );
+                                                                             "http://www.opengis.net/gml/3.2", true,
+                                                                             true );
         for ( XSElementDeclaration elementDecl : elementDecls ) {
             System.out.println( elementDecl.getName() );
         }
@@ -253,9 +254,12 @@ public class XSModelGMLAnalyzerTest {
 
         String schemaURL = "http://schemas.opengis.net/gml/3.2.1/gml.xsd";
         XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer( schemaURL, GMLVersion.GML_32 );
-        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml/3.2",
+        List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions(
+                                                                             new QName(
+                                                                                        "http://www.opengis.net/gml/3.2",
                                                                                         "AbstractSurfacePatch" ),
-                                                                             "http://www.opengis.net/gml/3.2", true );
+                                                                             "http://www.opengis.net/gml/3.2", true,
+                                                                             true );
         for ( XSElementDeclaration elementDecl : elementDecls ) {
             System.out.println( elementDecl.getName() );
         }
@@ -272,7 +276,8 @@ public class XSModelGMLAnalyzerTest {
                                                                              new QName(
                                                                                         "http://www.opengis.net/gml/3.2",
                                                                                         "AbstractGeometry" ),
-                                                                             "http://www.opengis.net/gml/3.2", true );
+                                                                             "http://www.opengis.net/gml/3.2", true,
+                                                                             true );
         for ( XSElementDeclaration elementDecl : elementDecls ) {
             System.out.println( elementDecl.getName() );
         }
@@ -282,7 +287,7 @@ public class XSModelGMLAnalyzerTest {
     private Set<String> getConcreteSubstitutions( String localName, XSModelGMLAnalyzer analyzer ) {
         List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml",
                                                                                         localName ),
-                                                                             "http://www.opengis.net/gml", false );
+                                                                             "http://www.opengis.net/gml", false, true );
         HashSet<String> localNames = new HashSet<String>();
         for ( XSElementDeclaration elementDecl : elementDecls ) {
             localNames.add( elementDecl.getName() );
