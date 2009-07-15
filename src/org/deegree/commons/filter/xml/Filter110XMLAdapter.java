@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.filter.xml;
 
 import java.util.ArrayList;
@@ -97,10 +97,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Adapter between XML documents that comply to the Filter Encoding Specification 1.1.0 and {@link Filter} objects.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Filter110XMLAdapter extends XMLAdapter {
@@ -216,7 +216,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * Parses the encapsulated root element as a {@link Filter}.
      * <p>
      * The element must be a {http://www.opengis.net/ogc}Filter element.
-     *
+     * 
      * @return <code>Filter</code> object
      * @throws XMLParsingException
      */
@@ -248,7 +248,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * Parses the given element as an {@link IdFilter}.
      * <p>
      * The element must be a {http://www.opengis.net/ogc}Filter element.
-     *
+     * 
      * @return <code>Filter</code> object
      * @throws XMLProcessingException
      */
@@ -298,7 +298,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * <li>{http://www.opengis.net/ogc}Literal</li>
      * <li>{http://www.opengis.net/ogc}Function</li>
      * </ul>
-     *
+     * 
      * @param element
      *            element to be parsed
      * @return expression object
@@ -371,7 +371,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Parses the given {http://www.opengis.net/ogc}PropertyName element as a {@link PropertyName}.
-     *
+     * 
      * @param element
      *            element to be parsed
      * @return propertyName object
@@ -380,6 +380,11 @@ public class Filter110XMLAdapter extends XMLAdapter {
         // TODO build correct nsContext
         SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "app", "http://www.deegree.org/app" );
+        if ( element.getText().trim().isEmpty() ) {
+            // TODO filter encoding guy: use whatever exception shall be used here. But make sure that the
+            // GetObservation100XMLAdapter gets an exception from here as the compliance of the SOS hangs on it's thread
+            throw new IllegalArgumentException( "Property name cannot be empty." );
+        }
         return new PropertyName( element.getText(), nsContext );
     }
 
@@ -392,7 +397,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * <li>{@link SpatialOperator}</li>
      * <li>{@link ComparisonOperator}</li>
      * </ul>
-     *
+     * 
      * @param element
      *            element to be parsed
      * @return expression object
@@ -426,9 +431,9 @@ public class Filter110XMLAdapter extends XMLAdapter {
                 operator = parseSpatialOperator( element );
             } catch ( XMLStreamException e ) {
                 e.printStackTrace();
-                throw new XMLParsingException(e.getMessage());
+                throw new XMLParsingException( e.getMessage() );
             } catch ( UnknownCRSException e ) {
-                throw new XMLParsingException(e.getMessage());
+                throw new XMLParsingException( e.getMessage() );
             }
             break;
         }
@@ -452,7 +457,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * <li>{http://www.opengis.net/ogc}Touches</li>
      * <li>{http://www.opengis.net/ogc}Within</li>
      * </ul>
-     *
+     * 
      * @param element
      *            element to be parsed
      * @return logical operator object
@@ -483,13 +488,11 @@ public class Filter110XMLAdapter extends XMLAdapter {
             OMElement geometryElement = childElementIter.next();
             XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
 
-            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                           reader,
-                                                                           getSystemId() );
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
             xmlReader.nextTag();
 
             Geometry parameter2 = geomParser.parseAbstractGeometry( xmlReader, null );
-            spatialOperator = new Intersects(parameter1, parameter2);
+            spatialOperator = new Intersects( parameter1, parameter2 );
             break;
         case BBOX:
         case BEYOND:
@@ -521,7 +524,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * <li>{http://www.opengis.net/ogc}PropertyIsLike</li>
      * <li>{http://www.opengis.net/ogc}PropertyIsNull</li>
      * </ul>
-     *
+     * 
      * @param element
      *            element to be parsed
      * @return logical operator object
@@ -628,7 +631,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * <li>{http://www.opengis.net/ogc}PropertyIsLessThanOrEqualTo</li>
      * <li>{http://www.opengis.net/ogc}PropertyIsNotEqualTo</li>
      * </ul>
-     *
+     * 
      * @param element
      *            element to be parsed
      * @return binary comparison operator object
@@ -677,7 +680,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * <li>{http://www.opengis.net/ogc}Or</li>
      * <li>{http://www.opengis.net/ogc}Not</li>
      * </ul>
-     *
+     * 
      * @param element
      *            element to be parsed
      * @return logical operator object
@@ -697,27 +700,27 @@ public class Filter110XMLAdapter extends XMLAdapter {
         case AND: {
             Iterator<OMElement> iterator = element.getChildElements();
             // the AND operator here is defined over multiple arguments
-            // see BinaryLogicOpType on http://schemas.opengis.net/filter/1.1.0/filter.xsd                        
+            // see BinaryLogicOpType on http://schemas.opengis.net/filter/1.1.0/filter.xsd
             Operator parameter1 = parseOperator( iterator.next() );
             Operator parameter2 = parseOperator( iterator.next() );
             logicalOperator = new And( parameter1, parameter2 );
             while ( iterator.hasNext() ) {
                 Operator nextParameter = parseOperator( iterator.next() );
                 logicalOperator = new And( logicalOperator, nextParameter );
-            }            
+            }
             break;
         }
         case OR: {
             Iterator<OMElement> iterator = element.getChildElements();
             // the OR operator here is defined over multiple arguments
-            // see BinaryLogicOpType on http://schemas.opengis.net/filter/1.1.0/filter.xsd                        
+            // see BinaryLogicOpType on http://schemas.opengis.net/filter/1.1.0/filter.xsd
             Operator parameter1 = parseOperator( iterator.next() );
             Operator parameter2 = parseOperator( iterator.next() );
             logicalOperator = new Or( parameter1, parameter2 );
             while ( iterator.hasNext() ) {
                 Operator nextParameter = parseOperator( iterator.next() );
                 logicalOperator = new Or( logicalOperator, nextParameter );
-            }            
+            }
             break;
         }
         case NOT: {
@@ -732,7 +735,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Serializes the given {@link Filter} object to XML.
-     *
+     * 
      * @param filter
      *            <code>Filter</code> object to be serialized
      * @param writer
@@ -763,7 +766,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Serializes the given {@link Operator} object to XML.
-     *
+     * 
      * @param operator
      *            <code>BooleanOperator</code> object to be serialized
      * @param writer
@@ -787,7 +790,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Serializes the given {@link LogicalOperator} object to XML.
-     *
+     * 
      * @param operator
      *            <code>LogicalOperator</code> object to be serialized
      * @param writer
@@ -819,7 +822,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Serializes the given {@link ComparisonOperator} object to XML.
-     *
+     * 
      * @param operator
      *            <code>ComparisonOperator</code> object to be serialized
      * @param writer
@@ -883,7 +886,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Serializes the given {@link SpatialOperator} object to XML.
-     *
+     * 
      * @param operator
      *            <code>SpatialOperator</code> object to be serialized
      * @param writer
@@ -916,7 +919,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Serializes the given {@link Expression} object to XML.
-     *
+     * 
      * @param expression
      *            <code>Expression</code> object to be serialized
      * @param writer
@@ -966,7 +969,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
     /**
      * Return a String with all element names of the given enum class.
-     *
+     * 
      * @param enumClass
      * @param map
      *            the operator type -> element name map
