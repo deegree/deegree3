@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,22 +32,18 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wps;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.deegree.commons.types.ows.Version;
-import org.deegree.protocol.i18n.Messages;
 
 /**
  * Important constants from the WMS specifications.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class WPSConstants {
@@ -61,78 +57,28 @@ public class WPSConstants {
     /** WPS protocol version 1.0.0 */
     public static final Version VERSION_100 = Version.parseVersion( "1.0.0" );
 
-    private static final String DESCRIBE_PROCESS_NAME = "DescribeProcess";
-
-    private static final String GET_CAPABILITIES_NAME = "GetCapabilities";
-
-    private static final String EXECUTE_NAME = "Execute";
-
-    private static final String DEEGREEWPS_GET_OUTPUT_NAME = "GetOutput";
-
-    private static final String DEEGREEWPS_GET_RESPONSE_DOCUMENT_NAME = "GetResponseDocument";
-
-    private static final String DEEGREEWPS_GET_WPS_WSDL_NAME = "GetWPSWSDL";
-
-    /** All request names of the WPS specifications. */
-    public static final String[] REQUEST_NAMES = { DESCRIBE_PROCESS_NAME, GET_CAPABILITIES_NAME, EXECUTE_NAME };
-
-    /** All request names of the WPS specifications + deegree WPS specific ones. */
-    public static final String[] DEEGREE_WPS_REQUEST_NAMES = { DESCRIBE_PROCESS_NAME, GET_CAPABILITIES_NAME,
-                                                              EXECUTE_NAME, DEEGREEWPS_GET_OUTPUT_NAME,
-                                                              DEEGREEWPS_GET_RESPONSE_DOCUMENT_NAME,
-                                                              DEEGREEWPS_GET_WPS_WSDL_NAME };
-
-    private static final Map<String, WPSRequestType> requestNameToWPSRequest = new HashMap<String, WPSRequestType>();
-
-    static {
-        requestNameToWPSRequest.put( DESCRIBE_PROCESS_NAME, WPSRequestType.DESCRIBE_PROCESS );
-        requestNameToWPSRequest.put( GET_CAPABILITIES_NAME, WPSRequestType.GET_CAPABILITIES );
-        requestNameToWPSRequest.put( EXECUTE_NAME, WPSRequestType.EXECUTE );
-        requestNameToWPSRequest.put( DEEGREEWPS_GET_OUTPUT_NAME, WPSRequestType.DEEGREEWPS_GET_OUTPUT );
-        requestNameToWPSRequest.put( DEEGREEWPS_GET_RESPONSE_DOCUMENT_NAME, WPSRequestType.DEEGREEWPS_GET_RESPONSE_DOCUMENT );
-        requestNameToWPSRequest.put( DEEGREEWPS_GET_WPS_WSDL_NAME, WPSRequestType.DEEGREEWPS_GET_WPS_WSDL );
-    }
-
     /**
      * Enum type for discriminating between the different types of WebProcessingService (WPS) requests.
-     *
+     * 
      * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
      * @author last edited by: $Author: schneider $
-     *
+     * 
      * @version $Revision: $, $Date: $
      */
     public enum WPSRequestType {
 
         /** Retrieve the process description for one more processes. */
-        DESCRIBE_PROCESS,
+        DescribeProcess,
         /** Retrieve the capabilities of the service. */
-        GET_CAPABILITIES,
+        GetCapabilities,
         /** Execute a process. */
-        EXECUTE,
+        Execute,
         /** deegree WPS specific request for retrieving stored complex outputs. */
-        DEEGREEWPS_GET_OUTPUT,
+        GetOutput,
         /** deegree WPS specific request for retrieving response documents. */
-        DEEGREEWPS_GET_RESPONSE_DOCUMENT,
+        GetResponseDocument,
         /** deegree WPS specific request for retrieving WSDL documents for the full service or single processes. */
-        DEEGREEWPS_GET_WPS_WSDL,
+        GetWPSWSDL,
     }
 
-    /**
-     * Retrieves the corresponding {@link WPSRequestType} for a given WPS request name.
-     *
-     * @param requestName
-     *            name of the request (case-sensitive)
-     * @return corresponding type from
-     * @throws IllegalArgumentException
-     *             if the given request name is not a known WPS request
-     */
-    public static WPSRequestType getRequestTypeByName( String requestName )
-                            throws IllegalArgumentException {
-
-        WPSRequestType requestType = requestNameToWPSRequest.get( requestName );
-        if ( requestType == null ) {
-            throw new IllegalArgumentException( Messages.get( "WPS_UNKNOWN_OPERATION", requestName ) );
-        }
-        return requestType;
-    }
 }

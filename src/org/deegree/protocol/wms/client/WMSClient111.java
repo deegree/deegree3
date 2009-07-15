@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wms.client;
 
@@ -42,6 +42,8 @@ import static org.deegree.commons.utils.HttpUtils.XML;
 import static org.deegree.commons.xml.CommonNamespaces.getNamespaceContext;
 import static org.deegree.crs.coordinatesystems.GeographicCRS.WGS84;
 import static org.deegree.protocol.i18n.Messages.get;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetCapabilities;
+import static org.deegree.protocol.wms.WMSConstants.WMSRequestType.GetMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
@@ -71,34 +73,36 @@ import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.crs.CRS;
-import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.protocol.wms.WMSConstants;
 import org.deegree.protocol.wms.WMSConstants.WMSRequestType;
 import org.slf4j.Logger;
 
 /**
  * Allows for easy performing of requests again WMS 1.1.1 compliant map services.
- *
+ * 
  * TODO refactor timeout and tiled request code
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class WMSClient111 {
 
     private static final NamespaceContext nsContext = getNamespaceContext();
 
-    private static final Logger LOG = getLogger( WMSClient111.class );
+    // needed in the worker
+    static final Logger LOG = getLogger( WMSClient111.class );
 
-    private int maxMapWidth = -1;
+    // needed in the worker
+    int maxMapWidth = -1;
 
-    private int maxMapHeight = -1;
+    // needed in the worker
+    int maxMapHeight = -1;
 
-    private XMLAdapter capabilities;
+    // needed in the worker
+    XMLAdapter capabilities;
 
     /**
      * @param url
@@ -125,7 +129,7 @@ public class WMSClient111 {
     /**
      * Sets the maximum map size that the server will process. If a larger map is requested, it will be broken down into
      * multiple GetMap requests.
-     *
+     * 
      * @param maxWidth
      *            maximum number of pixels in x-direction, or -1 for unrestricted width
      * @param maxHeight
@@ -152,7 +156,7 @@ public class WMSClient111 {
      * TODO implement updateSequence handling to improve network performance
      */
     public void refreshCapabilities() {
-        String url = getAddress( WMSRequestType.GET_CAPABILITIES, true );
+        String url = getAddress( GetCapabilities, true );
         if ( !url.endsWith( "?" ) && !url.endsWith( "&" ) ) {
             url += url.indexOf( "?" ) == -1 ? "?" : "&";
         }
@@ -171,7 +175,7 @@ public class WMSClient111 {
      * @return true, if an according section was found in the capabilities
      */
     public boolean isOperationSupported( WMSRequestType request ) {
-        XPath xp = new XPath( "//" + WMSConstants.getRequestNameByType( request, false ), null );
+        XPath xp = new XPath( "//" + request, null );
         return capabilities.getElement( capabilities.getRootElement(), xp ) != null;
     }
 
@@ -183,7 +187,7 @@ public class WMSClient111 {
         if ( !isOperationSupported( request ) ) {
             return null;
         }
-        XPath xp = new XPath( "//" + WMSConstants.getRequestNameByType( request, false ) + "/Format", null );
+        XPath xp = new XPath( "//" + request + "/Format", null );
         LinkedList<String> list = new LinkedList<String>();
         Object res = capabilities.evaluateXPath( xp, capabilities.getRootElement() );
         if ( res instanceof List ) {
@@ -202,29 +206,10 @@ public class WMSClient111 {
      */
     public String getAddress( WMSRequestType request, boolean get ) {
 
-        String requestName = null;
-        switch ( request ) {
-        case DESCRIBE_LAYER: {
-            requestName = WMSConstants.DESCRIBE_LAYER_NAME;
-            break;
-        }
-        case GET_CAPABILITIES: {
-            requestName = WMSConstants.GET_CAPABILITIES_NAME;
-            break;
-        }
-        case GET_MAP: {
-            requestName = WMSConstants.GET_MAP_NAME;
-            break;
-        }
-        case GET_FEATURE_INFO: {
-            requestName = WMSConstants.GET_FEATURE_INFO_NAME;
-            break;
-        }
-        }
         if ( !isOperationSupported( request ) ) {
             return null;
         }
-        return capabilities.getNodeAsString( capabilities.getRootElement(), new XPath( "//" + requestName
+        return capabilities.getNodeAsString( capabilities.getRootElement(), new XPath( "//" + request
                                                                                        + "/DCPType/HTTP/"
                                                                                        + ( get ? "Get" : "Post" )
                                                                                        + "/OnlineResource/@xlink:href",
@@ -314,10 +299,8 @@ public class WMSClient111 {
      * @param srs
      * @param layer
      * @return the envelope, or null, if none was found
-     * @throws UnknownCRSException
      */
-    public Envelope getBoundingBox( String srs, String layer )
-                            throws UnknownCRSException {
+    public Envelope getBoundingBox( String srs, String layer ) {
         double[] min = new double[2];
         double[] max = new double[2];
 
@@ -347,10 +330,8 @@ public class WMSClient111 {
      * @param srs
      * @param layers
      * @return the merged envelope, or null, if none was found
-     * @throws UnknownCRSException
      */
-    public Envelope getBoundingBox( String srs, List<String> layers )
-                            throws UnknownCRSException {
+    public Envelope getBoundingBox( String srs, List<String> layers ) {
         Envelope res = null;
 
         for ( String name : layers ) {
@@ -365,7 +346,7 @@ public class WMSClient111 {
     }
 
     /**
-     *
+     * 
      * @param layers
      * @param width
      * @param height
@@ -515,7 +496,7 @@ public class WMSClient111 {
 
             try {
                 if ( validate ) {
-                    LinkedList<String> formats = getFormats( WMSRequestType.GET_MAP );
+                    LinkedList<String> formats = getFormats( GetMap );
                     if ( !formats.contains( format ) ) {
                         format = formats.get( 0 );
                         validationErrors.add( "Using format " + format + " instead." );
@@ -523,7 +504,7 @@ public class WMSClient111 {
                     // TODO validate srs, width, height, rest, etc
                 }
 
-                String url = getAddress( WMSRequestType.GET_MAP, true );
+                String url = getAddress( GetMap, true );
                 if ( url == null ) {
                     LOG.warn( get( "WMSCLIENT.SERVER_NO_GETMAP_URL" ), "Capabilities: ", capabilities );
                     return null;
@@ -674,6 +655,6 @@ public class WMSClient111 {
         WMSClient111 client = new WMSClient111(
                                                 new URL(
                                                          "http://stadtplan.bonn.de/Deegree2wms/services?request=GetCapabilities&version=1.1.1&service=WMS" ) );
-        System.out.println( client.getAddress( WMSRequestType.GET_MAP, true ) );
+        System.out.println( client.getAddress( GetMap, true ) );
     }
 }

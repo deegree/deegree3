@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wpvs.client;
 
@@ -43,8 +43,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,92 +53,58 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
+import org.deegree.protocol.wpvs.WPVSConstants.WPVSRequestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>WPVSClient</code> class supports the functionality of sending requests to the
- * Web Perspective View Service (WPVS).
- *
+ * The <code>WPVSClient</code> class supports the functionality of sending requests to the Web Perspective View
+ * Service (WPVS).
+ * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author: ionita $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class WPVSClient {
 
     private final static Logger LOG = LoggerFactory.getLogger( WPVSClient.class );
 
-    public enum Requests {
-        GetView,
-        GetCapabilities,
-    }
-
     private final NamespaceContext nsContext;
 
     private XMLAdapter capabilities;
 
+    /**
+     * 
+     * @param url
+     *            to retrieve the capabilities from
+     */
     public WPVSClient( URL url ) {
         this( new XMLAdapter( url ) );
     }
 
+    /**
+     * retrieve the capabilities from an xml file
+     * 
+     * @param capabilities
+     */
+    @SuppressWarnings("unchecked")
     public WPVSClient( XMLAdapter capabilities ) {
         this.capabilities = capabilities;
-        // get all defined namespaces from getCapabilities in order to define the namespace context
-        List<Namespace> nss = parseNamespaces();
         // add namespaces to namespace context, to be used later with xpath
         nsContext = new NamespaceContext();
-        for ( Namespace ns: nss ) {
-            nsContext.addNamespace( ns.getPrefix(), ns.getUri() );
-        }
-    }
-
-    private List<Namespace> parseNamespaces() {
-        OMElement rootEl = capabilities.getRootElement();
-        Iterator<OMNamespace> nss = rootEl.getAllDeclaredNamespaces();
-        List<Namespace> res = new ArrayList<Namespace>();
+        // get all defined namespaces from getCapabilities in order to define the namespace context
+        Iterator<OMNamespace> nss = this.capabilities.getRootElement().getAllDeclaredNamespaces();
         while ( nss.hasNext() ) {
             OMNamespace omNs = nss.next();
-            res.add( new Namespace( omNs.getPrefix(), omNs.getNamespaceURI()) );
+            if ( omNs != null ) {
+                nsContext.addNamespace( omNs.getPrefix(), omNs.getNamespaceURI() );
+            }
         }
-        return res;
     }
 
     /**
-     *
-     * The <code>Namespace</code> class encapsulates the namespace structure as needed locally in the
-     * <code>WPVSClient</code> class.
-     *
-     * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
-     *
-     * @author last edited by: $Author: ionita $
-     *
-     * @version $Revision: $, $Date: $
-     *
-     */
-    private class Namespace {
-
-        private String prefix;
-
-        private String uri;
-
-        public Namespace( String prefix, String uri ) {
-            this.prefix = prefix;
-            this.uri = uri;
-        }
-
-        public String getPrefix() {
-            return prefix;
-        }
-
-        public String getUri() {
-            return uri;
-        }
-
-    }
-
-    /**
-     *
+     * 
      * @return all datasets that are queryable
      */
     public synchronized List<String> getQueryableDatasets() {
@@ -162,7 +126,7 @@ public class WPVSClient {
     }
 
     /**
-     *
+     * 
      * @return all elevation models defined
      */
     public synchronized List<String> getElevationModels() {
@@ -180,22 +144,25 @@ public class WPVSClient {
     }
 
     /**
-     *
-     * @param request the type of {@link Requests}
+     * 
+     * @param request
+     *            the type of {@link WPVSRequestType}
      * @return whether the request is defined in the getCapabilities xml file
      */
-    public synchronized boolean isOperationSupported( Requests request ) {
+    public synchronized boolean isOperationSupported( WPVSRequestType request ) {
         XPath xp = new XPath( "//ows:Operation[@name='" + request.name() + "']", nsContext );
         return capabilities.getElement( capabilities.getRootElement(), xp ) != null;
     }
 
     /**
-     *
-     * @param request the type of {@link Requests}
-     * @param get whether it is a Get or a Post request
+     * 
+     * @param request
+     *            the type of {@link WPVSRequestType}
+     * @param get
+     *            whether it is a Get or a Post request
      * @return the url of the requested operation
      */
-    public synchronized String getAddress( Requests request, boolean get ) {
+    public synchronized String getAddress( WPVSRequestType request, boolean get ) {
         if ( !isOperationSupported( request ) )
             return null;
 
@@ -208,35 +175,22 @@ public class WPVSClient {
     }
 
     /**
-     *
+     * 
      * @param url
-     * @return a {@link Pair} of {@link BuggeredImage} and {@link String}. In case the WPVS returns
-     * an image the former will be used, otherwise an XML response ( as a String ) will be returned
-     * in the second value.
+     * @return a {@link Pair} of {@link BufferedImage} and {@link String}. In case the WPVS returns an image the former
+     *         will be used, otherwise an XML response ( as a String ) will be returned in the second value.
      * @throws IOException
      */
-    public synchronized Pair<BufferedImage, String> getView( URL url ) {
+    public synchronized Pair<BufferedImage, String> getView( URL url )
+                            throws IOException {
         Pair<BufferedImage, String> res = new Pair<BufferedImage, String>();
-        URLConnection conn = null;
-        try {
-            conn = url.openConnection();
-            conn.connect();
-        } catch ( IOException e ) {
-            System.err.println( "ERROR: Could not open connection/connect to the URL given: " + url );
-            LOG.error( e.getMessage(), e );
+        InputStream inStream = url.openStream();
+        res.first = IMAGE.work( inStream );
+        // rb: the following will never happen (I guess)
+        if ( res.first == null ) {
+            res.second = XML.work( url.openStream() ).toString();
         }
-
-        InputStream inStream;
-        try {
-            inStream = conn.getInputStream();
-            res.first = IMAGE.work( inStream );
-            if ( res.first == null ) {
-                conn = url.openConnection();
-                res.second = XML.work( conn.getInputStream() ).toString();
-            }
-        } catch ( IOException e ) {
-            LOG.error( e.getMessage(), e );
-        }
+        inStream.close();
 
         return res;
     }

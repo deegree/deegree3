@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,22 +32,18 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wcs;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.deegree.commons.types.ows.Version;
-import org.deegree.protocol.i18n.Messages;
 
 /**
  * Important constants from the WCS specifications.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class WCSConstants {
@@ -58,8 +54,11 @@ public class WCSConstants {
     /** Namespace for elements from the WCS 1.1.0 specification */
     public static final String WCS_110_NS = "http://www.opengis.net/wcs/1.1";
 
+    /** Common namespace prefix for elements from WCS 1.0.0 specifications */
+    public static final String WCS_100_PRE = "wcs_1_0_0";
+
     /** Common namespace prefix for elements from WCS specifications */
-    public static final String WCS_PREFIX = "wcs";
+    public static final String WCS_110_PRE = "wcs_1_1_0";
 
     /** WCS protocol version 1.0.0 */
     public static final Version VERSION_100 = Version.parseVersion( "1.0.0" );
@@ -67,60 +66,21 @@ public class WCSConstants {
     /** WCS protocol version 1.1.0 */
     public static final Version VERSION_110 = Version.parseVersion( "1.1.0" );
 
-    /** WCS request name 'DescribeCoverage' */
-    public static final String DESCRIBE_COVERAGE_NAME = "DescribeCoverage";
-
-    /** WCS request name 'GetCapabilities' */
-    public static final String GET_CAPABILITIES_NAME = "GetCapabilities";
-
-    /** WCS request name 'GetCoverage' */
-    public static final String GET_COVERAGE_NAME = "GetCoverage";
-
-    /** All request names of the WCS specifications. */
-    public static final String[] REQUEST_NAMES = { DESCRIBE_COVERAGE_NAME, GET_CAPABILITIES_NAME, GET_COVERAGE_NAME };
-
-    private static final Map<String, WCSRequestType> requestNameToWCSRequest = new HashMap<String, WCSRequestType>();
-
-    static {
-        requestNameToWCSRequest.put( DESCRIBE_COVERAGE_NAME, WCSRequestType.DESCRIBE_COVERAGE );
-        requestNameToWCSRequest.put( GET_CAPABILITIES_NAME, WCSRequestType.GET_CAPABILITIES );
-        requestNameToWCSRequest.put( GET_COVERAGE_NAME, WCSRequestType.GET_COVERAGE );
-    }
-
     /**
      * Enum type for discriminating between the different types of WebCoverageService (WCS) requests.
-     *
+     * 
      * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
      * @author last edited by: $Author: schneider $
-     *
+     * 
      * @version $Revision: $, $Date: $
      */
     public enum WCSRequestType {
 
         /** Describe a coverage. */
-        DESCRIBE_COVERAGE,
+        DescribeCoverage,
         /** Retrieve the capabilities of the service. */
-        GET_CAPABILITIES,
+        GetCapabilities,
         /** Retrieve a coverage for a certain region. */
-        GET_COVERAGE
-    }
-
-    /**
-     * Retrieves the corresponding {@link WCSRequestType} for a given WCS request name.
-     *
-     * @param requestName
-     *            name of the request (case-sensitive)
-     * @return corresponding type from
-     * @throws IllegalArgumentException
-     *             if the given request name is not a known WCS request
-     */
-    public static WCSRequestType getRequestTypeByName( String requestName )
-                            throws IllegalArgumentException {
-
-        WCSRequestType requestType = requestNameToWCSRequest.get( requestName );
-        if ( requestType == null ) {
-            throw new IllegalArgumentException( Messages.get( "WCS_UNKNOWN_OPERATION", requestName ) );
-        }
-        return requestType;
+        GetCoverage
     }
 }

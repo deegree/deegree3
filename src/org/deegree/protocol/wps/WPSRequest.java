@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,22 +32,22 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wps;
 
 import org.deegree.commons.types.ows.Version;
+import org.deegree.protocol.wps.describeprocess.DescribeProcessRequest;
 
 /**
  * Abstract base class for WPS specific requests.
- *
+ * 
  * @see DescribeProcessRequest
- * @see ExecuteRequest
- *
+ * 
  * @author <a href="mailto:apadberg@uni-bonn.de">Alexander Padberg</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public abstract class WPSRequest {
@@ -58,7 +58,7 @@ public abstract class WPSRequest {
 
     /**
      * Creates a new {@link WPSRequest} instance.
-     *
+     * 
      * @param version
      *            WPS protocol version
      * @param language

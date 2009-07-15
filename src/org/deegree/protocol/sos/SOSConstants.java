@@ -36,11 +36,7 @@
 
 package org.deegree.protocol.sos;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.deegree.commons.types.ows.Version;
-import org.deegree.protocol.i18n.Messages;
 
 /**
  * Important constants from the SOS specifications.
@@ -61,26 +57,6 @@ public class SOSConstants {
     /** SOS protocol version 1.0.0 */
     public static final Version VERSION_100 = Version.parseVersion( "1.0.0" );
 
-    /** SOS request name 'DescribeSensor' */
-    public static final String DESCRIBE_SENSOR_NAME = "DescribeSensor";
-
-    /** SOS request name 'GetCapabilities' */
-    public static final String GET_CAPABILITIES_NAME = "GetCapabilities";
-
-    /** SOS request name 'GetObservation' */
-    public static final String GET_OBSERVATION_NAME = "GetObservation";
-
-    /** All request names of the SOS specifications. */
-    public static final String[] REQUEST_NAMES = { DESCRIBE_SENSOR_NAME, GET_CAPABILITIES_NAME, GET_OBSERVATION_NAME };
-
-    private static final Map<String, SOSRequestType> requestNameToSOSRequest = new HashMap<String, SOSRequestType>();
-
-    static {
-        requestNameToSOSRequest.put( DESCRIBE_SENSOR_NAME, SOSRequestType.DESCRIBE_SENSOR );
-        requestNameToSOSRequest.put( GET_CAPABILITIES_NAME, SOSRequestType.GET_CAPABILITIES );
-        requestNameToSOSRequest.put( GET_OBSERVATION_NAME, SOSRequestType.GET_OBSERVATION );
-    }
-
     /**
      * Enum type for discriminating between the different types of SensorObservationService (SOS) requests.
      * 
@@ -92,29 +68,10 @@ public class SOSConstants {
     public enum SOSRequestType {
 
         /** Retrieve information on one or more sensors. */
-        DESCRIBE_SENSOR,
+        DescribeSensor,
         /** Retrieve the capabilities of the service. */
-        GET_CAPABILITIES,
+        GetCapabilities,
         /** Retrieve an observation. */
-        GET_OBSERVATION
-    }
-
-    /**
-     * Retrieves the corresponding {@link SOSRequestType} for a given SOS request name.
-     * 
-     * @param requestName
-     *            name of the request (case-sensitive)
-     * @return corresponding type from
-     * @throws IllegalArgumentException
-     *             if the given request name is not a known SOS request
-     */
-    public static SOSRequestType getRequestTypeByName( String requestName )
-                            throws IllegalArgumentException {
-
-        SOSRequestType requestType = requestNameToSOSRequest.get( requestName );
-        if ( requestType == null ) {
-            throw new IllegalArgumentException( Messages.get( "SOS_UNKNOWN_OPERATION", requestName ) );
-        }
-        return requestType;
+        GetObservation
     }
 }

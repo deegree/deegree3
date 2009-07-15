@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,22 +32,18 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.protocol.wpvs;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.deegree.commons.types.ows.Version;
-import org.deegree.protocol.i18n.Messages;
 
 /**
  * Important constants from the WPVS specifications.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class WPVSConstants {
@@ -64,66 +60,22 @@ public class WPVSConstants {
     /** WPVS protocol version 1.0.0 */
     public static final Version VERSION_100 = Version.parseVersion( "1.0.0" );
 
-    /** WPVS request name 'GetCapabilities' */
-    public static final String GET_CAPABILITIES_NAME = "GetCapabilities";
-
-    /** WPVS request name 'GetDescription' */
-    public static final String GET_DESCRIPTION_NAME = "GetDescription";
-
-    /** WPVS request name 'GetLegendGraphic' */
-    public static final String GET_LEGEND_GRAPHIC_NAME = "GetLegendGraphic";
-
-    /** WPVS request name 'GetView' */
-    public static final String GET_VIEW_NAME = "GetView";
-
-    /** All request names of the WPVS specifications. */
-    public static final String[] REQUEST_NAMES = { GET_CAPABILITIES_NAME, GET_DESCRIPTION_NAME,
-                                                  GET_LEGEND_GRAPHIC_NAME, GET_VIEW_NAME };
-
-    private static final Map<String, WPVSRequestType> requestNameToWPVSRequest = new HashMap<String, WPVSRequestType>();
-
-    static {
-        requestNameToWPVSRequest.put( GET_CAPABILITIES_NAME, WPVSRequestType.GET_CAPABILITIES );
-        requestNameToWPVSRequest.put( GET_DESCRIPTION_NAME, WPVSRequestType.GET_DESCRIPTION );
-        requestNameToWPVSRequest.put( GET_LEGEND_GRAPHIC_NAME, WPVSRequestType.GET_LEGEND_GRAPHIC );
-        requestNameToWPVSRequest.put( GET_VIEW_NAME, WPVSRequestType.GET_VIEW );
-    }
-
     /**
      * Enum type for discriminating between the different types of WebPerspectiveView (WPVS) requests.
-     *
+     * 
      * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
      * @author last edited by: $Author: schneider $
-     *
+     * 
      * @version $Revision: $, $Date: $
      */
     public enum WPVSRequestType {
         /** Retrieve the capabilities of the service. */
-        GET_CAPABILITIES,
+        GetCapabilities,
         /** Retrieve the descriptions of one or more datasets or styles. */
-        GET_DESCRIPTION,
+        GetDescription,
         /** Retrieve a graphic containing a map legend for an identified dataset and style. */
-        GET_LEGEND_GRAPHIC,
+        GetLegendGraphic,
         /** Retrieve a perspective view of a certain point-of-interest. */
-        GET_VIEW,
-    }
-
-    /**
-     * Retrieves the corresponding {@link WPVSRequestType} for a given WPVS request name.
-     *
-     * @param requestName
-     *            name of the request (case-sensitive)
-     * @return corresponding type from
-     * @throws IllegalArgumentException
-     *             if the given request name is not a known WPVS request
-     */
-    public static WPVSRequestType getRequestTypeByName( String requestName )
-                            throws IllegalArgumentException {
-
-        WPVSRequestType requestType = requestNameToWPVSRequest.get( requestName );
-        if ( requestType == null ) {
-            throw new IllegalArgumentException( Messages.get( "WPVS_UNKNOWN_OPERATION", requestName ) );
-        }
-        return requestType;
+        GetView,
     }
 }
