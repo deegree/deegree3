@@ -37,6 +37,7 @@
 package org.deegree.rendering.r2d.se.parser;
 
 import static java.awt.Color.decode;
+import static org.deegree.commons.filter.Filter.Type.ELSE_FILTER;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.rendering.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -57,6 +58,7 @@ import org.apache.axiom.om.OMText;
 import org.deegree.commons.filter.Expression;
 import org.deegree.commons.filter.Filter;
 import org.deegree.commons.filter.FilterEvaluationException;
+import org.deegree.commons.filter.MatchableObject;
 import org.deegree.commons.filter.xml.Filter110XMLAdapter;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
@@ -97,6 +99,8 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
     static final Logger LOG = getLogger( SE110SymbolizerAdapter.class );
 
     private static final NamespaceContext nscontext = CommonNamespaces.getNamespaceContext();
+
+    static final ElseFilter ELSEFILTER = new ElseFilter();
 
     /**
      * @param root
@@ -878,6 +882,11 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 Filter110XMLAdapter parser = new Filter110XMLAdapter();
                 parser.setRootElement( fil );
                 filter = parser.parse();
+            } else {
+                fil = getElement( elem, new XPath( "se:ElseFilter", nscontext ) );
+                if ( fil != null ) {
+                    filter = ELSEFILTER;
+                }
             }
 
             LinkedList<Symbolizer<?>> syms = new LinkedList<Symbolizer<?>>();
@@ -901,6 +910,19 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
         return new org.deegree.rendering.r2d.se.unevaluated.Style( result, labels );
     }
 
+    static class ElseFilter implements Filter {
+        @Override
+        public boolean evaluate( MatchableObject object )
+                                throws FilterEvaluationException {
+            return false; // always to false, has to be checked differently, see FilterContinuation below
+        }
+
+        @Override
+        public Type getType() {
+            return ELSE_FILTER;
+        }
+    }
+
     class FilterContinuation extends Continuation<LinkedList<Symbolizer<?>>> {
         private Filter filter;
 
@@ -914,7 +936,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
         @Override
         public void updateStep( LinkedList<Symbolizer<?>> base, Feature f ) {
             try {
-                if ( filter == null || filter.evaluate( f ) ) {
+                if ( filter == null || filter.evaluate( f ) || ( base.isEmpty() && filter == ELSEFILTER ) ) {
                     base.addAll( syms );
                 }
             } catch ( FilterEvaluationException e ) {

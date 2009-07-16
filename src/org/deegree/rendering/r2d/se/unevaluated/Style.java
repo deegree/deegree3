@@ -91,18 +91,21 @@ public class Style {
     public LinkedList<Pair<Styling, Geometry>> evaluate( Feature f ) {
         StringBuffer sb = new StringBuffer();
         LinkedList<Object> res = new LinkedList<Object>();
+
+        LinkedList<Symbolizer<?>> list = new LinkedList<Symbolizer<?>>();
         for ( Continuation<LinkedList<Symbolizer<?>>> rule : rules ) {
-            LinkedList<Symbolizer<?>> list = new LinkedList<Symbolizer<?>>();
             rule.evaluate( list, f );
-            for ( Symbolizer<?> s : list ) {
-                res.add( s.evaluate( f ) );
-                if ( labels.containsKey( s ) ) {
-                    sb.setLength( 0 );
-                    labels.get( s ).evaluate( sb, f );
-                    text.add( sb.toString() );
-                }
+        }
+
+        for ( Symbolizer<?> s : list ) {
+            res.add( s.evaluate( f ) );
+            if ( labels.containsKey( s ) ) {
+                sb.setLength( 0 );
+                labels.get( s ).evaluate( sb, f );
+                text.add( sb.toString() );
             }
         }
+
         return (LinkedList) res;
     }
 

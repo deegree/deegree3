@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,20 +32,20 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.filter;
 
 /**
  * A <code>Filter</code> is a boolean expression (often with spatial conditions) that can be tested against
  * {@link MatchableObject}s.
- *
+ * 
  * @see IdFilter
  * @see OperatorFilter
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public interface Filter {
@@ -60,19 +60,23 @@ public interface Filter {
          * Filter that matches objects that match a certain expression. The object is an instance of
          * {@link OperatorFilter}.
          */
-        OPERATOR_FILTER;
+        OPERATOR_FILTER,
+        /**
+         * This one actually comes from SE 1.1.0, but is useful to have here.
+         */
+        ELSE_FILTER
     }
 
     /**
      * Returns the type of filter. Use this to safely determine the subtype of {@link Filter}.
-     *
+     * 
      * @return type of filter (id or expression based)
      */
     public Type getType();
 
     /**
      * Determines if the given {@link MatchableObject} matches this <code>Filter</code>.
-     *
+     * 
      * @param object
      *            {@link MatchableObject} to be tested
      * @return true, if the <code>Filter</code> evaluates to true, else false
