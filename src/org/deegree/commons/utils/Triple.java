@@ -47,7 +47,7 @@ package org.deegree.commons.utils;
  * @param <U>
  * @param <V>
  */
-public class Triple<T, U, V> {
+public final class Triple<T, U, V> {
 
     /** * */
     public T first;
