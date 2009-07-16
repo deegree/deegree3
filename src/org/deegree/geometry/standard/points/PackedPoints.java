@@ -81,7 +81,7 @@ public class PackedPoints implements Points {
         double[] pointCoordinates = new double[coordinatesDimension];
         int idx = i * coordinatesDimension;
         for ( int d = 0; d < coordinatesDimension; d++ ) {
-            pointCoordinates[i] = coordinates[idx + d];
+            pointCoordinates[d] = coordinates[idx + d];
         }
         return new DefaultPoint( null, null, null, pointCoordinates );
     }
