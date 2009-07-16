@@ -113,7 +113,6 @@ public class Style {
      * @return the next label
      */
     public String getNextText() {
-        System.out.println( text.size() );
         return text.poll();
     }
 
