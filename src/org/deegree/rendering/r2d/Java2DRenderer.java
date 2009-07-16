@@ -114,14 +114,11 @@ public class Java2DRenderer implements Renderer {
         if ( bbox != null ) {
             double scalex = width / bbox.getWidth();
             double scaley = height / bbox.getHeight();
-            // always use the bigger scale to determine line width etc.
-            double scale = ( 1 / ( scalex > scaley ? scalex : scaley ) );
 
             // we have to flip horizontally, so invert y scale and add the screen height
             worldToScreen.translate( -bbox.getMin().getX() * scalex, bbox.getMin().getY() * scaley + height );
             worldToScreen.scale( scalex, -scaley );
 
-            LOG.debug( "Rendering with scale {}", scale );
             LOG.debug( "For coordinate transformations, scaling by x = {} and y = {}", scalex, -scaley );
             LOG.trace( "Final transformation was {}", worldToScreen );
         } else {
@@ -419,7 +416,6 @@ public class Java2DRenderer implements Renderer {
             }
             line.lineTo( point.getX(), point.getY() );
         }
-
         line.transform( worldToScreen );
 
         return line;

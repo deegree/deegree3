@@ -242,6 +242,25 @@ public class ShapeDatastore {
     }
 
     /**
+     * @param bbox
+     * @return the bbox in the native srs
+     */
+    public Envelope getTransformedEnvelope( Envelope bbox ) {
+        if ( bbox != null && transformer != null ) {
+            try {
+                bbox = (Envelope) transformer.transform( bbox );
+            } catch ( IllegalArgumentException e ) {
+                LOG.error( "Unknown error", e );
+            } catch ( TransformationException e ) {
+                LOG.error( "Unknown error", e );
+            } catch ( UnknownCRSException e ) {
+                LOG.error( "Unknown error", e );
+            }
+        }
+        return bbox;
+    }
+
+    /**
      * @param filter
      * @param bbox
      *            if the bbox filter is contained in the filter, it will be evaluated by deegree, if given here, the
@@ -261,17 +280,7 @@ public class ShapeDatastore {
             return null;
         }
 
-        if ( bbox != null && transformer != null ) {
-            try {
-                bbox = (Envelope) transformer.transform( bbox );
-            } catch ( IllegalArgumentException e ) {
-                LOG.error( "Unknown error", e );
-            } catch ( TransformationException e ) {
-                LOG.error( "Unknown error", e );
-            } catch ( UnknownCRSException e ) {
-                LOG.error( "Unknown error", e );
-            }
-        }
+        bbox = getTransformedEnvelope( bbox );
 
         LinkedList<Pair<Integer, Geometry>> list;
         synchronized ( shp ) {

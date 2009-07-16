@@ -42,6 +42,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
 import org.deegree.geometry.Geometry;
 import org.deegree.rendering.r2d.styling.Styling;
@@ -60,8 +61,6 @@ public class Style {
     private LinkedList<Continuation<LinkedList<Symbolizer<?>>>> rules = new LinkedList<Continuation<LinkedList<Symbolizer<?>>>>();
 
     private HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
-
-    private LinkedList<String> text = new LinkedList<String>();
 
     /**
      * @param rules
@@ -88,7 +87,7 @@ public class Style {
      * @param f
      * @return a pair suitable for rendering
      */
-    public LinkedList<Pair<Styling, Geometry>> evaluate( Feature f ) {
+    public LinkedList<Triple<Styling, Geometry, String>> evaluate( Feature f ) {
         StringBuffer sb = new StringBuffer();
         LinkedList<Object> res = new LinkedList<Object>();
 
@@ -97,26 +96,19 @@ public class Style {
             rule.evaluate( list, f );
         }
 
+        String text = null;
         for ( Symbolizer<?> s : list ) {
-            res.add( s.evaluate( f ) );
+            Pair<?, ?> p = s.evaluate( f );
+
             if ( labels.containsKey( s ) ) {
                 sb.setLength( 0 );
                 labels.get( s ).evaluate( sb, f );
-                text.add( sb.toString() );
+                text = sb.toString();
             }
+            res.add( new Triple<Object, Object, String>( p.first, p.second, text ) );
         }
 
         return (LinkedList) res;
-    }
-
-    /**
-     * When evaluate is called, and a label continuation corresponds to a symbolizer which is evaluated, then the String
-     * of the label continuation is put in a queue. This method gives you the head of it.
-     * 
-     * @return the next label
-     */
-    public String getNextText() {
-        return text.poll();
     }
 
     class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {
