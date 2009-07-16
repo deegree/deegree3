@@ -301,10 +301,11 @@ public class SHPReader {
 
     /**
      * @param bbox
+     * @param withGeometry
      * @return the list of contained geometries
      * @throws IOException
      */
-    public LinkedList<Pair<Integer, Geometry>> query( Envelope bbox )
+    public LinkedList<Pair<Integer, Geometry>> query( Envelope bbox, boolean withGeometry )
                             throws IOException {
 
         LOG.debug( "Querying shp with bbox {}", bbox );
@@ -316,6 +317,12 @@ public class SHPReader {
             in.seek( ptr - 8 );
 
             int num = in.readInt() - 1;
+
+            if ( !withGeometry ) {
+                list.add( new Pair<Integer, Geometry>( num, null ) );
+                continue;
+            }
+
             int length = in.readInt() * 2; // bah, 16 bit length units here as well!
 
             int type = readLEInt( in );
@@ -448,14 +455,14 @@ public class SHPReader {
     private Geometry readPolygon( boolean z, boolean m, int length )
                             throws IOException {
 
-        Points [] ps = readLines( m, z, length );
+        Points[] ps = readLines( m, z, length );
 
         Ring outer = null;
         LinkedList<Ring> inners = new LinkedList<Ring>();
         LinkedList<Polygon> polys = new LinkedList<Polygon>();
 
-        for (Points p : ps) {
-            if (outer == null) {
+        for ( Points p : ps ) {
+            if ( outer == null ) {
                 outer = fac.createLinearRing( null, crs, p );
             } else {
                 Ring ring = fac.createLinearRing( null, crs, p );

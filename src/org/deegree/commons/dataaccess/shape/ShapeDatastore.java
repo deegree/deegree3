@@ -246,11 +246,13 @@ public class ShapeDatastore {
      * @param bbox
      *            if the bbox filter is contained in the filter, it will be evaluated by deegree, if given here, the
      *            backend will do it
+     * @param withGeometries
+     *            whether to return geometry properties or not
      * @return a feature collection with matching features
      * @throws IOException
      * @throws FilterEvaluationException
      */
-    public FeatureCollection query( Filter filter, Envelope bbox )
+    public FeatureCollection query( Filter filter, Envelope bbox, boolean withGeometries )
                             throws IOException, FilterEvaluationException {
 
         checkForUpdate();
@@ -273,7 +275,7 @@ public class ShapeDatastore {
 
         LinkedList<Pair<Integer, Geometry>> list;
         synchronized ( shp ) {
-            list = shp.query( bbox );
+            list = shp.query( bbox, withGeometries );
         }
 
         LOG.debug( "Got {} geometries", list.size() );
@@ -288,10 +290,14 @@ public class ShapeDatastore {
             }
         }
         GeometryPropertyType geom = new GeometryPropertyType( new QName( "geometry" ), 0, 1, GEOMETRY, DIM_2_OR_3 );
-        fields.add( geom );
+        if ( withGeometries ) {
+            fields.add( geom );
+        }
 
         GenericFeatureType type = new GenericFeatureType( new QName( "feature" ), fields, false );
-        fields.removeLast();
+        if ( withGeometries ) {
+            fields.removeLast();
+        }
 
         while ( !list.isEmpty() ) {
             Pair<Integer, Geometry> pair = list.poll();
@@ -309,7 +315,9 @@ public class ShapeDatastore {
                     props.add( entry.get( t ) );
                 }
             }
-            props.add( new GenericProperty<Geometry>( geom, pair.second ) );
+            if ( withGeometries ) {
+                props.add( new GenericProperty<Geometry>( geom, pair.second ) );
+            }
             GenericFeature feat = new GenericFeature( type, "shp_" + pair.first, props );
 
             if ( filter == null || filter.evaluate( feat ) ) {
