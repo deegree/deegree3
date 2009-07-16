@@ -79,7 +79,9 @@ public class Style {
      */
     public Style( Symbolizer<?> symbolizer, Continuation<StringBuffer> label ) {
         rules.add( new InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>>( symbolizer ) );
-        labels.put( (Symbolizer) symbolizer, label );
+        if ( label != null ) {
+            labels.put( (Symbolizer) symbolizer, label );
+        }
     }
 
     /**
