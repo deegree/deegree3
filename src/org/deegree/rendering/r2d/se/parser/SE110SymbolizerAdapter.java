@@ -45,6 +45,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -54,6 +55,7 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMText;
 import org.deegree.commons.filter.Expression;
+import org.deegree.commons.filter.Filter;
 import org.deegree.commons.filter.FilterEvaluationException;
 import org.deegree.commons.filter.xml.Filter110XMLAdapter;
 import org.deegree.commons.utils.Pair;
@@ -97,11 +99,32 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
     private static final NamespaceContext nscontext = CommonNamespaces.getNamespaceContext();
 
     /**
+     * @param root
+     * @return the new symbolizer. In case of a text symbolizer, the second part of the pair can be used to evaluate the
+     *         text to render.
+     */
+    public Pair<Symbolizer<?>, Continuation<StringBuffer>> parseSymbolizer( OMElement root ) {
+        if ( root.getLocalName().equals( "PointSymbolizer" ) ) {
+            return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parsePointSymbolizer( root ), null );
+        }
+        if ( root.getLocalName().equals( "LineSymbolizer" ) ) {
+            return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parseLineSymbolizer( root ), null );
+        }
+        if ( root.getLocalName().equals( "PolygonSymbolizer" ) ) {
+            return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parsePolygonSymbolizer( root ), null );
+        }
+        if ( root.getLocalName().equals( "TextSymbolizer" ) ) {
+            return (Pair) parseTextSymbolizer( root );
+        }
+
+        return null;
+    }
+
+    /**
+     * @param root
      * @return the symbolizer
      */
-    public Symbolizer<PointStyling> parsePointSymbolizer() {
-        OMElement root = getRootElement();
-
+    public Symbolizer<PointStyling> parsePointSymbolizer( OMElement root ) {
         String name = getNodeAsString( root, new XPath( "se:Name", nscontext ), null );
 
         QName geom = getNodeAsQName( root, new XPath( "se:Geometry", nscontext ), null );
@@ -127,11 +150,10 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
     }
 
     /**
+     * @param root
      * @return the symbolizer
      */
-    public Symbolizer<LineStyling> parseLineSymbolizer() {
-        OMElement root = getRootElement();
-
+    public Symbolizer<LineStyling> parseLineSymbolizer( OMElement root ) {
         String name = getNodeAsString( root, new XPath( "se:Name", nscontext ), null );
 
         QName geom = getNodeAsQName( root, new XPath( "se:Geometry", nscontext ), null );
@@ -169,11 +191,10 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
     }
 
     /**
+     * @param root
      * @return the symbolizer
      */
-    public Symbolizer<PolygonStyling> parsePolygonSymbolizer() {
-        OMElement root = getRootElement();
-
+    public Symbolizer<PolygonStyling> parsePolygonSymbolizer( OMElement root ) {
         String name = getNodeAsString( root, new XPath( "se:Name", nscontext ), null );
 
         QName geom = getNodeAsQName( root, new XPath( "se:Geometry", nscontext ), null );
@@ -242,11 +263,10 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
     }
 
     /**
+     * @param root
      * @return the symbolizer
      */
-    public Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>> parseTextSymbolizer() {
-        OMElement root = getRootElement();
-
+    public Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>> parseTextSymbolizer( OMElement root ) {
         String name = getNodeAsString( root, new XPath( "se:Name", nscontext ), null );
 
         QName geom = getNodeAsQName( root, new XPath( "se:Geometry", nscontext ), null );
@@ -841,6 +861,67 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
         }
 
         return new Pair<Stroke, Continuation<Stroke>>( base, contn );
+    }
+
+    /**
+     * @param root
+     * @return a new style
+     */
+    public org.deegree.rendering.r2d.se.unevaluated.Style parseFeatureTypeStyle( OMElement root ) {
+        LinkedList<Continuation<LinkedList<Symbolizer<?>>>> result = new LinkedList<Continuation<LinkedList<Symbolizer<?>>>>();
+        HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
+        // TODO name, description, ftname, semantictypeidentifier
+        for ( OMElement elem : getElements( root, new XPath( "se:Rule | se:OnlineResource", nscontext ) ) ) {
+            OMElement fil = getElement( elem, new XPath( "ogc:Filter", nscontext ) );
+            Filter filter = null;
+            if ( fil != null ) {
+                Filter110XMLAdapter parser = new Filter110XMLAdapter();
+                parser.setRootElement( fil );
+                filter = parser.parse();
+            }
+
+            LinkedList<Symbolizer<?>> syms = new LinkedList<Symbolizer<?>>();
+
+            if ( elem.getLocalName().equals( "OnlineResource" ) ) {
+                // TODO
+            } else {
+                // TODO name, description, legendgraphic, scales
+                String symNames = "se:PointSymbolizer | se:TextSymbolizer | se:PolygonSymbolizer | se:LineSymbolizer";
+                for ( OMElement sym : getElements( elem, new XPath( symNames, nscontext ) ) ) {
+                    Pair<Symbolizer<?>, Continuation<StringBuffer>> parsedSym = parseSymbolizer( sym );
+                    if ( parsedSym.second != null ) {
+                        labels.put( (Symbolizer) parsedSym.first, parsedSym.second );
+                    }
+                    syms.add( parsedSym.first );
+                }
+            }
+            result.add( new FilterContinuation( filter, syms ) );
+        }
+
+        return new org.deegree.rendering.r2d.se.unevaluated.Style( result, labels );
+    }
+
+    class FilterContinuation extends Continuation<LinkedList<Symbolizer<?>>> {
+        private Filter filter;
+
+        private LinkedList<Symbolizer<?>> syms;
+
+        FilterContinuation( Filter filter, LinkedList<Symbolizer<?>> syms ) {
+            this.filter = filter;
+            this.syms = syms;
+        }
+
+        @Override
+        public void updateStep( LinkedList<Symbolizer<?>> base, Feature f ) {
+            try {
+                if ( filter == null || filter.evaluate( f ) ) {
+                    base.addAll( syms );
+                }
+            } catch ( FilterEvaluationException e ) {
+                LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), filter.toString() );
+            }
+        }
+
     }
 
     /**
