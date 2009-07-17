@@ -53,7 +53,7 @@ import org.deegree.commons.i18n.Messages;
  *
  */
 public class FixedChildIterator implements Iterable<OMElement>, Iterator<OMElement> {
-    private final int expectedChilds;
+    private final int expectedChildren;
 
     private final OMElement parent;
 
@@ -63,27 +63,27 @@ public class FixedChildIterator implements Iterable<OMElement>, Iterator<OMEleme
 
     /**
      * @param parent
-     * @param expectedChilds
+     * @param expectedChildren
      *            the number of expected child elements
      */
     public FixedChildIterator( OMElement parent, int expectedChilds ) {
         this.parent = parent;
-        this.expectedChilds = expectedChilds;
+        this.expectedChildren = expectedChilds;
         this.itr = parent.getChildElements();
     }
 
     public OMElement next() {
-        if ( i >= expectedChilds ) { // only allow i next() calls
+        if ( i >= expectedChildren ) { // only allow i next() calls
             throw new NoSuchElementException( "requested to much elements." );
         }
         if ( !itr.hasNext() ) {
-            String msg = Messages.getMessage( "XML_PARSING_WRONG_CHILD_COUNT", parent.getQName(), expectedChilds );
+            String msg = Messages.getMessage( "XML_PARSING_WRONG_CHILD_COUNT", parent.getQName(), expectedChildren );
             throw new XMLProcessingException( msg );
         }
         OMElement result = (OMElement) itr.next();
         i++;
-        if ( i == expectedChilds && itr.hasNext() ) { // more than expected
-            String msg = Messages.getMessage( "XML_PARSING_WRONG_CHILD_COUNT", parent.getQName(), expectedChilds );
+        if ( i == expectedChildren && itr.hasNext() ) { // more than expected
+            String msg = Messages.getMessage( "XML_PARSING_WRONG_CHILD_COUNT", parent.getQName(), expectedChildren );
             throw new XMLProcessingException( msg );
         }
         return result;
@@ -96,7 +96,7 @@ public class FixedChildIterator implements Iterable<OMElement>, Iterator<OMEleme
 
     @Override
     public boolean hasNext() {
-        return i < expectedChilds;
+        return i < expectedChildren;
     }
 
     @Override
