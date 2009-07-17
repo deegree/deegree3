@@ -35,50 +35,91 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.commons.filter.logical;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.deegree.commons.filter.FilterEvaluationException;
 import org.deegree.commons.filter.MatchableObject;
 import org.deegree.commons.filter.Operator;
 
 /**
- * TODO add documentation here
+ * The API for the And logical operator. For the schema model, see 
+ * http://schemas.opengis.net/filter/1.1.0/filter.xsd
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
 public class And extends LogicalOperator {
 
-    private Operator param1;
+    private List<Operator> params;
 
-    private Operator param2;
-
-    public And( Operator param1, Operator param2 ) {
-        this.param1 = param1;
-        this.param2 = param2;
+    /**
+     * Creates an And operator by providing an arbitrary number of parameters
+     * @param paramsArray    an arbitrary number of parameters
+     * @throws Exception when less than 2 parameters are provided
+     */
+    public And( Operator... paramsArray ) throws Exception {
+        if ( paramsArray.length < 2 ) {
+            throw new Exception( "And operator must have at least 2 arguments" );
+        }
+            
+        params = new ArrayList<Operator>( paramsArray.length );
+        params = Arrays.asList( paramsArray );
     }
 
+    /**
+     * @see org.deegree.commons.filter.logical.LogicalOperator#getSubType()
+     */
+    @Override
     public SubType getSubType() {
         return SubType.AND;
     }
-
-    public Operator getParameter1 () {
-        return param1;
+    
+    /**
+     * Return the number of parameters in the And operator
+     * @return  the number of parameters
+     */
+    public int getSize() {
+        return params.size();
     }
 
-    public Operator getParameter2 () {
-        return param2;
+    /**
+     * @param n the index of the wanted argument. Starting from 1. 
+     * @return  returns the nth parameter of the And operator. In order to prevent the 
+     * {@link IndexOutOfBoundsException} from occurring, one can call getSize() first and check... 
+     */
+    public Operator getParameter( int n ) {
+        return params.get( n - 1 ); 
     }
 
+    /**
+     * @param object    the object that will be evaluated
+     * @return a boolean value representing the result of the And expression evaluation
+     * @throws FilterEvaluationException    if the evaluation of the object fails
+     */
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        return param1.evaluate( object ) && param2.evaluate (object);
+        boolean partialRes = true;
+        for ( int i = 0; i < getSize(); i++ ) {
+            partialRes = partialRes && params.get( i ).evaluate( object );
+        }
+        return partialRes;
     }
 
+    /**
+     * @param indent    used to indent the output String
+     * @return       an indented String representation of the expression 
+     * (think of XML representation but without tags)
+     */
     public String toString( String indent ) {
         String s = indent + "-And\n";
-        s += param1.toString (indent + "  ");
-        s += param2.toString (indent + "  ");
+        for ( int i = 0; i < getSize(); i++ ) {
+            s += params.get( i ).toString( indent + "  " );
+        }
         return s;
     }
 }

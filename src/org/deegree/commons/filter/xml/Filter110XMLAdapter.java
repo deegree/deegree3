@@ -36,6 +36,7 @@
 package org.deegree.commons.filter.xml;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -698,29 +699,39 @@ public class Filter110XMLAdapter extends XMLAdapter {
         }
         switch ( type ) {
         case AND: {
+            
+            List<Operator> listOperators = new ArrayList<Operator>();
             Iterator<OMElement> iterator = element.getChildElements();
-            // the AND operator here is defined over multiple arguments
-            // see BinaryLogicOpType on http://schemas.opengis.net/filter/1.1.0/filter.xsd
-            Operator parameter1 = parseOperator( iterator.next() );
-            Operator parameter2 = parseOperator( iterator.next() );
-            logicalOperator = new And( parameter1, parameter2 );
             while ( iterator.hasNext() ) {
-                Operator nextParameter = parseOperator( iterator.next() );
-                logicalOperator = new And( logicalOperator, nextParameter );
+                listOperators.add( parseOperator( iterator.next() ) );                
+            }
+            Operator operators[] = new Operator[ listOperators.size() ];
+            listOperators.toArray( operators );
+            
+            try {
+                logicalOperator = new And( operators );
+            } catch ( Exception e ) {
+                String msg = "Error while parsing the And operator. It must have at least two arguments.";                    
+                throw new XMLParsingException( this, element, msg );
             }
             break;
         }
         case OR: {
+            List<Operator> listOperators = new ArrayList<Operator>();
             Iterator<OMElement> iterator = element.getChildElements();
-            // the OR operator here is defined over multiple arguments
-            // see BinaryLogicOpType on http://schemas.opengis.net/filter/1.1.0/filter.xsd
-            Operator parameter1 = parseOperator( iterator.next() );
-            Operator parameter2 = parseOperator( iterator.next() );
-            logicalOperator = new Or( parameter1, parameter2 );
             while ( iterator.hasNext() ) {
-                Operator nextParameter = parseOperator( iterator.next() );
-                logicalOperator = new Or( logicalOperator, nextParameter );
+                listOperators.add( parseOperator( iterator.next() ) );
             }
+            Operator operators[] = new Operator[ listOperators.size() ];
+            listOperators.toArray( operators );
+            
+            try {
+                logicalOperator = new Or( operators );
+            } catch (Exception e ) {
+                String msg = "Error while parsing the Or operator. It must have at least two arguments.";                    
+                throw new XMLParsingException( this, element, msg );
+            }
+            
             break;
         }
         case NOT: {
@@ -805,12 +816,16 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
         switch ( operator.getSubType() ) {
         case AND:
-            export( ( (And) operator ).getParameter1(), writer );
-            export( ( (And) operator ).getParameter2(), writer );
+            And andOp = (And) operator;
+            for ( int i = 0; i < andOp.getSize(); i++ ) {
+                export( andOp.getParameter( i ), writer );
+            }
             break;
         case OR:
-            export( ( (Or) operator ).getParameter1(), writer );
-            export( ( (Or) operator ).getParameter2(), writer );
+            Or orOp = (Or) operator;
+            for ( int i = 0; i < orOp.getSize(); i++ ) {
+                export( orOp.getParameter( i ), writer );
+            }
             break;
         case NOT:
             export( ( (Not) operator ).getParameter(), writer );
