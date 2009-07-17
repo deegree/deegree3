@@ -78,6 +78,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * </ul>
      *
      * @return parsed {@link GetFeature} request
+     * @throws Exception 
      * @throws XMLParsingException
      *             if a syntax error occurs in the XML
      * @throws MissingParameterException
@@ -85,7 +86,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * @throws InvalidParameterValueException
      *             if a parameter contains a syntax error
      */
-    public GetFeature parse() {
+    public GetFeature parse() throws Exception {
         Version version = Version.parseVersion( getNodeAsString( rootElement, 
                                                                  new XPath( "@version", nsContext ),
                                                                  null ) );
@@ -94,6 +95,9 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         if ( VERSION_110.equals( version ) )
             result = parse110();
+        else {
+            throw new Exception( "Version " + version + " is not supported for parsing (for now). Only 1.1.0 is supported." );
+        }
 
         return result;
     }
@@ -222,8 +226,8 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             List<OMElement> xlinkPropertyElements = getElements( queryEl, new XPath( "wfs:XlinkPropertyName", nsContext ) );
             for ( OMElement xlinkPropertyEl : xlinkPropertyElements ) {
                 PropertyName xlinkProperty = new PropertyName( xlinkPropertyEl.getText(), getNamespaceContext( xlinkPropertyEl ) );
-                String xlinkDepth = getRequiredNodeAsString( xlinkPropertyEl, new XPath( "traverseXlinkDepth", nsContext ) );
-                String xlinkExpiry = getNodeAsString( xlinkPropertyEl, new XPath( "traverseXlinkExpiry", nsContext ), null );
+                String xlinkDepth = getRequiredNodeAsString( xlinkPropertyEl, new XPath( "@traverseXlinkDepth", nsContext ) );
+                String xlinkExpiry = getNodeAsString( xlinkPropertyEl, new XPath( "@traverseXlinkExpiry", nsContext ), null );
                 Integer xlinkExpiryInt = null;
                 try {
                     if ( xlinkExpiry != null )
