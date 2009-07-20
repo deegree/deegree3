@@ -55,6 +55,8 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PointsPoints;
 import org.deegree.geometry.standard.primitive.DefaultLineString;
 
+import com.vividsolutions.jts.geom.MultiLineString;
+
 /**
  * Default implementation of {@link CompositeCurve}.
  * 
@@ -143,6 +145,16 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
         return memberCurves.get( 0 ).getCoordinateDimension();
     }
 
+    @Override
+    protected MultiLineString buildJTSGeometry() {
+        com.vividsolutions.jts.geom.LineString [] jtsMembers = new com.vividsolutions.jts.geom.LineString[size()];
+        int i = 0;
+        for ( Curve geometry : memberCurves ) {
+            jtsMembers[i++] = (com.vividsolutions.jts.geom.LineString) geometry.getJTSGeometry();
+        }
+        return jtsFactory.createMultiLineString( jtsMembers );
+    }    
+    
     // -----------------------------------------------------------------------
     // delegate methods for List<Curve>
     // -----------------------------------------------------------------------

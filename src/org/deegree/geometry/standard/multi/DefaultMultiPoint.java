@@ -71,4 +71,14 @@ public class DefaultMultiPoint extends DefaultMultiGeometry<Point> implements Mu
     public MultiGeometryType getMultiGeometryType() {
         return MultiGeometryType.MULTI_POINT;
     }
+
+    @Override
+    protected com.vividsolutions.jts.geom.MultiPoint buildJTSGeometry() {
+        com.vividsolutions.jts.geom.Point [] jtsMembers = new com.vividsolutions.jts.geom.Point[size()];
+        int i = 0;
+        for ( Point geometry : members ) {
+            jtsMembers[i++] = (com.vividsolutions.jts.geom.Point) geometry.getJTSGeometry();
+        }
+        return jtsFactory.createMultiPoint( jtsMembers );
+    }
 }

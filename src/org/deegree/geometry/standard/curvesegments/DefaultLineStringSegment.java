@@ -63,7 +63,7 @@ public class DefaultLineStringSegment implements LineStringSegment {
 
     @Override
     public int getCoordinateDimension() {
-        return points.getCoordinateDimension();
+        return points.getDimension();
     }
 
     @Override

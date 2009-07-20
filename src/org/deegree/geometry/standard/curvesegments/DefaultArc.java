@@ -83,7 +83,7 @@ public class DefaultArc implements Arc {
 
     @Override
     public int getCoordinateDimension() {
-        return points.getCoordinateDimension();
+        return points.getDimension();
     }
 
     @Override

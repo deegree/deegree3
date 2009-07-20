@@ -128,6 +128,16 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
     public double getPerimeter() {
         throw new UnsupportedOperationException();
     }
+    
+    @Override
+    protected com.vividsolutions.jts.geom.MultiPolygon buildJTSGeometry() {
+        com.vividsolutions.jts.geom.Polygon [] jtsMembers = new com.vividsolutions.jts.geom.Polygon[size()];
+        int i = 0;
+        for ( Surface geometry : memberSurfaces ) {
+            jtsMembers[i++] = (com.vividsolutions.jts.geom.Polygon) geometry.getJTSGeometry();
+        }
+        return jtsFactory.createMultiPolygon( jtsMembers );
+    }    
 
     // -----------------------------------------------------------------------
     // delegate methods for List<Surface>

@@ -88,4 +88,9 @@ public class DefaultLineString extends DefaultCurve implements LineString {
     public LineString getAsLineString() {
         return this;
     }
+    
+    @Override
+    protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
+        return jtsFactory.createLineString( singleSegment.getControlPoints() );
+    }
 }

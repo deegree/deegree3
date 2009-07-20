@@ -41,6 +41,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.standard.DefaultEnvelope;
 
 import com.vividsolutions.jts.geom.Coordinate;
 

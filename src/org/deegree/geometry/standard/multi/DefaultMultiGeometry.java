@@ -48,6 +48,8 @@ import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
+import com.vividsolutions.jts.geom.GeometryCollection;
+
 /**
  * Default implementation of {@link MultiGeometry}.
  *
@@ -61,7 +63,7 @@ import org.deegree.geometry.standard.AbstractDefaultGeometry;
  */
 public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeometry implements MultiGeometry<T> {
 
-    private List<T> members;
+    protected List<T> members;
 
     /**
      * Creates a new {@link DefaultMultiGeometry} from the given parameters.
@@ -94,6 +96,16 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
         return GeometryType.MULTI_GEOMETRY;
     }
 
+    @Override
+    protected GeometryCollection buildJTSGeometry() {
+        com.vividsolutions.jts.geom.Geometry [] jtsMembers = new com.vividsolutions.jts.geom.Geometry[size()];
+        int i = 0;
+        for ( Geometry geometry : members ) {
+            jtsMembers[i++] = geometry.getJTSGeometry();
+        }
+        return jtsFactory.createGeometryCollection( jtsMembers );
+    }
+    
     // -----------------------------------------------------------------------
     // delegate methods for List<T>
     // -----------------------------------------------------------------------

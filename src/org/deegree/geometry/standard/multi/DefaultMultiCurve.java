@@ -42,6 +42,9 @@ import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+
 /**
  * Default implementation of {@link MultiCurve}.
  * 
@@ -75,5 +78,15 @@ public class DefaultMultiCurve extends DefaultMultiGeometry<Curve> implements Mu
     @Override
     public MultiGeometryType getMultiGeometryType() {
         return MultiGeometryType.MULTI_CURVE;
+    }
+
+    @Override
+    protected MultiLineString buildJTSGeometry() {
+        LineString [] jtsMembers = new LineString[size()];
+        int i = 0;
+        for ( Curve geometry : members ) {
+            jtsMembers[i++] = (LineString) geometry.getJTSGeometry();
+        }
+        return jtsFactory.createMultiLineString( jtsMembers );
     }
 }

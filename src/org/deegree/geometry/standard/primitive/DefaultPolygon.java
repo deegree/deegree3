@@ -49,6 +49,8 @@ import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.standard.surfacepatches.DefaultPolygonPatch;
 
+import com.vividsolutions.jts.geom.LinearRing;
+
 /**
  * Default implementation of {@link Polygon}.
  * 
@@ -113,8 +115,8 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
     public Envelope getEnvelope() {
         if ( envelope == null ) {
             Points points = exteriorRing.getControlPoints();
-            double[] min = new double[points.getCoordinateDimension()];
-            double[] max = new double[points.getCoordinateDimension()];
+            double[] min = new double[points.getDimension()];
+            double[] max = new double[points.getDimension()];
             boolean first = true;
             for ( Point point : points ) {
                 double[] d = point.getAsArray();
@@ -144,5 +146,17 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
     @Override
     public List<PolygonPatch> getPatches() {
         return (List<PolygonPatch>) patches;
+    }
+
+    @Override
+    protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
+
+        LinearRing shell = (LinearRing) exteriorRing.getJTSGeometry();
+        LinearRing[] holes = new LinearRing[interiorRings.size()];
+        int i = 0;
+        for ( Ring ring : interiorRings ) {
+            holes[i++] = (LinearRing) ring.getJTSGeometry();
+        }
+        return jtsFactory.createPolygon( shell, holes );
     }
 }

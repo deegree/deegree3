@@ -41,10 +41,13 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.deegree.crs.CRS;
+import org.deegree.geometry.Geometry;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+
+import com.vividsolutions.jts.geom.GeometryCollection;
 
 /**
  * Default implementation of {@link CompositeGeometry}.
@@ -175,4 +178,14 @@ public class DefaultCompositeGeometry extends AbstractDefaultGeometry implements
     public GeometryType getGeometryType() {
         return GeometryType.COMPOSITE_GEOMETRY;
     }
+    
+    @Override
+    protected GeometryCollection buildJTSGeometry() {
+        com.vividsolutions.jts.geom.Geometry [] jtsMembers = new com.vividsolutions.jts.geom.Geometry[size()];
+        int i = 0;
+        for ( Geometry geometry : memberPrimitives ) {
+            jtsMembers[i++] = geometry.getJTSGeometry();
+        }
+        return jtsFactory.createGeometryCollection( jtsMembers );
+    }    
 }

@@ -76,4 +76,14 @@ public class DefaultMultiSurface extends DefaultMultiGeometry<Surface> implement
     public MultiGeometryType getMultiGeometryType() {
         return MultiGeometryType.MULTI_SURFACE;
     }
+    
+    @Override
+    protected com.vividsolutions.jts.geom.MultiPolygon buildJTSGeometry() {
+        com.vividsolutions.jts.geom.Polygon [] jtsMembers = new com.vividsolutions.jts.geom.Polygon[size()];
+        int i = 0;
+        for ( Surface geometry : members ) {
+            jtsMembers[i++] = (com.vividsolutions.jts.geom.Polygon) geometry.getJTSGeometry();
+        }
+        return jtsFactory.createMultiPolygon( jtsMembers );
+    }    
 }

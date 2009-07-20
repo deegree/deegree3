@@ -39,6 +39,8 @@ package org.deegree.geometry.points;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 
+import com.vividsolutions.jts.geom.CoordinateSequence;
+
 /**
  * Encapsulates a sequence of {@link Point}s that each may be uniquely identifiable or not.
  * <p>
@@ -47,8 +49,8 @@ import org.deegree.geometry.primitive.Point;
  * {@link LineString} may consist of tens or hundreds thousands of points.
  * </p>
  * <p>
- * Note that this extends JTS <code>CoordinateSequence</code> interface, so it's possible to use it for the efficient
- * construction of JTS geometries.
+ * Note that this interface extends JTS <code>CoordinateSequence</code> interface, so it's possible to use it for the
+ * efficient construction of JTS geometries.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -56,20 +58,22 @@ import org.deegree.geometry.primitive.Point;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface Points extends Iterable<Point> {
+public interface Points extends Iterable<Point>, CoordinateSequence {
 
     /**
      * Returns the coordinate dimension, i.e. the dimension of the space that the points are embedded in.
      * 
      * @return the coordinate dimension
      */
-    public int getCoordinateDimension();
+    @Override
+    public int getDimension();
 
     /**
      * Returns the number of represented {@link Point}s.
      * 
      * @return the number of points
      */
+    @Override
     public int size();
 
     /**

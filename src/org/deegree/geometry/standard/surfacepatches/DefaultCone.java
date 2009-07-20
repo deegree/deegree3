@@ -111,6 +111,6 @@ public class DefaultCone implements Cone {
 
     @Override
     public int getCoordinateDimension() {
-        return grid.get( 0 ).getCoordinateDimension();
+        return grid.get( 0 ).getDimension();
     }
 }

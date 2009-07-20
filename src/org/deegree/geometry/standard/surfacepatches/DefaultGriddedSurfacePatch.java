@@ -102,7 +102,7 @@ public class DefaultGriddedSurfacePatch implements GriddedSurfacePatch {
 
     @Override
     public int getCoordinateDimension() {
-        return grid.get( 0 ).getCoordinateDimension();
+        return grid.get( 0 ).getDimension();
     }
 
     @Override

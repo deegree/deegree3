@@ -73,7 +73,7 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
 
     @Override
     public int getCoordinateDimension() {
-        return controlPoints.getCoordinateDimension();
+        return controlPoints.getDimension();
     }
 
     @Override
@@ -94,5 +94,10 @@ public class DefaultLinearRing extends DefaultRing implements LinearRing {
     @Override
     public Points getControlPoints() {
         return ( (LineString) members.get( 0 ) ).getControlPoints();
+    }
+
+    @Override
+    protected com.vividsolutions.jts.geom.LinearRing buildJTSGeometry() {
+        return jtsFactory.createLinearRing( controlPoints );
     }
 }

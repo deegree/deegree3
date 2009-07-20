@@ -41,6 +41,9 @@ import java.util.List;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+
 /**
  * <code>List</code>-based {@link Points} implementation that allows to hold identifiable {@link Point} objects (with id
  * or even references to local or remote {@link Point} instances}.
@@ -70,7 +73,7 @@ public class PointsList implements Points {
     }
 
     @Override
-    public int getCoordinateDimension() {
+    public int getDimension() {
         return points.get( 0 ).getCoordinateDimension();
     }
 
@@ -91,7 +94,7 @@ public class PointsList implements Points {
 
     @Override
     public double[] getAsArray() {
-        double[] coords = new double[getCoordinateDimension() * size()];
+        double[] coords = new double[getDimension() * size()];
         int i = 0;
         for ( Point p : this ) {
             for ( double coord : p.getAsArray() ) {
@@ -109,5 +112,64 @@ public class PointsList implements Points {
     @Override
     public Point getStartPoint() {
         return get( 0 );
-    }    
+    }
+
+    // -----------------------------------------------------------------------
+    // Implementation of JTS methods
+    // -----------------------------------------------------------------------    
+    
+    @Override
+    public Envelope expandEnvelope( Envelope env ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Coordinate getCoordinate( int index ) {
+        Point point = points.get(index);
+        return new Coordinate( point.getX(), point.getY(), point.getZ() );   
+    }
+
+    @Override
+    public void getCoordinate( int index, Coordinate coord ) {
+        Point point = points.get(index);
+        coord.x = point.getX();
+        coord.y = point.getY();
+        coord.z = point.getZ();
+    }
+
+    @Override
+    public Coordinate getCoordinateCopy( int index ) {
+        Point point = points.get(index);
+        return new Coordinate( point.getX(), point.getY(), point.getZ() );        
+    }
+
+    @Override
+    public double getOrdinate( int index, int ordinateIndex ) {
+        return points.get( index ).get(ordinateIndex);
+    }
+
+    @Override
+    public double getX( int index ) {
+        return points.get( index ).getX();
+    }
+
+    @Override
+    public double getY( int index ) {
+        return points.get( index ).getY();
+    }
+
+    @Override
+    public void setOrdinate( int index, int ordinateIndex, double value ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Coordinate[] toCoordinateArray() {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public Object clone () {
+        throw new UnsupportedOperationException();
+    }
 }

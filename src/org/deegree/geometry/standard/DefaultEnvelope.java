@@ -33,22 +33,20 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry.standard.primitive;
-
-import java.util.UUID;
+package org.deegree.geometry.standard;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
-import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.Polygon;
-import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.standard.points.PackedPoints;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
+
+import com.vividsolutions.jts.geom.LinearRing;
 
 /**
  * Default implementation of {@link Envelope}.
@@ -181,7 +179,6 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
         switch ( geometry.getGeometryType() ) {
         case ENVELOPE: {
             Envelope other = (Envelope) geometry;
-
             double minX1 = this.getMin().getX();
             double minY1 = this.getMin().getY();
             double maxX1 = this.getMax().getX();
@@ -192,7 +189,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
             double maxX2 = other.getMax().getX();
             double maxY2 = other.getMax().getY();
 
-            // special case: the passed envelope lays completly inside this envelope
+            // special case: the passed envelope lays completely inside this envelope
             if ( other.contains( this ) ) {
                 return true;
             }
@@ -226,67 +223,11 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
                 double maxY1 = this.getMax().getY();
                 return px >= minX1 && px <= maxX1 && py >= minY1 && py <= maxY1;
             }
-            case Curve: {
-                // CAUTION: incorrect hack to move forward in WMS!
-                double minx = min.getX();
-                double miny = min.getY();
-                double maxx = max.getX();
-                double maxy = max.getY();
-
-                Curve c = (Curve) primitive;
-
-                for ( Point pt : c.getControlPoints() ) {
-                    if ( minx <= pt.getX() && pt.getX() <= maxx && miny <= pt.getY() && pt.getY() <= maxy ) {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-            case Surface: {
-                // CAUTION: incorrect hack to move forward in WMS!
-                if ( primitive instanceof Polygon ) {
-                    double minx = min.getX();
-                    double miny = min.getY();
-                    double maxx = max.getX();
-                    double maxy = max.getY();
-
-                    Polygon p = (Polygon) primitive;
-                    for ( Point pt : p.getExteriorRingCoordinates() ) {
-                        if ( minx <= pt.getX() && pt.getX() <= maxx && miny <= pt.getY() && pt.getY() <= maxy ) {
-                            return true;
-                        }
-                    }
-
-                    for ( Points list : p.getInteriorRingsCoordinates() ) {
-                        for ( Point pt : list ) {
-                            if ( minx <= pt.getX() && pt.getX() <= maxx && miny <= pt.getY() && pt.getY() <= maxy ) {
-                                return true;
-                            }
-                        }
-                    }
-
-                    return false;
-                }
-            }
-            default: {
-                throw new UnsupportedOperationException( "Intersects not implemented for Envelope/"
-                                                         + primitive.getPrimitiveType().name() );
-            }
             }
         }
-        case MULTI_GEOMETRY:
-            for ( Geometry g : (MultiGeometry<?>) geometry ) {
-                if ( !intersects( g ) ) {
-                    return false;
-                }
-            }
-            return true;
-        default: {
-            throw new UnsupportedOperationException( "Intersects not implemented for Envelope/"
-                                                     + geometry.getGeometryType().name() );
         }
-        }
+
+        return getJTSGeometry().intersects( geometry.getJTSGeometry() );
     }
 
     /*
@@ -316,10 +257,23 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
             return false;
         }
-        default: {
-            throw new UnsupportedOperationException();
+        case PRIMITIVE_GEOMETRY: {
+            GeometricPrimitive primitive = (GeometricPrimitive) geometry;
+            switch ( primitive.getPrimitiveType() ) {
+            case Point: {
+                Point point = (Point) primitive;
+                double px = point.getX();
+                double py = point.getY();
+                double minX1 = this.getMin().getX();
+                double minY1 = this.getMin().getY();
+                double maxX1 = this.getMax().getX();
+                double maxY1 = this.getMax().getY();
+                return px >= minX1 && px <= maxX1 && py >= minY1 && py <= maxY1;
+            }
+            }
         }
         }
+        return getJTSGeometry().contains( geometry.getJTSGeometry() );
     }
 
     /*
@@ -338,10 +292,8 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
             }
             return false;
         }
-        default: {
-            throw new UnsupportedOperationException();
         }
-        }
+        return getJTSGeometry().equals( geometry.getJTSGeometry() );
     }
 
     @Override
@@ -378,14 +330,21 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
      */
     public Point getCentroid() {
         if ( centroid == null ) {
-            GeometryFactory gf = new GeometryFactory();
             double[] coordinates = new double[max.getAsArray().length];
             for ( int i = 0; i < coordinates.length; i++ ) {
                 coordinates[i] = min.getAsArray()[i] + ( max.getAsArray()[i] - min.getAsArray()[i] ) / 2d;
             }
-            centroid = gf.createPoint( UUID.randomUUID().toString(), coordinates, getCoordinateSystem() );
+            centroid = new DefaultPoint( null, getCoordinateSystem(), getPrecision(), coordinates );
         }
         return centroid;
+    }
+
+    @Override
+    protected com.vividsolutions.jts.geom.Polygon buildJTSGeometry() {
+        Points points = new PackedPoints( new double[] { min.getX(), min.getY(), max.getX(), min.getY(), max.getX(),
+                                                        max.getY(), min.getX(), max.getY(), min.getX(), min.getY() }, 2 );
+        LinearRing shell = jtsFactory.createLinearRing( ( points ) );
+        return jtsFactory.createPolygon( shell, null );
     }
 
     @Override
