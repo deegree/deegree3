@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
 import java.util.List;
@@ -41,7 +41,6 @@ import javax.xml.namespace.QName;
 
 import org.deegree.commons.filter.MatchableObject;
 import org.deegree.commons.types.gml.StandardObjectProperties;
-import org.deegree.commons.types.identifier.Identifiable;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -61,21 +60,21 @@ import org.deegree.geometry.Geometry;
  * </p>
  * <p>
  * <h4>Notes on the representation of GML features</h4>
- *
+ * 
  * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
- * <code>gml:description</code>) which are inherited by any GML feature type definition are treated in a specific way. They
- * are modelled using the {@link StandardObjectProperties} class and not as standard properties of the feature. This design decision
- * has been driven by the goal to make the implementation less GML (and GML-version) specific and to allow for example
- * to export a {@link Feature} instance as either GML 3.2.1 or GML 3.1.1 (different namespaces for the standard
- * properties).
+ * <code>gml:description</code>) which are inherited by any GML feature type definition are treated in a specific way.
+ * They are modelled using the {@link StandardObjectProperties} class and not as standard properties of the feature.
+ * This design decision has been driven by the goal to make the implementation less GML (and GML-version) specific and
+ * to allow for example to export a {@link Feature} instance as either GML 3.2.1 or GML 3.1.1 (different namespaces for
+ * the standard properties).
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
-public interface Feature extends Identifiable<String>, MatchableObject {
+public interface Feature extends MatchableObject {
 
     /**
      * Returns the id of the feature.
@@ -83,7 +82,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
      * In an GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3 and later) or
      * <code>fid</code> (GML 2) attribute of the feature element.
      * </p>
-     *
+     * 
      * @return the id of the feature
      */
     public String getId();
@@ -94,7 +93,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
      * In an GML representation of the feature, this corresponds to the <code>gml:id</code> (GML 3) or <code>fid</code>
      * (GML 2) attribute of the feature element.
      * </p>
-     *
+     * 
      * @param id
      *            the id of the feature instance
      */
@@ -105,28 +104,28 @@ public interface Feature extends Identifiable<String>, MatchableObject {
      * <p>
      * In an GML representation of the feature, this corresponds to the feature element's name.
      * </p>
-     *
+     * 
      * @return the name of the feature instance
      */
     public QName getName();
 
     /**
      * Returns the type information for this feature.
-     *
+     * 
      * @return the type information
      */
     public FeatureType getType();
 
     /**
      * Returns all properties in order.
-     *
+     * 
      * @return all properties
      */
     public Property<?>[] getProperties();
 
     /**
      * Returns the values of the properties with the given name, in order.
-     *
+     * 
      * @param propName
      *            name of the requested property
      * @return the values of the properties with the given name, in order
@@ -135,7 +134,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
 
     /**
      * Returns the values of the property with the given name.
-     *
+     * 
      * @param propName
      *            name of the requested property
      * @return the values of the properties with the given name
@@ -146,7 +145,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
 
     /**
      * Returns the properties with the given name, in order.
-     *
+     * 
      * @param propName
      *            name of the requested properties
      * @return the properties with the given name, in order
@@ -155,7 +154,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
 
     /**
      * Returns the property with the given name.
-     *
+     * 
      * @param propName
      *            name of the requested property
      * @return the property with the given name
@@ -166,21 +165,21 @@ public interface Feature extends Identifiable<String>, MatchableObject {
 
     /**
      * Returns all geometry-valued properties in order.
-     *
+     * 
      * @return all geometry properties
      */
     public Property<Geometry>[] getGeometryProperties();
 
     /**
      * Returns the envelope of the feature.
-     *
+     * 
      * @return the envelope of the feature, or null if the feature has no geometry properties
      */
     public Envelope getEnvelope();
 
     /**
      * Sets the value of a specific occurence of a property with a given name.
-     *
+     * 
      * @param propName
      *            property name
      * @param occurence
@@ -195,7 +194,7 @@ public interface Feature extends Identifiable<String>, MatchableObject {
 
     /**
      * Called during construction to initialize the properties of the feature.
-     *
+     * 
      * @param props
      * @throws IllegalArgumentException
      *             if the property names or values are not compatible with the feature type
@@ -206,14 +205,14 @@ public interface Feature extends Identifiable<String>, MatchableObject {
     /**
      * Returns a representation of the standard GML properties (e.g. <code>gml:name</code> or
      * <code>gml:description</code).
-     *
+     * 
      * @return a representation of the standard GML properties, may be null
      */
     public StandardObjectProperties getStandardGMLProperties();
 
     /**
      * Sets the standard GML properties (e.g. <code>gml:name</code> or <code>gml:description</code).
-     *
+     * 
      * @param standardProps
      *            representation of the standard GML properties
      */

@@ -36,7 +36,6 @@
 package org.deegree.geometry;
 
 import org.deegree.commons.types.gml.StandardObjectProperties;
-import org.deegree.commons.types.identifier.Identifiable;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.precision.PrecisionModel;
 
@@ -49,9 +48,9 @@ import org.deegree.geometry.precision.PrecisionModel;
  * <h4>Notes on the representation of GML geometries</h4>
  * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
  * <code>gml:description</code>) which are inherited by any GML geometry type definition are treated in a specific way.
- * They are modelled using the {@link StandardObjectProperties} class. This design decision has been driven by the
- * goal to make the implementation less GML (and GML-version) specific and to allow for example to export a
- * {@link Geometry} instance as either GML 3.2.1 or GML 3.1.1 (different namespaces for the standard properties).
+ * They are modelled using the {@link StandardObjectProperties} class. This design decision has been driven by the goal
+ * to make the implementation less GML (and GML-version) specific and to allow for example to export a {@link Geometry}
+ * instance as either GML 3.2.1 or GML 3.1.1 (different namespaces for the standard properties).
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -60,7 +59,7 @@ import org.deegree.geometry.precision.PrecisionModel;
  * 
  * @version. $Revision$, $Date$
  */
-public interface Geometry extends Identifiable<String> {
+public interface Geometry {
 
     /**
      * Convenience enum type for discriminating the different geometry variants.
@@ -255,11 +254,11 @@ public interface Geometry extends Identifiable<String> {
      *            representation of the standard GML properties
      */
     public void setStandardGMLProperties( StandardObjectProperties standardProps );
-    
+
     /**
      * Returns an equivalent (or best-fit) JTS geometry object.
      * 
      * @return an equivalent (or best-fit) JTS geometry
      */
-    public com.vividsolutions.jts.geom.Geometry getJTSGeometry();    
+    public com.vividsolutions.jts.geom.Geometry getJTSGeometry();
 }
