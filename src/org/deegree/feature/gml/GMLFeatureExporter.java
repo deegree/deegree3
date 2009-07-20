@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.feature.gml;
 
@@ -50,6 +50,7 @@ import org.deegree.commons.types.Length;
 import org.deegree.commons.types.Measure;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.feature.Feature;
+import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.LengthPropertyType;
 import org.deegree.feature.types.property.CodePropertyType;
@@ -68,11 +69,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Exporter class for Features and properties that delegates exporting tasks to the <code>GML311GeometryExporter</code>
  * .
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GMLFeatureExporter {
@@ -111,12 +112,28 @@ public class GMLFeatureExporter {
     public void export( Feature feature )
                             throws XMLStreamException {
         QName featureName = feature.getName();
-        LOG.debug( "Exporting Feature " + featureName + " with ID " + feature.getId() );
+        LOG.debug( "Exporting Feature {} with ID {}", featureName, feature.getId() );
         writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
         if ( feature.getId() != null )
             writer.writeAttribute( GMLNS, "id", feature.getId() );
         for ( Property<?> prop : feature.getProperties() )
             export( prop );
+        writer.writeEndElement();
+    }
+
+    /**
+     * @param col
+     * @throws XMLStreamException
+     */
+    public void export( GenericFeatureCollection col )
+                            throws XMLStreamException {
+        LOG.debug( "Exporting generic feature collection." );
+        writeStartElementWithNS( "http://www.opengis.net/gml", "FeatureCollection" );
+        writer.writeStartElement( "http://www.opengis.net/gml", "featureMembers" );
+        for ( Feature f : col ) {
+            export( f );
+        }
+        writer.writeEndElement();
         writer.writeEndElement();
     }
 
