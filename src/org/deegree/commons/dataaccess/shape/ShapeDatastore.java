@@ -48,6 +48,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -58,6 +59,7 @@ import org.deegree.commons.dataaccess.dbase.DBFReader;
 import org.deegree.commons.filter.Filter;
 import org.deegree.commons.filter.FilterEvaluationException;
 import org.deegree.commons.index.RTree;
+import org.deegree.commons.index.SpatialIndex;
 import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.TransformationException;
@@ -198,7 +200,7 @@ public class ShapeDatastore {
         File rtfile = new File( name + ".rti" );
         if ( rtfile.exists() && !( rtfile.lastModified() < shpFile.lastModified() ) && !forceIndexRebuild ) {
             try {
-                RTree rtree = new RTree( new FileInputStream( name + ".rti" ) );
+                SpatialIndex<Long> rtree = new RTree<Long>( new FileInputStream( name + ".rti" ) );
                 shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, rtree );
             } catch ( IOException e ) {
                 LOG.debug( "Stack trace:", e );
@@ -215,7 +217,8 @@ public class ShapeDatastore {
         shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, null );
 
         LOG.debug( "Building rtree index in memory for '{}'", new File( name ).getName() );
-        RTree rtree = new RTree( shp );
+
+        RTree<Long> rtree = createIndex( shp );
         shp.close();
         LOG.debug( "done." );
         shp = new SHPReader( new RandomAccessFile( shpFile, "r" ), crs, rtree );
@@ -223,6 +226,25 @@ public class ShapeDatastore {
         rtree.write( output );
         output.close();
         return shp;
+    }
+
+    /**
+     * @param shapeReader
+     * @return
+     * @throws IOException
+     */
+    private RTree<Long> createIndex( SHPReader shapeReader )
+                            throws IOException {
+        Envelope env = shapeReader.getEnvelope();
+        // use 128 values per rect.
+        RTree<Long> result = new RTree<Long>( env, -1 );
+        // to work around Java's non-existent variant type
+        LOG.debug( "Read envelopes from shape file..." );
+        ArrayList<Pair<float[], Long>> list = shapeReader.readEnvelopes();
+        LOG.debug( "done." );
+        result.buildIndex( list );
+        return result;
+
     }
 
     private void checkForUpdate() {

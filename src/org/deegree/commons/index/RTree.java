@@ -51,94 +51,82 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeMap;
 
-import org.deegree.commons.dataaccess.shape.SHPReader;
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
 import org.slf4j.Logger;
 
 /**
- * <code>RTree</code>
+ * <code>RTree</code> Query will return the Objects of the index
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
+ * @param <T>
+ *            of objects the tree will hold.
+ * 
  */
-public class RTree {
+public class RTree<T> extends SpatialIndex<T> {
 
     private static final Logger LOG = getLogger( RTree.class );
 
-    private Entry[] root;
+    private Entry<T>[] root;
 
     private float[] bbox;
 
-    int size = 128;
+    private int maxNumberOfObjects = 128;
 
     /**
-     * @param shape
+     * @param rootEnvelope
+     *            of this rtree.
+     * @param numberOfObjects
+     *            each rectangle shall hold before splitting.
      */
-    public RTree( SHPReader shape ) {
-        Envelope bbox = shape.getEnvelope();
-        this.bbox = new float[] { (float) bbox.getMin().getX(), (float) bbox.getMin().getY(),
-                                 (float) bbox.getMax().getX(), (float) bbox.getMax().getY() };
-        try {
-            // to work around Java's non-existent variant type
-            LOG.debug( "Read envelopes from shape file..." );
-            ArrayList list = shape.readEnvelopes();
-            LOG.debug( "done." );
-            root = buildTree( list, size );
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    public RTree( Envelope rootEnvelope, int numberOfObjects ) {
+        if ( rootEnvelope == null ) {
+            throw new NullPointerException( "The root envelope may not be null" );
         }
-
+        this.bbox = createEnvelope( rootEnvelope );
+        if ( numberOfObjects > 0 ) {
+            this.maxNumberOfObjects = numberOfObjects;
+        }
+        this.root = null;
     }
 
     /**
+     * Rereads this RTree from a serialized file to which is should point.
+     * 
      * @param is
      * @throws IOException
      * @throws ClassNotFoundException
      */
+    @SuppressWarnings("unchecked")
     public RTree( InputStream is ) throws IOException, ClassNotFoundException {
         ObjectInputStream in = new ObjectInputStream( new BufferedInputStream( is ) );
+        maxNumberOfObjects = in.readInt();
         bbox = (float[]) in.readObject();
         root = (Entry[]) in.readObject();
         in.close();
     }
 
-    private static final boolean contained( final float[] box, final float x, final float y ) {
-        return box[0] <= x && x <= box[2] && box[1] <= y && y <= box[3];
-    }
+    private LinkedList<T> query( final float[] bbox, Entry<T>[] node ) {
 
-    private static final boolean noEdgeOverlap( final float[] box1, final float[] box2 ) {
-        return box1[0] <= box2[0] && box2[2] <= box1[2] && box2[1] <= box1[1] && box1[3] <= box2[3];
-    }
+        LinkedList<T> list = new LinkedList<T>();
 
-    private boolean intersects( final float[] box1, final float[] box2 ) {
-        return contained( box2, box1[0], box1[3] ) || contained( box2, box1[0], box1[1] )
-               || contained( box2, box1[2], box1[3] ) || contained( box2, box1[2], box1[1] )
-               || contained( box1, box2[0], box2[3] ) || contained( box1, box2[0], box2[1] )
-               || contained( box1, box2[2], box2[3] ) || contained( box1, box2[2], box2[1] )
-               || noEdgeOverlap( box1, box2 ) || noEdgeOverlap( box2, box1 );
-
-    }
-
-    private LinkedList<Long> query( final float[] bbox, Entry[] node ) {
-        LinkedList<Long> list = new LinkedList<Long>();
-
-        for ( Entry e : node ) {
+        for ( Entry<T> e : node ) {
             if ( intersects( bbox, e.bbox ) ) {
                 if ( e.next == null ) {
-                    list.add( e.pointer );
-                    if ( list.size() >= size * 10 ) {
+                    list.add( e.entryValue );
+                    if ( list.size() >= maxNumberOfObjects * 10 ) {
                         LOG.warn( "Stopped collecting features when {} were loaded.", list.size() );
                         return list;
                     }
                 } else {
                     list.addAll( query( bbox, e.next ) );
-                    if ( list.size() >= size * 10 ) {
+                    if ( list.size() >= maxNumberOfObjects * 10 ) {
                         LOG.warn( "Stopped collecting features when {} were loaded.", list.size() );
                         return list;
                     }
@@ -151,15 +139,19 @@ public class RTree {
 
     /**
      * @param env
-     * @return a list of pointers
+     * @return a list of objects intersecting the given boundingbox.
      */
-    public LinkedList<Long> query( Envelope env ) {
-        final float[] bbox = new float[] { (float) env.getMin().getX(), (float) env.getMin().getY(),
-                                          (float) env.getMax().getX(), (float) env.getMax().getY() };
-        if ( intersects( bbox, this.bbox ) ) {
-            return query( bbox, root );
+    @Override
+    public LinkedList<T> query( Envelope env ) {
+        if ( root != null ) {
+            final float[] bbox = new float[] { (float) env.getMin().getX(), (float) env.getMin().getY(),
+                                              (float) env.getMax().getX(), (float) env.getMax().getY() };
+
+            if ( intersects( bbox, this.bbox ) ) {
+                return query( bbox, root );
+            }
         }
-        return new LinkedList<Long>();
+        return new LinkedList<T>();
     }
 
     private TreeMap<Float, LinkedList<Pair<float[], ?>>> sort( Collection<Pair<float[], ?>> rects, int byIdx ) {
@@ -197,22 +189,41 @@ public class RTree {
         return list;
     }
 
-    private Entry[] buildTree( ArrayList<Pair<float[], ?>> rects, int limit ) {
-        if ( rects.size() <= limit ) {
-            Entry[] node = new Entry[rects.size()];
+    /**
+     * Builds the index from the given objects with their envelope.
+     * 
+     * @param listOfObjects
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void buildIndex( List<Pair<float[], T>> listOfObjects ) {
+        // rb: dirty cast because the ? will not accept T... m*rf*king generics.
+        root = buildTree( (List) listOfObjects );
+    }
+
+    @Override
+    public boolean insert( float[] envelope, T object ) {
+        throw new UnsupportedOperationException( "Inserting of a single object should be implemented" );
+    }
+
+    @SuppressWarnings("unchecked")
+    private Entry<T>[] buildTree( List<Pair<float[], ?>> rects ) {
+        if ( rects.size() <= maxNumberOfObjects ) {
+            Entry<T>[] node = new Entry[rects.size()];
             for ( int i = 0; i < rects.size(); ++i ) {
-                node[i] = new Entry();
+                node[i] = new Entry<T>();
                 node[i].bbox = rects.get( i ).first;
-                if ( rects.get( i ).second instanceof Long ) {
-                    node[i].pointer = (Long) rects.get( i ).second;
-                } else {
+                if ( rects.get( i ).second instanceof Entry[] ) {
                     node[i].next = (Entry[]) rects.get( i ).second;
+                } else {
+                    node[i].entryValue = (T) rects.get( i ).second;
                 }
             }
             return node;
         }
 
-        LinkedList<LinkedList<Pair<float[], ?>>> slices = slice( sort( rects, 0 ), limit * limit );
+        LinkedList<LinkedList<Pair<float[], ?>>> slices = slice( sort( rects, 0 ), maxNumberOfObjects
+                                                                                   * maxNumberOfObjects );
         ArrayList<Pair<float[], ?>> newRects = new ArrayList<Pair<float[], ?>>();
 
         for ( LinkedList<Pair<float[], ?>> slice : slices ) {
@@ -222,20 +233,20 @@ public class RTree {
             LinkedList<Pair<float[], ?>> list = iter.next();
             int idx = 0;
             while ( idx < slice.size() ) {
-                Entry[] node = new Entry[min( limit, slice.size() - idx )];
+                Entry<T>[] node = new Entry[min( maxNumberOfObjects, slice.size() - idx )];
                 float[] bbox = null;
-                for ( int i = 0; i < limit; ++i, ++idx ) {
+                for ( int i = 0; i < maxNumberOfObjects; ++i, ++idx ) {
                     if ( idx < slice.size() ) {
                         if ( list.isEmpty() ) {
                             list = iter.next();
                         }
                         Pair<float[], ?> p = list.poll();
-                        node[i] = new Entry();
+                        node[i] = new Entry<T>();
                         node[i].bbox = p.first;
-                        if ( p.second instanceof Long ) {
-                            node[i].pointer = (Long) p.second;
-                        } else {
+                        if ( p.second instanceof Entry[] ) {
                             node[i].next = (Entry[]) p.second;
+                        } else {
+                            node[i].entryValue = (T) p.second;
                         }
                         if ( bbox == null ) {
                             bbox = new float[] { p.first[0], p.first[1], p.first[2], p.first[3] };
@@ -257,7 +268,7 @@ public class RTree {
             }
         }
 
-        return buildTree( newRects, limit );
+        return buildTree( newRects );
     }
 
     /**
@@ -268,21 +279,22 @@ public class RTree {
                             throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutputStream out = new ObjectOutputStream( bos );
+        out.writeInt( maxNumberOfObjects );
         out.writeObject( bbox );
         out.writeObject( root );
         out.close();
         output.write( bos.toByteArray() );
-        output.close();
+        // output.close();
     }
 
-    static class Entry implements Serializable {
+    static class Entry<T> implements Serializable {
         private static final long serialVersionUID = -4272761420705520561L;
 
         float[] bbox;
 
-        long pointer;
+        T entryValue;
 
-        Entry[] next;
+        Entry<T>[] next;
     }
 
 }

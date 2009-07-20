@@ -44,8 +44,9 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
-import org.deegree.commons.index.RTree;
+import org.deegree.commons.index.SpatialIndex;
 import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
@@ -202,7 +203,7 @@ public class SHPReader {
 
     private Envelope bbox;
 
-    private RTree rtree;
+    private SpatialIndex<Long> rtree;
 
     /**
      * @param in
@@ -210,7 +211,7 @@ public class SHPReader {
      * @param rtree
      * @throws IOException
      */
-    public SHPReader( RandomAccessFile in, CRS crs, RTree rtree ) throws IOException {
+    public SHPReader( RandomAccessFile in, CRS crs, SpatialIndex<Long> rtree ) throws IOException {
         this.in = in;
         this.crs = crs;
         this.rtree = rtree;
@@ -312,7 +313,7 @@ public class SHPReader {
 
         LinkedList<Pair<Integer, Geometry>> list = new LinkedList<Pair<Integer, Geometry>>();
 
-        LinkedList<Long> pointers = rtree.query( bbox );
+        List<Long> pointers = rtree.query( bbox );
         for ( Long ptr : pointers ) {
             in.seek( ptr - 8 );
 
