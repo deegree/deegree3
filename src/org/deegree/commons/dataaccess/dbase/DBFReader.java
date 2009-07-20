@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.dataaccess.dbase;
 
@@ -40,9 +40,10 @@ import static java.lang.Double.valueOf;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.MILLISECOND;
 import static org.deegree.commons.utils.EncodingGuesser.guess;
+import static org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension.DIM_2_OR_3;
+import static org.deegree.feature.types.property.GeometryPropertyType.GeometryType.GEOMETRY;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
@@ -56,6 +57,8 @@ import javax.xml.namespace.QName;
 
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
+import org.deegree.feature.types.GenericFeatureType;
+import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
@@ -63,10 +66,10 @@ import org.slf4j.Logger;
 
 /**
  * <code>DBFReader</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class DBFReader {
@@ -83,14 +86,18 @@ public class DBFReader {
 
     private final Charset encoding;
 
+    private GenericFeatureType featureType;
+
     /**
      * Already reads/parses the header.
-     *
+     * 
      * @param in
      * @param encoding
+     * @param ftName
+     *            the name of the feature type
      * @throws IOException
      */
-    public DBFReader( RandomAccessFile in, Charset encoding ) throws IOException {
+    public DBFReader( RandomAccessFile in, Charset encoding, QName ftName ) throws IOException {
         this.encoding = encoding;
         this.in = in;
         int version = in.readUnsignedByte();
@@ -135,6 +142,8 @@ public class DBFReader {
         }
 
         LinkedList<Byte> buf = new LinkedList<Byte>();
+
+        LinkedList<PropertyType> types = new LinkedList<PropertyType>();
 
         int read;
         while ( ( read = in.readUnsignedByte() ) != 13 ) {
@@ -203,12 +212,18 @@ public class DBFReader {
 
             fields.put( name, new Field( type, pt, fieldLength ) );
             fieldOrder.add( name );
+            types.add( pt );
 
             in.skipBytes( 13 );
             if ( in.readUnsignedByte() == 1 ) {
                 LOG.warn( "Index found: index files are not supported by this implementation." );
             }
         }
+
+        types.add( new GeometryPropertyType( new QName( "geometry" ), 0, 1, GEOMETRY, DIM_2_OR_3 ) ); // TODO properly
+        // determine the
+        // dimension from SHP type
+        featureType = new GenericFeatureType( ftName, types, false );
 
     }
 
@@ -320,7 +335,7 @@ public class DBFReader {
 
     /**
      * Closes the underlying input stream.
-     *
+     * 
      * @throws IOException
      */
     public void close()
@@ -341,26 +356,6 @@ public class DBFReader {
         return list;
     }
 
-    /**
-     * @param args
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-    public static void main( String[] args )
-                            throws FileNotFoundException, IOException {
-        for ( String s : args ) {
-            System.out.println( s );
-            DBFReader parser = new DBFReader( new RandomAccessFile( s, "r" ), null );
-            for ( int i = 0; i < parser.noOfRecords; ++i ) {
-                if ( i % 1000 == 0 ) {
-                    System.out.println( i + "/" + parser.noOfRecords );
-                }
-                parser.getEntry( i );
-            }
-            parser.close();
-        }
-    }
-
     class Field {
         char type;
 
@@ -373,6 +368,13 @@ public class DBFReader {
             propertyType = pt;
             length = l;
         }
+    }
+
+    /**
+     * @return the feature type
+     */
+    public GenericFeatureType getFeatureType() {
+        return featureType;
     }
 
 }

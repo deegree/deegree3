@@ -48,6 +48,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -68,6 +69,7 @@ import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
@@ -106,6 +108,8 @@ public class ShapeDatastore {
     private boolean available = true;
 
     private GeometryTransformer transformer;
+
+    private GenericFeatureType featureType;
 
     /**
      * @param name
@@ -176,9 +180,14 @@ public class ShapeDatastore {
         shp = getSHP( false );
 
         try {
-            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding );
+            dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, new QName( new File( name ).getName() ) );
+            featureType = dbf.getFeatureType();
         } catch ( IOException e ) {
             LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", name );
+            GeometryPropertyType geomProp = new GeometryPropertyType( new QName( "geometry" ), 0, 1, GEOMETRY,
+                                                                      DIM_2_OR_3 );
+            featureType = new GenericFeatureType( new QName( new File( name ).getName() ),
+                                                  Collections.<PropertyType> singletonList( geomProp ), false );
         }
     }
 
@@ -230,7 +239,8 @@ public class ShapeDatastore {
                 if ( dbf != null && dbfLastModified != dbfFile.lastModified() ) {
                     dbf.close();
                     LOG.debug( "Re-opening the dbf file {}", name );
-                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding );
+                    dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, new QName( name ) );
+                    featureType = dbf.getFeatureType();
                     dbfLastModified = dbfFile.lastModified();
                 }
             }
@@ -298,12 +308,12 @@ public class ShapeDatastore {
                 fields = dbf.getFields();
             }
         }
-        GeometryPropertyType geom = new GeometryPropertyType( new QName( "geometry" ), 0, 1, GEOMETRY, DIM_2_OR_3 );
+        GeometryPropertyType geom = (GeometryPropertyType) featureType.getPropertyDeclarations().get(
+                                                                                                      featureType.getPropertyDeclarations().size() - 1 );
         if ( withGeometries ) {
             fields.add( geom );
         }
 
-        GenericFeatureType type = new GenericFeatureType( new QName( "feature" ), fields, false );
         if ( withGeometries ) {
             fields.removeLast();
         }
@@ -327,7 +337,7 @@ public class ShapeDatastore {
             if ( withGeometries ) {
                 props.add( new GenericProperty<Geometry>( geom, pair.second ) );
             }
-            GenericFeature feat = new GenericFeature( type, "shp_" + pair.first, props );
+            GenericFeature feat = new GenericFeature( featureType, "shp_" + pair.first, props );
 
             if ( filter == null || filter.evaluate( feat ) ) {
                 feats.add( feat );
@@ -371,6 +381,13 @@ public class ShapeDatastore {
      */
     public CRS getCRS() {
         return crs;
+    }
+
+    /**
+     * @return the 'interpolated' feature type from the dbf
+     */
+    public FeatureType getFeatureType() {
+        return featureType;
     }
 
 }

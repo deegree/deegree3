@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.gml.schema;
 
 import static org.deegree.commons.xml.CommonNamespaces.GML3_2_NS;
@@ -41,6 +41,7 @@ import static org.deegree.commons.xml.CommonNamespaces.GML_PREFIX;
 import static org.deegree.commons.xml.CommonNamespaces.XSNS;
 import static org.deegree.commons.xml.CommonNamespaces.XS_PREFIX;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,15 +67,15 @@ import org.deegree.feature.types.property.SimplePropertyType;
  * <li>GML 3.2 (3.2.1)</li>
  * </ul>
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class ApplicationSchemaXSDExporter {
 
-    private static final String GML_212_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2/feature.xsd";
+    private static final String GML_212_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2.1/feature.xsd";
 
     private static final String GML_311_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
 
@@ -84,14 +85,14 @@ public class ApplicationSchemaXSDExporter {
 
     private String gmlNsURI;
 
-    private Map<String, String> importURLs;
+    private final Map<String, String> importURLs;
 
     // set to "gml:_Feature" (GML 2 and 3.1) or "gml:AbstractFeatureType" (GML 3.2)
     private String abstractGMLFeatureElement;
 
     /**
      * Creates a new {@link ApplicationSchemaXSDExporter} for the given GML version and optional import URL.
-     *
+     * 
      * @param version
      *            gml version that exported schemas will comply to
      * @param importURLs
@@ -100,32 +101,41 @@ public class ApplicationSchemaXSDExporter {
     public ApplicationSchemaXSDExporter( GMLVersion version, Map<String, String> importURLs ) {
 
         this.version = version;
-        this.importURLs = importURLs;
+        if ( importURLs == null ) {
+            this.importURLs = new HashMap<String, String>();
+        } else {
+            this.importURLs = importURLs;
+        }
         switch ( version ) {
         case GML_2:
             gmlNsURI = GMLNS;
             abstractGMLFeatureElement = "gml:_Feature";
-            if ( !importURLs.containsKey( gmlNsURI ) ) {
-                importURLs.put( gmlNsURI, GML_212_DEFAULT_INCLUDE );
+            if ( !this.importURLs.containsKey( gmlNsURI ) ) {
+                this.importURLs.put( gmlNsURI, GML_212_DEFAULT_INCLUDE );
             }
             break;
         case GML_31:
             gmlNsURI = GMLNS;
             abstractGMLFeatureElement = "gml:_Feature";
-            if ( !importURLs.containsKey( gmlNsURI ) ) {
-                importURLs.put( gmlNsURI, GML_311_DEFAULT_INCLUDE );
+            if ( !this.importURLs.containsKey( gmlNsURI ) ) {
+                this.importURLs.put( gmlNsURI, GML_311_DEFAULT_INCLUDE );
             }
             break;
         case GML_32:
             gmlNsURI = GML3_2_NS;
             abstractGMLFeatureElement = "gml:AbstractFeature";
-            if ( !importURLs.containsKey( gmlNsURI ) ) {
-                importURLs.put( gmlNsURI, GML_321_DEFAULT_INCLUDE );
+            if ( !this.importURLs.containsKey( gmlNsURI ) ) {
+                this.importURLs.put( gmlNsURI, GML_321_DEFAULT_INCLUDE );
             }
             break;
         }
     }
 
+    /**
+     * @param writer
+     * @param schema
+     * @throws XMLStreamException
+     */
     public void export( XMLStreamWriter writer, ApplicationSchema schema )
                             throws XMLStreamException {
 
@@ -151,6 +161,11 @@ public class ApplicationSchemaXSDExporter {
         writer.writeEndElement();
     }
 
+    /**
+     * @param writer
+     * @param fts
+     * @throws XMLStreamException
+     */
     public void export( XMLStreamWriter writer, List<FeatureType> fts )
                             throws XMLStreamException {
 
@@ -160,14 +175,38 @@ public class ApplicationSchemaXSDExporter {
         writer.writeStartElement( XSNS, "schema" );
         writer.writeNamespace( XS_PREFIX, XSNS );
         writer.writeNamespace( GML_PREFIX, gmlNsURI );
-        writer.writeAttribute( "targetNamespace", fts.get( 0 ).getName().getNamespaceURI() );
-        writer.writeAttribute( "elementFormDefault", "qualified" );
-        writer.writeAttribute( "attributeFormDefault", "unqualified" );
+        String ns = fts.get( 0 ).getName().getNamespaceURI();
+        if ( ns != null && !ns.isEmpty() ) {
+            writer.writeAttribute( "targetNamespace", ns );
+            writer.writeAttribute( "elementFormDefault", "qualified" );
+            writer.writeAttribute( "attributeFormDefault", "unqualified" );
+        } else {
+            writer.writeAttribute( "elementFormDefault", "unqualified" );
+            writer.writeAttribute( "attributeFormDefault", "unqualified" );
+        }
 
         for ( String importNamespace : importURLs.keySet() ) {
             writer.writeEmptyElement( XSNS, "import" );
             writer.writeAttribute( "namespace", importNamespace );
             writer.writeAttribute( "schemaLocation", importURLs.get( importNamespace ) );
+        }
+
+        if ( ns == null || ns.isEmpty() ) {
+            writer.writeStartElement( XSNS, "element" );
+            writer.writeAttribute( "name", "FeatureCollection" );
+            writer.writeAttribute( "substitutionGroup", "gml:_FeatureCollection" );
+            writer.writeAttribute( "type", "FeatureCollectionType" );
+            writer.writeEndElement();
+            writer.writeStartElement( XSNS, "complexType" );
+            writer.writeAttribute( "name", "FeatureCollectionType" );
+            writer.writeStartElement( XSNS, "complexContent" );
+            writer.writeStartElement( XSNS, "extension" );
+            writer.writeAttribute( "base", "gml:AbstractFeatureCollectionType" );
+            writer.writeStartElement( XSNS, "sequence" );
+            writer.writeEndElement();
+            writer.writeEndElement();
+            writer.writeEndElement();
+            writer.writeEndElement();
         }
 
         // export feature type declarations
