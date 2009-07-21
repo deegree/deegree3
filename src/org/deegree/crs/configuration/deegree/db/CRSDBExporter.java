@@ -1185,7 +1185,7 @@ public class CRSDBExporter {
                     crsList.add( crs );
 
                 } else if ( "xml".equals( args[0] ) ) {
-                    CoordinateSystem lookup = CRSRegistry.lookup( args[1] );
+                    CoordinateSystem lookup = CRSRegistry.lookup( "org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider", args[1] );
                     crsList.add( lookup );
                 } else {
                     throw new IllegalArgumentException(
