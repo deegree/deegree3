@@ -51,8 +51,6 @@ import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.Assert;
 
-import org.deegree.commons.filter.Filter;
-import org.deegree.commons.filter.IdFilter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
@@ -61,6 +59,8 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.gml.GMLFeatureParserTest;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
+import org.deegree.filter.Filter;
+import org.deegree.filter.IdFilter;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML311GeometryExporter;
 import org.deegree.geometry.primitive.Ring;

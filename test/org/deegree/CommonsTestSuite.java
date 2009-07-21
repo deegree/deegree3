@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  */
 @RunWith(Suite.class)
 @SuiteClasses( {
-org.deegree.commons.filter.Filter110XMLAdapterTest.class,
+org.deegree.filter.Filter110XMLAdapterTest.class,
 org.deegree.commons.utils.ArrayToolsTest.class,
 org.deegree.commons.utils.FileUtilsTest.class,
 org.deegree.commons.utils.StringToolsTest.class,

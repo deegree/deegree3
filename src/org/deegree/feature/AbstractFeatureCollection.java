@@ -38,8 +38,8 @@ package org.deegree.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.commons.filter.Filter;
-import org.deegree.commons.filter.FilterEvaluationException;
+import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 
 /**
  * Abstract base class for {@link FeatureCollection} implementations.

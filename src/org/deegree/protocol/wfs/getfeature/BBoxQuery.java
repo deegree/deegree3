@@ -35,10 +35,10 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
-import org.deegree.commons.filter.expression.Function;
-import org.deegree.commons.filter.expression.PropertyName;
-import org.deegree.commons.filter.sort.SortProperty;
 import org.deegree.crs.CRS;
+import org.deegree.filter.expression.Function;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sort.SortProperty;
 import org.deegree.geometry.Envelope;
 
 /**

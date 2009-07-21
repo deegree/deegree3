@@ -40,11 +40,11 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.filter.expression.PropertyName;
 import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.jaxen.JaxenException;

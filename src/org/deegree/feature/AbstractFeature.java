@@ -39,12 +39,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.deegree.commons.filter.expression.PropertyName;
 import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.feature.xpath.FeatureNode;
 import org.deegree.feature.xpath.FeatureXPath;
 import org.deegree.feature.xpath.Node;
 import org.deegree.feature.xpath.PropertyNode;
+import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.jaxen.JaxenException;

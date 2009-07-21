@@ -39,9 +39,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.filter.MatchableObject;
 import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.filter.MatchableObject;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 

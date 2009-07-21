@@ -37,9 +37,9 @@ package org.deegree.feature;
 
 import java.util.Collection;
 
-import org.deegree.commons.filter.Filter;
-import org.deegree.commons.filter.FilterEvaluationException;
 import org.deegree.feature.types.FeatureCollectionType;
+import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 
 /**
  * A feature collection is a collection of {@link Feature} instances.

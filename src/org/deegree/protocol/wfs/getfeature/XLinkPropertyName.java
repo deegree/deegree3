@@ -36,7 +36,7 @@
 
 package org.deegree.protocol.wfs.getfeature;
 
-import org.deegree.commons.filter.expression.PropertyName;
+import org.deegree.filter.expression.PropertyName;
 
 /**
  * Specifies a feature property for which the resolving behaviour for xlink-references should be altered selectively.

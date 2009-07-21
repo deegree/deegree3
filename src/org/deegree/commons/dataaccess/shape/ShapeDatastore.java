@@ -56,8 +56,6 @@ import java.util.LinkedList;
 import javax.xml.namespace.QName;
 
 import org.deegree.commons.dataaccess.dbase.DBFReader;
-import org.deegree.commons.filter.Filter;
-import org.deegree.commons.filter.FilterEvaluationException;
 import org.deegree.commons.index.RTree;
 import org.deegree.commons.index.SpatialIndex;
 import org.deegree.commons.utils.Pair;
@@ -76,6 +74,8 @@ import org.deegree.feature.types.GenericFeatureType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryTransformer;

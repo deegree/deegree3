@@ -37,8 +37,8 @@
 package org.deegree.rendering.r2d.se.parser;
 
 import static java.awt.Color.decode;
-import static org.deegree.commons.filter.Filter.Type.ELSE_FILTER;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
+import static org.deegree.filter.Filter.Type.ELSE_FILTER;
 import static org.deegree.rendering.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -55,17 +55,17 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMText;
-import org.deegree.commons.filter.Expression;
-import org.deegree.commons.filter.Filter;
-import org.deegree.commons.filter.FilterEvaluationException;
-import org.deegree.commons.filter.MatchableObject;
-import org.deegree.commons.filter.xml.Filter110XMLAdapter;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XPath;
 import org.deegree.feature.Feature;
+import org.deegree.filter.Expression;
+import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.MatchableObject;
+import org.deegree.filter.xml.Filter110XMLAdapter;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation.Updater;

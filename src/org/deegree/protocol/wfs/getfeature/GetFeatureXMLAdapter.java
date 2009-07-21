@@ -42,17 +42,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.filter.Filter;
-import org.deegree.commons.filter.expression.Function;
-import org.deegree.commons.filter.expression.PropertyName;
-import org.deegree.commons.filter.sort.SortProperty;
-import org.deegree.commons.filter.xml.Filter110XMLAdapter;
 import org.deegree.commons.types.ows.Version;
 import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.crs.CRS;
+import org.deegree.filter.Filter;
+import org.deegree.filter.expression.Function;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sort.SortProperty;
+import org.deegree.filter.xml.Filter110XMLAdapter;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 
 /**

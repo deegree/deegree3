@@ -37,11 +37,11 @@ package org.deegree.protocol.wfs.getfeature;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.commons.filter.Filter;
-import org.deegree.commons.filter.expression.Function;
-import org.deegree.commons.filter.expression.PropertyName;
-import org.deegree.commons.filter.sort.SortProperty;
 import org.deegree.crs.CRS;
+import org.deegree.filter.Filter;
+import org.deegree.filter.expression.Function;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.sort.SortProperty;
 
 /**
  * A {@link Query} that selects features using an optional {@link Filter}.

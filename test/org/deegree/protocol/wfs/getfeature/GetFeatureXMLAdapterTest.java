@@ -38,9 +38,9 @@
 
 package org.deegree.protocol.wfs.getfeature;
 
-import static org.deegree.commons.filter.Operator.Type.COMPARISON;
-import static org.deegree.commons.filter.Operator.Type.LOGICAL;
-import static org.deegree.commons.filter.logical.LogicalOperator.SubType.AND;
+import static org.deegree.filter.Operator.Type.COMPARISON;
+import static org.deegree.filter.Operator.Type.LOGICAL;
+import static org.deegree.filter.logical.LogicalOperator.SubType.AND;
 
 import java.net.URL;
 import java.util.Set;
@@ -49,19 +49,19 @@ import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;
 
-import org.deegree.commons.filter.IdFilter;
-import org.deegree.commons.filter.Operator;
-import org.deegree.commons.filter.OperatorFilter;
-import org.deegree.commons.filter.comparison.BinaryComparisonOperator;
-import org.deegree.commons.filter.comparison.PropertyIsEqualTo;
-import org.deegree.commons.filter.comparison.PropertyIsGreaterThan;
-import org.deegree.commons.filter.comparison.PropertyIsGreaterThanOrEqualTo;
-import org.deegree.commons.filter.comparison.PropertyIsLessThanOrEqualTo;
-import org.deegree.commons.filter.expression.Literal;
-import org.deegree.commons.filter.expression.PropertyName;
-import org.deegree.commons.filter.logical.And;
-import org.deegree.commons.filter.logical.LogicalOperator;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.filter.IdFilter;
+import org.deegree.filter.Operator;
+import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.comparison.BinaryComparisonOperator;
+import org.deegree.filter.comparison.PropertyIsEqualTo;
+import org.deegree.filter.comparison.PropertyIsGreaterThan;
+import org.deegree.filter.comparison.PropertyIsGreaterThanOrEqualTo;
+import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
+import org.deegree.filter.expression.Literal;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.logical.And;
+import org.deegree.filter.logical.LogicalOperator;
 import org.junit.Test;
 
 /**

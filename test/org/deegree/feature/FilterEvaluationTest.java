@@ -44,15 +44,15 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.commons.filter.Filter;
-import org.deegree.commons.filter.FilterEvaluationException;
-import org.deegree.commons.filter.xml.Filter110XMLAdapter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.feature.gml.GMLFeatureParser;
 import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDAdapter;
 import org.deegree.feature.gml.schema.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.xml.Filter110XMLAdapter;
 import org.jaxen.SimpleNamespaceContext;
 import org.junit.Assert;
 import org.junit.Before;
