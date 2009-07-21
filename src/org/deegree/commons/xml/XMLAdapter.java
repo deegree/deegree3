@@ -1266,6 +1266,24 @@ public class XMLAdapter {
         }
     }
 
+    /**
+     * Writes an element with namespace, only if text not null
+     * 
+     * @param writer
+     * @param ns
+     * @param name
+     * @param text
+     * @throws XMLStreamException
+     */
+    public static void maybeWriteElementNS( XMLStreamWriter writer, String ns, String name, String text )
+                            throws XMLStreamException {
+        if ( text != null ) {
+            writer.writeStartElement( ns, name );
+            writer.writeCharacters( text );
+            writer.writeEndElement();
+        }
+    }
+
     @Override
     public String toString() {
         return rootElement == null ? "(no document)" : rootElement.toString();

@@ -175,9 +175,11 @@ public class GMLFeatureExporter212 {
                 writer.writeEndElement();
             }
         } else if ( propertyType instanceof SimplePropertyType ) {
-            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-            writer.writeCharacters( value.toString() );
-            writer.writeEndElement();
+            if ( value != null ) {
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeCharacters( value.toString() );
+                writer.writeEndElement();
+            }
 
         } else if ( propertyType instanceof GeometryPropertyType ) {
             Geometry gValue = (Geometry) value;

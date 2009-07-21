@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,18 +32,18 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
 /**
  * Definitions for OGC related namespace bindings.
  * <p>
  * NOTE: Don't put project specific bindings here -- subclass it and override {@link #getNamespaceContext()} instead.
- *
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class CommonNamespaces {
@@ -134,6 +134,11 @@ public class CommonNamespaces {
      */
     public static final String SENS = "http://www.opengis.net/se";
 
+    /**
+     * The WMS namespace is currently bound to: "http://www.opengis.net/wms"
+     */
+    public static final String WMSNS = "http://www.opengis.net/wms";
+
     // prefixes
     /**
      * The GML3_2 prefix is currently assigned to: "gml3_2"
@@ -220,11 +225,16 @@ public class CommonNamespaces {
      */
     public static final String SE_PREFIX = "se";
 
+    /**
+     * The WMS_PREFIX is currently assigned to: "wms"
+     */
+    public static final String WMS_PREFIX = "wms";
+
     private static NamespaceContext nsContext = null;
 
     /**
      * Returns the <code>NamespaceContext</code> for common namespaces known be deegree.
-     *
+     * 
      * @return the NamespaceContext for all common namespaces
      */
     public static synchronized NamespaceContext getNamespaceContext() {
@@ -246,6 +256,7 @@ public class CommonNamespaces {
             nsContext.addNamespace( APISO_PREFIX, APISO );
             nsContext.addNamespace( CRS_PREFIX, CRSNS );
             nsContext.addNamespace( SE_PREFIX, SENS );
+            nsContext.addNamespace( WMS_PREFIX, WMSNS );
 
         }
         return nsContext;
