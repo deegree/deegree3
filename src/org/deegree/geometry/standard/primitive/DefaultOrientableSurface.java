@@ -48,6 +48,7 @@ import org.deegree.geometry.primitive.OrientableSurface;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link OrientableSurface}.
@@ -137,7 +138,7 @@ public class DefaultOrientableSurface implements OrientableSurface {
         return baseSurface.getArea();
     }
 
-    public Geometry getBuffer( double distance ) {
+    public Geometry getBuffer( ValueWithUnit distance ) {
         return baseSurface.getBuffer( distance );
     }
 
@@ -186,7 +187,7 @@ public class DefaultOrientableSurface implements OrientableSurface {
         return baseSurface.intersects( geometry );
     }
 
-    public boolean isBeyond( Geometry geometry, double distance ) {
+    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
         return baseSurface.isBeyond( geometry, distance );
     }
 
@@ -194,7 +195,7 @@ public class DefaultOrientableSurface implements OrientableSurface {
         return baseSurface.isWithin( geometry );
     }
 
-    public boolean isWithinDistance( Geometry geometry, double distance ) {
+    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
         return baseSurface.isWithinDistance( geometry, distance );
     }
 

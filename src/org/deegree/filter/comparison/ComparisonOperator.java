@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,18 +32,19 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
+import org.deegree.filter.i18n.Messages;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public abstract class ComparisonOperator implements Operator {
@@ -58,11 +59,19 @@ public abstract class ComparisonOperator implements Operator {
 
     public abstract SubType getSubType();
 
+    /**
+     * Performs a checked cast to {@link Comparable}. If the given value is neither null nor a {@link Comparable} instance, a
+     * corresponding {@link FilterEvaluationException} is thrown.
+     * 
+     * @param value
+     * @return the very same value (if it is a {@link Comparable} or <code>null</code>)
+     * @throws FilterEvaluationException
+     *             if the value is neither <code>null</code> nor a {@link Comparable}
+     */    
     protected Comparable<Object> checkComparableOrNull( Object value )
                             throws FilterEvaluationException {
-        if ( value != null && !( value instanceof Comparable ) ) {
-            String msg = "Cannot evaluate operator '" + getType().name() + "'. Parameter '" + value
-                         + "' is not 'comparable', i.e. there is no total ordering defined on the value type.";
+        if ( value != null && !( value instanceof Comparable<?> ) ) {
+            String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_COMPARABLE", this.getType().name(), value );
             throw new FilterEvaluationException( msg );
         }
         return (Comparable<Object>) value;

@@ -41,6 +41,7 @@ import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.precision.PrecisionModel;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Represents a reference to the GML representation of a geometry, which is usually expressed using an
@@ -94,7 +95,7 @@ public class GeometryReference implements Geometry {
         return geometry.equals( geometry );
     }
 
-    public Geometry getBuffer( double distance ) {
+    public Geometry getBuffer( ValueWithUnit distance ) {
         return geometry.getBuffer( distance );
     }
 
@@ -134,7 +135,7 @@ public class GeometryReference implements Geometry {
         return geometry.intersects( geometry );
     }
 
-    public boolean isBeyond( Geometry geometry, double distance ) {
+    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
         return geometry.isBeyond( geometry, distance );
     }
 
@@ -142,7 +143,7 @@ public class GeometryReference implements Geometry {
         return geometry.isWithin( geometry );
     }
 
-    public boolean isWithinDistance( Geometry geometry, double distance ) {
+    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
         return geometry.isWithinDistance( geometry, distance );
     }
 

@@ -59,15 +59,18 @@ public class PropertyIsNull extends ComparisonOperator {
         return propName;
     }
 
+    @Override    
     public SubType getSubType() {
         return SubType.PROPERTY_IS_NULL;
     }
 
+    @Override    
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         return propName.evaluate( object ) == null;
     }
 
+    @Override    
     public String toString( String indent ) {
         String s = indent + "-PropertyIsNull\n";
         s += propName.toString (indent + "  ");

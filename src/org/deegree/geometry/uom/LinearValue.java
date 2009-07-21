@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,48 +33,8 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.spatial;
+package org.deegree.geometry.uom;
 
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.PropertyName;
-import org.deegree.geometry.Geometry;
+public class LinearValue {
 
-/**
- * TODO add documentation here
- * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- * 
- * @version $Revision:$, $Date:$
- */
-public class Intersects extends SpatialOperator {
-
-    private final PropertyName param1;
-
-    private final Geometry param2;
-
-    /**
-     * @param param1
-     * @param param2
-     */
-    public Intersects( PropertyName param1, Geometry param2 ) {
-        this.param1 = param1;
-        this.param2 = param2;
-    }
-
-    @Override
-    public boolean evaluate( MatchableObject object )
-                            throws FilterEvaluationException {
-        Geometry param1Value = checkGeometryOrNull( param1.evaluate( object ) );
-        return param1Value != null ? param2.intersects( param1Value ) : false;
-    }
-
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-Intersects\n";
-        s += indent + param1 + "\n";
-        s += indent + param2;
-        return s;
-    }
 }

@@ -41,6 +41,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -91,7 +92,7 @@ public class PointReference extends GeometryReference implements Point {
         return geometry.getAsArray();
     }
 
-    public Geometry getBuffer( double distance ) {
+    public Geometry getBuffer( ValueWithUnit distance ) {
         return geometry.getBuffer( distance );
     }
 
@@ -144,7 +145,7 @@ public class PointReference extends GeometryReference implements Point {
         return geometry.intersects( geometry );
     }
 
-    public boolean isBeyond( Geometry geometry, double distance ) {
+    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
         return geometry.isBeyond( geometry, distance );
     }
 
@@ -152,7 +153,7 @@ public class PointReference extends GeometryReference implements Point {
         return geometry.isWithin( geometry );
     }
 
-    public boolean isWithinDistance( Geometry geometry, double distance ) {
+    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
         return geometry.isWithinDistance( geometry, distance );
     }
 

@@ -51,6 +51,7 @@ public abstract class LogicalOperator implements Operator {
         AND, OR, NOT;
     }
 
+    @Override
     public Type getType () {
         return Type.LOGICAL;
     }

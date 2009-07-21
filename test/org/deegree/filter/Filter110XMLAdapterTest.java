@@ -85,6 +85,6 @@ public class Filter110XMLAdapterTest {
 
         String schemaLocation = "http://schemas.opengis.net/filter/1.1.0/filter.xsd";
         XMLAssert.assertValidDocument( schemaLocation, new InputSource( writer.getReader() ) );
-
+        System.out.println (writer);
     }
 }

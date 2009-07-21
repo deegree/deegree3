@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,19 +32,20 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.Operator;
+import org.deegree.filter.i18n.Messages;
 import org.deegree.geometry.Geometry;
 
 /**
- * Defines a topological predicate that can be evaluated on {@link Geometry} objects.
- *
+ * Defines a topological predicate that can be evaluated on {@link Geometry} valued objects.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public abstract class SpatialOperator implements Operator {
@@ -82,7 +83,7 @@ public abstract class SpatialOperator implements Operator {
 
     /**
      * Always returns {@link Operator.Type#SPATIAL} (for {@link SpatialOperator} instances).
-     *
+     * 
      * @return {@link Operator.Type#SPATIAL}
      */
     public Type getType() {
@@ -91,18 +92,26 @@ public abstract class SpatialOperator implements Operator {
 
     /**
      * Returns the type of spatial operator. Use this to safely determine the subtype of {@link SpatialOperator}.
-     *
+     * 
      * @return type of spatial operator
      */
     public SubType getSubType() {
         return SubType.valueOf( getClass().getSimpleName().toUpperCase() );
     }
 
+    /**
+     * Performs a checked cast to {@link Geometry}. If the given value is neither null nor a {@link Geometry} instance, a
+     * corresponding {@link FilterEvaluationException} is thrown.
+     * 
+     * @param value
+     * @return the very same value (if it is a {@link Geometry} or <code>null</code>)
+     * @throws FilterEvaluationException
+     *             if the value is neither <code>null</code> nor a {@link Geometry}
+     */
     protected Geometry checkGeometryOrNull( Object value )
                             throws FilterEvaluationException {
         if ( value != null && !( value instanceof Geometry ) ) {
-            String msg = "Cannot evaluate operator '" + getType().name() + "'. Parameter '" + value
-                         + "' is not geometric.";
+            String msg = Messages.getMessage( "FILTER_EVALUATION_NOT_GEOMETRY", getType().name(), value );
             throw new FilterEvaluationException( msg );
         }
         return (Geometry) value;

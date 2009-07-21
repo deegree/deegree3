@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,47 +33,17 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.filter.logical;
 
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
-import org.deegree.filter.Operator;
+package org.deegree.geometry.uom;
 
 /**
- * TODO add documentation here
- *
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- *
- * @version $Revision:$, $Date:$
+ * The <code></code> class TODO add class documentation here.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
  */
-public class Not extends LogicalOperator {
+public class AngularValue {
 
-    private Operator param;
-
-    public Not (Operator param) {
-        this.param = param;
-    }
-
-    public Operator getParameter () {
-        return param;
-    }
-
-    @Override    
-    public SubType getSubType() {
-        return SubType.NOT;
-    }    
-    
-    @Override    
-    public boolean evaluate( MatchableObject object )
-                            throws FilterEvaluationException {
-        return !param.evaluate( object );
-    }
-    
-    @Override    
-    public String toString( String indent ) {
-        String s = indent + "-Not\n";
-        s += param.toString (indent + "  ");
-        return s;
-    }
 }

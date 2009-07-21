@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.xml;
 
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -87,8 +90,10 @@ import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.logical.Or;
+import org.deegree.filter.spatial.BBOX;
 import org.deegree.filter.spatial.Intersects;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML311GeometryParser;
 import org.jaxen.SimpleNamespaceContext;
@@ -263,8 +268,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
             if ( GML_OBJECT_ID_ELEMENT.equals( childElementName ) ) {
                 String id = childElement.getAttributeValue( GML_ID_ATTR_NAME );
                 if ( id == null || id.length() == 0 ) {
-                    String msg = Messages.getMessage( "", GML_OBJECT_ID_ELEMENT,
-                                                      GML_ID_ATTR_NAME );
+                    String msg = Messages.getMessage( "", GML_OBJECT_ID_ELEMENT, GML_ID_ATTR_NAME );
                     throw new XMLParsingException( this, childElement, msg );
                 }
                 matchedIds.add( id );
@@ -480,7 +484,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
         }
 
         switch ( type ) {
-        case INTERSECTS:
+        case INTERSECTS: {
             FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
             PropertyName parameter1 = parsePropertyName( childElementIter.next() );
             GML311GeometryParser geomParser = new GML311GeometryParser();
@@ -494,7 +498,23 @@ public class Filter110XMLAdapter extends XMLAdapter {
             Geometry parameter2 = geomParser.parseAbstractGeometry( xmlReader, null );
             spatialOperator = new Intersects( parameter1, parameter2 );
             break;
-        case BBOX:
+        }
+        case BBOX: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+            PropertyName parameter1 = parsePropertyName( childElementIter.next() );
+            GML311GeometryParser geomParser = new GML311GeometryParser();
+
+            OMElement geometryElement = childElementIter.next();
+            XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
+
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
+            xmlReader.nextTag();
+            xmlReader.require( START_ELEMENT, GML_NS, "Envelope" );
+
+            Envelope parameter2 = geomParser.parseEnvelope( xmlReader, null );
+            spatialOperator = new BBOX( parameter1, parameter2 );
+            break;
+        }
         case BEYOND:
         case CONTAINS:
         case CROSSES:
@@ -698,19 +718,19 @@ public class Filter110XMLAdapter extends XMLAdapter {
         }
         switch ( type ) {
         case AND: {
-            
+
             List<Operator> listOperators = new ArrayList<Operator>();
             Iterator<OMElement> iterator = element.getChildElements();
             while ( iterator.hasNext() ) {
-                listOperators.add( parseOperator( iterator.next() ) );                
+                listOperators.add( parseOperator( iterator.next() ) );
             }
-            Operator operators[] = new Operator[ listOperators.size() ];
+            Operator operators[] = new Operator[listOperators.size()];
             listOperators.toArray( operators );
-            
+
             try {
                 logicalOperator = new And( operators );
             } catch ( Exception e ) {
-                String msg = "Error while parsing the And operator. It must have at least two arguments.";                    
+                String msg = "Error while parsing the And operator. It must have at least two arguments.";
                 throw new XMLParsingException( this, element, msg );
             }
             break;
@@ -721,16 +741,16 @@ public class Filter110XMLAdapter extends XMLAdapter {
             while ( iterator.hasNext() ) {
                 listOperators.add( parseOperator( iterator.next() ) );
             }
-            Operator operators[] = new Operator[ listOperators.size() ];
+            Operator operators[] = new Operator[listOperators.size()];
             listOperators.toArray( operators );
-            
+
             try {
                 logicalOperator = new Or( operators );
-            } catch (Exception e ) {
-                String msg = "Error while parsing the Or operator. It must have at least two arguments.";                    
+            } catch ( Exception e ) {
+                String msg = "Error while parsing the Or operator. It must have at least two arguments.";
                 throw new XMLParsingException( this, element, msg );
             }
-            
+
             break;
         }
         case NOT: {

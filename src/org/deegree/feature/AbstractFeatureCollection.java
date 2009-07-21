@@ -54,6 +54,7 @@ public abstract class AbstractFeatureCollection extends AbstractFeature implemen
     @Override
     public FeatureCollection getMembers( Filter filter )
                             throws FilterEvaluationException {
+
         List<Feature> matchingFeatures = new ArrayList<Feature>();
         for ( Feature feature : this ) {
             if ( filter.evaluate( feature ) ) {

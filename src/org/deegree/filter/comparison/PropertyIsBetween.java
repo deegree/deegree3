@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
 import org.deegree.filter.Expression;
@@ -41,10 +41,10 @@ import org.deegree.filter.MatchableObject;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class PropertyIsBetween extends ComparisonOperator {
@@ -59,19 +59,6 @@ public class PropertyIsBetween extends ComparisonOperator {
         this.expression = expression;
         this.lowerBoundary = lowerBoundary;
         this.upperBoundary = upperBoundary;
-    }
-
-    public SubType getSubType() {
-        return SubType.PROPERTY_IS_BETWEEN;
-    }
-
-    public boolean evaluate( MatchableObject obj )
-                            throws FilterEvaluationException {
-
-        Comparable<Object> propertyValue = checkComparableOrNull(expression.evaluate( obj ));
-        Comparable<Object> upperBoundaryValue = checkComparableOrNull(upperBoundary.evaluate( obj ));
-        Comparable<Object> lowerBoundaryValue = checkComparableOrNull(lowerBoundary.evaluate( obj ));
-        return upperBoundaryValue.compareTo( propertyValue ) >= 0 && lowerBoundaryValue.compareTo( propertyValue ) <= 0;
     }
 
     public Expression getExpression() {
@@ -92,12 +79,27 @@ public class PropertyIsBetween extends ComparisonOperator {
         return lowerBoundary;
     }
 
+    @Override
+    public SubType getSubType() {
+        return SubType.PROPERTY_IS_BETWEEN;
+    }
 
+    @Override
+    public boolean evaluate( MatchableObject obj )
+                            throws FilterEvaluationException {
+
+        Comparable<Object> propertyValue = checkComparableOrNull( expression.evaluate( obj ) );
+        Comparable<Object> upperBoundaryValue = checkComparableOrNull( upperBoundary.evaluate( obj ) );
+        Comparable<Object> lowerBoundaryValue = checkComparableOrNull( lowerBoundary.evaluate( obj ) );
+        return upperBoundaryValue.compareTo( propertyValue ) >= 0 && lowerBoundaryValue.compareTo( propertyValue ) <= 0;
+    }
+
+    @Override
     public String toString( String indent ) {
         String s = indent + "-PropertyIsBetween\n";
-        s += upperBoundary.toString (indent + "  ");
-        s += expression.toString (indent + "  ");
-        s += lowerBoundary.toString (indent + "  ");
+        s += upperBoundary.toString( indent + "  " );
+        s += expression.toString( indent + "  " );
+        s += lowerBoundary.toString( indent + "  " );
         return s;
     }
 }

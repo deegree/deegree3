@@ -149,26 +149,29 @@ public class PointsPoints implements Points {
     @Override
     public Point getStartPoint() {
         return get( 0 );
-    }    
-    
+    }
+
     // -----------------------------------------------------------------------
     // Implementation of JTS methods
-    // -----------------------------------------------------------------------    
-    
+    // -----------------------------------------------------------------------
+
     @Override
     public Envelope expandEnvelope( Envelope env ) {
-        throw new UnsupportedOperationException();
+        for ( Point p : this ) {
+            env.expandToInclude( p.getX(), p.getY() );
+        }
+        return env;
     }
 
     @Override
     public Coordinate getCoordinate( int index ) {
-        Point point = get(index);
-        return new Coordinate( point.getX(), point.getY(), point.getZ() );   
+        Point point = get( index );
+        return new Coordinate( point.getX(), point.getY(), point.getZ() );
     }
 
     @Override
     public void getCoordinate( int index, Coordinate coord ) {
-        Point point = get(index);
+        Point point = get( index );
         coord.x = point.getX();
         coord.y = point.getY();
         coord.z = point.getZ();
@@ -176,13 +179,13 @@ public class PointsPoints implements Points {
 
     @Override
     public Coordinate getCoordinateCopy( int index ) {
-        Point point = get(index);
-        return new Coordinate( point.getX(), point.getY(), point.getZ() );        
+        Point point = get( index );
+        return new Coordinate( point.getX(), point.getY(), point.getZ() );
     }
 
     @Override
     public double getOrdinate( int index, int ordinateIndex ) {
-        return get( index ).get(ordinateIndex);
+        return get( index ).get( ordinateIndex );
     }
 
     @Override
@@ -202,11 +205,16 @@ public class PointsPoints implements Points {
 
     @Override
     public Coordinate[] toCoordinateArray() {
-        throw new UnsupportedOperationException();
+        Coordinate[] coords = new Coordinate[size()];
+        int i = 0;
+        for ( Point p : this ) {
+            coords[i++] = new Coordinate( p.getX(), p.getY() );
+        }
+        return coords;
     }
-    
+
     @Override
-    public Object clone () {
+    public Object clone() {
         throw new UnsupportedOperationException();
     }
 }

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
 import org.deegree.filter.expression.Add;
@@ -44,11 +44,11 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.expression.Sub;
 
 /**
- *
- *
+ * 
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public interface Expression {
@@ -82,14 +82,14 @@ public interface Expression {
 
     /**
      * Returns the type of expression. Use this to safely determine the subtype of {@link Expression}.
-     *
+     * 
      * @return type of expression
      */
     public Type getType();
 
     /**
      * Determines the value of the expression for the given {@link MatchableObject}.
-     *
+     * 
      * @param obj
      * @return the value of the expression
      * @throws FilterEvaluationException
@@ -97,5 +97,12 @@ public interface Expression {
     public Object evaluate( MatchableObject obj )
                             throws FilterEvaluationException;
 
+    /**
+     * @param object
+     *            the object that will be evaluated
+     * @return a boolean value representing the result of the And expression evaluation
+     * @throws FilterEvaluationException
+     *             if the evaluation of the object fails
+     */
     public String toString( String indent );
 }

@@ -32,7 +32,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.feature;
+package org.deegree.filter;
 
 import java.net.URL;
 import java.util.HashSet;
@@ -45,6 +45,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.gml.GMLFeatureParser;
 import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDAdapter;
@@ -69,24 +71,20 @@ public class FilterEvaluationTest {
     @Before
     public void setUp()
                             throws Exception {
-        String schemaURL = this.getClass().getResource( "gml/schema/Philosopher_typesafe.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../feature/gml/schema/Philosopher_typesafe.xsd" ).toString();
         ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL,
                                                                                         GMLVersion.GML_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
         GMLIdContext idContext = new GMLIdContext();
         GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema, idContext );
 
-        URL docURL = this.getClass().getResource( "gml/testdata/features/Philosopher_FeatureCollection.xml" );
+        URL docURL = this.getClass().getResource( "../feature/gml/testdata/features/Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
         fc = (FeatureCollection) gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ),
                                                           null);
         idContext.resolveXLinks( schema );
-
-        for ( Feature member : fc ) {
-            System.out.println( member.getId() );
-        }
 
         nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
@@ -97,7 +95,7 @@ public class FilterEvaluationTest {
     public void filterCollection1()
                             throws FilterEvaluationException {
         Filter110XMLAdapter adapter = new Filter110XMLAdapter();
-        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testfilter1.xml" ) );
+        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter1.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
 
@@ -110,7 +108,7 @@ public class FilterEvaluationTest {
     public void filterCollection2()
                             throws FilterEvaluationException {
         Filter110XMLAdapter adapter = new Filter110XMLAdapter();
-        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testfilter2.xml" ) );
+        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter2.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
 
@@ -124,7 +122,7 @@ public class FilterEvaluationTest {
     public void filterCollection3()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter110XMLAdapter adapter = new Filter110XMLAdapter();
-        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testfilter3.xml" ) );
+        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter3.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
 
@@ -142,7 +140,7 @@ public class FilterEvaluationTest {
     public void filterCollection4()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
         Filter110XMLAdapter adapter = new Filter110XMLAdapter();
-        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testfilter4.xml" ) );
+        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter4.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
 

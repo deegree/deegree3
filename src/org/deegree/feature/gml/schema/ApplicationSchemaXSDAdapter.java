@@ -131,7 +131,7 @@ public class ApplicationSchemaXSDAdapter {
             FeatureType ft = buildFeatureType( ftNameToftElement.get( ftName ) );
             ftNameToft.put( ftName, ft );
         }
-        resolveFtReferences();
+//        resolveFtReferences();
 
         FeatureType[] fts = ftNameToft.values().toArray( new FeatureType[ftNameToft.size()] );
         Map<FeatureType, FeatureType> ftSubstitution = new HashMap<FeatureType, FeatureType>();

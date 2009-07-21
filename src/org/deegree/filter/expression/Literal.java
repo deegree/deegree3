@@ -54,14 +54,15 @@ public class Literal implements Expression {
         this.value = value;
     }
 
-    public Type getType() {
-        return Type.LITERAL;
-    }
-
     public String getValue() {
         return value;
     }
 
+    @Override
+    public Type getType() {
+        return Type.LITERAL;
+    }    
+    
     /**
      * Returns the <code>Literal</code>'s value (to be used in the evaluation of a complexer <code>Expression</code>).
      * <p>
@@ -79,6 +80,7 @@ public class Literal implements Expression {
         return value;
     }
 
+    @Override    
     public String toString( String indent ) {
         String s = indent + "-Literal ('" + value + "')\n";
         return s;

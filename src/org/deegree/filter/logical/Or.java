@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.logical;
 
 import java.util.ArrayList;
@@ -44,13 +44,12 @@ import org.deegree.filter.MatchableObject;
 import org.deegree.filter.Operator;
 
 /**
- * The API for the Or logical operator. For the schema model, see 
- * http://schemas.opengis.net/filter/1.1.0/filter.xsd
- *
+ * The API for the Or logical operator. For the schema model, see http://schemas.opengis.net/filter/1.1.0/filter.xsd
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Or extends LogicalOperator {
@@ -59,48 +58,46 @@ public class Or extends LogicalOperator {
 
     /**
      * Creates an Or operator by providing an arbitrary number of parameters
-     * @param paramsArray    an arbitrary number of parameters
-     * @throws Exception when less than 2 parameters are provided
+     * 
+     * @param paramsArray
+     *            an arbitrary number of parameters
+     * @throws Exception
+     *             when less than 2 parameters are provided
      */
     public Or( Operator... paramsArray ) throws Exception {
         if ( paramsArray.length < 2 ) {
             throw new Exception( "Or operator must have at least 2 arguments" );
         }
-            
+
         params = new ArrayList<Operator>( paramsArray.length );
         params = Arrays.asList( paramsArray );
     }
 
-    /**  
-     * @see org.deegree.filter.logical.LogicalOperator#getSubType() 
-     */
-    @Override
-    public SubType getSubType() {
-        return SubType.OR;
-    }
-
     /**
      * Return the number of parameters in the Or operator
-     * @return  the number of parameters
+     * 
+     * @return the number of parameters
      */
     public int getSize() {
         return params.size();
     }
 
     /**
-     * @param n the index of the wanted argument. Starting from 0.
-     * @return  returns the nth parameter of the Or operator. In order to prevent the 
-     * {@link IndexOutOfBoundsException} from occurring, one can call getSize() first and check... 
+     * @param n
+     *            the index of the wanted argument. Starting from 0.
+     * @return returns the nth parameter of the Or operator. In order to prevent the {@link IndexOutOfBoundsException}
+     *         from occurring, one can call getSize() first and check...
      */
     public Operator getParameter( int n ) {
-        return params.get( n ); 
+        return params.get( n );
     }
 
-    /**
-     * @param object    the object that will be evaluated
-     * @return a boolean value representing the result of the Or expression evaluation
-     * @throws FilterEvaluationException    if the evaluation of the object fails
-     */
+    @Override
+    public SubType getSubType() {
+        return SubType.OR;
+    }
+
+    @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         boolean partialRes = true;
@@ -110,12 +107,7 @@ public class Or extends LogicalOperator {
         return partialRes;
     }
 
-
-    /**
-     * @param indent    used to indent the output String
-     * @return       an indented String representation of the expression 
-     * (think of XML representation but without tags)
-     */
+    @Override
     public String toString( String indent ) {
         String s = indent + "-Or\n";
         for ( int i = 0; i < getSize(); i++ ) {

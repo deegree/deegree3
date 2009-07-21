@@ -80,10 +80,6 @@ public class PropertyIsLike extends ComparisonOperator {
         return propName;
     }
 
-    public SubType getSubType() {
-        return SubType.PROPERTY_IS_LIKE;
-    }
-
     public Literal getLiteral () {
         return literal;
     }
@@ -100,12 +96,19 @@ public class PropertyIsLike extends ComparisonOperator {
         return escapeChar;
     }
 
+    @Override
+    public SubType getSubType() {
+        return SubType.PROPERTY_IS_LIKE;
+    }    
+    
+    @Override        
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()
                                              + "' operator is not implemented yet." );
     }
 
+    @Override
     public String toString( String indent ) {
         String s = indent + "-PropertyIsLike\n";
         s += propName.toString (indent + "  ");

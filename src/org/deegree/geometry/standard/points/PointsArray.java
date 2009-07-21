@@ -45,8 +45,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
- * <code>Array</code>-based {@link Points} implementation that allows to hold identifiable {@link Point} objects (with id
- * or even references to local or remote {@link Point} instances}.
+ * <code>Array</code>-based {@link Points} implementation that allows to hold identifiable {@link Point} objects (with
+ * id or even references to local or remote {@link Point} instances}.
  * <p>
  * This implementation is rather expensive, as every contained point is represented as an individual {@link Point}
  * object. Whenever possible, {@link PackedPoints} or {@link PointsPoints} should be used instead.
@@ -68,7 +68,7 @@ public class PointsArray implements Points {
      * 
      * @param points
      */
-    public PointsArray( Point...points ) {
+    public PointsArray( Point... points ) {
         this.points = points;
     }
 
@@ -87,7 +87,7 @@ public class PointsArray implements Points {
         return new Iterator<Point>() {
 
             int i = 0;
-            
+
             @Override
             public boolean hasNext() {
                 return i < points.length;
@@ -95,7 +95,7 @@ public class PointsArray implements Points {
 
             @Override
             public Point next() {
-                if (!hasNext()) {
+                if ( !hasNext() ) {
                     throw new NoSuchElementException();
                 }
                 return points[i++];
@@ -104,7 +104,7 @@ public class PointsArray implements Points {
             @Override
             public void remove() {
                 throw new UnsupportedOperationException();
-            }            
+            }
         };
     }
 
@@ -124,7 +124,7 @@ public class PointsArray implements Points {
         }
         return coords;
     }
-    
+
     @Override
     public Point getEndPoint() {
         return get( size() - 1 );
@@ -134,25 +134,28 @@ public class PointsArray implements Points {
     public Point getStartPoint() {
         return get( 0 );
     }
-    
+
     // -----------------------------------------------------------------------
     // Implementation of JTS methods
-    // -----------------------------------------------------------------------    
-    
+    // -----------------------------------------------------------------------
+
     @Override
     public Envelope expandEnvelope( Envelope env ) {
-        throw new UnsupportedOperationException();
+        for ( Point p : points ) {
+            env.expandToInclude( p.getX(), p.getY() );
+        }
+        return env;
     }
 
     @Override
     public Coordinate getCoordinate( int index ) {
-        Point point = get(index);
-        return new Coordinate( point.getX(), point.getY(), point.getZ() );   
+        Point point = get( index );
+        return new Coordinate( point.getX(), point.getY(), point.getZ() );
     }
 
     @Override
     public void getCoordinate( int index, Coordinate coord ) {
-        Point point = get(index);
+        Point point = get( index );
         coord.x = point.getX();
         coord.y = point.getY();
         coord.z = point.getZ();
@@ -160,13 +163,13 @@ public class PointsArray implements Points {
 
     @Override
     public Coordinate getCoordinateCopy( int index ) {
-        Point point = get(index);
-        return new Coordinate( point.getX(), point.getY(), point.getZ() );        
+        Point point = get( index );
+        return new Coordinate( point.getX(), point.getY(), point.getZ() );
     }
 
     @Override
     public double getOrdinate( int index, int ordinateIndex ) {
-        return get( index ).get(ordinateIndex);
+        return get( index ).get( ordinateIndex );
     }
 
     @Override
@@ -186,11 +189,16 @@ public class PointsArray implements Points {
 
     @Override
     public Coordinate[] toCoordinateArray() {
+        Coordinate[] coords = new Coordinate[size()];
+        int i = 0;
+        for ( Point p : this ) {
+            coords[i++] = new Coordinate( p.getX(), p.getY() );
+        }
+        return coords;
+    }
+
+    @Override
+    public Object clone() {
         throw new UnsupportedOperationException();
     }
-    
-    @Override
-    public Object clone () {
-        throw new UnsupportedOperationException();
-    }    
 }

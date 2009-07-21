@@ -53,10 +53,12 @@ public class PropertyIsGreaterThanOrEqualTo extends BinaryComparisonOperator {
         super( parameter1, parameter2, matchCase );
     }
 
+    @Override    
     public SubType getSubType() {
         return SubType.PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO;
     }
 
+    @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         Comparable<Object> parameter1Value = checkComparableOrNull( param1.evaluate( object ) );
@@ -64,6 +66,7 @@ public class PropertyIsGreaterThanOrEqualTo extends BinaryComparisonOperator {
         return parameter1Value.compareTo( parameter2Value ) >= 0;
     }
 
+    @Override    
     public String toString( String indent ) {
         String s = indent + "-PropertyIsGreaterThanOrEqualTo\n";
         s += param1.toString( indent + "  " );

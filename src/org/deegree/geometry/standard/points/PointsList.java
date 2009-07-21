@@ -120,7 +120,10 @@ public class PointsList implements Points {
     
     @Override
     public Envelope expandEnvelope( Envelope env ) {
-        throw new UnsupportedOperationException();
+        for ( Point p : points ) {
+            env.expandToInclude( p.getX(), p.getY() );
+        }
+        return env;
     }
 
     @Override
@@ -165,7 +168,12 @@ public class PointsList implements Points {
 
     @Override
     public Coordinate[] toCoordinateArray() {
-        throw new UnsupportedOperationException();
+        Coordinate[] coords = new Coordinate[size()];
+        int i = 0;
+        for ( Point p : this ) {
+            coords[i++] = new Coordinate( p.getX(), p.getY() );
+        }
+        return coords;
     }
     
     @Override

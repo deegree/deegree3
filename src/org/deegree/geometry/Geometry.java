@@ -38,6 +38,7 @@ package org.deegree.geometry;
 import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.precision.PrecisionModel;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Base interface for all vector geometry types.
@@ -125,14 +126,11 @@ public interface Geometry {
      * than or equal to the "distance" passed as a parameter. The Geometry returned is in the same reference system as
      * this original Geometry. The dimension of the returned Geometry is normally the same as the coordinate dimension -
      * a collection of Surfaces in 2D space and a collection of Solids in 3D space, but this may be application defined.
-     * <p>
-     * How to cope with uom in meters? Supply distance function?
-     * </p>
      * 
      * @param distance
      * @return buffer geometry
      */
-    public Geometry getBuffer( double distance );
+    public Geometry getBuffer( ValueWithUnit distance );
 
     /**
      * The Boolean valued operation "contains" shall return TRUE if this Geometry contains another Geometry.
@@ -212,7 +210,7 @@ public interface Geometry {
      * @param distance
      * @return true if passed geometry is within a specified distance of this geometry.
      */
-    public boolean isWithinDistance( Geometry geometry, double distance );
+    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance );
 
     /**
      * tests whether the value of a geometric is beyond a specified distance of this geometry.
@@ -221,7 +219,7 @@ public interface Geometry {
      * @param distance
      * @return true if passed geometry is beyond a specified distance of this geometry.
      */
-    public boolean isBeyond( Geometry geometry, double distance );
+    public boolean isBeyond( Geometry geometry, ValueWithUnit distance );
 
     /**
      * tests whether the value of a geometric is topological located within this geometry. This method is the opposite

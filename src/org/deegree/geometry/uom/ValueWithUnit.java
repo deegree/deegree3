@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,48 +33,25 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.filter.spatial;
 
-import org.deegree.filter.FilterEvaluationException;
-import org.deegree.filter.MatchableObject;
-import org.deegree.filter.expression.PropertyName;
-import org.deegree.geometry.Geometry;
+package org.deegree.geometry.uom;
 
 /**
- * TODO add documentation here
+ * The <code></code> class TODO add class documentation here.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision: $, $Date: $
  */
-public class Intersects extends SpatialOperator {
+public class ValueWithUnit {
 
-    private final PropertyName param1;
+    private String value;
 
-    private final Geometry param2;
+    private String uom;
 
-    /**
-     * @param param1
-     * @param param2
-     */
-    public Intersects( PropertyName param1, Geometry param2 ) {
-        this.param1 = param1;
-        this.param2 = param2;
-    }
-
-    @Override
-    public boolean evaluate( MatchableObject object )
-                            throws FilterEvaluationException {
-        Geometry param1Value = checkGeometryOrNull( param1.evaluate( object ) );
-        return param1Value != null ? param2.intersects( param1Value ) : false;
-    }
-
-    @Override
-    public String toString( String indent ) {
-        String s = indent + "-Intersects\n";
-        s += indent + param1 + "\n";
-        s += indent + param2;
-        return s;
+    public ValueWithUnit( String value, String uom ) {
+        this.value = value;
+        this.uom = uom;
     }
 }

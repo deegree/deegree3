@@ -1936,6 +1936,9 @@ public class GML311GeometryParser extends GML311BaseParser {
      * Returns the object representation of a <code>gml:Envelope</code> element. Consumes all corresponding events from
      * the associated <code>XMLStream</code>.
      * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Envelope&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Envelope&gt;) afterwards
      * @param defaultCRS
      *            default CRS for the envelope, this is only used if the <code>gml:Envelope</code> has no
      *            <code>srsName</code> attribute itself

@@ -58,10 +58,6 @@ public class Mul implements Expression {
         this.param2 = param2;
     }
 
-    public Type getType() {
-        return Type.MUL;
-    }
-
     public Expression getParameter1() {
         return param1;
     }
@@ -70,6 +66,12 @@ public class Mul implements Expression {
         return param2;
     }
 
+    @Override    
+    public Type getType() {
+        return Type.MUL;
+    }    
+    
+    @Override    
     public Double evaluate( MatchableObject obj )
                             throws FilterEvaluationException {
         Object value1 = param1.evaluate( obj );
@@ -87,6 +89,7 @@ public class Mul implements Expression {
         return ( (Number) value1 ).doubleValue() * ( (Number) value2 ).doubleValue();
     }
 
+    @Override    
     public String toString( String indent ) {
         String s = indent + "-Mul\n";
         s += param1.toString( indent + "  " );

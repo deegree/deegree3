@@ -46,6 +46,7 @@ import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -92,7 +93,7 @@ public class SurfaceReference extends GeometryReference implements Surface {
         return geometry.getArea();
     }
 
-    public Geometry getBuffer( double distance ) {
+    public Geometry getBuffer( ValueWithUnit distance ) {
         return geometry.getBuffer( distance );
     }
 
@@ -156,7 +157,7 @@ public class SurfaceReference extends GeometryReference implements Surface {
         return geometry.intersects( geometry );
     }
 
-    public boolean isBeyond( Geometry geometry, double distance ) {
+    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
         return geometry.isBeyond( geometry, distance );
     }
 
@@ -164,7 +165,7 @@ public class SurfaceReference extends GeometryReference implements Surface {
         return geometry.isWithin( geometry );
     }
 
-    public boolean isWithinDistance( Geometry geometry, double distance ) {
+    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
         return geometry.isWithinDistance( geometry, distance );
     }
 

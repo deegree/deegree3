@@ -41,6 +41,7 @@ import org.deegree.crs.CRS;
 import org.deegree.geometry.multi.MultiPolygon;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Polygon;
+import org.deegree.geometry.primitive.Surface;
 
 /**
  * Default implementation of {@link MultiPolygon}.
@@ -76,4 +77,14 @@ public class DefaultMultiPolygon extends DefaultMultiGeometry<Polygon> implement
     public MultiGeometryType getMultiGeometryType() {
         return MultiGeometryType.MULTI_POLYGON;
     }
+    
+    @Override
+    protected com.vividsolutions.jts.geom.MultiPolygon buildJTSGeometry() {
+        com.vividsolutions.jts.geom.Polygon [] jtsMembers = new com.vividsolutions.jts.geom.Polygon[size()];
+        int i = 0;
+        for ( Surface geometry : members ) {
+            jtsMembers[i++] = (com.vividsolutions.jts.geom.Polygon) geometry.getJTSGeometry();
+        }
+        return jtsFactory.createMultiPolygon( jtsMembers );
+    }       
 }

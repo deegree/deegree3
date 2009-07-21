@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.junit;
 
 import static org.junit.Assert.assertEquals;
@@ -63,13 +63,13 @@ import org.xml.sax.SAXParseException;
 
 /**
  * This class contains static assert methods for XML validation. This class should only be used in JUnit tests and
- * <strong>not</strongm> as a general schema validator.
- *
+ * <strong>not</strong> as a general schema validator, as it uses the JUnit specific mechanisms (e.g. <code>fail</code>)
+ * to signal success or failure.
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
  */
 public class XMLAssert {
 
@@ -103,10 +103,10 @@ public class XMLAssert {
 
     /**
      * Check if the input is valid against the xml schema.
-     *
      * <p>
      * The validator will cache the schema documents.
-     *
+     * </p>
+     * 
      * @param schemaLocation
      * @param source
      * @throws AssertionError
@@ -157,5 +157,4 @@ public class XMLAssert {
         assertEquals( "catched some unexpected exceptions while validating against the schema. see error log", 0,
                       exceptions.size() );
     }
-
 }

@@ -53,10 +53,12 @@ public class PropertyIsNotEqualTo extends BinaryComparisonOperator {
         super (param1, param2, matchCase);
     }
 
+    @Override    
     public SubType getSubType() {
         return SubType.PROPERTY_IS_NOT_EQUAL_TO;
     }
 
+    @Override    
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         Comparable<Object> parameter1Value = checkComparableOrNull( param1.evaluate( object ));
@@ -64,6 +66,7 @@ public class PropertyIsNotEqualTo extends BinaryComparisonOperator {
         return !parameter1Value.equals( parameter2Value );
     }
 
+    @Override    
     public String toString( String indent ) {
         String s = indent + "-PropertyIsNotEqualTo\n";
         s += param1.toString (indent + "  ");

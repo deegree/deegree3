@@ -60,10 +60,6 @@ public class Function implements Expression {
         this.params = params;
     }
 
-    public Type getType() {
-        return Type.FUNCTION;
-    }
-
     public String getName() {
         return name;
     }
@@ -72,12 +68,19 @@ public class Function implements Expression {
         return params;
     }
 
+    @Override    
+    public Type getType() {
+        return Type.FUNCTION;
+    }
+
+    @Override    
     public Object evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         throw new FilterEvaluationException( "Evaluation of the '" + getType().name()
                                              + "' expression is not implemented yet." );
     }
 
+    @Override    
     public String toString( String indent ) {
         String s = indent + "-Function (" + name + ")\n";
         for ( Expression param : params ) {

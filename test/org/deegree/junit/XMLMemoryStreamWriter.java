@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,9 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.junit;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -46,26 +47,35 @@ import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.Assert;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class creates a {@link XMLStreamWriter} that writes into a temporary buffer and can create a {@link Reader} on
- * that buffer.
- *
+ * that buffer. The {@link #toString()} method allows to print the content conveniently.
+ * <p>
+ * NOTE: This class is not thread-safe!
+ * </p>
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
  */
 public class XMLMemoryStreamWriter {
+
+    private static final Logger LOG = LoggerFactory.getLogger( XMLMemoryStreamWriter.class );
 
     private XMLStreamWriter xmlWriter;
 
     private StringWriter writer;
 
+    private Reader reader;
+
     /**
      * Create a {@link XMLStreamWriter} that writes into a buffer. Call {@link #getReader()} to close the writer and get
      * a {@link Reader} on the buffer.
-     *
+     * 
      * @return the XMLStreamWriter
      */
     public XMLStreamWriter getXMLStreamWriter() {
@@ -83,29 +93,39 @@ public class XMLMemoryStreamWriter {
     }
 
     /**
-     * Get a reader for the xml buffer. This will close the {@link XMLStreamWriter}!
-     *
+     * Get a reader for the xml buffer. This will close the {@link XMLStreamWriter}.
+     * 
      * @return a {@link Reader} for the buffer
      */
     public Reader getReader() {
-        Reader reader = null;
-        if ( xmlWriter == null ) {
-            Assert.fail( "no XMLStreamWriter found for this MemoryStreamWriter" );
+        if ( xmlWriter != null ) {
+            try {
+                xmlWriter.flush();
+                xmlWriter.close();
+                xmlWriter = null;
+                writer.close();
+            } catch ( IOException e ) {
+                throw new RuntimeException( "error while closing StringWriter: " + e.getMessage() );
+            } catch ( XMLStreamException e ) {
+                throw new RuntimeException( "error while closing XMLStreamWriter: " + e.getMessage() );
+            }
         }
-        try {
-            xmlWriter.flush();
-            xmlWriter.close();
-            xmlWriter = null;
-            reader = new StringReader( writer.getBuffer().toString() );
-            writer.close();
-        } catch ( IOException e ) {
-            Assert.fail( "error while closing StringWriter: " + e.getMessage() );
-        } catch ( XMLStreamException e ) {
-            Assert.fail( "error while closing XMLStreamWriter: " + e.getMessage() );
-        }
-        writer = null;
-
-        return reader;
+        return new StringReader( writer.getBuffer().toString() );
     }
 
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        BufferedReader reader = new BufferedReader( getReader() );
+        String line = null;
+        try {
+            while ( ( line = reader.readLine() ) != null ) {
+                sb.append( line );
+                sb.append( '\n' );
+            }
+        } catch ( IOException e ) {
+            LOG.info( e.getMessage() );
+        }
+        return sb.toString();
+    }
 }

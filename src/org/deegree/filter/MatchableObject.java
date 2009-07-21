@@ -41,9 +41,10 @@ import org.deegree.filter.expression.PropertyName;
 import org.jaxen.JaxenException;
 
 /**
- * Interface for objects that may be filtered, i.e. a {@link Filter} expression may be evaluated against them.
+ * Interface for objects that can be filtered, i.e. {@link Filter} expressions may be evaluated against them.
  * <p>
  * Therefore the objects must provide access to their id and their property values using XPath-expressions.
+ * </p>
  *
  * @see Filter
  * @see Feature
@@ -73,5 +74,4 @@ public interface MatchableObject {
      */
     public Object getPropertyValue( PropertyName propName )
                             throws JaxenException;
-
 }

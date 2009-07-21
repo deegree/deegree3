@@ -42,6 +42,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Abstract base class for the default {@link Geometry} implementation.
@@ -104,33 +105,37 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     @Override
     public boolean intersects( Geometry geometry ) {
-        return getJTSGeometry().intersects( geometry.getJTSGeometry() );
+        JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
+        return jtsGeoms.first.intersects( jtsGeoms.second );
     }
 
     @Override
     public boolean isWithin( Geometry geometry ) {
-        return getJTSGeometry().within( geometry.getJTSGeometry() );
+        JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
+        return jtsGeoms.first.within( jtsGeoms.second );
     }
 
     @Override
-    public boolean isWithinDistance( Geometry geometry, double distance ) {
+    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
         // TODO what about the UOM?
-        return getJTSGeometry().isWithinDistance( geometry.getJTSGeometry(), distance );
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isBeyond( Geometry geometry, double distance ) {
+    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean contains( Geometry geometry ) {
-        return getJTSGeometry().contains( geometry.getJTSGeometry() );
+        JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
+        return jtsGeoms.first.contains( jtsGeoms.second );
     }
 
     @Override
     public boolean equals( Geometry geometry ) {
-        return getJTSGeometry().equals( geometry.getJTSGeometry() );
+        JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
+        return jtsGeoms.first.equals( jtsGeoms.second );
     }
 
     @Override
@@ -154,7 +159,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
-    public Geometry getBuffer( double distance ) {
+    public Geometry getBuffer( ValueWithUnit distance ) {
         throw new UnsupportedOperationException();
     }
 
