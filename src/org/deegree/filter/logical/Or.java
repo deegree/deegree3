@@ -88,7 +88,7 @@ public class Or extends LogicalOperator {
     }
 
     /**
-     * @param n the index of the wanted argument. Starting from 1.
+     * @param n the index of the wanted argument. Starting from 0.
      * @return  returns the nth parameter of the Or operator. In order to prevent the 
      * {@link IndexOutOfBoundsException} from occurring, one can call getSize() first and check... 
      */
