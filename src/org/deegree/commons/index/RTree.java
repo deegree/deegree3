@@ -61,6 +61,12 @@ import org.slf4j.Logger;
 /**
  * <code>RTree</code> Query will return the Objects of the index
  * 
+ * <p>
+ * The bulk insertion mechanism is an implementation of STRTree:
+ * 
+ * Scott T. Leutenegger, Jeffrey M. Edgington, Mario A. Lopez: STR: A SIMPLE AND EFFICIENT ALGORITHM FOR R-TREE PACKING
+ * (1997)
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
  * 
