@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.crs.CRSIdentifiable;
+import org.deegree.crs.CRSRegistry;
 import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.Ellipsoid;
 import org.deegree.crs.components.GeodeticDatum;
@@ -57,10 +58,13 @@ import org.deegree.crs.coordinatesystems.GeocentricCRS;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.coordinatesystems.VerticalCRS;
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.crs.projections.Projection;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import sun.util.LocaleServiceProviderPool.LocalizedObjectGetter;
 
 /**
  * The <code>CRSRemover</code> class deletes a CRS from the database. The provided CRS if first
@@ -93,7 +97,7 @@ public class CRSRemover {
      */
     int getInternalID( CRSIdentifiable identifiable ) throws SQLException {
         PreparedStatement ps = connection.prepareStatement( "SELECT ref_id FROM code WHERE code.code ='" + identifiable.getCode().getCode() +
-                                                      "' AND code.codespace ='" + identifiable.getCode().getCodeSpace() + "'" );
+                                                            "' AND code.codespace ='" + identifiable.getCode().getCodeSpace() + "'" );
         ResultSet rs = ps.executeQuery();
         rs.next();
         return rs.getInt( 1 );
@@ -130,7 +134,7 @@ public class CRSRemover {
 
         ResultSet
         datumRef = connection.prepareStatement( "SELECT * FROM geodetic_datum WHERE ellipsoid_id = " +
-                                          internalID ).executeQuery();
+                                                internalID ).executeQuery();
         if ( datumRef.next() ) {
             LOG.info( "An Ellipsoid is refereced by GeodeticDatum(s) that are still in the database ");
             return;
@@ -157,7 +161,7 @@ public class CRSRemover {
 
         ResultSet
         datumRef = connection.prepareStatement( "SELECT * FROM geodetic_datum WHERE prime_meridian_id = " +
-                                          internalID ).executeQuery();
+                                                internalID ).executeQuery();
         if ( datumRef.next() ) {
             LOG.info( "A Prime Meridian is referenced by Geodetic Datum(s) that are still in the " +
             "database");
@@ -168,7 +172,7 @@ public class CRSRemover {
         removeIdentifiableAttributes( internalID );
     }
 
-    
+
     /**
      * Deletes the provided Helmert transformation object from the database.
      * 
@@ -186,7 +190,7 @@ public class CRSRemover {
 
         ResultSet
         datumRef = connection.prepareStatement( "SELECT * FROM geodetic_datum WHERE helmert_id = " +
-                                          internalID ).executeQuery();
+                                                internalID ).executeQuery();
         if ( datumRef.next() ) {
             LOG.info( "A WGS84 transformation is referenced by GeodeticaDatum(s) that are still" +
             "in the database" );
@@ -214,7 +218,7 @@ public class CRSRemover {
 
         ResultSet
         geographicRef = connection.prepareStatement( "SELECT * FROM geographic_crs WHERE datum_id = " +
-                                               internalID ).executeQuery();
+                                                     internalID ).executeQuery();
         if ( geographicRef.next() ) {
             LOG.info( "A geodeticDatum is referenced by geographicCRS(s) and/or geocentricCRS(s) " +
             "that are still used in the database" );
@@ -222,7 +226,7 @@ public class CRSRemover {
         }
         ResultSet
         geocentricRef = connection.prepareStatement( "SELECT * FROM geocentric_crs WHERE datum_id = " +
-                                               internalID ).executeQuery();
+                                                     internalID ).executeQuery();
         if ( geocentricRef.next() ) {
             LOG.info( "A geodeticDatum is referenced by geographicCRS(s) and/or geocentricCRS(s) " +
             "that are still used in the database" );
@@ -253,7 +257,7 @@ public class CRSRemover {
 
         ResultSet
         verticalCRSRef = connection.prepareStatement( "SELECT * FROM vertical_crs " +
-                                                "WHERE vertical_datum_id = " + internalID ).executeQuery();
+                                                      "WHERE vertical_datum_id = " + internalID ).executeQuery();
         if ( verticalCRSRef.next() ) {
             LOG.info( "A verticalDatum is referenced by verticalCRS(s) that are still in the" +
             "database" );
@@ -281,16 +285,16 @@ public class CRSRemover {
 
         ResultSet
         projectedCRSRef = connection.prepareStatement( "SELECT * FROM projected_crs WHERE" +
-                                                 " projection_id = " + internalID ).executeQuery();
+                                                       " projection_id = " + internalID ).executeQuery();
         if ( projectedCRSRef.next() )
             LOG.info( "A projection is referenced a ProjectedCRS(s) still in the database. ");
         else {
             ResultSet
             rs = connection.prepareStatement( "SELECT table_name FROM projection_lookup WHERE id = " +
-                                        internalID ).executeQuery();
+                                              internalID ).executeQuery();
             rs.next();
             connection.prepareStatement( "DELETE FROM " + rs.getString( 1 ) + " WHERE id = "
-                                   + internalID ).execute();
+                                         + internalID ).execute();
             connection.prepareStatement( "DELETE FROM projection_lookup WHERE id = " + internalID ).execute();
             removeCRS( projection.getGeographicCRS() );
             removeIdentifiableAttributes( internalID );
@@ -314,8 +318,8 @@ public class CRSRemover {
 
         ResultSet
         projectedCRSRef = connection.prepareStatement( "SELECT * FROM projected_crs WHERE axis1_id = " +
-                                                 internalID + " OR axis2_id = " +
-                                                 internalID ).executeQuery();
+                                                       internalID + " OR axis2_id = " +
+                                                       internalID ).executeQuery();
         if ( projectedCRSRef.next() ) {
             LOG.info( "An axis is referenced by projectedCRS(s) that are still used in the " +
             "database. ");
@@ -323,8 +327,8 @@ public class CRSRemover {
         }
         ResultSet
         geographicCRSRef = connection.prepareStatement( "SELECT * FROM geographic_crs WHERE axis1_id = " +
-                                                  internalID + " OR axis2_id = " +
-                                                  internalID ).executeQuery();
+                                                        internalID + " OR axis2_id = " +
+                                                        internalID ).executeQuery();
         if ( geographicCRSRef.next() ) {
             LOG.info( "An axis is referenced by projectedCRS(s) that are still used in the " +
             "database. ");
@@ -332,9 +336,9 @@ public class CRSRemover {
         }
         ResultSet
         geocentricCRSRef = connection.prepareStatement( "SELECT * FROM geocentric_crs WHERE axis1_id = " +
-                                                  internalID + " OR axis2_id = " +
-                                                  internalID + " OR axis3_id = " +
-                                                  internalID ).executeQuery();
+                                                        internalID + " OR axis2_id = " +
+                                                        internalID + " OR axis3_id = " +
+                                                        internalID ).executeQuery();
         if ( geocentricCRSRef.next() ) {
             LOG.info( "An axis is referenced by projectedCRS(s) that are still used in the " +
             "database. ");
@@ -342,7 +346,7 @@ public class CRSRemover {
         }
         ResultSet
         verticalCRSRef = connection.prepareStatement( "SELECT * FROM vertical_crs WHERE axis_id = " +
-                                                internalID ).executeQuery();
+                                                      internalID ).executeQuery();
         if ( verticalCRSRef.next() ) {
             LOG.info( "An axis is referenced by projectedCRS(s) that are still used in the " +
             "database. ");
@@ -350,7 +354,7 @@ public class CRSRemover {
         }
         ResultSet
         compoundCRSRef = connection.prepareStatement( "SELECT * FROM compound_crs WHERE height_axis_id = " +
-                                                internalID ).executeQuery();
+                                                      internalID ).executeQuery();
         if ( compoundCRSRef.next() ) {
             LOG.info( "An axis is referenced by projectedCRS(s) that are still used in the " +
             "database. ");
@@ -387,7 +391,7 @@ public class CRSRemover {
 
             ResultSet
             compoundRef = connection.prepareStatement( "SELECT * FROM compound_crs " +
-                                                 "WHERE base_crs = " + internalID ).executeQuery();
+                                                       "WHERE base_crs = " + internalID ).executeQuery();
             if ( compoundRef.next() ) {
                 LOG.info( "A projected CRS is referenced by compoundCrs(s) still in the database" );
                 return;
@@ -407,7 +411,7 @@ public class CRSRemover {
 
             ResultSet
             compoundRef = connection.prepareStatement( "SELECT * FROM compound_crs " +
-                                            "WHERE base_crs = " + internalID ).executeQuery();
+                                                       "WHERE base_crs = " + internalID ).executeQuery();
             if ( compoundRef.next() ) {
                 LOG.info( "A geographicCRS is referenced by compoundCRS(s) that " +
                 "are still in the database." );
@@ -417,7 +421,7 @@ public class CRSRemover {
 
             ResultSet
             tmRef = connection.prepareStatement( "SELECT * FROM transverse_mercator " +
-                                           "WHERE geographic_crs_id = " + internalID ).executeQuery();
+                                                 "WHERE geographic_crs_id = " + internalID ).executeQuery();
             if ( tmRef.next() ) {
                 LOG.info( "A geographicCRS is referenced by projection(s) that " +
                 "are still in the database." );
@@ -426,7 +430,7 @@ public class CRSRemover {
 
             ResultSet
             lccRef = connection.prepareStatement( "SELECT * FROM lambert_conformal_conic " +
-                                            "WHERE geographic_crs_id = " + internalID ).executeQuery();
+                                                  "WHERE geographic_crs_id = " + internalID ).executeQuery();
             if ( lccRef.next() ) {
                 LOG.info( "A geographicCRS is referenced by projection(s) that " +
                 "are still in the database." );
@@ -435,7 +439,7 @@ public class CRSRemover {
 
             ResultSet
             laeaRef = connection.prepareStatement( "SELECT * FROM lambert_azimuthal_equal_area " +
-                                             "WHERE geographic_crs_id = " + internalID ).executeQuery();
+                                                   "WHERE geographic_crs_id = " + internalID ).executeQuery();
             if ( laeaRef.next() ) {
                 LOG.info( "A geographicCRS is referenced by projection(s) that " +
                 "are still in the database." );
@@ -444,7 +448,7 @@ public class CRSRemover {
 
             ResultSet
             salRef = connection.prepareStatement( "SELECT * FROM stereographic_alternative " +
-                                            "WHERE geographic_crs_id = " + internalID ).executeQuery();
+                                                  "WHERE geographic_crs_id = " + internalID ).executeQuery();
             if ( salRef.next() ) {
                 LOG.info( "A geographicCRS is referenced by projection(s) that " +
                 "are still in the database." );
@@ -453,7 +457,7 @@ public class CRSRemover {
 
             ResultSet
             sazRef = connection.prepareStatement( "SELECT * FROM stereographic_azimuthal " +
-                                            "WHERE geographic_crs_id = " + internalID ).executeQuery();
+                                                  "WHERE geographic_crs_id = " + internalID ).executeQuery();
             if ( sazRef.next() ) {
                 LOG.info( "A geographicCRS is referenced by projection(s) that " +
                 "are still in the database." );
@@ -475,7 +479,7 @@ public class CRSRemover {
 
             ResultSet
             compoundRef = connection.prepareStatement( "SELECT * FROM compound_crs " +
-                                            "WHERE base_crs = " + internalID ).executeQuery();
+                                                       "WHERE base_crs = " + internalID ).executeQuery();
             if ( compoundRef.next() ) {
                 LOG.info( "A geocentricCRS is referenced by compoundCRS(s) that " +
                 "are still in the database." );
@@ -558,24 +562,107 @@ public class CRSRemover {
     }
 
     /**
-     * Command-line tool for removing a CRS given in WKT format, from a file ( provided as
-     * command-line argument).
+     * Command-line tool for removing a CRS given from one of the CRS database.
+     * The first argument is 'wkt' or 'xml'. The second argument is either a filename (that contains a 
+     * CRS in WKT format) or the id of the CRS, taken from the deegree-crs-configuration.xml.
      * @param args
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @throws SQLException
+     * @throws Exception 
+     * @throws Exception 
      */
-    public static void main( String[] args ) throws IOException, ClassNotFoundException, SQLException {
-        // get the instantiated CRS from WKT format
-        WKTParser parser = new WKTParser( args[0] );
-        CoordinateSystem crs = parser.parseCoordinateSystem();
+    public static void main( String[] args ) throws Exception {
 
-        // preparing the crs to remove
-        List<CoordinateSystem> crsList = new ArrayList<CoordinateSystem>();
-        crsList.add( crs );
+        if ( args.length != 2 ) {
+            throw new Exception( "Exactly 3 arguments have to be provided ( 'xml|wkt|swap      crs-code-type|wkt-filename' )" );
+        }
 
-        DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration
-        ( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
-        dbProvider.remove( crsList );
+        try {
+            CoordinateSystem crs = null;
+            if ( args[0].equals( "wkt" ) ) {
+                // get the instantiated CRS from WKT format
+                WKTParser parser = new WKTParser( args[1] );
+                crs = parser.parseCoordinateSystem();
+            } else if ( args[0].equals( "xml" ) || args[0].equals( "swap" ) ) {
+                crs = CRSRegistry.lookup( args[1] );
+
+            } else {
+                throw new Exception( "First argument must be either 'xml', 'wkt' or 'swap'" );
+            }
+            
+            if ( args[0].equals( "swap" ) ) {
+                DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
+
+                dbProvider.getRemover().swapAxesOfCRS( crs );
+            } else {
+            
+                // preparing the crs to remove
+                List<CoordinateSystem> crsList = new ArrayList<CoordinateSystem>();
+                crsList.add( crs );
+            
+                DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();            
+                dbProvider.remove( crsList );
+            }
+        } catch ( UnknownCRSException e ) {
+            System.err.println( "The crs code-type provided as the second argument is unknown. Original exception message: '" + e.getMessage() + "'" );
+        } catch ( SQLException e ) {
+            System.err.println( e.getMessage() ); 
+        } catch ( IOException e ) {
+            System.err.println( e.getMessage() );
+        }
     }
+    
+    private void swapAxesOfCRS( CoordinateSystem crs ) throws Exception {
+        Axis[] axes = crs.getAxis();
+        
+        int internalID = getInternalID( crs );
+        
+        PreparedStatement ps = connection.prepareStatement( "SELECT table_name FROM crs_lookup WHERE id = ?" );
+        ps.setInt( 1, internalID );
+        ResultSet rs = ps.executeQuery();
+        if ( !rs.next()) {
+            throw new Exception( "The table 'crs_lookup' does not contain an entry for id = " + internalID );
+        }
+        
+        String nameCRS = rs.getString( 1 );
+        
+        int axis1ID = 0;
+        int axis2ID = 0;
+        if ( nameCRS.equals( "geographic_crs" ) ) {
+            PreparedStatement ps2 = connection.prepareStatement( "SELECT axis1_id, axis2_id FROM geographic_crs WHERE id = ?" );
+            ps2.setInt( 1, internalID );
+            ResultSet rs2 = ps2.executeQuery();
+            if ( !rs2.next() ) {
+                throw new Exception( "The table geographic_crs does not contain an entry for id = " + internalID );
+            }
+            
+            axis1ID = rs2.getInt( 1 );
+            axis2ID = rs2.getInt( 2 );
+            
+            PreparedStatement ps3 = connection.prepareStatement( "UPDATE geographic_crs SET axis1_id = ?, axis2_id = ? WHERE id = ?" );
+            ps3.setInt( 1, axis2ID );
+            ps3.setInt( 2, axis1ID );
+            ps3.setInt( 3, internalID );
+            ps3.executeUpdate();
+            
+        } else if ( nameCRS.equals( "projected_crs" ) ) {
+            PreparedStatement ps2 = connection.prepareStatement( "SELECT axis1_id, axis2_id FROM projected_crs WHERE id = ?" );
+            ps2.setInt( 1, internalID );
+            ResultSet rs2 = ps2.executeQuery();
+            if ( !rs2.next() ) {
+                throw new Exception( "The table projected_crs does not contain an entry for id = " + internalID );
+            }
+            
+            axis1ID = rs2.getInt( 1 );
+            axis2ID = rs2.getInt( 2 );
+            
+            PreparedStatement ps3 = connection.prepareStatement( "UPDATE projected_crs SET axis1_id = ?, axis2_id = ? WHERE id = ?" );
+            ps3.setInt( 1, axis2ID );
+            ps3.setInt( 2, axis1ID );
+            ps3.setInt( 3, internalID );
+            ps3.executeUpdate();
+            
+        } else {
+            throw new Exception( "Swapping axes is not functional for other CRSs than geographic- and projected." );
+        }                
+    }    
+    
 }
