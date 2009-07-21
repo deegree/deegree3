@@ -283,6 +283,13 @@ public class DatabaseCRSProvider implements CRSProvider {
         return conn;
     }
 
+    /**
+     * 
+     * @return  the remover object that was initialized once the db crs provider was instantiated. 
+     */
+    public CRSRemover getRemover() {
+        return remover;
+    }
     
     /**
      * @param   the {@link CRSCodeType} of the wanted identifiable 
