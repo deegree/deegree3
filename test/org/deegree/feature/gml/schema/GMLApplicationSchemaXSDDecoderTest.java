@@ -38,7 +38,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.junit.Test;
 
-public class GMLApplicationSchemaXSDAdapterTest {
+public class GMLApplicationSchemaXSDDecoderTest {
 
     @Test
     public void testParsing()
@@ -49,7 +49,7 @@ public class GMLApplicationSchemaXSDAdapterTest {
 //        String schemaURL = "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
         // String schemaURL =
         // "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
-        ApplicationSchemaXSDAdapter adapter = new ApplicationSchemaXSDAdapter( schemaURL, GMLVersion.GML_31 );
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( schemaURL, GMLVersion.GML_31 );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         for ( FeatureType featureType : fts ) {
             System.out.println ("\nfeatureType: " + featureType);

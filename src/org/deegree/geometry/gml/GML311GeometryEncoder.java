@@ -113,20 +113,20 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GML311GeometryExporter {
+public class GML311GeometryEncoder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GML311GeometryExporter.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GML311GeometryEncoder.class );
 
     private XMLStreamWriter writer;
 
     private Set<String> exportedIds;
 
-    public GML311GeometryExporter( XMLStreamWriter writer ) {
+    public GML311GeometryEncoder( XMLStreamWriter writer ) {
         this.writer = writer;
         exportedIds = new HashSet<String>();
     }
 
-    public GML311GeometryExporter( XMLStreamWriter writer, Set<String> exportedIds ) {
+    public GML311GeometryEncoder( XMLStreamWriter writer, Set<String> exportedIds ) {
         this.writer = writer;
         this.exportedIds = exportedIds;
     }

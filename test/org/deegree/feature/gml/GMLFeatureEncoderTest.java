@@ -53,7 +53,7 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
-import org.deegree.feature.gml.schema.ApplicationSchemaXSDAdapter;
+import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.gml.schema.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.junit.XMLAssert;
@@ -70,7 +70,7 @@ import org.xml.sax.InputSource;
  * @version $Revision: $, $Date: $
  *
  */
-public class GMLFeatureExporterTest {
+public class GMLFeatureEncoderTest {
 
     final String DIR = "testdata/features/";
 
@@ -86,16 +86,16 @@ public class GMLFeatureExporterTest {
                             IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException,
                             XMLParsingException, UnknownCRSException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
-        ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL,
+        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
                                                                                         GMLVersion.GML_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
-        URL docURL = GMLFeatureExporterTest.class.getResource( DIR + SOURCE_FILE );
+        URL docURL = GMLFeatureEncoderTest.class.getResource( DIR + SOURCE_FILE );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema, idContext );
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
         Feature feature = gmlAdapter.parseFeature(new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
         idContext.resolveXLinks( schema );
 
@@ -111,7 +111,7 @@ public class GMLFeatureExporterTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GMLFeatureExporter exporter = new GMLFeatureExporter( writer );
+        GMLFeatureEncoder exporter = new GMLFeatureEncoder( writer );
         exporter.export( feature );
         writer.flush();
         writer.close();

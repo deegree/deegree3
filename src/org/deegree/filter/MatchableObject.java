@@ -65,10 +65,6 @@ public interface MatchableObject {
 
     /**
      * Returns the values that are selected by the given {@link PropertyName} expression.
-     * <p>
-     * Usually, a {@link PropertyName} selects one or more properties of the object, but it allows for all kinds of
-     * XPath 1.0-expressions, e.g. <code>true()</code>.
-     * </p>
      * 
      * @param propName
      *            XPath expression that usually selects a property

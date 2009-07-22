@@ -107,17 +107,17 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Revision:$, $Date:$
  */
-class GML311CurveSegmentParser extends GML311BaseParser {
+class GML311CurveSegmentDecoder extends GML311BaseDecoder {
 
-    private static Logger LOG = LoggerFactory.getLogger( GML311CurveSegmentParser.class );
+    private static Logger LOG = LoggerFactory.getLogger( GML311CurveSegmentDecoder.class );
 
-    private GML311GeometryParser geometryParser;
+    private GML311GeometryDecoder geometryParser;
 
     /**
      * @param geometryParser
      * @param geomFac
      */
-    GML311CurveSegmentParser( GML311GeometryParser geometryParser, GeometryFactory geomFac ) {
+    GML311CurveSegmentDecoder( GML311GeometryDecoder geometryParser, GeometryFactory geomFac ) {
         super( geomFac );
         this.geometryParser = geometryParser;
     }

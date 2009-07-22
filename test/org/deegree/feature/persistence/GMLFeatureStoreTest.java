@@ -56,13 +56,13 @@ import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.gml.GMLFeatureParserTest;
+import org.deegree.feature.gml.GMLFeatureDecoderTest;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.gml.GML311GeometryExporter;
+import org.deegree.geometry.gml.GML311GeometryEncoder;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.protocol.wfs.getfeature.FilterQuery;
 import org.junit.Before;
@@ -90,7 +90,7 @@ public class GMLFeatureStoreTest {
         JAXBAdapter adapter = new JAXBAdapter( url );
         ApplicationSchema schema = adapter.getApplicationSchema();
 
-        URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
+        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         store = new GMLFeatureStore( docURL, schema );
     }
 
@@ -162,7 +162,7 @@ public class GMLFeatureStoreTest {
         OutputStream out = new FileOutputStream( "/tmp/exported_ring.gml");
         XMLStreamWriter writer = outputFactory.createXMLStreamWriter( out );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
-        GML311GeometryExporter exporter = new GML311GeometryExporter(writer );
+        GML311GeometryEncoder exporter = new GML311GeometryEncoder(writer );
         exporter.export( (Ring) o);
     }
 }

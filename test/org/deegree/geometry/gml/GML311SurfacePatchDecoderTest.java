@@ -47,8 +47,8 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.gml.GML311GeometryParser;
-import org.deegree.geometry.gml.GML311SurfacePatchParser;
+import org.deegree.geometry.gml.GML311GeometryDecoder;
+import org.deegree.geometry.gml.GML311SurfacePatchDecoder;
 import org.deegree.geometry.primitive.surfacepatches.Cone;
 import org.deegree.geometry.primitive.surfacepatches.Cylinder;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
@@ -67,7 +67,7 @@ import org.junit.Test;
  *
  * @version $Revision:$, $Date:$
  */
-public class GML311SurfacePatchParserTest {
+public class GML311SurfacePatchDecoderTest {
 
     private GeometryFactory geomFac;
 
@@ -135,14 +135,14 @@ public class GML311SurfacePatchParserTest {
     private XMLStreamReaderWrapper getParser( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311SurfacePatchParserTest.class.getResource( "testdata/patches/"
+                                                                       GML311SurfacePatchDecoderTest.class.getResource( "testdata/patches/"
                                                                                                                        + fileName ) );
         xmlReader.nextTag();
         return xmlReader;
     }
 
-    private GML311SurfacePatchParser getPatchParser() {
+    private GML311SurfacePatchDecoder getPatchParser() {
         GeometryFactory geomFac = new GeometryFactory();
-        return new GML311SurfacePatchParser( new GML311GeometryParser(), geomFac );
+        return new GML311SurfacePatchDecoder( new GML311GeometryDecoder(), geomFac );
     }
 }

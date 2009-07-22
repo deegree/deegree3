@@ -83,15 +83,15 @@ import org.deegree.geometry.standard.points.PointsList;
  * 
  * @version $Revision:$, $Date:$
  */
-class GML311SurfacePatchParser extends GML311BaseParser {
+class GML311SurfacePatchDecoder extends GML311BaseDecoder {
 
-    private GML311GeometryParser geometryParser;
+    private GML311GeometryDecoder geometryParser;
 
     /**
      * @param geometryParser
      * @param geomFac
      */
-    GML311SurfacePatchParser( GML311GeometryParser geometryParser, GeometryFactory geomFac ) {
+    GML311SurfacePatchDecoder( GML311GeometryDecoder geometryParser, GeometryFactory geomFac ) {
         super( geomFac );
         this.geometryParser = geometryParser;
     }

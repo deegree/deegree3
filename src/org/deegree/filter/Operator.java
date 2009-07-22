@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
 import org.deegree.filter.comparison.ComparisonOperator;
@@ -40,13 +40,13 @@ import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.spatial.SpatialOperator;
 
 /**
- * {@link Operator} instances are the building blocks of {@link OperatorFilter}s. They may be nested recursively -- an
- * argument of an {@link Operator} can be another {@link Operator} so they form a tree structure that can be evaluated
- * by traversing it.
- *
+ * {@link Operator} instances are predicates and the building blocks of {@link OperatorFilter}s. They may be nested
+ * recursively -- an argument of an {@link Operator} can be another {@link Operator} so they form a tree structure that
+ * can be evaluated by traversing it.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public interface Operator {
@@ -65,14 +65,14 @@ public interface Operator {
 
     /**
      * Returns the type of operator. Use this to safely determine the subtype of {@link Operator}.
-     *
+     * 
      * @return type of operator
      */
     public Type getType();
 
     /**
      * Determines the value of the boolean operator.
-     *
+     * 
      * @param object
      *            {@link MatchableObject} to evaluate the operator against
      * @return true, if the operator evaluates to true, false otherwise

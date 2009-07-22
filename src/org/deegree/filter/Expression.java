@@ -42,9 +42,23 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.Mul;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.expression.Sub;
+import org.deegree.geometry.Geometry;
 
 /**
- * 
+ * An <code>Expression</code> describes a rule to obtain a value that may be derived from the properties of a
+ * {@link MatchableObject}.
+ * <p>
+ * Note that the objects returned by {@link #evaluate(MatchableObject)} is an <code>Object[]</code>, as an expression
+ * may evaluate to multiple values, e.g. a {@link PropertyName} that targets a multi property of a feature. The single
+ * values in the array are usually one of the following:
+ * <ul>
+ * <li><code>String</code></li>
+ * <li><code>Number</code></li>
+ * <li><code>Boolean</code></li>
+ * <li><code>Date</code></li>
+ * <li>{@link Geometry}</li>
+ * </ul>
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -91,7 +105,7 @@ public interface Expression {
      * Determines the values of the expression for the given {@link MatchableObject}.
      * <p>
      * Note that this returns an <code>Object[]</code>, as an expression may evaluate to multiple values, e.g. a
-     * {@link PropertyName} that targets a multi property.
+     * {@link PropertyName} that targets a multi property of a feature.
      * </p>
      * 
      * @param obj

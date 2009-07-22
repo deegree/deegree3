@@ -73,7 +73,7 @@ import org.deegree.feature.types.property.SimplePropertyType;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ApplicationSchemaXSDExporter {
+public class ApplicationSchemaXSDEncoder {
 
     private static final String GML_212_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2.1/feature.xsd";
 
@@ -91,14 +91,14 @@ public class ApplicationSchemaXSDExporter {
     private String abstractGMLFeatureElement;
 
     /**
-     * Creates a new {@link ApplicationSchemaXSDExporter} for the given GML version and optional import URL.
+     * Creates a new {@link ApplicationSchemaXSDEncoder} for the given GML version and optional import URL.
      * 
      * @param version
      *            gml version that exported schemas will comply to
      * @param importURLs
      *            to be imported in the generated schema document, this may also contain a URL for the gml namespace
      */
-    public ApplicationSchemaXSDExporter( GMLVersion version, Map<String, String> importURLs ) {
+    public ApplicationSchemaXSDEncoder( GMLVersion version, Map<String, String> importURLs ) {
 
         this.version = version;
         if ( importURLs == null ) {

@@ -60,7 +60,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.Property;
-import org.deegree.feature.gml.schema.ApplicationSchemaXSDAdapter;
+import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.gml.schema.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -85,7 +85,7 @@ import org.junit.Test;
  *
  * @version $Revision:$, $Date:$
  */
-public class GMLFeatureParserTest {
+public class GMLFeatureDecoderTest {
 
     private static final String BASE_DIR = "testdata/features/";
 
@@ -105,9 +105,9 @@ public class GMLFeatureParserTest {
         FeatureType[] fts = new FeatureType[] { ft };
         ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>(), null );
 
-        GMLFeatureParser adapter = new GMLFeatureParser( schema );
+        GMLFeatureDecoder adapter = new GMLFeatureDecoder( schema );
 
-        URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "SimpleFeatureExample1.gml" );
+        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "SimpleFeatureExample1.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
@@ -139,9 +139,9 @@ public class GMLFeatureParserTest {
         FeatureType ft = new GenericFeatureType( new QName( "Country" ), propDecls, false );
         FeatureType[] fts = new FeatureType[] { ft };
         ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>(), null );
-        GMLFeatureParser adapter = new GMLFeatureParser( schema );
+        GMLFeatureDecoder adapter = new GMLFeatureDecoder( schema );
 
-        URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "SimpleFeatureExampleNoNS1.gml" );
+        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "SimpleFeatureExampleNoNS1.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
@@ -186,9 +186,9 @@ public class GMLFeatureParserTest {
         fts[1] = new GenericFeatureCollectionType( new QName( "http://www.opengis.net/gml", "FeatureCollection" ),
                                                    propDecls, false );
         ApplicationSchema schema = new ApplicationSchema( fts, new HashMap<FeatureType, FeatureType>(), null );
-        GMLFeatureParser adapter = new GMLFeatureParser( schema );
+        GMLFeatureDecoder adapter = new GMLFeatureDecoder( schema );
 
-        URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "SimpleFeatureCollectionExample1.gml" );
+        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "SimpleFeatureCollectionExample1.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
@@ -209,7 +209,7 @@ public class GMLFeatureParserTest {
                             XMLParsingException, UnknownCRSException {
 
         String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2008/IMRO2008-with-xlinks.xsd";
-        ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL,
+        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
                                                                                         GMLVersion.GML_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
@@ -219,7 +219,7 @@ public class GMLFeatureParserTest {
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema, idContext );
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
         Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
         System.out.println( "A" );
         idContext.resolveXLinks( schema );
@@ -234,7 +234,7 @@ public class GMLFeatureParserTest {
                             XMLParsingException, UnknownCRSException {
 
         String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2006/IMRO2006-adapted.xsd";
-        ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL,
+        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
                                                                                         GMLVersion.GML_31 );
 
         URL docURL = new URL(
@@ -243,7 +243,7 @@ public class GMLFeatureParserTest {
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema(), idContext );
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( xsdAdapter.extractFeatureTypeSchema(), idContext );
         Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
 
         System.out.println( idContext );
@@ -260,9 +260,9 @@ public class GMLFeatureParserTest {
                             XMLParsingException, UnknownCRSException {
 
         String schemaURL = "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
-        ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL,
+        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
                                                                                         GMLVersion.GML_31 );
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( xsdAdapter.extractFeatureTypeSchema() );
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( xsdAdapter.extractFeatureTypeSchema() );
 
         URL docURL = new URL( "file:///home/schneider/workspace/lkee_xplanung/resources/data/BP2070.gml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
@@ -287,12 +287,12 @@ public class GMLFeatureParserTest {
 //                                                                                        GMLVersion.VERSION_31 );
 //        ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
-        URL docURL = GMLFeatureParserTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
+        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema, idContext );
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature(
                                                                             new XMLStreamReaderWrapper(
                                                                                                         xmlReader,
@@ -311,7 +311,7 @@ public class GMLFeatureParserTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException {
         String schemaURL = "file:///home/schneider/workspace/schemas/citygml/profiles/base/1.0/CityGML.xsd";
-        ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL,
+        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
                                                                                         GMLVersion.GML_31 );
 
         URL docURL = new URL( "file:///home/schneider/Desktop/Stadt-Ettenheim-LoD3_edited_v1.0.0.gml" );
@@ -320,7 +320,7 @@ public class GMLFeatureParserTest {
         xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
-        GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema, idContext );
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
         long begin = System.currentTimeMillis();
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature(
                                                                             new XMLStreamReaderWrapper(

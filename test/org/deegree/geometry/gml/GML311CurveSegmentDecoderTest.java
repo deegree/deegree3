@@ -48,8 +48,8 @@ import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.gml.GML311CurveSegmentParser;
-import org.deegree.geometry.gml.GML311GeometryParser;
+import org.deegree.geometry.gml.GML311CurveSegmentDecoder;
+import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.deegree.geometry.primitive.curvesegments.Arc;
 import org.deegree.geometry.primitive.curvesegments.ArcByBulge;
 import org.deegree.geometry.primitive.curvesegments.ArcByCenterPoint;
@@ -77,7 +77,7 @@ import org.junit.Test;
  *
  * @version $Revision:$, $Date:$
  */
-public class GML311CurveSegmentParserTest {
+public class GML311CurveSegmentDecoderTest {
 
     private GeometryFactory geomFac;
 
@@ -360,16 +360,16 @@ public class GML311CurveSegmentParserTest {
     private XMLStreamReaderWrapper getReader( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311CurveSegmentParserTest.class.getResource( "testdata/segments/"
+                                                                       GML311CurveSegmentDecoderTest.class.getResource( "testdata/segments/"
                                                                                                                        + fileName ) );
         xmlReader.nextTag();
         return xmlReader;
     }
 
-    private GML311CurveSegmentParser getParser()
+    private GML311CurveSegmentDecoder getParser()
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         GMLIdContext idContext = new GMLIdContext();
         GeometryFactory geomFac = new GeometryFactory();
-        return new GML311CurveSegmentParser( new GML311GeometryParser(), geomFac );
+        return new GML311CurveSegmentDecoder( new GML311GeometryDecoder(), geomFac );
     }
 }

@@ -40,9 +40,9 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.feature.gml.CustomPropertyParser;
+import org.deegree.feature.gml.CustomPropertyDecoder;
 
-public class GenericCustomPropertyParser implements CustomPropertyParser<GenericCustomPropertyValue>{
+public class GenericCustomPropertyParser implements CustomPropertyDecoder<GenericCustomPropertyValue>{
 
     @Override
     public GenericCustomPropertyValue parse( XMLStreamReaderWrapper xmlStream )

@@ -48,7 +48,7 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
  *
  * @version $Revision: $, $Date: $
  */
-public interface CustomPropertyParser<T> {
+public interface CustomPropertyDecoder<T> {
 
     public T parse (XMLStreamReaderWrapper xmlStream) throws XMLStreamException;
 

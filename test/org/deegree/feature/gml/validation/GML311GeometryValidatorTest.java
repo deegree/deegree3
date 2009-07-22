@@ -45,7 +45,7 @@ import javax.xml.stream.XMLStreamException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.gml.GML311GeometryParserTest;
+import org.deegree.geometry.gml.GML311GeometryDecoderTest;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
@@ -129,7 +129,7 @@ public class GML311GeometryValidatorTest {
     private XMLStreamReaderWrapper getParser( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( BASE_DIR
+                                                                       GML311GeometryDecoderTest.class.getResource( BASE_DIR
                                                                                                                    + fileName ) );
         return xmlReader;
     }

@@ -147,17 +147,17 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision:$, $Date:$
  */
-public class GML311GeometryParser extends GML311BaseParser {
+public class GML311GeometryDecoder extends GML311BaseDecoder {
 
-    private static Logger LOG = LoggerFactory.getLogger( GML311GeometryParser.class );
+    private static Logger LOG = LoggerFactory.getLogger( GML311GeometryDecoder.class );
 
     private static String FID = "gid";
 
     private static String GMLID = "id";
 
-    private final GML311CurveSegmentParser curveSegmentParser;
+    private final GML311CurveSegmentDecoder curveSegmentParser;
 
-    private final GML311SurfacePatchParser surfacePatchParser;
+    private final GML311SurfacePatchDecoder surfacePatchParser;
 
     private final GMLIdContext idContext;
 
@@ -234,14 +234,14 @@ public class GML311GeometryParser extends GML311BaseParser {
         complexElements.add( "GeometricComplex" );
     }
 
-    public GML311GeometryParser( GeometryFactory geomFac, GMLIdContext idContext ) {
+    public GML311GeometryDecoder( GeometryFactory geomFac, GMLIdContext idContext ) {
         super( geomFac );
         this.idContext = idContext;
-        curveSegmentParser = new GML311CurveSegmentParser( this, geomFac );
-        surfacePatchParser = new GML311SurfacePatchParser( this, geomFac );
+        curveSegmentParser = new GML311CurveSegmentDecoder( this, geomFac );
+        surfacePatchParser = new GML311SurfacePatchDecoder( this, geomFac );
     }
 
-    public GML311GeometryParser() {
+    public GML311GeometryDecoder() {
         this( new GeometryFactory(), new GMLIdContext() );
     }
 

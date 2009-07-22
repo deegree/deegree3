@@ -63,7 +63,7 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.gml.GML311GeometryExporter;
+import org.deegree.geometry.gml.GML311GeometryEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,22 +78,22 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-public class GMLFeatureExporter212 {
+public class GMLFeatureEncoder212 {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureExporter212.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureEncoder212.class );
 
     private Set<String> exportedIds = new HashSet<String>();
 
     private XMLStreamWriter writer;
 
-    private GML311GeometryExporter geometryExporter;
+    private GML311GeometryEncoder geometryExporter;
 
     /**
      * @param writer
      */
-    public GMLFeatureExporter212( XMLStreamWriter writer ) {
+    public GMLFeatureEncoder212( XMLStreamWriter writer ) {
         this.writer = writer;
-        geometryExporter = new GML311GeometryExporter( writer, exportedIds );
+        geometryExporter = new GML311GeometryEncoder( writer, exportedIds );
     }
 
     // public void export( FeatureCollection featureCol ) throws XMLStreamException {

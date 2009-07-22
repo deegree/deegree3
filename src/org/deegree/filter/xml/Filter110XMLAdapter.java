@@ -48,7 +48,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -95,7 +94,7 @@ import org.deegree.filter.spatial.Intersects;
 import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.gml.GML311GeometryParser;
+import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.jaxen.SimpleNamespaceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -487,7 +486,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
         case INTERSECTS: {
             FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
             PropertyName parameter1 = parsePropertyName( childElementIter.next() );
-            GML311GeometryParser geomParser = new GML311GeometryParser();
+            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
 
             OMElement geometryElement = childElementIter.next();
             XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
@@ -502,7 +501,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
         case BBOX: {
             FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
             PropertyName parameter1 = parsePropertyName( childElementIter.next() );
-            GML311GeometryParser geomParser = new GML311GeometryParser();
+            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
 
             OMElement geometryElement = childElementIter.next();
             XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
@@ -1017,5 +1016,4 @@ public class Filter110XMLAdapter extends XMLAdapter {
         }
         return ArrayUtils.join( ", ", names );
     }
-
 }

@@ -76,7 +76,7 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.gml.GML311GeometryParser;
+import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,9 +88,9 @@ import org.slf4j.LoggerFactory;
  *
  * @version $Revision:$, $Date:$
  */
-public class GMLFeatureParser extends XMLAdapter {
+public class GMLFeatureDecoder extends XMLAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureParser.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureDecoder.class );
 
     private static String FID = "fid";
 
@@ -104,18 +104,18 @@ public class GMLFeatureParser extends XMLAdapter {
 
     private final GeometryFactory geomFac;
 
-    private final Map<PropertyType, CustomPropertyParser<?>> ptToParser = new HashMap<PropertyType, CustomPropertyParser<?>>();
+    private final Map<PropertyType, CustomPropertyDecoder<?>> ptToParser = new HashMap<PropertyType, CustomPropertyDecoder<?>>();
 
     private final GMLIdContext idContext;
 
-    private final GML311GeometryParser geomParser;
+    private final GML311GeometryDecoder geomParser;
 
-    public GMLFeatureParser( ApplicationSchema schema, GMLIdContext idContext ) {
+    public GMLFeatureDecoder( ApplicationSchema schema, GMLIdContext idContext ) {
         this.schema = schema;
         this.xsModel = schema.getXSModel();
         this.geomFac = new GeometryFactory();
         this.idContext = idContext;
-        this.geomParser = new GML311GeometryParser( geomFac, idContext );
+        this.geomParser = new GML311GeometryDecoder( geomFac, idContext );
     }
 
     /**
@@ -125,17 +125,17 @@ public class GMLFeatureParser extends XMLAdapter {
      * @param schema
      *            schema
      */
-    public GMLFeatureParser( ApplicationSchema schema ) {
+    public GMLFeatureDecoder( ApplicationSchema schema ) {
         this( schema, new GMLIdContext() );
     }
 
     /**
-     * Registers a {@link CustomPropertyParser} that is invoked to parse properties of a certain type.
+     * Registers a {@link CustomPropertyDecoder} that is invoked to parse properties of a certain type.
      *
      * @param pt
      * @param parser
      */
-    public void registerCustomPropertyParser( PropertyType pt, CustomPropertyParser<?> parser ) {
+    public void registerCustomPropertyParser( PropertyType pt, CustomPropertyDecoder<?> parser ) {
         this.ptToParser.put( pt, parser );
     }
 
@@ -292,7 +292,7 @@ public class GMLFeatureParser extends XMLAdapter {
         LOG.debug( "- parsing property (begin): " + xmlStream.getCurrentEventInfo() );
         LOG.debug( "- property declaration: " + propDecl );
 
-        CustomPropertyParser<?> parser = ptToParser.get( propDecl );
+        CustomPropertyDecoder<?> parser = ptToParser.get( propDecl );
 
         if ( parser == null ) {
             if ( propDecl instanceof SimplePropertyType ) {

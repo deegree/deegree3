@@ -57,7 +57,7 @@ import org.junit.Test;
  *
  * @version $Revision: $, $Date: $
  */
-public class ApplicationSchemaXSDExporterTest {
+public class ApplicationSchemaXSDEncoderTest {
 
     private ApplicationSchema schema;
 
@@ -77,7 +77,7 @@ public class ApplicationSchemaXSDExporterTest {
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 //        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         FormattingXMLStreamWriter writer = new FormattingXMLStreamWriter (outputFactory.createXMLStreamWriter( new FileWriter ("/home/schneider/philosopher_gml200.xsd") ));
-        new ApplicationSchemaXSDExporter(GMLVersion.GML_2, null).export( writer, schema );
+        new ApplicationSchemaXSDEncoder(GMLVersion.GML_2, null).export( writer, schema );
         writer.close();
     }
 }

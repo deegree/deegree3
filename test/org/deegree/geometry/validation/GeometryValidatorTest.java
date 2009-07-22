@@ -50,8 +50,8 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.gml.GML311GeometryParser;
-import org.deegree.geometry.gml.GML311GeometryParserTest;
+import org.deegree.geometry.gml.GML311GeometryDecoder;
+import org.deegree.geometry.gml.GML311GeometryDecoderTest;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
@@ -253,10 +253,10 @@ public class GeometryValidatorTest {
     private Geometry parseGeometry( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
-                                                                       GML311GeometryParserTest.class.getResource( BASE_DIR
+                                                                       GML311GeometryDecoderTest.class.getResource( BASE_DIR
                                                                                                                    + fileName ) );
         xmlReader.nextTag();
-        return new GML311GeometryParser( geomFac, new GMLIdContext() ).parseAbstractGeometry( xmlReader, null );
+        return new GML311GeometryDecoder( geomFac, new GMLIdContext() ).parseAbstractGeometry( xmlReader, null );
     }
 }
 

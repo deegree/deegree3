@@ -53,7 +53,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
-import org.deegree.feature.gml.GMLFeatureParser;
+import org.deegree.feature.gml.GMLFeatureDecoder;
 import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -92,7 +92,7 @@ public class GMLFeatureStore implements FeatureStore {
                             UnknownCRSException, FactoryConfigurationError, IOException {
         this.schema = schema;
         GMLIdContext idContext = new GMLIdContext();
-        GMLFeatureParser parser = new GMLFeatureParser( schema, idContext );
+        GMLFeatureDecoder parser = new GMLFeatureDecoder( schema, idContext );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
