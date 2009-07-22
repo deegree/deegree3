@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.tesselation;
 
@@ -54,13 +54,13 @@ import org.slf4j.LoggerFactory;
  * The <code>Tesselator</code> class is a {@link GLUtessellator} utility wrapper. Its main purpose is the creation of
  * a {@link RenderableQualityModel} out of a {@link GeometryQualityModel} by triangulating (tesselating) all it's
  * {@link SimpleAccessGeometry}.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class Tesselator {
     private final transient static Logger LOG = LoggerFactory.getLogger( Tesselator.class );
@@ -71,7 +71,7 @@ public class Tesselator {
 
     /**
      * Create a tesselator which triangulates all {@link SimpleAccessGeometry} of a {@link GeometryQualityModel}.
-     *
+     * 
      * @param useDirectBuffers
      *            to use direct buffers instead of heap buffers.
      */
@@ -83,12 +83,15 @@ public class Tesselator {
     /**
      * Create a renderable quality model from the given 'original' geometry model, by tesselating (triangulating) its
      * polygons.
-     *
+     * 
+     * @param objectID
+     *            identifying the given quality model, if an error occurs. May be <code>null</code>
+     * 
      * @param originalObject
      *            containing polygons
      * @return the renderable object.
      */
-    public RenderableQualityModel createRenderableQM( GeometryQualityModel originalObject ) {
+    public RenderableQualityModel createRenderableQM( String objectID, GeometryQualityModel originalObject ) {
         GLUtessellator tess = glu.gluNewTess();
         if ( originalObject == null ) {
             throw new NullPointerException( "The original object may not be null" );
@@ -99,10 +102,17 @@ public class Tesselator {
         for ( SimpleAccessGeometry geom : geometryPatches ) {
             if ( geom != null ) {
                 GeometryCallBack callBack = createAndRegisterCallBack( tess, geom );
-                RenderableGeometry result = tesselatePolygon( tess, callBack );
-                if ( result != null ) {
-                    LOG.trace( "Resulting renderable has " + result.getVertexCount() + " number of vertices." );
-                    results.add( result );
+                try {
+                    RenderableGeometry result = tesselatePolygon( tess, callBack );
+                    if ( result != null ) {
+                        LOG.trace( "Resulting renderable has " + result.getVertexCount() + " number of vertices." );
+                        results.add( result );
+                    }
+                } catch ( Exception e ) {
+                    LOG.warn( "Error while tesselating following geometry (from a quality model"
+                              + ( objectID == null || "".equals( objectID ) ? ")" : " with id: " + objectID + ")" )
+                              + ":\n" + geom.toString() + "\n(are the vertices colinear?). Original error message was:"
+                              + e.getLocalizedMessage() );
                 }
             }
         }
@@ -112,7 +122,7 @@ public class Tesselator {
 
     /**
      * Register the callback with the given tesselator.
-     *
+     * 
      * @param tess
      *            to register with
      * @param cb
@@ -129,7 +139,7 @@ public class Tesselator {
 
     /**
      * Create a renderable geometry from the given {@link SimpleAccessGeometry} by tesselating it.
-     *
+     * 
      * @param originalGeometry
      *            may not be null.
      * @return the {@link RenderableGeometry} or <code>null</code> if the given geometry could not be triangulated.
@@ -150,7 +160,7 @@ public class Tesselator {
 
     /**
      * Create a callback for the given geometry and register it with the given tesselator object.
-     *
+     * 
      * @param tess
      * @param geom
      * @return
@@ -168,7 +178,7 @@ public class Tesselator {
 
     /**
      * Tesselate the given geometry with respect to the innerrings and texture coordinates.
-     *
+     * 
      * @param tess
      * @param geom
      * @return
@@ -214,7 +224,7 @@ public class Tesselator {
 
     /**
      * Tesselate a ring indexed by the begin and end vertices not array positions.
-     *
+     * 
      * @param glu
      * @param tess
      * @param begin
