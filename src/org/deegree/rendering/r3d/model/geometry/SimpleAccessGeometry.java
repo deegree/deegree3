@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.model.geometry;
 
@@ -47,18 +47,18 @@ import org.slf4j.LoggerFactory;
 /**
  * The <code>SimpleAccessGeometry</code> class, defines geometry by a coordinate array with or without innerrings and
  * a set of colors.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author: rbezema $
- *
+ * 
  * @version $Revision: 15598 $, $Date: 2009-01-12 15:03:49 +0100 (Mo, 12 Jan 2009) $
- *
+ * 
  */
 public class SimpleAccessGeometry implements QualityModelPart {
 
     /**
-     *
+     * 
      */
     private static final long serialVersionUID = -5069487647474073270L;
 
@@ -181,7 +181,7 @@ public class SimpleAccessGeometry implements QualityModelPart {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder( super.toString() );
+        StringBuilder sb = new StringBuilder();
         if ( coordinates != null && coordinates.length > 0 ) {
             sb.append( "VertexCount: " ).append( vertexCount );
             sb.append( "\nCoordinates:\n" );
@@ -207,7 +207,7 @@ public class SimpleAccessGeometry implements QualityModelPart {
 
     /**
      * Method called while serializing this object
-     *
+     * 
      * @param out
      *            to write to.
      * @throws IOException
@@ -224,7 +224,7 @@ public class SimpleAccessGeometry implements QualityModelPart {
 
     /**
      * Method called while de-serializing (instancing) this object.
-     *
+     * 
      * @param in
      *            to create the methods from.
      * @throws IOException
