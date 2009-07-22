@@ -59,7 +59,20 @@ public class CRSCodeType {
 
     private String code;
 
+    private String codeVersion;
+
     private String codeSpace;
+
+    public CRSCodeType( String code, String codeSpace, String codeVersion ) {
+        if ( code == null )
+            throw new IllegalArgumentException( "Code cannot be null!" );
+        if ( code.trim().equals( "" ) )
+            throw new IllegalArgumentException( "Code cannot be white space(s)!" );
+
+        this.codeSpace = codeSpace;
+        this.codeVersion = codeVersion;
+        this.code = code;
+    }
 
     public CRSCodeType( String code, String codeSpace ) {
         if ( code == null )
@@ -69,6 +82,7 @@ public class CRSCodeType {
 
         this.codeSpace = codeSpace;
         this.code = code;
+        this.codeVersion = "";
     }
 
     public CRSCodeType( String codeAsString ) {
@@ -79,21 +93,38 @@ public class CRSCodeType {
 
         int n = codeAsString.length();
         String codenumber = "";
+        boolean numberFinished = false;
+        String codeversion = "";
+        boolean versionFinished = false;
         for ( int i = n - 1; i >= 0; i-- ) {
-            if ( !( codeAsString.charAt( i ) >= '0' && codeAsString.charAt( i ) <= '9' ) ) {
-                // the first non-digit encoutered by reading the code from right to left
-                break;
-            } else
+            if ( codeAsString.charAt( i ) >= '0' && codeAsString.charAt( i ) <= '9' && !numberFinished ) {
                 codenumber = codeAsString.charAt( i ) + codenumber;
+            } else if ( !versionFinished && ( ( codeAsString.charAt( i ) >= '0' && codeAsString.charAt( i ) <= '9' ) || codeAsString.charAt( i ) == '.' ) ) {
+                codeversion = codeAsString.charAt( i ) + codeversion;
+            } else if ( codeAsString.charAt( i ) == ':' && !numberFinished ) { 
+                numberFinished = true;
+            } else if ( codeAsString.charAt( i ) == ':' && !versionFinished ) {
+                versionFinished = true;
+            } else if ( codeAsString.charAt( i ) == '#' ) {
+                numberFinished = true;
+                versionFinished = true;
+            }
         }
 
         if ( codenumber.trim().equals( "" ) || ! codeAsString.toUpperCase().contains( "EPSG" ) ) {
             this.code = codeAsString;
-            this.codeSpace = "";
+            this.codeSpace = ""; 
+            this.codeVersion = "";
+        } else if ( codenumber.length() != 0 && codeversion.length() != 0 ) { 
+            this.code = codenumber;
+            this.codeVersion = codeversion;
+            this.codeSpace = "EPSG";
         } else {
             this.code = codenumber;
             this.codeSpace = "EPSG";
+            this.codeVersion = "";
         }
+
     }
 
     public static CRSCodeType valueOf( String codeAsString ) throws IllegalArgumentException {
@@ -104,20 +135,32 @@ public class CRSCodeType {
 
         int n = codeAsString.length();
         String codenumber = "";
+        boolean numberFinished = false;
+        String codeversion = "";
+        boolean versionFinished = false;
         for ( int i = n - 1; i >= 0; i-- ) {
-            if ( !( codeAsString.charAt( i ) >= '0' && codeAsString.charAt( i ) <= '9' ) ) {
-                // the first non-digit encoutered by reading the code from right to left
-                break;
-            } else
+            if ( codeAsString.charAt( i ) >= '0' && codeAsString.charAt( i ) <= '9' && !numberFinished ) {
                 codenumber = codeAsString.charAt( i ) + codenumber;
+            } else if ( !versionFinished && ( ( codeAsString.charAt( i ) >= '0' && codeAsString.charAt( i ) <= '9' ) || codeAsString.charAt( i ) == '.' ) ) {
+                codeversion = codeAsString.charAt( i ) + codeversion;
+            } else if ( codeAsString.charAt( i ) == ':' && !numberFinished ) { 
+                numberFinished = true;
+            } else if ( codeAsString.charAt( i ) == ':' && !versionFinished ) {
+                versionFinished = true;
+            } else if ( codeAsString.charAt( i ) == '#' ) {
+                numberFinished = true;
+                versionFinished = true;
+            }
         }
 
         if ( codenumber.trim().equals( "" ) || ! codeAsString.toUpperCase().contains( "EPSG" ) )
             return new CRSCodeType( codeAsString, "" );
-        else
+        else if ( codenumber.length() != 0 && codeversion.length() != 0 ) {
+            return new  CRSCodeType( codenumber, "EPSG", codeversion );
+        } else {
             return new CRSCodeType( codenumber, "EPSG" );
+        }
     }
-
 
     public String getCode() {
         return code;
@@ -125,6 +168,10 @@ public class CRSCodeType {
 
     public String getCodeSpace() {
         return codeSpace;
+    }
+
+    public String getCodeVersion() {
+        return codeVersion;
     }
 
     /**
@@ -136,12 +183,12 @@ public class CRSCodeType {
 
     @Override
     public String toString() {
-        return code + (codeSpace != null ? " (codeSpace=" + codeSpace + ")" : "");
+        return code + (codeSpace != null ? " (codeSpace=" + codeSpace + (codeVersion != null ? "; version: " + codeVersion : "" ) + ")" : "");
     }
 
     @Override
     public int hashCode() {
-        return codeSpace != null ? (codeSpace + code).hashCode() : code.hashCode();
+        return codeSpace != null ? ( codeVersion != null ? (codeSpace + code + codeVersion).hashCode() : (codeSpace + code).hashCode() ) : code.hashCode();
     }
 
     @Override
@@ -150,16 +197,19 @@ public class CRSCodeType {
             return false;
         }
         CRSCodeType that = (CRSCodeType) o;
-        if ( code.equals( that.code ) && codeSpace.equals( that.codeSpace ) ) {
+        if ( code.equals( that.code ) && codeSpace.equals( that.codeSpace ) && codeVersion.equals( that.codeVersion ) ) {
             return true;
-        } else
-            return false;
+        }
+        return false;
     }
 
     public String getEquivalentString() {
-        if ( ! codeSpace.equals( "" ) )
+        if ( ! codeSpace.equals( "" ) ) {
+            if ( !codeVersion.equals( "" ) ) {
+                return codeSpace + ":" + codeVersion + ":" + code;
+            }
             return codeSpace + ":" + code;
-        else
-            return code;
+        } 
+        return code;
     }
 }
