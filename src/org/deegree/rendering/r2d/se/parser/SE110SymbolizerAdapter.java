@@ -1000,11 +1000,11 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                                 }
                                 if ( p.second != null ) {
                                     try {
-                                        Object evald = p.second.first.evaluate( f );
-                                        if ( evald == null ) {
+                                        Object[] evald = p.second.first.evaluate( f );
+                                        if ( evald.length == 0 ) {
                                             LOG.warn( get( "R2D.EXPRESSION_TO_NULL" ), p.second.second );
                                         } else {
-                                            tmp += evald;
+                                            tmp += evald[0];
                                         }
                                     } catch ( FilterEvaluationException e ) {
                                         LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), p.second.second );

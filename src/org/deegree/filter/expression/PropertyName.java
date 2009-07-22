@@ -74,23 +74,15 @@ public class PropertyName implements Expression {
     }
 
     @Override
-    public Object evaluate( MatchableObject obj )
+    public Object[] evaluate( MatchableObject obj )
                             throws FilterEvaluationException {
-        Object value;
+        Object[] values;
         try {
-            value = obj.getPropertyValue( this );
+            values = obj.getPropertyValues( this );
         } catch ( JaxenException e ) {
             throw new FilterEvaluationException( e.getMessage() );
         }
-        if ( value instanceof String ) {
-            // try to parse the value as a double value
-            try {
-                return new Double( (String) value );
-            } catch ( NumberFormatException e ) {
-                // not a double -> eat the exception
-            }
-        }
-        return value;
+        return values;
     }
 
     @Override

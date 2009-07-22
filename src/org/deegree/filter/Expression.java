@@ -88,21 +88,19 @@ public interface Expression {
     public Type getType();
 
     /**
-     * Determines the value of the expression for the given {@link MatchableObject}.
+     * Determines the values of the expression for the given {@link MatchableObject}.
+     * <p>
+     * Note that this returns an <code>Object[]</code>, as an expression may evaluate to multiple values, e.g. a
+     * {@link PropertyName} that targets a multi property.
+     * </p>
      * 
      * @param obj
-     * @return the value of the expression
+     *            object that the expression is evaluated upon
+     * @return the values of the expression, may be empty, but never <code>null</code>
      * @throws FilterEvaluationException
      */
-    public Object evaluate( MatchableObject obj )
+    public Object[] evaluate( MatchableObject obj )
                             throws FilterEvaluationException;
 
-    /**
-     * @param object
-     *            the object that will be evaluated
-     * @return a boolean value representing the result of the And expression evaluation
-     * @throws FilterEvaluationException
-     *             if the evaluation of the object fails
-     */
     public String toString( String indent );
 }

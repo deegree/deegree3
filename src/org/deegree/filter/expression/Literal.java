@@ -69,15 +69,16 @@ public class Literal implements Expression {
      * If the value appears to be numerical, a <code>Double</code> object is returned, else a <code>String</code>.
      */
     @Override
-    public Object evaluate( MatchableObject obj ) {
+    public Object[] evaluate( MatchableObject obj ) {
 
+        Object [] result = new Object[] {value};
         // try to parse the literal as a double value
         try {
-            return new Double( value );
+            result[0] = new Double( value );
         } catch ( NumberFormatException e ) {
             // not a double -> eat the exception
         }
-        return value;
+        return result;
     }
 
     @Override    

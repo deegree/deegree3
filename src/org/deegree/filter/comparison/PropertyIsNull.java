@@ -67,7 +67,14 @@ public class PropertyIsNull extends ComparisonOperator {
     @Override    
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        return propName.evaluate( object ) == null;
+        Object[] paramValues = propName.evaluate( object );
+        // TODO what about the difference between missing and xsi:nil properties???
+        for ( Object value : paramValues ) {
+            if (value == null) {
+                return true;
+            }
+        }        
+        return false;
     }
 
     @Override    

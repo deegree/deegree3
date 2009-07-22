@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,11 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
 import org.deegree.feature.Feature;
-import org.deegree.feature.FeatureCollection;
 import org.jaxen.BaseXPath;
 import org.jaxen.JaxenException;
 
@@ -44,22 +43,21 @@ import org.jaxen.JaxenException;
  * <a href="http://jaxen.codehaus.org/">Jaxen</a> XPath implementation for {@link Feature} objects.
  * <p>
  * This is the main entry point for matching an XPath expression against a {@link Feature}. Let <code>fc</code> be a
- * {@link Feature} (or a {@link FeatureCollection} object) that you want to match against. Create a compiled XPath
- * object, then match it against one or more context nodes using the {@link #selectNodes(Object)} method, as in the
- * following example:
+ * {@link Feature} that you want to match against. Create a compiled XPath object, then match it against one or more
+ * context nodes using the {@link #selectNodes(Object)} method, as in the following example:
  * </p>
- *
+ * 
  * <pre>
  * XPath xpath = new FeatureXPath( &quot;gml:featureMember/app:Philosopher/app:friend/app:Philosopher//app:name&quot; );
  * xpath.setNamespaceContext( nsContext );
- * List&lt;Node&gt; selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+ * List&lt;?&gt; selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
  * </pre>
- *
+ * 
  * @see FeatureNode
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class FeatureXPath extends BaseXPath {
@@ -68,7 +66,7 @@ public class FeatureXPath extends BaseXPath {
 
     /**
      * Create a new <code>FeatureXPath</code> from an XPath expression string.
-     *
+     * 
      * @param xpathExpr
      *            the XPath expression
      * @throws JaxenException

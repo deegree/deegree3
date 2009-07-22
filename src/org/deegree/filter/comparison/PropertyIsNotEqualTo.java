@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.comparison;
 
 import org.deegree.filter.Expression;
@@ -41,36 +41,49 @@ import org.deegree.filter.MatchableObject;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class PropertyIsNotEqualTo extends BinaryComparisonOperator {
 
     public PropertyIsNotEqualTo( Expression param1, Expression param2, boolean matchCase ) {
-        super (param1, param2, matchCase);
+        super( param1, param2, matchCase );
     }
 
-    @Override    
+    @Override
     public SubType getSubType() {
         return SubType.PROPERTY_IS_NOT_EQUAL_TO;
     }
 
-    @Override    
+    @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        Comparable<Object> parameter1Value = checkComparableOrNull( param1.evaluate( object ));
-        Comparable<Object> parameter2Value = checkComparableOrNull(param2.evaluate( object ));
-        return !parameter1Value.equals( parameter2Value );
+        Object[] param1Values = param1.evaluate( object );
+        Object[] param2Values = param2.evaluate( object );
+        for ( Object value1 : param1Values ) {
+            Comparable<Object> parameter1Value = checkComparableOrNull( value1 );
+            for ( Object value2 : param2Values ) {
+                Comparable<Object> parameter2Value = checkComparableOrNull( value2 );
+                if ( ( parameter1Value == null && parameter2Value != null )
+                     || ( ( parameter1Value != null && parameter2Value == null ) ) ) {
+                    return true;
+                }
+                if ( parameter1Value != null && !parameter1Value.equals( parameter2Value ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
-    @Override    
+    @Override
     public String toString( String indent ) {
         String s = indent + "-PropertyIsNotEqualTo\n";
-        s += param1.toString (indent + "  ");
-        s += param2.toString (indent + "  ");
+        s += param1.toString( indent + "  " );
+        s += param2.toString( indent + "  " );
         return s;
     }
 }

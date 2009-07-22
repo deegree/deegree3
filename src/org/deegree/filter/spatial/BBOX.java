@@ -69,13 +69,18 @@ public class BBOX extends SpatialOperator {
      */
     public Envelope getBoundingBox() {
         return bbox;
-    }    
-    
+    }
+
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        Geometry param1Value = checkGeometryOrNull( geometry.evaluate( object ) );
-        return param1Value != null ? bbox.intersects( param1Value.getEnvelope() ) : false;
+        for ( Object paramValue : geometry.evaluate( object ) ) {
+            Geometry param1Value = checkGeometryOrNull( paramValue );
+            if ( param1Value != null && bbox.intersects( param1Value.getEnvelope() ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

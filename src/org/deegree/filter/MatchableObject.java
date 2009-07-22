@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.filter;
 
@@ -45,33 +45,37 @@ import org.jaxen.JaxenException;
  * <p>
  * Therefore the objects must provide access to their id and their property values using XPath-expressions.
  * </p>
- *
+ * 
  * @see Filter
  * @see Feature
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public interface MatchableObject {
 
     /**
      * Returns the identifier of the object.
-     *
+     * 
      * @return the identifier of the object or null if it is an anonymous object
      */
     public String getId();
 
     /**
-     * Returns the value of a certain property of this object.
-     *
+     * Returns the values that are selected by the given {@link PropertyName} expression.
+     * <p>
+     * Usually, a {@link PropertyName} selects one or more properties of the object, but it allows for all kinds of
+     * XPath 1.0-expressions, e.g. <code>true()</code>.
+     * </p>
+     * 
      * @param propName
-     *            XPath expression that identifies the property
-     * @return the property value
+     *            XPath expression that usually selects a property
+     * @return the selected values
      * @throws JaxenException
      *             if an exception occurs during the evaluation of the XPath expression
      */
-    public Object getPropertyValue( PropertyName propName )
+    public Object[] getPropertyValues( PropertyName propName )
                             throws JaxenException;
 }

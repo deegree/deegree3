@@ -74,7 +74,7 @@ public class Function implements Expression {
     }
 
     @Override    
-    public Object evaluate( MatchableObject object )
+    public Object[] evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         throw new FilterEvaluationException( "Evaluation of the '" + getType().name()
                                              + "' expression is not implemented yet." );

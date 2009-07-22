@@ -61,9 +61,18 @@ public class PropertyIsLessThanOrEqualTo extends BinaryComparisonOperator {
     @Override    
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        Comparable<Object> parameter1Value = checkComparableOrNull( param1.evaluate( object ));
-        Comparable<Object> parameter2Value = checkComparableOrNull(param2.evaluate( object ));
-        return parameter1Value.compareTo( parameter2Value ) <= 0;
+        Object[] param1Values = param1.evaluate( object );
+        Object[] param2Values = param2.evaluate( object );
+        for ( Object value1 : param1Values ) {
+            Comparable<Object> parameter1Value = checkComparableOrNull( value1 );
+            for ( Object value2 : param2Values ) {
+                Comparable<Object> parameter2Value = checkComparableOrNull( value2 );
+                if ( parameter1Value != null && parameter1Value.compareTo(  parameter2Value ) <= 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override    

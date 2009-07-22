@@ -1,9 +1,10 @@
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -31,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
 import java.net.URL;
@@ -52,14 +53,21 @@ import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDAdapter;
 import org.deegree.feature.gml.schema.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.filter.Filter;
-import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.xml.Filter110XMLAdapter;
+import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Tests the correct evaluation of filter expressions.
+ *
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class FilterEvaluationTest {
 
     private FeatureCollection fc;
@@ -72,8 +80,7 @@ public class FilterEvaluationTest {
     public void setUp()
                             throws Exception {
         String schemaURL = this.getClass().getResource( "../feature/gml/schema/Philosopher_typesafe.xsd" ).toString();
-        ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL,
-                                                                                        GMLVersion.GML_31 );
+        ApplicationSchemaXSDAdapter xsdAdapter = new ApplicationSchemaXSDAdapter( schemaURL, GMLVersion.GML_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
         GMLIdContext idContext = new GMLIdContext();
         GMLFeatureParser gmlAdapter = new GMLFeatureParser( schema, idContext );
@@ -83,7 +90,7 @@ public class FilterEvaluationTest {
                                                                                          docURL.openStream() );
         xmlReader.next();
         fc = (FeatureCollection) gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ),
-                                                          null);
+                                                          null );
         idContext.resolveXLinks( schema );
 
         nsContext = new SimpleNamespaceContext();
@@ -100,8 +107,11 @@ public class FilterEvaluationTest {
         Assert.assertNotNull( filter );
 
         FeatureCollection filteredCollection = fc.getMembers( filter );
-        Assert.assertEquals (1, filteredCollection.size());
-        Assert.assertEquals ("Albert Camus", filteredCollection.iterator().next().getPropertyValue( QName.valueOf( "{http://www.deegree.org/app}name" )));
+        Assert.assertEquals( 1, filteredCollection.size() );
+        Assert.assertEquals(
+                             "Albert Camus",
+                             filteredCollection.iterator().next().getPropertyValue(
+                                                                                    QName.valueOf( "{http://www.deegree.org/app}name" ) ) );
     }
 
     @Test
@@ -113,9 +123,12 @@ public class FilterEvaluationTest {
         Assert.assertNotNull( filter );
 
         FeatureCollection filteredCollection = fc.getMembers( filter );
+        Assert.assertEquals( 1, filteredCollection.size() );
+        Set<String> ids = new HashSet<String>();
         for ( Feature feature : filteredCollection ) {
-            System.out.println( "HUHU: " + feature.getId() );
+            ids.add( feature.getId() );
         }
+        Assert.assertTrue( ids.contains( "PHILOSOPHER_2" ) );
     }
 
     @Test
@@ -127,13 +140,13 @@ public class FilterEvaluationTest {
         Assert.assertNotNull( filter );
 
         FeatureCollection filteredCollection = fc.getMembers( filter );
-        Assert.assertEquals (2, filteredCollection.size());
+        Assert.assertEquals( 2, filteredCollection.size() );
         Set<String> ids = new HashSet<String>();
         for ( Feature feature : filteredCollection ) {
             ids.add( feature.getId() );
         }
-        Assert.assertTrue (ids.contains( "PHILOSOPHER_5" ));
-        Assert.assertTrue (ids.contains( "PHILOSOPHER_6" ));
+        Assert.assertTrue( ids.contains( "PHILOSOPHER_5" ) );
+        Assert.assertTrue( ids.contains( "PHILOSOPHER_6" ) );
     }
 
     @Test
@@ -145,8 +158,67 @@ public class FilterEvaluationTest {
         Assert.assertNotNull( filter );
 
         FeatureCollection filteredCollection = fc.getMembers( filter );
+        Assert.assertEquals( 2, filteredCollection.size() );
+        Set<String> ids = new HashSet<String>();
         for ( Feature feature : filteredCollection ) {
-            System.out.println (feature.getId());
+            ids.add( feature.getId() );
         }
+        Assert.assertTrue( ids.contains( "PHILOSOPHER_1" ) );
+        Assert.assertTrue( ids.contains( "PHILOSOPHER_2" ) );
+    }
+
+    @Test
+    public void filterCollection5()
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
+        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter5.xml" ) );
+        Filter filter = adapter.parse();
+        Assert.assertNotNull( filter );
+
+        FeatureCollection filteredCollection = fc.getMembers( filter );
+        Assert.assertEquals( 2, filteredCollection.size() );
+        Set<String> ids = new HashSet<String>();
+        for ( Feature feature : filteredCollection ) {
+            ids.add( feature.getId() );
+        }
+        Assert.assertTrue( ids.contains( "PHILOSOPHER_1" ) );
+        Assert.assertTrue( ids.contains( "PHILOSOPHER_2" ) );
+    }
+
+    @Test
+    public void filterCollection6()
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
+        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter6.xml" ) );
+        Filter filter = adapter.parse();
+        Assert.assertNotNull( filter );
+
+        FeatureCollection filteredCollection = fc.getMembers( filter );
+        Assert.assertEquals( 1, filteredCollection.size() );
+        Set<String> ids = new HashSet<String>();
+        for ( Feature feature : filteredCollection ) {
+            ids.add( feature.getId() );
+            System.out.println( feature.getId() );
+        }
+        Assert.assertTrue( ids.contains( "PHILOSOPHER_1" ) );
+    }
+
+    @Test
+    public void filterCollection7()
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
+                            JaxenException {
+        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter7.xml" ) );
+        Filter filter = adapter.parse();
+        Assert.assertNotNull( filter );
+
+        FeatureCollection filteredCollection = fc.getMembers( filter );
+        Assert.assertEquals( 1, filteredCollection.size() );
+        Set<String> ids = new HashSet<String>();
+        for ( Feature feature : filteredCollection ) {
+            ids.add( feature.getId() );
+            System.out.println( feature.getId() );
+        }
+        Assert.assertTrue( ids.contains( "PHILOSOPHER_1" ) );
     }
 }

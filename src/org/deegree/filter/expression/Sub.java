@@ -72,21 +72,30 @@ public class Sub implements Expression {
     }
     
     @Override    
-    public Double evaluate( MatchableObject obj )
+    public Object[] evaluate( MatchableObject obj )
                             throws FilterEvaluationException {
-        Object value1 = param1.evaluate( obj );
-        Object value2 = param2.evaluate( obj );
-        if ( !( value1 instanceof Number ) ) {
-            String msg = "Cannot evaluate '" + getType().name() + "' expression on '" + value1
-                         + "'. This is only possible for numerical values.";
-            throw new FilterEvaluationException( msg );
+
+        Object[] values1 = param1.evaluate( obj );
+        Object[] values2 = param2.evaluate( obj );
+        
+        Object [] resultValues = new Object [values1.length * values2.length];
+        int i = 0;
+        for ( Object value1 : values1 ) {
+            if ( !( value1 instanceof Number ) ) {
+                String msg = "Cannot evaluate '" + getType().name() + "' expression on '" + value1
+                             + "'. This is only possible for numerical values.";
+                throw new FilterEvaluationException( msg );
+            }
+            for ( Object value2 : values2 ) {
+                if ( !( value2 instanceof Number ) ) {
+                    String msg = "Cannot evaluate '" + getType().name() + "' expression on '" + value2
+                                 + "'. This is only possible for numerical values.";
+                    throw new FilterEvaluationException( msg );
+                }
+                resultValues [i++] = ( (Number) value1 ).doubleValue() - ( (Number) value2 ).doubleValue();
+            }
         }
-        if ( !( value2 instanceof Number ) ) {
-            String msg = "Cannot evaluate '" + getType().name() + "' expression on '" + value2
-                         + "'. This is only possible for numerical values.";
-            throw new FilterEvaluationException( msg );
-        }
-        return ( (Number) value1 ).doubleValue() - ( (Number) value2 ).doubleValue();
+        return resultValues;
     }
 
     @Override    

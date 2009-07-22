@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature;
 
 import java.util.HashSet;
@@ -42,7 +42,6 @@ import java.util.Set;
 import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.feature.xpath.FeatureNode;
 import org.deegree.feature.xpath.FeatureXPath;
-import org.deegree.feature.xpath.Node;
 import org.deegree.feature.xpath.PropertyNode;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Envelope;
@@ -52,43 +51,33 @@ import org.jaxen.XPath;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public abstract class AbstractFeature implements Feature {
 
     private StandardObjectProperties standardProps;
 
-    /**
-     * Returns the value of a certain property of this object.
-     *
-     * @param propName
-     *            XPath expression that identifies the property
-     * @return the property value
-     */
-    @SuppressWarnings("unchecked")
-    public Object getPropertyValue( PropertyName propName )
+    public Object[] getPropertyValues( PropertyName propName )
                             throws JaxenException {
+
         XPath xpath = new FeatureXPath( propName.getPropertyName() );
         xpath.setNamespaceContext( propName.getNsContext() );
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, this ) );
-        if ( selectedNodes.size() == 0 ) {
-            return null;
+        List<?> selectedNodes = xpath.selectNodes( new FeatureNode( null, this ) );
+
+        Object[] resultValues = new Object[selectedNodes.size()];
+        int i = 0;
+        for ( Object node : selectedNodes ) {
+            if ( node instanceof PropertyNode ) {
+                resultValues[i++] = ( (PropertyNode) node ).getProperty().getValue();
+            } else {
+                resultValues[i++] = node;
+            }
         }
-        if ( selectedNodes.size() > 1 ) {
-            String msg = "PropertyName '" + propName + "' matches multiple nodes in feature " + getId()
-                         + ". This is currently not supported.";
-            throw new JaxenException( msg );
-        }
-        Node node = selectedNodes.get( 0 );
-        if ( !( node instanceof PropertyNode ) ) {
-            String msg = "PropertyName '" + propName + "' does not refer to a property.";
-            throw new JaxenException( msg );
-        }
-        return ( (PropertyNode) node ).getProperty().getValue();
+        return resultValues;
     }
 
     public Envelope getEnvelope() {
@@ -98,9 +87,9 @@ public abstract class AbstractFeature implements Feature {
     /**
      * Helper method for calculating the envelope of a feature (or feature collection), respects multiple geometry
      * properties, subfeatures and cycles in the feature structure.
-     *
+     * 
      * TODO use caching to prevent permanent recalculation of bbox
-     *
+     * 
      * @param feature
      *            feature for which the envelope is requested
      * @param visited

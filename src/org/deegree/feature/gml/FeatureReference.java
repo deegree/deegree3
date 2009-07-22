@@ -119,9 +119,9 @@ public class FeatureReference implements Feature {
         return feature.getProperty( propName );
     }
 
-    public Object getPropertyValue( PropertyName propName )
+    public Object[] getPropertyValues( PropertyName propName )
                             throws JaxenException {
-        return feature.getPropertyValue( propName );
+        return feature.getPropertyValues( propName );
     }
 
     public Object getPropertyValue( QName propName ) {

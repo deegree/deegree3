@@ -100,11 +100,12 @@ public class And extends LogicalOperator {
     @Override
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        boolean partialRes = true;
-        for ( int i = 0; i < getSize(); i++ ) {
-            partialRes = partialRes && params.get( i ).evaluate( object );
+        for ( Operator operator : params ) {
+            if (!operator.evaluate( object )) {
+                return false;
+            }
         }
-        return partialRes;
+        return true;
     }
 
     @Override
