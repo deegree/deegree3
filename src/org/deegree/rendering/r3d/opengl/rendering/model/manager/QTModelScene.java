@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
@@ -55,13 +55,13 @@ import org.deegree.rendering.r3d.ViewParams;
 
 /**
  * The <code>QTModelScene</code> is a quadtree based organization of a scene containing {@link PositionableModel}s.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
  * @param <T>
  *            a positionable
- *
+ * 
  */
 public class QTModelScene<T extends PositionableModel> {
 
@@ -180,7 +180,7 @@ public class QTModelScene<T extends PositionableModel> {
     }
 
     /**
-     *
+     * 
      */
     private void merge() {
         if ( !isLeaf() ) {
@@ -293,7 +293,7 @@ public class QTModelScene<T extends PositionableModel> {
 
     /**
      * Method without checking lies within.
-     *
+     * 
      * @return the leafnode which contains the given position.
      */
     private QTModelScene<T> getLeafNode( float[] position ) {
@@ -327,7 +327,7 @@ public class QTModelScene<T extends PositionableModel> {
             break;
         case 1:
             mi[0] = halfWidth;
-            mi[1] = mi[1];
+            mi[1] = min[1];
             ma[0] = max[0];
             ma[1] = halfHeight;
             break;
@@ -362,7 +362,7 @@ public class QTModelScene<T extends PositionableModel> {
     }
 
     /**
-     *
+     * 
      * @param bbMin
      * @param bbMax
      * @return true if this node intersects with the given bbox
@@ -506,7 +506,7 @@ public class QTModelScene<T extends PositionableModel> {
     }
 
     /**
-     *
+     * 
      */
     public void clear() {
         if ( isLeaf() ) {
