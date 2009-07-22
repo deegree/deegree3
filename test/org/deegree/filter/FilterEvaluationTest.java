@@ -39,7 +39,6 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -62,7 +61,7 @@ import org.junit.Test;
 
 /**
  * Tests the correct evaluation of filter expressions.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
@@ -105,13 +104,7 @@ public class FilterEvaluationTest {
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter1.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
-
-        FeatureCollection filteredCollection = fc.getMembers( filter );
-        Assert.assertEquals( 1, filteredCollection.size() );
-        Assert.assertEquals(
-                             "Albert Camus",
-                             filteredCollection.iterator().next().getPropertyValue(
-                                                                                    QName.valueOf( "{http://www.deegree.org/app}name" ) ) );
+        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_7" );
     }
 
     @Test
@@ -121,14 +114,7 @@ public class FilterEvaluationTest {
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter2.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
-
-        FeatureCollection filteredCollection = fc.getMembers( filter );
-        Assert.assertEquals( 1, filteredCollection.size() );
-        Set<String> ids = new HashSet<String>();
-        for ( Feature feature : filteredCollection ) {
-            ids.add( feature.getId() );
-        }
-        Assert.assertTrue( ids.contains( "PHILOSOPHER_2" ) );
+        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_2" );
     }
 
     @Test
@@ -138,15 +124,7 @@ public class FilterEvaluationTest {
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter3.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
-
-        FeatureCollection filteredCollection = fc.getMembers( filter );
-        Assert.assertEquals( 2, filteredCollection.size() );
-        Set<String> ids = new HashSet<String>();
-        for ( Feature feature : filteredCollection ) {
-            ids.add( feature.getId() );
-        }
-        Assert.assertTrue( ids.contains( "PHILOSOPHER_5" ) );
-        Assert.assertTrue( ids.contains( "PHILOSOPHER_6" ) );
+        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_5", "PHILOSOPHER_6" );
     }
 
     @Test
@@ -156,15 +134,7 @@ public class FilterEvaluationTest {
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter4.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
-
-        FeatureCollection filteredCollection = fc.getMembers( filter );
-        Assert.assertEquals( 2, filteredCollection.size() );
-        Set<String> ids = new HashSet<String>();
-        for ( Feature feature : filteredCollection ) {
-            ids.add( feature.getId() );
-        }
-        Assert.assertTrue( ids.contains( "PHILOSOPHER_1" ) );
-        Assert.assertTrue( ids.contains( "PHILOSOPHER_2" ) );
+        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1", "PHILOSOPHER_2" );
     }
 
     @Test
@@ -174,15 +144,7 @@ public class FilterEvaluationTest {
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter5.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
-
-        FeatureCollection filteredCollection = fc.getMembers( filter );
-        Assert.assertEquals( 2, filteredCollection.size() );
-        Set<String> ids = new HashSet<String>();
-        for ( Feature feature : filteredCollection ) {
-            ids.add( feature.getId() );
-        }
-        Assert.assertTrue( ids.contains( "PHILOSOPHER_1" ) );
-        Assert.assertTrue( ids.contains( "PHILOSOPHER_2" ) );
+        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1", "PHILOSOPHER_2" );
     }
 
     @Test
@@ -192,15 +154,7 @@ public class FilterEvaluationTest {
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter6.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
-
-        FeatureCollection filteredCollection = fc.getMembers( filter );
-        Assert.assertEquals( 1, filteredCollection.size() );
-        Set<String> ids = new HashSet<String>();
-        for ( Feature feature : filteredCollection ) {
-            ids.add( feature.getId() );
-            System.out.println( feature.getId() );
-        }
-        Assert.assertTrue( ids.contains( "PHILOSOPHER_1" ) );
+        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1");
     }
 
     @Test
@@ -211,14 +165,17 @@ public class FilterEvaluationTest {
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter7.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
+        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1");
+    }
 
-        FeatureCollection filteredCollection = fc.getMembers( filter );
-        Assert.assertEquals( 1, filteredCollection.size() );
+    private void assertResultSet( FeatureCollection fc, String... expectedIds ) {
+        Assert.assertEquals( expectedIds.length, fc.size() );
         Set<String> ids = new HashSet<String>();
-        for ( Feature feature : filteredCollection ) {
+        for ( Feature feature : fc ) {
             ids.add( feature.getId() );
-            System.out.println( feature.getId() );
         }
-        Assert.assertTrue( ids.contains( "PHILOSOPHER_1" ) );
+        for ( String string : expectedIds ) {
+            Assert.assertTrue( ids.contains( string ) );
+        }
     }
 }

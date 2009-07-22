@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree;
 
@@ -53,52 +53,50 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <code>CommonsTestSuite</code> the test suite for all test defined in commons
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
  */
 @RunWith(Suite.class)
-@SuiteClasses( {
-org.deegree.filter.Filter110XMLAdapterTest.class,
-org.deegree.commons.utils.ArrayToolsTest.class,
-org.deegree.commons.utils.FileUtilsTest.class,
-org.deegree.commons.utils.StringToolsTest.class,
-org.deegree.commons.utils.math.MathUtilsTest.class,
-org.deegree.commons.utils.time.DateUtilsTest.class,
-org.deegree.commons.xml.XMLAdapterTest.class,
-org.deegree.coverage.raster.GeoTIFFTest.class,
-org.deegree.coverage.raster.RasterReferenceTest.class,
-org.deegree.coverage.raster.WorldFileAccessTest.class,
-org.deegree.crs.components.UnitTest.class,
-org.deegree.crs.configuration.deegree.DatabaseCRSProviderTest.class,
-org.deegree.crs.configuration.deegree.DeegreeCRSProviderTest.class,
-org.deegree.crs.configuration.deegree.TransformationAccuracyTest.class,
-org.deegree.crs.configuration.gml.GMLCRSProviderTest.class,
-org.deegree.crs.coordinatesystems.CompoundCRSTest.class,
-org.deegree.crs.projections.azimuthal.LambertAzimuthalTest.class,
-org.deegree.crs.projections.azimuthal.StereographicAlternativeTest.class,
-org.deegree.crs.projections.azimuthal.StereographicTest.class,
-org.deegree.crs.projections.conic.LambertConformalConicTest.class,
-org.deegree.crs.projections.cylindric.TransverseMercatorTest.class,
-org.deegree.crs.transformations.TransformationAccuracyTest.class,
-org.deegree.filter.FilterEvaluationTest.class,
-org.deegree.geometry.gml.GML311CurveSegmentDecoderTest.class,
-org.deegree.geometry.gml.GML311GeometryDecoderTest.class,
-org.deegree.geometry.gml.GML311SurfacePatchDecoderTest.class,
-org.deegree.feature.gml.GMLFeatureEncoderTest.class,
-org.deegree.feature.gml.GMLFeatureDecoderTest.class,
-org.deegree.geometry.gml.GMLGeometryEncoderTest.class,
-org.deegree.feature.gml.schema.XSModelGMLAnalyzerTest.class,
-org.deegree.feature.gml.validation.GML311GeometryValidatorTest.class,
-org.deegree.feature.xpath.FeatureXPathTest.class,
-org.deegree.geometry.GeometryTest.class,
-org.deegree.geometry.linearization.CurveLinearizerTest.class,
-org.deegree.geometry.validation.GeometryValidatorTest.class
-} )
-public class CommonsTestSuite {
+@SuiteClasses( { org.deegree.commons.jdbc.ConnectionManagerTest.class, org.deegree.commons.utils.ArrayToolsTest.class,
+                org.deegree.commons.utils.FileUtilsTest.class, org.deegree.commons.utils.StringToolsTest.class,
+                org.deegree.commons.utils.math.MathUtilsTest.class, org.deegree.commons.utils.time.DateUtilsTest.class,
+                org.deegree.commons.xml.XMLAdapterTest.class, org.deegree.coverage.raster.GeoTIFFTest.class,
+                org.deegree.coverage.raster.RasterReferenceTest.class,
+                org.deegree.coverage.raster.WorldFileAccessTest.class, org.deegree.crs.CRSCodeTypeTest.class,
+                org.deegree.crs.components.UnitTest.class,
+                org.deegree.crs.configuration.deegree.DatabaseCRSProviderTest.class,
+                org.deegree.crs.configuration.deegree.DeegreeCRSProviderTest.class,
+                org.deegree.crs.configuration.deegree.TransformationAccuracyTest.class,
+                org.deegree.crs.configuration.gml.GMLCRSProviderTest.class,
+                org.deegree.crs.coordinatesystems.CompoundCRSTest.class,
+                org.deegree.crs.projections.azimuthal.LambertAzimuthalTest.class,
+                org.deegree.crs.projections.azimuthal.StereographicAlternativeTest.class,
+                org.deegree.crs.projections.azimuthal.StereographicTest.class,
+                org.deegree.crs.projections.conic.LambertConformalConicTest.class,
+                org.deegree.crs.projections.cylindric.TransverseMercatorTest.class,
+                org.deegree.crs.transformations.TransformationAccuracyTest.class,
+                org.deegree.feature.gml.GMLFeatureDecoderTest.class,
+                org.deegree.feature.gml.GMLFeatureEncoderTest.class,
+                org.deegree.feature.gml.schema.ApplicationSchemaXSDEncoderTest.class,
+                org.deegree.feature.gml.schema.GMLApplicationSchemaXSDDecoderTest.class,
+                org.deegree.feature.gml.schema.XSModelGMLAnalyzerTest.class,
+                org.deegree.feature.gml.validation.GML311GeometryValidatorTest.class,
+                org.deegree.feature.persistence.GMLFeatureStoreTest.class,
+                org.deegree.feature.xpath.FeatureXPathTest.class, org.deegree.filter.Filter110XMLAdapterTest.class,
+                org.deegree.filter.FilterEvaluationTest.class, org.deegree.geometry.GeometryTest.class,
+                org.deegree.geometry.gml.GML311CurveSegmentDecoderTest.class,
+                org.deegree.geometry.gml.GML311GeometryDecoderTest.class,
+                org.deegree.geometry.gml.GML311SurfacePatchDecoderTest.class,
+                org.deegree.geometry.gml.GMLGeometryEncoderTest.class,
+                org.deegree.geometry.linearization.CurveLinearizerTest.class,
+                org.deegree.geometry.validation.GeometryValidatorTest.class,
+                org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParserTest.class,
+                org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureTypeKVPAdapterTest.class,
+                org.deegree.protocol.wfs.getfeature.GetFeatureXMLAdapterTest.class })
+class CommonsTestSuite {
 
     private static final int DOT_CLASS_LENGTH = ".class".length();
 
@@ -238,15 +236,15 @@ public class CommonsTestSuite {
     }
 
     /**
-     *
+     * 
      * The <code>CustomFileFilter</code> class adds functionality to the filefilter mechanism of the JFileChooser.
-     *
+     * 
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
-     *
+     * 
      * @author last edited by: $Author$
-     *
+     * 
      * @version $Revision$, $Date$
-     *
+     * 
      */
     static class CustomFileFilter implements java.io.FileFilter {
 
