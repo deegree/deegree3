@@ -44,9 +44,13 @@ import java.util.Properties;
 
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
+import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.configuration.CRSProvider;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.crs.coordinatesystems.GeocentricCRS;
+import org.deegree.crs.coordinatesystems.GeographicCRS;
+import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.exceptions.CRSConfigurationException;
 import org.deegree.crs.exceptions.CRSException;
 import org.deegree.crs.transformations.Transformation;
@@ -98,7 +102,7 @@ public class DatabaseCRSProvider implements CRSProvider {
      * @throws SQLException
      */
     public int getInternalID( CRSIdentifiable identifiable )
-                            throws SQLException {
+    throws SQLException {
         return querier.getInternalID( identifiable );
     }
 
@@ -112,7 +116,7 @@ public class DatabaseCRSProvider implements CRSProvider {
      * @throws SQLException
      */
     public void setCode( int internalID, String code )
-                            throws SQLException {
+    throws SQLException {
         querier.setCode( internalID, code );
     }
 
@@ -124,7 +128,7 @@ public class DatabaseCRSProvider implements CRSProvider {
      */
     public Transformation getTransformation( CoordinateSystem sourceCRS, 
                                              CoordinateSystem targetCRS )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         return null;
     }
 
@@ -136,10 +140,36 @@ public class DatabaseCRSProvider implements CRSProvider {
      * @throws CRSConfigurationException
      */
     public CoordinateSystem getCRSByCode( CRSCodeType code )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         CoordinateSystem result = null;
         try {
             result = querier.getCRSByCode( code );
+
+            if ( "4326".equals( code.getCode() ) || "31466".equals( code.getCode() )  
+                                    || "31467".equals( code.getCode() ) || "31468".equals( code.getCode() ) ) {
+                if ( code.getCodeVersion() != null && code.getCodeVersion().length() > 0 ) {
+                    // switch axes of the CRS 4326, 31466, 31467, 31468 that have a version! (e.g. 6.11)
+                    if ( result instanceof GeographicCRS ) {
+                        CRSIdentifiable fiable = new CRSIdentifiable( result.getCodes(),
+                                                                      result.getNames(),
+                                                                      result.getVersions(),
+                                                                      result.getDescriptions(),
+                                                                      result.getAreasOfUse() );
+                        result = new GeographicCRS( result.getGeodeticDatum(), new Axis[] { result.getAxis()[1],
+                                                                                            result.getAxis()[0] },
+                                                                                            fiable );
+                    } else if ( result instanceof ProjectedCRS ) {
+                        CRSIdentifiable fiable = new CRSIdentifiable( result.getCodes(),
+                                                                      result.getNames(),
+                                                                      result.getVersions(),
+                                                                      result.getDescriptions(),
+                                                                      result.getAreasOfUse() );
+                        result = new ProjectedCRS( ( (ProjectedCRS) result ).getProjection(), new Axis[] { result.getAxis()[1],
+                                                                                                             result.getAxis()[0] },
+                                                                                                             fiable );
+                    }
+                }
+            }
         } catch ( IllegalArgumentException e ) {
             LOG.error( e.getMessage(), e );
         } catch ( SQLException e ) {
@@ -158,8 +188,8 @@ public class DatabaseCRSProvider implements CRSProvider {
             dbConnectionURL = "jdbc:derby:classpath:META-INF/deegreeCRS";
         }
         LOG.debug( "using the connection protocol: " + dbConnectionURL );
-        
-        
+
+
         dbUser = System.getenv( "CRS_DB_USER" );
         dbPass = System.getenv( "CRS_DB_PASS" );
         dbDriver = System.getenv( "CRS_DB_DRIVER" );
@@ -237,7 +267,7 @@ public class DatabaseCRSProvider implements CRSProvider {
      * @throws SQLException
      */
     public void remove( List<CoordinateSystem> crsList )
-                            throws SQLException {
+    throws SQLException {
         remover.removeCRSList( crsList );
     }
 
@@ -253,7 +283,7 @@ public class DatabaseCRSProvider implements CRSProvider {
      * @throws SQLException
      */
     public void changeAxisCode( String axisName, String axisOrientation, Unit uom, CRSCodeType code )
-                            throws SQLException {
+    throws SQLException {
         querier.changeAxisCode( axisName, axisOrientation, uom, code );
     }
 
@@ -266,11 +296,11 @@ public class DatabaseCRSProvider implements CRSProvider {
      * @throws CRSException
      */
     public void export( List<CoordinateSystem> crsList )
-                            throws ClassNotFoundException, SQLException, CRSException {
+    throws ClassNotFoundException, SQLException, CRSException {
         String url = System.getenv( "CRS_DB_URL" );
         if ( url == null ) {
             throw new SQLException(
-                                    "Please specify the database connection by setting the CRS_DB_URL property (environment setting, for example derby: -DCRS_DB_URL=jdbc:derby:META-INF/deegreeCRS)" );
+            "Please specify the database connection by setting the CRS_DB_URL property (environment setting, for example derby: -DCRS_DB_URL=jdbc:derby:META-INF/deegreeCRS)" );
         }
         exporter.export( crsList );
     }
@@ -290,14 +320,14 @@ public class DatabaseCRSProvider implements CRSProvider {
     public CRSRemover getRemover() {
         return remover;
     }
-    
+
     /**
      * @param   the {@link CRSCodeType} of the wanted identifiable 
      * @return  the {@link CRSIdentifiable} object
      */
     @Override
     public CRSIdentifiable getIdentifiable( CRSCodeType id )
-                            throws CRSConfigurationException {
+    throws CRSConfigurationException {
         try {
             return querier.getIdentifiable( id );
         } catch ( SQLException e ) {
