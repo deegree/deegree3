@@ -230,7 +230,6 @@ public class ShapeDatastore {
 
     /**
      * @param shapeReader
-     * @return
      * @throws IOException
      */
     private RTree<Long> createIndex( SHPReader shapeReader )
