@@ -52,7 +52,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <code>CommonsTestSuite</code> the test suite for all test defined in commons
+ * <code>CommonsTestSuite</code> the test suite for all test defined in commons.
+ * <p>
+ * Run as an application ({@link #main(String[])}) to check if the internal list of test classes is up-to-date.
+ * </p>
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -116,7 +119,7 @@ class CommonsTestSuite {
         buildTestSuite( CommonsTestSuite.class );
     }
 
-    public static void buildTestSuite( Class<?> suite ) {
+    private static void buildTestSuite( Class<?> suite ) {
         SuiteClasses annotation = suite.getAnnotation( SuiteClasses.class );
         Class<?>[] values = annotation.value();
         List<String> testClasses = new LinkedList<String>();

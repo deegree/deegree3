@@ -144,7 +144,7 @@ public class ApplicationSchemaXSDDecoder {
 
     private FeatureType buildFeatureType( XSElementDeclaration featureElementDecl ) {
         QName ftName = new QName( featureElementDecl.getNamespace(), featureElementDecl.getName() );
-        LOG.info( "Building feature type declaration: '" + ftName + "'" );
+        LOG.debug( "Building feature type declaration: '" + ftName + "'" );
 
         if ( featureElementDecl.getTypeDefinition().getType() == XSTypeDefinition.SIMPLE_TYPE ) {
             String msg = "The schema type of feature element '" + ftName
@@ -519,12 +519,12 @@ public class ApplicationSchemaXSDDecoder {
     }
 
     private GeometryType getGeometryType (QName gmlGeometryName) {
-        LOG.info( "Mapping '" + gmlGeometryName + "'...");
+        LOG.debug( "Mapping '" + gmlGeometryName + "'...");
         return null;
     }
 
     private PrimitiveType getPrimitiveType( XSSimpleType typeDef ) {
-        LOG.info( "Mapping '" + typeDef.getName() + "'...");
+        LOG.debug( "Mapping '" + typeDef.getName() + "'...");
         return null;
     }
 }

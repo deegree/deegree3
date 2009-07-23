@@ -61,7 +61,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * TODO add documentation here
+ * Tests the correct evaluation of {@link FeatureXPath} expressions.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -97,10 +97,6 @@ public class FeatureXPathTest {
         fc = (FeatureCollection) gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ),
                                                           null);
         idContext.resolveXLinks( schema );
-
-        for ( Feature member : fc ) {
-            System.out.println( member.getId() );
-        }
 
         nsContext = new SimpleNamespaceContext();
         nsContext.addNamespace( "gml", "http://www.opengis.net/gml" );
