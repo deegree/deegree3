@@ -64,7 +64,7 @@ public class XSModelGMLAnalyzerTest {
                             IllegalAccessException {
 
         XSModelGMLAnalyzer analyzer = new XSModelGMLAnalyzer(
-                                                              this.getClass().getResource( "Philosopher.xsd" ).toString(),
+                                                              this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString(),
                                                               GMLVersion.GML_31 );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations(
                                                                                                  "http://www.deegree.org/app",

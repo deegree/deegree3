@@ -36,7 +36,6 @@
 
 package org.deegree.feature.gml;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 

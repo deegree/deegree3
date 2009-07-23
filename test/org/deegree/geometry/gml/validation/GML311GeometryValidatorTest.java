@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.feature.gml.validation;
+package org.deegree.geometry.gml.validation;
 
 import java.io.IOException;
 import java.net.URL;
@@ -46,6 +46,9 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.gml.GML311GeometryDecoderTest;
+import org.deegree.geometry.gml.validation.GML311GeometryValidator;
+import org.deegree.geometry.gml.validation.GMLElementIdentifier;
+import org.deegree.geometry.gml.validation.GMLValidationEventHandler;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;

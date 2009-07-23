@@ -86,7 +86,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.feature.gml.schema.ApplicationSchemaXSDEncoderTest.class,
                 org.deegree.feature.gml.schema.GMLApplicationSchemaXSDDecoderTest.class,
                 org.deegree.feature.gml.schema.XSModelGMLAnalyzerTest.class,
-                org.deegree.feature.gml.validation.GML311GeometryValidatorTest.class,
+                org.deegree.geometry.gml.validation.GML311GeometryValidatorTest.class,
                 org.deegree.feature.persistence.GMLFeatureStoreTest.class,
                 org.deegree.feature.xpath.FeatureXPathTest.class, org.deegree.filter.Filter110XMLAdapterTest.class,
                 org.deegree.filter.FilterEvaluationTest.class, org.deegree.geometry.GeometryTest.class,

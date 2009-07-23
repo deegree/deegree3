@@ -34,10 +34,9 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.feature.gml.validation;
+package org.deegree.geometry.gml.validation;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
@@ -74,6 +73,7 @@ public class GMLElementIdentifier {
         columnNumber  = xmlStream.getLocation().getColumnNumber();
     }
 
+    @Override
     public String toString () {
         String s = elementName + ", line: " + lineNumber + ", column: " + columnNumber;
         return s;

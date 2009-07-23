@@ -45,16 +45,13 @@ public class GMLApplicationSchemaXSDDecoderTest {
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
-         String schemaURL = this.getClass().getResource( "Philosopher_typesafe.xsd" ).toString();
-//        String schemaURL = "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
-        // String schemaURL =
-        // "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
+        String schemaURL = this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( schemaURL, GMLVersion.GML_31 );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         for ( FeatureType featureType : fts ) {
-            System.out.println ("\nfeatureType: " + featureType);
+            System.out.println( "\nfeatureType: " + featureType );
             for ( PropertyType pt : featureType.getPropertyDeclarations() ) {
-                System.out.println (pt);
+                System.out.println( pt );
             }
         }
     }

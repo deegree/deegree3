@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.feature.gml.validation;
+package org.deegree.geometry.gml.validation;
 
 import java.util.List;
 
@@ -64,6 +64,7 @@ public interface GMLValidationEventHandler {
      *            the duplicated point
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the curve is a part of)
+     * @param affectedElements 
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
     public boolean curvePointDuplication( Curve curve, Point point, List<Object> affectedGeometryParticles, List<GMLElementIdentifier> affectedElements );
@@ -78,6 +79,7 @@ public interface GMLValidationEventHandler {
      *            the index of the segment with the discontinuity
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the curve is a part of)
+     * @param affectedElements 
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
     public boolean curveDiscontinuity( Curve curve, int segmentIdx, List<Object> affectedGeometryParticles, List<GMLElementIdentifier> affectedElements  );
@@ -91,6 +93,7 @@ public interface GMLValidationEventHandler {
      *            the (approximative) location of the self-intersection
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the curve is a part of)
+     * @param affectedElements 
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
     public boolean curveSelfIntersection( Curve curve, Point location, List<Object> affectedGeometryParticles, List<GMLElementIdentifier> affectedElements  );
@@ -102,6 +105,7 @@ public interface GMLValidationEventHandler {
      *            invalid {@link Ring} geometry
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the curve is a part of)
+     * @param affectedElements 
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
     public boolean ringNotClosed( Ring ring, List<Object> affectedGeometryParticles, List<GMLElementIdentifier> affectedElements  );
@@ -115,6 +119,7 @@ public interface GMLValidationEventHandler {
      *            the (approximative) location of the self-intersection
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the curve is a part of)
+     * @param affectedElements 
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
     public boolean ringSelfIntersection( Ring ring, Point location, List<Object> affectedGeometryParticles, List<GMLElementIdentifier> affectedElements  );
@@ -125,6 +130,7 @@ public interface GMLValidationEventHandler {
      * @param patch
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the curve is a part of)
+     * @param affectedElements 
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
     public boolean exteriorRingCW( PolygonPatch patch, List<Object> affectedGeometryParticles, List<GMLElementIdentifier> affectedElements  );
@@ -135,6 +141,7 @@ public interface GMLValidationEventHandler {
      * @param patch
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the curve is a part of)
+     * @param affectedElements 
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
     public boolean interiorRingCCW( PolygonPatch patch, List<Object> affectedGeometryParticles, List<GMLElementIdentifier> affectedElements );
@@ -150,6 +157,7 @@ public interface GMLValidationEventHandler {
      *            index of the second ring involved
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the curve is a part of)
+     * @param affectedElements 
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
     public boolean interiorRingsTouch( PolygonPatch patch, int ring1Idx, int ring2Idx, List<Object> affectedGeometryParticles, List<GMLElementIdentifier> affectedElements );
@@ -165,6 +173,7 @@ public interface GMLValidationEventHandler {
      *            index of the second ring involved
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the curve is a part of)
+     * @param affectedElements 
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
     public boolean interiorRingsIntersect( PolygonPatch patch, int ring1Idx, int ring2Idx, List<Object> affectedGeometryParticles, List<GMLElementIdentifier> affectedElements );
@@ -181,6 +190,7 @@ public interface GMLValidationEventHandler {
      *            index of the second ring involved (the 'inner' one)
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the curve is a part of)
+     * @param affectedElements 
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
     public boolean interiorRingsWithin( PolygonPatch patch, int ring1Idx, int ring2Idx, List<Object> affectedGeometryParticles, List<GMLElementIdentifier> affectedElements );
@@ -195,6 +205,7 @@ public interface GMLValidationEventHandler {
      *            index of the offending inner ring
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the curve is a part of)
+     * @param affectedElements 
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
     public boolean interiorRingTouchesExterior( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles, List<GMLElementIdentifier> affectedElements );
@@ -209,6 +220,7 @@ public interface GMLValidationEventHandler {
      *            index of the offending inner ring
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the curve is a part of)
+     * @param affectedElements 
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
     public boolean interiorRingIntersectsExterior( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles, List<GMLElementIdentifier> affectedElements );
@@ -222,6 +234,7 @@ public interface GMLValidationEventHandler {
      * @param ringIdx
      * @param affectedGeometryParticles
      *            list of affected geometry components (that the curve is a part of)
+     * @param affectedElements 
      * @return true, if the event indicates that the geometry is invalid, otherwise false
      */
     public boolean interiorRingOutsideExterior( PolygonPatch patch, int ringIdx, List<Object> affectedGeometryParticles, List<GMLElementIdentifier> affectedElements );
