@@ -64,11 +64,9 @@ import org.junit.Test;
  * Exports the features in the Philosophers example and validates them against the corresponding schema.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author: ionita $
  * 
  * @version $Revision: $, $Date: $
- * 
  */
 public class GMLFeatureEncoderTest {
 
@@ -102,7 +100,7 @@ public class GMLFeatureEncoderTest {
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         OutputStream out = new FileOutputStream( "/tmp/exported_" + SOURCE_FILE );
         XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( outputFactory.createXMLStreamWriter( out ),
-                                                                    SCHEMA_LOCATION_ATTRIBUTE );
+                                                                    SCHEMA_LOCATION );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
         writer.setPrefix( "app", "http://www.deegree.org/app" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
