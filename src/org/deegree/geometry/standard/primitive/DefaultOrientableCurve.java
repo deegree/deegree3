@@ -152,6 +152,11 @@ public class DefaultOrientableCurve implements OrientableCurve {
     }
 
     @Override
+    public boolean crosses( Geometry geometry ) {
+        return baseCurve.crosses( geometry );
+    }    
+    
+    @Override
     public Geometry difference( Geometry geometry ) {
         return baseCurve.difference( geometry );
     }
@@ -211,6 +216,21 @@ public class DefaultOrientableCurve implements OrientableCurve {
         return baseCurve.intersects( geometry );
     }
 
+    @Override
+    public boolean isDisjoint( Geometry geometry ) {
+        return baseCurve.isDisjoint( geometry );
+    }
+
+    @Override
+    public boolean overlaps( Geometry geometry ) {
+        return baseCurve.overlaps( geometry );
+    }
+
+    @Override
+    public boolean touches( Geometry geometry ) {
+        return baseCurve.touches( geometry );
+    }    
+    
     @Override
     public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
         return baseCurve.isBeyond( geometry, distance );

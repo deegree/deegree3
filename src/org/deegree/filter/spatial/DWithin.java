@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,26 +32,46 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DWithin extends SpatialOperator {
 
+    private final PropertyName param1;
+
+    private final Geometry param2;
+
+    private final ValueWithUnit distance;
+
+    public DWithin( PropertyName param1, Geometry param2, ValueWithUnit distance ) {
+        this.param1 = param1;
+        this.param2 = param2;
+        this.distance = distance;
+    }
+
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()
-                                             + "' operator is not implemented yet." );
+        for ( Object param1Value : param1.evaluate( object ) ) {
+            Geometry geom = checkGeometryOrNull( param1Value );
+            if ( param1Value != null && geom.isWithinDistance( param2, distance ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String toString( String indent ) {

@@ -83,6 +83,10 @@ public class GeometryReference implements Geometry {
         return geometry.contains( geometry );
     }
 
+    public boolean crosses( Geometry geometry ) {
+        return geometry.crosses( geometry );
+    }    
+    
     public Geometry difference( Geometry geometry ) {
         return geometry.difference( geometry );
     }
@@ -134,7 +138,19 @@ public class GeometryReference implements Geometry {
     public boolean intersects( Geometry geometry ) {
         return geometry.intersects( geometry );
     }
+    
+    public boolean isDisjoint( Geometry geometry ) {
+        return geometry.isDisjoint( geometry );
+    }
 
+    public boolean overlaps( Geometry geometry ) {
+        return geometry.overlaps( geometry );
+    }
+
+    public boolean touches( Geometry geometry ) {
+        return geometry.touches( geometry );
+    }    
+    
     public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
         return geometry.isBeyond( geometry, distance );
     }

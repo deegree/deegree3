@@ -141,6 +141,14 @@ public interface Geometry {
     public boolean contains( Geometry geometry );
 
     /**
+     * The Boolean valued operation "contains" shall return TRUE if this Geometry crosses another Geometry.
+     * 
+     * @param geometry
+     * @return true if this Geometry contains the other
+     */
+    public boolean crosses( Geometry geometry );
+
+    /**
      * The Boolean valued operation "intersects" shall return TRUE if this Geometry intersects another Geometry. Within
      * a Complex, the Primitives do not intersect one another. In general, topologically structured data uses shared
      * geometric objects to capture intersection information.
@@ -149,6 +157,29 @@ public interface Geometry {
      * @return true if both Geometries intersects
      */
     public boolean intersects( Geometry geometry );
+
+    /**
+     * 
+     * @param geometry
+     * @return true if both Geometries are disjoint
+     */
+    public boolean isDisjoint( Geometry geometry );
+
+    /**
+     * The Boolean valued operation "overlaps"...
+     * 
+     * @param geometry
+     * @return true if both Geometries overlap
+     */
+    public boolean overlaps( Geometry geometry );
+
+    /**
+     * The Boolean valued operation "touches"...
+     * 
+     * @param geometry
+     * @return true if both Geometries overlap
+     */
+    public boolean touches( Geometry geometry );
 
     /**
      * The operation "distance" shall return the distance between this Geometry and another Geometry. This distance is

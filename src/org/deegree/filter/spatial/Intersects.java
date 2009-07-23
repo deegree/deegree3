@@ -68,7 +68,7 @@ public class Intersects extends SpatialOperator {
                             throws FilterEvaluationException {
         for ( Object paramValue : param1.evaluate( object ) ) {
             Geometry param1Value = checkGeometryOrNull( paramValue );
-            if ( param1Value != null && param2.intersects( param1Value ) ) {
+            if ( param1Value != null && param1Value.intersects( param2 ) ) {
                 return true;
             }
         }

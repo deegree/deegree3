@@ -110,6 +110,24 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
+    public boolean isDisjoint( Geometry geometry ) {
+        JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
+        return jtsGeoms.first.disjoint( jtsGeoms.second );
+    }
+    
+    @Override
+    public boolean overlaps( Geometry geometry ) {
+        JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
+        return jtsGeoms.first.overlaps( jtsGeoms.second );
+    }    
+
+    @Override
+    public boolean touches( Geometry geometry ) {
+        JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
+        return jtsGeoms.first.touches( jtsGeoms.second );
+    }    
+    
+    @Override
     public boolean isWithin( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
         return jtsGeoms.first.within( jtsGeoms.second );
@@ -132,6 +150,12 @@ public abstract class AbstractDefaultGeometry implements Geometry {
         return jtsGeoms.first.contains( jtsGeoms.second );
     }
 
+    @Override
+    public boolean crosses( Geometry geometry ) {
+        JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
+        return jtsGeoms.first.crosses( jtsGeoms.second );
+    }    
+    
     @Override
     public boolean equals( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );

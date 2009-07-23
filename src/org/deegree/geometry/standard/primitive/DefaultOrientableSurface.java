@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.geometry.standard.primitive;
 
@@ -52,10 +52,10 @@ import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link OrientableSurface}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultOrientableSurface implements OrientableSurface {
@@ -72,7 +72,7 @@ public class DefaultOrientableSurface implements OrientableSurface {
 
     /**
      * Creates a new <code>DefaultOrientableSurface</code> instance from the given parameters.
-     *
+     * 
      * @param id
      *            identifier, may be null
      * @param crs
@@ -122,6 +122,11 @@ public class DefaultOrientableSurface implements OrientableSurface {
         return baseSurface.contains( geometry );
     }
 
+    @Override
+    public boolean crosses( Geometry geometry ) {
+        return baseSurface.crosses( geometry );
+    }
+
     public Geometry difference( Geometry geometry ) {
         return baseSurface.difference( geometry );
     }
@@ -151,7 +156,7 @@ public class DefaultOrientableSurface implements OrientableSurface {
     }
 
     @Override
-    public int getCoordinateDimension () {
+    public int getCoordinateDimension() {
         return baseSurface.getCoordinateDimension();
     }
 
@@ -187,6 +192,21 @@ public class DefaultOrientableSurface implements OrientableSurface {
         return baseSurface.intersects( geometry );
     }
 
+    @Override
+    public boolean isDisjoint( Geometry geometry ) {
+        return baseSurface.isDisjoint( geometry );
+    }    
+
+    @Override
+    public boolean overlaps( Geometry geometry ) {
+        return baseSurface.overlaps( geometry );
+    }
+
+    @Override
+    public boolean touches( Geometry geometry ) {
+        return baseSurface.touches( geometry );
+    }     
+    
     public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
         return baseSurface.isBeyond( geometry, distance );
     }

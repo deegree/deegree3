@@ -88,11 +88,21 @@ import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.logical.Not;
 import org.deegree.filter.logical.Or;
 import org.deegree.filter.spatial.BBOX;
+import org.deegree.filter.spatial.Beyond;
+import org.deegree.filter.spatial.Contains;
+import org.deegree.filter.spatial.Crosses;
+import org.deegree.filter.spatial.DWithin;
+import org.deegree.filter.spatial.Disjoint;
+import org.deegree.filter.spatial.Equals;
 import org.deegree.filter.spatial.Intersects;
+import org.deegree.filter.spatial.Overlaps;
 import org.deegree.filter.spatial.SpatialOperator;
+import org.deegree.filter.spatial.Touches;
+import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML311GeometryDecoder;
+import org.deegree.geometry.uom.ValueWithUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -474,47 +484,203 @@ public class Filter110XMLDecoder extends XMLAdapter {
         }
 
         switch ( type ) {
-        case INTERSECTS: {
-            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
-            PropertyName parameter1 = parsePropertyName( childElementIter.next() );
-            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
-
-            OMElement geometryElement = childElementIter.next();
-            XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
-
-            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
-            xmlReader.nextTag();
-
-            Geometry parameter2 = geomParser.parseAbstractGeometry( xmlReader, null );
-            spatialOperator = new Intersects( parameter1, parameter2 );
-            break;
-        }
         case BBOX: {
             FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
-            PropertyName parameter1 = parsePropertyName( childElementIter.next() );
-            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
 
+            // first parameter: 'ogc:PropertyName'
+            PropertyName param1 = parsePropertyName( childElementIter.next() );
+
+            // second parameter: 'gml:Envelope'
+            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
             OMElement geometryElement = childElementIter.next();
             XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
-
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
             xmlReader.nextTag();
             xmlReader.require( START_ELEMENT, GML_NS, "Envelope" );
+            Envelope param2 = geomParser.parseEnvelope( xmlReader, null );
 
-            Envelope parameter2 = geomParser.parseEnvelope( xmlReader, null );
-            spatialOperator = new BBOX( parameter1, parameter2 );
+            spatialOperator = new BBOX( param1, param2 );
             break;
         }
-        case BEYOND:
-        case CONTAINS:
-        case CROSSES:
-        case DISJOINT:
-        case DWITHIN:
-        case EQUALS:
-        case OVERLAPS:
-        case TOUCHES:
-        case WITHIN:
-            throw new UnsupportedOperationException();
+        case BEYOND: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 3 );
+
+            // first parameter: 'ogc:PropertyName'
+            PropertyName param1 = parsePropertyName( childElementIter.next() );
+
+            // second parameter: 'gml:_Geometry'
+            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
+            OMElement geometryElement = childElementIter.next();
+            XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
+            xmlReader.nextTag();
+            Geometry param2 = geomParser.parseAbstractGeometry( xmlReader, null );
+
+            // third parameter: 'ogc:Distance'
+            OMElement distanceElement = childElementIter.next();
+            String distanceUnits = getRequiredNodeAsString( distanceElement, new XPath( "@units", nsContext ) );
+            ValueWithUnit distance = new ValueWithUnit( distanceElement.getText(), distanceUnits );
+
+            spatialOperator = new Beyond( param1, param2, distance );
+            break;
+        }
+        case INTERSECTS: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+
+            // first parameter: 'ogc:PropertyName'
+            PropertyName param1 = parsePropertyName( childElementIter.next() );
+
+            // second parameter: 'gml:_Geometry'
+            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
+            OMElement geometryElement = childElementIter.next();
+            XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
+            xmlReader.nextTag();
+            Geometry param2 = geomParser.parseAbstractGeometry( xmlReader, null );
+
+            spatialOperator = new Intersects( param1, param2 );
+            break;
+        }
+        case CONTAINS: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+
+            // first parameter: 'ogc:PropertyName'
+            PropertyName param1 = parsePropertyName( childElementIter.next() );
+
+            // second parameter: 'gml:_Geometry'
+            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
+            OMElement geometryElement = childElementIter.next();
+            XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
+            xmlReader.nextTag();
+            Geometry param2 = geomParser.parseAbstractGeometry( xmlReader, null );
+
+            spatialOperator = new Contains( param1, param2 );
+            break;
+        }
+        case CROSSES: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+
+            // first parameter: 'ogc:PropertyName'
+            PropertyName param1 = parsePropertyName( childElementIter.next() );
+
+            // second parameter: 'gml:_Geometry'
+            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
+            OMElement geometryElement = childElementIter.next();
+            XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
+            xmlReader.nextTag();
+            Geometry param2 = geomParser.parseAbstractGeometry( xmlReader, null );
+
+            spatialOperator = new Crosses( param1, param2 );
+            break;
+        }
+        case DISJOINT: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+
+            // first parameter: 'ogc:PropertyName'
+            PropertyName param1 = parsePropertyName( childElementIter.next() );
+
+            // second parameter: 'gml:_Geometry'
+            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
+            OMElement geometryElement = childElementIter.next();
+            XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
+            xmlReader.nextTag();
+            Geometry param2 = geomParser.parseAbstractGeometry( xmlReader, null );
+
+            spatialOperator = new Disjoint( param1, param2 );
+            break;
+        }
+        case DWITHIN: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 3 );
+
+            // first parameter: 'ogc:PropertyName'
+            PropertyName param1 = parsePropertyName( childElementIter.next() );
+
+            // second parameter: 'gml:_Geometry'
+            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
+            OMElement geometryElement = childElementIter.next();
+            XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
+            xmlReader.nextTag();
+            Geometry param2 = geomParser.parseAbstractGeometry( xmlReader, null );
+
+            // third parameter: 'ogc:Distance'
+            OMElement distanceElement = childElementIter.next();
+            String distanceUnits = getRequiredNodeAsString( distanceElement, new XPath( "@units", nsContext ) );
+            ValueWithUnit distance = new ValueWithUnit( distanceElement.getText(), distanceUnits );
+
+            spatialOperator = new DWithin( param1, param2, distance );
+            break;
+        }
+        case EQUALS: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+
+            // first parameter: 'ogc:PropertyName'
+            PropertyName param1 = parsePropertyName( childElementIter.next() );
+
+            // second parameter: 'gml:_Geometry'
+            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
+            OMElement geometryElement = childElementIter.next();
+            XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
+            xmlReader.nextTag();
+            Geometry param2 = geomParser.parseAbstractGeometry( xmlReader, null );
+
+            spatialOperator = new Equals( param1, param2 );
+            break;
+        }
+        case OVERLAPS: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+
+            // first parameter: 'ogc:PropertyName'
+            PropertyName param1 = parsePropertyName( childElementIter.next() );
+
+            // second parameter: 'gml:_Geometry'
+            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
+            OMElement geometryElement = childElementIter.next();
+            XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
+            xmlReader.nextTag();
+            Geometry param2 = geomParser.parseAbstractGeometry( xmlReader, null );
+
+            spatialOperator = new Overlaps( param1, param2 );
+            break;
+        }
+        case TOUCHES: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+
+            // first parameter: 'ogc:PropertyName'
+            PropertyName param1 = parsePropertyName( childElementIter.next() );
+
+            // second parameter: 'gml:_Geometry'
+            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
+            OMElement geometryElement = childElementIter.next();
+            XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
+            xmlReader.nextTag();
+            Geometry param2 = geomParser.parseAbstractGeometry( xmlReader, null );
+
+            spatialOperator = new Touches( param1, param2 );
+            break;
+        }
+        case WITHIN: {
+            FixedChildIterator childElementIter = new FixedChildIterator( element, 2 );
+
+            // first parameter: 'ogc:PropertyName'
+            PropertyName param1 = parsePropertyName( childElementIter.next() );
+
+            // second parameter: 'gml:_Geometry'
+            GML311GeometryDecoder geomParser = new GML311GeometryDecoder();
+            OMElement geometryElement = childElementIter.next();
+            XMLStreamReader reader = geometryElement.getXMLStreamReaderWithoutCaching();
+            XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( reader, getSystemId() );
+            xmlReader.nextTag();
+            Geometry param2 = geomParser.parseAbstractGeometry( xmlReader, null );
+
+            spatialOperator = new Within( param1, param2 );
+        }
         }
         return spatialOperator;
     }

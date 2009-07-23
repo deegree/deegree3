@@ -37,6 +37,8 @@ package org.deegree.filter.spatial;
 
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.geometry.Geometry;
 
 /**
  * TODO add documentation here
@@ -48,15 +50,30 @@ import org.deegree.filter.MatchableObject;
  */
 public class Touches extends SpatialOperator {
 
-    public boolean evaluate( MatchableObject object )
-                            throws FilterEvaluationException {
-        throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()
-                                             + "' operator is not implemented yet." );
+    private final PropertyName param1;
+
+    private final Geometry param2;     
+    
+    public Touches( PropertyName param1, Geometry param2 ) {
+        this.param1 = param1;
+        this.param2 = param2;
     }
 
+    @Override
+    public boolean evaluate( MatchableObject object )
+                            throws FilterEvaluationException {
+        for ( Object paramValue : param1.evaluate( object ) ) {
+            Geometry param1Value = checkGeometryOrNull( paramValue );
+            if ( param1Value != null && param1Value.touches ( param2 ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public String toString( String indent ) {
         // TODO Auto-generated method stub
         return null;
     }
-
 }

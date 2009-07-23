@@ -37,6 +37,8 @@ package org.deegree.filter.spatial;
 
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.geometry.Geometry;
 
 /**
  * TODO add documentation here
@@ -48,10 +50,24 @@ import org.deegree.filter.MatchableObject;
  */
 public class Contains extends SpatialOperator {
 
+    private final PropertyName param1;
+
+    private final Geometry param2;    
+    
+    public Contains( PropertyName param1, Geometry param2 ) {
+        this.param1 = param1;
+        this.param2 = param2;
+    }
+
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()
-                                             + "' operator is not implemented yet." );
+        for ( Object paramValue : param1.evaluate( object ) ) {
+            Geometry param1Value = checkGeometryOrNull( paramValue );
+            if ( param1Value != null && param1Value.contains( param2 ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String toString( String indent ) {

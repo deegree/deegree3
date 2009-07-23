@@ -83,7 +83,7 @@ public class FeatureXPathTest {
     public void setUp()
                             throws Exception {
 
-        String schemaURL = this.getClass().getResource( "../gml/schema/Philosopher_typesafe.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../gml/testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
                                                                                         GMLVersion.GML_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();

@@ -37,6 +37,9 @@ package org.deegree.filter.spatial;
 
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
+import org.deegree.filter.expression.PropertyName;
+import org.deegree.geometry.Geometry;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * TODO add documentation here
@@ -48,10 +51,27 @@ import org.deegree.filter.MatchableObject;
  */
 public class Beyond extends SpatialOperator {
 
+    private final PropertyName param1;
+    
+    private final Geometry param2;
+    
+    private final ValueWithUnit distance;
+    
+    public Beyond( PropertyName param1, Geometry param2, ValueWithUnit distance ) {
+        this.param1 = param1;
+        this.param2 = param2;
+        this.distance = distance;
+    }
+
     public boolean evaluate( MatchableObject object )
                             throws FilterEvaluationException {
-        throw new FilterEvaluationException( "Evaluation of the '" + getSubType().name()
-                                             + "' operator is not implemented yet." );
+        for ( Object param1Value : param1.evaluate( object ) ) {
+            Geometry geom = checkGeometryOrNull( param1Value );
+            if ( param1Value != null && geom.isBeyond( param2, distance )) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String toString( String indent ) {
