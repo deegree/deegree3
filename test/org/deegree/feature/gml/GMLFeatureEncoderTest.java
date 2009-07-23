@@ -72,9 +72,9 @@ public class GMLFeatureEncoderTest {
 
     private final String SOURCE_FILE = "Philosopher_FeatureCollection.xml";
 
-    private final String SCHEMA_LOCATION_ATTRIBUTE = "schema/Philosopher_typesafe.xsd";
+    private final String SCHEMA_LOCATION_ATTRIBUTE = "testdata/schema/Philosopher.xsd";
 
-    private final String SCHEMA_LOCATION = "http://www.deegree.org/app schema/Philosopher_typesafe.xsd";
+    private final String SCHEMA_LOCATION = "http://www.deegree.org/app testdata/schema/Philosopher.xsd";
 
     @Test
     public void testValidateExportedFeatures()
@@ -105,7 +105,7 @@ public class GMLFeatureEncoderTest {
         writer.setPrefix( "wfs", "http://www.opengis.net/wfs" );
         writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
         writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        GMLFeatureEncoder exporter = new GMLFeatureEncoder( writer );
+        GML311FeatureEncoder exporter = new GML311FeatureEncoder( writer );
         exporter.export( feature );
         writer.flush();
         writer.close();

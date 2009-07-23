@@ -52,7 +52,7 @@ import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.gml.schema.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.filter.xml.Filter110XMLAdapter;
+import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.junit.Assert;
@@ -78,7 +78,7 @@ public class FilterEvaluationTest {
     @Before
     public void setUp()
                             throws Exception {
-        String schemaURL = this.getClass().getResource( "../feature/gml/schema/Philosopher_typesafe.xsd" ).toString();
+        String schemaURL = this.getClass().getResource( "../feature/gml/testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL, GMLVersion.GML_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
         GMLIdContext idContext = new GMLIdContext();
@@ -100,7 +100,7 @@ public class FilterEvaluationTest {
     @Test
     public void filterCollection1()
                             throws FilterEvaluationException {
-        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter1.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
@@ -110,7 +110,7 @@ public class FilterEvaluationTest {
     @Test
     public void filterCollection2()
                             throws FilterEvaluationException {
-        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter2.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
@@ -120,7 +120,7 @@ public class FilterEvaluationTest {
     @Test
     public void filterCollection3()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter3.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
@@ -130,7 +130,7 @@ public class FilterEvaluationTest {
     @Test
     public void filterCollection4()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter4.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
@@ -140,7 +140,7 @@ public class FilterEvaluationTest {
     @Test
     public void filterCollection5()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter5.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
@@ -150,7 +150,7 @@ public class FilterEvaluationTest {
     @Test
     public void filterCollection6()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter6.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
@@ -161,7 +161,7 @@ public class FilterEvaluationTest {
     public void filterCollection7()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
                             JaxenException {
-        Filter110XMLAdapter adapter = new Filter110XMLAdapter();
+        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter7.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );

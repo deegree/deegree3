@@ -43,16 +43,16 @@ import org.deegree.commons.i18n.Messages;
 
 /**
  * This is a child element iterator that expects a fixed number of child elements. It will throw an
- * {@link XMLProcessingException} when an element is missing, or when you access the last expected element and there
+ * {@link XMLParsingException} when an element is missing, or when you access the last expected element and there
  * are stil child elements left.
  *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
  *
  * @version $Revision$, $Date$
- *
  */
 public class FixedChildIterator implements Iterable<OMElement>, Iterator<OMElement> {
+
     private final int expectedChildren;
 
     private final OMElement parent;
@@ -66,9 +66,9 @@ public class FixedChildIterator implements Iterable<OMElement>, Iterator<OMEleme
      * @param expectedChildren
      *            the number of expected child elements
      */
-    public FixedChildIterator( OMElement parent, int expectedChilds ) {
+    public FixedChildIterator( OMElement parent, int expectedChildren ) {
         this.parent = parent;
-        this.expectedChildren = expectedChilds;
+        this.expectedChildren = expectedChildren;
         this.itr = parent.getChildElements();
     }
 
@@ -78,13 +78,13 @@ public class FixedChildIterator implements Iterable<OMElement>, Iterator<OMEleme
         }
         if ( !itr.hasNext() ) {
             String msg = Messages.getMessage( "XML_PARSING_WRONG_CHILD_COUNT", parent.getQName(), expectedChildren );
-            throw new XMLProcessingException( msg );
+            throw new XMLParsingException( msg );
         }
         OMElement result = (OMElement) itr.next();
         i++;
         if ( i == expectedChildren && itr.hasNext() ) { // more than expected
             String msg = Messages.getMessage( "XML_PARSING_WRONG_CHILD_COUNT", parent.getQName(), expectedChildren );
-            throw new XMLProcessingException( msg );
+            throw new XMLParsingException( msg );
         }
         return result;
     }

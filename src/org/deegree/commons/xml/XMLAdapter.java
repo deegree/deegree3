@@ -65,6 +65,7 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMAttribute;
+import org.apache.axiom.om.OMContainer;
 import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
@@ -1047,22 +1048,34 @@ public class XMLAdapter {
     }
 
     /**
-     * Constructs a {@link NamespaceContext} from all the namespaces available for an {@link OMElement}
+     * Constructs a {@link NamespaceContext} from all active namespace bindings available in the scope of the given
+     * {@link OMElement}.
      * 
      * @param element
      *            the given element
      * @return the constructed namespace context
      */
     public NamespaceContext getNamespaceContext( OMElement element ) {
-        NamespaceContext nsContext = new NamespaceContext();
 
+        NamespaceContext nsContext = new NamespaceContext();
+        augmentNamespaceContext( element, nsContext );
+        System.out.println (nsContext);
+        return nsContext;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void augmentNamespaceContext( OMElement element, NamespaceContext nsContext ) {
         Iterator<OMNamespace> iterator = element.getAllDeclaredNamespaces();
         while ( iterator.hasNext() ) {
             OMNamespace namespace = iterator.next();
-            nsContext.addNamespace( namespace.getPrefix(), namespace.getNamespaceURI() );
+            if ( nsContext.getURI( namespace.getPrefix() ) == null ) {
+                nsContext.addNamespace( namespace.getPrefix(), namespace.getNamespaceURI() );
+            }
         }
-
-        return nsContext;
+        OMContainer parent = element.getParent();
+        if ( parent != null && parent instanceof OMElement ) {
+            augmentNamespaceContext( (OMElement) parent, nsContext );
+        }
     }
 
     /**

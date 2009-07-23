@@ -52,7 +52,7 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
-import org.deegree.filter.xml.Filter110XMLAdapter;
+import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
 
 /**
@@ -242,14 +242,14 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             List<Function> functions = new ArrayList<Function>();
             List<OMElement> functionElements = getElements( queryEl, new XPath( "ogc:Function", nsContext ) );
             for ( OMElement functionEl: functionElements ) {
-                Filter110XMLAdapter filterAdapter = new Filter110XMLAdapter();
+                Filter110XMLDecoder filterAdapter = new Filter110XMLDecoder();
                 Function function = (Function) filterAdapter.parseExpression( functionEl );
                 functions.add( function );
             }
             
             Filter filter = null;
             OMElement filterEl = getElement( queryEl, new XPath( "ogc:Filter", nsContext ) );
-            Filter110XMLAdapter filterAdapter = new Filter110XMLAdapter();
+            Filter110XMLDecoder filterAdapter = new Filter110XMLDecoder();
             filterAdapter.setRootElement( filterEl );
             filter = filterAdapter.parse();
             

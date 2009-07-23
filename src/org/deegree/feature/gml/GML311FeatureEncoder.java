@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/feature/Feature.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -69,18 +69,17 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Exporter class for Features and properties that delegates exporting tasks to the <code>GML311GeometryExporter</code>
- * Please note that this class is just a copy of the GMLFeatureExporter, and in conforms to the appropriate schemas just
- * by accident!
+ * .
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author:$
  * 
- * @version $Revision$, $Date$
+ * @version $Revision:$, $Date:$
  */
-public class GMLFeatureEncoder212 {
+public class GML311FeatureEncoder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureEncoder212.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GML311FeatureEncoder.class );
 
     private Set<String> exportedIds = new HashSet<String>();
 
@@ -88,10 +87,7 @@ public class GMLFeatureEncoder212 {
 
     private GML311GeometryEncoder geometryExporter;
 
-    /**
-     * @param writer
-     */
-    public GMLFeatureEncoder212( XMLStreamWriter writer ) {
+    public GML311FeatureEncoder( XMLStreamWriter writer ) {
         this.writer = writer;
         geometryExporter = new GML311GeometryEncoder( writer, exportedIds );
     }
@@ -114,17 +110,13 @@ public class GMLFeatureEncoder212 {
     // writer.writeEndElement();
     // }
 
-    /**
-     * @param feature
-     * @throws XMLStreamException
-     */
     public void export( Feature feature )
                             throws XMLStreamException {
         QName featureName = feature.getName();
         LOG.debug( "Exporting Feature {} with ID {}", featureName, feature.getId() );
         writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
         if ( feature.getId() != null )
-            writer.writeAttribute( "fid", feature.getId() );
+            writer.writeAttribute( GMLNS, "id", feature.getId() );
         for ( Property<?> prop : feature.getProperties() )
             export( prop );
         writer.writeEndElement();
@@ -145,16 +137,11 @@ public class GMLFeatureEncoder212 {
             writer.setPrefix( "xsi", XSINS );
             writer.writeAttribute( XSINS, "noNamespaceSchemaLocation", schemaLocation );
         }
-        writer.writeStartElement( GMLNS, "boundedBy" );
-        writer.writeStartElement( GMLNS, "null" );
-        writer.writeCharacters( "unavailable" );
-        writer.writeEndElement();
-        writer.writeEndElement();
+        writer.writeStartElement( "http://www.opengis.net/gml", "featureMembers" );
         for ( Feature f : col ) {
-            writer.writeStartElement( "http://www.opengis.net/gml", "featureMember" );
             export( f );
-            writer.writeEndElement();
         }
+        writer.writeEndElement();
         writer.writeEndElement();
     }
 
@@ -175,11 +162,9 @@ public class GMLFeatureEncoder212 {
                 writer.writeEndElement();
             }
         } else if ( propertyType instanceof SimplePropertyType ) {
-            if ( value != null ) {
-                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writer.writeCharacters( value.toString() );
-                writer.writeEndElement();
-            }
+            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+            writer.writeCharacters( value.toString() );
+            writer.writeEndElement();
 
         } else if ( propertyType instanceof GeometryPropertyType ) {
             Geometry gValue = (Geometry) value;

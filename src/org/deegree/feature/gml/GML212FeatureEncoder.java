@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/feature/Feature.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -69,17 +69,18 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Exporter class for Features and properties that delegates exporting tasks to the <code>GML311GeometryExporter</code>
- * .
+ * Please note that this class is just a copy of the GMLFeatureExporter, and it conforms to the appropriate schemas just
+ * by accident!
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$, $Date$
  */
-public class GMLFeatureEncoder {
+public class GML212FeatureEncoder {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLFeatureEncoder.class );
+    private static final Logger LOG = LoggerFactory.getLogger( GML212FeatureEncoder.class );
 
     private Set<String> exportedIds = new HashSet<String>();
 
@@ -87,7 +88,10 @@ public class GMLFeatureEncoder {
 
     private GML311GeometryEncoder geometryExporter;
 
-    public GMLFeatureEncoder( XMLStreamWriter writer ) {
+    /**
+     * @param writer
+     */
+    public GML212FeatureEncoder( XMLStreamWriter writer ) {
         this.writer = writer;
         geometryExporter = new GML311GeometryEncoder( writer, exportedIds );
     }
@@ -110,13 +114,17 @@ public class GMLFeatureEncoder {
     // writer.writeEndElement();
     // }
 
+    /**
+     * @param feature
+     * @throws XMLStreamException
+     */
     public void export( Feature feature )
                             throws XMLStreamException {
         QName featureName = feature.getName();
         LOG.debug( "Exporting Feature {} with ID {}", featureName, feature.getId() );
         writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
         if ( feature.getId() != null )
-            writer.writeAttribute( GMLNS, "id", feature.getId() );
+            writer.writeAttribute( "fid", feature.getId() );
         for ( Property<?> prop : feature.getProperties() )
             export( prop );
         writer.writeEndElement();
@@ -137,11 +145,16 @@ public class GMLFeatureEncoder {
             writer.setPrefix( "xsi", XSINS );
             writer.writeAttribute( XSINS, "noNamespaceSchemaLocation", schemaLocation );
         }
-        writer.writeStartElement( "http://www.opengis.net/gml", "featureMembers" );
-        for ( Feature f : col ) {
-            export( f );
-        }
+        writer.writeStartElement( GMLNS, "boundedBy" );
+        writer.writeStartElement( GMLNS, "null" );
+        writer.writeCharacters( "unavailable" );
         writer.writeEndElement();
+        writer.writeEndElement();
+        for ( Feature f : col ) {
+            writer.writeStartElement( "http://www.opengis.net/gml", "featureMember" );
+            export( f );
+            writer.writeEndElement();
+        }
         writer.writeEndElement();
     }
 
@@ -162,9 +175,11 @@ public class GMLFeatureEncoder {
                 writer.writeEndElement();
             }
         } else if ( propertyType instanceof SimplePropertyType ) {
-            writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-            writer.writeCharacters( value.toString() );
-            writer.writeEndElement();
+            if ( value != null ) {
+                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                writer.writeCharacters( value.toString() );
+                writer.writeEndElement();
+            }
 
         } else if ( propertyType instanceof GeometryPropertyType ) {
             Geometry gValue = (Geometry) value;
@@ -220,5 +235,4 @@ public class GMLFeatureEncoder {
         else
             writer.writeEmptyElement( namespaceURI, localname );
     }
-
 }

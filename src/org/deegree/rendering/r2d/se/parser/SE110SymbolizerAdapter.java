@@ -65,7 +65,7 @@ import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
-import org.deegree.filter.xml.Filter110XMLAdapter;
+import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation.Updater;
@@ -185,7 +185,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
             public void update( LineStyling obj, String val ) {
                 obj.perpendicularOffset = Double.parseDouble( val );
             }
-        }, new Filter110XMLAdapter(), contn );
+        }, new Filter110XMLDecoder(), contn );
 
         if ( contn == null ) {
             return new Symbolizer<LineStyling>( baseOrEvaluated, geom, name );
@@ -241,7 +241,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
             public void update( PolygonStyling obj, String val ) {
                 obj.perpendicularOffset = Double.parseDouble( val );
             }
-        }, new Filter110XMLAdapter(), contn );
+        }, new Filter110XMLDecoder(), contn );
 
         contn = updateOrContinue( root, "se:Displacement/se:DisplacementX", baseOrEvaluated,
                                   new Updater<PolygonStyling>() {
@@ -249,7 +249,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                                       public void update( PolygonStyling obj, String val ) {
                                           obj.displacementX = Double.parseDouble( val );
                                       }
-                                  }, new Filter110XMLAdapter(), contn );
+                                  }, new Filter110XMLDecoder(), contn );
 
         contn = updateOrContinue( root, "se:Displacement/se:DisplacementY", baseOrEvaluated,
                                   new Updater<PolygonStyling>() {
@@ -257,7 +257,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                                       public void update( PolygonStyling obj, String val ) {
                                           obj.displacementY = Double.parseDouble( val );
                                       }
-                                  }, new Filter110XMLAdapter(), contn );
+                                  }, new Filter110XMLDecoder(), contn );
 
         if ( contn == null ) {
             return new Symbolizer<PolygonStyling>( baseOrEvaluated, geom, name );
@@ -277,7 +277,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
         TextStyling baseOrEvaluated = new TextStyling();
         Continuation<TextStyling> contn = null;
 
-        Filter110XMLAdapter parser = new Filter110XMLAdapter();
+        Filter110XMLDecoder parser = new Filter110XMLDecoder();
         contn = updateOrContinue( root, "se:LabelPlacement/se:PointPlacement/se:AnchorPoint/se:AnchorPointX",
                                   baseOrEvaluated, new Updater<TextStyling>() {
                                       @Override
@@ -399,7 +399,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
 
         Font baseOrEvaluated = new Font();
         Continuation<Font> contn = null;
-        Filter110XMLAdapter parser = new Filter110XMLAdapter();
+        Filter110XMLDecoder parser = new Filter110XMLDecoder();
 
         contn = updateOrContinue( root, "se:SvgParameter[@name='font-family']", baseOrEvaluated, new Updater<Font>() {
             @Override
@@ -445,7 +445,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.radius = Double.parseDouble( val );
 
             }
-        }, new Filter110XMLAdapter(), contn );
+        }, new Filter110XMLDecoder(), contn );
 
         final Pair<Fill, Continuation<Fill>> fillPair = parseFill( root );
 
@@ -480,7 +480,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.perpendicularOffset = Double.parseDouble( val );
 
             }
-        }, new Filter110XMLAdapter(), contn );
+        }, new Filter110XMLDecoder(), contn );
 
         contn = updateOrContinue( root, "se:InitialGap", baseOrEvaluated, new Updater<LinePlacement>() {
             @Override
@@ -488,7 +488,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.initialGap = Double.parseDouble( val );
 
             }
-        }, new Filter110XMLAdapter(), contn );
+        }, new Filter110XMLDecoder(), contn );
 
         contn = updateOrContinue( root, "se:Gap", baseOrEvaluated, new Updater<LinePlacement>() {
             @Override
@@ -496,7 +496,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.gap = Double.parseDouble( val );
 
             }
-        }, new Filter110XMLAdapter(), contn );
+        }, new Filter110XMLDecoder(), contn );
 
         contn = updateOrContinue( root, "se:GeneralizeLine", baseOrEvaluated, new Updater<LinePlacement>() {
             @Override
@@ -504,7 +504,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.generalizeLine = Boolean.parseBoolean( val );
 
             }
-        }, new Filter110XMLAdapter(), contn );
+        }, new Filter110XMLDecoder(), contn );
 
         contn = updateOrContinue( root, "se:IsAligned", baseOrEvaluated, new Updater<LinePlacement>() {
             @Override
@@ -512,7 +512,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.isAligned = Boolean.parseBoolean( val );
 
             }
-        }, new Filter110XMLAdapter(), contn );
+        }, new Filter110XMLDecoder(), contn );
 
         contn = updateOrContinue( root, "se:IsRepeated", baseOrEvaluated, new Updater<LinePlacement>() {
             @Override
@@ -520,7 +520,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.repeat = Boolean.parseBoolean( val );
 
             }
-        }, new Filter110XMLAdapter(), contn );
+        }, new Filter110XMLDecoder(), contn );
 
         return new Pair<LinePlacement, Continuation<LinePlacement>>( baseOrEvaluated, contn );
     }
@@ -530,7 +530,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
      * @return a base graphic and a continuation, or an evaluated graphic
      */
     private Pair<Graphic, Continuation<Graphic>> parseGraphic( OMElement root ) {
-        Filter110XMLAdapter parser = new Filter110XMLAdapter();
+        Filter110XMLDecoder parser = new Filter110XMLDecoder();
 
         OMElement graphic = getElement( root, new XPath( "se:Graphic", nscontext ) );
 
@@ -702,7 +702,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
             return null;
         }
 
-        Filter110XMLAdapter parser = new Filter110XMLAdapter();
+        Filter110XMLDecoder parser = new Filter110XMLDecoder();
 
         Fill base = new Fill();
         Continuation<Fill> contn = null;
@@ -756,7 +756,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
             return null;
         }
 
-        Filter110XMLAdapter parser = new Filter110XMLAdapter();
+        Filter110XMLDecoder parser = new Filter110XMLDecoder();
 
         Stroke base = new Stroke();
         Continuation<Stroke> contn = null;
@@ -879,7 +879,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
             OMElement fil = getElement( elem, new XPath( "ogc:Filter", nscontext ) );
             Filter filter = null;
             if ( fil != null ) {
-                Filter110XMLAdapter parser = new Filter110XMLAdapter();
+                Filter110XMLDecoder parser = new Filter110XMLDecoder();
                 parser.setRootElement( fil );
                 filter = parser.parse();
             } else {
@@ -957,7 +957,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
      * @return a continuation or null, if none was created and input
      */
     private <T> Continuation<T> updateOrContinue( OMElement root, String name, T obj, final Updater<T> updater,
-                                                  Filter110XMLAdapter parser, Continuation<T> contn ) {
+                                                  Filter110XMLDecoder parser, Continuation<T> contn ) {
         for ( OMElement elem : getElements( root, new XPath( name, nscontext ) ) ) {
             if ( elem != null ) {
                 Iterator<?> iter = elem.getChildren();

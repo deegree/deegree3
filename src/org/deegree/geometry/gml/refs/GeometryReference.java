@@ -45,7 +45,7 @@ import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Represents a reference to the GML representation of a geometry, which is usually expressed using an
- * <code>xlink:href</code> attribute in GML (may be document-local or remote). </p>
+ * <code>xlink:href</code> attribute in GML (may be document-local or remote).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $

@@ -38,7 +38,6 @@ package org.deegree.filter.xml;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,7 +49,6 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.ArrayUtils;
@@ -95,27 +93,24 @@ import org.deegree.filter.spatial.SpatialOperator;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML311GeometryDecoder;
-import org.jaxen.SimpleNamespaceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Adapter between XML documents that comply to the Filter Encoding Specification 1.1.0 and {@link Filter} objects.
+ * Decodes XML documents that comply to the OGC Filter Encoding Specification 1.1.0 as {@link Filter} objects.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public class Filter110XMLAdapter extends XMLAdapter {
+public class Filter110XMLDecoder extends XMLAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger( Filter110XMLAdapter.class );
+    private static final Logger LOG = LoggerFactory.getLogger( Filter110XMLDecoder.class );
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
 
     private static final String GML_NS = "http://www.opengis.net/gml";
-
-    private static final QName NAME_ATTR = new QName( "name" );
 
     private static final QName FEATURE_ID_ELEMENT = new QName( OGC_NS, "FeatureId" );
 
@@ -231,8 +226,8 @@ public class Filter110XMLAdapter extends XMLAdapter {
 
         Iterator<?> childIterator = rootElement.getChildElements();
         if ( !childIterator.hasNext() ) {
-            String msg = "ogc:Filter elements must have at least one child.";
-            throw new XMLParsingException( this, rootElement, msg );
+            throw new XMLParsingException( this, rootElement, Messages.getMessage( "FILTER_PARSER_FILTER_EMPTY",
+                                                                                   rootElement.getQName() ) );
         }
 
         OMElement element = (OMElement) childIterator.next();
@@ -267,7 +262,8 @@ public class Filter110XMLAdapter extends XMLAdapter {
             if ( GML_OBJECT_ID_ELEMENT.equals( childElementName ) ) {
                 String id = childElement.getAttributeValue( GML_ID_ATTR_NAME );
                 if ( id == null || id.length() == 0 ) {
-                    String msg = Messages.getMessage( "", GML_OBJECT_ID_ELEMENT, GML_ID_ATTR_NAME );
+                    String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", GML_OBJECT_ID_ELEMENT,
+                                                      GML_ID_ATTR_NAME );
                     throw new XMLParsingException( this, childElement, msg );
                 }
                 matchedIds.add( id );
@@ -313,8 +309,8 @@ public class Filter110XMLAdapter extends XMLAdapter {
         // check if element name is a valid expression element
         Expression.Type type = elementNameToExpressionType.get( element.getQName() );
         if ( type == null ) {
-            String msg = "Error while parsing ogc:expression. Expected one of "
-                         + elemNames( Expression.Type.class, expressionTypeToElementName ) + ". ";
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", element.getQName(),
+                                              elemNames( Expression.Type.class, expressionTypeToElementName ) );
             throw new XMLParsingException( this, element, msg );
         }
 
@@ -356,11 +352,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
             break;
         }
         case FUNCTION: {
-            String name = element.getAttributeValue( new QName( "name" ) );
-            if ( name == null ) {
-                String msg = Messages.getMessage( "FILTER_PARSING_FUNCTION_NAME_ATTR_MISSING" );
-                throw new XMLProcessingException( msg );
-            }
+            String name = getRequiredNodeAsString( element, new XPath( "@name", nsContext ) );
             List<Expression> params = new ArrayList<Expression>();
             FixedChildIterator childElementIter = new FixedChildIterator( element, 1 );
             Expression param = parseExpression( childElementIter.next() );
@@ -380,15 +372,14 @@ public class Filter110XMLAdapter extends XMLAdapter {
      * @return propertyName object
      */
     private PropertyName parsePropertyName( OMElement element ) {
-        // TODO build correct nsContext
-        SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
-        nsContext.addNamespace( "app", "http://www.deegree.org/app" );
-        if ( element.getText().trim().isEmpty() ) {
+        String propName = element.getText().trim();
+        if ( propName.isEmpty() ) {
             // TODO filter encoding guy: use whatever exception shall be used here. But make sure that the
             // GetObservation100XMLAdapter gets an exception from here as the compliance of the SOS hangs on it's thread
-            throw new IllegalArgumentException( "Property name cannot be empty." );
+            throw new XMLParsingException( this, element, Messages.getMessage( "FILTER_PARSER_PROPERTY_NAME_EMPTY",
+                                                                               element.getQName() ) );
         }
-        return new PropertyName( element.getText(), nsContext );
+        return new PropertyName( propName, getNamespaceContext( element ) );
     }
 
     /**
@@ -412,10 +403,10 @@ public class Filter110XMLAdapter extends XMLAdapter {
         // check if element name is a valid operator element
         Operator.Type type = elementNameToOperatorType.get( element.getQName() );
         if ( type == null ) {
-            String msg = "Error while parsing ogc:Filter. Expected one of "
-                         + elemNames( Operator.Type.class, logicalOperatorTypeToElementName ) + ", "
-                         + elemNames( Operator.Type.class, spatialOperatorTypeToElementName ) + ", "
-                         + elemNames( Operator.Type.class, comparisonOperatorTypeToElementName );
+            String expectedList = elemNames( Operator.Type.class, logicalOperatorTypeToElementName ) + ", "
+                                  + elemNames( Operator.Type.class, spatialOperatorTypeToElementName ) + ", "
+                                  + elemNames( Operator.Type.class, comparisonOperatorTypeToElementName );
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", element.getQName(), expectedList );
             throw new XMLParsingException( this, element, msg );
         }
 
@@ -433,10 +424,9 @@ public class Filter110XMLAdapter extends XMLAdapter {
             try {
                 operator = parseSpatialOperator( element );
             } catch ( XMLStreamException e ) {
-                e.printStackTrace();
-                throw new XMLParsingException( e.getMessage() );
+                throw new XMLParsingException( this, element, e.getMessage() );
             } catch ( UnknownCRSException e ) {
-                throw new XMLParsingException( e.getMessage() );
+                throw new XMLParsingException( this, element, e.getMessage() );
             }
             break;
         }
@@ -477,8 +467,9 @@ public class Filter110XMLAdapter extends XMLAdapter {
         SpatialOperator.SubType type = elementNameToSpatialOperatorType.get( element.getQName() );
 
         if ( type == null ) {
-            String msg = "Error while parsing ogc:spatialOps. Expected one of "
-                         + elemNames( SpatialOperator.SubType.class, spatialOperatorTypeToElementName ) + ".";
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", element.getQName(),
+                                              elemNames( SpatialOperator.SubType.class,
+                                                         spatialOperatorTypeToElementName ) );
             throw new XMLParsingException( this, element, msg );
         }
 
@@ -556,8 +547,9 @@ public class Filter110XMLAdapter extends XMLAdapter {
         ComparisonOperator.SubType type = elementNameToComparisonOperatorType.get( element.getQName() );
 
         if ( type == null ) {
-            String msg = "Error while parsing ogc:comparsionOps. Expected one of "
-                         + elemNames( ComparisonOperator.SubType.class, comparisonOperatorTypeToElementName ) + ".";
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", element.getQName(),
+                                              elemNames( ComparisonOperator.SubType.class,
+                                                         comparisonOperatorTypeToElementName ) );
             throw new XMLParsingException( this, element, msg );
         }
 
@@ -704,6 +696,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
      *            element to be parsed
      * @return logical operator object
      */
+    @SuppressWarnings("unchecked")
     private Operator parseLogicalOperator( OMElement element ) {
 
         Operator logicalOperator = null;
@@ -711,8 +704,9 @@ public class Filter110XMLAdapter extends XMLAdapter {
         // check if element name is a valid logical operator element
         LogicalOperator.SubType type = elementNameToLogicalOperatorType.get( element.getQName() );
         if ( type == null ) {
-            String msg = "Error while parsing ogc:logicOps. Expected one of "
-                         + elemNames( LogicalOperator.SubType.class, logicalOperatorTypeToElementName ) + ".";
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", element.getQName(),
+                                              elemNames( LogicalOperator.SubType.class,
+                                                         logicalOperatorTypeToElementName ) );
             throw new XMLParsingException( this, element, msg );
         }
         switch ( type ) {
@@ -763,244 +757,6 @@ public class Filter110XMLAdapter extends XMLAdapter {
     }
 
     /**
-     * Serializes the given {@link Filter} object to XML.
-     * 
-     * @param filter
-     *            <code>Filter</code> object to be serialized
-     * @param writer
-     *            target of the xml stream
-     * @throws XMLStreamException
-     */
-    public static void export( Filter filter, XMLStreamWriter writer )
-                            throws XMLStreamException {
-
-        writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
-
-        writer.writeStartElement( OGC_NS, "Filter" );
-        switch ( filter.getType() ) {
-        case ID_FILTER:
-            Collection<String> ids = ( (IdFilter) filter ).getMatchingIds();
-            for ( String id : ids ) {
-                writer.writeStartElement( OGC_NS, "GmlObjectId" );
-                writer.writeCharacters( id );
-                writer.writeEndElement();
-            }
-            break;
-        case OPERATOR_FILTER:
-            export( ( (OperatorFilter) filter ).getOperator(), writer );
-            break;
-        }
-        writer.writeEndElement();
-    }
-
-    /**
-     * Serializes the given {@link Operator} object to XML.
-     * 
-     * @param operator
-     *            <code>BooleanOperator</code> object to be serialized
-     * @param writer
-     *            target of the xml stream
-     * @throws XMLStreamException
-     */
-    private static void export( Operator operator, XMLStreamWriter writer )
-                            throws XMLStreamException {
-        switch ( operator.getType() ) {
-        case COMPARISON:
-            export( (ComparisonOperator) operator, writer );
-            break;
-        case LOGICAL:
-            export( (LogicalOperator) operator, writer );
-            break;
-        case SPATIAL:
-            export( (SpatialOperator) operator, writer );
-            break;
-        }
-    }
-
-    /**
-     * Serializes the given {@link LogicalOperator} object to XML.
-     * 
-     * @param operator
-     *            <code>LogicalOperator</code> object to be serialized
-     * @param writer
-     *            target of the xml stream
-     * @throws XMLStreamException
-     */
-    private static void export( LogicalOperator operator, XMLStreamWriter writer )
-                            throws XMLStreamException {
-
-        QName elementName = logicalOperatorTypeToElementName.get( operator.getSubType() );
-        writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
-
-        switch ( operator.getSubType() ) {
-        case AND:
-            And andOp = (And) operator;
-            for ( int i = 0; i < andOp.getSize(); i++ ) {
-                export( andOp.getParameter( i ), writer );
-            }
-            break;
-        case OR:
-            Or orOp = (Or) operator;
-            for ( int i = 0; i < orOp.getSize(); i++ ) {
-                export( orOp.getParameter( i ), writer );
-            }
-            break;
-        case NOT:
-            export( ( (Not) operator ).getParameter(), writer );
-            break;
-        }
-
-        writer.writeEndElement();
-    }
-
-    /**
-     * Serializes the given {@link ComparisonOperator} object to XML.
-     * 
-     * @param operator
-     *            <code>ComparisonOperator</code> object to be serialized
-     * @param writer
-     *            target of the xml stream
-     * @throws XMLStreamException
-     */
-    private static void export( ComparisonOperator operator, XMLStreamWriter writer )
-                            throws XMLStreamException {
-
-        QName elementName = comparisonOperatorTypeToElementName.get( operator.getSubType() );
-        writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
-
-        switch ( operator.getSubType() ) {
-        case PROPERTY_IS_BETWEEN:
-            PropertyIsBetween isBetween = (PropertyIsBetween) operator;
-            export( isBetween.getExpression(), writer );
-            writer.writeStartElement( OGC_NS, "LowerBoundary" );
-            writer.writeEndElement();
-            writer.writeStartElement( OGC_NS, "UpperBoundary" );
-            writer.writeEndElement();
-            break;
-        case PROPERTY_IS_EQUAL_TO:
-            export( ( (PropertyIsEqualTo) operator ).getParameter1(), writer );
-            export( ( (PropertyIsEqualTo) operator ).getParameter2(), writer );
-            break;
-        case PROPERTY_IS_GREATER_THAN:
-            export( ( (PropertyIsGreaterThan) operator ).getParameter1(), writer );
-            export( ( (PropertyIsGreaterThan) operator ).getParameter2(), writer );
-            break;
-        case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
-            export( ( (PropertyIsGreaterThanOrEqualTo) operator ).getParameter1(), writer );
-            export( ( (PropertyIsGreaterThanOrEqualTo) operator ).getParameter2(), writer );
-            break;
-        case PROPERTY_IS_LESS_THAN:
-            export( ( (PropertyIsLessThan) operator ).getParameter1(), writer );
-            export( ( (PropertyIsLessThan) operator ).getParameter2(), writer );
-            break;
-        case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
-            export( ( (PropertyIsLessThanOrEqualTo) operator ).getParameter1(), writer );
-            export( ( (PropertyIsLessThanOrEqualTo) operator ).getParameter2(), writer );
-            break;
-        case PROPERTY_IS_LIKE:
-            PropertyIsLike isLikeOperator = (PropertyIsLike) operator;
-            writer.writeAttribute( "wildCard", isLikeOperator.getWildCard() );
-            writer.writeAttribute( "singleChar", isLikeOperator.getSingleChar() );
-            writer.writeAttribute( "escapeChar", isLikeOperator.getEscapeChar() );
-            export( isLikeOperator.getPropertyName(), writer );
-            export( isLikeOperator.getLiteral(), writer );
-            break;
-        case PROPERTY_IS_NOT_EQUAL_TO:
-            export( ( (PropertyIsNotEqualTo) operator ).getParameter1(), writer );
-            export( ( (PropertyIsNotEqualTo) operator ).getParameter2(), writer );
-            break;
-        case PROPERTY_IS_NULL:
-            export( ( (PropertyIsNull) operator ).getPropertyName(), writer );
-            break;
-        }
-
-        writer.writeEndElement();
-    }
-
-    /**
-     * Serializes the given {@link SpatialOperator} object to XML.
-     * 
-     * @param operator
-     *            <code>SpatialOperator</code> object to be serialized
-     * @param writer
-     *            target of the xml stream
-     * @throws XMLStreamException
-     */
-    private static void export( SpatialOperator operator, XMLStreamWriter writer )
-                            throws XMLStreamException {
-
-        QName elementName = spatialOperatorTypeToElementName.get( operator.getSubType() );
-        writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
-
-        switch ( operator.getSubType() ) {
-        // TODO implement me
-        case BBOX:
-        case BEYOND:
-        case CONTAINS:
-        case CROSSES:
-        case DISJOINT:
-        case DWITHIN:
-        case EQUALS:
-        case INTERSECTS:
-        case OVERLAPS:
-        case TOUCHES:
-        case WITHIN:
-        }
-
-        writer.writeEndElement();
-    }
-
-    /**
-     * Serializes the given {@link Expression} object to XML.
-     * 
-     * @param expression
-     *            <code>Expression</code> object to be serialized
-     * @param writer
-     *            target of the xml stream
-     * @throws XMLStreamException
-     */
-    public static void export( Expression expression, XMLStreamWriter writer )
-                            throws XMLStreamException {
-
-        QName elementName = expressionTypeToElementName.get( expression.getType() );
-        writer.writeStartElement( elementName.getNamespaceURI(), elementName.getLocalPart() );
-
-        switch ( expression.getType() ) {
-        case PROPERTY_NAME:
-            writer.writeCharacters( ( (PropertyName) expression ).getPropertyName() );
-            break;
-        case LITERAL:
-            writer.writeCharacters( ( (Literal) expression ).getValue() );
-            break;
-        case FUNCTION:
-            Function function = (Function) expression;
-            writer.writeAttribute( NAME_ATTR.getLocalPart(), function.getName() );
-            for ( Expression param : function.getParameters() ) {
-                export( param, writer );
-            }
-            break;
-        case ADD:
-            export( ( (Add) expression ).getParameter1(), writer );
-            export( ( (Add) expression ).getParameter2(), writer );
-            break;
-        case SUB:
-            export( ( (Sub) expression ).getParameter1(), writer );
-            export( ( (Sub) expression ).getParameter2(), writer );
-            break;
-        case MUL:
-            export( ( (Mul) expression ).getParameter1(), writer );
-            export( ( (Mul) expression ).getParameter2(), writer );
-            break;
-        case DIV:
-            export( ( (Div) expression ).getParameter1(), writer );
-            export( ( (Div) expression ).getParameter2(), writer );
-            break;
-        }
-
-        writer.writeEndElement();
-    }
-
-    /**
      * Return a String with all element names of the given enum class.
      * 
      * @param enumClass
@@ -1012,7 +768,7 @@ public class Filter110XMLAdapter extends XMLAdapter {
         List<String> names = new LinkedList<String>();
         for ( Enum<?> e : enumClass.getEnumConstants() ) {
             QName qname = map.get( e );
-            names.add( qname.getLocalPart() );
+            names.add( qname.toString() );
         }
         return ArrayUtils.join( ", ", names );
     }
