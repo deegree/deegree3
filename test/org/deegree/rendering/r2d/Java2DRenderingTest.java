@@ -91,6 +91,7 @@ import org.deegree.rendering.r2d.styling.components.LinePlacement;
 import org.deegree.rendering.r2d.styling.components.Mark;
 import org.deegree.rendering.r2d.styling.components.Stroke;
 import org.deegree.rendering.r2d.styling.components.Stroke.LineJoin;
+import org.junit.Test;
 import org.slf4j.Logger;
 
 /**
@@ -108,7 +109,7 @@ public class Java2DRenderingTest extends TestCase {
     private static File textFile, perfFile;
 
     // setting this to true will delete all rendering_* files in your temporary directory!
-    private static final boolean INTERACTIVE_TESTS = true;
+    private static final boolean INTERACTIVE_TESTS = false;
 
     private static BufferedImage fill;
 
@@ -158,6 +159,7 @@ public class Java2DRenderingTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testPointStyling()
                             throws Exception {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
@@ -259,6 +261,7 @@ public class Java2DRenderingTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testLineStyling()
                             throws Exception {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
@@ -336,6 +339,7 @@ public class Java2DRenderingTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testLineStyling2()
                             throws Exception {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
@@ -425,6 +429,7 @@ public class Java2DRenderingTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testPolygonStyling()
                             throws Exception {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
@@ -473,6 +478,7 @@ public class Java2DRenderingTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testTextStyling()
                             throws Exception {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
@@ -566,6 +572,7 @@ public class Java2DRenderingTest extends TestCase {
     /**
      * @throws Exception
      */
+    @Test
     public void testTextStyling2()
                             throws Exception {
         BufferedImage img = new BufferedImage( 1000, 1000, TYPE_INT_ARGB );
@@ -664,4 +671,5 @@ public class Java2DRenderingTest extends TestCase {
         texts.add( "fourth line: renders with initial gap of 20 and gap of 10 (with text size 12)" );
         writeTestImage( img, texts, time2 - time );
     }
+
 }

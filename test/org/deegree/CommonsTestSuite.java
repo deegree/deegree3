@@ -95,7 +95,8 @@ import org.slf4j.LoggerFactory;
                 org.deegree.geometry.validation.GeometryValidatorTest.class,
                 org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParserTest.class,
                 org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureTypeKVPAdapterTest.class,
-                org.deegree.protocol.wfs.getfeature.GetFeatureXMLAdapterTest.class })
+                org.deegree.protocol.wfs.getfeature.GetFeatureXMLAdapterTest.class,
+                org.deegree.rendering.r2d.Java2DRenderingTest.class })
 class CommonsTestSuite {
 
     private static final int DOT_CLASS_LENGTH = ".class".length();
