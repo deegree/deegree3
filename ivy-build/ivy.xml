@@ -60,5 +60,8 @@
     <!-- for a postgis runtime -->
     <dependency org="postgis" name="postgresql" rev="8.3-+" transitive="false" conf="${module.name}-build" />
     <dependency org="postgis" name="postgis" rev="1.3.3" transitive="false" conf="${module.name}-build" />
+    
+    <!-- local copy of OpenGIS schemas -->
+    <dependency org="opengis-schemas" name="opengis_schemas_2009-05-08" rev="" transitive="false" conf="${module.name}-build" />
   </dependencies>
 </ivy-module>
