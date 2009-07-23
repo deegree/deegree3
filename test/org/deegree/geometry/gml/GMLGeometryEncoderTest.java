@@ -48,6 +48,7 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.xerces.xni.parser.XMLInputSource;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
@@ -55,17 +56,12 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.gml.GML311CurveSegmentDecoder;
-import org.deegree.geometry.gml.GML311GeometryEncoder;
-import org.deegree.geometry.gml.GML311GeometryDecoder;
-import org.deegree.geometry.gml.GML311SurfacePatchDecoder;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.junit.XMLAssert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
 
 /**
  * Exporting all types of geometries and validating them.
@@ -188,8 +184,9 @@ public class GMLGeometryEncoderTest {
             writer.close();
             out.close();
 
-            XMLAssert.assertValidDocument( SCHEMA_LOCATION,
-                                           new InputSource( new FileReader( "/tmp/exported_" + source ) ) );
+            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new XMLInputSource( null, null, null,
+                                                                          new FileReader( "/tmp/exported_" + source ),
+                                                                          null ) );
         }
     }
 
@@ -227,8 +224,9 @@ public class GMLGeometryEncoderTest {
             writer.close();
             out.close();
 
-            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new InputSource( new FileReader( "/tmp/exported_"
-                                                                                             + patchSource ) ) );
+            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new XMLInputSource( null, null, null,
+                                                                                new FileReader( "/tmp/exported_" + patchSource ),
+                                                                                null ) );
         }
     }
 
@@ -264,8 +262,9 @@ public class GMLGeometryEncoderTest {
             writer.close();
             out.close();
 
-            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new InputSource( new FileReader( "/tmp/exported_"
-                                                                                             + segmentSource ) ) );
+            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new XMLInputSource( null, null, null,
+                                                                                new FileReader( "/tmp/exported_" + segmentSource ),
+                                                                                null ) );
         }
     }
 
@@ -299,8 +298,9 @@ public class GMLGeometryEncoderTest {
             writer.close();
             out.close();
 
-            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new InputSource( new FileReader( "/tmp/exported_"
-                                                                                             + envelopeSource ) ) );
+            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new XMLInputSource( null, null, null,
+                                                                                new FileReader( "/tmp/exported_" + envelopeSource ),
+                                                                                null ) );
         }
     }
 
@@ -336,6 +336,8 @@ public class GMLGeometryEncoderTest {
         writer.close();
         out.close();
 
-        XMLAssert.assertValidDocument( SCHEMA_LOCATION, new InputSource( new FileReader( "/tmp/exported_" + source ) ) );
+        XMLAssert.assertValidDocument( SCHEMA_LOCATION, new XMLInputSource( null, null, null,
+                                                                            new FileReader( "/tmp/exported_" + source ),
+                                                                            null ) );
     }
 }

@@ -35,10 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.junit;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -47,19 +46,19 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.xerces.xni.XNIException;
+import org.apache.xerces.xni.parser.XMLErrorHandler;
+import org.apache.xerces.xni.parser.XMLInputSource;
+import org.apache.xerces.xni.parser.XMLParseException;
+import org.apache.xerces.xni.parser.XMLParserConfiguration;
+import org.deegree.commons.xml.schema.PreparserHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 /**
  * This class contains static assert methods for XML validation. This class should only be used in JUnit tests and
@@ -112,41 +111,34 @@ public class XMLAssert {
      * @throws AssertionError
      *             when the document is not valid against the schema
      */
-    public static void assertValidDocument( String schemaLocation, InputSource source ) {
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        docBuilderFactory.setNamespaceAware( true );
-        docBuilderFactory.setIgnoringElementContentWhitespace( true );
+    public static void assertValidDocument( String schemaLocation, XMLInputSource source ) {
 
         final List<Exception> exceptions = new LinkedList<Exception>();
 
         try {
-            DocumentBuilder parser = docBuilderFactory.newDocumentBuilder();
-
-            parser.setErrorHandler( new ErrorHandler() {
-
-                public void error( SAXParseException exception )
-                                        throws SAXException {
-                    exceptions.add( exception );
+            XMLParserConfiguration parserConfig = PreparserHelper.getValidatingParser( schemaLocation );
+            parserConfig.setErrorHandler(new XMLErrorHandler() {
+                @Override
+                public void error( String arg0, String arg1, XMLParseException e )
+                                        throws XNIException {
+                    exceptions.add( e );
                 }
 
-                public void fatalError( SAXParseException exception )
-                                        throws SAXException {
-                    exceptions.add( exception );
+                @Override
+                public void fatalError( String arg0, String arg1, XMLParseException e )
+                                        throws XNIException {
+                    exceptions.add( e );
                 }
 
-                public void warning( SAXParseException exception )
-                                        throws SAXException {
-                    exceptions.add( exception );
+                @Override
+                public void warning( String arg0, String arg1, XMLParseException e )
+                                        throws XNIException {
+                    exceptions.add( e );
                 }
-
-            } );
-
-            getSchema( schemaLocation ).newValidator().validate( new DOMSource( parser.parse( source ) ) );
-        } catch ( ParserConfigurationException e ) {
-            exceptions.add( e );
-        } catch ( SAXException e ) {
-            exceptions.add( e );
-        } catch ( IOException e ) {
+                
+            });
+            parserConfig.parse( source );
+        } catch ( Exception e ) {
             exceptions.add( e );
         }
         if ( LOG.isErrorEnabled() ) {

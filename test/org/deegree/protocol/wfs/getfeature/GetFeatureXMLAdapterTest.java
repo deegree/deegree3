@@ -68,11 +68,9 @@ import org.junit.Test;
  * Test class for the GetFeatureXMLAdapter.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * 
  * @author last edited by: $Author: ionita $
  * 
  * @version $Revision: $, $Date: $
- * 
  */
 public class GetFeatureXMLAdapterTest extends TestCase {
 
@@ -466,5 +464,4 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertEquals( ids.size(), 1 );
         assertTrue( ids.contains( "t1" ) );
     }
-
 }

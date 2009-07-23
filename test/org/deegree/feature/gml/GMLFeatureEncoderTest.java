@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.feature.gml;
 
@@ -48,6 +48,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.xerces.xni.parser.XMLInputSource;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
@@ -58,17 +59,16 @@ import org.deegree.feature.gml.schema.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.junit.XMLAssert;
 import org.junit.Test;
-import org.xml.sax.InputSource;
 
 /**
  * Exports the features in the Philosophers example and validates them against the corresponding schema.
- *
+ * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- *
+ * 
  * @author last edited by: $Author: ionita $
- *
+ * 
  * @version $Revision: $, $Date: $
- *
+ * 
  */
 public class GMLFeatureEncoderTest {
 
@@ -86,8 +86,7 @@ public class GMLFeatureEncoderTest {
                             IllegalAccessException, XMLStreamException, FactoryConfigurationError, IOException,
                             XMLParsingException, UnknownCRSException {
         String schemaURL = this.getClass().getResource( SCHEMA_LOCATION_ATTRIBUTE ).toString();
-        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
-                                                                                        GMLVersion.GML_31 );
+        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL, GMLVersion.GML_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureEncoderTest.class.getResource( DIR + SOURCE_FILE );
@@ -96,14 +95,14 @@ public class GMLFeatureEncoderTest {
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
-        Feature feature = gmlAdapter.parseFeature(new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
+        Feature feature = gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
         idContext.resolveXLinks( schema );
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
         OutputStream out = new FileOutputStream( "/tmp/exported_" + SOURCE_FILE );
-        XMLStreamWriterWrapper writer =
-            new XMLStreamWriterWrapper( outputFactory.createXMLStreamWriter( out ), SCHEMA_LOCATION_ATTRIBUTE );
+        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( outputFactory.createXMLStreamWriter( out ),
+                                                                    SCHEMA_LOCATION_ATTRIBUTE );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
         writer.setPrefix( "app", "http://www.deegree.org/app" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -117,6 +116,8 @@ public class GMLFeatureEncoderTest {
         writer.close();
         out.close();
 
-        XMLAssert.assertValidDocument( schemaURL, new InputSource( new FileReader( "/tmp/exported_" + SOURCE_FILE ) ) );
+        XMLAssert.assertValidDocument( schemaURL, new XMLInputSource( null, null, null,
+                                                                      new FileReader( "/tmp/exported_" + SOURCE_FILE ),
+                                                                      null ) );
     }
 }

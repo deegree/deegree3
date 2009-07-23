@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,13 +32,11 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.gml;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 
 import junit.framework.TestCase;
 
@@ -62,18 +60,19 @@ import org.slf4j.LoggerFactory;
 /**
  * <code>GMLCRSProviderTest</code> test the loading of a projected crs as well as the loading of the default
  * configuration.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class GMLCRSProviderTest extends TestCase {
 
     private static final String CONFIG_FILE = "/org/deegree/crs/configuration/gml/gmlDictionary.xml";
-    //"${user.home}/workspace/adv_registry2/docs/specification/AdV-Registry-P2_130-v02_dictionary_2.xml";
+
+    // "${user.home}/workspace/adv_registry2/docs/specification/AdV-Registry-P2_130-v02_dictionary_2.xml";
 
     private static Logger LOG = LoggerFactory.getLogger( GMLCRSProviderTest.class );
 
@@ -83,7 +82,8 @@ public class GMLCRSProviderTest extends TestCase {
             LOG.error( "No configuration file found, nothing to test. " );
             throw new NullPointerException( "The file was not found. " );
         }
-        final String old_value = CRSConfiguration.setDefaultFileProperty( GMLCRSProviderTest.class.getResource( CONFIG_FILE ).getPath() );
+        final String old_value = CRSConfiguration.setDefaultFileProperty( GMLCRSProviderTest.class.getResource(
+                                                                                                                CONFIG_FILE ).getPath() );
         CRSProvider provider = CRSConfiguration.getCRSConfiguration( "org.deegree.crs.configuration.gml.GMLCRSProvider" ).getProvider();
         assertNotNull( provider );
         if ( !( provider instanceof GMLCRSProvider ) ) {
@@ -114,9 +114,9 @@ public class GMLCRSProviderTest extends TestCase {
     public void testCRSByID() {
         try {
             GMLCRSProvider gProvider = getProvider();
-            //            for (String id : gProvider.getCRSByID(""))) {
-            //            	System.out.println ("id: " + id);
-            //            }
+            // for (String id : gProvider.getCRSByID(""))) {
+            // System.out.println ("id: " + id);
+            // }
             // try loading the gaus krueger zone 3.
             System.out.println( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
             CoordinateSystem testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
@@ -191,18 +191,12 @@ public class GMLCRSProviderTest extends TestCase {
      * Test a cache
      */
     public void testCache() {
-        try {
-            GMLCRSProvider gProvider = getProvider();
+        GMLCRSProvider gProvider = getProvider();
 
-            CoordinateSystem testCRS = gProvider.getCRSByCode(
-                                                              CRSCodeType.valueOf
-                                                              ( "urn:ogc:def:crs:EPSG::31467" ) );
-            testCRS_31467( testCRS );
+        CoordinateSystem testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
+        testCRS_31467( testCRS );
 
-            testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:adv:crs:DE_DHDN_3GK3" ) );
-            testCRS_31467( testCRS );
-        } catch ( NullPointerException e ) {
-            // nottin.
-        }
+        testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:adv:crs:DE_DHDN_3GK3" ) );
+        testCRS_31467( testCRS );
     }
 }

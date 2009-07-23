@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,26 +32,25 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.xerces.xni.parser.XMLInputSource;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.filter.Filter;
 import org.deegree.filter.xml.Filter110XMLAdapter;
 import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Assert;
 import org.junit.Test;
-import org.xml.sax.InputSource;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Filter110XMLAdapterTest {
@@ -84,7 +83,6 @@ public class Filter110XMLAdapterTest {
         Filter110XMLAdapter.export( filter, writer.getXMLStreamWriter() );
 
         String schemaLocation = "http://schemas.opengis.net/filter/1.1.0/filter.xsd";
-        XMLAssert.assertValidDocument( schemaLocation, new InputSource( writer.getReader() ) );
-        System.out.println (writer);
+        XMLAssert.assertValidDocument( schemaLocation, new XMLInputSource( null, null, null, writer.getReader(), null ) );
     }
 }

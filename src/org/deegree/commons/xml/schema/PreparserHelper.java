@@ -36,9 +36,12 @@
 package org.deegree.commons.xml.schema;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.xerces.impl.Constants;
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
+import org.apache.xerces.parsers.XIncludeAwareParserConfiguration;
 import org.apache.xerces.parsers.XMLGrammarPreparser;
 import org.apache.xerces.util.SymbolTable;
 import org.apache.xerces.util.XMLGrammarPoolImpl;
@@ -49,6 +52,7 @@ import org.apache.xerces.xni.grammars.XMLGrammarDescription;
 import org.apache.xerces.xni.grammars.XMLGrammarPool;
 import org.apache.xerces.xni.parser.XMLEntityResolver;
 import org.apache.xerces.xni.parser.XMLInputSource;
+import org.apache.xerces.xni.parser.XMLParserConfiguration;
 import org.apache.xerces.xs.XSModel;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.slf4j.Logger;
@@ -101,6 +105,47 @@ public class PreparserHelper {
     /** Default honour all schema locations (false). */
     protected static final boolean DEFAULT_HONOUR_ALL_SCHEMA_LOCATIONS = false;
 
+    
+    private static Map<String,XMLParserConfiguration> schemaURLToParser = new HashMap<String,XMLParserConfiguration>();
+    
+    public static XMLParserConfiguration getValidatingParser (String schemaUrl) throws XNIException, IOException {
+        XMLParserConfiguration parser = schemaURLToParser.get( schemaUrl );
+        if (parser == null) {
+            parser = createValidatingParser(schemaUrl);
+            schemaURLToParser.put( schemaUrl, parser );
+        }
+        return parser;
+    }
+    
+    private static XMLParserConfiguration createValidatingParser (String url) throws XNIException, IOException {
+
+        XMLEntityResolver resolver = new RedirectingEntityResolver();
+        SymbolTable sym = new SymbolTable( BIG_PRIME );
+
+        XMLGrammarPreparser preparser = new XMLGrammarPreparser( sym );
+        XMLGrammarPool grammarPool = new MyGrammarPool();
+        preparser.registerPreparser( XMLGrammarDescription.XML_SCHEMA, null );
+
+        preparser.setProperty( GRAMMAR_POOL, grammarPool );
+        preparser.setEntityResolver( resolver );
+        preparser.setFeature( NAMESPACES_FEATURE_ID, true );
+        preparser.setFeature( VALIDATION_FEATURE_ID, true );
+        preparser.setFeature( SCHEMA_VALIDATION_FEATURE_ID, true );
+        preparser.setFeature( SCHEMA_FULL_CHECKING_FEATURE_ID, true );
+        preparser.setFeature( HONOUR_ALL_SCHEMA_LOCATIONS_ID, true );        
+
+        preparser.preparseGrammar(XMLGrammarDescription.XML_SCHEMA, new XMLInputSource( null, url, null ));
+        grammarPool.lockPool();
+        
+        XMLParserConfiguration parserConfiguration = new XIncludeAwareParserConfiguration(sym, grammarPool);
+        parserConfiguration.setFeature(NAMESPACES_FEATURE_ID, true);
+        parserConfiguration.setFeature(VALIDATION_FEATURE_ID, true);
+        parserConfiguration.setFeature(SCHEMA_VALIDATION_FEATURE_ID, true);
+        parserConfiguration.setFeature(SCHEMA_FULL_CHECKING_FEATURE_ID, true);
+        parserConfiguration.setFeature(HONOUR_ALL_SCHEMA_LOCATIONS_ID, true);
+        return parserConfiguration;
+    }
+    
     public static void main( String[] args )
                             throws XNIException, IOException {
 

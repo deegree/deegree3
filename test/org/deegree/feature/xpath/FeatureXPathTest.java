@@ -227,17 +227,17 @@ public class FeatureXPathTest {
         Assert.assertTrue( names.contains( "Karl Marx" ) );
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testXPath10()
-                            throws JaxenException {
-        XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher/app:friend/app:Philosopher//app:name" );
-        xpath.setNamespaceContext( nsContext );
-        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
-        for ( Node node : selectedNodes ) {
-            System.out.println( ( (PropertyNode) node ).getProperty().getValue() );
-        }
-    }
+//    @SuppressWarnings("unchecked")
+//    @Test
+//    public void testXPath10()
+//                            throws JaxenException {
+//        XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher/app:friend/app:Philosopher//app:name" );
+//        xpath.setNamespaceContext( nsContext );
+//        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+//        for ( Node node : selectedNodes ) {
+//            System.out.println( ( (PropertyNode) node ).getProperty().getValue() );
+//        }
+//    }
 
     @SuppressWarnings("unchecked")
     @Test
