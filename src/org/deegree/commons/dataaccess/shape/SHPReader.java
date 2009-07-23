@@ -300,13 +300,25 @@ public class SHPReader {
 
     }
 
+    private static final void maybeAddPair( int num, Geometry g, boolean withGeometry, boolean exact,
+                                            List<Pair<Integer, Geometry>> list, Envelope bbox ) {
+        if ( exact ) {
+            if ( bbox.intersects( g ) ) {
+                list.add( new Pair<Integer, Geometry>( num, withGeometry ? g : null ) );
+            }
+        } else {
+            list.add( new Pair<Integer, Geometry>( num, g ) );
+        }
+    }
+
     /**
      * @param bbox
      * @param withGeometry
+     * @param exact
      * @return the list of contained geometries
      * @throws IOException
      */
-    public LinkedList<Pair<Integer, Geometry>> query( Envelope bbox, boolean withGeometry )
+    public LinkedList<Pair<Integer, Geometry>> query( Envelope bbox, boolean withGeometry, boolean exact )
                             throws IOException {
 
         LOG.debug( "Querying shp with bbox {}", bbox );
@@ -319,7 +331,7 @@ public class SHPReader {
 
             int num = in.readInt() - 1;
 
-            if ( !withGeometry ) {
+            if ( !withGeometry && !exact ) {
                 list.add( new Pair<Integer, Geometry>( num, null ) );
                 continue;
             }
@@ -332,67 +344,67 @@ public class SHPReader {
                 continue;
             case POINT: {
                 Point p = readPoint();
-                list.add( new Pair<Integer, Geometry>( num, p ) );
+                maybeAddPair( num, p, withGeometry, exact, list, bbox );
                 break;
             }
             case POLYLINE: {
                 in.skipBytes( 32 );
-                list.add( new Pair<Integer, Geometry>( num, readPolyline( false, false, length ) ) );
+                maybeAddPair( num, readPolyline( false, false, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case POLYGON: {
                 in.skipBytes( 32 );
-                list.add( new Pair<Integer, Geometry>( num, readPolygon( false, false, length ) ) );
+                maybeAddPair( num, readPolygon( false, false, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case MULTIPOINT: {
                 in.skipBytes( 32 );
-                list.add( new Pair<Integer, Geometry>( num, readMultipoint() ) );
+                maybeAddPair( num, readMultipoint(), withGeometry, exact, list, bbox );
                 break;
             }
             case POINTM: {
                 in.skipBytes( 32 );
-                list.add( new Pair<Integer, Geometry>( num, readPointM() ) );
+                maybeAddPair( num, readPointM(), withGeometry, exact, list, bbox );
                 break;
             }
             case POLYLINEM: {
                 in.skipBytes( 32 );
-                list.add( new Pair<Integer, Geometry>( num, readPolyline( false, true, length ) ) );
+                maybeAddPair( num, readPolyline( false, true, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case POLYGONM: {
                 in.skipBytes( 32 );
-                list.add( new Pair<Integer, Geometry>( num, readPolygon( false, true, length ) ) );
+                maybeAddPair( num, readPolygon( false, true, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case MULTIPOINTM: {
                 in.skipBytes( 32 );
-                list.add( new Pair<Integer, Geometry>( num, readMultipointM( length ) ) );
+                maybeAddPair( num, readMultipointM( length ), withGeometry, exact, list, bbox );
                 break;
             }
             case POINTZ: {
                 in.skipBytes( 32 );
-                list.add( new Pair<Integer, Geometry>( num, readPointZ() ) );
+                maybeAddPair( num, readPointZ(), withGeometry, exact, list, bbox );
                 break;
             }
             case POLYLINEZ: {
                 in.skipBytes( 32 );
-                list.add( new Pair<Integer, Geometry>( num, readPolyline( true, false, length ) ) );
+                maybeAddPair( num, readPolyline( true, false, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case POLYGONZ: {
                 in.skipBytes( 32 );
-                list.add( new Pair<Integer, Geometry>( num, readPolygon( true, false, length ) ) );
+                maybeAddPair( num, readPolygon( true, false, length ), withGeometry, exact, list, bbox );
                 break;
             }
             case MULTIPOINTZ: {
                 in.skipBytes( 32 );
-                list.add( new Pair<Integer, Geometry>( num, readMultipointZ( length ) ) );
+                maybeAddPair( num, readMultipointZ( length ), withGeometry, exact, list, bbox );
                 break;
             }
             case MULTIPATCH: {
                 in.skipBytes( 32 );
-                list.add( new Pair<Integer, Geometry>( num, readMultipatch( length ) ) );
+                maybeAddPair( num, readMultipatch( length ), withGeometry, exact, list, bbox );
                 break;
             }
             }

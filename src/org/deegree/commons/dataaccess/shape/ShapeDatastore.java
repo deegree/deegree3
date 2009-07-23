@@ -298,11 +298,12 @@ public class ShapeDatastore {
      *            backend will do it
      * @param withGeometries
      *            whether to return geometry properties or not
+     * @param exact 
      * @return a feature collection with matching features
      * @throws IOException
      * @throws FilterEvaluationException
      */
-    public FeatureCollection query( Filter filter, Envelope bbox, boolean withGeometries )
+    public FeatureCollection query( Filter filter, Envelope bbox, boolean withGeometries, boolean exact )
                             throws IOException, FilterEvaluationException {
 
         checkForUpdate();
@@ -315,7 +316,7 @@ public class ShapeDatastore {
 
         LinkedList<Pair<Integer, Geometry>> list;
         synchronized ( shp ) {
-            list = shp.query( bbox, withGeometries );
+            list = shp.query( bbox, withGeometries, exact );
         }
 
         LOG.debug( "Got {} geometries", list.size() );
