@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r2d;
 
@@ -95,10 +95,10 @@ import org.slf4j.Logger;
 
 /**
  * <code>Java2DRenderingTest</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class Java2DRenderingTest extends TestCase {
@@ -170,79 +170,79 @@ public class Java2DRenderingTest extends TestCase {
                                                                        null ) );
 
         PointStyling style = new PointStyling();
-        r.render( style, geomFac.createPoint( null, new double[] { 100, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 100, 4900 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.SQUARE;
-        r.render( style, geomFac.createPoint( null, new double[] { 200, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 200, 4900 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.CIRCLE;
-        r.render( style, geomFac.createPoint( null, new double[] { 300, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 300, 4900 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.TRIANGLE;
-        r.render( style, geomFac.createPoint( null, new double[] { 400, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 400, 4900 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.STAR;
-        r.render( style, geomFac.createPoint( null, new double[] { 500, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 500, 4900 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.CROSS;
-        r.render( style, geomFac.createPoint( null, new double[] { 600, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 600, 4900 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.X;
-        r.render( style, geomFac.createPoint( null, new double[] { 700, 100 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 700, 4900 }, null ) );
 
         style = new PointStyling();
         style.graphic.size = 32;
         style.graphic.mark.fill.color = red;
         style.graphic.mark.stroke.color = green;
-        r.render( style, geomFac.createPoint( null, new double[] { 500, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 500, 4500 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.SQUARE;
-        r.render( style, geomFac.createPoint( null, new double[] { 1000, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 1000, 4500 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.CIRCLE;
-        r.render( style, geomFac.createPoint( null, new double[] { 1500, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 1500, 4500 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.TRIANGLE;
-        r.render( style, geomFac.createPoint( null, new double[] { 2000, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 2000, 4500 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.STAR;
-        r.render( style, geomFac.createPoint( null, new double[] { 2500, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 2500, 4500 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.CROSS;
-        r.render( style, geomFac.createPoint( null, new double[] { 3000, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 3000, 4500 }, null ) );
         style.graphic.mark.wellKnown = Mark.SimpleMark.X;
-        r.render( style, geomFac.createPoint( null, new double[] { 3500, 500 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 3500, 4500 }, null ) );
 
         style = new PointStyling();
         style.graphic.size = 32;
-        r.render( style, geomFac.createPoint( null, new double[] { 500, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 500, 4000 }, null ) );
         style.graphic.size = 16;
-        r.render( style, geomFac.createPoint( null, new double[] { 500, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 500, 4000 }, null ) );
 
         style = new PointStyling();
         style.graphic.size = 32;
-        r.render( style, geomFac.createPoint( null, new double[] { 1000, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 1000, 4000 }, null ) );
         style.graphic.size = 16;
         style.graphic.anchorPointX = 0;
         style.graphic.anchorPointY = 0;
-        r.render( style, geomFac.createPoint( null, new double[] { 1000, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 1000, 4000 }, null ) );
 
         style = new PointStyling();
         style.graphic.size = 32;
-        r.render( style, geomFac.createPoint( null, new double[] { 1500, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 1500, 4000 }, null ) );
         style.graphic.size = 16;
         style.graphic.anchorPointX = 1;
         style.graphic.anchorPointY = 1;
-        r.render( style, geomFac.createPoint( null, new double[] { 1500, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 1500, 4000 }, null ) );
 
         style = new PointStyling();
         style.graphic.size = 32;
-        r.render( style, geomFac.createPoint( null, new double[] { 2000, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 2000, 4000 }, null ) );
         style.graphic.size = 16;
         style.graphic.anchorPointX = 0;
         style.graphic.anchorPointY = 0;
         style.graphic.displacementX = -16;
         style.graphic.displacementY = -16;
-        r.render( style, geomFac.createPoint( null, new double[] { 2000, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 2000, 4000 }, null ) );
 
         style = new PointStyling();
         style.graphic.size = 32;
-        r.render( style, geomFac.createPoint( null, new double[] { 2500, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 2500, 4000 }, null ) );
         style.graphic.size = 16;
         style.graphic.anchorPointX = 1;
         style.graphic.anchorPointY = 1;
         style.graphic.displacementX = 16;
         style.graphic.displacementY = 16;
-        r.render( style, geomFac.createPoint( null, new double[] { 2500, 1000 }, null ) );
+        r.render( style, geomFac.createPoint( null, new double[] { 2500, 4000 }, null ) );
 
         g.dispose();
         long time2 = currentTimeMillis();
@@ -312,7 +312,7 @@ public class Java2DRenderingTest extends TestCase {
             Iterator<Curve> iterator = curves.iterator();
             for ( int x = 0; x < 10; ++x ) {
                 styling.stroke.width = x;
-                Curve curve = (Curve) move( iterator.next(), 0, y * 500 );
+                Curve curve = (Curve) move( iterator.next(), 0, ( 9 - y ) * 500 );
                 r.render( styling, curve );
             }
         }
@@ -383,7 +383,7 @@ public class Java2DRenderingTest extends TestCase {
             Iterator<Curve> iterator = curves.iterator();
             for ( int x = 0; x < 10; ++x ) {
                 styling.stroke.width = x;
-                Curve curve = (Curve) move( iterator.next(), 0, y * 500 );
+                Curve curve = (Curve) move( iterator.next(), 0, ( 9 - y ) * 500 );
                 switch ( y ) {
                 case 4:
                     styling.perpendicularOffset = 0;
@@ -457,7 +457,7 @@ public class Java2DRenderingTest extends TestCase {
             Iterator<Surface> surface = polygons.iterator();
             for ( int x = 0; x < 10; ++x ) {
                 styling.stroke.width = x;
-                Surface polygon = (Surface) move( surface.next(), 0, y * 500 );
+                Surface polygon = (Surface) move( surface.next(), 0, ( 9 - y ) * 500 );
                 r.render( styling, polygon );
             }
         }
@@ -487,7 +487,7 @@ public class Java2DRenderingTest extends TestCase {
 
         LinkedList<Point> points = new LinkedList<Point>();
         for ( int i = 0; i < 50; ++i ) {
-            points.add( geomFac.createPoint( null, new double[] { 2500, ( i + 1 ) * 150 }, null ) );
+            points.add( geomFac.createPoint( null, new double[] { 2500, 5000 - ( i + 1 ) * 150 }, null ) );
         }
 
         String text = "This is a sample text with Umläütß";
@@ -581,7 +581,7 @@ public class Java2DRenderingTest extends TestCase {
         LinkedList<Curve> curves = new LinkedList<Curve>();
         for ( int y = 0; y < 4; ++y ) {
             for ( int i = 0; i < 6; ++i ) {
-                curves.add( randomCurve( 700, i * 800, 100 + 800 * y ) );
+                curves.add( randomCurve( 700, i * 800, 4100 - 800 * y ) );
             }
         }
 
