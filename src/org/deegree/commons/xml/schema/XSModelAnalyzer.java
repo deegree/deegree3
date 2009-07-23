@@ -40,9 +40,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import org.apache.xerces.impl.xs.XMLSchemaLoader;
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.apache.xerces.xs.XSImplementation;
-import org.apache.xerces.xs.XSLoader;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSObjectList;
 import org.deegree.commons.xml.XMLProcessingException;
@@ -52,7 +51,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.DOMError;
 import org.w3c.dom.DOMErrorHandler;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 /**
  * Provides convenient methods to retrieve "relevant" element and type declarations of an XML schema infoset (which is
@@ -96,39 +94,7 @@ public class XSModelAnalyzer {
      */
     public XSModelAnalyzer( String url ) throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
-        System.setProperty( DOMImplementationRegistry.PROPERTY, "org.apache.xerces.dom.DOMXSImplementationSourceImpl" );
-        DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-        XSImplementation impl = (XSImplementation) registry.getDOMImplementation( "XS-Loader" );
-        XSLoader schemaLoader = impl.createXSLoader( null );
-
-        DOMConfiguration config = schemaLoader.getConfig();
-
-        // create and register DOMErrorHandler
-        DOMErrorHandler errorHandler = new DOMErrorHandler() {
-            @SuppressWarnings("synthetic-access")
-            public boolean handleError( DOMError domError ) {
-                switch ( domError.getSeverity() ) {
-                case DOMError.SEVERITY_WARNING: {
-                    LOG.debug( "DOM warning: " + domError.getMessage() );
-                    break;
-                }
-                case DOMError.SEVERITY_ERROR:
-                case DOMError.SEVERITY_FATAL_ERROR: {
-                    String msg = "Severe error in schema document (line: " + domError.getLocation().getLineNumber()
-                                 + ", column: " + domError.getLocation().getColumnNumber() + ") "
-                                 + domError.getMessage();
-                    throw new XMLProcessingException( msg );
-                }
-                }
-                return false;
-            }
-        };
-        config.setParameter( "error-handler", errorHandler );
-
-        // set validation feature
-        config.setParameter( "validate", Boolean.TRUE );
-
-        xmlSchema = schemaLoader.loadURI( url );
+        xmlSchema = loadModel( url );
     }
 
     /**
@@ -195,5 +161,41 @@ public class XSModelAnalyzer {
             throw new IllegalArgumentException( msg );
         }
         return getSubstitutions( elementDecl, namespace, transitive, onlyConcrete );
+    }
+
+    public static XSModel loadModel( String url )
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        XMLSchemaLoader schemaLoader = new XMLSchemaLoader();
+        DOMConfiguration config = schemaLoader.getConfig();
+
+        // create and register DOMErrorHandler
+        DOMErrorHandler errorHandler = new DOMErrorHandler() {
+            @SuppressWarnings("synthetic-access")
+            public boolean handleError( DOMError domError ) {
+                switch ( domError.getSeverity() ) {
+                case DOMError.SEVERITY_WARNING: {
+                    LOG.debug( "DOM warning: " + domError.getMessage() );
+                    break;
+                }
+                case DOMError.SEVERITY_ERROR:
+                case DOMError.SEVERITY_FATAL_ERROR: {
+                    String msg = "Severe error in schema document (line: " + domError.getLocation().getLineNumber()
+                                 + ", column: " + domError.getLocation().getColumnNumber() + ") "
+                                 + domError.getMessage();
+                    throw new XMLProcessingException( msg );
+                }
+                }
+                return false;
+            }
+        };
+
+        config.setParameter( "error-handler", errorHandler );
+        config.setParameter( "validate", Boolean.TRUE );
+
+        schemaLoader.setEntityResolver( new RedirectingEntityResolver() );
+        
+        return schemaLoader.loadURI( url );
     }
 }
