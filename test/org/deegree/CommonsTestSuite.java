@@ -119,7 +119,7 @@ class CommonsTestSuite {
         buildTestSuite( CommonsTestSuite.class );
     }
 
-    private static void buildTestSuite( Class<?> suite ) {
+    static void buildTestSuite( Class<?> suite ) {
         SuiteClasses annotation = suite.getAnnotation( SuiteClasses.class );
         Class<?>[] values = annotation.value();
         List<String> testClasses = new LinkedList<String>();
