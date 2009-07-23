@@ -209,19 +209,16 @@ public class PreparserHelper {
 class MyGrammarPool extends XMLGrammarPoolImpl {
 
     public Grammar[] retrieveInitialGrammarSet( String grammarType ) {
-        System.out.println( "retrieveInitialGrammarSet" );
-        return new Grammar[0];
+        return super.retrieveInitialGrammarSet( grammarType );
     }
 
     @Override
     public Grammar getGrammar( XMLGrammarDescription desc ) {
-        System.out.println( "HEY, get me: " + desc );
         return super.getGrammar( desc );
     }
 
     @Override
     public Grammar retrieveGrammar( XMLGrammarDescription desc ) {
-        System.out.println( "HEY, retrieve me: " + desc );
         return super.retrieveGrammar( desc );
     }
 
@@ -241,7 +238,6 @@ class MyEntityResolver implements XMLEntityResolver {
     @Override
     public XMLInputSource resolveEntity( XMLResourceIdentifier identifier )
                             throws XNIException, IOException {
-        System.out.println( "Resolving: " + identifier );
         return new XMLInputSource( identifier );
     }
 

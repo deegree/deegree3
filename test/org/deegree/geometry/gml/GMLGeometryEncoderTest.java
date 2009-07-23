@@ -36,10 +36,7 @@
 
 package org.deegree.geometry.gml;
 
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +56,7 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.junit.XMLAssert;
+import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,7 +157,6 @@ public class GMLGeometryEncoderTest {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             FactoryConfigurationError, IOException {
         for ( String source : sources ) {
-            LOG.info( "Exporting " + DIR + source );
             GMLIdContext idContext = new GMLIdContext();
             GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
             URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + source );
@@ -169,9 +166,10 @@ public class GMLGeometryEncoderTest {
 
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
-            OutputStream out = new FileOutputStream( "/tmp/exported_" + source );
-            XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( outputFactory.createXMLStreamWriter( out ),
+            XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+            XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                         SCHEMA_LOCATION_ATTRIBUTE );
+
             writer.setPrefix( "app", "http://www.deegree.org/app" );
             writer.setPrefix( "gml", "http://www.opengis.net/gml" );
             writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
@@ -182,11 +180,9 @@ public class GMLGeometryEncoderTest {
             exporter.export( geom );
             writer.flush();
             writer.close();
-            out.close();
 
-            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new XMLInputSource( null, null, null,
-                                                                          new FileReader( "/tmp/exported_" + source ),
-                                                                          null ) );
+            XMLAssert.assertValidity( SCHEMA_LOCATION, new XMLInputSource( null, null, null, memoryWriter.getReader(),
+                                                                           null ) );
         }
     }
 
@@ -195,7 +191,6 @@ public class GMLGeometryEncoderTest {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             FactoryConfigurationError, IOException {
         for ( String patchSource : patchSources ) {
-            LOG.info( "Exporting " + PATCH_DIR + patchSource );
             GMLIdContext idContext = new GMLIdContext();
             GeometryFactory geomFactory = new GeometryFactory();
             GML311GeometryDecoder geometryParser = new GML311GeometryDecoder( geomFactory, idContext );
@@ -209,8 +204,8 @@ public class GMLGeometryEncoderTest {
 
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
-            OutputStream out = new FileOutputStream( "/tmp/exported_" + patchSource );
-            XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( outputFactory.createXMLStreamWriter( out ),
+            XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+            XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                         SCHEMA_LOCATION_ATTRIBUTE );
             writer.setPrefix( "app", "http://www.deegree.org/app" );
             writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -222,11 +217,9 @@ public class GMLGeometryEncoderTest {
             exporter.export( surfPatch );
             writer.flush();
             writer.close();
-            out.close();
 
-            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new XMLInputSource( null, null, null,
-                                                                                new FileReader( "/tmp/exported_" + patchSource ),
-                                                                                null ) );
+            XMLAssert.assertValidity( SCHEMA_LOCATION, new XMLInputSource( null, null, null, memoryWriter.getReader(),
+                                                                           null ) );
         }
     }
 
@@ -235,7 +228,6 @@ public class GMLGeometryEncoderTest {
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
                             FactoryConfigurationError, IOException {
         for ( String segmentSource : segmentSources ) {
-            LOG.info( "Exporting " + SEGMENT_DIR + segmentSource );
             GMLIdContext idContext = new GMLIdContext();
             GeometryFactory geomFactory = new GeometryFactory();
             GML311GeometryDecoder geometryParser = new GML311GeometryDecoder( geomFactory, idContext );
@@ -247,8 +239,8 @@ public class GMLGeometryEncoderTest {
 
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
-            OutputStream out = new FileOutputStream( "/tmp/exported_" + segmentSource );
-            XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( outputFactory.createXMLStreamWriter( out ),
+            XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+            XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                         SCHEMA_LOCATION_ATTRIBUTE );
             writer.setPrefix( "app", "http://www.deegree.org/app" );
             writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -260,11 +252,9 @@ public class GMLGeometryEncoderTest {
             exporter.export( curveSegment );
             writer.flush();
             writer.close();
-            out.close();
 
-            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new XMLInputSource( null, null, null,
-                                                                                new FileReader( "/tmp/exported_" + segmentSource ),
-                                                                                null ) );
+            XMLAssert.assertValidity( SCHEMA_LOCATION, new XMLInputSource( null, null, null, memoryWriter.getReader(),
+                                                                           null ) );
         }
     }
 
@@ -273,7 +263,6 @@ public class GMLGeometryEncoderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         for ( String envelopeSource : envelopeSources ) {
-            LOG.info( "Exporting " + DIR + envelopeSource );
             GMLIdContext idContext = new GMLIdContext();
             GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
             URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + envelopeSource );
@@ -283,8 +272,8 @@ public class GMLGeometryEncoderTest {
 
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
-            OutputStream out = new FileOutputStream( "/tmp/exported_" + envelopeSource );
-            XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( outputFactory.createXMLStreamWriter( out ),
+            XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+            XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                         SCHEMA_LOCATION_ATTRIBUTE );
             writer.setPrefix( "app", "http://www.deegree.org/app" );
             writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -296,11 +285,9 @@ public class GMLGeometryEncoderTest {
             exporter.export( geom );
             writer.flush();
             writer.close();
-            out.close();
 
-            XMLAssert.assertValidDocument( SCHEMA_LOCATION, new XMLInputSource( null, null, null,
-                                                                                new FileReader( "/tmp/exported_" + envelopeSource ),
-                                                                                null ) );
+            XMLAssert.assertValidity( SCHEMA_LOCATION, new XMLInputSource( null, null, null, memoryWriter.getReader(),
+                                                                           null ) );
         }
     }
 
@@ -308,8 +295,8 @@ public class GMLGeometryEncoderTest {
     public void testValidatingExportedXLinkMultiGeometry1()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException {
+
         String source = "XLinkMultiGeometry1.gml";
-        LOG.info( "Exporting " + DIR + source );
         GMLIdContext idContext = new GMLIdContext();
         GML311GeometryDecoder parser = new GML311GeometryDecoder( new GeometryFactory(), idContext );
         URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + source );
@@ -321,8 +308,8 @@ public class GMLGeometryEncoderTest {
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
-        OutputStream out = new FileOutputStream( "/tmp/exported_" + source );
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( outputFactory.createXMLStreamWriter( out ),
+        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                     SCHEMA_LOCATION_ATTRIBUTE );
         writer.setPrefix( "app", "http://www.deegree.org/app" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -334,10 +321,8 @@ public class GMLGeometryEncoderTest {
         exporter.export( geom );
         writer.flush();
         writer.close();
-        out.close();
 
-        XMLAssert.assertValidDocument( SCHEMA_LOCATION, new XMLInputSource( null, null, null,
-                                                                            new FileReader( "/tmp/exported_" + source ),
-                                                                            null ) );
+        XMLAssert.assertValidity( SCHEMA_LOCATION,
+                                  new XMLInputSource( null, null, null, memoryWriter.getReader(), null ) );
     }
 }

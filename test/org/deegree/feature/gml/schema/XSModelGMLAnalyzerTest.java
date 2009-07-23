@@ -287,7 +287,7 @@ public class XSModelGMLAnalyzerTest {
     private Set<String> getConcreteSubstitutions( String localName, XSModelGMLAnalyzer analyzer ) {
         List<XSElementDeclaration> elementDecls = analyzer.getSubstitutions( new QName( "http://www.opengis.net/gml",
                                                                                         localName ),
-                                                                             "http://www.opengis.net/gml", false, true );
+                                                                             "http://www.opengis.net/gml", true, true );
         HashSet<String> localNames = new HashSet<String>();
         for ( XSElementDeclaration elementDecl : elementDecls ) {
             localNames.add( elementDecl.getName() );

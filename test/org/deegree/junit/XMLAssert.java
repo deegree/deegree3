@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
@@ -111,7 +110,7 @@ public class XMLAssert {
      * @throws AssertionError
      *             when the document is not valid against the schema
      */
-    public static void assertValidDocument( String schemaLocation, XMLInputSource source ) {
+    public static void assertValidity( String schemaLocation, XMLInputSource source ) {
 
         final List<Exception> exceptions = new LinkedList<Exception>();
 

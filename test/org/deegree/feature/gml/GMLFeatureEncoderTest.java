@@ -36,10 +36,8 @@
 
 package org.deegree.feature.gml;
 
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URL;
 
 import javax.xml.stream.FactoryConfigurationError;
@@ -58,6 +56,7 @@ import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.gml.schema.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.junit.XMLAssert;
+import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
 
 /**
@@ -70,13 +69,13 @@ import org.junit.Test;
  */
 public class GMLFeatureEncoderTest {
 
-    final String DIR = "testdata/features/";
+    private final String DIR = "testdata/features/";
 
-    final String SOURCE_FILE = "Philosopher_FeatureCollection.xml";
+    private final String SOURCE_FILE = "Philosopher_FeatureCollection.xml";
 
-    final String SCHEMA_LOCATION_ATTRIBUTE = "schema/Philosopher_typesafe.xsd";
+    private final String SCHEMA_LOCATION_ATTRIBUTE = "schema/Philosopher_typesafe.xsd";
 
-    final String SCHEMA_LOCATION = "http://www.deegree.org/app schema/Philosopher_typesafe.xsd";
+    private final String SCHEMA_LOCATION = "http://www.deegree.org/app schema/Philosopher_typesafe.xsd";
 
     @Test
     public void testValidateExportedFeatures()
@@ -98,9 +97,8 @@ public class GMLFeatureEncoderTest {
 
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
         outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
-        OutputStream out = new FileOutputStream( "/tmp/exported_" + SOURCE_FILE );
-        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( outputFactory.createXMLStreamWriter( out ),
-                                                                    SCHEMA_LOCATION );
+        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+        XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(), SCHEMA_LOCATION );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
         writer.setPrefix( "app", "http://www.deegree.org/app" );
         writer.setPrefix( "gml", "http://www.opengis.net/gml" );
@@ -112,10 +110,7 @@ public class GMLFeatureEncoderTest {
         exporter.export( feature );
         writer.flush();
         writer.close();
-        out.close();
 
-        XMLAssert.assertValidDocument( schemaURL, new XMLInputSource( null, null, null,
-                                                                      new FileReader( "/tmp/exported_" + SOURCE_FILE ),
-                                                                      null ) );
+        XMLAssert.assertValidity( schemaURL, new XMLInputSource( null, null, null, memoryWriter.getReader(), null ) );
     }
 }

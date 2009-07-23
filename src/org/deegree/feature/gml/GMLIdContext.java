@@ -115,7 +115,7 @@ public class GMLIdContext {
                             throws XMLProcessingException {
 
         for ( FeatureReference ref : featureReferences ) {
-            LOG.info( "Resolving reference to feature '" + ref.getId() + "'" );
+            LOG.debug( "Resolving reference to feature '" + ref.getId() + "'" );
             Feature targetObject = idToFeature.get( ref.getId() );
             if ( targetObject == null ) {
                 String msg = "Cannot resolve reference to feature with id '" + ref.getId()
@@ -134,7 +134,7 @@ public class GMLIdContext {
         }
 
         for ( GeometryReference ref : geometryReferences ) {
-            LOG.info( "Resolving reference to geometry '" + ref.getId() + "'" );
+            LOG.debug( "Resolving reference to geometry '" + ref.getId() + "'" );
             Geometry targetObject = idToGeometry.get( ref.getId() );
             if ( targetObject == null ) {
                 String msg = "Cannot resolve reference to geometry with id '" + ref.getId()
@@ -143,7 +143,7 @@ public class GMLIdContext {
             }
 
             // TODO check geometry type
-            System.out.println ("Resolving " + ref);
+            LOG.debug ("Resolving " + ref);
             ref.resolve( targetObject );
         }
     }

@@ -55,11 +55,9 @@ import junit.framework.Assert;
 import org.deegree.commons.xml.FormattingXMLStreamWriter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
-import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.Property;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.gml.schema.GMLVersion;
 import org.deegree.feature.types.ApplicationSchema;
@@ -74,7 +72,6 @@ import org.deegree.feature.types.property.SimplePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType.CoordinateDimension;
 import org.deegree.feature.types.property.GeometryPropertyType.GeometryType;
 import org.deegree.feature.types.property.SimplePropertyType.PrimitiveType;
-import org.deegree.geometry.Geometry;
 import org.junit.Test;
 
 /**
@@ -305,40 +302,40 @@ public class GMLFeatureDecoderTest {
         }
     }
 
-    @Test
-    public void testParsingCityGML()
-                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-                            ClassNotFoundException, InstantiationException, IllegalAccessException,
-                            XMLParsingException, UnknownCRSException {
-        String schemaURL = "file:///home/schneider/workspace/schemas/citygml/profiles/base/1.0/CityGML.xsd";
-        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
-                                                                                        GMLVersion.GML_31 );
-
-        URL docURL = new URL( "file:///home/schneider/Desktop/Stadt-Ettenheim-LoD3_edited_v1.0.0.gml" );
-        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
-                                                                                         docURL.openStream() );
-        xmlReader.nextTag();
-        GMLIdContext idContext = new GMLIdContext();
-        ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
-        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
-        long begin = System.currentTimeMillis();
-        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature(
-                                                                            new XMLStreamReaderWrapper(
-                                                                                                        xmlReader,
-                                                                                                        docURL.toString() ),
-                                                                            new CRS( "EPSG:31466" ) );
-        idContext.resolveXLinks(schema);
-
-        long elapsed = System.currentTimeMillis() - begin;
-        System.out.println( "Parsing: " + elapsed + "[ms]" );
-
-        System.out.println( fc.size() );
-        Feature first = fc.iterator().next();
-        for ( Property prop : first.getProperties() ) {
-            System.out.println( prop.getName() + "=" + prop.getValue() );
-            if ( prop.getValue() instanceof Geometry ) {
-                System.out.println( ( (Geometry) prop.getValue() ).getCoordinateSystem() );
-            }
-        }
-    }
+//    @Test
+//    public void testParsingCityGML()
+//                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+//                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+//                            XMLParsingException, UnknownCRSException {
+//        String schemaURL = "file:///home/schneider/workspace/schemas/citygml/profiles/base/1.0/CityGML.xsd";
+//        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
+//                                                                                        GMLVersion.GML_31 );
+//
+//        URL docURL = new URL( "file:///home/schneider/Desktop/Stadt-Ettenheim-LoD3_edited_v1.0.0.gml" );
+//        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+//                                                                                         docURL.openStream() );
+//        xmlReader.nextTag();
+//        GMLIdContext idContext = new GMLIdContext();
+//        ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
+//        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
+//        long begin = System.currentTimeMillis();
+//        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature(
+//                                                                            new XMLStreamReaderWrapper(
+//                                                                                                        xmlReader,
+//                                                                                                        docURL.toString() ),
+//                                                                            new CRS( "EPSG:31466" ) );
+//        idContext.resolveXLinks(schema);
+//
+//        long elapsed = System.currentTimeMillis() - begin;
+//        System.out.println( "Parsing: " + elapsed + "[ms]" );
+//
+//        System.out.println( fc.size() );
+//        Feature first = fc.iterator().next();
+//        for ( Property prop : first.getProperties() ) {
+//            System.out.println( prop.getName() + "=" + prop.getValue() );
+//            if ( prop.getValue() instanceof Geometry ) {
+//                System.out.println( ( (Geometry) prop.getValue() ).getCoordinateSystem() );
+//            }
+//        }
+//    }
 }

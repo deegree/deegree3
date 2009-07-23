@@ -51,13 +51,6 @@ import org.apache.xerces.xni.parser.XMLEntityResolver;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.ls.LSInput;
-import org.w3c.dom.ls.LSResourceResolver;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import com.sun.tools.xjc.reader.xmlschema.parser.LSInputSAXWrapper;
 
 /**
  * Xerces entity resolver that performs redirection of requests for OpenGIS core schemas (e.g. GML) to a local copy.
@@ -102,7 +95,7 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
         if (systemId.startsWith( SCHEMAS_OPENGIS_NET_URL )) {
             String localPart = "./" + systemId.substring( SCHEMAS_OPENGIS_NET_URL.length() );
             if (availableFiles.contains( localPart )) {
-                System.out.println ("Mirror hit: " + systemId);
+                LOG.debug ("Mirror hit: " + systemId);
                 try {
                     return new URL (baseURL, localPart).toString();
                 } catch ( MalformedURLException e ) {
@@ -119,7 +112,7 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 
         String systemId = identifier.getExpandedSystemId();
         String redirectedSystemId = redirect(systemId ); 
-        System.out.println( "'" + systemId + "' -> '" + redirectedSystemId + "'" );
+        LOG.debug( "'" + systemId + "' -> '" + redirectedSystemId + "'" );
         return new XMLInputSource( null, redirectedSystemId, null );
     }
 }

@@ -52,7 +52,6 @@ import javax.xml.stream.XMLStreamWriter;
 import junit.framework.Assert;
 
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -121,7 +120,7 @@ public class GMLFeatureStoreTest {
         Assert.assertEquals( 4, fc.size() );
     }
 
-    @Test
+//    @Test
     public void testQueryAllBooks() {
         QName ftName = new QName( "http://www.deegree.org/app", "Book" );
         FilterQuery query = new FilterQuery( ftName, null, null, null );
