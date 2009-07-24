@@ -202,12 +202,13 @@ public class GML311GeometryEncoder {
                 if ( multiPoint.getId() != null )
                     writer.writeAttribute( GMLNS, "id", multiPoint.getId() );
                 writer.writeAttribute( "srsName", multiPoint.getCoordinateSystem().getName() );
-                Iterator<Point> iteratorP = multiPoint.iterator();
-                while ( iteratorP.hasNext() ) {
+                for ( Point point : multiPoint ) {
                     writer.writeStartElement( GMLNS, "pointMember" );
-                    writer.writeStartElement( GMLNS, "Point" );
-                    export( iteratorP.next() );
-                    writer.writeEndElement();
+                    if ( point.getId() != null && exportedIds.contains( point.getId() ) ) {
+                        writer.writeAttribute( GMLNS, "id", point.getId() );
+                    } else {                        
+                        export( point );
+                    }
                     writer.writeEndElement();
                 }
                 writer.writeEndElement();
@@ -272,23 +273,7 @@ public class GML311GeometryEncoder {
                 export( (Curve) geometry );
                 break;
             case Point:
-                writer.writeStartElement( GMLNS, "Point" );
-                Point point = (Point) geometry;
-                if ( point.getId() != null && exportedIds.contains( point.getId() ) ) {
-                    writer.writeStartElement( GMLNS, "pointProperty" );
-                    writer.writeAttribute( XLNNS, "href", "#" + point.getId() );
-                    writer.writeEndElement();
-                } else {
-                    exportedIds.add( point.getId() );
-                    if ( point.getId() != null )
-                        writer.writeAttribute( GMLNS, "id", point.getId() );
-                    writer.writeStartElement( GMLNS, "pos" );
-                    double[] array = point.getAsArray();
-                    for ( int i = 0; i < array.length; i++ )
-                        writer.writeCharacters( String.valueOf( array[i] ) + " " );
-                    writer.writeEndElement();
-                }
-                writer.writeEndElement();
+                export( (Point) geometry );
                 break;
             case Solid:
                 export( (Solid) geometry );
@@ -303,17 +288,21 @@ public class GML311GeometryEncoder {
 
     public void export( Point point )
                             throws XMLStreamException {
-        if ( point.getId() != null && exportedIds.contains( point.getId() ) ) {
-            writer.writeEmptyElement( GMLNS, "pointProperty" );
-            writer.writeAttribute( XLNNS, "href", "#" + point.getId() );
-        } else {
-            exportedIds.add( point.getId() );
-            writer.writeStartElement( GMLNS, "pos" );
-            double[] array = point.getAsArray();
-            for ( int i = 0; i < array.length; i++ )
-                writer.writeCharacters( String.valueOf( array[i] ) + " " );
-            writer.writeEndElement();
+        writer.writeStartElement( GMLNS, "Point" );
+        exportedIds.add( point.getId() );
+        exportAsPos( point );
+        writer.writeEndElement();
+    }
+
+    private void exportAsPos( Point point )
+                            throws XMLStreamException {
+        writer.writeStartElement( GMLNS, "pos" );
+        double[] array = point.getAsArray();
+        writer.writeCharacters( String.valueOf( array[0] ) );
+        for ( int i = 1; i < array.length; i++ ) {
+            writer.writeCharacters( " " + String.valueOf( array[i] ) );
         }
+        writer.writeEndElement();
     }
 
     public void export( Curve curve )
@@ -349,7 +338,7 @@ public class GML311GeometryEncoder {
             LineString lineString = (LineString) curve;
             if ( lineString.getId() != null )
                 writer.writeAttribute( GMLNS, "id", lineString.getId() );
-            int dim =  lineString.getCoordinateDimension();
+            int dim = lineString.getCoordinateDimension();
             export( lineString.getControlPoints(), dim );
             writer.writeEndElement();
             break;
@@ -769,16 +758,16 @@ public class GML311GeometryEncoder {
         case ARC:
             writer.writeStartElement( GMLNS, "Arc" );
             Arc arc = (Arc) curveSeg;
-            export( arc.getPoint1() );
-            export( arc.getPoint2() );
-            export( arc.getPoint3() );
+            exportAsPos( arc.getPoint1() );
+            exportAsPos( arc.getPoint2() );
+            exportAsPos( arc.getPoint3() );
             writer.writeEndElement();
             break;
         case ARC_BY_BULGE:
             writer.writeStartElement( GMLNS, "ArcByBulge" );
             ArcByBulge arcBulge = (ArcByBulge) curveSeg;
-            export( arcBulge.getPoint1() );
-            export( arcBulge.getPoint2() );
+            exportAsPos( arcBulge.getPoint1() );
+            exportAsPos( arcBulge.getPoint2() );
             writer.writeStartElement( GMLNS, "bulge" );
             writer.writeCharacters( String.valueOf( arcBulge.getBulge() ) );
             writer.writeEndElement();
@@ -792,7 +781,7 @@ public class GML311GeometryEncoder {
             ArcByCenterPoint arcCenterP = (ArcByCenterPoint) curveSeg;
             writer.writeAttribute( "interpolation", arcCenterP.getInterpolation().toString() );
             writer.writeAttribute( "numArc", "1" ); // TODO have a getNumArcs() method in ArcByCenterPoint ???
-            export( arcCenterP.getMidPoint() );
+            exportAsPos( arcCenterP.getMidPoint() );
             writer.writeStartElement( GMLNS, "radius" );
             writer.writeAttribute( "uom", arcCenterP.getRadius().getUomUri() );
             writer.writeCharacters( String.valueOf( arcCenterP.getRadius().getValue() ) );
@@ -877,7 +866,7 @@ public class GML311GeometryEncoder {
             CircleByCenterPoint circleCenterP = (CircleByCenterPoint) curveSeg;
             writer.writeAttribute( "interpolation", circleCenterP.getInterpolation().toString() );
             writer.writeAttribute( "numArc", "1" );
-            export( circleCenterP.getMidPoint() );
+            exportAsPos( circleCenterP.getMidPoint() );
             writer.writeStartElement( GMLNS, "radius" );
             writer.writeAttribute( "uom", circleCenterP.getRadius().getUomUri() );
             writer.writeCharacters( String.valueOf( circleCenterP.getRadius().getValue() ) );
@@ -984,7 +973,7 @@ public class GML311GeometryEncoder {
             writer.writeCharacters( String.valueOf( offsetCurve.getDistance().getValue() ) );
             writer.writeEndElement();
             writer.writeStartElement( GMLNS, "refDirection" );
-            export( offsetCurve.getDirection() );
+            exportAsPos( offsetCurve.getDirection() );
             writer.writeEndElement();
             writer.writeEndElement();
             break;
@@ -1011,24 +1000,38 @@ public class GML311GeometryEncoder {
     void export( Points points, int srsDimension )
                             throws XMLStreamException {
         boolean hasID = false; // see if there exists a point that has an ID
-        for ( Point p : points )
+        for ( Point p : points ) {
             if ( p.getId() != null && p.getId().trim().length() > 0 ) {
                 hasID = true;
                 break;
             }
+        }
         if ( !hasID ) { // if not then use the <posList> element to export the points
             writer.writeStartElement( GMLNS, "posList" );
             writer.writeAttribute( "srsDimension", String.valueOf( srsDimension ) );
+            boolean first = true;
             for ( Point p : points ) {
                 double[] array = p.getAsArray();
-                for ( int i = 0; i < array.length; i++ )
-                    writer.writeCharacters( String.valueOf( array[i] ) + " " );
+                for ( int i = 0; i < array.length; i++ ) {
+                    if ( !first ) {
+                        writer.writeCharacters( " " + String.valueOf( array[i] ) );
+                    } else {
+                        writer.writeCharacters( String.valueOf( array[i] ) );
+                        first = false;
+                    }
+                }
             }
             writer.writeEndElement();
         } else { // if there are points with IDs, see whether an ID was already encountered
-            for ( Point p : points )
-                export( p );
+            for ( Point point : points ) {
+                writer.writeStartElement( GMLNS, "pointProperty" );
+                if ( point.getId() != null && exportedIds.contains( point.getId() ) ) {
+                    writer.writeAttribute( GMLNS, "id", point.getId() );
+                } else {                        
+                    export( point );
+                }
+                writer.writeEndElement();
+            }
         }
     }
-
 }
