@@ -74,7 +74,7 @@ import org.deegree.geometry.uom.ValueWithUnit;
  * </ul>
  * Distance calculation:
  * <ul>
- * <li>{@link #distance(Geometry)}</li>
+ * <li>{@link #distance(Geometry, Unit)}</li>
  * </ul>
  * </p>
  * <p>
