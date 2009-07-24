@@ -41,9 +41,40 @@ import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
- * Base interface for all vector geometry types.
+ * Base interface for all vector geometry types in deegree.
  * <p>
- * This is the root of an ISO 19107/GML 3.1.1/GML 3.2.1 compliant geometry type hierarchy.
+ * This is the root of deegree's ISO 19107/GML 3.1.1/GML 3.2.1 compliant geometry type hierarchy. It provides methods
+ * for the common topological predicates (e.g. {@link #intersects(Geometry)} and {@link #touches(Geometry)} as well as
+ * the usual geometry creation methods (e.g {@link #intersection(Geometry)} and {@link #getBuffer(ValueWithUnit)}).
+ * </p>
+ * <p>
+ * <h4>Topological operators</h4>
+ * These are the methods for evaluting the common topological predicates:
+ * <ul>
+ * <li>{@link #contains(Geometry)}</li>
+ * <li>{@link #crosses(Geometry)}</li>
+ * <li>{@link #equals(Geometry)}</li>
+ * <li>{@link #intersects(Geometry)}</li>
+ * <li>{@link #isDisjoint(Geometry)}</li>
+ * <li>{@link #isWithin(Geometry)}</li>
+ * <li>{@link #isWithinDistance(Geometry,ValueWithUnit)}</li>
+ * <li>{@link #touches(Geometry)}</li>
+ * </ul>
+ * </p>
+ * <p>
+ * <h4>Other geometry processing methods</h4>
+ * Methods for deriving geometries that aid spatial analysis tasks:
+ * <ul>
+ * <li>{@link #difference(Geometry)}</li>
+ * <li>{@link #getBuffer(ValueWithUnit)}</li>
+ * <li>{@link #getConvexHull()}</li>
+ * <li>{@link #intersection(Geometry)}</li>
+ * <li>{@link #union(Geometry)}</li>
+ * </ul>
+ * Distance calculation:
+ * <ul>
+ * <li>{@link #distance(Geometry)}</li>
+ * </ul>
  * </p>
  * <p>
  * <h4>Notes on the representation of GML geometries</h4>
