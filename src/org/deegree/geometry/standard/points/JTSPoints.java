@@ -67,7 +67,8 @@ public class JTSPoints implements Points {
 
     @Override
     public int getDimension() {
-        return seq.getDimension();
+        // TODO why does seq#getDimension() not work?
+        return 2;
     }
 
     @Override

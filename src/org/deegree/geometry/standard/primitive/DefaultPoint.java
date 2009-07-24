@@ -48,7 +48,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 /**
  * Default implementation of {@link Point}.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
