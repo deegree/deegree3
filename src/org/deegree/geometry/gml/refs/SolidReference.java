@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,134 +32,54 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 
-import org.deegree.crs.CRS;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
-import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
+import org.deegree.geometry.uom.Unit;
 import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * The <code></code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
-public class SolidReference extends GeometryReference implements Solid {
+public class SolidReference<T extends Solid> extends GeometryReference<T> implements Solid {
 
-    protected Solid geometry;
-
-    public SolidReference (String href) {
-        super (href);
+    public SolidReference( String href ) {
+        super( href );
     }
 
-    @Override
-    public void resolve (Geometry geometry) {
-        if (this.geometry != null) {
-            String msg = "Internal error: Geometry reference (" + href + ") has already been resolved.";
-            throw new RuntimeException(msg);
-        }
-        this.geometry = (Solid) geometry;
-    }
-
-    public boolean contains( Geometry geometry ) {
-        return geometry.contains( geometry );
-    }
-
-    public Geometry difference( Geometry geometry ) {
-        return geometry.difference( geometry );
-    }
-
-    public double distance( Geometry geometry ) {
-        return geometry.distance( geometry );
-    }
-
-    public boolean equals( Geometry geometry ) {
-        return geometry.equals( geometry );
-    }
-
-    public double getArea() {
-        return geometry.getArea();
-    }
-
-    public Geometry getBuffer( ValueWithUnit distance ) {
-        return geometry.getBuffer( distance );
-    }
-
-    public Geometry getConvexHull() {
-        return geometry.getConvexHull();
-    }
-
-    public int getCoordinateDimension() {
-        return geometry.getCoordinateDimension();
-    }
-
-    public CRS getCoordinateSystem() {
-        return geometry.getCoordinateSystem();
-    }
-
-    public Envelope getEnvelope() {
-        return geometry.getEnvelope();
-    }
-
-    public Surface getExteriorSurface() {
-        return geometry.getExteriorSurface();
-    }
-
-    public GeometryType getGeometryType() {
-        return geometry.getGeometryType();
-    }
-
-    public List<Surface> getInteriorSurfaces() {
-        return geometry.getInteriorSurfaces();
-    }
-
-    public PrecisionModel getPrecision() {
-        return geometry.getPrecision();
+    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
+        return referencedGeometry.getArea( requestedBaseUnit );
     }
 
     public PrimitiveType getPrimitiveType() {
-        return geometry.getPrimitiveType();
+        return PrimitiveType.Solid;
     }
 
     public SolidType getSolidType() {
-        return geometry.getSolidType();
+        return referencedGeometry.getSolidType();
     }
 
-    public double getVolume() {
-        return geometry.getVolume();
+    public ValueWithUnit getVolume( Unit requestedBaseUnit ) {
+        return referencedGeometry.getVolume( requestedBaseUnit );
     }
 
-    public Geometry intersection( Geometry geometry ) {
-        return geometry.intersection( geometry );
+    @Override
+    public Surface getExteriorSurface() {
+        return referencedGeometry.getExteriorSurface();
     }
 
-    public boolean intersects( Geometry geometry ) {
-        return geometry.intersects( geometry );
-    }
-
-    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isBeyond( geometry, distance );
-    }
-
-    public boolean isWithin( Geometry geometry ) {
-        return geometry.isWithin( geometry );
-    }
-
-    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isWithinDistance( geometry, distance );
-    }
-
-    public Geometry union( Geometry geometry ) {
-        return geometry.union( geometry );
+    @Override
+    public List<Surface> getInteriorSurfaces() {
+        return referencedGeometry.getInteriorSurfaces();
     }
 }

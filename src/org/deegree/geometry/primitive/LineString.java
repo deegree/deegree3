@@ -35,7 +35,6 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
-
 /**
  * The most common case of a {@link Curve}: consist of just one curve segment with linear interpolation between the
  * control points.

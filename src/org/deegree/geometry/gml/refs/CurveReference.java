@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,154 +32,84 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.crs.CRS;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
 import org.deegree.geometry.points.Points;
-import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
+import org.deegree.geometry.uom.Unit;
 import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * The <code></code> class TODO add class documentation here.
- *
+ * 
+ * @param <T>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
-public class CurveReference extends GeometryReference implements Curve {
+public class CurveReference<T extends Curve> extends GeometricPrimitiveReference<T> implements Curve {
 
-    protected Curve geometry;
-
-    public CurveReference (String href) {
-        super (href);
+    public CurveReference( String href ) {
+        super( href );
     }
 
     @Override
-    public void resolve (Geometry geometry) {
-        if (this.geometry != null) {
-            String msg = "Internal error: Geometry reference (" + href + ") has already been resolved.";
-            throw new RuntimeException(msg);
-        }
-        this.geometry = (Curve) geometry;
-    }
-
-    public boolean contains( Geometry geometry ) {
-        return geometry.contains( geometry );
-    }
-
-    public Geometry difference( Geometry geometry ) {
-        return geometry.difference( geometry );
-    }
-
-    public double distance( Geometry geometry ) {
-        return geometry.distance( geometry );
-    }
-
-    public boolean equals( Geometry geometry ) {
-        return geometry.equals( geometry );
-    }
-
     public LineString getAsLineString() {
-        return geometry.getAsLineString();
+        return referencedGeometry.getAsLineString();
     }
 
-    public Pair<Point,Point> getBoundary() {
-        return geometry.getBoundary();
+    @Override
+    public Pair<Point, Point> getBoundary() {
+        return referencedGeometry.getBoundary();
     }
 
-    public Geometry getBuffer( ValueWithUnit distance ) {
-        return geometry.getBuffer( distance );
-    }
-
+    @Override
     public Points getControlPoints() {
-        return geometry.getControlPoints();
+        return referencedGeometry.getControlPoints();
     }
 
-    public Geometry getConvexHull() {
-        return geometry.getConvexHull();
-    }
-
-    public int getCoordinateDimension() {
-        return geometry.getCoordinateDimension();
-    }
-
-    public CRS getCoordinateSystem() {
-        return geometry.getCoordinateSystem();
-    }
-
+    @Override
     public List<CurveSegment> getCurveSegments() {
-        return geometry.getCurveSegments();
+        return referencedGeometry.getCurveSegments();
     }
 
+    @Override
     public CurveType getCurveType() {
-        return geometry.getCurveType();
+        return referencedGeometry.getCurveType();
     }
 
+    @Override
     public Point getEndPoint() {
-        return geometry.getEndPoint();
+        return referencedGeometry.getEndPoint();
     }
 
-    public Envelope getEnvelope() {
-        return geometry.getEnvelope();
+    @Override
+    public ValueWithUnit getLength( Unit requestedUnit ) {
+        return referencedGeometry.getLength( requestedUnit );
     }
 
-    public GeometryType getGeometryType() {
-        return geometry.getGeometryType();
-    }
-
-    public double getLength() {
-        return geometry.getLength();
-    }
-
-    public PrecisionModel getPrecision() {
-        return geometry.getPrecision();
-    }
-
+    @Override
     public PrimitiveType getPrimitiveType() {
-        return geometry.getPrimitiveType();
+        return referencedGeometry.getPrimitiveType();
     }
 
+    @Override
     public Point getStartPoint() {
-        return geometry.getStartPoint();
+        return referencedGeometry.getStartPoint();
     }
 
-    public Geometry intersection( Geometry geometry ) {
-        return geometry.intersection( geometry );
-    }
-
-    public boolean intersects( Geometry geometry ) {
-        return geometry.intersects( geometry );
-    }
-
-    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isBeyond( geometry, distance );
-    }
-
+    @Override
     public boolean isClosed() {
-        return geometry.isClosed();
-    }
-
-    public boolean isWithin( Geometry geometry ) {
-        return geometry.isWithin( geometry );
-    }
-
-    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isWithinDistance( geometry, distance );
-    }
-
-    public Geometry union( Geometry geometry ) {
-        return geometry.union( geometry );
+        return referencedGeometry.isClosed();
     }
 }

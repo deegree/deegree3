@@ -50,6 +50,7 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.OrientableCurve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
+import org.deegree.geometry.uom.Unit;
 import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
@@ -162,8 +163,8 @@ public class DefaultOrientableCurve implements OrientableCurve {
     }
 
     @Override
-    public double distance( Geometry geometry ) {
-        return baseCurve.distance( geometry );
+    public ValueWithUnit distance( Geometry geometry, Unit requestedUnit ) {
+        return baseCurve.distance( geometry, requestedUnit );
     }
 
     @Override
@@ -197,8 +198,8 @@ public class DefaultOrientableCurve implements OrientableCurve {
     }
 
     @Override
-    public double getLength() {
-        return baseCurve.getLength();
+    public ValueWithUnit getLength( Unit requestedUnit ) {
+        return baseCurve.getLength( requestedUnit );
     }
 
     @Override

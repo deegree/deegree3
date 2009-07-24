@@ -44,6 +44,8 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.PolyhedralSurface;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.uom.Unit;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link PolyhedralSurface}.
@@ -74,13 +76,13 @@ public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements
         this.patches = patches;
     }
 
-    @Override    
+    @Override
     public int getCoordinateDimension() {
-        return patches.get(0).getCoordinateDimension();
+        return patches.get( 0 ).getCoordinateDimension();
     }
 
     @Override
-    public double getArea() {
+    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
         throw new UnsupportedOperationException();
     }
 
@@ -95,7 +97,7 @@ public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements
     }
 
     @Override
-    public double getPerimeter() {
+    public ValueWithUnit getPerimeter( Unit requestedUnit ) {
         throw new UnsupportedOperationException();
     }
 

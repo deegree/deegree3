@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,132 +32,53 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.geometry.gml.refs;
 
-import org.deegree.crs.CRS;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
-import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * The <code></code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
-public class PointReference extends GeometryReference implements Point {
+public class PointReference extends GeometricPrimitiveReference<Point> implements Point {
 
-    protected Point geometry;
-
-    public PointReference (String href) {
-        super (href);
+    public PointReference( String href ) {
+        super( href );
     }
 
     @Override
-    public void resolve (Geometry geometry) {
-        if (this.geometry != null) {
-            String msg = "Internal error: Geometry reference (" + href + ") has already been resolved.";
-            throw new RuntimeException(msg);
-        }
-        this.geometry = (Point) geometry;
-    }
-
-    public boolean contains( Geometry geometry ) {
-        return geometry.contains( geometry );
-    }
-
-    public Geometry difference( Geometry geometry ) {
-        return geometry.difference( geometry );
-    }
-
-    public double distance( Geometry geometry ) {
-        return geometry.distance( geometry );
-    }
-
-    public boolean equals( Geometry geometry ) {
-        return geometry.equals( geometry );
-    }
-
     public double get( int dimension ) {
-        return geometry.get( dimension );
+        return referencedGeometry.get( dimension );
     }
 
+    @Override
     public double[] getAsArray() {
-        return geometry.getAsArray();
+        return referencedGeometry.getAsArray();
     }
 
-    public Geometry getBuffer( ValueWithUnit distance ) {
-        return geometry.getBuffer( distance );
-    }
-
-    public Geometry getConvexHull() {
-        return geometry.getConvexHull();
-    }
-
-    public int getCoordinateDimension() {
-        return geometry.getCoordinateDimension();
-    }
-
-    public CRS getCoordinateSystem() {
-        return geometry.getCoordinateSystem();
-    }
-
-    public Envelope getEnvelope() {
-        return geometry.getEnvelope();
-    }
-
-    public GeometryType getGeometryType() {
-        return geometry.getGeometryType();
-    }
-
-    public PrecisionModel getPrecision() {
-        return geometry.getPrecision();
-    }
-
+    @Override
     public PrimitiveType getPrimitiveType() {
-        return geometry.getPrimitiveType();
+        return PrimitiveType.Point;
     }
 
+    @Override
     public double getX() {
-        System.out.println ("Point: " + this);
-        return geometry.getX();
+        return referencedGeometry.getX();
     }
 
+    @Override
     public double getY() {
-        return geometry.getY();
+        return referencedGeometry.getY();
     }
 
+    @Override
     public double getZ() {
-        return geometry.getZ();
-    }
-
-    public Geometry intersection( Geometry geometry ) {
-        return geometry.intersection( geometry );
-    }
-
-    public boolean intersects( Geometry geometry ) {
-        return geometry.intersects( geometry );
-    }
-
-    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isBeyond( geometry, distance );
-    }
-
-    public boolean isWithin( Geometry geometry ) {
-        return geometry.isWithin( geometry );
-    }
-
-    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isWithinDistance( geometry, distance );
-    }
-
-    public Geometry union( Geometry geometry ) {
-        return geometry.union( geometry );
+        return referencedGeometry.getZ();
     }
 }

@@ -41,24 +41,27 @@ import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.precision.PrecisionModel;
+import org.deegree.geometry.uom.Unit;
 import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Represents a reference to the GML representation of a geometry, which is usually expressed using an
  * <code>xlink:href</code> attribute in GML (may be document-local or remote).
  * 
+ * @param <T> 
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class GeometryReference implements Geometry {
+public class GeometryReference<T extends Geometry> implements Geometry {
 
     protected String href;
 
     private final String gid;
 
-    protected Geometry geometry;
+    protected T referencedGeometry;
 
     public GeometryReference( String href ) {
         this.href = href;
@@ -71,12 +74,12 @@ public class GeometryReference implements Geometry {
         gid = href.substring( pos + 1 );
     }
 
-    public void resolve( Geometry geometry ) {
-        if ( this.geometry != null ) {
+    public void resolve( T geometry ) {
+        if ( this.referencedGeometry != null ) {
             String msg = "Internal error: Geometry reference (" + href + ") has already been resolved.";
             throw new RuntimeException( msg );
         }
-        this.geometry = geometry;
+        this.referencedGeometry = geometry;
     }
 
     public boolean contains( Geometry geometry ) {
@@ -91,8 +94,8 @@ public class GeometryReference implements Geometry {
         return geometry.difference( geometry );
     }
 
-    public double distance( Geometry geometry ) {
-        return geometry.distance( geometry );
+    public ValueWithUnit distance( Geometry geometry, Unit requestedUnits  ) {
+        return geometry.distance( geometry, requestedUnits );
     }
 
     public boolean equals( Geometry geometry ) {
@@ -100,27 +103,27 @@ public class GeometryReference implements Geometry {
     }
 
     public Geometry getBuffer( ValueWithUnit distance ) {
-        return geometry.getBuffer( distance );
+        return referencedGeometry.getBuffer( distance );
     }
 
     public Geometry getConvexHull() {
-        return geometry.getConvexHull();
+        return referencedGeometry.getConvexHull();
     }
 
     public int getCoordinateDimension() {
-        return geometry.getCoordinateDimension();
+        return referencedGeometry.getCoordinateDimension();
     }
 
     public CRS getCoordinateSystem() {
-        return geometry.getCoordinateSystem();
+        return referencedGeometry.getCoordinateSystem();
     }
 
     public Envelope getEnvelope() {
-        return geometry.getEnvelope();
+        return referencedGeometry.getEnvelope();
     }
 
     public GeometryType getGeometryType() {
-        return geometry.getGeometryType();
+        return referencedGeometry.getGeometryType();
     }
 
     public String getId() {
@@ -128,57 +131,57 @@ public class GeometryReference implements Geometry {
     }
 
     public PrecisionModel getPrecision() {
-        return geometry.getPrecision();
+        return referencedGeometry.getPrecision();
     }
 
     public Geometry intersection( Geometry geometry ) {
-        return geometry.intersection( geometry );
+        return referencedGeometry.intersection( geometry );
     }
 
     public boolean intersects( Geometry geometry ) {
-        return geometry.intersects( geometry );
+        return referencedGeometry.intersects( geometry );
     }
     
     public boolean isDisjoint( Geometry geometry ) {
-        return geometry.isDisjoint( geometry );
+        return referencedGeometry.isDisjoint( geometry );
     }
 
     public boolean overlaps( Geometry geometry ) {
-        return geometry.overlaps( geometry );
+        return referencedGeometry.overlaps( geometry );
     }
 
     public boolean touches( Geometry geometry ) {
-        return geometry.touches( geometry );
+        return referencedGeometry.touches( geometry );
     }    
     
     public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isBeyond( geometry, distance );
+        return referencedGeometry.isBeyond( geometry, distance );
     }
 
     public boolean isWithin( Geometry geometry ) {
-        return geometry.isWithin( geometry );
+        return referencedGeometry.isWithin( geometry );
     }
 
     public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isWithinDistance( geometry, distance );
+        return referencedGeometry.isWithinDistance( geometry, distance );
     }
 
     public Geometry union( Geometry geometry ) {
-        return geometry.union( geometry );
+        return referencedGeometry.union( geometry );
     }
 
     @Override
     public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
-        return geometry.getJTSGeometry();
+        return referencedGeometry.getJTSGeometry();
     }
 
     @Override
     public StandardObjectProperties getStandardGMLProperties() {
-        return geometry.getStandardGMLProperties();
+        return referencedGeometry.getStandardGMLProperties();
     }
 
     @Override
     public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
-        geometry.setStandardGMLProperties( standardProps );
+        referencedGeometry.setStandardGMLProperties( standardProps );
     }
 }

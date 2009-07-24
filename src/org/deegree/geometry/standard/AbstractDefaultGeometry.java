@@ -42,6 +42,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
+import org.deegree.geometry.uom.Unit;
 import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
@@ -114,19 +115,19 @@ public abstract class AbstractDefaultGeometry implements Geometry {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
         return jtsGeoms.first.disjoint( jtsGeoms.second );
     }
-    
+
     @Override
     public boolean overlaps( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
         return jtsGeoms.first.overlaps( jtsGeoms.second );
-    }    
+    }
 
     @Override
     public boolean touches( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
         return jtsGeoms.first.touches( jtsGeoms.second );
-    }    
-    
+    }
+
     @Override
     public boolean isWithin( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
@@ -154,8 +155,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     public boolean crosses( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
         return jtsGeoms.first.crosses( jtsGeoms.second );
-    }    
-    
+    }
+
     @Override
     public boolean equals( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
@@ -163,8 +164,10 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
-    public double distance( Geometry geometry ) {
-        return getJTSGeometry().distance( geometry.getJTSGeometry() );
+    public ValueWithUnit distance( Geometry geometry, Unit requestedUnit ) {
+        // TODO respect unit
+        double dist = getJTSGeometry().distance( geometry.getJTSGeometry() );
+        return new ValueWithUnit( Double.toString( dist ), null );
     }
 
     @Override

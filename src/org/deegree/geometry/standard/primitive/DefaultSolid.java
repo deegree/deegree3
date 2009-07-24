@@ -42,6 +42,8 @@ import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.uom.Unit;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link Solid}.
@@ -108,12 +110,12 @@ public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
     }
 
     @Override
-    public double getArea() {
+    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public double getVolume() {
+    public ValueWithUnit getVolume( Unit requestedBaseUnit ) {
         throw new UnsupportedOperationException();
     }
 }

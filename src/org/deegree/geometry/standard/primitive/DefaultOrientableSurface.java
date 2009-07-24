@@ -48,6 +48,7 @@ import org.deegree.geometry.primitive.OrientableSurface;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.uom.Unit;
 import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
@@ -131,16 +132,17 @@ public class DefaultOrientableSurface implements OrientableSurface {
         return baseSurface.difference( geometry );
     }
 
-    public double distance( Geometry geometry ) {
-        return baseSurface.distance( geometry );
+    @Override
+    public ValueWithUnit distance( Geometry geometry, Unit requestedUnit ) {
+        return baseSurface.distance( geometry, requestedUnit );
     }
 
     public boolean equals( Geometry geometry ) {
         return baseSurface.equals( geometry );
     }
 
-    public double getArea() {
-        return baseSurface.getArea();
+    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
+        return baseSurface.getArea( requestedBaseUnit );
     }
 
     public Geometry getBuffer( ValueWithUnit distance ) {
@@ -172,8 +174,8 @@ public class DefaultOrientableSurface implements OrientableSurface {
         return baseSurface.getPatches();
     }
 
-    public double getPerimeter() {
-        return baseSurface.getPerimeter();
+    public ValueWithUnit getPerimeter( Unit requestedUnit ) {
+        return baseSurface.getPerimeter( requestedUnit );
     }
 
     public PrecisionModel getPrecision() {
@@ -195,7 +197,7 @@ public class DefaultOrientableSurface implements OrientableSurface {
     @Override
     public boolean isDisjoint( Geometry geometry ) {
         return baseSurface.isDisjoint( geometry );
-    }    
+    }
 
     @Override
     public boolean overlaps( Geometry geometry ) {
@@ -205,8 +207,8 @@ public class DefaultOrientableSurface implements OrientableSurface {
     @Override
     public boolean touches( Geometry geometry ) {
         return baseSurface.touches( geometry );
-    }     
-    
+    }
+
     public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
         return baseSurface.isBeyond( geometry, distance );
     }

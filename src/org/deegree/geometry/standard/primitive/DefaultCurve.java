@@ -57,6 +57,8 @@ import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PointsPoints;
+import org.deegree.geometry.uom.Unit;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
@@ -105,8 +107,10 @@ public class DefaultCurve extends AbstractDefaultGeometry implements Curve {
     }
 
     @Override
-    public double getLength() {
-        return ( (com.vividsolutions.jts.geom.LineString) getJTSGeometry() ).getLength();
+    public ValueWithUnit getLength( Unit requestedUnit ) {
+        // TODO respect requested unit
+        double length = ( (com.vividsolutions.jts.geom.LineString) getJTSGeometry() ).getLength(); 
+        return new ValueWithUnit( Double.toString( length), null );
     }
 
     @Override

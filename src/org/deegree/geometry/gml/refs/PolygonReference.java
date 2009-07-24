@@ -38,16 +38,10 @@ package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 
-import org.deegree.crs.CRS;
-import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.points.Points;
-import org.deegree.geometry.precision.PrecisionModel;
-import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -57,128 +51,29 @@ import org.deegree.geometry.uom.ValueWithUnit;
  *
  * @version $Revision: $, $Date: $
  */
-public class PolygonReference extends GeometryReference implements Polygon {
-
-    protected Polygon geometry;
+public class PolygonReference extends SurfaceReference<Polygon> implements Polygon {
 
     public PolygonReference (String href) {
         super (href);
     }
 
     @Override
-    public void resolve (Geometry geometry) {
-        if (this.geometry != null) {
-            String msg = "Internal error: Geometry reference (" + href + ") has already been resolved.";
-            throw new RuntimeException(msg);
-        }
-        this.geometry = (Polygon) geometry;
-    }
-
-    public boolean contains( Geometry geometry ) {
-        return geometry.contains( geometry );
-    }
-
-    public Geometry difference( Geometry geometry ) {
-        return geometry.difference( geometry );
-    }
-
-    public double distance( Geometry geometry ) {
-        return geometry.distance( geometry );
-    }
-
-    public boolean equals( Geometry geometry ) {
-        return geometry.equals( geometry );
-    }
-
-    public double getArea() {
-        return geometry.getArea();
-    }
-
-    public Geometry getBuffer( ValueWithUnit distance ) {
-        return geometry.getBuffer( distance );
-    }
-
-    public Point getCentroid() {
-        return geometry.getCentroid();
-    }
-
-    public Geometry getConvexHull() {
-        return geometry.getConvexHull();
-    }
-
-    public int getCoordinateDimension() {
-        return geometry.getCoordinateDimension();
-    }
-
-    public CRS getCoordinateSystem() {
-        return geometry.getCoordinateSystem();
-    }
-
-    public Envelope getEnvelope() {
-        return geometry.getEnvelope();
-    }
-
-    public Ring getExteriorRing() {
-        return geometry.getExteriorRing();
-    }
-
-    public Points getExteriorRingCoordinates() {
-        return geometry.getExteriorRingCoordinates();
-    }
-
-    public GeometryType getGeometryType() {
-        return geometry.getGeometryType();
-    }
-
-    public List<Ring> getInteriorRings() {
-        return geometry.getInteriorRings();
-    }
-
-    public List<Points> getInteriorRingsCoordinates() {
-        return geometry.getInteriorRingsCoordinates();
-    }
-
-    public List<PolygonPatch> getPatches() {
-        return geometry.getPatches();
-    }
-
-    public double getPerimeter() {
-        return geometry.getPerimeter();
-    }
-
-    public PrecisionModel getPrecision() {
-        return geometry.getPrecision();
-    }
-
-    public PrimitiveType getPrimitiveType() {
-        return geometry.getPrimitiveType();
-    }
-
     public SurfaceType getSurfaceType() {
-        return geometry.getSurfaceType();
+        return SurfaceType.Polygon;
     }
 
-    public Geometry intersection( Geometry geometry ) {
-        return geometry.intersection( geometry );
+    @Override
+    public Ring getExteriorRing() {
+        return referencedGeometry.getExteriorRing();
     }
 
-    public boolean intersects( Geometry geometry ) {
-        return geometry.intersects( geometry );
+    @Override
+    public List<Ring> getInteriorRings() {
+        return referencedGeometry.getInteriorRings();
     }
-
-    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isBeyond( geometry, distance );
-    }
-
-    public boolean isWithin( Geometry geometry ) {
-        return geometry.isWithin( geometry );
-    }
-
-    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isWithinDistance( geometry, distance );
-    }
-
-    public Geometry union( Geometry geometry ) {
-        return geometry.union( geometry );
+    
+    @Override
+    public List<PolygonPatch> getPatches() {
+        return referencedGeometry.getPatches();
     }
 }

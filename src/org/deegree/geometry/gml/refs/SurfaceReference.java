@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,144 +32,67 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 
-import org.deegree.crs.CRS;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
 import org.deegree.geometry.points.Points;
-import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.uom.Unit;
 import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * The <code></code> class TODO add class documentation here.
- *
+ * 
+ * @param <T>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
-public class SurfaceReference extends GeometryReference implements Surface {
+public class SurfaceReference<T extends Surface> extends GeometricPrimitiveReference<T> implements Surface {
 
-    protected Surface geometry;
-
-    public SurfaceReference (String href) {
-        super (href);
+    public SurfaceReference( String href ) {
+        super( href );
     }
 
     @Override
-    public void resolve (Geometry geometry) {
-        if (this.geometry != null) {
-            String msg = "Internal error: Geometry reference (" + href + ") has already been resolved.";
-            throw new RuntimeException(msg);
-        }
-        this.geometry = (Surface) geometry;
+    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
+        return referencedGeometry.getArea( requestedBaseUnit );
     }
 
-    public boolean contains( Geometry geometry ) {
-        return geometry.contains( geometry );
-    }
-
-    public Geometry difference( Geometry geometry ) {
-        return geometry.difference( geometry );
-    }
-
-    public double distance( Geometry geometry ) {
-        return geometry.distance( geometry );
-    }
-
-    public boolean equals( Geometry geometry ) {
-        return geometry.equals( geometry );
-    }
-
-    public double getArea() {
-        return geometry.getArea();
-    }
-
-    public Geometry getBuffer( ValueWithUnit distance ) {
-        return geometry.getBuffer( distance );
-    }
-
-    public Point getCentroid() {
-        return geometry.getCentroid();
-    }
-
-    public Geometry getConvexHull() {
-        return geometry.getConvexHull();
-    }
-
-    public int getCoordinateDimension() {
-        return geometry.getCoordinateDimension();
-    }
-
-    public CRS getCoordinateSystem() {
-        return geometry.getCoordinateSystem();
-    }
-
-    public Envelope getEnvelope() {
-        return geometry.getEnvelope();
-    }
-
-    public Points getExteriorRingCoordinates() {
-        return geometry.getExteriorRingCoordinates();
-    }
-
-    public GeometryType getGeometryType() {
-        return geometry.getGeometryType();
-    }
-
-    public List<Points> getInteriorRingsCoordinates() {
-        return geometry.getInteriorRingsCoordinates();
-    }
-
-    public List<? extends SurfacePatch> getPatches() {
-        return geometry.getPatches();
-    }
-
-    public double getPerimeter() {
-        return geometry.getPerimeter();
-    }
-
-    public PrecisionModel getPrecision() {
-        return geometry.getPrecision();
-    }
-
-    public org.deegree.geometry.primitive.GeometricPrimitive.PrimitiveType getPrimitiveType() {
-        return geometry.getPrimitiveType();
-    }
-
+    @Override
     public SurfaceType getSurfaceType() {
-        return geometry.getSurfaceType();
+        return referencedGeometry.getSurfaceType();
     }
 
-    public Geometry intersection( Geometry geometry ) {
-        return geometry.intersection( geometry );
+    @Override
+    public Point getCentroid() {
+        return referencedGeometry.getCentroid();
     }
 
-    public boolean intersects( Geometry geometry ) {
-        return geometry.intersects( geometry );
+    @Override
+    public Points getExteriorRingCoordinates() {
+        return referencedGeometry.getExteriorRingCoordinates();
     }
 
-    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isBeyond( geometry, distance );
+    @Override
+    public List<Points> getInteriorRingsCoordinates() {
+        return referencedGeometry.getInteriorRingsCoordinates();
     }
 
-    public boolean isWithin( Geometry geometry ) {
-        return geometry.isWithin( geometry );
+    @Override
+    public List<? extends SurfacePatch> getPatches() {
+        return referencedGeometry.getPatches();
     }
 
-    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isWithinDistance( geometry, distance );
-    }
-
-    public Geometry union( Geometry geometry ) {
-        return geometry.union( geometry );
+    @Override
+    public ValueWithUnit getPerimeter( Unit requestedUnit ) {
+        return referencedGeometry.getPerimeter( requestedUnit );
     }
 }

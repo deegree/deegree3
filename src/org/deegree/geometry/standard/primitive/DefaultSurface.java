@@ -48,6 +48,8 @@ import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.uom.Unit;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link Surface}.
@@ -99,7 +101,7 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     }
 
     @Override
-    public double getArea() {
+    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
         throw new UnsupportedOperationException();
     }
 
@@ -114,7 +116,7 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     }
 
     @Override
-    public double getPerimeter() {
+    public ValueWithUnit getPerimeter( Unit requestedUnit ) {
         throw new UnsupportedOperationException();
     }
 

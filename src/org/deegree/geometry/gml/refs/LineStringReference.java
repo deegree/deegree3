@@ -36,18 +36,7 @@
 
 package org.deegree.geometry.gml.refs;
 
-import java.util.List;
-
-import org.deegree.commons.utils.Pair;
-import org.deegree.crs.CRS;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
-import org.deegree.geometry.points.Points;
-import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.LineString;
-import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -57,128 +46,13 @@ import org.deegree.geometry.uom.ValueWithUnit;
  *
  * @version $Revision: $, $Date: $
  */
-public class LineStringReference extends GeometryReference implements LineString {
-
-    protected LineString geometry;
+public class LineStringReference extends CurveReference<LineString> implements LineString {
 
     public LineStringReference (String href) {
         super (href);
     }
 
-    @Override
-    public void resolve (Geometry geometry) {
-        if (this.geometry != null) {
-            String msg = "Internal error: Geometry reference (" + href + ") has already been resolved.";
-            throw new RuntimeException(msg);
-        }
-        this.geometry = (LineString) geometry;
-    }
-
-    public boolean contains( Geometry geometry ) {
-        return geometry.contains( geometry );
-    }
-
-    public Geometry difference( Geometry geometry ) {
-        return geometry.difference( geometry );
-    }
-
-    public double distance( Geometry geometry ) {
-        return geometry.distance( geometry );
-    }
-
-    public boolean equals( Geometry geometry ) {
-        return geometry.equals( geometry );
-    }
-
-    public LineString getAsLineString() {
-        return geometry.getAsLineString();
-    }
-
-    public Pair<Point,Point> getBoundary() {
-        return geometry.getBoundary();
-    }
-
-    public Geometry getBuffer( ValueWithUnit distance ) {
-        return geometry.getBuffer( distance );
-    }
-
-    public Points getControlPoints() {
-        return geometry.getControlPoints();
-    }
-
-    public Geometry getConvexHull() {
-        return geometry.getConvexHull();
-    }
-
-    public int getCoordinateDimension() {
-        return geometry.getCoordinateDimension();
-    }
-
-    public CRS getCoordinateSystem() {
-        return geometry.getCoordinateSystem();
-    }
-
-    public List<CurveSegment> getCurveSegments() {
-        return geometry.getCurveSegments();
-    }
-
     public CurveType getCurveType() {
-        return geometry.getCurveType();
-    }
-
-    public Point getEndPoint() {
-        return geometry.getEndPoint();
-    }
-
-    public Envelope getEnvelope() {
-        return geometry.getEnvelope();
-    }
-
-    public GeometryType getGeometryType() {
-        return geometry.getGeometryType();
-    }
-
-    public double getLength() {
-        return geometry.getLength();
-    }
-
-    public PrecisionModel getPrecision() {
-        return geometry.getPrecision();
-    }
-
-    public PrimitiveType getPrimitiveType() {
-        return geometry.getPrimitiveType();
-    }
-
-    public Point getStartPoint() {
-        return geometry.getStartPoint();
-    }
-
-    public Geometry intersection( Geometry geometry ) {
-        return geometry.intersection( geometry );
-    }
-
-    public boolean intersects( Geometry geometry ) {
-        return geometry.intersects( geometry );
-    }
-
-    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isBeyond( geometry, distance );
-    }
-
-    public boolean isClosed() {
-        return geometry.isClosed();
-    }
-
-    public boolean isWithin( Geometry geometry ) {
-        return geometry.isWithin( geometry );
-    }
-
-    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
-        return geometry.isWithinDistance( geometry, distance );
-    }
-
-    public Geometry union( Geometry geometry ) {
-        return geometry.union( geometry );
+        return CurveType.LineString;
     }
 }

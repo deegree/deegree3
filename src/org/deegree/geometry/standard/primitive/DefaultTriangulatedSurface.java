@@ -44,6 +44,8 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.TriangulatedSurface;
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.uom.Unit;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link TriangulatedSurface}.
@@ -80,7 +82,7 @@ public class DefaultTriangulatedSurface extends AbstractDefaultGeometry implemen
     }
 
     @Override
-    public double getArea() {
+    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
         throw new UnsupportedOperationException();
     }
 
@@ -95,7 +97,7 @@ public class DefaultTriangulatedSurface extends AbstractDefaultGeometry implemen
     }
 
     @Override
-    public double getPerimeter() {
+    public ValueWithUnit getPerimeter( Unit requestedUnit ) {
         throw new UnsupportedOperationException();
     }
 

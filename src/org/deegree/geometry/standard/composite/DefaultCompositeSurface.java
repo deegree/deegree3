@@ -49,6 +49,8 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.uom.Unit;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link CompositeSurface}.
@@ -101,12 +103,13 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
     }
 
     @Override
-    public double getArea() {
-        double sum = 0.0;
-        for ( Surface member : memberSurfaces ) {
-            sum += member.getArea();
-        }
-        return sum;
+    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ValueWithUnit getPerimeter( Unit requestedUnit ) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -124,10 +127,6 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
         return allPatches;
     }
 
-    @Override
-    public double getPerimeter() {
-        throw new UnsupportedOperationException();
-    }
     
     @Override
     protected com.vividsolutions.jts.geom.MultiPolygon buildJTSGeometry() {

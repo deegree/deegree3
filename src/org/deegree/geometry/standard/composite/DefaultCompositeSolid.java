@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.composite;
 
+import java.nio.channels.UnsupportedAddressTypeException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -46,6 +47,8 @@ import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.uom.Unit;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link CompositeSolid}.
@@ -109,21 +112,13 @@ public class DefaultCompositeSolid extends AbstractDefaultGeometry implements Co
     }
 
     @Override
-    public double getArea() {
-        double sum = 0.0;
-        for ( Solid member : memberSolids ) {
-            sum += member.getArea();
-        }
-        return sum;
+    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public double getVolume() {
-        double sum = 0.0;
-        for ( Solid member : memberSolids ) {
-            sum += member.getVolume();
-        }
-        return sum;
+    public ValueWithUnit getVolume( Unit requestedBaseUnit ) {
+        throw new UnsupportedOperationException();
     }
 
     // -----------------------------------------------------------------------

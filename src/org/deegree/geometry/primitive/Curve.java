@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,29 +32,30 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
 import java.util.List;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.geometry.uom.Unit;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * <code>Curve</code> instances are 1D-geometries that consist of an arbitrary number of curve segments.
- *
+ * 
  * @see CompositeCurve
  * @see LineString
  * @see OrientableCurve
  * @see Ring
- *
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version. $Revision$, $Date$
  */
 public interface Curve extends GeometricPrimitive {
@@ -77,7 +78,7 @@ public interface Curve extends GeometricPrimitive {
 
     /**
      * Must always return {@link GeometricPrimitive.PrimitiveType#Curve}.
-     *
+     * 
      * @return {@link GeometricPrimitive.PrimitiveType#Curve}
      */
     @Override
@@ -85,50 +86,51 @@ public interface Curve extends GeometricPrimitive {
 
     /**
      * Returns the type of curve.
-     *
+     * 
      * @return the type of curve
      */
     public CurveType getCurveType();
 
     /**
      * Returns whether the curve forms a closed loop.
-     *
+     * 
      * @return true, if the curve forms a closed loop, false otherwise
      */
     public boolean isClosed();
 
     /**
-     *
-     * @return length of a curve measured in units of the assigned {@link CoordinateSystem}
+     * 
+     * @param requestedUnit
+     * @return length of the curve
      */
-    public double getLength();
+    public ValueWithUnit getLength( Unit requestedUnit );
 
     /**
      * The boundary of a curve is the set of points at either end of the curve. If the curve is a cycle, the two ends
      * are identical, and the curve (if topologically closed) is considered to not have a boundary.
-     *
+     * 
      * @return boundary of a curve. If a curve does not have a boundary because it is closed an empty {@link List} shall
      *         be retruned
      */
-    public Pair<Point,Point> getBoundary();
+    public Pair<Point, Point> getBoundary();
 
     /**
      * Returns the start point of the curve.
-     *
+     * 
      * @return the start point of the curve
      */
     public Point getStartPoint();
 
     /**
      * Returns the end point of the curve.
-     *
+     * 
      * @return the end point of the curve
      */
     public Point getEndPoint();
 
     /**
      * Returns the segments that constitute this curve.
-     *
+     * 
      * @return the segments that constitute this curve
      */
     public List<CurveSegment> getCurveSegments();
@@ -139,7 +141,7 @@ public interface Curve extends GeometricPrimitive {
      * NOTE: This method is only safe to use when the curve is a {@link LineString} or {@link LinearRing} or it only
      * consists of {@link LineStringSegment}s. In any other case it will fail.
      * </p>
-     *
+     * 
      * @return the control points
      * @throws IllegalArgumentException
      *             if the curve is not linear interpolated
@@ -150,7 +152,7 @@ public interface Curve extends GeometricPrimitive {
      * Returns a linear interpolated representation of the curve.
      * <p>
      * Please note that this operation returns an approximated version if the curve uses non-linear curve segments.
-     *
+     * 
      * @return a linear interpolated representation of the curve
      */
     public LineString getAsLineString();

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,20 +32,21 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
+import org.deegree.geometry.uom.Unit;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * <code>Solid</code> instances are 3D-geometries that ...
- *
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version. $Revision$, $Date$
  */
 public interface Solid extends GeometricPrimitive {
@@ -62,7 +63,7 @@ public interface Solid extends GeometricPrimitive {
 
     /**
      * Must always return {@link GeometricPrimitive.PrimitiveType#Solid}.
-     *
+     * 
      * @return {@link GeometricPrimitive.PrimitiveType#Solid}
      */
     @Override
@@ -70,22 +71,24 @@ public interface Solid extends GeometricPrimitive {
 
     /**
      * Returns the type of solid.
-     *
+     * 
      * @return the type of solid
      */
     public SolidType getSolidType();
 
     /**
-     *
-     * @return volume of a Solid measured in units of the assigned {@link CoordinateSystem}
+     * 
+     * @param requestedBaseUnit 
+     * @return volume of the solid
      */
-    public double getVolume();
+    public ValueWithUnit getVolume( Unit requestedBaseUnit );
 
     /**
-     *
-     * @return area of a Solids boundary measured in units of the assigend {@link CoordinateSystem}
+     * 
+     * @param requestedBaseUnit 
+     * @return area of the solid's boundary
      */
-    public double getArea();
+    public ValueWithUnit getArea( Unit requestedBaseUnit );
 
     /**
      * Returns the exterior surface (shell) of the solid.
@@ -93,14 +96,14 @@ public interface Solid extends GeometricPrimitive {
      * Please note that this method may return null. The following explanation is from the GML 3.1.1 schema
      * (geometryPrimitives.xsd): In normal 3-dimensional Euclidean space, one (composite) surface is distinguished as
      * the exterior. In the more general case, this is not always possible.
-     *
+     * 
      * @return the exterior surface, or null if no surface is distinguished as being the exterior boundary
      */
     public Surface getExteriorSurface();
 
     /**
      * Returns the interior surfaces of the solid.
-     *
+     * 
      * @return the interior surfaces, list may be empty (but not null)
      */
     public List<Surface> getInteriorSurfaces();

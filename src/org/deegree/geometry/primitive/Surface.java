@@ -37,11 +37,12 @@ package org.deegree.geometry.primitive;
 
 import java.util.List;
 
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
+import org.deegree.geometry.uom.Unit;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * <code>Surface</code> instances are 2D-geometries that consist of an arbitrary number of surface patches which are not
@@ -89,15 +90,17 @@ public interface Surface extends GeometricPrimitive {
 
     /**
      * 
-     * @return area of a Surface measured in units of the assigned {@link CoordinateSystem}
+     * @param requestedBaseUnit
+     * @return area of the surface
      */
-    public double getArea();
+    public ValueWithUnit getArea( Unit requestedBaseUnit );
 
     /**
      * 
-     * @return perimeter of a Surface measured in units of the assigned {@link CoordinateSystem}
+     * @param requestedUnit
+     * @return perimeter of the surface
      */
-    public double getPerimeter();
+    public ValueWithUnit getPerimeter( Unit requestedUnit );
 
     /**
      * 

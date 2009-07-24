@@ -38,6 +38,7 @@ package org.deegree.geometry;
 import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.precision.PrecisionModel;
+import org.deegree.geometry.uom.Unit;
 import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
@@ -281,9 +282,10 @@ public interface Geometry {
      * theoretically viable.
      * 
      * @param geometry
-     * @return distance between two geometries
+     * @param requestedUnits
+     * @return shortest distance between the two geometries
      */
-    public double distance( Geometry geometry );    
+    public ValueWithUnit distance( Geometry geometry, Unit requestedUnits );    
     
     /**
      * tests whether the value of a geometric is topological located within this geometry. This method is the opposite

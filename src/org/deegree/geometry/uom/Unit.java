@@ -33,34 +33,8 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
+package org.deegree.geometry.uom;
 
-package org.deegree.geometry.gml.refs;
+public class Unit {
 
-import org.deegree.geometry.primitive.GeometricPrimitive;
-
-/**
- * The <code></code> class TODO add class documentation here.
- * 
- * @param <T> 
- *
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
- *
- * @version $Revision: $, $Date: $
- */
-public class GeometricPrimitiveReference<T extends GeometricPrimitive> extends GeometryReference<T> implements GeometricPrimitive {
-
-    public GeometricPrimitiveReference (String href) {
-        super (href);
-    }
-
-    @Override
-    public GeometryType getGeometryType() {
-        return GeometryType.PRIMITIVE_GEOMETRY;
-    }
-
-    @Override
-    public PrimitiveType getPrimitiveType() {
-        return referencedGeometry.getPrimitiveType();
-    }
 }

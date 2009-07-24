@@ -54,6 +54,8 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PointsPoints;
 import org.deegree.geometry.standard.primitive.DefaultLineString;
+import org.deegree.geometry.uom.Unit;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 import com.vividsolutions.jts.geom.MultiLineString;
 
@@ -127,12 +129,9 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
     }
 
     @Override
-    public double getLength() {
-        double sum = 0.0;
-        for ( Curve member : memberCurves ) {
-            sum += member.getLength();
-        }
-        return sum;
+    public ValueWithUnit getLength( Unit requestedUnit ) {
+        // TODO
+        throw new UnsupportedOperationException();
     }
 
     @Override

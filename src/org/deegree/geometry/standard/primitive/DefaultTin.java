@@ -44,8 +44,11 @@ import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Tin;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.primitive.surfacepatches.Triangle;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
+import org.deegree.geometry.uom.Unit;
+import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link Tin}.
@@ -117,7 +120,7 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
     }
 
     @Override
-    public double getArea() {
+    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
         throw new UnsupportedOperationException();
     }
 
@@ -134,7 +137,7 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
     }
 
     @Override
-    public double getPerimeter() {
+    public ValueWithUnit getPerimeter( Unit requestedUnit ) {
         throw new UnsupportedOperationException();
     }
 
