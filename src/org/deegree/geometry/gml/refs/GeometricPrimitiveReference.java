@@ -50,8 +50,8 @@ import org.deegree.geometry.primitive.GeometricPrimitive;
  */
 public class GeometricPrimitiveReference<T extends GeometricPrimitive> extends GeometryReference<T> implements GeometricPrimitive {
 
-    public GeometricPrimitiveReference (String href) {
-        super (href);
+    public GeometricPrimitiveReference (String href, String baseURL) {
+        super (href, baseURL);
     }
 
     @Override
@@ -61,6 +61,6 @@ public class GeometricPrimitiveReference<T extends GeometricPrimitive> extends G
 
     @Override
     public PrimitiveType getPrimitiveType() {
-        return referencedGeometry.getPrimitiveType();
+        return getGeometry().getPrimitiveType();
     }
 }

@@ -72,7 +72,7 @@ public class GMLIdContext {
 
     private List<FeatureReference> featureReferences = new ArrayList<FeatureReference>();
 
-    private List<GeometryReference> geometryReferences = new ArrayList<GeometryReference>();
+    private List<GeometryReference> localGeometryReferences = new ArrayList<GeometryReference>();
 
     public void addFeature( Feature feature ) {
         String id = feature.getId();
@@ -93,7 +93,9 @@ public class GMLIdContext {
     }
 
     public void addGeometryReference( GeometryReference ref ) {
-        geometryReferences.add( ref );
+        if (ref.isLocal()) {
+            localGeometryReferences.add( ref );
+        }
     }
 
     public Feature getFeature( String fid ) {
@@ -133,7 +135,7 @@ public class GMLIdContext {
             ref.resolve( targetObject );
         }
 
-        for ( GeometryReference ref : geometryReferences ) {
+        for ( GeometryReference ref : localGeometryReferences ) {
             LOG.debug( "Resolving reference to geometry '" + ref.getId() + "'" );
             Geometry targetObject = idToGeometry.get( ref.getId() );
             if ( targetObject == null ) {

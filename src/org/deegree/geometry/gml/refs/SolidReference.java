@@ -53,12 +53,12 @@ import org.deegree.geometry.uom.ValueWithUnit;
  */
 public class SolidReference<T extends Solid> extends GeometryReference<T> implements Solid {
 
-    public SolidReference( String href ) {
-        super( href );
+    public SolidReference( String href, String baseURL ) {
+        super( href,baseURL );
     }
 
     public ValueWithUnit getArea( Unit requestedBaseUnit ) {
-        return referencedGeometry.getArea( requestedBaseUnit );
+        return getGeometry().getArea( requestedBaseUnit );
     }
 
     public PrimitiveType getPrimitiveType() {
@@ -66,20 +66,20 @@ public class SolidReference<T extends Solid> extends GeometryReference<T> implem
     }
 
     public SolidType getSolidType() {
-        return referencedGeometry.getSolidType();
+        return getGeometry().getSolidType();
     }
 
     public ValueWithUnit getVolume( Unit requestedBaseUnit ) {
-        return referencedGeometry.getVolume( requestedBaseUnit );
+        return getGeometry().getVolume( requestedBaseUnit );
     }
 
     @Override
     public Surface getExteriorSurface() {
-        return referencedGeometry.getExteriorSurface();
+        return getGeometry().getExteriorSurface();
     }
 
     @Override
     public List<Surface> getInteriorSurfaces() {
-        return referencedGeometry.getInteriorSurfaces();
+        return getGeometry().getInteriorSurfaces();
     }
 }

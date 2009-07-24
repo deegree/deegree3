@@ -775,6 +775,27 @@ public class GML311GeometryDecoderTest {
     }
 
     @Test
+    public void parseXLinkLineString()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+        XMLStreamReaderWrapper xmlReader = getParser( "XLinkLineString.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
+        GMLIdContext idContext = new GMLIdContext();
+        LineString geom = new GML311GeometryDecoder( new GeometryFactory(), idContext ).parseLineString(
+                                                                                                                        xmlReader,
+                                                                                                                        null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "LineString" ), xmlReader.getName() );
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), geom.getCoordinateSystem().getWrappedCRS() );
+
+        idContext.resolveXLinks( null );
+        for ( Point p : geom.getControlPoints() ) {
+            System.out.println( p.getId() + ", " + p.getClass() );
+            System.out.println( p.getX());
+        }
+    }
+    
+    @Test
     public void parseXLinkMultiGeometry1()
                             throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
         XMLStreamReaderWrapper xmlReader = getParser( "XLinkMultiGeometry1.gml" );

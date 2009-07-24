@@ -38,7 +38,6 @@ package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 
-import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
@@ -53,8 +52,8 @@ import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
  */
 public class PolygonReference extends SurfaceReference<Polygon> implements Polygon {
 
-    public PolygonReference (String href) {
-        super (href);
+    public PolygonReference (String href, String baseURL) {
+        super (href, baseURL);
     }
 
     @Override
@@ -64,16 +63,16 @@ public class PolygonReference extends SurfaceReference<Polygon> implements Polyg
 
     @Override
     public Ring getExteriorRing() {
-        return referencedGeometry.getExteriorRing();
+        return getGeometry().getExteriorRing();
     }
 
     @Override
     public List<Ring> getInteriorRings() {
-        return referencedGeometry.getInteriorRings();
+        return getGeometry().getInteriorRings();
     }
     
     @Override
     public List<PolygonPatch> getPatches() {
-        return referencedGeometry.getPatches();
+        return getGeometry().getPatches();
     }
 }

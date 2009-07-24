@@ -34,25 +34,16 @@
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
 
-package org.deegree.geometry.gml.refs;
-
-import org.deegree.geometry.primitive.LineString;
+package org.deegree.geometry.gml;
 
 /**
  * The <code></code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
-public class LineStringReference extends CurveReference<LineString> implements LineString {
+public class ExternalGeometryReferenceTest {
 
-    public LineStringReference (String href, String baseURL) {
-        super (href, baseURL);
-    }
-
-    public CurveType getCurveType() {
-        return CurveType.LineString;
-    }
 }

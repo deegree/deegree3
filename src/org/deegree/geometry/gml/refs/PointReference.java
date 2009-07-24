@@ -48,18 +48,18 @@ import org.deegree.geometry.primitive.Point;
  */
 public class PointReference extends GeometricPrimitiveReference<Point> implements Point {
 
-    public PointReference( String href ) {
-        super( href );
+    public PointReference( String href, String baseURL ) {
+        super( href, baseURL );
     }
 
     @Override
     public double get( int dimension ) {
-        return referencedGeometry.get( dimension );
+        return getGeometry().get( dimension );
     }
 
     @Override
     public double[] getAsArray() {
-        return referencedGeometry.getAsArray();
+        return getGeometry().getAsArray();
     }
 
     @Override
@@ -69,16 +69,16 @@ public class PointReference extends GeometricPrimitiveReference<Point> implement
 
     @Override
     public double getX() {
-        return referencedGeometry.getX();
+        return getGeometry().getX();
     }
 
     @Override
     public double getY() {
-        return referencedGeometry.getY();
+        return getGeometry().getY();
     }
 
     @Override
     public double getZ() {
-        return referencedGeometry.getZ();
+        return getGeometry().getZ();
     }
 }

@@ -59,57 +59,57 @@ import org.deegree.geometry.uom.ValueWithUnit;
  */
 public class CurveReference<T extends Curve> extends GeometricPrimitiveReference<T> implements Curve {
 
-    public CurveReference( String href ) {
-        super( href );
+    public CurveReference( String href, String baseURL ) {
+        super( href,baseURL );
     }
 
     @Override
     public LineString getAsLineString() {
-        return referencedGeometry.getAsLineString();
+        return getGeometry().getAsLineString();
     }
 
     @Override
     public Pair<Point, Point> getBoundary() {
-        return referencedGeometry.getBoundary();
+        return getGeometry().getBoundary();
     }
 
     @Override
     public Points getControlPoints() {
-        return referencedGeometry.getControlPoints();
+        return getGeometry().getControlPoints();
     }
 
     @Override
     public List<CurveSegment> getCurveSegments() {
-        return referencedGeometry.getCurveSegments();
+        return getGeometry().getCurveSegments();
     }
 
     @Override
     public CurveType getCurveType() {
-        return referencedGeometry.getCurveType();
+        return getGeometry().getCurveType();
     }
 
     @Override
     public Point getEndPoint() {
-        return referencedGeometry.getEndPoint();
+        return getGeometry().getEndPoint();
     }
 
     @Override
     public ValueWithUnit getLength( Unit requestedUnit ) {
-        return referencedGeometry.getLength( requestedUnit );
+        return getGeometry().getLength( requestedUnit );
     }
 
     @Override
     public PrimitiveType getPrimitiveType() {
-        return referencedGeometry.getPrimitiveType();
+        return getGeometry().getPrimitiveType();
     }
 
     @Override
     public Point getStartPoint() {
-        return referencedGeometry.getStartPoint();
+        return getGeometry().getStartPoint();
     }
 
     @Override
     public boolean isClosed() {
-        return referencedGeometry.isClosed();
+        return getGeometry().isClosed();
     }
 }

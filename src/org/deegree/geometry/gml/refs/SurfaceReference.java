@@ -57,42 +57,42 @@ import org.deegree.geometry.uom.ValueWithUnit;
  */
 public class SurfaceReference<T extends Surface> extends GeometricPrimitiveReference<T> implements Surface {
 
-    public SurfaceReference( String href ) {
-        super( href );
+    public SurfaceReference( String href, String baseURL ) {
+        super( href, baseURL );
     }
 
     @Override
     public ValueWithUnit getArea( Unit requestedBaseUnit ) {
-        return referencedGeometry.getArea( requestedBaseUnit );
+        return getGeometry().getArea( requestedBaseUnit );
     }
 
     @Override
     public SurfaceType getSurfaceType() {
-        return referencedGeometry.getSurfaceType();
+        return getGeometry().getSurfaceType();
     }
 
     @Override
     public Point getCentroid() {
-        return referencedGeometry.getCentroid();
+        return getGeometry().getCentroid();
     }
 
     @Override
     public Points getExteriorRingCoordinates() {
-        return referencedGeometry.getExteriorRingCoordinates();
+        return getGeometry().getExteriorRingCoordinates();
     }
 
     @Override
     public List<Points> getInteriorRingsCoordinates() {
-        return referencedGeometry.getInteriorRingsCoordinates();
+        return getGeometry().getInteriorRingsCoordinates();
     }
 
     @Override
     public List<? extends SurfacePatch> getPatches() {
-        return referencedGeometry.getPatches();
+        return getGeometry().getPatches();
     }
 
     @Override
     public ValueWithUnit getPerimeter( Unit requestedUnit ) {
-        return referencedGeometry.getPerimeter( requestedUnit );
+        return getGeometry().getPerimeter( requestedUnit );
     }
 }
