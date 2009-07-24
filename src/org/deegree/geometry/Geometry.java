@@ -117,11 +117,11 @@ public interface Geometry {
     /**
      * Returns the id of the geometry.
      * <p>
-     * In an GML representation of the geometry, this corresponds to the <code>gml:id</code> (GML 3 and later) or
+     * In a GML representation of the geometry, this corresponds to the <code>gml:id</code> (GML 3 and later) or
      * <code>gid</code> (GML 2) attribute of the geometry element.
      * </p>
      * 
-     * @return the id of the feature
+     * @return the id of the geometry
      */
     public String getId();
 
@@ -145,23 +145,6 @@ public interface Geometry {
      * @return spatial reference system, may be null
      */
     public CRS getCoordinateSystem();
-
-    /**
-     * 
-     * @return convex hull of a Geometry
-     */
-    public Geometry getConvexHull();
-
-    /**
-     * The operation "buffer" shall return a Geometry containing all points whose distance from this Geometry is less
-     * than or equal to the "distance" passed as a parameter. The Geometry returned is in the same reference system as
-     * this original Geometry. The dimension of the returned Geometry is normally the same as the coordinate dimension -
-     * a collection of Surfaces in 2D space and a collection of Solids in 3D space, but this may be application defined.
-     * 
-     * @param distance
-     * @return buffer geometry
-     */
-    public Geometry getBuffer( ValueWithUnit distance );
 
     /**
      * The Boolean valued operation "contains" shall return TRUE if this Geometry contains another Geometry.
@@ -213,46 +196,48 @@ public interface Geometry {
     public boolean touches( Geometry geometry );
 
     /**
-     * The operation "distance" shall return the distance between this Geometry and another Geometry. This distance is
-     * defined to be the greatest lower bound of the set of distances between all pairs of points that include one each
-     * from each of the two Geometries. A "distance" value shall be a positive number associated to distance units such
-     * as meters or standard foot. If necessary, the second geometric object shall be transformed into the same
-     * coordinate reference system as the first before the distance is calculated.
-     * <p>
-     * </p>
-     * If the geometric objects overlap, or touch, then their distance apart shall be zero. Some current implementations
-     * use a "negative" distance for such cases, but the approach is neither consistent between implementations, nor
-     * theoretically viable.
+     * Returns the set-theoretic difference of this and the passed {@link Geometry}.
      * 
      * @param geometry
-     * @return distance between two geometries
+     *            other geometry, must not be null
+     * @return difference Geometry or <code>null</code> (empty set)
      */
-    public double distance( Geometry geometry );
-
+    public Geometry difference( Geometry geometry );    
+    
     /**
-     * The "union" operation shall return the set theoretic union of this Geometry and the passed Geometry.
+     * Returns the set-theoretic intersection of this and the passed {@link Geometry}.
      * 
      * @param geometry
-     * @return united Geometry
-     */
-    public Geometry union( Geometry geometry );
-
-    /**
-     * The "intersection" operation shall return the set theoretic intersection of this Geometry and the passed
-     * Geometry.
-     * 
-     * @param geometry
-     * @return intersection Geometry or <code>null</code>
+     *            other geometry, must not be null
+     * @return intersection Geometry or <code>null</code> (empty set)
      */
     public Geometry intersection( Geometry geometry );
 
     /**
-     * The "difference" operation shall return the set theoretic difference of this Geometry and the passed Geometry.
+     * Returns the set-theoretic union of this and the passed {@link Geometry}.
      * 
      * @param geometry
-     * @return difference Geometry or <code>null</code>
+     *            other geometry, must not be null
+     * @return united Geometry (never null)
      */
-    public Geometry difference( Geometry geometry );
+    public Geometry union( Geometry geometry );
+    
+    /**
+     * 
+     * @return convex hull of a Geometry
+     */
+    public Geometry getConvexHull();
+
+    /**
+     * The operation "buffer" shall return a Geometry containing all points whose distance from this Geometry is less
+     * than or equal to the "distance" passed as a parameter. The Geometry returned is in the same reference system as
+     * this original Geometry. The dimension of the returned Geometry is normally the same as the coordinate dimension -
+     * a collection of Surfaces in 2D space and a collection of Solids in 3D space, but this may be application defined.
+     * 
+     * @param distance
+     * @return buffer geometry
+     */
+    public Geometry getBuffer( ValueWithUnit distance );    
 
     /**
      * Returns true if this geometry is equal to the specified geometry. The behaviour of this method is not 100%
@@ -283,6 +268,23 @@ public interface Geometry {
      */
     public boolean isBeyond( Geometry geometry, ValueWithUnit distance );
 
+    /**
+     * The operation "distance" shall return the distance between this Geometry and another Geometry. This distance is
+     * defined to be the greatest lower bound of the set of distances between all pairs of points that include one each
+     * from each of the two Geometries. A "distance" value shall be a positive number associated to distance units such
+     * as meters or standard foot. If necessary, the second geometric object shall be transformed into the same
+     * coordinate reference system as the first before the distance is calculated.
+     * <p>
+     * </p>
+     * If the geometric objects overlap, or touch, then their distance apart shall be zero. Some current implementations
+     * use a "negative" distance for such cases, but the approach is neither consistent between implementations, nor
+     * theoretically viable.
+     * 
+     * @param geometry
+     * @return distance between two geometries
+     */
+    public double distance( Geometry geometry );    
+    
     /**
      * tests whether the value of a geometric is topological located within this geometry. This method is the opposite
      * of {@link #contains(Geometry)} method
