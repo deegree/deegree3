@@ -49,7 +49,7 @@ import org.deegree.geometry.uom.ValueWithUnit;
  * the usual geometry creation methods (e.g {@link #intersection(Geometry)} and {@link #getBuffer(ValueWithUnit)}).
  * </p>
  * <p>
- * <h4>Topological operators</h4>
+ * <h4>Topological predicates</h4>
  * These are the methods for evaluting the common topological predicates:
  * <ul>
  * <li>{@link #contains(Geometry)}</li>
@@ -63,7 +63,7 @@ import org.deegree.geometry.uom.ValueWithUnit;
  * </ul>
  * </p>
  * <p>
- * <h4>Other geometry processing methods</h4>
+ * <h4>Set-theoretic methods</h4>
  * Methods for deriving geometries that aid spatial analysis tasks:
  * <ul>
  * <li>{@link #difference(Geometry)}</li>

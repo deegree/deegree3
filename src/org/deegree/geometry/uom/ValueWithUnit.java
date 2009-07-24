@@ -54,4 +54,8 @@ public class ValueWithUnit {
         this.value = value;
         this.uom = uom;
     }
+    
+    public double getValueAsDouble () {
+        return Double.parseDouble( value );
+    }
 }

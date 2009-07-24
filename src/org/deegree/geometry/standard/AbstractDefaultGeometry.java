@@ -35,15 +35,34 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
+import org.deegree.geometry.primitive.LinearRing;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Polygon;
+import org.deegree.geometry.primitive.Ring;
+import org.deegree.geometry.standard.multi.DefaultMultiGeometry;
+import org.deegree.geometry.standard.multi.DefaultMultiLineString;
+import org.deegree.geometry.standard.multi.DefaultMultiPoint;
+import org.deegree.geometry.standard.multi.DefaultMultiPolygon;
+import org.deegree.geometry.standard.points.JTSPoints;
+import org.deegree.geometry.standard.primitive.DefaultLineString;
+import org.deegree.geometry.standard.primitive.DefaultLinearRing;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
+import org.deegree.geometry.standard.primitive.DefaultPolygon;
 import org.deegree.geometry.uom.Unit;
 import org.deegree.geometry.uom.ValueWithUnit;
+
+import com.vividsolutions.jts.geom.CoordinateSequence;
 
 /**
  * Abstract base class for the default {@link Geometry} implementation.
@@ -172,32 +191,46 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     @Override
     public Geometry intersection( Geometry geometry ) {
-        throw new UnsupportedOperationException();
+        JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
+        com.vividsolutions.jts.geom.Geometry jtsGeom = jtsGeoms.first.intersection( jtsGeoms.second );
+        return createFromJTS( jtsGeom );
     }
 
     @Override
     public Geometry union( Geometry geometry ) {
-        throw new UnsupportedOperationException();
+        JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
+        com.vividsolutions.jts.geom.Geometry jtsGeom = jtsGeoms.first.union( jtsGeoms.second );
+        return createFromJTS( jtsGeom );
     }
 
     @Override
     public Geometry difference( Geometry geometry ) {
-        throw new UnsupportedOperationException();
+        JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
+        com.vividsolutions.jts.geom.Geometry jtsGeom = jtsGeoms.first.difference( jtsGeoms.second );
+        return createFromJTS( jtsGeom );
     }
 
     @Override
     public Geometry getBuffer( ValueWithUnit distance ) {
-        throw new UnsupportedOperationException();
+        // TODO get double in CRS units
+        double crsDistance = distance.getValueAsDouble();
+        com.vividsolutions.jts.geom.Geometry jtsGeom = getJTSGeometry().buffer( crsDistance );
+        return createFromJTS( jtsGeom );
     }
 
     @Override
     public Geometry getConvexHull() {
-        throw new UnsupportedOperationException();
+        com.vividsolutions.jts.geom.Geometry jtsGeom = getJTSGeometry().convexHull();
+        return createFromJTS( jtsGeom );
     }
 
     @Override
     public Envelope getEnvelope() {
-        throw new UnsupportedOperationException();
+        // TODO consider 3D geometries
+        com.vividsolutions.jts.geom.Envelope jtsEnvelope = getJTSGeometry().getEnvelopeInternal();
+        Point min = new DefaultPoint( null, crs, pm, new double[] { jtsEnvelope.getMinX(), jtsEnvelope.getMinY() } );
+        Point max = new DefaultPoint( null, crs, pm, new double[] { jtsEnvelope.getMaxX(), jtsEnvelope.getMaxY() } );
+        return new DefaultEnvelope( null, crs, pm, min, max );
     }
 
     @Override
@@ -220,5 +253,74 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     @Override
     public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
         this.standardProps = standardProps;
+    }
+
+    /**
+     * Helper methods for creating {@link AbstractDefaultGeometry} from JTS geometries that have been derived from this
+     * geometry by JTS spatial analysis methods.
+     * 
+     * @param jtsGeom
+     * @return geoemtry with precision model and CRS information that are identical to the ones of this geometry
+     */
+    @SuppressWarnings("unchecked")
+    protected AbstractDefaultGeometry createFromJTS( com.vividsolutions.jts.geom.Geometry jtsGeom ) {
+
+        AbstractDefaultGeometry geom = null;
+        if ( jtsGeom instanceof com.vividsolutions.jts.geom.Point ) {
+            com.vividsolutions.jts.geom.Point jtsPoint = (com.vividsolutions.jts.geom.Point) jtsGeom;
+            geom = new DefaultPoint( null, crs, pm, new double[] { jtsPoint.getX(), jtsPoint.getY() } );
+        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.LinearRing ) {
+            com.vividsolutions.jts.geom.LinearRing jtsLinearRing = (com.vividsolutions.jts.geom.LinearRing) jtsGeom;
+            geom = new DefaultLinearRing( null, crs, pm, getAsPoints( jtsLinearRing.getCoordinateSequence() ) );
+        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.LineString ) {
+            com.vividsolutions.jts.geom.LineString jtsLineString = (com.vividsolutions.jts.geom.LineString) jtsGeom;
+            geom = new DefaultLineString( null, crs, pm, getAsPoints( jtsLineString.getCoordinateSequence() ) );
+        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.Polygon ) {
+            com.vividsolutions.jts.geom.Polygon jtsPolygon = (com.vividsolutions.jts.geom.Polygon) jtsGeom;
+            Points exteriorPoints = getAsPoints( jtsPolygon.getExteriorRing().getCoordinateSequence() );
+            LinearRing exteriorRing = new DefaultLinearRing( null, crs, pm, exteriorPoints );
+            List<Ring> interiorRings = new ArrayList<Ring>( jtsPolygon.getNumInteriorRing() );
+            for ( int i = 0; i < interiorRings.size(); i++ ) {
+                Points interiorPoints = getAsPoints( jtsPolygon.getInteriorRingN( i ).getCoordinateSequence() );
+                interiorRings.add( new DefaultLinearRing( null, crs, pm, interiorPoints ) );
+            }
+            geom = new DefaultPolygon( null, crs, pm, exteriorRing, interiorRings );
+        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.MultiPoint ) {
+            com.vividsolutions.jts.geom.MultiPoint jtsMultiPoint = (com.vividsolutions.jts.geom.MultiPoint) jtsGeom;
+            List<Point> members = new ArrayList<Point>( jtsMultiPoint.getNumGeometries() );
+            for ( int i = 0; i < jtsMultiPoint.getNumGeometries(); i++ ) {
+                members.add( (Point) createFromJTS( jtsMultiPoint.getGeometryN( i ) ) );
+            }
+            geom = new DefaultMultiPoint( id, crs, pm, members );
+        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.MultiLineString ) {
+            com.vividsolutions.jts.geom.MultiLineString jtsMultiLineString = (com.vividsolutions.jts.geom.MultiLineString) jtsGeom;
+            List<LineString> members = new ArrayList<LineString>( jtsMultiLineString.getNumGeometries() );
+            for ( int i = 0; i < jtsMultiLineString.getNumGeometries(); i++ ) {
+                members.add( (LineString) createFromJTS( jtsMultiLineString.getGeometryN( i ) ) );
+            }
+            geom = new DefaultMultiLineString( id, crs, pm, members );
+        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.MultiPolygon ) {
+            com.vividsolutions.jts.geom.MultiPolygon jtsMultiPolygon = (com.vividsolutions.jts.geom.MultiPolygon) jtsGeom;
+            List<Polygon> members = new ArrayList<Polygon>( jtsMultiPolygon.getNumGeometries() );
+            for ( int i = 0; i < jtsMultiPolygon.getNumGeometries(); i++ ) {
+                members.add( (Polygon) createFromJTS( jtsMultiPolygon.getGeometryN( i ) ) );
+            }
+            geom = new DefaultMultiPolygon( id, crs, pm, members );
+        } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.GeometryCollection ) {
+            com.vividsolutions.jts.geom.GeometryCollection jtsGeometryCollection = (com.vividsolutions.jts.geom.GeometryCollection) jtsGeom;
+            List<Geometry> members = new ArrayList<Geometry>( jtsGeometryCollection.getNumGeometries() );
+            for ( int i = 0; i < jtsGeometryCollection.getNumGeometries(); i++ ) {
+                members.add( createFromJTS( jtsGeometryCollection.getGeometryN( i ) ) );
+            }
+            geom = new DefaultMultiGeometry( id, crs, pm, members );
+        } else {
+            throw new RuntimeException( "Internal error. Encountered unhandled JTS geometry type '"
+                                        + jtsGeom.getClass().getName() + "'." );
+        }
+        return geom;
+    }
+
+    private Points getAsPoints( CoordinateSequence seq ) {
+        return new JTSPoints( seq );
     }
 }
