@@ -84,7 +84,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Tests that check the correct parsing of GML 3.1.1 geometry elements (elements substitutable for
+ * Tests that check the correct decoding of GML 3.1.1 geometry elements (elements substitutable for
  * <code>gml:_Geometry</code> and <code>gml:Envelope</code>).
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>

@@ -260,7 +260,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
      * geometry by JTS spatial analysis methods.
      * 
      * @param jtsGeom
-     * @return geoemtry with precision model and CRS information that are identical to the ones of this geometry
+     * @return geometry with precision model and CRS information that are identical to the ones of this geometry, or null if the given geometry is an empty collection
      */
     @SuppressWarnings("unchecked")
     protected AbstractDefaultGeometry createFromJTS( com.vividsolutions.jts.geom.Geometry jtsGeom ) {
@@ -287,32 +287,40 @@ public abstract class AbstractDefaultGeometry implements Geometry {
             geom = new DefaultPolygon( null, crs, pm, exteriorRing, interiorRings );
         } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.MultiPoint ) {
             com.vividsolutions.jts.geom.MultiPoint jtsMultiPoint = (com.vividsolutions.jts.geom.MultiPoint) jtsGeom;
-            List<Point> members = new ArrayList<Point>( jtsMultiPoint.getNumGeometries() );
-            for ( int i = 0; i < jtsMultiPoint.getNumGeometries(); i++ ) {
-                members.add( (Point) createFromJTS( jtsMultiPoint.getGeometryN( i ) ) );
+            if ( jtsMultiPoint.getNumGeometries() > 0 ) {
+                List<Point> members = new ArrayList<Point>( jtsMultiPoint.getNumGeometries() );
+                for ( int i = 0; i < jtsMultiPoint.getNumGeometries(); i++ ) {
+                    members.add( (Point) createFromJTS( jtsMultiPoint.getGeometryN( i ) ) );
+                }
+                geom = new DefaultMultiPoint( id, crs, pm, members );
             }
-            geom = new DefaultMultiPoint( id, crs, pm, members );
         } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.MultiLineString ) {
             com.vividsolutions.jts.geom.MultiLineString jtsMultiLineString = (com.vividsolutions.jts.geom.MultiLineString) jtsGeom;
-            List<LineString> members = new ArrayList<LineString>( jtsMultiLineString.getNumGeometries() );
-            for ( int i = 0; i < jtsMultiLineString.getNumGeometries(); i++ ) {
-                members.add( (LineString) createFromJTS( jtsMultiLineString.getGeometryN( i ) ) );
+            if ( jtsMultiLineString.getNumGeometries() > 0 ) {
+                List<LineString> members = new ArrayList<LineString>( jtsMultiLineString.getNumGeometries() );
+                for ( int i = 0; i < jtsMultiLineString.getNumGeometries(); i++ ) {
+                    members.add( (LineString) createFromJTS( jtsMultiLineString.getGeometryN( i ) ) );
+                }
+                geom = new DefaultMultiLineString( id, crs, pm, members );
             }
-            geom = new DefaultMultiLineString( id, crs, pm, members );
         } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.MultiPolygon ) {
             com.vividsolutions.jts.geom.MultiPolygon jtsMultiPolygon = (com.vividsolutions.jts.geom.MultiPolygon) jtsGeom;
-            List<Polygon> members = new ArrayList<Polygon>( jtsMultiPolygon.getNumGeometries() );
-            for ( int i = 0; i < jtsMultiPolygon.getNumGeometries(); i++ ) {
-                members.add( (Polygon) createFromJTS( jtsMultiPolygon.getGeometryN( i ) ) );
+            if ( jtsMultiPolygon.getNumGeometries() > 0 ) {
+                List<Polygon> members = new ArrayList<Polygon>( jtsMultiPolygon.getNumGeometries() );
+                for ( int i = 0; i < jtsMultiPolygon.getNumGeometries(); i++ ) {
+                    members.add( (Polygon) createFromJTS( jtsMultiPolygon.getGeometryN( i ) ) );
+                }
+                geom = new DefaultMultiPolygon( id, crs, pm, members );
             }
-            geom = new DefaultMultiPolygon( id, crs, pm, members );
         } else if ( jtsGeom instanceof com.vividsolutions.jts.geom.GeometryCollection ) {
             com.vividsolutions.jts.geom.GeometryCollection jtsGeometryCollection = (com.vividsolutions.jts.geom.GeometryCollection) jtsGeom;
-            List<Geometry> members = new ArrayList<Geometry>( jtsGeometryCollection.getNumGeometries() );
-            for ( int i = 0; i < jtsGeometryCollection.getNumGeometries(); i++ ) {
-                members.add( createFromJTS( jtsGeometryCollection.getGeometryN( i ) ) );
+            if ( jtsGeometryCollection.getNumGeometries() > 0 ) {
+                List<Geometry> members = new ArrayList<Geometry>( jtsGeometryCollection.getNumGeometries() );
+                for ( int i = 0; i < jtsGeometryCollection.getNumGeometries(); i++ ) {
+                    members.add( createFromJTS( jtsGeometryCollection.getGeometryN( i ) ) );
+                }
+                geom = new DefaultMultiGeometry( id, crs, pm, members );
             }
-            geom = new DefaultMultiGeometry( id, crs, pm, members );
         } else {
             throw new RuntimeException( "Internal error. Encountered unhandled JTS geometry type '"
                                         + jtsGeom.getClass().getName() + "'." );

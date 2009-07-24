@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
+import static junit.framework.Assert.assertTrue;
+
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -43,19 +45,31 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import junit.framework.Assert;
+
 import org.deegree.commons.xml.FormattingXMLStreamWriter;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.gml.GML311GeometryEncoder;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.points.PackedPoints;
-import org.deegree.geometry.uom.ValueWithUnit;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Basic test for some spatial analyis operations.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class GeometryAnalysisTest {
 
     private static GeometryFactory geomFactory = new GeometryFactory();
+
+    private static double DELTA = 0.00000001;
 
     private Point p1, p2, p3, p4;
 
@@ -79,21 +93,58 @@ public class GeometryAnalysisTest {
                                            new PackedPoints( new double[] { 10.0, 5.0, 15.0, 9.0, 20.0, 20.0 }, 2 ) );
         l2 = geomFactory.createLineString( "l2", crs, new PackedPoints( new double[] { 15.0, 20.0, 15.0, 6.0 }, 2 ) );
         l3 = geomFactory.createLineString( "l3", crs, new PackedPoints( new double[] { 9.0, 9.0, 12.0, 5.0 }, 2 ) );
-        l4 = geomFactory.createLineString( "l4", crs, new PackedPoints( new double[] { 0,0,1,0 }, 2 ) );
-        
+        l4 = geomFactory.createLineString( "l4", crs, new PackedPoints( new double[] { 0, 0, 1, 0 }, 2 ) );
+
         env1 = geomFactory.createEnvelope( 13.0, 7.0, 21.0, 21.0, crs );
     }
 
     @Test
-    public void testIntersection() throws XMLStreamException, FactoryConfigurationError, IOException {
+    public void testIntersectionPointPoint() {
+        Geometry result = p1.intersection( p1 );
+        assertTrue( p1.equals( result ) );
+    }
+
+    @Test
+    public void testIntersectionPointLineString() {
+        Geometry result = p1.intersection( l1 );
+        Assert.assertNull( result );
+
+        result = p4.intersection( l1 );
+        assertTrue( result instanceof Point );
+        assertTrue( p4.equals( result ) );
+    }
+
+    @Test
+    public void testIntersectionLineStringLineString() {
+        Geometry result = l1.intersection( l1 );
+        Assert.assertTrue( l1.equals( result ) );
+
+        result = l2.intersection( l1 );
+        Assert.assertTrue( result.equals( new DefaultPoint( null, new CRS("EPSG:4326"), null, new double [] {15.0,9.0} ) ) );
         
-        Geometry result = l1.getBuffer( new ValueWithUnit( "1", null ) );
-        result = result.difference( env1 );
-        result = p1.union( result );
-        
-        XMLStreamWriter writer = new FormattingXMLStreamWriter( XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter ("/tmp/out.gml") ));
-        writer.setPrefix( "gml", "http://www.opengis.net/gml");
-        GML311GeometryEncoder encoder = new GML311GeometryEncoder( writer );
-        encoder.export( result );
-        writer.close();
-    }}
+        result = l3.intersection( l4 );
+        Assert.assertNull( result );
+    }
+
+    private void writeResult( Geometry result ) {
+        try {
+            XMLStreamWriter writer = new FormattingXMLStreamWriter(
+                                                                    XMLOutputFactory.newInstance().createXMLStreamWriter(
+                                                                                                                          new FileWriter(
+                                                                                                                                          "/tmp/out.gml" ) ) );
+            writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+            GML311GeometryEncoder encoder = new GML311GeometryEncoder( writer );
+            encoder.export( result );
+            writer.close();
+        } catch ( XMLStreamException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( FactoryConfigurationError e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+}
