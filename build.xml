@@ -16,37 +16,37 @@
    specific language governing permissions and limitations
    under the License.    
 -->
-<project name="commons" default="publish" xmlns:ivy="antlib:org.apache.ivy.ant">
-	<property file="build.properties" />
+<project name="core" default="publish" xmlns:ivy="antlib:org.apache.ivy.ant">
+    <property file="build.properties" />
 
-	<import file="${ivybuild.dir}/ivy-build.xml" optional="false" />
+    <import file="${ivybuild.dir}/ivy-build.xml" optional="false" />
 
-	<echo message="basedir: ${basedir}" />
+    <echo message="basedir: ${basedir}" />
 
-	<!-- Support the ant-contrib tasks. -->
-	<taskdef resource="net/sf/antcontrib/antlib.xml">
-		<classpath>
-			<pathelement location="${basedir}/lib/ant-contrib/ant-contrib-1.0b3.jar" />
-		</classpath>
-	</taskdef>
+    <!-- Support the ant-contrib tasks. -->
+    <taskdef resource="net/sf/antcontrib/antlib.xml">
+        <classpath>
+            <pathelement location="${basedir}/lib/ant-contrib/ant-contrib-1.0b3.jar" />
+        </classpath>
+    </taskdef>
 
-	<target name="bind" depends="resolve">
-		<!-- Support jaxb tasks -->
-		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
-			<classpath refid="build.path" />
-		</taskdef>
-		<property name="schema.file" value="commons.xsd" />
-		<property name="schema.name" value="commons" />
+    <target name="bind" depends="resolve">
+        <!-- Support jaxb tasks -->
+        <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+            <classpath refid="build.path" />
+        </taskdef>
+        <property name="schema.file" value="commons.xsd" />
+        <property name="schema.name" value="commons" />
 
-		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
-		<property name="src.output.dir" value="${src.dir}/org/deegree/${schema.name}/configuration" />
+        <property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
+        <property name="src.output.dir" value="${src.dir}/org/deegree/${schema.name}/configuration" />
 
-		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
-			<produces dir="${src.output.dir}" includes="**/*.java" />
-		</xjc>
-	</target>
+        <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
+            <produces dir="${src.output.dir}" includes="**/*.java" />
+        </xjc>
+    </target>
 
-	<target name="bind-commons-configuration" depends="bind, publish" description="Bind the commons configuration files and publish the result." />
+    <target name="bind-commons-configuration" depends="bind, publish" description="Bind the commons configuration files and publish the result." />
 
     <target name="bind-ft-definition" depends="resolve" description="Bind featuretype_definition.xsd">
         <!-- Support jaxb tasks -->
@@ -62,49 +62,86 @@
             <depends dir="${schema.dir}" includes="**/*.xsd" />
             <produces dir="${src.output.dir}" includes="**/*.java" />
         </xjc>
-    </target>	
-	
-	<target name="bind-ds" depends="resolve">
-		<!-- Support jaxb tasks -->
-		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
-			<classpath refid="build.path" />
-		</taskdef>
-		<property name="schema.file" value="all_datasources.xsd" />
-		<property name="schema.name" value="datasource" />
-		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
-		<property name="src.output.dir" value="${src.dir}/org/deegree/commons/${schema.name}/configuration" />
+    </target>
 
-		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
-			<depends dir="${schema.dir}" includes="**/*.xsd" />
-			<produces dir="${src.output.dir}" includes="**/*.java" />
-		</xjc>
-	</target>
+    <target name="bind-ds" depends="resolve">
+        <!-- Support jaxb tasks -->
+        <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+            <classpath refid="build.path" />
+        </taskdef>
+        <property name="schema.file" value="all_datasources.xsd" />
+        <property name="schema.name" value="datasource" />
+        <property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
+        <property name="src.output.dir" value="${src.dir}/org/deegree/commons/${schema.name}/configuration" />
 
-	<target name="bind-datasource-configuration" depends="bind-ds, publish" description="Bind the dataaccess configuration files and publish the result." />
+        <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
+            <depends dir="${schema.dir}" includes="**/*.xsd" />
+            <produces dir="${src.output.dir}" includes="**/*.java" />
+        </xjc>
+    </target>
 
-	<target name="create-tables" description="run SQL scripts that create tables for the database backend">
-		<sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="jdbc:derby:src/META-INF/deegreeCRS" userid="" password="">
-			<classpath>
-				<pathelement location="lib/derby/derby-10.4.2.0.jar" />
-			</classpath>
-			<transaction src="scripts/database/1.Transformations.SQL" />
-			<transaction src="scripts/database/2.Datums.SQL" />
-			<transaction src="scripts/database/3.Projections.SQL" />
-			<transaction src="scripts/database/4.CoordinateSystems.SQL" />
-			<transaction src="scripts/database/5.Identifiables.SQL" />
-		</sql>
-	</target>
+    <target name="bind-datasource-configuration" depends="bind-ds, publish" description="Bind the dataaccess configuration files and publish the result." />
 
-	<target name="drop-tables" description="run SQL script that drops all tables in the database backend">
-		<sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="jdbc:derby:src/META-INF/deegreeCRS" userid="" password="">
-			<classpath>
-				<pathelement location="lib/derby/derby-10.4.2.0.jar" />
-			</classpath>
-			<transaction src="scripts/database/0.drop-all-in-order.SQL" />
-		</sql>
-	</target>
-    
-    
+    <target name="create-crs-db" description="run SQL scripts that create tables for the database backend">
+        <sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="${crs.derby.url}" userid="" password="" >
+            <classpath>
+                <pathelement location="lib/derby/derby-10.4.2.0.jar" />
+            </classpath>
+            <transaction src="scripts/database/1.Transformations.SQL" />
+            <transaction src="scripts/database/2.Datums.SQL" />
+            <transaction src="scripts/database/3.Projections.SQL" />
+            <transaction src="scripts/database/4.CoordinateSystems.SQL" />
+            <transaction src="scripts/database/5.Identifiables.SQL" />
+        </sql>
+    </target>
+
+    <target name="drop-crs-db">
+        <!--run SQL script that drops all tables in the database backend-->
+        <sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="${crs.derby.url}" userid="" password="" >
+            <classpath>
+                <pathelement location="lib/derby/derby-10.4.2.0.jar" />
+            </classpath>
+            <transaction src="scripts/database/0.drop-all-in-order.SQL" />
+        </sql>
+    </target>
+
+    <target name="fill-crs-db-from-xml" depends="publish-local-all" description="->fill the fill the created db ATTENTION, you will need to drop and create the current db for this to work.">
+        <java  classname="org.deegree.crs.configuration.CRSConfiguration" fork="true" maxmemory="512M" >
+            <classpath>
+                <path refid="build.path"/>
+                <pathelement location="${classes.dir}"/>
+            </classpath>
+            <arg line="-inFormat deegree -outFormat database -inFile ${crs.xml.config}" />
+            <env key="CRS_DB_URL" value="${crs.derby.url}" />
+        </java>
+    </target>
+
+    <target name="insert-crs-into-db-from-xml-configuration" depends="publish-local-all" description="->insert a crs defined in the deegree-crs-configuration.xml into the db.">
+        <fail unless="crs.id" message="you should supply a crs.id parameter to this ant target (ant insert-crs-into-db-from-xml-configuration -Dcrs.id=your_newly_inserted_id)"/>
+        <java  classname="org.deegree.crs.configuration.deegree.db.CRSDBExporter" fork="true" maxmemory="512M" >
+            <classpath>
+                <path refid="build.path"/>
+                <pathelement location="${classes.dir}"/>
+            </classpath>
+            <arg line="${wkt.file}" />
+            <env key="CRS_DB_URL" value="${crs.derby.url}" />
+        </java>
+    </target>
+
+    <target name="insert-crs-into-db-from-wkt-file" depends="publish-local-all" description="->insert a crs defined in a wkt file into the db.">
+        <fail unless="wkt.file" message="you should supply a wkt.file parameter to this ant target (ant insert-crs-into-db-from-wkt-file -Dwkt.file=your_file)"/>
+        <java  classname="org.deegree.crs.configuration.deegree.db.CRSDBExporter" fork="true" maxmemory="512M" >
+            <classpath>
+                <path refid="build.path"/>
+                <pathelement location="${classes.dir}"/>
+            </classpath>
+            <arg line="${wkt.file}" />
+            <env key="CRS_DB_URL" value="${crs.derby.url}" />
+        </java>
+    </target>
+
+
+
     <target name="hudson-build" depends="publish-nightly,javadoc">
         <echo message="A nightly build has been created"/>
     </target>
