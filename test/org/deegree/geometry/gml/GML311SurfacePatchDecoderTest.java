@@ -1,0 +1,148 @@
+//$HeadURL$
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2009 by:
+   Department of Geography, University of Bonn
+ and
+   lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+----------------------------------------------------------------------------*/
+package org.deegree.geometry.gml;
+
+import java.io.IOException;
+
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLStreamException;
+
+import junit.framework.Assert;
+
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.CRS;
+import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.gml.GML311GeometryDecoder;
+import org.deegree.geometry.gml.GML311SurfacePatchDecoder;
+import org.deegree.geometry.primitive.surfacepatches.Cone;
+import org.deegree.geometry.primitive.surfacepatches.Cylinder;
+import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
+import org.deegree.geometry.primitive.surfacepatches.Rectangle;
+import org.deegree.geometry.primitive.surfacepatches.Sphere;
+import org.deegree.geometry.primitive.surfacepatches.Triangle;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * Tests that check the correct parsing of GML 3.1.1 surface patches, i.e. of elements that are substitutable for
+ * <code>gml:_SurfacePatch</code>.
+ *
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author:$
+ *
+ * @version $Revision:$, $Date:$
+ */
+public class GML311SurfacePatchDecoderTest {
+
+    private GeometryFactory geomFac;
+
+    @Before
+    public void setUp()
+                            throws Exception {
+        geomFac = new GeometryFactory();
+    }
+
+    @Test
+    public void parsePolygonPatch()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
+        XMLStreamReaderWrapper parser = getParser( "PolygonPatch.gml" );
+        PolygonPatch patch = (PolygonPatch) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
+        Assert.assertEquals( 2.0, patch.getExteriorRing().getStartPoint().getX() );
+        Assert.assertEquals( 0.0, patch.getExteriorRing().getStartPoint().getY() );
+        Assert.assertEquals( 2.0, patch.getExteriorRing().getEndPoint().getX() );
+        Assert.assertEquals( 0.0, patch.getExteriorRing().getEndPoint().getY() );
+        Assert.assertEquals( 2, patch.getInteriorRings().size() );
+    }
+
+    @Test
+    public void parseTriangle()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
+        XMLStreamReaderWrapper parser = getParser( "Triangle.gml" );
+        Triangle patch = (Triangle) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
+        Assert.assertEquals( 4, patch.getExteriorRing().getControlPoints().size() );
+    }
+
+    @Test
+    public void parseRectangle()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
+                            UnknownCRSException {
+        XMLStreamReaderWrapper parser = getParser( "Rectangle.gml" );
+        Rectangle patch = (Rectangle) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
+        Assert.assertEquals( 5, patch.getExteriorRing().getControlPoints().size() );
+    }
+
+    @Test
+    public void parseCone() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+        XMLStreamReaderWrapper parser = getParser( "Cone.gml" );
+        Cone patch = (Cone) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326") );
+        Assert.assertEquals( 3, patch.getNumColumns() );
+        Assert.assertEquals( 2, patch.getNumRows() );
+    }
+
+    @Test
+    public void parseCylinder() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+        XMLStreamReaderWrapper parser = getParser( "Cylinder.gml" );
+        Cylinder patch = (Cylinder) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326") );
+        Assert.assertEquals( 3, patch.getNumColumns() );
+        Assert.assertEquals( 2, patch.getNumRows() );
+    }
+
+    @Test
+    public void parseSphere() throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException, UnknownCRSException {
+        XMLStreamReaderWrapper parser = getParser( "Sphere.gml" );
+        Sphere patch = (Sphere) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326") );
+        Assert.assertEquals( 3, patch.getNumColumns() );
+        Assert.assertEquals( 2, patch.getNumRows() );
+    }
+
+    private XMLStreamReaderWrapper getParser( String fileName )
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(
+                                                                       GML311SurfacePatchDecoderTest.class.getResource( "testdata/patches/"
+                                                                                                                       + fileName ) );
+        xmlReader.nextTag();
+        return xmlReader;
+    }
+
+    private GML311SurfacePatchDecoder getPatchParser() {
+        GeometryFactory geomFac = new GeometryFactory();
+        return new GML311SurfacePatchDecoder( new GML311GeometryDecoder(), geomFac );
+    }
+}

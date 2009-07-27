@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:ds="http://www.deegree.org/datasource" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:cm="http://www.deegree.org/commons"
+  targetNamespace="http://www.deegree.org/datasource" elementFormDefault="qualified">
+  <include schemaLocation="./constrained_datasource.xsd" />
+  <element name="AbstractRasterDataSource" abstract="true" substitutionGroup="ds:AbstractGeospatialDataSource">
+    <annotation>
+      <documentation>
+        The abstract datasource can be referenced if a service needs the possibility to use a raster datasource, may it be file or fileset based
+      </documentation>
+    </annotation>
+  </element>
+
+  <element name="RasterFile" type="ds:RasterFileType" substitutionGroup="ds:AbstractFile">
+    <annotation>
+      <documentation>
+        A rasterfile is an instance of a RasterFileType which adds a possibility to define the type of the raster image, e.g. jpg, geotiff etc.
+      </documentation>
+    </annotation>
+  </element>
+
+  <!-- ====================================================
+    Defining Raster datasources
+    ======================================================= -->
+  <complexType name="RasterFileDataSourceType" abstract="true">
+    <annotation>
+      <documentation>A raster file datasource can only use raster files (georeferenced, typed rasterfiles) from the file system.</documentation>
+    </annotation>
+    <complexContent>
+      <extension base="ds:AbstractGeospatialDataSourceType">
+        <choice>
+          <element ref="ds:RasterFile" />
+          <element ref="ds:RasterDirectory" />
+        </choice>
+      </extension>
+    </complexContent>
+  </complexType>
+
+  <element name="RasterDataSource" substitutionGroup="ds:AbstractRasterDataSource">
+    <annotation>
+      <documentation>A raster datasource must define a crs in which the rasterfile(s) is/are defined.</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="ds:RasterFileDataSourceType">
+          <attribute name="crs" type="string" use="optional" default="EPSG:4326" />
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <element name="MultiResolutionDataSource" substitutionGroup="ds:AbstractRasterDataSource">
+    <annotation>
+      <documentation>A multi resolution datasource wraps RasterDatasources and marks the resolution it is used for.</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="ds:AbstractGeospatialDataSourceType">
+          <sequence>
+            <element name="Resolution" maxOccurs="unbounded">
+              <complexType>
+                <sequence>
+                  <element ref="ds:AbstractGeospatialDataSource" />
+                </sequence>
+                <attribute name="res" type="double"/>
+              </complexType>
+            </element>
+          </sequence>
+          <attribute name="crs" type="string" use="optional" default="EPSG:4326" />
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+
+  <!-- =====================================================
+    Defining raster file access.
+    =========================================================-->
+  <complexType name="RasterFileType">
+    <annotation>
+      <documentation>Define a file to be of a certain raster type.</documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="ds:FileType">
+        <attribute name="fileType" default="jpg" />
+      </extension>
+    </simpleContent>
+  </complexType>
+
+  <element name="RasterDirectory" type="ds:RasterFileSetType" substitutionGroup="ds:AbstractFileSet" />
+  <annotation>
+    <documentation>Define the files in a directory to be of a certain raster type.</documentation>
+  </annotation>
+  <complexType name="RasterFileSetType">
+    <simpleContent>
+      <extension base="ds:FileSetType">
+        <attribute name="fileType" default="jpg" />
+      </extension>
+    </simpleContent>
+  </complexType>
+</schema>

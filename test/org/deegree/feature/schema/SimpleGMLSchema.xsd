@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:app="http://www.deegree.org/app" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" xmlns:wfs="http://www.opengis.net/wfs" xmlns:ogc="http://www.opengis.net/ogc" targetNamespace="http://www.deegree.org/app" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!-- ====================================================================== -->
+	<xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/base/gml.xsd"/>
+	<!-- ====================================================================== -->
+	<xsd:element name="Country" type="app:CountryType" substitutionGroup="gml:_Feature"/>
+	<!-- ====================================================================== -->
+	<xsd:complexType name="CountryType">
+		<xsd:complexContent>
+			<xsd:extension base="gml:AbstractFeatureType">
+				<xsd:sequence>
+					<!-- simple (string) valued property 'name' -->
+					<xsd:element name="name" type="xsd:string"/>
+					<!-- geometry property 'boundary' -->
+					<xsd:element name="boundary" type="gml:MultiSurfacePropertyType"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+</xsd:schema>

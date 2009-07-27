@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Dictionary xmlns:gml3_2="http://www.opengis.net/gml/3.2"
+	xmlns="http://www.opengis.net/gml/3.2" xmlns:gmd="http://www.isotc211.org/2005/gmd"
+	xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:epsg="urn:x-ogp:spec:schema-xsd:EPSG:0.1:dataset"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:rim="urn:oasis:names:tc:ebxml-regrep:xsd:rim:3.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd"
+	gml3_2:id="_1">
+	<description>Example GML Dictionary of some coordinate reference
+		systems and components. </description>
+	<gml3_2:identifier codeSpace="whatever">An identifier for the dictionary</gml3_2:identifier>
+	<name>CRS Dictionary</name>
+
+	<dictionaryEntry>
+		<ProjectedCRS gml3_2:id="epsg-crs-31467">
+			<identifier codeSpace="OGP">urn:ogc:def:crs:EPSG::31467</identifier>
+			<name>DHDN / 3-degree Gauss-Kruger zone 3</name>
+			<remarks>Zone width 3 degrees.</remarks>
+
+			<domainOfValidity xlink:href="urn:ogc:def:area:EPSG::1625" />
+			<scope>Large and medium scale topographic mapping and
+				engineering survey, cadastral survey.</scope>
+			<conversion xlink:href="urn:ogc:def:coordinateOperation:EPSG::16263" />
+			<baseGeodeticCRS xlink:href="urn:ogc:def:crs:EPSG::4314" />
+			<cartesianCS xlink:href="urn:ogc:def:cs:EPSG::4530" />
+		</ProjectedCRS>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<CartesianCS gml3_2:id="epsg-cs-4530">
+			<identifier codeSpace="OGP">urn:ogc:def:cs:EPSG::4530</identifier>
+			<name>Cartesian 2D CS. Axes: northing, easting (X,Y).
+				Orientations: north, east. UoM: m.</name>
+			<remarks>Used in projected and engineering coordinate reference
+				systems.</remarks>
+			<axis>
+				<CoordinateSystemAxis gml3_2:id="epsg-axis-48"
+					uom="urn:ogc:def:uom:EPSG::9001">
+
+					<descriptionReference xlink:href="urn:ogc:def:axis-name:EPSG::9907" />
+					<identifier codeSpace="OGP">urn:ogc:def:axis:EPSG::48</identifier>
+					<axisAbbrev>X</axisAbbrev>
+					<axisDirection codeSpace="EPSG">north</axisDirection>
+				</CoordinateSystemAxis>
+			</axis>
+			<axis>
+
+				<CoordinateSystemAxis gml3_2:id="epsg-axis-47"
+					uom="urn:ogc:def:uom:EPSG::9001">
+					<descriptionReference xlink:href="urn:ogc:def:axis-name:EPSG::9906" />
+					<identifier codeSpace="OGP">urn:ogc:def:axis:EPSG::47
+					</identifier>
+					<axisAbbrev>Y</axisAbbrev>
+					<axisDirection codeSpace="EPSG">east</axisDirection>
+				</CoordinateSystemAxis>
+			</axis>
+
+		</CartesianCS>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<GeodeticCRS gml3_2:id="epsg-crs-4314">
+
+			<identifier codeSpace="OGP">urn:ogc:def:crs:EPSG::4314</identifier>
+
+			<name>DHDN</name>
+			<remarks>See also RD/83 for Saxony and PD/83 for Thuringen. For
+				national digital cartographic purposes used across all German
+				states.</remarks>
+			<domainOfValidity xlink:href="urn:ogc:def:area:EPSG::2326" />
+			<scope>Geodetic survey.</scope>
+			<ellipsoidalCS xlink:href="urn:ogc:def:cs:EPSG::6422" />
+			<geodeticDatum xlink:href="urn:ogc:def:datum:EPSG::6314" />
+		</GeodeticCRS>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<EllipsoidalCS gml3_2:id="epsg-cs-6422">
+
+			<identifier codeSpace="OGP">urn:ogc:def:cs:EPSG::6422</identifier>
+			<name>Ellipsoidal 2D CS. Axes: latitude, longitude.
+				Orientations: north, east. UoM: degree</name>
+			<remarks>Coordinates referenced to this CS are in degrees.
+				Any degree representation (e.g. DMSH, decimal, etc.) may be used but
+				that used must be declared for the user by the supplier of data.
+				Used
+				in geographic 2D coordinate reference systems.</remarks>
+
+			<axis>
+				<CoordinateSystemAxis gml3_2:id="epsg-axis-106"
+					uom="urn:ogc:def:uom:EPSG::9122">
+					<descriptionReference xlink:href="urn:ogc:def:axis-name:EPSG::9901" />
+					<identifier codeSpace="OGP">urn:ogc:def:axis:EPSG::106</identifier>
+					<axisAbbrev>Lat</axisAbbrev>
+					<axisDirection codeSpace="EPSG">north</axisDirection>
+				</CoordinateSystemAxis>
+
+			</axis>
+			<axis>
+				<CoordinateSystemAxis gml3_2:id="epsg-axis-107"
+					uom="urn:ogc:def:uom:EPSG::9122">
+					<descriptionReference xlink:href="urn:ogc:def:axis-name:EPSG::9902" />
+					<identifier codeSpace="OGP">urn:ogc:def:axis:EPSG::107
+					</identifier>
+					<axisAbbrev>Long</axisAbbrev>
+					<axisDirection codeSpace="EPSG">east</axisDirection>
+
+				</CoordinateSystemAxis>
+			</axis>
+		</EllipsoidalCS>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<Conversion gml3_2:id="epsg-op-16263">
+			<identifier codeSpace="OGP">urn:ogc:def:coordinateOperation:EPSG::16263</identifier>
+
+			<name>3-degree Gauss-Kruger zone 3</name>
+			<remarks>Also found with zone truncated from false easting: see
+				Gauss-Kruger cm 9E (code 16302). Original transformation by
+				Gauss-Kruger formula.</remarks>
+			<domainOfValidity xlink:href="urn:ogc:def:area:EPSG::2301" />
+			<scope>Large scale topographic mapping, cadastral and
+				engineering survey.</scope>
+			<coordinateOperationAccuracy>
+				<gmd:DQ_RelativeInternalPositionalAccuracy>
+					<gmd:result>
+
+						<gmd:DQ_QuantitativeResult>
+							<gmd:valueUnit xlink:href="urn:ogc:def:uom:EPSG::9001" />
+							<gmd:value>
+								<gco:Record>
+									<gco:Decimal>0</gco:Decimal>
+								</gco:Record>
+							</gmd:value>
+						</gmd:DQ_QuantitativeResult>
+
+					</gmd:result>
+				</gmd:DQ_RelativeInternalPositionalAccuracy>
+			</coordinateOperationAccuracy>
+			<method xlink:href="urn:ogc:def:method:EPSG::9807" />
+			<parameterValue>
+				<ParameterValue>
+					<value uom="urn:ogc:def:uom:EPSG::9102">0</value>
+					<operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8801" />
+
+				</ParameterValue>
+			</parameterValue>
+			<parameterValue>
+				<ParameterValue>
+					<value uom="urn:ogc:def:uom:EPSG::9102">9</value>
+					<operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8802" />
+				</ParameterValue>
+			</parameterValue>
+
+			<parameterValue>
+				<ParameterValue>
+					<value uom="urn:ogc:def:uom:EPSG::9201">1</value>
+					<operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8805" />
+				</ParameterValue>
+			</parameterValue>
+			<parameterValue>
+				<ParameterValue>
+
+					<value uom="urn:ogc:def:uom:EPSG::9001">3500000</value>
+					<operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8806" />
+				</ParameterValue>
+			</parameterValue>
+			<parameterValue>
+				<ParameterValue>
+					<value uom="urn:ogc:def:uom:EPSG::9001">0</value>
+					<operationParameter xlink:href="urn:ogc:def:parameter:EPSG::8807" />
+
+				</ParameterValue>
+			</parameterValue>
+		</Conversion>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<GeodeticDatum gml3_2:id="epsg-datum-6314">
+			<metaDataProperty>
+			</metaDataProperty>
+			<identifier codeSpace="OGP">urn:ogc:def:datum:EPSG::6314</identifier>
+
+			<name>Deutsches Hauptdreiecksnetz</name>
+			<remarks />
+			<domainOfValidity xlink:href="urn:ogc:def:area:EPSG::2326" />
+			<scope>Geodetic survey, cadastre, topographic mapping,
+			engineering survey.</scope>
+			<anchorDefinition>Fundamental point: Rauenberg. Latitude:
+			52°27'12.021"N, longitude: 13°22'04.928"E (of Greenwich). This
+			station was destroyed in 1910 and the station at Potsdam substituted
+			as the fundamental point.</anchorDefinition>
+			<primeMeridian xlink:href="urn:ogc:def:meridian:EPSG::8901" />
+			<ellipsoid xlink:href="urn:ogc:def:ellipsoid:EPSG::7004" />
+
+		</GeodeticDatum>
+	</dictionaryEntry>
+
+	<dictionaryEntry>
+		<PrimeMeridian gml3_2:id="epsg-meridian-8901">
+			<metaDataProperty>
+			</metaDataProperty>
+			<identifier codeSpace="OGP">urn:ogc:def:meridian:EPSG::8901</identifier>
+			<name>Greenwich</name>
+			<greenwichLongitude uom="urn:ogc:def:uom:EPSG::9102">0</greenwichLongitude>
+		</PrimeMeridian>
+	</dictionaryEntry>
+</Dictionary>

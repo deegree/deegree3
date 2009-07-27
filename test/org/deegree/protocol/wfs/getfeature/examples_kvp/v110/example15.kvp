@@ -1,0 +1,7 @@
+http://www.someserver.com/wfs.cgi&
+SERVICE=WFS&
+VERSION=1.1.0&
+REQUEST=GetFeature&
+PROPERTYNAME=uk:Town/gml:name,uk:Town/gml:directedNode&
+TYPENAME=uk:Town&
+FEATUREID=t1

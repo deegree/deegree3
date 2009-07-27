@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.deegree.org/app" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/filter.xsd">
+    <ogc:PropertyIsEqualTo>
+      <ogc:PropertyName>app:subject</ogc:PropertyName>
+      <ogc:Literal>economy</ogc:Literal>
+    </ogc:PropertyIsEqualTo>
+</ogc:Filter>

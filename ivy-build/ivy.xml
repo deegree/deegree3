@@ -1,0 +1,67 @@
+<!--
+  # found in the ${basedir}/ivy-build/ivy.properties
+  module.organisation = org.deegree    
+  module.name = ${ant.project.name}
+-->
+<ivy-module version="1.0">
+  <info organisation="${module.organisation}" module="${module.name}" />
+  <configurations>
+    <conf name="${module.name}-build" description="Dependencies needed to build the commons jar" />
+    <conf name="${module.name}-src" description="The source" visibility="private" />
+    <conf name="${module.name}-release" description="Dependencies to build the commons jar and release it's sources" />
+  </configurations>
+
+  <publications defaultconf="${module.name}-build">
+    <artifact name="deegree-${module.name}" type="jar" conf="${module.name}-build" ext="jar" />
+    <!-- artifact name="deegree-${module.name}-src" type="zip" conf="${module.name}-src" ext="zip" /-->
+  </publications>
+  <dependencies defaultconfmapping="${module.name}-build->default">
+    <dependency org="commons" name="commons-httpclient" rev="3.1" transitive="false" conf="${module.name}-build" />
+    <dependency org="commons" name="commons-pool" rev="1.4" transitive="false" conf="${module.name}-build" />
+    <dependency org="commons" name="commons-dbcp" rev="1.2.2" transitive="false" conf="${module.name}-build" />
+    <dependency org="jai" name="jai_core" rev="" transitive="false" conf="${module.name}-build" />
+
+    <!-- Needed for various calculations on points -->
+    <dependency org="java3d" name="vecmath" rev="1.5.2" conf="${module.name}-build" />
+
+    <!--  The geometry package depends on jts -->
+    <dependency org="jts" name="jts" rev="1.10" conf="${module.name}-build" />
+
+    <!-- Needed for the api -->
+    <dependency org="logging" name="slf4j-api" rev="1.5.8" conf="${module.name}-build" />
+    <dependency org="logging" name="slf4j-log4j12" rev="1.5.8" conf="${module.name}-build" />
+    <dependency org="logging" name="jcl-over-slf4j" rev="1.5.8" conf="${module.name}-build" />
+    <dependency org="logging" name="log4j" rev="1.2.15" transitive="false" conf="${module.name}-build" />    
+
+    <!-- mail -->
+    <dependency org="mail" name="mail" rev="1.4" conf="${module.name}-build" />
+
+    <!-- xml framework build dependencies -->
+    <dependency org="xml" name="jaxen" rev="1.1.1" conf="${module.name}-build" />    
+    <dependency org="xml" name="axiom-api" rev="1.2.9-SNAPSHOT" conf="${module.name}-build" />
+    <dependency org="xml" name="axiom-impl" rev="1.2.9-SNAPSHOT" conf="${module.name}-build" />   
+    <dependency org="xerces" name="xercesImpl" rev="2.9.1" conf="${module.name}-build" />
+    
+    <!--  for rendering and working with 3d stuff -->
+    <dependency org="jogl" name="jogl" rev="1.1.2-+" transitive="false" conf="${module.name}-build" />
+    <dependency org="jogl" name="gluegen-rt" rev="1.1.2-+" transitive="false" conf="${module.name}-build" />
+    
+    <dependency org="jaxb" name="jaxb-impl" rev="2.1.10" transitive="false" conf="${module.name}-build" />
+    <dependency org="jaxb" name="jaxb-xjc" rev="2.1.10" transitive="false" conf="${module.name}-build" />
+
+    <!-- derby-->
+    <dependency org="derby" name="derby" rev="10.4.2.0" conf="${module.name}-build" />
+    
+    <dependency org="ehcache" name="ehcache" rev="1.4.1" transitive="false" conf="${module.name}-build" />
+
+    <dependency org="jai" name="jai_codec" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="jai" name="jai_imageio" rev="" transitive="false" conf="${module.name}-build" />
+    
+    <!-- for a postgis runtime -->
+    <dependency org="postgis" name="postgresql" rev="8.3-+" transitive="false" conf="${module.name}-build" />
+    <dependency org="postgis" name="postgis" rev="1.3.3" transitive="false" conf="${module.name}-build" />
+    
+    <!-- local copy of OpenGIS schemas -->
+    <dependency org="opengis-schemas" name="opengis_schemas_2009-05-08" rev="" transitive="false" conf="${module.name}-build" />
+  </dependencies>
+</ivy-module>

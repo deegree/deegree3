@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<!--
+   $HeadURL$
+-->
+</head>
+<body bgcolor="white">
+A Transformation can be defined as an mathematical operation which transforms some values into other values using a
+specified function. In geographic terms this means, that some incoming coordinate in a specified crs, must be
+transformed into a coordinate valid for some other crs. In general two different transformations can be distinguished:
+<ol>
+  <li>The helmert transformation allows coordinate transformation with a datum shift by going to euclidean
+  space and normalizing to WGS84</li>
+  <li>Polynomial transformations use a polynomial to approximate a function which directly transforms coordinates
+  from one crs into another.</li>
+</ol>
+To accommodate these transformation the deegree crs package defines different transformation packages:
+<ul>
+  <li>{@link org.deegree.crs.transformations.coordinate coordinate}, which defines classes for chaining transformations (e.g. transformation steps). The resulting
+  concatenated transformation will define a function which transforms coordinates between two different coordinate
+  systems</li>
+  <li>{@link org.deegree.crs.transformations.helmert helmert}, which transforms coordinates from one euclidean R^3 space into another</li>
+  <li>{@link org.deegree.crs.transformations.polynomial polynomial}, which transforms coordinates direct between two different coordinate system using a polynomial
+  function</li>
+</ul>
+<p>The TransformFactory tries to create the appropriate transformation(s) to maps coordinates from one coordinate
+systems into another.</p>
+@author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+@author last edited by: $Author$ 
+@version $Revision$, $Date: 2007-03-20 10:15:15 +0100 (Di, 20 Mrz
+2007)$
+</body>
+</html>

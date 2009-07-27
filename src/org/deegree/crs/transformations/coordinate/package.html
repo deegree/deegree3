@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<!--
+   $HeadURL$
+-->
+</head>
+<body bgcolor="white">
+Coordinate Transformations allow the chaining of operations to map coordinates of one coordinate systems onto a
+coordinate valid in another coordinate system. They can thus be viewed as a glue which binds all operations necessary to
+define a 'global' transformation.
+<p>The base class of all of these transformations is the CRSTransformation, which supplies abstract methods for the
+actual transformation of coordinates between two different crs. The most important one is the abstract doTransformation
+method. A concrete implementation of the CRSTransformation will handle the incoming coordinates as is appropriate for the
+transformation it defines.</p>
+@author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+@author last edited by: $Author$ 
+@version $Revision$, $Date: 2007-03-20 10:15:15 +0100 (Di, 20 Mrz
+2007)$
+</body>
+</html>

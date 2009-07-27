@@ -1,0 +1,112 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one
+   or more contributor license agreements.  See the NOTICE file
+   distributed with this work for additional information
+   regarding copyright ownership.  The ASF licenses this file
+   to you under the Apache License, Version 2.0 (the
+   "License"); you may not use this file except in compliance
+   with the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing,
+   software distributed under the License is distributed on an
+   "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+   specific language governing permissions and limitations
+   under the License.    
+-->
+<project name="commons" default="publish" xmlns:ivy="antlib:org.apache.ivy.ant">
+	<property file="build.properties" />
+
+	<import file="${ivybuild.dir}/ivy-build.xml" optional="false" />
+
+	<echo message="basedir: ${basedir}" />
+
+	<!-- Support the ant-contrib tasks. -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${basedir}/lib/ant-contrib/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+
+	<target name="bind" depends="resolve">
+		<!-- Support jaxb tasks -->
+		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+			<classpath refid="build.path" />
+		</taskdef>
+		<property name="schema.file" value="commons.xsd" />
+		<property name="schema.name" value="commons" />
+
+		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
+		<property name="src.output.dir" value="${src.dir}/org/deegree/${schema.name}/configuration" />
+
+		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
+			<produces dir="${src.output.dir}" includes="**/*.java" />
+		</xjc>
+	</target>
+
+	<target name="bind-commons-configuration" depends="bind, publish" description="Bind the commons configuration files and publish the result." />
+
+    <target name="bind-ft-definition" depends="resolve" description="Bind featuretype_definition.xsd">
+        <!-- Support jaxb tasks -->
+        <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+            <classpath refid="build.path" />
+        </taskdef>
+        <property name="schema.file" value="featuretype_definition.xsd" />
+        <property name="schema.name" value="feature" />
+        <property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
+        <property name="src.output.dir" value="${src.dir}/org/deegree/feature/types/jaxb" />
+
+        <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
+            <depends dir="${schema.dir}" includes="**/*.xsd" />
+            <produces dir="${src.output.dir}" includes="**/*.java" />
+        </xjc>
+    </target>	
+	
+	<target name="bind-ds" depends="resolve">
+		<!-- Support jaxb tasks -->
+		<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+			<classpath refid="build.path" />
+		</taskdef>
+		<property name="schema.file" value="all_datasources.xsd" />
+		<property name="schema.name" value="datasource" />
+		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
+		<property name="src.output.dir" value="${src.dir}/org/deegree/commons/${schema.name}/configuration" />
+
+		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
+			<depends dir="${schema.dir}" includes="**/*.xsd" />
+			<produces dir="${src.output.dir}" includes="**/*.java" />
+		</xjc>
+	</target>
+
+	<target name="bind-datasource-configuration" depends="bind-ds, publish" description="Bind the dataaccess configuration files and publish the result." />
+
+	<target name="create-tables" description="run SQL scripts that create tables for the database backend">
+		<sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="jdbc:derby:src/META-INF/deegreeCRS" userid="" password="">
+			<classpath>
+				<pathelement location="lib/derby/derby-10.4.2.0.jar" />
+			</classpath>
+			<transaction src="scripts/database/1.Transformations.SQL" />
+			<transaction src="scripts/database/2.Datums.SQL" />
+			<transaction src="scripts/database/3.Projections.SQL" />
+			<transaction src="scripts/database/4.CoordinateSystems.SQL" />
+			<transaction src="scripts/database/5.Identifiables.SQL" />
+		</sql>
+	</target>
+
+	<target name="drop-tables" description="run SQL script that drops all tables in the database backend">
+		<sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="jdbc:derby:src/META-INF/deegreeCRS" userid="" password="">
+			<classpath>
+				<pathelement location="lib/derby/derby-10.4.2.0.jar" />
+			</classpath>
+			<transaction src="scripts/database/0.drop-all-in-order.SQL" />
+		</sql>
+	</target>
+    
+    
+    <target name="hudson-build" depends="publish-nightly,javadoc">
+        <echo message="A nightly build has been created"/>
+    </target>
+
+</project>
