@@ -212,7 +212,7 @@ public class JAXBAdapter {
     public static void main( String[] args )
                             throws JAXBException, MalformedURLException {
 
-        URL url = new URL( "file:/home/schneider/workspace/d3_commons/resources/schema/feature/example.xml" );
+        URL url = new URL( "file:/home/schneider/workspace/d3_core/resources/schema/feature/example.xml" );
         JAXBAdapter adapter = new JAXBAdapter( url );
         ApplicationSchema schema = adapter.getApplicationSchema();
         for ( FeatureType ft : schema.getFeatureTypes() ) {
