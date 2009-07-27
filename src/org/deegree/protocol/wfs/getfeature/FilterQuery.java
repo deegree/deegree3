@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
 import javax.xml.namespace.QName;
@@ -48,10 +48,10 @@ import org.deegree.filter.sort.SortProperty;
  * <p>
  * NOTE: XML-based queries are always of this type. Only for KVP requests it is possible to specify a <code>BBOX</code>
  * or a <code>FEATUREID</code> parameter.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class FilterQuery extends Query {
@@ -60,7 +60,7 @@ public class FilterQuery extends Query {
 
     /**
      * Creates a new {@link FilterQuery} instance.
-     *
+     * 
      * @param handle
      *            client-generated query identifier, may be null
      * @param typeNames
@@ -90,13 +90,26 @@ public class FilterQuery extends Query {
         this.filter = filter;
     }
 
+    /**
+     * Creates a new {@link FilterQuery} instance from the most commonly used parameters.
+     * 
+     * @param typeName
+     *            requested feature type name, must not be null
+     * @param srsName
+     *            WFS-supported SRS that should be used for returned feature geometries, may be null
+     * @param sortBy
+     *            properties whose values should be used to order the set of feature instances that satisfy the query,
+     *            may be null
+     * @param filter
+     *            filter constraint, may be null
+     */
     public FilterQuery( QName typeName, CRS srsName, SortProperty[] sortBy, Filter filter ) {
-        this( null, new TypeName []{new TypeName(typeName, null)}, null, srsName, null,null, null, sortBy, filter );
+        this( null, new TypeName[] { new TypeName( typeName, null ) }, null, srsName, null, null, null, sortBy, filter );
     }
 
     /**
      * Returns the filter constraint.
-     *
+     * 
      * @return the filter constraint, may be null
      */
     public Filter getFilter() {

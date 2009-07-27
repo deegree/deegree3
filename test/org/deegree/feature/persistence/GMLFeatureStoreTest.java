@@ -79,7 +79,7 @@ public class GMLFeatureStoreTest {
 
     private static final String BASE_DIR = "../gml/testdata/features/";
 
-    private GMLFeatureStore store;
+    private GMLMemoryStore store;
 
     @Before
     public void setUp()
@@ -90,7 +90,7 @@ public class GMLFeatureStoreTest {
         ApplicationSchema schema = adapter.getApplicationSchema();
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
-        store = new GMLFeatureStore( docURL, schema );
+        store = new GMLMemoryStore( docURL, schema );
     }
 
     @Test

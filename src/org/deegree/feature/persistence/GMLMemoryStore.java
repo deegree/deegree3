@@ -62,14 +62,14 @@ import org.deegree.geometry.Geometry;
 import org.deegree.protocol.wfs.getfeature.FilterQuery;
 
 /**
- * {@link FeatureStore} that is backed by a GML file which is kept in memory.
+ * {@link FeatureStore} implementation that is backed by a GML file which is kept in memory.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  *
  * @version $Revision: $, $Date: $
  */
-public class GMLFeatureStore implements FeatureStore {
+public class GMLMemoryStore implements FeatureStore {
 
     private final ApplicationSchema schema;
 
@@ -78,7 +78,7 @@ public class GMLFeatureStore implements FeatureStore {
     private final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();
 
     /**
-     * Creates a new {@link GMLFeatureStore} that is backed by the given GML file.
+     * Creates a new {@link GMLMemoryStore} that is backed by the given GML file.
      *
      * @param docURL
      * @param schema
@@ -88,7 +88,7 @@ public class GMLFeatureStore implements FeatureStore {
      * @throws FactoryConfigurationError
      * @throws IOException
      */
-    public GMLFeatureStore( URL docURL, ApplicationSchema schema ) throws XMLStreamException, XMLParsingException,
+    public GMLMemoryStore( URL docURL, ApplicationSchema schema ) throws XMLStreamException, XMLParsingException,
                             UnknownCRSException, FactoryConfigurationError, IOException {
         this.schema = schema;
         GMLIdContext idContext = new GMLIdContext();
@@ -114,7 +114,6 @@ public class GMLFeatureStore implements FeatureStore {
                 ftToFeatures.put( ft, fc2 );
             }
             fc2.add( feature );
-
             idToObject.put( id, feature );
         }
 

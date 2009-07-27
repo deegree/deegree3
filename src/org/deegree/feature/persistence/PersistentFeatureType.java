@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+   Department of Geography, University of Bonn
  and
- lat/lon GmbH
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,52 +32,79 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+----------------------------------------------------------------------------*/
 
 package org.deegree.feature.persistence;
 
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
 import org.deegree.feature.Feature;
-import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.Property;
 import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.geometry.Geometry;
-import org.deegree.protocol.wfs.getfeature.FilterQuery;
-import org.deegree.protocol.wfs.getfeature.Query;
+import org.deegree.feature.types.FeatureType;
+import org.deegree.feature.types.property.PropertyType;
 
 /**
- * Base interface of the {@link Feature} persistence layer, provides access to stored {@link Feature} instances.
+ * A {@link FeatureType} which is associated with a {@link FeatureStore}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface FeatureStore {
+public class PersistentFeatureType implements FeatureType {
+
+    private final FeatureType ft;
+
+    private final FeatureStore store;
+    
+    /**
+     * @param ft
+     * @param store 
+     */
+    public PersistentFeatureType (FeatureType ft, FeatureStore store) {
+        this.ft = ft;
+        this.store = store;
+    }
 
     /**
-     * Returns the application schema that this {@link FeatureStore} serves.
+     * Returns the associated {@link FeatureStore}.
      * 
-     * @return the served application schema
+     * @return the associated <code>FeatureStore</code>
      */
-    public abstract ApplicationSchema getSchema();
+    public FeatureStore getStore () {
+        return store;
+    }
+    
+    @Override
+    public QName getName() {
+        return ft.getName();
+    }
 
-    /**
-     * Performs the given {@link Query} and returns the matching features as a {@link FeatureCollection}.
-     * 
-     * @param query
-     *            query to be performed
-     * @return matching features
-     */
-    public abstract FeatureCollection performQuery( FilterQuery query );
+    @Override
+    public PropertyType getPropertyDeclaration( QName propName ) {
+        return ft.getPropertyDeclaration( propName );
+    }
 
-    /**
-     * Retrieves the stored object with a certain id.
-     * 
-     * TODO check if common interface for returned objects can be used here
-     * 
-     * @param id
-     *            identifier of the object to be retrieved
-     * @return the stored object (either a {@link Feature} or a {@link Geometry})
-     */
-    public abstract Object getObjectById( String id );
+    @Override
+    public List<PropertyType> getPropertyDeclarations() {
+        return ft.getPropertyDeclarations();
+    }
 
+    @Override
+    public ApplicationSchema getSchema() {
+        return ft.getSchema();
+    }
+
+    @Override
+    public boolean isAbstract() {
+        return ft.isAbstract();
+    }
+
+    @Override
+    public Feature newFeature( String fid, List<Property<?>> props ) {
+        return ft.newFeature( fid, props );
+    }
 }
