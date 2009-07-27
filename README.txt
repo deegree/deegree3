@@ -1,19 +1,19 @@
-= deegree 3 commons =
+= deegree 3 core =
 
-This is a list of the dependencies of the deegree 3 commons module.
+This is a list of the dependencies of the deegree 3 core module.
 
 @author last edited by: $Author$
 @version $Revision$, $Date$
 
 == modules ===
 
-This part lists all deegree 3 modules that the commons module depends on:
+This part lists all deegree 3 modules that the core module depends on:
 
-The commons module does not depend on any other deegree module. It is the root of the module hierarchy.
+The core module does not depend on any other deegree module. It is the root of the module hierarchy.
 
 == libraries ==
 
-This part describes all libraries the commons module depends on. If you use one of these
+This part describes all libraries the core module depends on. If you use one of these
 libs please add your package to the "Used for:" list.
 
 NOTE: Necessary libraries that are also used by one of the dependent modules are not listed here again.

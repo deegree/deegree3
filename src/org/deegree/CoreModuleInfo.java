@@ -39,7 +39,7 @@ package org.deegree;
 import org.deegree.commons.version.DeegreeModuleInfo;
 
 /**
- * {@link DeegreeModuleInfo} for the commons module.
+ * {@link DeegreeModuleInfo} for the core module.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
