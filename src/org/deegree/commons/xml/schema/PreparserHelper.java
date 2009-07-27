@@ -197,7 +197,7 @@ public class PreparserHelper {
         config.setParameter( "validate", Boolean.TRUE );
 
         long before = System.currentTimeMillis();
-        XSModel xmlSchema = schemaLoader.loadURI( "file:/home/markus/workspace/d3_commons/test/org/deegree/feature/gml/schema/Philosopher_typesafe.xsd" );
+        XSModel xmlSchema = schemaLoader.loadURI( "file:/home/markus/workspace/d3_core/test/org/deegree/feature/gml/schema/Philosopher_typesafe.xsd" );
         System.out.println( xmlSchema.getNamespaces().item( 0 ) );
         long elapsed = System.currentTimeMillis() - before;
         System.out.println( elapsed + " ms" );
