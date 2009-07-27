@@ -52,7 +52,7 @@
     <!-- derby-->
     <dependency org="derby" name="derby" rev="10.4.2.0" conf="${module.name}-build" />
     
-    <dependency org="ehcache" name="ehcache" rev="1.6.0" transitive="false" conf="${module.name}-build" />
+    <dependency org="ehcache" name="ehcache" rev="1.4.1" transitive="false" conf="${module.name}-build" />
 
     <dependency org="jai" name="jai_codec" rev="" transitive="false" conf="${module.name}-build" />
     <dependency org="jai" name="jai_imageio" rev="" transitive="false" conf="${module.name}-build" />
