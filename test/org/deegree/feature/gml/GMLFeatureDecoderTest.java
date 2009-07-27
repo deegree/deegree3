@@ -271,34 +271,18 @@ public class GMLFeatureDecoderTest {
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, JAXBException {
 
-        URL url = new URL( "file:/home/schneider/workspace/d3_commons/resources/schema/feature/example.xml" );
-        JAXBAdapter adapter = new JAXBAdapter( url );
-        ApplicationSchema schema = adapter.getApplicationSchema();
-
-        // String schemaURL = this.getClass().getResource( "schema/Philosopher_typesafe.xsd" ).toString();
-        // GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
-        // GMLVersion.VERSION_31 );
-        // ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
-
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
         GMLIdContext idContext = new GMLIdContext();
-        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
-        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature(
-                                                                            new XMLStreamReaderWrapper(
-                                                                                                        xmlReader,
-                                                                                                        docURL.toString() ),
-                                                                            null );
-        idContext.resolveXLinks( schema );
-
-        for ( Feature member : fc ) {
-            System.out.println( member );
-        }
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext );
+        XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
+        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+        idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
     }
-
-    @Test
+    
+    @Test (expected=XMLParsingException.class)
     public void testParsingPhilosopherFeatureCollectionNoSchema()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
@@ -312,12 +296,7 @@ public class GMLFeatureDecoderTest {
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext );
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
-        idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
-
-        for ( Feature member : fc ) {
-            System.out.println( member );
-        }
-    }
+    }    
 
     // @Test
     // public void testParsingCityGML()
