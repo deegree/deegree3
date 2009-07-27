@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * </p>
  * <p>
  * Registration of modules is based on the {@link ServiceLoader} mechanism, i.e. it is required that each deegree module
- * is packaged in a jar and with a corresponding <code>META-INF/services/org.deegree.CommonsModuleInfo</code> file.
+ * is packaged in a jar and with a corresponding <code>META-INF/services/org.deegree.CoreModuleInfo</code> file.
  * </p>
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
