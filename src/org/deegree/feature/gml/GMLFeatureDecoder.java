@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,11 +32,13 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.gml;
 
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -61,7 +63,9 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
 import org.deegree.feature.generic.GenericCustomPropertyParser;
+import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.gml.schema.DefaultGMLTypes;
+import org.deegree.feature.gml.schema.GMLVersion;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -81,11 +85,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add documentation here
- *
+ * Decodes GML-encoded features and feature collections.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GMLFeatureDecoder extends XMLAdapter {
@@ -98,9 +102,9 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     private static String GMLNS = CommonNamespaces.GMLNS;
 
-    private final ApplicationSchema schema;
+    private ApplicationSchema schema;
 
-    private final XSModel xsModel;
+    private XSModel xsModel;
 
     private final GeometryFactory geomFac;
 
@@ -112,7 +116,9 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     public GMLFeatureDecoder( ApplicationSchema schema, GMLIdContext idContext ) {
         this.schema = schema;
-        this.xsModel = schema.getXSModel();
+        if (schema != null) {
+            this.xsModel = schema.getXSModel();
+        }
         this.geomFac = new GeometryFactory();
         this.idContext = idContext;
         this.geomParser = new GML311GeometryDecoder( geomFac, idContext );
@@ -121,7 +127,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
     /**
      * Creates a new <code>FeatureGMLAdapter</code> instance instance that is configured for building features with the
      * specified feature types.
-     *
+     * 
      * @param schema
      *            schema
      */
@@ -131,7 +137,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     /**
      * Registers a {@link CustomPropertyDecoder} that is invoked to parse properties of a certain type.
-     *
+     * 
      * @param pt
      * @param parser
      */
@@ -140,9 +146,18 @@ public class GMLFeatureDecoder extends XMLAdapter {
     }
 
     /**
+     * Returns the associated {@link ApplicationSchema} that describes the structure of the feature types.
+     * 
+     * @return the associated {@link ApplicationSchema}
+     */
+    public ApplicationSchema getApplicationSchema() {
+        return schema;
+    }
+
+    /**
      * Returns the object representation for the feature element event that the cursor of the given
      * <code>XMLStreamReader</code> points at.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event of the feature element, afterwards points at
      *            the next event after the <code>END_ELEMENT</code> event of the feature element
@@ -155,6 +170,10 @@ public class GMLFeatureDecoder extends XMLAdapter {
      */
     public Feature parseFeature( XMLStreamReaderWrapper xmlStream, CRS crs )
                             throws XMLStreamException, XMLParsingException, UnknownCRSException {
+
+        if ( schema == null ) {
+            schema = buildApplicationSchema( xmlStream );
+        }
 
         Feature feature = null;
         String fid = parseFeatureId( xmlStream );
@@ -234,6 +253,27 @@ public class GMLFeatureDecoder extends XMLAdapter {
         return feature;
     }
 
+    private ApplicationSchema buildApplicationSchema( XMLStreamReaderWrapper xmlStream ) throws XMLParsingException {
+        String schemaLocation = xmlStream.getAttributeValue( XSINS, "schemaLocation" );
+        if ( schemaLocation == null ) {
+            throw new XMLParsingException( xmlStream, Messages.getMessage( "ERROR_NO_SCHEMA_LOCATION", xmlStream.getSystemId() ) );
+        }
+        String [] tokens = schemaLocation.split( "\\s" );
+        if (tokens.length % 2 != 0){
+            throw new XMLParsingException( xmlStream, Messages.getMessage( "ERROR_SCHEMA_LOCATION_TOKENS_COUNT", xmlStream.getSystemId() ) );
+        }
+        // TODO handle multi-namespace schemas
+        ApplicationSchema schema = null;
+        try {
+            URL source = new URL (new URL (xmlStream.getSystemId()),tokens[1] );
+            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( source.toString(), GMLVersion.GML_31);
+            schema = decoder.extractFeatureTypeSchema();
+        } catch ( Exception e ) {
+            throw new XMLParsingException (xmlStream, "Error parsing application schema: " + e.getMessage());
+        }
+        return schema;
+    }
+
     private boolean isElementSubstitutableForProperty( QName elemName, PropertyType pt ) {
         LOG.debug( "Checking if '" + elemName + "' is a valid substitution for '" + pt.getName() + "'" );
 
@@ -270,7 +310,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     /**
      * Returns the object representation for the given property element.
-     *
+     * 
      * @param xmlStream
      *            cursor must point at the <code>START_ELEMENT</code> event of the property, afterwards points at the
      *            next event after the <code>END_ELEMENT</code> of the property
@@ -278,6 +318,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
      *            property declaration
      * @param crs
      *            default SRS for all a descendant geometry properties
+     * @param occurence
      * @return object representation for the given property element.
      * @throws XMLParsingException
      * @throws XMLStreamException
@@ -368,9 +409,9 @@ public class GMLFeatureDecoder extends XMLAdapter {
      * Returns the feature type with the given name.
      * <p>
      * If no feature type with the given name is defined, an XMLParsingException is thrown.
-     *
+     * 
      * @param xmlStreamReader
-     *
+     * 
      * @param ftName
      *            feature type name to look up
      * @return the feature type with the given name
@@ -381,7 +422,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
                             throws XMLParsingException {
 
         // TODO implement this less hacky
-        if (ftName.equals( DefaultGMLTypes.GML311_FEATURECOLLECTION.getName() )) {
+        if ( ftName.equals( DefaultGMLTypes.GML311_FEATURECOLLECTION.getName() ) ) {
             return DefaultGMLTypes.GML311_FEATURECOLLECTION;
         }
 
@@ -399,7 +440,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
      * <code>XMLStreamReader</code> points to.
      * <p>
      * Looks after 'gml:id' (GML 3) first, if no such attribute is present, the 'fid' (GML 2) attribute is used.
-     *
+     * 
      * @param xmlReader
      *            must point to the <code>START_ELEMENT</code> event of the feature
      * @return the feature id, or "" (empty string) if neither a 'gml:id' nor a 'fid' attribute is present

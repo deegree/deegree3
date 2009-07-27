@@ -68,8 +68,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Exporter class for Features and properties that delegates exporting tasks to the <code>GML311GeometryExporter</code>
- * .
+ * Encodes features and properties into GML. Delegates {@link Geometry} exporting tasks to the
+ * {@link GML311GeometryEncoder}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>

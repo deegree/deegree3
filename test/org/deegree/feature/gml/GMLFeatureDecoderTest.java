@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.gml;
 
 import java.io.IOException;
@@ -76,10 +76,10 @@ import org.junit.Test;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GMLFeatureDecoderTest {
@@ -128,8 +128,7 @@ public class GMLFeatureDecoderTest {
 
         // manually set up a simple "app:Country" feature type
         List<PropertyType> propDecls = new ArrayList<PropertyType>();
-        propDecls.add( new SimplePropertyType( new QName( "name" ), 1, 1,
-                                               PrimitiveType.STRING ) );
+        propDecls.add( new SimplePropertyType( new QName( "name" ), 1, 1, PrimitiveType.STRING ) );
         propDecls.add( new GeometryPropertyType( new QName( "http://www.deegree.org/app", "boundary" ), 1, 1,
                                                  GeometryType.MULTI_SURFACE, CoordinateDimension.DIM_2 ) );
 
@@ -206,8 +205,7 @@ public class GMLFeatureDecoderTest {
                             XMLParsingException, UnknownCRSException {
 
         String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2008/IMRO2008-with-xlinks.xsd";
-        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
-                                                                                        GMLVersion.GML_31 );
+        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL, GMLVersion.GML_31 );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = new URL(
@@ -231,8 +229,7 @@ public class GMLFeatureDecoderTest {
                             XMLParsingException, UnknownCRSException {
 
         String schemaURL = "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/schemas/imro2006/IMRO2006-adapted.xsd";
-        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
-                                                                                        GMLVersion.GML_31 );
+        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL, GMLVersion.GML_31 );
 
         URL docURL = new URL(
                               "file:///home/schneider/workspace/prvlimburg_nlrpp/resources/testplans/NL.IMRO.02020000705-.gml" );
@@ -257,8 +254,7 @@ public class GMLFeatureDecoderTest {
                             XMLParsingException, UnknownCRSException {
 
         String schemaURL = "file:///home/schneider/workspace/lkee_xplanung/resources/schema/XPlanung-Operationen.xsd";
-        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
-                                                                                        GMLVersion.GML_31 );
+        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL, GMLVersion.GML_31 );
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( xsdAdapter.extractFeatureTypeSchema() );
 
         URL docURL = new URL( "file:///home/schneider/workspace/lkee_xplanung/resources/data/BP2070.gml" );
@@ -279,10 +275,10 @@ public class GMLFeatureDecoderTest {
         JAXBAdapter adapter = new JAXBAdapter( url );
         ApplicationSchema schema = adapter.getApplicationSchema();
 
-//        String schemaURL = this.getClass().getResource( "schema/Philosopher_typesafe.xsd" ).toString();
-//        GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
-//                                                                                        GMLVersion.VERSION_31 );
-//        ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
+        // String schemaURL = this.getClass().getResource( "schema/Philosopher_typesafe.xsd" ).toString();
+        // GMLApplicationSchemaXSDAdapter xsdAdapter = new GMLApplicationSchemaXSDAdapter( schemaURL,
+        // GMLVersion.VERSION_31 );
+        // ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
@@ -302,40 +298,61 @@ public class GMLFeatureDecoderTest {
         }
     }
 
-//    @Test
-//    public void testParsingCityGML()
-//                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
-//                            ClassNotFoundException, InstantiationException, IllegalAccessException,
-//                            XMLParsingException, UnknownCRSException {
-//        String schemaURL = "file:///home/schneider/workspace/schemas/citygml/profiles/base/1.0/CityGML.xsd";
-//        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
-//                                                                                        GMLVersion.GML_31 );
-//
-//        URL docURL = new URL( "file:///home/schneider/Desktop/Stadt-Ettenheim-LoD3_edited_v1.0.0.gml" );
-//        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
-//                                                                                         docURL.openStream() );
-//        xmlReader.nextTag();
-//        GMLIdContext idContext = new GMLIdContext();
-//        ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
-//        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
-//        long begin = System.currentTimeMillis();
-//        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature(
-//                                                                            new XMLStreamReaderWrapper(
-//                                                                                                        xmlReader,
-//                                                                                                        docURL.toString() ),
-//                                                                            new CRS( "EPSG:31466" ) );
-//        idContext.resolveXLinks(schema);
-//
-//        long elapsed = System.currentTimeMillis() - begin;
-//        System.out.println( "Parsing: " + elapsed + "[ms]" );
-//
-//        System.out.println( fc.size() );
-//        Feature first = fc.iterator().next();
-//        for ( Property prop : first.getProperties() ) {
-//            System.out.println( prop.getName() + "=" + prop.getValue() );
-//            if ( prop.getValue() instanceof Geometry ) {
-//                System.out.println( ( (Geometry) prop.getValue() ).getCoordinateSystem() );
-//            }
-//        }
-//    }
+    @Test
+    public void testParsingPhilosopherFeatureCollectionNoSchema()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException {
+
+        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection_no_schema.xml" );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.next();
+        GMLIdContext idContext = new GMLIdContext();
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext );
+        XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
+        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+        idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
+
+        for ( Feature member : fc ) {
+            System.out.println( member );
+        }
+    }
+
+    // @Test
+    // public void testParsingCityGML()
+    // throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+    // ClassNotFoundException, InstantiationException, IllegalAccessException,
+    // XMLParsingException, UnknownCRSException {
+    // String schemaURL = "file:///home/schneider/workspace/schemas/citygml/profiles/base/1.0/CityGML.xsd";
+    // ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
+    // GMLVersion.GML_31 );
+    //
+    // URL docURL = new URL( "file:///home/schneider/Desktop/Stadt-Ettenheim-LoD3_edited_v1.0.0.gml" );
+    // XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+    // docURL.openStream() );
+    // xmlReader.nextTag();
+    // GMLIdContext idContext = new GMLIdContext();
+    // ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
+    // GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
+    // long begin = System.currentTimeMillis();
+    // FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature(
+    // new XMLStreamReaderWrapper(
+    // xmlReader,
+    // docURL.toString() ),
+    // new CRS( "EPSG:31466" ) );
+    // idContext.resolveXLinks(schema);
+    //
+    // long elapsed = System.currentTimeMillis() - begin;
+    // System.out.println( "Parsing: " + elapsed + "[ms]" );
+    //
+    // System.out.println( fc.size() );
+    // Feature first = fc.iterator().next();
+    // for ( Property prop : first.getProperties() ) {
+    // System.out.println( prop.getName() + "=" + prop.getValue() );
+    // if ( prop.getValue() instanceof Geometry ) {
+    // System.out.println( ( (Geometry) prop.getValue() ).getCoordinateSystem() );
+    // }
+    // }
+    // }
 }
