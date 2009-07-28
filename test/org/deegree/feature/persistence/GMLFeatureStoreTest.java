@@ -85,7 +85,7 @@ public class GMLFeatureStoreTest {
     public void setUp()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
                             FactoryConfigurationError, IOException, JAXBException {
-        URL url = new URL( "file:/home/schneider/workspace/d3_commons/resources/schema/feature/example.xml" );
+        URL url = new URL( "file:/home/schneider/workspace/d3_core/resources/schema/feature/example.xml" );
         JAXBAdapter adapter = new JAXBAdapter( url );
         ApplicationSchema schema = adapter.getApplicationSchema();
 
