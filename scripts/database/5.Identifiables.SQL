@@ -25,7 +25,9 @@ CREATE TABLE version (
 CREATE TABLE code ( 
 	ref_id INTEGER NOT NULL,
 	code VARCHAR(50) NOT NULL,
-	codespace VARCHAR(50)
+	codespace VARCHAR(50),
+	codeversion VARCHAR(50),
+	original VARCHAR(50)
 )
 ;
 
