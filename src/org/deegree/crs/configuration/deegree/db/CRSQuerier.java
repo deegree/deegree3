@@ -996,9 +996,7 @@ public class CRSQuerier {
 
         ResultSet crsType = conn.prepareStatement(
                                                   "SELECT table_name, id FROM identifiable_lookup, code "
-                                                  + "WHERE id = ref_id AND code = '"
-                                                  + code.getCode() + "' AND codespace = '"
-                                                  + code.getCodeSpace() + "'" ).executeQuery();
+                                                  + "WHERE id = ref_id AND original = '" + code.getOriginal() + "'" ).executeQuery();
         if ( crsType.getString( 1 ).equalsIgnoreCase( "projected_crs" ) )
             return getProjectedCRS( crsType.getInt( 2 ) );
         else if ( crsType.getString( 1 ).equalsIgnoreCase( "geographic_crs" ) )
