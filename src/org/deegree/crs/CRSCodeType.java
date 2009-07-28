@@ -217,7 +217,7 @@ public class CRSCodeType {
     public String getEquivalentString() {
         if ( ! code.equals( "" ) ) {
             if ( !codeVersion.equals( "" ) ) {
-                return codeSpace + codeVersion + code;
+                return codeSpace + ":" + codeVersion + ":" + code;
             }
             return codeSpace + ":" + code;            
         }
