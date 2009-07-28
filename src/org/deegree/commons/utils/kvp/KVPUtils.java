@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils.kvp;
 
 import java.io.BufferedReader;
@@ -47,18 +47,18 @@ import java.util.Map;
 
 /**
  * This class contains convenience methods for working with key-value pair maps (e.g. from OGC KVP requests).
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class KVPUtils {
 
     /**
      * Returns the value of the key. Throws an exception if the kvp map doesn't contain the key.
-     *
+     * 
      * @param param
      *            the key-value map
      * @param key
@@ -138,7 +138,7 @@ public class KVPUtils {
 
     /**
      * Returns the value of the key or the default value if the kvp map doesn't contain the key.
-     *
+     * 
      * @param param
      *            the key-value map
      * @param key
@@ -155,7 +155,7 @@ public class KVPUtils {
 
     /**
      * Return a list with all values for a key. Values are splitted if they contain multiple comma delimited values.
-     *
+     * 
      * @param param
      *            the key-value map
      * @param key
@@ -174,12 +174,12 @@ public class KVPUtils {
 
     /**
      * Returns the specified parameter from a KVP map as a boolean value.
-     *
+     * 
      * @param kvpParams
      *            KVP map
      * @param paramName
      *            name of the parameter
-     *
+     * 
      * @param defaultValue
      *            returned when the specified parameter is not present in the map (=null)
      * @return the specified parameter value as a boolean value
@@ -205,10 +205,38 @@ public class KVPUtils {
     }
 
     /**
+     * Returns the specified parameter from a KVP map as an integer value.
+     * 
+     * @param kvpParams
+     *            KVP map
+     * @param paramName
+     *            name of the parameter
+     * @param defaultValue
+     *            returned when the specified parameter is not present in the map (=null)
+     * @return the specified parameter value as an integer value
+     * @throws InvalidParameterValueException
+     *             if the parameter value does not denote an integer
+     */
+    public static int getInt( Map<String, String> kvpParams, String paramName, int defaultValue )
+                            throws InvalidParameterValueException {
+        int result = defaultValue;
+        String s = kvpParams.get( paramName );
+        if ( s != null ) {
+            try {
+                result = Integer.parseInt( s );
+            } catch ( NumberFormatException e ) {
+                throw new InvalidParameterValueException( "The value of parameter '" + paramName
+                                                          + "' must be an integer, but was '" + s + "'." );
+            }
+        }
+        return result;
+    }
+
+    /**
      * Reads a text file with KVP content into a map.
      * <p>
      * Example contents:
-     *
+     * 
      * <pre>
      * http://www.someserver.com/wfs.cgi?
      * SERVICE=WFS&amp;
@@ -216,20 +244,20 @@ public class KVPUtils {
      * REQUEST=DescribeFeatureType&amp;
      * TYPENAME=TreesA_1M
      * </pre>
-     *
+     * 
      * What this method does:
      * <ul>
-     * <li>Only lines that contain a <code>'='</code> character are taken into account, so for the example the first line is
-     * discarded.</li>
-     * <li>Every line that contains a <code>'='</code> character is taken into account, so the first line of the example is
-     * discarded.</li>
+     * <li>Only lines that contain a <code>'='</code> character are taken into account, so for the example the first
+     * line is discarded.</li>
+     * <li>Every line that contains a <code>'='</code> character is taken into account, so the first line of the example
+     * is discarded.</li>
      * <li>Every line is split around the '=' character, the first part is used as the key, the second part as the
      * value.</li>
      * <li>Keys are uppercased.</li>
-     * <li>Values are URL decoded. </li>
+     * <li>Values are URL decoded.</li>
      * </ul>
      * </p>
-     *
+     * 
      * @param url
      *            url of the text file
      * @return map with the contents of the file, keys are uppercased

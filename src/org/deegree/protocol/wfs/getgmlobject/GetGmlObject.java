@@ -85,7 +85,7 @@ public class GetGmlObject extends AbstractWFSRequest {
      *            attribute, may be null
      */
     public GetGmlObject( Version version, String handle, String requestedId, String outputFormat,
-                         String traverseXlinkDepth, int traverseXlinkExpiry ) {
+                         String traverseXlinkDepth, Integer traverseXlinkExpiry ) {
         super( version, handle );
         this.requestedId = requestedId;
         this.outputFormat = outputFormat;

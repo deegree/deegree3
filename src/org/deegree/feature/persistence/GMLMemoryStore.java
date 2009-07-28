@@ -60,6 +60,7 @@ import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Geometry;
 import org.deegree.protocol.wfs.getfeature.FilterQuery;
+import org.deegree.protocol.wfs.getfeature.Query;
 
 /**
  * {@link FeatureStore} implementation that is backed by a GML file which is kept in memory.
@@ -130,7 +131,7 @@ public class GMLMemoryStore implements FeatureStore {
     }
 
     @Override
-    public FeatureCollection performQuery( FilterQuery query ) {
+    public FeatureCollection performQuery( Query query ) {
 
         if ( query.getTypeNames() == null || query.getTypeNames().length != 1 ) {
             String msg = "Only queries with exactly one type name are supported.";
@@ -145,12 +146,14 @@ public class GMLMemoryStore implements FeatureStore {
         }
 
         FeatureCollection fc = ftToFeatures.get( ft );
-        if ( query.getFilter() != null ) {
+        if (query instanceof FilterQuery) {
+        if ( ((FilterQuery)query).getFilter() != null ) {
             try {
-                fc = fc.getMembers( query.getFilter() );
+                fc = fc.getMembers( ((FilterQuery)query).getFilter() );
             } catch ( FilterEvaluationException e ) {
                 throw new RuntimeException( e.getMessage() );
             }
+        }
         }
 
         return fc;

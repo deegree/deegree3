@@ -139,10 +139,10 @@ public class GetFeature extends AbstractWFSRequest {
     }
 
     /**
-     * Return the number of minutes that the WFS should wait to receive a response to a nested GetGmlObject request.
-     * This is only relevant if a value is specified for the traverseXlinkDepth parameter.
+     * Return the number of minutes that the WFS should wait to receive a response to a nested <code>GetGmlObject</code> request.
+     * This is only relevant if a value is specified for the <code>traverseXlinkDepth</code> parameter.
      *
-     * @return the number of minutes to wait for nested GetGmlObject responses (positive integer) or null (unspecified)
+     * @return the number of minutes to wait for nested <code>GetGmlObject</code> responses (positive integer) or null (unspecified)
      */
     public Integer getTraverseXlinkExpiry() {
         return traverseXlinkExpiry;

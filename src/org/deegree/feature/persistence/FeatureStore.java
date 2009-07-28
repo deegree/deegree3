@@ -40,7 +40,6 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.geometry.Geometry;
-import org.deegree.protocol.wfs.getfeature.FilterQuery;
 import org.deegree.protocol.wfs.getfeature.Query;
 
 /**
@@ -67,7 +66,7 @@ public interface FeatureStore {
      *            query to be performed
      * @return matching features
      */
-    public abstract FeatureCollection performQuery( FilterQuery query );
+    public abstract FeatureCollection performQuery( Query query );
 
     /**
      * Retrieves the stored object with a certain id.
