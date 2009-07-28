@@ -36,12 +36,15 @@
 
 package org.deegree.commons.index;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.deegree.commons.utils.GraphvizDot;
 import org.deegree.commons.utils.Pair;
@@ -60,23 +63,24 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.PositionableMode
  */
 public class QTree<T> extends SpatialIndex<T> {
 
-    private float[] envelope;
-
-    private float halfWidth;
-
-    private float halfHeight;
+    private final float[] envelope;
 
     private QTree<T>[] children;
 
-    private ArrayList<Entry<T>> objects = null;
+    private ArrayList<Entry<T>> leafObjects = null;
+
+    private List<Entry<T>> objectsCoveringEnv = null;
+
+    private final static float SPLIT_CRITERIA_EPSILON = 1E-4f;
 
     private final int numberOfObjects;
 
-    private QTree( int numberOfObjects ) {
+    private QTree( int numberOfObjects, float[] envelope ) {
         if ( numberOfObjects < 1 ) {
             throw new IllegalArgumentException( "The number of objects per leaf may not be smaller than 1." );
         }
         this.numberOfObjects = numberOfObjects;
+        this.envelope = envelope;
     }
 
     /**
@@ -85,14 +89,10 @@ public class QTree<T> extends SpatialIndex<T> {
      *            each node will contain
      */
     public QTree( Envelope validDomain, int numberOfObjects ) {
-        this( numberOfObjects );
+        this( numberOfObjects, createEnvelope( validDomain ) );
         if ( validDomain == null ) {
             throw new IllegalArgumentException( "The envelope must be set." );
         }
-        this.envelope = createEnvelope( validDomain );
-
-        this.halfHeight = this.envelope[1] + ( .5f * (float) validDomain.getWidth() );
-        this.halfWidth = this.envelope[0] + ( .5f * (float) validDomain.getHeight() );
     }
 
     /**
@@ -101,10 +101,21 @@ public class QTree<T> extends SpatialIndex<T> {
      *            each leaf node will contain
      */
     public QTree( float[] envelope, int numberOfObjects ) {
-        this( numberOfObjects );
-        this.envelope = envelope;
-        this.halfHeight = this.envelope[1] + ( ( this.envelope[3] - this.envelope[1] ) * 0.5f );
-        this.halfWidth = this.envelope[0] + ( ( this.envelope[2] - this.envelope[0] ) * 0.5f );
+        this( numberOfObjects, envelope );
+    }
+
+    /**
+     * @return the half of the width added to min x
+     */
+    private final float getHalfWidth() {
+        return ( this.envelope[0] + ( ( this.envelope[2] - this.envelope[0] ) * 0.5f ) );
+    }
+
+    /**
+     * @return the half of the height added to the min y
+     */
+    private final float getHalfHeight() {
+        return ( this.envelope[1] + ( ( this.envelope[3] - this.envelope[1] ) * 0.5f ) );
     }
 
     /**
@@ -115,20 +126,24 @@ public class QTree<T> extends SpatialIndex<T> {
      * @return true if the object was inserted, false otherwise.
      */
     @Override
-    public boolean insert( float[] envelope, T object ) {
-        if ( object != null && intersects( this.envelope, envelope ) ) {
-            Entry<T> obj = new Entry<T>( envelope, object );
-            if ( isLeaf() ) {
-                addObject( obj );
-            } else {
-                List<QTree<T>> treeNodes = getLeafNodes( obj.entryEnv );
-                for ( QTree<T> node : treeNodes ) {
-                    if ( node != null ) {
-                        node.addObject( obj );
+    public boolean insert( Envelope envelope, T object ) {
+
+        if ( object != null ) {
+            float[] env = createEnvelope( envelope );
+            if ( intersects( this.envelope, env ) ) {
+                Entry<T> obj = new Entry<T>( env, object );
+                if ( isLeaf() ) {
+                    addObject( obj );
+                } else {
+                    List<QTree<T>> treeNodes = getObjectNodes( obj.entryEnv );
+                    for ( QTree<T> node : treeNodes ) {
+                        if ( node != null ) {
+                            node.addObject( obj );
+                        }
                     }
                 }
+                return true;
             }
-            return true;
         }
         return false;
     }
@@ -138,6 +153,7 @@ public class QTree<T> extends SpatialIndex<T> {
      *            to remove
      * @return true if the object was inserted, false otherwise.
      */
+    @Override
     public boolean remove( T object ) {
         if ( object != null ) {
             return removeObject( object );
@@ -145,26 +161,65 @@ public class QTree<T> extends SpatialIndex<T> {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return getEnvString()
+               + ": "
+               + ( ( isLeaf() ) ? " is a leaf with " + leafObjects.size() + " leafObjects."
+                               : ( " is a node with: " + ( ( children[0] == null ) ? "" : " ll," )
+                                   + ( ( children[1] == null ) ? "" : " lr," )
+                                   + ( ( children[2] == null ) ? "" : " ul," ) + ( ( children[3] == null ) ? ""
+                                                                                                          : " ur," ) ) );
+
+    }
+
+    /**
+     * @return
+     */
+    private String getEnvString() {
+        StringBuilder sb = new StringBuilder();
+        for ( int i = 0; i < envelope.length; ++i ) {
+            sb.append( envelope[i] );
+            if ( ( i + 1 ) < envelope.length ) {
+                sb.append( ", " );
+            }
+        }
+        return sb.toString();
+    }
+
     /**
      * @param object
      */
     private boolean removeObject( T object ) {
         boolean result = false;
-        if ( isLeaf() ) {
-            if ( objects != null ) {
-                for ( Entry<T> e : objects ) {
-                    if ( e != null && e.entryValue.equals( object ) ) {
-                        result = objects.remove( e );
-                    }
-                }
-                if ( objects.isEmpty() ) {
-                    objects = null;
-                }
+        if ( objectsCoveringEnv != null ) {
+            result = removeFromCovering( object );
+        }
+        // none of the totally covering objects matched the given object, try the subtrees.
+        if ( !result ) {
+            if ( isLeaf() ) {
+                result = removeFromLeaf( object );
+            } else {
+                result = removeFromSubTree( object );
             }
-        } else {
-            List<QTree<T>> leafNodes = getLeafNodes( this.envelope );
+        }
+        return result;
+    }
+
+    /**
+     * remove the given object from the subtree of this node.
+     * 
+     * @param object
+     *            to remove
+     * @return true if the object could be removed from one of the subtrees.
+     */
+    private boolean removeFromSubTree( T object ) {
+        // only usable for not leafs;
+        boolean result = false;
+
+        if ( !isLeaf() ) {
             boolean tR = false;
-            for ( QTree<T> node : leafNodes ) {
+            for ( QTree<T> node : children ) {
                 if ( node != null ) {
                     tR = node.removeObject( object );
                     if ( tR && !result ) {
@@ -176,6 +231,54 @@ public class QTree<T> extends SpatialIndex<T> {
                 merge();
             }
         }
+
+        return result;
+    }
+
+    /**
+     * Try to remove the given object from the set of objects which cover this nodes whole envelope
+     * 
+     * @param object
+     *            to be removed
+     * @return true if the object was in the list of the objects covering this nodes' total area.
+     */
+    private boolean removeFromCovering( T object ) {
+        boolean result = false;
+        if ( objectsCoveringEnv != null ) {
+            Iterator<Entry<T>> it = objectsCoveringEnv.iterator();
+            while ( it.hasNext() && !result ) {
+                Entry<T> e = it.next();
+                if ( e != null && e.entryValue.equals( object ) ) {
+                    result = objectsCoveringEnv.remove( e );
+                }
+            }
+            if ( objectsCoveringEnv.isEmpty() ) {
+                objectsCoveringEnv = null;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Try to remove the given object from this nodes (which is a leaf) objects.
+     * 
+     * @param object
+     *            to be removed
+     * @return true if the given object was in this leaf and it could be removed.
+     */
+    private boolean removeFromLeaf( T object ) {
+        boolean result = false;
+        if ( leafObjects != null ) {
+            for ( int i = 0; i < leafObjects.size() && !result; ++i ) {
+                Entry<T> e = leafObjects.get( i );
+                if ( e != null && e.entryValue.equals( object ) ) {
+                    result = leafObjects.remove( e );
+                }
+            }
+            if ( leafObjects.isEmpty() ) {
+                leafObjects = null;
+            }
+        }
         return result;
     }
 
@@ -184,42 +287,116 @@ public class QTree<T> extends SpatialIndex<T> {
      */
     private void merge() {
         if ( !isLeaf() ) {
-            int size = 0;
+            Set<Entry<T>> mergableObjects = validateChildrenSize();
+            if ( mergableObjects != null ) {
+                // calculate the size of the set, after removing duplicates
+                ArrayList<Entry<T>> objects = new ArrayList<Entry<T>>( mergableObjects );
+                int size = mergableObjects.size() - duplicateEnvelopes( objects );
+                if ( size <= numberOfObjects ) {
+                    // we can merge the children.
+                    leafObjects = objects;
+                    // leafObjects.addAll( mergableObjects );
+                    for ( QTree<T> n : children ) {
+                        if ( n != null ) {
+                            n.objectsCoveringEnv = null;
+                            n.leafObjects = null;
+                            n = null;
+                        }
+                    }
+                    children = null;
+                }
+            }
+        }
+    }
+
+    private Set<Entry<T>> validateChildrenSize() {
+        boolean possibleMerge = true;
+        Set<Entry<T>> childrenInLeaf = new HashSet<Entry<T>>();
+        if ( !isLeaf() ) {
             for ( int i = 0; i < children.length; ++i ) {
                 QTree<T> n = children[i];
                 if ( n != null ) {
                     if ( n.isLeaf() ) {
-                        // the child is a leaf but does not contain any objects, no need to keep it in memory.
-                        if ( n.objects == null ) {
+                        // if one of the other children wasn't a leaf, don't bother getting the objects
+                        if ( possibleMerge ) {
+                            n.getObjects( n.envelope, childrenInLeaf );
+                        }
+                        // the child is a leaf but does not contain any leafObjects, no need to keep it in memory.
+                        if ( n.leafObjects == null && n.objectsCoveringEnv == null ) {
                             children[i] = null;
                         }
-                        size += n.size();
                     } else {
                         // no merging, but check other children if they can be deleted.
-                        size = numberOfObjects + 1;
+                        possibleMerge = false;
                     }
                 }
-            }
-            if ( size <= numberOfObjects ) {
-                // we can merge the children.
-                objects = new ArrayList<Entry<T>>( size );
-                for ( QTree<T> n : children ) {
-                    if ( n != null && n.objects != null ) {
-                        objects.addAll( n.objects );
-                        n.objects = null;
-                        n = null;
-                    }
-                }
-                children = null;
             }
         }
+        return possibleMerge ? childrenInLeaf : null;
+    }
+
+    /**
+     * @return the number of duplicate envelopes in the leaf objects which should be substracted from the size();
+     */
+    private final int duplicateEnvelopes( List<Entry<T>> objectList ) {
+
+        List<List<T>> equalEnvelope = new ArrayList<List<T>>( objectList.size() );
+        for ( int i = 0; i < objectList.size(); ++i ) {
+            Entry<T> firstE = objectList.get( i );
+            float[] first = firstE.entryEnv;
+            boolean checked = false;
+            for ( int listI = 0; listI < equalEnvelope.size() && !checked; ++listI ) {
+                List<T> l = equalEnvelope.get( listI );
+                if ( l != null ) {
+                    checked = l.contains( firstE.entryValue );
+                }
+            }
+            if ( !checked ) {
+                LinkedList<T> checkList = new LinkedList<T>();
+
+                for ( int j = i + 1; j < objectList.size(); ++j ) {
+                    float[] second = objectList.get( j ).entryEnv;
+                    double minD = calcDist( first, second, 0 );
+                    double maxD = calcDist( first, second, 2 );
+
+                    // if min and max have distance 0, then just count as one because they are equals, this might
+                    // prevent a stack overflow
+                    if ( ( minD < SPLIT_CRITERIA_EPSILON && maxD < SPLIT_CRITERIA_EPSILON ) ) {
+                        checkList.add( objectList.get( j ).entryValue );
+                    }
+                }
+                if ( !checkList.isEmpty() ) {
+                    checkList.add( firstE.entryValue );
+                    equalEnvelope.add( checkList );
+                }
+            }
+        }
+        int result = 0;
+        for ( List<T> l : equalEnvelope ) {
+            if ( l != null && !l.isEmpty() ) {
+                result += ( l.size() - 1 );
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * @return the number of all objects in this node, e.g. the leafObjects and the objects covering the entire
+     *         envelope.
+     */
+    private final int totalSize() {
+        return size()
+               + ( ( objectsCoveringEnv == null ) ? 0
+                                                 : ( objectsCoveringEnv.size() - duplicateEnvelopes( objectsCoveringEnv ) ) );
+
     }
 
     /**
      * @return
      */
-    private int size() {
-        return ( objects == null ) ? 0 : objects.size();
+    private final int size() {
+        return ( leafObjects == null ) ? 0 : ( leafObjects.size() - duplicateEnvelopes( leafObjects ) );
     }
 
     /**
@@ -227,14 +404,50 @@ public class QTree<T> extends SpatialIndex<T> {
      * @param position
      */
     private void addObject( Entry<T> object ) {
-        if ( objects == null ) {
-            objects = new ArrayList<Entry<T>>( numberOfObjects );
-        }
-        objects.add( object );
-        if ( objects.size() > numberOfObjects ) {
-            split();
+        if ( objectCoversEnvelope( object.entryEnv ) ) {
+            if ( objectsCoveringEnv == null ) {
+                objectsCoveringEnv = new LinkedList<Entry<T>>();
+            }
+            objectsCoveringEnv.add( object );
+        } else {
+            if ( leafObjects == null ) {
+                leafObjects = new ArrayList<Entry<T>>( numberOfObjects );
+            }
+            leafObjects.add( object );
+            if ( splitCriteria() ) {
+                split();
+            }
         }
 
+    }
+
+    /**
+     * @return true if the number of objects in the leaf without the duplicate envelopes are larger than the allowed
+     *         number of objects in a leaf
+     */
+    private boolean splitCriteria() {
+        return ( size() > numberOfObjects );
+    }
+
+    /**
+     * Distance between the two 2d points starting at index (0 == min, 2 == max )
+     * 
+     * @param first
+     * @param second
+     * @return
+     */
+    private final static double calcDist( float[] first, float[] second, int index ) {
+        return Math.sqrt( ( ( first[index] - second[index] ) * ( first[index] - second[index] ) )
+                          + ( ( first[index + 1] - second[index + 1] ) * ( first[index + 1] - second[index + 1] ) ) );
+    }
+
+    /**
+     * @param object
+     * @return true if the object covers this entire quad node
+     */
+    private final boolean objectCoversEnvelope( float[] entryEnv ) {
+        return ( entryEnv[0] <= this.envelope[0] && entryEnv[1] <= this.envelope[1] )
+               && ( entryEnv[2] >= this.envelope[2] && entryEnv[3] >= this.envelope[3] );
     }
 
     /**
@@ -244,36 +457,42 @@ public class QTree<T> extends SpatialIndex<T> {
     @SuppressWarnings("unchecked")
     private void split() {
         children = new QTree[4];
-        for ( Entry<T> e : objects ) {
-            List<QTree<T>> treeNodes = getLeafNodes( e.entryEnv );
+        for ( Entry<T> e : leafObjects ) {
+            List<QTree<T>> treeNodes = getObjectNodes( e.entryEnv );
             for ( QTree<T> node : treeNodes ) {
                 node.addObject( e );
             }
         }
-        objects = null;
+        leafObjects = null;
     }
 
     /**
      * @param entryEnv
      * @return
      */
-    private List<QTree<T>> getLeafNodes( float[] entryEnv ) {
+    private List<QTree<T>> getObjectNodes( float[] entryEnv ) {
         List<QTree<T>> list = new LinkedList<QTree<T>>();
-        if ( !isLeaf() ) {
-            int[] indizes = getIndizes( entryEnv );
-            for ( int index : indizes ) {
-                QTree<T> child = children[index];
-                // No children in that area create a new one
-                if ( child == null ) {
-                    child = createNode( index );
-                    children[index] = child;
-                    list.add( child );
-                }
-                // traverse tree
-                list.addAll( child.getLeafNodes( entryEnv ) );
-            }
-        } else {
+        // if the object covers the whole of this node
+        if ( objectCoversEnvelope( entryEnv ) ) {
             list.add( this );
+        } else {
+            if ( !isLeaf() ) {
+                int[] indizes = getIndizes( entryEnv );
+                for ( int index : indizes ) {
+                    QTree<T> child = children[index];
+                    // No children in that area create a new one
+                    if ( child == null ) {
+                        child = createNode( index );
+                        children[index] = child;
+                        list.add( child );
+                    } else {
+                        // traverse tree
+                        list.addAll( child.getObjectNodes( entryEnv ) );
+                    }
+                }
+            } else {
+                list.add( this );
+            }
         }
         return list;
     }
@@ -281,7 +500,7 @@ public class QTree<T> extends SpatialIndex<T> {
     /**
      * @return true if this is a leaf node
      */
-    private boolean isLeaf() {
+    private final boolean isLeaf() {
         return children == null;
     }
 
@@ -293,32 +512,32 @@ public class QTree<T> extends SpatialIndex<T> {
         float[] newEnv = Arrays.copyOf( this.envelope, this.envelope.length );
         switch ( index ) {
         case 0:// ll
-            newEnv[2] = halfWidth;
-            newEnv[3] = halfHeight;
+            newEnv[2] = getHalfWidth();
+            newEnv[3] = getHalfHeight();
             break;
         case 1:// lr
-            newEnv[0] = halfWidth;
-            newEnv[3] = halfHeight;
+            newEnv[0] = getHalfWidth();
+            newEnv[3] = getHalfHeight();
             break;
         case 2:// ul
-            newEnv[1] = halfHeight;
-            newEnv[2] = halfWidth;
+            newEnv[1] = getHalfHeight();
+            newEnv[2] = getHalfWidth();
             break;
         case 3:// ur
-            newEnv[0] = halfWidth;
-            newEnv[1] = halfHeight;
+            newEnv[0] = getHalfWidth();
+            newEnv[1] = getHalfHeight();
             break;
         }
         return new QTree<T>( newEnv, numberOfObjects );
     }
 
     /**
-     * Calculate the indizes of the sons touching this envelope
+     * Calculate the indices of the sons touching this envelope
      * 
      * @param envelope
-     * @return the indizes of the sons touching the envelope
+     * @return the indices of the sons touching the envelope
      */
-    private int[] getIndizes( float[] envelope ) {
+    private final int[] getIndizes( float[] envelope ) {
         int min = getIndex( envelope, 0 );
         int max = getIndex( envelope, 2 );
         return analyzeIndizes( envelope, min, max );
@@ -327,10 +546,12 @@ public class QTree<T> extends SpatialIndex<T> {
     /**
      * @param envelope
      * @param min
+     *            index of the intersecting node the min point
      * @param max
-     * @return the indizes of the son the given envelope touches.
+     *            index of the intersecting node the max point
+     * @return the indices of the sons with which the given envelope intersects.
      */
-    private int[] analyzeIndizes( float[] envelope, int min, int max ) {
+    private final static int[] analyzeIndizes( float[] envelope, int min, int max ) {
         if ( min == max ) {
             return new int[] { min };
         }
@@ -349,28 +570,22 @@ public class QTree<T> extends SpatialIndex<T> {
     /**
      * @return
      */
-    private int getIndex( float[] position, int start ) {
-        return ( ( ( position[start] < halfWidth ) ? 0 : 1 ) + ( ( position[start + 1] < halfHeight ) ? 0 : 2 ) );
+    private final int getIndex( float[] position, int start ) {
+        return ( ( ( position[start] < getHalfWidth() ) ? 0 : 1 ) + ( ( position[start + 1] < getHalfHeight() ) ? 0 : 2 ) );
     }
 
-    // /**
-    // *
-    // * @param env
-    // * to intersect with
-    // * @return true if this node intersects with the given bbox
-    // */
-    // private boolean intersects( float[] env ) {
-    // return ( this.envelope[0] >= env[0] && this.envelope[0] <= env[2] )
-    // || ( this.envelope[2] <= env[2] && this.envelope[2] >= env[0] )
-    // || ( this.envelope[1] >= env[1] && this.envelope[1] <= env[3] )
-    // || ( this.envelope[3] <= env[3] && this.envelope[3] >= env[1] );
-    // }
-
-    private void getObjects( float[] envelope, List<Entry<T>> result ) {
+    private final void getObjects( float[] envelope, Set<Entry<T>> result ) {
         if ( intersects( this.envelope, envelope ) ) {
+            if ( objectsCoveringEnv != null ) {
+                result.addAll( objectsCoveringEnv );
+            }
             if ( isLeaf() ) {
-                if ( objects != null ) {
-                    result.addAll( objects );
+                if ( leafObjects != null ) {
+                    for ( Entry<T> e : leafObjects ) {
+                        if ( intersects( envelope, e.entryEnv ) && !result.contains( e.entryValue ) ) {
+                            result.add( e );
+                        }
+                    }
                 }
             } else {
                 for ( QTree<T> n : children ) {
@@ -382,9 +597,9 @@ public class QTree<T> extends SpatialIndex<T> {
         }
     }
 
-    private List<T> getEntryListAsResult( List<Entry<T>> aList ) {
-        List<T> result = new ArrayList<T>( aList.size() );
-        for ( Entry<T> e : aList ) {
+    private final List<T> getEntrySetAsResult( Set<Entry<T>> set ) {
+        List<T> result = new ArrayList<T>( set.size() );
+        for ( Entry<T> e : set ) {
             result.add( e.entryValue );
         }
         return result;
@@ -392,23 +607,23 @@ public class QTree<T> extends SpatialIndex<T> {
 
     /**
      * @param env
-     *            to get the objects for.
-     * @return the objects which intersect with this node and or it's children, or the empty list.
+     *            to get the leafObjects for.
+     * @return the leafObjects which intersect with this node and or it's children, or the empty list.
      */
     @Override
     public List<T> query( Envelope env ) {
-        List<Entry<T>> r = new LinkedList<Entry<T>>();
+        Set<Entry<T>> r = new HashSet<Entry<T>>();
         getObjects( createEnvelope( env ), r );
-        return getEntryListAsResult( r );
+        return getEntrySetAsResult( r );
     }
 
     /**
-     * @return the objects which intersect with this node and or it's children, or the empty list.
+     * @return the leafObjects which intersect with this node and or it's children, or the empty list.
      */
     public List<T> getObjects() {
-        List<Entry<T>> r = new LinkedList<Entry<T>>();
+        Set<Entry<T>> r = new HashSet<Entry<T>>();
         getObjects( envelope, r );
-        return getEntryListAsResult( r );
+        return getEntrySetAsResult( r );
     }
 
     /**
@@ -416,9 +631,9 @@ public class QTree<T> extends SpatialIndex<T> {
      */
     public void clear() {
         if ( isLeaf() ) {
-            if ( objects != null ) {
-                objects.clear();
-                objects = null;
+            if ( leafObjects != null ) {
+                leafObjects.clear();
+                leafObjects = null;
             }
         } else {
             for ( QTree<T> n : children ) {
@@ -432,14 +647,14 @@ public class QTree<T> extends SpatialIndex<T> {
 
     /**
      * 
-     * The <code>Positionable</code> class wraps an object with its envelope
+     * The <code>Entry</code> class wraps an object with its envelope
      * 
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
      * @author last edited by: $Author$
      * @version $Revision$, $Date$
      * 
      */
-    private class Entry<T> {
+    private final class Entry<T> {
         final float[] entryEnv;
 
         final T entryValue;
@@ -452,6 +667,34 @@ public class QTree<T> extends SpatialIndex<T> {
             this.entryValue = object;
         }
 
+        @Override
+        public boolean equals( Object other ) {
+            if ( other != null && other instanceof Entry ) {
+                final Entry<T> that = (Entry<T>) other;
+                return testEnv( that.entryEnv ) && this.entryValue.equals( that.entryValue );
+            }
+            return false;
+        }
+
+        private boolean testEnv( float[] otherEnv ) {
+            if ( otherEnv == null ) {
+                return entryEnv == null;
+            }
+            boolean result = entryEnv != null;
+            if ( result ) {
+                result = ( entryEnv.length == otherEnv.length );
+                for ( int i = 0; i < entryEnv.length && result; ++i ) {
+                    result = ( Math.abs( entryEnv[i] - otherEnv[i] ) < 1E-11 );
+                }
+            }
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "{min(" + entryEnv[0] + "," + entryEnv[1] + "), max(" + entryEnv[2] + "," + entryEnv[3]
+                   + "), value:" + entryValue + "}";
+        }
     }
 
     /**
@@ -461,7 +704,7 @@ public class QTree<T> extends SpatialIndex<T> {
      * @param sonID
      * @throws IOException
      */
-    public void outputAsDot( BufferedWriter out, String id, int level, int sonID )
+    public void outputAsDot( Writer out, String id, int level, int sonID )
                             throws IOException {
         if ( isLeaf() ) {
             GraphvizDot.writeVertex( id, getDotVertex( level, sonID, true ), out );
@@ -505,17 +748,53 @@ public class QTree<T> extends SpatialIndex<T> {
             break;
         }
         if ( isLeaf ) {
-            label += "(" + size() + ")";
+            StringBuilder sb = new StringBuilder();
+            StringBuilder s = getCoveringAsDot();
+            if ( s != null ) {
+                sb.append( s );
+            }
+            if ( leafObjects != null ) {
+                int i = 0;
+                sb.append( "L{" );
+                for ( Entry<T> t : leafObjects ) {
+                    sb.append( t.entryValue ).append( ( ++i < leafObjects.size() ? "," : "" ) );
+                }
+                sb.append( "}" );
+            }
+            label += "(" + ( totalSize() ) + ":[" + sb.toString() + "])";
             attList.add( GraphvizDot.getShapeDef( "box" ) );
+        } else {
+            if ( objectsCoveringEnv != null ) {
+                StringBuilder sb = new StringBuilder();
+                StringBuilder s = getCoveringAsDot();
+                if ( s != null ) {
+                    sb.append( s );
+                }
+                label += "(" + size() + ":[" + sb.toString() + "])";
+            }
         }
         attList.add( GraphvizDot.getLabelDef( label ) );
         attList.add( GraphvizDot.getFillColorDef( color ) );
         return attList;
     }
 
+    private StringBuilder getCoveringAsDot() {
+        StringBuilder sb = null;
+        if ( objectsCoveringEnv != null ) {
+            sb = new StringBuilder();
+            int i = 0;
+            sb.append( "C{" );
+            for ( Entry<T> t : objectsCoveringEnv ) {
+                sb.append( t.entryValue ).append( ( ++i < objectsCoveringEnv.size() ? "," : "" ) );
+            }
+            sb.append( "}" );
+        }
+        return sb;
+    }
+
     @Override
-    public void buildIndex( List<Pair<float[], T>> listOfObjects ) {
-        for ( Pair<float[], T> p : listOfObjects ) {
+    public void insertBulk( List<Pair<Envelope, T>> listOfObjects ) {
+        for ( Pair<Envelope, T> p : listOfObjects ) {
             if ( p != null ) {
                 insert( p.first, p.second );
             }

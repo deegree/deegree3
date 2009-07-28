@@ -38,13 +38,14 @@
 
 package org.deegree.commons.index;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.Envelope;
 
 /**
- * The <code>SpatialIndex</code> defines basic methods for the adding and querying of a spatial index.
+ * The <code>SpatialIndex</code> defines basic methods for the adding, removing and querying of a spatial index.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -63,7 +64,7 @@ public abstract class SpatialIndex<T> {
      *            to intersect
      * @return the list of intersecting objects.
      */
-    public abstract List<T> query( Envelope envelope );
+    public abstract Collection<T> query( Envelope envelope );
 
     /**
      * Create the spatial index from the given list of envelope, objects tuples.
@@ -71,7 +72,12 @@ public abstract class SpatialIndex<T> {
      * @param listOfObjects
      *            to be inserted into the spatial index.
      */
-    public abstract void buildIndex( List<Pair<float[], T>> listOfObjects );
+    public abstract void insertBulk( List<Pair<Envelope, T>> listOfObjects );
+
+    /**
+     * Removes all objects from this spatial index.
+     */
+    public abstract void clear();
 
     /**
      * Add the given object to the spatial index using the given boundingbox
@@ -81,13 +87,41 @@ public abstract class SpatialIndex<T> {
      * @param object
      *            to insert
      * @return true if the object could be inserted.
+     * @throws UnsupportedOperationException
+     *             if the implementation does not support inserting single objects
      */
-    public abstract boolean insert( float[] envelope, T object );
+    public abstract boolean insert( Envelope envelope, T object );
 
-    private static final boolean contained( final float[] box, final float x, final float y ) {
+    /**
+     * Removes the given object from this spatial index, using the objects' equals method.
+     * 
+     * @param object
+     *            to be removed
+     * @return true if the removal was successful, false otherwise
+     * @throws UnsupportedOperationException
+     *             if the implementation does not support removal of objects
+     */
+    public abstract boolean remove( T object );
+
+    /**
+     * Tests whether one point lies in the given bbox
+     * 
+     * @param box
+     * @param x
+     * @param y
+     * @return
+     */
+    private static final boolean contains( final float[] box, final float x, final float y ) {
         return box[0] <= x && x <= box[2] && box[1] <= y && y <= box[3];
     }
 
+    /**
+     * tests whether a bbox is overlapping another without actually being inside it.
+     * 
+     * @param box1
+     * @param box2
+     * @return
+     */
     private static final boolean noEdgeOverlap( final float[] box1, final float[] box2 ) {
         return box1[0] <= box2[0] && box2[2] <= box1[2] && box2[1] <= box1[1] && box1[3] <= box2[3];
     }
@@ -102,10 +136,10 @@ public abstract class SpatialIndex<T> {
      * @return true if the given boxes intersects with eachother.
      */
     protected boolean intersects( final float[] box1, final float[] box2 ) {
-        return contained( box2, box1[0], box1[3] ) || contained( box2, box1[0], box1[1] )
-               || contained( box2, box1[2], box1[3] ) || contained( box2, box1[2], box1[1] )
-               || contained( box1, box2[0], box2[3] ) || contained( box1, box2[0], box2[1] )
-               || contained( box1, box2[2], box2[3] ) || contained( box1, box2[2], box2[1] )
+        return contains( box2, box1[0], box1[3] ) || contains( box2, box1[0], box1[1] )
+               || contains( box2, box1[2], box1[3] ) || contains( box2, box1[2], box1[1] )
+               || contains( box1, box2[0], box2[3] ) || contains( box1, box2[0], box2[1] )
+               || contains( box1, box2[2], box2[3] ) || contains( box1, box2[2], box2[1] )
                || noEdgeOverlap( box1, box2 ) || noEdgeOverlap( box2, box1 );
 
     }
@@ -116,7 +150,7 @@ public abstract class SpatialIndex<T> {
      * @param validDomain
      * @return a float[] representation of the given envelope
      */
-    protected float[] createEnvelope( Envelope validDomain ) {
+    protected static final float[] createEnvelope( Envelope validDomain ) {
         int dim = validDomain.getCoordinateDimension();
         double[] env = validDomain.getMin().getAsArray();
 

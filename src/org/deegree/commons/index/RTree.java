@@ -160,6 +160,21 @@ public class RTree<T> extends SpatialIndex<T> {
         return new LinkedList<T>();
     }
 
+    private TreeMap<Float, LinkedList<Pair<float[], ?>>> sortEnvelopes( Collection<Pair<Envelope, ?>> rects, int byIdx ) {
+        TreeMap<Float, LinkedList<Pair<float[], ?>>> map = new TreeMap<Float, LinkedList<Pair<float[], ?>>>();
+
+        for ( Pair<Envelope, ?> p : rects ) {
+            float[] env = createEnvelope( p.first );
+            float d = env[byIdx] + ( env[byIdx + 2] - env[byIdx] ) / 2;
+            if ( !map.containsKey( d ) ) {
+                map.put( d, new LinkedList<Pair<float[], ?>>() );
+            }
+            map.get( d ).add( new Pair<float[], Object>( env, p.second ) );
+        }
+
+        return map;
+    }
+
     private TreeMap<Float, LinkedList<Pair<float[], ?>>> sort( Collection<Pair<float[], ?>> rects, int byIdx ) {
         TreeMap<Float, LinkedList<Pair<float[], ?>>> map = new TreeMap<Float, LinkedList<Pair<float[], ?>>>();
 
@@ -202,18 +217,85 @@ public class RTree<T> extends SpatialIndex<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void buildIndex( List<Pair<float[], T>> listOfObjects ) {
+    public void insertBulk( List<Pair<Envelope, T>> listOfObjects ) {
         // rb: dirty cast because the ? will not accept T... m*rf*king generics.
         root = buildTree( (List) listOfObjects );
     }
 
-    @Override
-    public boolean insert( float[] envelope, T object ) {
-        throw new UnsupportedOperationException( "Inserting of a single object should be implemented" );
+    @SuppressWarnings("unchecked")
+    private Entry<T>[] buildTree( List<Pair<Envelope, ?>> rects ) {
+        if ( rects.size() <= maxNumberOfObjects ) {
+            Entry<T>[] node = new Entry[rects.size()];
+            for ( int i = 0; i < rects.size(); ++i ) {
+                node[i] = new Entry<T>();
+                node[i].bbox = createEnvelope( rects.get( i ).first );
+                if ( rects.get( i ).second instanceof Entry[] ) {
+                    node[i].next = (Entry[]) rects.get( i ).second;
+                } else {
+                    node[i].entryValue = (T) rects.get( i ).second;
+                }
+            }
+            return node;
+        }
+
+        LinkedList<LinkedList<Pair<float[], ?>>> slices = slice( sortEnvelopes( rects, 0 ), maxNumberOfObjects
+                                                                                            * maxNumberOfObjects );
+        ArrayList<Pair<float[], ?>> newRects = new ArrayList<Pair<float[], ?>>();
+
+        for ( LinkedList<Pair<float[], ?>> slice : slices ) {
+            TreeMap<Float, LinkedList<Pair<float[], ?>>> map = sort( slice, 1 );
+
+            Iterator<LinkedList<Pair<float[], ?>>> iter = map.values().iterator();
+            LinkedList<Pair<float[], ?>> list = iter.next();
+            int idx = 0;
+            while ( idx < slice.size() ) {
+                Entry<T>[] node = new Entry[min( maxNumberOfObjects, slice.size() - idx )];
+                float[] bbox = null;
+                for ( int i = 0; i < maxNumberOfObjects; ++i, ++idx ) {
+                    if ( idx < slice.size() ) {
+                        if ( list.isEmpty() ) {
+                            list = iter.next();
+                        }
+                        Pair<float[], ?> p = list.poll();
+                        node[i] = new Entry<T>();
+                        node[i].bbox = p.first;
+                        if ( p.second instanceof Entry[] ) {
+                            node[i].next = (Entry[]) p.second;
+                        } else {
+                            node[i].entryValue = (T) p.second;
+                        }
+                        if ( bbox == null ) {
+                            bbox = new float[] { p.first[0], p.first[1], p.first[2], p.first[3] };
+                        } else {
+                            for ( int k = 0; k < 2; ++k ) {
+                                if ( bbox[k] > p.first[k] ) {
+                                    bbox[k] = p.first[k];
+                                }
+                            }
+                            for ( int k = 2; k < 4; ++k ) {
+                                if ( bbox[k] < p.first[k] ) {
+                                    bbox[k] = p.first[k];
+                                }
+                            }
+                        }
+                    }
+                }
+                newRects.add( new Pair<float[], Entry[]>( bbox, node ) );
+            }
+        }
+
+        return buildFromFloat( newRects );
     }
 
+    /**
+     * RB: this method is a duplicate from buildTree, but used only with float arrays. (Sorry no time to refactor
+     * buildtree).
+     * 
+     * @param rects
+     * @return
+     */
     @SuppressWarnings("unchecked")
-    private Entry<T>[] buildTree( List<Pair<float[], ?>> rects ) {
+    private Entry<T>[] buildFromFloat( List<Pair<float[], ?>> rects ) {
         if ( rects.size() <= maxNumberOfObjects ) {
             Entry<T>[] node = new Entry[rects.size()];
             for ( int i = 0; i < rects.size(); ++i ) {
@@ -274,7 +356,7 @@ public class RTree<T> extends SpatialIndex<T> {
             }
         }
 
-        return buildTree( newRects );
+        return buildFromFloat( newRects );
     }
 
     /**
@@ -301,6 +383,21 @@ public class RTree<T> extends SpatialIndex<T> {
         T entryValue;
 
         Entry<T>[] next;
+    }
+
+    @Override
+    public void clear() {
+        this.root = null;
+    }
+
+    @Override
+    public boolean remove( T object ) {
+        throw new UnsupportedOperationException( "Deletion of a single object should be implemented" );
+    }
+
+    @Override
+    public boolean insert( Envelope envelope, T object ) {
+        throw new UnsupportedOperationException( "Inserting of a single object should be implemented" );
     }
 
 }
