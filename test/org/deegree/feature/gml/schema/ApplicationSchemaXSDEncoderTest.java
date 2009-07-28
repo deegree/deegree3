@@ -67,7 +67,7 @@ public class ApplicationSchemaXSDEncoderTest {
     @Before
     public void setUp()
                             throws Exception {
-        URL url = new URL( "file:/home/schneider/workspace/d3_commons/resources/schema/feature/example.xml" );
+        URL url = new URL( "file:/home/schneider/workspace/d3_core/resources/schema/feature/example.xml" );
         JAXBAdapter adapter = new JAXBAdapter( url );
         schema = adapter.getApplicationSchema();
     }
