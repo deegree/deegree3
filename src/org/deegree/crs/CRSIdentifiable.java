@@ -56,8 +56,6 @@ public class CRSIdentifiable {
 
     private CRSCodeType[] codes;
 
-    private EPSGCode epsgCode;
-
     private String[] versions;
 
     private String[] names;
@@ -94,14 +92,6 @@ public class CRSIdentifiable {
             throw new IllegalArgumentException( "An identifiable object must at least have one identifier." );
         }
         this.codes = codes;
-        for ( CRSCodeType codeType : codes ) {
-            //  TODO remove this hack -- not needed if EPSGCode would be used directly
-            if ("EPSG".equals(codeType.getCodeSpace() )) {
-                epsgCode = new EPSGCode(Integer.parseInt( codeType.getCode()));
-                break;
-            }
-        }
-
         this.names = names;
         this.versions = versions;
         this.descriptions = descriptions;
@@ -156,15 +146,6 @@ public class CRSIdentifiable {
      */
     public final CRSCodeType getCode() {
         return codes[0];
-    }
-
-    /**
-     * Returns the {@link EPSGCode} of this {@link CRSIdentifiable}, if it exist.
-     *
-     * @return the EPSG code, or null if it does not exist
-     */
-    public final EPSGCode getEPSGCode () {
-        return epsgCode;
     }
 
     /**
