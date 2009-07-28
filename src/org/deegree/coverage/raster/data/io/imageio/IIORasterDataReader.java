@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.coverage.io.imageio;
+package org.deegree.coverage.raster.data.io.imageio;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
