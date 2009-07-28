@@ -905,11 +905,11 @@ public class CRSQuerier {
         List<CRSCodeType> listCodes = new ArrayList<CRSCodeType>();
 
         try {
-            PreparedStatement ps = conn.prepareStatement( "SELECT code, codespace "
+            PreparedStatement ps = conn.prepareStatement( "SELECT original "
                                                           + "FROM crs_lookup JOIN code ON crs_lookup.id = code.ref_id" );
             ResultSet rs = ps.executeQuery();
             while ( rs.next() )
-                listCodes.add( new CRSCodeType( rs.getString( 1 ), rs.getString( 2 ) ) );
+                listCodes.add( new CRSCodeType( rs.getString( 1 ) ) );
         } catch ( SQLException e ) {
             LOG.error( e.getMessage() );
         }
