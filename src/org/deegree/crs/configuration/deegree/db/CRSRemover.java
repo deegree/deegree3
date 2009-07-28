@@ -64,8 +64,6 @@ import org.deegree.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.util.LocaleServiceProviderPool.LocalizedObjectGetter;
-
 /**
  * The <code>CRSRemover</code> class deletes a CRS from the database. The provided CRS if first
  * identified with the one in the database via its code (every CRS needs to have a code). Identifiable
