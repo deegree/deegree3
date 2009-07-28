@@ -67,6 +67,16 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
     private Point centroid;
 
     /**
+     * Creates a new <code>DefaultEnvelope</code> instance with no id, crs and precisionmodel.
+     * 
+     * @param min
+     * @param max
+     */
+    public DefaultEnvelope( Point min, Point max ) {
+        this( null, null, null, min, max );
+    }
+
+    /**
      * Creates a new <code>DefaultEnvelope</code> instance from the given parameters.
      * 
      * @param id
