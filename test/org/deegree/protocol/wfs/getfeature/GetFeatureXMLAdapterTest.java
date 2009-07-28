@@ -303,14 +303,14 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         
         assertEquals( logOp.getSubType(), AND );
         And andOp = (And) logOp;
-        Operator op1 = andOp.getParameter( 1 );
+        Operator op1 = andOp.getParameter( 0 );
         
         assertEquals( op1.getType(), LOGICAL );
         LogicalOperator logOp1 = (LogicalOperator) op1;
         assertEquals( logOp1.getSubType(), AND );
         And andOp1 = (And) logOp1;
         
-        Operator op11 = andOp1.getParameter( 1 );
+        Operator op11 = andOp1.getParameter( 0 );
         assertEquals( op11.getType(), COMPARISON );
         BinaryComparisonOperator compOp11 = (BinaryComparisonOperator) op11;
         assertTrue( compOp11 instanceof PropertyIsGreaterThanOrEqualTo );
@@ -319,7 +319,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ( (PropertyIsGreaterThanOrEqualTo) op11).getParameter2() instanceof Literal );
         assertEquals( ( (Literal) ( (PropertyIsGreaterThanOrEqualTo) op11).getParameter2() ).getValue(), "10000" );
         
-        Operator op12 = andOp1.getParameter( 2 );
+        Operator op12 = andOp1.getParameter( 1 );
         assertEquals( op12.getType(), COMPARISON );
         BinaryComparisonOperator compOp12 = (BinaryComparisonOperator) op12;
         assertTrue( compOp12 instanceof PropertyIsLessThanOrEqualTo );
@@ -328,14 +328,14 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ( (PropertyIsLessThanOrEqualTo) op12).getParameter2() instanceof Literal );
         assertEquals( ( (Literal) ( (PropertyIsLessThanOrEqualTo) op12).getParameter2() ).getValue(), "10999" );
                 
-        Operator op2 = andOp.getParameter( 2 );
+        Operator op2 = andOp.getParameter( 1 );
         
         assertEquals( op2.getType(), LOGICAL );
         LogicalOperator logOp2 = (LogicalOperator) op2;
         assertEquals( logOp2.getSubType(), AND );
         And andOp2 = (And) logOp2;
         
-        Operator op21 = andOp2.getParameter( 1 );
+        Operator op21 = andOp2.getParameter( 0 );
         assertEquals( op21.getType(), COMPARISON );
         BinaryComparisonOperator compOp21 = (BinaryComparisonOperator) op21;
         assertTrue( compOp21 instanceof PropertyIsEqualTo );
@@ -344,7 +344,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ( (PropertyIsEqualTo) op21).getParameter2() instanceof Literal );
         assertEquals( ( (Literal) ( (PropertyIsEqualTo) op21).getParameter2() ).getValue(), "Main St." );
         
-        Operator op22 = andOp2.getParameter( 2 );
+        Operator op22 = andOp2.getParameter( 1 );
         assertEquals( op22.getType(), COMPARISON );
         BinaryComparisonOperator compOp22 = (BinaryComparisonOperator) op22;
         assertTrue( compOp22 instanceof PropertyIsEqualTo );
@@ -353,7 +353,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ( (PropertyIsEqualTo) op22).getParameter2() instanceof Literal );
         assertEquals( ( (Literal) ( (PropertyIsEqualTo) op22).getParameter2() ).getValue(), "SomeTown" );
         
-        Operator op23 = andOp2.getParameter( 3 );
+        Operator op23 = andOp2.getParameter( 2 );
         assertEquals( op23.getType(), COMPARISON );
         BinaryComparisonOperator compOp23 = (BinaryComparisonOperator) op23;
         assertTrue( compOp23 instanceof PropertyIsEqualTo );
@@ -362,7 +362,7 @@ public class GetFeatureXMLAdapterTest extends TestCase {
         assertTrue( ( (PropertyIsEqualTo) op23).getParameter2() instanceof Literal );
         assertEquals( ( (Literal) ( (PropertyIsEqualTo) op23).getParameter2() ).getValue(), "Female" );
         
-        Operator op24 = andOp2.getParameter( 4 );
+        Operator op24 = andOp2.getParameter( 3 );
         assertEquals( op24.getType(), COMPARISON );
         BinaryComparisonOperator compOp24 = (BinaryComparisonOperator) op24;
         assertTrue( compOp24 instanceof PropertyIsGreaterThan );
