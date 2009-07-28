@@ -34,6 +34,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.feature.gml.schema;
 
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.junit.Test;

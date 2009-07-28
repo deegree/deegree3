@@ -42,11 +42,11 @@ import javax.xml.stream.XMLStreamException;
 
 import junit.framework.Assert;
 
+import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.gml.GML311CurveSegmentDecoder;
 import org.deegree.geometry.gml.GML311GeometryDecoder;

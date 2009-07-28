@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.feature.gml.schema;
+package org.deegree.commons.gml;
 
 /**
  * Enum type for discriminating the different GML versions.

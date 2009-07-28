@@ -33,16 +33,18 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.feature.gml.schema;
+package org.deegree.commons.gml.schema;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.schema.XSModelAnalyzer;
 
 /**
- * Provides convenient access to the <i>relevant</i> element declarations of a GML schema.
+ * Provides convenient access to the <i>relevant</i> element declarations of a GML schema (can be both application or
+ * core schema).
  * <p>
  * An element declaration is <i>relevant</i>, if it is in a GML object class. In the latest version of GML (3.2.1),
  * eight classes of GML objects exist:
@@ -92,9 +94,9 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
     private XSElementDeclaration abstractStyleElementDecl;
 
     private XSElementDeclaration abstractCurveSegmentElementDecl;
-    
+
     private XSElementDeclaration abstractSurfacePatchElementDecl;
-    
+
     public XSModelGMLAnalyzer( String url, GMLVersion mode ) throws ClassCastException, ClassNotFoundException,
                             InstantiationException, IllegalAccessException {
         super( url );
@@ -128,7 +130,7 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
             abstractCoverageElementDecl = xmlSchema.getElementDeclaration( "AbstractCoverage", GML_32_NS );
             abstractStyleElementDecl = xmlSchema.getElementDeclaration( "AbstractStyle", GML_32_NS );
             abstractCurveSegmentElementDecl = xmlSchema.getElementDeclaration( "AbstractCurveSegment", GML_PRE_32_NS );
-            abstractSurfacePatchElementDecl = xmlSchema.getElementDeclaration( "AbstractSurfacePatch", GML_PRE_32_NS );            
+            abstractSurfacePatchElementDecl = xmlSchema.getElementDeclaration( "AbstractSurfacePatch", GML_PRE_32_NS );
             break;
         }
         }
@@ -176,8 +178,8 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
      */
     public XSElementDeclaration getAbstractSurfacePatchElementDeclaration() {
         return abstractSurfacePatchElementDecl;
-    }    
-    
+    }
+
     public List<XSElementDeclaration> getFeatureElementDeclarations( String namespace, boolean onlyConcrete ) {
         return getSubstitutions( abstractFeatureElementDecl, namespace, true, onlyConcrete );
     }

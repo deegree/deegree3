@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.feature.gml;
+package org.deegree.commons.gml;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +42,7 @@ import java.util.Map;
 
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.feature.Feature;
+import org.deegree.feature.gml.FeatureReference;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.geometry.Geometry;
@@ -72,7 +73,7 @@ public class GMLIdContext {
 
     private List<FeatureReference> featureReferences = new ArrayList<FeatureReference>();
 
-    private List<GeometryReference> localGeometryReferences = new ArrayList<GeometryReference>();
+    private List<GeometryReference<?>> localGeometryReferences = new ArrayList<GeometryReference<?>>();
 
     public void addFeature( Feature feature ) {
         String id = feature.getId();

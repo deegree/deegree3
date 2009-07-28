@@ -38,10 +38,10 @@ package org.deegree.geometry.gml.refs;
 
 import java.net.URL;
 
+import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
-import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML311GeometryDecoder;

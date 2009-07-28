@@ -44,8 +44,8 @@ import javax.xml.namespace.QName;
 import junit.framework.Assert;
 
 import org.apache.xerces.xs.XSElementDeclaration;
-import org.deegree.feature.gml.schema.GMLVersion;
-import org.deegree.feature.gml.schema.XSModelGMLAnalyzer;
+import org.deegree.commons.gml.GMLVersion;
+import org.deegree.commons.gml.schema.XSModelGMLAnalyzer;
 import org.junit.Test;
 
 /**

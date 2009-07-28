@@ -45,12 +45,12 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 
+import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.feature.gml.GMLIdContext;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.deegree.geometry.primitive.Curve;
