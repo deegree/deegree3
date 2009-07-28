@@ -66,9 +66,9 @@ public class PrimeMeridian extends CRSIdentifiable {
                                                                      0,
                                                                      new CRSCodeType[] {
                                                                                    new CRSCodeType( "8901", "EPSG" ),
-//                                                                                   "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#8901",
-//                                                                                   "URN:OPENGIS:DEF:CRS:EPSG::8901",
-//                                                                                   "URN:OGC:DEF:CRS:EPSG::8901"
+                                                                                   new CRSCodeType( "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#8901" ),
+                                                                                   new CRSCodeType( "URN:OPENGIS:DEF:CRS:EPSG::8901" ),
+                                                                                   new CRSCodeType( "URN:OGC:DEF:CRS:EPSG::8901" )
                                                                                    },
                                                                      new String[] { "Greenwich" },
                                                                      new String[] { "1995-06-02" }, null, null );
