@@ -294,7 +294,7 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
                             throws CRSConfigurationException {
         CRSParser resolver = getResolver();
         try {
-            return resolver.parseCoordinateSystem( resolver.getURIAsType( id.getEquivalentString() ) );
+            return resolver.parseCoordinateSystem( resolver.getURIAsType( id.getOriginal() ) );
         } catch ( IOException e ) {
             LOG.error( e.getMessage(), e );
         }
