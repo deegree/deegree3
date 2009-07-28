@@ -75,7 +75,8 @@ public interface FeatureStore {
      * 
      * @param id
      *            identifier of the object to be retrieved
-     * @return the stored object (either a {@link Feature} or a {@link Geometry})
+     * @return the stored object (either a {@link Feature} or a {@link Geometry}) or null if no object with the given id
+     *         is known
      */
     public abstract Object getObjectById( String id );
 

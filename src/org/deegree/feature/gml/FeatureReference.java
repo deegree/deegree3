@@ -91,68 +91,84 @@ public class FeatureReference implements Feature {
         this.feature = feature;
     }
 
+    @Override    
     public Envelope getEnvelope() {
         return feature.getEnvelope();
     }
 
+    @Override    
     public Property<Geometry>[] getGeometryProperties() {
         return feature.getGeometryProperties();
     }
 
+    @Override
     public String getId() {
         return fid;
     }
 
+    @Override
     public QName getName() {
         return feature.getName();
     }
 
+    @Override
     public Property<?>[] getProperties() {
         return feature.getProperties();
     }
 
+    @Override
     public Property<?>[] getProperties( QName propName ) {
         return feature.getProperties( propName );
     }
 
+    @Override    
     public Property<?> getProperty( QName propName ) {
         return feature.getProperty( propName );
     }
 
+    @Override
     public Object[] getPropertyValues( PropertyName propName )
                             throws JaxenException {
         return feature.getPropertyValues( propName );
     }
 
+    @Override
     public Object getPropertyValue( QName propName ) {
         return feature.getPropertyValue( propName );
     }
 
+    @Override    
     public Object[] getPropertyValues( QName propName ) {
         return feature.getPropertyValues( propName );
     }
 
+    @Override    
     public FeatureType getType() {
         return ft;
     }
 
+    @Override
     public void setId( String id ) {
         feature.setId( id );
     }
 
+    @Override
     public void setProperties( List<Property<?>> props )
                             throws IllegalArgumentException {
         feature.setProperties( props );
     }
 
+    @Override    
     public void setPropertyValue( QName propName, int occurence, Object value ) {
         feature.setPropertyValue( propName, occurence, value );
     }
 
+    @Override    
     public StandardObjectProperties getStandardGMLProperties() {
         return feature.getStandardGMLProperties();
     }
 
+    @Override
     public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
         feature.setStandardGMLProperties( standardProps );
     }

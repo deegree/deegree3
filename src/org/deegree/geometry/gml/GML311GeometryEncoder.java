@@ -1026,7 +1026,7 @@ public class GML311GeometryEncoder {
             for ( Point point : points ) {
                 writer.writeStartElement( GMLNS, "pointProperty" );
                 if ( point.getId() != null && exportedIds.contains( point.getId() ) ) {
-                    writer.writeAttribute( GMLNS, "id", point.getId() );
+                    writer.writeAttribute( XLNNS, "href", "#" + point.getId() );
                 } else {                        
                     export( point );
                 }

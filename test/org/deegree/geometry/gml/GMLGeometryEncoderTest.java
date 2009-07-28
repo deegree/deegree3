@@ -321,6 +321,7 @@ public class GMLGeometryEncoderTest {
         exporter.export( geom );
         writer.flush();
         writer.close();
+        System.out.println (memoryWriter);
 
         XMLAssert.assertValidity( SCHEMA_LOCATION,
                                   new XMLInputSource( null, null, null, memoryWriter.getReader(), null ) );

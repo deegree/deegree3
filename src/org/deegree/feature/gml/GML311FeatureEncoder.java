@@ -38,7 +38,6 @@ package org.deegree.feature.gml;
 
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -51,6 +50,7 @@ import org.deegree.commons.types.Length;
 import org.deegree.commons.types.Measure;
 import org.deegree.commons.types.ows.CodeType;
 import org.deegree.feature.Feature;
+import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.LengthPropertyType;
@@ -70,6 +70,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Encodes features and properties into GML. Delegates {@link Geometry} exporting tasks to the
  * {@link GML311GeometryEncoder}.
+ * <p>
+ * <h4>XLink handling</h4>
+ * This implementation is aware of xlinks (local as well as remote) and allows to set the
+ * <code>traverseXlinkDepth</code> parameter, which controls the number of feature levels that are exported inline.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
@@ -87,85 +92,112 @@ public class GML311FeatureEncoder {
 
     private GML311GeometryEncoder geometryExporter;
 
+    private String referenceTemplate;
+
+    // export all levels by default
+    private int traverseXlinkDepth = -1;
+
+    private int traverseXlinkExpiry;
+
+    /**
+     * @param writer
+     */
     public GML311FeatureEncoder( XMLStreamWriter writer ) {
         this.writer = writer;
         geometryExporter = new GML311GeometryEncoder( writer, exportedIds );
     }
 
-    // public void export( FeatureCollection featureCol ) throws XMLStreamException {
-    // QName fcName = featureCol.getName();
-    // LOG.debug( "Exporting FeatureCollection " + fcName );
-    // writeStartElementWithNS( fcName.getNamespaceURI(), fcName.getLocalPart() );
-    // if ( firstElement ) {
-    // writer.writeAttribute( schemaAttributeName, schemaAttributeValue ); //set schema
-    // firstElement = false;
-    // }
-    // Iterator<Feature> iterator = featureCol.iterator();
-    // while ( iterator.hasNext() ) {
-    // Feature f = iterator.next();
-    // writer.writeStartElement( GMLNS, "featureMember" );
-    // export( ( Property<?> ) f );
-    // writer.writeEndElement();
-    // }
-    // writer.writeEndElement();
-    // }
+    /**
+     * @param writer
+     * @param referenceTemplate
+     *            URI template used to create references to local objects, e.g.
+     *            <code>http://localhost:8080/d3_wfs_lab/services?SERVICE=WFS&REQUEST=GetGmlObject&VERSION=1.1.0&TRAVERSEXLINKDEPTH=1&GMLOBJECTID={}</code>
+     *            , the substring <code>{}</code> is replaced by the object id
+     * @param traverseXlinkDepth
+     * @param traverseXlinkExpiry
+     */
+    public GML311FeatureEncoder( XMLStreamWriter writer, String referenceTemplate, int traverseXlinkDepth,
+                                 int traverseXlinkExpiry ) {
+        this.writer = writer;
+        this.referenceTemplate = referenceTemplate;
+        this.traverseXlinkDepth = traverseXlinkDepth;
+        this.traverseXlinkExpiry = traverseXlinkExpiry;
+        geometryExporter = new GML311GeometryEncoder( writer, exportedIds );
+    }
 
     public void export( Feature feature )
                             throws XMLStreamException {
-        QName featureName = feature.getName();
-        LOG.debug( "Exporting Feature {} with ID {}", featureName, feature.getId() );
-        writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
-        if ( feature.getId() != null )
-            writer.writeAttribute( GMLNS, "id", feature.getId() );
-        for ( Property<?> prop : feature.getProperties() )
-            export( prop );
-        writer.writeEndElement();
+        export( feature, 0 );
     }
 
-    /**
-     * @param col
-     * @param schemaLocation
-     *            may be null
-     * @throws XMLStreamException
-     */
-    public void export( GenericFeatureCollection col, String schemaLocation )
+    public void export( FeatureCollection fc )
                             throws XMLStreamException {
-        LOG.debug( "Exporting generic feature collection." );
-        writer.setPrefix( "gml", GMLNS );
-        writer.writeStartElement( "FeatureCollection" );
-        if ( schemaLocation != null ) {
-            writer.setPrefix( "xsi", XSINS );
-            writer.writeAttribute( XSINS, "noNamespaceSchemaLocation", schemaLocation );
-        }
-        writer.writeStartElement( "http://www.opengis.net/gml", "featureMembers" );
-        for ( Feature f : col ) {
-            export( f );
-        }
-        writer.writeEndElement();
-        writer.writeEndElement();
+        export( fc, -1 );
     }
 
-    private void export( Property<?> property )
+    private void export( Feature feature, int inlineLevels )
+                            throws XMLStreamException {
+
+        if ( feature.getId() != null ) {
+            exportedIds.add( feature.getId() );
+        }
+        if ( feature instanceof GenericFeatureCollection ) {
+            LOG.debug( "Exporting generic feature collection." );
+            writer.setPrefix( "gml", GMLNS );
+            writer.writeStartElement( "FeatureCollection" );
+            for ( Feature member : ( (FeatureCollection) feature ) ) {
+                String memberFid = member.getId();
+                writer.writeStartElement( "http://www.opengis.net/gml", "featureMember" );
+                if ( memberFid != null && exportedIds.contains( memberFid ) ) {
+                    writer.writeAttribute( XLNNS, "href", "#" + memberFid );
+                } else {
+                    export( member, inlineLevels + 1 );
+                }
+                writer.writeEndElement();
+            }
+            writer.writeEndElement();
+        } else {
+            QName featureName = feature.getName();
+            LOG.debug( "Exporting Feature {} with ID {}", featureName, feature.getId() );
+            writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
+            if ( feature.getId() != null ) {
+                writer.writeAttribute( GMLNS, "id", feature.getId() );
+            }
+            for ( Property<?> prop : feature.getProperties() ) {
+                export( prop, inlineLevels );
+            }
+            writer.writeEndElement();
+        }
+    }
+
+    private void export( Property<?> property, int inlineLevels )
                             throws XMLStreamException {
         QName propName = property.getName();
         PropertyType propertyType = property.getType();
         Object value = property.getValue();
         if ( propertyType instanceof FeaturePropertyType ) {
-            Feature fValue = (Feature) value;
-            if ( fValue.getId() != null && exportedIds.contains( fValue.getId() ) ) {
+            Feature subFeature = (Feature) value;
+            String subFid = subFeature.getId();
+            if ( subFid != null && exportedIds.contains( subFid ) ) {
                 writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                writer.writeAttribute( XLNNS, "href", "#" + fValue.getId() );
+                writer.writeAttribute( XLNNS, "href", "#" + subFid );
             } else {
-                exportedIds.add( fValue.getId() );
-                writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
-                export( fValue );
-                writer.writeEndElement();
+                if ( referenceTemplate == null || subFid == null
+                     || ( traverseXlinkDepth > 0 && ( inlineLevels < traverseXlinkDepth ) ) ) {
+                    exportedIds.add( subFeature.getId() );
+                    writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                    export( subFeature, inlineLevels + 1 );
+                    writer.writeEndElement();
+                } else {
+                    writeEmptyElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
+                    String uri = referenceTemplate.replace( "{}", subFid );
+                    writer.writeAttribute( XLNNS, "href", uri );
+                }
             }
         } else if ( propertyType instanceof SimplePropertyType ) {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             writer.writeCharacters( value.toString() );
             writer.writeEndElement();
-
         } else if ( propertyType instanceof GeometryPropertyType ) {
             Geometry gValue = (Geometry) value;
             if ( gValue.getId() != null && exportedIds.contains( gValue.getId() ) ) {
@@ -177,7 +209,6 @@ public class GML311FeatureEncoder {
                 geometryExporter.export( (Geometry) value );
                 writer.writeEndElement();
             }
-
         } else if ( propertyType instanceof CodePropertyType ) {
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             CodeType codeType = (CodeType) value;
@@ -185,17 +216,14 @@ public class GML311FeatureEncoder {
                 writer.writeAttribute( "codeSpace", codeType.getCodeSpace() );
             writer.writeCharacters( codeType.getCode() );
             writer.writeEndElement();
-
         } else if ( propertyType instanceof EnvelopePropertyType ) {
             geometryExporter.export( (Envelope) value );
-
         } else if ( propertyType instanceof LengthPropertyType ) {
             Length length = (Length) value;
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
             writer.writeAttribute( "uom", length.getUomUri() );
             writer.writeCharacters( String.valueOf( length.getValue() ) );
             writer.writeEndElement();
-
         } else if ( propertyType instanceof MeasurePropertyType ) {
             Measure measure = (Measure) value;
             writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
@@ -205,20 +233,21 @@ public class GML311FeatureEncoder {
         }
     }
 
-    void writeStartElementWithNS( String namespaceURI, String localname )
+    private void writeStartElementWithNS( String namespaceURI, String localname )
                             throws XMLStreamException {
-        if ( namespaceURI == null || namespaceURI.length() == 0 )
+        if ( namespaceURI == null || namespaceURI.length() == 0 ) {
             writer.writeStartElement( localname );
-        else
+        } else {
             writer.writeStartElement( namespaceURI, localname );
+        }
     }
 
-    void writeEmptyElementWithNS( String namespaceURI, String localname )
+    private void writeEmptyElementWithNS( String namespaceURI, String localname )
                             throws XMLStreamException {
-        if ( namespaceURI == null || namespaceURI.length() == 0 )
+        if ( namespaceURI == null || namespaceURI.length() == 0 ) {
             writer.writeEmptyElement( localname );
-        else
+        } else {
             writer.writeEmptyElement( namespaceURI, localname );
+        }
     }
-
 }
