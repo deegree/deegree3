@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <code>CommonsTestSuite</code> the test suite for all test defined in commons.
+ * <code>CoreTestSuite</code> the test suite for all test defined in core.
  * <p>
  * Run as an application ({@link #main(String[])}) to check if the internal list of test classes is up-to-date.
  * </p>
@@ -110,14 +110,14 @@ org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureTypeKVPAdapterTest.c
 org.deegree.protocol.wfs.getfeature.GetFeatureXMLAdapterTest.class,
 org.deegree.rendering.r2d.Java2DRenderingTest.class
 } )
-class CommonsTestSuite {
+class CoreTestSuite {
 
     private static final int DOT_CLASS_LENGTH = ".class".length();
 
     /**
      * Logger for test cases
      */
-    private static final Logger LOG = LoggerFactory.getLogger( CommonsTestSuite.class );
+    private static final Logger LOG = LoggerFactory.getLogger( CoreTestSuite.class );
 
     private static final String packageName = "org.deegree.";
 
@@ -126,7 +126,7 @@ class CommonsTestSuite {
      *            will not be evaluated
      */
     public static void main( String[] args ) {
-        buildTestSuite( CommonsTestSuite.class );
+        buildTestSuite( CoreTestSuite.class );
     }
 
     static void buildTestSuite( Class<?> suite ) {
@@ -216,7 +216,7 @@ class CommonsTestSuite {
                     className = className.replace( '/', '.' );
                     Class<?> testClass = null;
                     try {
-                        testClass = Class.forName( className, false, CommonsTestSuite.class.getClassLoader() );
+                        testClass = Class.forName( className, false, CoreTestSuite.class.getClassLoader() );
                     } catch ( ClassNotFoundException cnfe ) {
                         LOG.error( cnfe.getLocalizedMessage(), cnfe );
                     }
