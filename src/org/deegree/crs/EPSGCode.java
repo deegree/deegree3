@@ -54,7 +54,10 @@ public class EPSGCode extends CRSCodeType {
     private int codeNo;
 
     /**
-     * Construct an EPSGCode, i.e. a CRSCodeType with code space equals "EPSG"
+     * Construct an EPSGCode, i.e. a CRSCodeType with code space equals "EPSG". <b>Note:</b> Use this 
+     * constructor when you know the code created is not a condensed form, but it actually exists, i.e.
+     * you mean "EPSG:4326" not "URN:OGC:DEF:CRS:EPSG:4326". It will matter when comparing them or the
+     * CRSIdentifiers that bear them.
      * @param codeNo
      */
     public EPSGCode (int codeNo) {
