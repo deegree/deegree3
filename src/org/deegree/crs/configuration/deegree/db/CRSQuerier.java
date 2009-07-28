@@ -949,8 +949,7 @@ public class CRSQuerier {
         CoordinateSystem result = null;
 
         PreparedStatement ps;
-        ps = conn.prepareStatement( "SELECT ref_id, code, codespace FROM code WHERE code = '" + crsCode.getCode()
-                                    + "' AND codespace = '" + crsCode.getCodeSpace() + "'" );
+        ps = conn.prepareStatement( "SELECT ref_id FROM code WHERE original = '" + crsCode.getOriginal() + "'" );
         
         ResultSet rs = ps.executeQuery();
         if ( !rs.next() ) {
