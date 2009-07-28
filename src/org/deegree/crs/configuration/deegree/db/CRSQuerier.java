@@ -135,7 +135,10 @@ public class CRSQuerier {
      */
     protected int getInternalID( CRSIdentifiable identifiable ) {
         try {
-            PreparedStatement ps = conn.prepareStatement( "SELECT ref_id FROM code WHERE original = '" + identifiable.getCode().getOriginal() + "'" );
+            PreparedStatement ps = conn.prepareStatement( "SELECT ref_id FROM code " + "WHERE code = '"
+                                                          + identifiable.getCode().getCode() + "' "
+                                                          + "AND codespace = '" + identifiable.getCode().getCodeSpace()
+                                                          + "'" );
             ResultSet rs = ps.executeQuery();
             if ( rs.next() ) {
                 return rs.getInt( 1 );
@@ -741,7 +744,7 @@ public class CRSQuerier {
      */
     protected CRSIdentifiable getIdentifiableAttributes( int id )
     throws SQLException {
-        PreparedStatement ps = conn.prepareStatement( "SELECT original, name, version, description, area_of_use "
+        PreparedStatement ps = conn.prepareStatement( "SELECT code, codespace, name, version, description, area_of_use "
                                                       + "FROM code LEFT JOIN name ON code.ref_id = name.ref_id "
                                                       + "LEFT JOIN version ON code.ref_id = version.ref_id "
                                                       + "LEFT JOIN description ON code.ref_id = description.ref_id "
@@ -756,15 +759,16 @@ public class CRSQuerier {
         List<String> areas = new ArrayList<String>();
 
         while ( rs.next() ) {
-            codes.add( new CRSCodeType( rs.getString( 1 ) ) );
-            if ( rs.getString( 2 ) != null )
-                names.add( rs.getString( 2 ) );
+            codes.add( rs.getString( 2 ) == "" ? new CRSCodeType( rs.getString( 1 ) )
+            : new CRSCodeType( rs.getString( 1 ), rs.getString( 2 ) ) );
             if ( rs.getString( 3 ) != null )
-                versions.add( rs.getString( 3 ) );
+                names.add( rs.getString( 3 ) );
             if ( rs.getString( 4 ) != null )
-                descriptions.add( rs.getString( 4 ) );
+                versions.add( rs.getString( 4 ) );
             if ( rs.getString( 5 ) != null )
-                areas.add( rs.getString( 5 ) );
+                descriptions.add( rs.getString( 5 ) );
+            if ( rs.getString( 6 ) != null )
+                areas.add( rs.getString( 6 ) );
         }
 
         return new CRSIdentifiable( codes.toArray( new CRSCodeType[codes.size()] ),
@@ -901,11 +905,11 @@ public class CRSQuerier {
         List<CRSCodeType> listCodes = new ArrayList<CRSCodeType>();
 
         try {
-            PreparedStatement ps = conn.prepareStatement( "SELECT original "
+            PreparedStatement ps = conn.prepareStatement( "SELECT code, codespace "
                                                           + "FROM crs_lookup JOIN code ON crs_lookup.id = code.ref_id" );
             ResultSet rs = ps.executeQuery();
             while ( rs.next() )
-                listCodes.add( new CRSCodeType( rs.getString( 1 ) ) );
+                listCodes.add( new CRSCodeType( rs.getString( 1 ), rs.getString( 2 ) ) );
         } catch ( SQLException e ) {
             LOG.error( e.getMessage() );
         }
@@ -949,7 +953,8 @@ public class CRSQuerier {
         CoordinateSystem result = null;
 
         PreparedStatement ps;
-        ps = conn.prepareStatement( "SELECT ref_id FROM code WHERE original = '" + crsCode.getOriginal() + "'" );
+        ps = conn.prepareStatement( "SELECT ref_id, code, codespace FROM code WHERE code = '" + crsCode.getCode()
+                                    + "' AND codespace = '" + crsCode.getCodeSpace() + "'" );
         
         ResultSet rs = ps.executeQuery();
         if ( !rs.next() ) {
@@ -991,7 +996,9 @@ public class CRSQuerier {
 
         ResultSet crsType = conn.prepareStatement(
                                                   "SELECT table_name, id FROM identifiable_lookup, code "
-                                                  + "WHERE id = ref_id AND original = '" + code.getOriginal() + "'" ).executeQuery();
+                                                  + "WHERE id = ref_id AND code = '"
+                                                  + code.getCode() + "' AND codespace = '"
+                                                  + code.getCodeSpace() + "'" ).executeQuery();
         if ( crsType.getString( 1 ).equalsIgnoreCase( "projected_crs" ) )
             return getProjectedCRS( crsType.getInt( 2 ) );
         else if ( crsType.getString( 1 ).equalsIgnoreCase( "geographic_crs" ) )

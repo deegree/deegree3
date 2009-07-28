@@ -94,7 +94,8 @@ public class CRSRemover {
      *              if an {@link SQLException} occurs
      */
     int getInternalID( CRSIdentifiable identifiable ) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement( "SELECT ref_id FROM code WHERE original ='" + identifiable.getCode().getOriginal() + "'" );
+        PreparedStatement ps = connection.prepareStatement( "SELECT ref_id FROM code WHERE code.code ='" + identifiable.getCode().getCode() +
+                                                            "' AND code.codespace ='" + identifiable.getCode().getCodeSpace() + "'" );
         ResultSet rs = ps.executeQuery();
         rs.next();
         return rs.getInt( 1 );

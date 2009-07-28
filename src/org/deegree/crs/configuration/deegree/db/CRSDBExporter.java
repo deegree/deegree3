@@ -133,14 +133,20 @@ public class CRSDBExporter {
             // insert into the CODE table
             CRSCodeType[] codes = crsObject.getCodes();
             int nCodes = codes.length;
+            Set<String> insertedCodes = new HashSet<String>();
+            Set<String> insertedCodeSpaces = new HashSet<String>();
             for ( int i = 0; i < nCodes; i++ ) {
-                preparedSt = connection.prepareStatement( "INSERT INTO code VALUES ( ?, ?, ?, ?, ? )" );
-                preparedSt.setInt( 1, internalID );
-                preparedSt.setString( 2, codes[i].getCode() );
-                preparedSt.setString( 3, codes[i].getCodeSpace() );
-                preparedSt.setString( 4, codes[i].getCodeVersion() );
-                preparedSt.setString( 5, codes[i].getOriginal() );
-                preparedSt.execute();
+                if ( !( insertedCodes.contains( codes[i].getCode() ) && insertedCodeSpaces.contains( codes[i].getCodeSpace() ) ) ) {
+
+                    preparedSt = connection.prepareStatement( "INSERT INTO code VALUES ( ?, ?, ?)" );
+                    preparedSt.setInt( 1, internalID );
+                    preparedSt.setString( 2, codes[i].getCode() );
+                    preparedSt.setString( 3, codes[i].getCodeSpace() );
+                    preparedSt.execute();
+
+                    insertedCodes.add( codes[i].getCode() );
+                    insertedCodeSpaces.add( codes[i].getCodeSpace() );
+                }
             }
 
             // insert into the VERSION table
