@@ -62,18 +62,15 @@ public class CRSCodeType {
     private String codeVersion;
 
     private String codeSpace;
+    
+    private String original;
 
-    public CRSCodeType( String code, String codeSpace, String codeVersion ) {
-        if ( code == null )
-            throw new IllegalArgumentException( "Code cannot be null!" );
-        if ( code.trim().equals( "" ) )
-            throw new IllegalArgumentException( "Code cannot be white space(s)!" );
-
-        this.codeSpace = codeSpace;
-        this.codeVersion = codeVersion;
-        this.code = code;
-    }
-
+    /**
+     * Create a CRSCodeType from the code and codeSpace. This constructor should be used when the
+     * "$codeSpace:$code" string is an actual id (and not just a compressed version).
+     * @param code
+     * @param codeSpace
+     */
     public CRSCodeType( String code, String codeSpace ) {
         if ( code == null )
             throw new IllegalArgumentException( "Code cannot be null!" );
@@ -83,8 +80,14 @@ public class CRSCodeType {
         this.codeSpace = codeSpace;
         this.code = code;
         this.codeVersion = "";
+        this.original = codeSpace + ":" + code;
     }
 
+    /**
+     * Create a CRSCodeType from a string. The string is parsed into code, codeSpace and codeVersion.
+     * When it cannot, only the original field is non-empty (it will be equal to codeAsString).  
+     * @param codeAsString
+     */
     public CRSCodeType( String codeAsString ) {
         if ( codeAsString == null )
             throw new IllegalArgumentException( "Code string cannot be null!" );
@@ -111,8 +114,9 @@ public class CRSCodeType {
             }
         }
 
+        this.original = codeAsString;
         if ( codenumber.trim().equals( "" ) || ! codeAsString.toUpperCase().contains( "EPSG" ) ) {
-            this.code = codeAsString;
+            this.code = "";
             this.codeSpace = ""; 
             this.codeVersion = "";
         } else if ( codenumber.length() != 0 && codeversion.length() != 0 ) { 
@@ -127,68 +131,72 @@ public class CRSCodeType {
 
     }
 
+    /**
+     * Returns the CRSCodeType that can be constructed from the string parameter.
+     * @param codeAsString
+     * @return
+     * @throws IllegalArgumentException
+     */
     public static CRSCodeType valueOf( String codeAsString ) throws IllegalArgumentException {
-        if ( codeAsString == null )
-            throw new IllegalArgumentException( "Code string cannot be null!" );
-        if ( codeAsString.trim().equals( "" ) )
-            throw new IllegalArgumentException( "Code string cannot be white space(s)" );
-
-        int n = codeAsString.length();
-        String codenumber = "";
-        boolean numberFinished = false;
-        String codeversion = "";
-        boolean versionFinished = false;
-        for ( int i = n - 1; i >= 0; i-- ) {
-            if ( codeAsString.charAt( i ) >= '0' && codeAsString.charAt( i ) <= '9' && !numberFinished ) {
-                codenumber = codeAsString.charAt( i ) + codenumber;
-            } else if ( !versionFinished && ( ( codeAsString.charAt( i ) >= '0' && codeAsString.charAt( i ) <= '9' ) || codeAsString.charAt( i ) == '.' ) ) {
-                codeversion = codeAsString.charAt( i ) + codeversion;
-            } else if ( codeAsString.charAt( i ) == ':' && !numberFinished ) { 
-                numberFinished = true;
-            } else if ( codeAsString.charAt( i ) == ':' && !versionFinished ) {
-                versionFinished = true;
-            } else if ( codeAsString.charAt( i ) == '#' ) {
-                numberFinished = true;
-                versionFinished = true;
-            }
-        }
-
-        if ( codenumber.trim().equals( "" ) || ! codeAsString.toUpperCase().contains( "EPSG" ) )
-            return new CRSCodeType( codeAsString, "" );
-        else if ( codenumber.length() != 0 && codeversion.length() != 0 ) {
-            return new  CRSCodeType( codenumber, "EPSG", codeversion );
-        } else {
-            return new CRSCodeType( codenumber, "EPSG" );
-        }
+        return new CRSCodeType( codeAsString );
     }
 
+    /**
+     * 
+     * @return  the code number from the code (e.g. "4326" ). Can be an empty string if
+     * the id could not be parsed. To get the id use {@link #getOriginal()}
+     */
     public String getCode() {
         return code;
     }
 
+    /**
+     * 
+     * @return  the code space from the code (e.g. "EPSG" ). Can be an empty string if
+     * the id could not be parsed.
+     */
     public String getCodeSpace() {
         return codeSpace;
     }
 
+    /**
+     * 
+     * @return  the version of the code. If it does not exist, an empty string is returned.
+     */
     public String getCodeVersion() {
         return codeVersion;
     }
-
+    
     /**
-     * @return The default value for the Codenumber in case it is not defined ( "NOT PROVIDED", "" )
+     * 
+     * @return  the code id before parsing. 
      */
-    public static CRSCodeType getUndefined() {
-        return new CRSCodeType( "NOT PROVIDED", "" );
+    public String getOriginal() {
+        return original;
     }
 
+    /**
+     * @return The code used when a {@link CRSIdentifiable} has no id. The code used is "NOT PROVIDED". 
+     */
+    public static CRSCodeType getUndefined() {
+        return new CRSCodeType( "NOT PROVIDED" );
+    }
+
+    /**
+     * @return Displays the code under the format <b>code (codeSpace: $codespace[; version: $codeversion])</b>
+     * or simply the string if the code cannot be parsed into code/codespace/codeversion  
+     */
     @Override
     public String toString() {
-        return code + (codeSpace != null ? " (codeSpace=" + codeSpace + (codeVersion != null ? "; version: " + codeVersion : "" ) + ")" : "");
+        if ( !code.equals( "" ) ) {
+            return code + "(codeSpace: " + codeSpace + ( !codeVersion.equals( "" ) ? "; version: " + codeVersion : "" ) + ")";
+        }
+        return original;
     }
 
     @Override
     public int hashCode() {
-        return codeSpace != null ? ( codeVersion != null ? (codeSpace + code + codeVersion).hashCode() : (codeSpace + code).hashCode() ) : code.hashCode();
+        return original.hashCode();
     }
 
     @Override
@@ -197,19 +205,23 @@ public class CRSCodeType {
             return false;
         }
         CRSCodeType that = (CRSCodeType) o;
-        if ( code.equals( that.code ) && codeSpace.equals( that.codeSpace ) && codeVersion.equals( that.codeVersion ) ) {
-            return true;
-        }
-        return false;
+
+        return original.equals( that.getOriginal() );
     }
 
+    /**
+     * 
+     * @return the code in the form "$codeSpace:$codeVersion:$code" or "$codeSpace:$code" or 
+     * the original string if the id could not be parsed.    
+     */
     public String getEquivalentString() {
-        if ( ! codeSpace.equals( "" ) ) {
+        if ( ! code.equals( "" ) ) {
             if ( !codeVersion.equals( "" ) ) {
-                return codeSpace + ":" + codeVersion + ":" + code;
+                return codeSpace + codeVersion + code;
             }
-            return codeSpace + ":" + code;
-        } 
-        return code;
+            return codeSpace + ":" + code;            
+        }
+        
+        return original;
     }
 }

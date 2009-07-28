@@ -53,126 +53,21 @@ public class EPSGCode extends CRSCodeType {
 
     private int codeNo;
 
+    /**
+     * Construct an EPSGCode, i.e. a CRSCodeType with code space equals "EPSG"
+     * @param codeNo
+     */
     public EPSGCode (int codeNo) {
         super ("" + codeNo, "EPSG" );
         this.codeNo = codeNo;
     }
 
+    /**
+     * Returns the code number associated with this EPSG code
+     * @return
+     */
     public int getCodeNo() {
         return codeNo;
     }
-
-//    public boolean isEPSGCode( String code ) {
-//        if ( code == null )
-//            return false;
-//
-//        boolean caught = false;
-//        int suffix = 0;
-//        if ( code.startsWith( "EPSG" ) || code.startsWith( "URN:OGC:DEF:CRS:EPSG" ) ||
-//                                code.startsWith( "URN:OPENGIS:DEF:CRS:EPSG" ) ||
-//                                code.startsWith( "URN:X-OGC:DEF:CRS:EPSG" ) ) {
-//            try {
-//                Integer.parseInt( code.substring( code.lastIndexOf( ':' ) + 1 ) );
-//            } catch ( NumberFormatException e ) {
-//                System.out.println( "Invalid EPSG code: " + code );
-//                e.printStackTrace();
-//                caught = true;
-//            }
-//            if ( ! caught )
-//                return true;
-//            else
-//                return false;
-//        }
-//        else if ( code.startsWith( "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML" ) ) {
-//            try {
-//            suffix = Integer.parseInt( epsgCodeAsString.substring( epsgCodeAsString.lastIndexOf( '#' ) + 1 ) );
-//            } catch ( NumberFormatException e ) {
-//                System.out.println( "Invalid EPSG code " + epsgCodeAsString );
-//                e.printStackTrace();
-//                caught = true;
-//            }
-//            if ( ! caught )
-//                return new EPSGCode( suffix );
-//            else
-//                throw new IllegalArgumentException();
-//        } else if ( epsgCodeAsString.contains( "EPSG" ) ) {
-//           int lastChPos = epsgCodeAsString.length();
-//           int noOfDigits = 1;
-//           int finalNoOfDigits = 0;
-//           while ( true ) {
-//               String stringSuffix = epsgCodeAsString.substring( lastChPos - noOfDigits, lastChPos );
-//            try {
-//                Integer.parseInt( stringSuffix );
-//            } catch ( NumberFormatException e ) {
-//                finalNoOfDigits = noOfDigits - 1;
-//                break;
-//            }
-//            noOfDigits++;
-//           }
-//           if ( finalNoOfDigits > 0 )
-//               return new EPSGCode( Integer.parseInt(
-//                                    epsgCodeAsString.substring( lastChPos - finalNoOfDigits, lastChPos ) ) );
-//           else
-//               throw new IllegalArgumentException();
-//        } else
-//            throw new IllegalArgumentException();
-//
-//    }
-//
-//    public static EPSGCode valueOf (String epsgCodeAsString) throws IllegalArgumentException {
-//        if ( epsgCodeAsString == null )
-//            throw new IllegalArgumentException();
-//
-//        boolean caught = false;
-//        int suffix = 0;
-//        if ( epsgCodeAsString.startsWith( "EPSG" ) || epsgCodeAsString.startsWith( "URN:OGC:DEF:CRS:EPSG" ) ||
-//                                epsgCodeAsString.startsWith( "URN:OPENGIS:DEF:CRS:EPSG" ) ||
-//                                epsgCodeAsString.startsWith( "URN:X-OGC:DEF:CRS:EPSG" ) ) {
-//            try {
-//                suffix = Integer.parseInt( epsgCodeAsString.substring( epsgCodeAsString.lastIndexOf( ':' ) + 1 ) );
-//            } catch ( NumberFormatException e ) {
-//                System.out.println( "Invalid EPSG code " + epsgCodeAsString );
-//                e.printStackTrace();
-//                caught = true;
-//            }
-//            if ( ! caught )
-//                return new EPSGCode( suffix );
-//            else
-//                throw new IllegalArgumentException();
-//        }
-//        else if ( epsgCodeAsString.startsWith( "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML" ) ) {
-//            try {
-//            suffix = Integer.parseInt( epsgCodeAsString.substring( epsgCodeAsString.lastIndexOf( '#' ) + 1 ) );
-//            } catch ( NumberFormatException e ) {
-//                System.out.println( "Invalid EPSG code " + epsgCodeAsString );
-//                e.printStackTrace();
-//                caught = true;
-//            }
-//            if ( ! caught )
-//                return new EPSGCode( suffix );
-//            else
-//                throw new IllegalArgumentException();
-//        } else if ( epsgCodeAsString.contains( "EPSG" ) ) {
-//           int lastChPos = epsgCodeAsString.length();
-//           int noOfDigits = 1;
-//           int finalNoOfDigits = 0;
-//           while ( true ) {
-//               String stringSuffix = epsgCodeAsString.substring( lastChPos - noOfDigits, lastChPos );
-//            try {
-//                Integer.parseInt( stringSuffix );
-//            } catch ( NumberFormatException e ) {
-//                finalNoOfDigits = noOfDigits - 1;
-//                break;
-//            }
-//            noOfDigits++;
-//           }
-//           if ( finalNoOfDigits > 0 )
-//               return new EPSGCode( Integer.parseInt(
-//                                    epsgCodeAsString.substring( lastChPos - finalNoOfDigits, lastChPos ) ) );
-//           else
-//               throw new IllegalArgumentException();
-//        } else
-//            throw new IllegalArgumentException();
-//    }
 
 }
