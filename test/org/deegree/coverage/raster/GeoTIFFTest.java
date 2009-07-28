@@ -87,7 +87,7 @@ public class GeoTIFFTest {
      */
     @Test
     public void geoTIFFCRS() throws UnknownCRSException {
-        assertTrue( raster.getEnvelope().getCoordinateSystem().getWrappedCRS().getEPSGCode().getCodeNo() == 4326);
+        assertTrue( raster.getEnvelope().getCoordinateSystem().getWrappedCRS().getCode().getCode().equals( "4326" ) );
     }
 
     /**
