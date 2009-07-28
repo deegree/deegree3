@@ -629,6 +629,7 @@ public class QTree<T> extends SpatialIndex<T> {
     /**
      * 
      */
+    @Override
     public void clear() {
         if ( isLeaf() ) {
             if ( leafObjects != null ) {
@@ -667,6 +668,7 @@ public class QTree<T> extends SpatialIndex<T> {
             this.entryValue = object;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public boolean equals( Object other ) {
             if ( other != null && other instanceof Entry ) {
