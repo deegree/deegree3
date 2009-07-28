@@ -1,2 +1,2 @@
-org.deegree.coverage.io.imageio.IIORasterIOProvider
-org.deegree.coverage.io.jai.JAIRasterIOProvider
+org.deegree.coverage.raster.data.io.imageio.IIORasterIOProvider
+org.deegree.coverage.raster.data.io.jai.JAIRasterIOProvider
