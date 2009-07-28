@@ -135,10 +135,7 @@ public class CRSQuerier {
      */
     protected int getInternalID( CRSIdentifiable identifiable ) {
         try {
-            PreparedStatement ps = conn.prepareStatement( "SELECT ref_id FROM code " + "WHERE code = '"
-                                                          + identifiable.getCode().getCode() + "' "
-                                                          + "AND codespace = '" + identifiable.getCode().getCodeSpace()
-                                                          + "'" );
+            PreparedStatement ps = conn.prepareStatement( "SELECT ref_id FROM code WHERE original = '" + identifiable.getCode().getOriginal() + "'" );
             ResultSet rs = ps.executeQuery();
             if ( rs.next() ) {
                 return rs.getInt( 1 );
