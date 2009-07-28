@@ -662,7 +662,7 @@ public class CRSExporter {
         for ( CRSCodeType id : identifiers ) {
             if ( id != null ) {
                 xmlWriter.writeStartElement( CRSNS, "id" );
-                xmlWriter.writeCharacters( id.getEquivalentString() );
+                xmlWriter.writeCharacters( id.getOriginal() );
                 xmlWriter.writeEndElement();
             }
         }
