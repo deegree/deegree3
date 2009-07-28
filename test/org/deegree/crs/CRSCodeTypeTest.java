@@ -62,7 +62,7 @@ public class CRSCodeTypeTest extends TestCase {
         
         CRSCodeType code2 = new CRSCodeType( "URN:X-OGC:DEF:CRS:EPSG:6.11:4326" );
         assertEquals( code2.getEquivalentString(), "EPSG:6.11:4326" );
-        System.out.println( code2 );
+
         assertEquals( CRSCodeType.valueOf( "URN:X-OGC:DEF:CRS:EPSG:6.11:4326" ).getEquivalentString(), "EPSG:6.11:4326" );
         
         CRSCodeType code3 = new CRSCodeType( "URN:X-OGC:DEF:CRS:EPSG:6.11.2:4326" );
