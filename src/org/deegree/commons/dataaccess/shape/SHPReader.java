@@ -325,7 +325,7 @@ public class SHPReader {
 
         LinkedList<Pair<Integer, Geometry>> list = new LinkedList<Pair<Integer, Geometry>>();
 
-        List<Long> pointers = rtree.query( bbox );
+        List<Long> pointers = (List<Long>) rtree.query( bbox );
         for ( Long ptr : pointers ) {
             in.seek( ptr - 8 );
 
@@ -419,9 +419,9 @@ public class SHPReader {
      * @return a list of all envelopes (minx, miny, maxx, maxy)
      * @throws IOException
      */
-    public ArrayList<Pair<float[], Long>> readEnvelopes()
+    public ArrayList<Pair<Envelope, Long>> readEnvelopes()
                             throws IOException {
-        ArrayList<Pair<float[], Long>> list = new ArrayList<Pair<float[], Long>>();
+        ArrayList<Pair<Envelope, Long>> list = new ArrayList<Pair<Envelope, Long>>();
 
         in.seek( 100 );
 
@@ -436,13 +436,13 @@ public class SHPReader {
             case POINT: {
                 double x = readLEDouble( in );
                 double y = readLEDouble( in );
-                list.add( new Pair<float[], Long>( new float[] { (float) x, (float) y, (float) x, (float) y }, pos ) );
+                list.add( new Pair<Envelope, Long>( fac.createEnvelope( x, y, x, y, null ), pos ) );
                 break;
             }
             default: {
-                list.add( new Pair<float[], Long>( new float[] { (float) readLEDouble( in ),
-                                                                (float) readLEDouble( in ), (float) readLEDouble( in ),
-                                                                (float) readLEDouble( in ) }, pos ) );
+                list.add( new Pair<Envelope, Long>( fac.createEnvelope( readLEDouble( in ), readLEDouble( in ),
+                                                                        readLEDouble( in ), readLEDouble( in ), null ),
+                                                    pos ) );
                 break;
             }
             }

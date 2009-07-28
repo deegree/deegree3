@@ -239,9 +239,9 @@ public class ShapeDatastore {
         RTree<Long> result = new RTree<Long>( env, -1 );
         // to work around Java's non-existent variant type
         LOG.debug( "Read envelopes from shape file..." );
-        ArrayList<Pair<float[], Long>> list = shapeReader.readEnvelopes();
+        ArrayList<Pair<Envelope, Long>> list = shapeReader.readEnvelopes();
         LOG.debug( "done." );
-        result.buildIndex( list );
+        result.insertBulk( list );
         return result;
 
     }
@@ -298,7 +298,7 @@ public class ShapeDatastore {
      *            backend will do it
      * @param withGeometries
      *            whether to return geometry properties or not
-     * @param exact 
+     * @param exact
      * @return a feature collection with matching features
      * @throws IOException
      * @throws FilterEvaluationException
