@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,8 +32,8 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster;
+ ----------------------------------------------------------------------------*/
+package org.deegree.coverage.raster.data.container;
 
 import java.util.UUID;
 
@@ -42,8 +42,6 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.coverage.raster.data.container.RasterDataContainer;
-import org.deegree.coverage.raster.data.container.RasterDataContainerProvider;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
 import org.deegree.coverage.raster.data.io.RasterDataReader;
 import org.slf4j.Logger;
@@ -51,13 +49,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class implements a cached RasterDataContainer.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author: otonnhofer $
- *
+ * 
  * @version $Revision: 10847 $, $Date: 2008-03-31 15:54:40 +0200 (Mon, 31 Mar 2008) $
  */
 public class CachedRasterDataContainer implements RasterDataContainer, RasterDataContainerProvider {
+
+    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( CachedRasterDataContainer.class );
 
     private RasterDataReader reader;
 
@@ -70,10 +70,16 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
     private final static String CACHENAME = "CachedRasterDataContainer";
 
     static {
-        CacheManager manager = CacheManager.create();
-        // TODO: make cachename configurable
-        // see ehcache.xml for CachedRasterDataContainer configuration
-        cache = manager.getCache( CACHENAME );
+        try {
+            CacheManager manager = CacheManager.create();
+            manager.addCache( CACHENAME );
+            // TODO: make cachename configurable
+            // see ehcache.xml for CachedRasterDataContainer configuration
+            cache = manager.getCache( CACHENAME );
+        } catch ( Throwable e ) {
+            LOG.error( e.getLocalizedMessage(), e );
+        }
+
     }
 
     /**
@@ -85,7 +91,7 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
 
     /**
      * Creates a RasterDataContainer that loads the data on first access.
-     *
+     * 
      * @param reader
      *            RasterReader for the raster source
      */
@@ -126,7 +132,7 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.model.raster.RasterDataContainer#getColumns()
      */
     public int getColumns() {
@@ -135,7 +141,7 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.model.raster.RasterDataContainer#getRows()
      */
     public int getRows() {
@@ -143,7 +149,7 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
     }
 
     public RasterDataContainer getRasterDataContainer( LoadingPolicy type ) {
-        if ( type == LoadingPolicy.CACHED ) {
+        if ( type == LoadingPolicy.CACHED && cache != null ) {
             // the service loader caches provider instances, so return a new instance
             return new CachedRasterDataContainer();
         }

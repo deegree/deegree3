@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,12 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster;
+ ----------------------------------------------------------------------------*/
+package org.deegree.coverage.raster.data.container;
 
 import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.coverage.raster.data.container.RasterDataContainer;
-import org.deegree.coverage.raster.data.container.RasterDataContainerProvider;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
 import org.deegree.coverage.raster.data.io.RasterDataReader;
 import org.slf4j.Logger;
@@ -45,12 +43,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class implements a RasterDataContainer that loads the data on first access.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class LazyRasterDataContainer implements RasterDataContainer, RasterDataContainerProvider {
 
@@ -71,7 +69,7 @@ public class LazyRasterDataContainer implements RasterDataContainer, RasterDataC
 
     /**
      * Creates a RasterDataContainer that loads the data on first access.
-     *
+     * 
      * @param reader
      *            RasterReader for the raster source
      */
@@ -81,7 +79,7 @@ public class LazyRasterDataContainer implements RasterDataContainer, RasterDataC
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.model.raster.RasterDataContainer#getRasterData()
      */
     public RasterData getRasterData() {
@@ -102,7 +100,7 @@ public class LazyRasterDataContainer implements RasterDataContainer, RasterDataC
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.model.raster.RasterDataContainer#getColumns()
      */
     public int getColumns() {
@@ -111,7 +109,7 @@ public class LazyRasterDataContainer implements RasterDataContainer, RasterDataC
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.model.raster.RasterDataContainer#getRows()
      */
     public int getRows() {
