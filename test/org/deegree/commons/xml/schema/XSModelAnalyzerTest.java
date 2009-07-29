@@ -35,14 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.schema;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.xs.XSElementDeclaration;
+import org.junit.Test;
 
 /**
- * TODO add documentation here
+ * Tests for the {@link XSModelAnalyzer}.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -51,20 +54,24 @@ import org.apache.xerces.xs.XSElementDeclaration;
  */
 public class XSModelAnalyzerTest {
 
-    // @Test
-    public void testPhilosopher()
+    /**
+     * Check the correct determining of substitutable elements.
+     * 
+     * @throws ClassCastException
+     * @throws ClassNotFoundException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    @Test
+    public void testConcreteFeatureElements()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
-        XSModelAnalyzer analyzer = new XSModelAnalyzer(
-                                                        "file:///home/schneider/workspace/vrom_roonline2/resources/schema/imro2008/local-IMRO2008.xsd" );
-        List<XSElementDeclaration> featureElements = analyzer.getSubstitutions(
-                                                                                new QName(
-                                                                                           "http://www.opengis.net/gml",
-                                                                                           "_Feature" ), null, true,
-                                                                                true );
-        for ( XSElementDeclaration elementDeclaration : featureElements ) {
-            System.out.println( elementDeclaration.getName() );
-        }
-    }
 
+        XSModelAnalyzer analyzer = new XSModelAnalyzer(
+                                                        XSModelAnalyzerTest.class.getResource( "Philosopher.xsd" ).toString() );
+        QName abstractFeatureElementName = new QName( "http://www.opengis.net/gml", "_Feature" );
+        List<XSElementDeclaration> concreteFeatureElements = analyzer.getSubstitutions( abstractFeatureElementName,
+                                                                                        null, true, true );
+        assertEquals( 5, concreteFeatureElements.size() );
+    }
 }

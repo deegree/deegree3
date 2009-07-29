@@ -36,7 +36,6 @@
 package org.deegree.commons.xml;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.fail;
 
 import java.io.StringWriter;
 
@@ -48,13 +47,14 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.jaxen.JaxenException;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * TODO add documentation here
+ * Basic tests for the {@link XMLAdapter} class.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -109,11 +109,11 @@ public class XMLAdapterTest extends XMLAdapter {
 
         // select text node
         Object textNode = getNode( root, new XPath( "wfs:Query/ogc:Filter/ogc:BBOX/ogc:PropertyName/text()", nsContext ) );
-        System.out.println( "textNode: " + textNode.getClass() );
+        assertEquals ("app:placeOfBirth/app:Place/app:country/app:Country/app:geom", ((OMText) textNode).getText());
 
         // select attribute node
         Object attributeNode = getNode( root, new XPath( "wfs:Query/@typeName", nsContext ) );
-        System.out.println( "attributeNode: " + attributeNode.getClass() );
+        assertEquals ("app:Philosopher", ((OMAttribute) attributeNode).getAttributeValue());
     }
 
     @Test
@@ -124,20 +124,20 @@ public class XMLAdapterTest extends XMLAdapter {
         // select text node
         String textNode = getNodeAsString( root, new XPath( "wfs:Query/ogc:Filter/ogc:BBOX/ogc:PropertyName/text()",
                                                             nsContext ), null );
-        System.out.println( "textNode: " + textNode );
+        assertEquals( "app:placeOfBirth/app:Place/app:country/app:Country/app:geom", textNode );
 
         // select attribute node
         QName attributeNode = getNodeAsQName( root, new XPath( "wfs:Query/@typeName", nsContext ), null );
-        System.out.println( "attributeNode: " + attributeNode );
+        assertEquals( QName.valueOf( "{http://www.deegree.org/app}Philosopher"), attributeNode );
 
         // select element node
         String elementNode = getNodeAsString( root,
                                               new XPath( "wfs:Query/ogc:Filter/ogc:BBOX/gml:Envelope/gml:coord/gml:X",
                                                          nsContext ), null );
-        System.out.println( "elementNode: '" + elementNode + "'" );
+        assertEquals ("-1", elementNode);
     }
 
-    @Test
+    @Test(expected=XMLProcessingException.class)
     public void testGetRequiredNodeAsString() {
 
         OMElement root = getRootElement();
@@ -146,34 +146,22 @@ public class XMLAdapterTest extends XMLAdapter {
                                                            nsContext ) );
         assertEquals( "app:placeOfBirth/app:Place/app:country/app:Country/app:geom", value );
 
-        try {
-            value = getRequiredNodeAsString( root, new XPath( "wfs:Query/@doesNotExist", nsContext ) );
-            fail();
-        } catch ( XMLProcessingException e ) {
-            // expected to be thrown (node does not exist)
-        }
+        getRequiredNodeAsString( root, new XPath( "wfs:Query/@doesNotExist", nsContext ) );
     }
 
-    @Test
+    @Test(expected=XMLProcessingException.class)
     public void testGetRequiredNodeAsQName() {
 
         OMElement root = getRootElement();
         QName value = getRequiredNodeAsQName( root, new XPath( "wfs:Query/@typeName", nsContext ) );
         assertEquals( new QName( APP_NS, "Philosopher" ), value );
 
-        try {
-            value = getRequiredNodeAsQName( root, new XPath( "wfs:Query/@doesNotExist", nsContext ) );
-            fail();
-        } catch ( XMLProcessingException e ) {
-            // expected to be thrown (node does not exist)
-        }
+        getRequiredNodeAsQName( root, new XPath( "wfs:Query/@doesNotExist", nsContext ) );
     }
 
     @Test
     public void testWriteElement()
                             throws XMLStreamException {
-
-        System.out.println( getRootElement().getLocalName() );
 
         StringWriter stringWriter = new StringWriter();
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
@@ -184,7 +172,5 @@ public class XMLAdapterTest extends XMLAdapter {
         inputReader.nextTag();
 
         getRootElement().serializeAndConsume( writer );
-
-        System.out.println( "HUHU: '" + stringWriter.toString() + "'" );
     }
 }

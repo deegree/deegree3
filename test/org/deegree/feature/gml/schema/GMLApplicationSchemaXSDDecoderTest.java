@@ -1,3 +1,4 @@
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -34,9 +35,10 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.feature.gml.schema;
 
+import junit.framework.Assert;
+
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.PropertyType;
 import org.junit.Test;
 
 public class GMLApplicationSchemaXSDDecoderTest {
@@ -49,11 +51,8 @@ public class GMLApplicationSchemaXSDDecoderTest {
         String schemaURL = this.getClass().getResource( "../testdata/schema/Philosopher.xsd" ).toString();
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( schemaURL, GMLVersion.GML_31 );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
-        for ( FeatureType featureType : fts ) {
-            System.out.println( "\nfeatureType: " + featureType );
-            for ( PropertyType pt : featureType.getPropertyDeclarations() ) {
-                System.out.println( pt );
-            }
-        }
+        Assert.assertEquals( 19, fts.length );
+        
+        // TODO do more thorough testing
     }
 }
