@@ -45,8 +45,10 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.XMLStreamWriterWrapper;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
+import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -77,8 +79,9 @@ public class ApplicationSchemaXSDEncoderTest {
     public void testExportAsGML31() throws XMLStreamException, IOException {
         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 //        outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
-        FormattingXMLStreamWriter writer = new FormattingXMLStreamWriter (outputFactory.createXMLStreamWriter( new FileWriter ("/home/schneider/philosopher_gml200.xsd") ));
-        new ApplicationSchemaXSDEncoder(GMLVersion.GML_2, null).export( writer, schema );
-        writer.close();
+        
+        XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();       
+        new ApplicationSchemaXSDEncoder(GMLVersion.GML_31, null).export( memoryWriter.getXMLStreamWriter(), schema );
+        memoryWriter.getXMLStreamWriter().close();
     }
 }
