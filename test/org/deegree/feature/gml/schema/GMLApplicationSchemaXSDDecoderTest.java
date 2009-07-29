@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.gml.schema;
 
 import junit.framework.Assert;
@@ -41,10 +41,18 @@ import org.deegree.commons.gml.GMLVersion;
 import org.deegree.feature.types.FeatureType;
 import org.junit.Test;
 
+/**
+ * Tests that check that the extraction of {@link FeatureType}s from GML application schemas works as expected.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class GMLApplicationSchemaXSDDecoderTest {
 
     @Test
-    public void testParsing()
+    public void testParsingPhilosopher()
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
@@ -52,7 +60,20 @@ public class GMLApplicationSchemaXSDDecoderTest {
         ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( schemaURL, GMLVersion.GML_31 );
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 19, fts.length );
-        
+
+        // TODO do more thorough testing
+    }
+
+    @Test
+    public void testParsingCityGML()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "http://schemas.opengis.net/citygml/profiles/base/1.0/CityGML.xsd";
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( schemaURL, GMLVersion.GML_31 );
+        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+        Assert.assertEquals( 69, fts.length );
+
         // TODO do more thorough testing
     }
 }
