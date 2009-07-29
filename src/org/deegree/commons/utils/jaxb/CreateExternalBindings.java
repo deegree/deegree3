@@ -50,7 +50,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.utils.StringPair;
-import org.deegree.commons.xml.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 
 /**
  * The <code>CreateExternalBindings</code> is a little utitly class, which writes a jaxb binding file by reading java

@@ -49,6 +49,7 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.jaxen.JaxenException;
 import org.junit.Before;
 import org.junit.Test;

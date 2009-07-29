@@ -47,7 +47,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.Assert;
 
-import org.deegree.commons.xml.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.gml.GML311GeometryEncoder;
 import org.deegree.geometry.primitive.LineString;

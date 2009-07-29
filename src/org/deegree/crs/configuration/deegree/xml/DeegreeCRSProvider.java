@@ -52,7 +52,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.FormattingXMLStreamWriter;
+import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
 import org.deegree.crs.configuration.AbstractCRSProvider;
