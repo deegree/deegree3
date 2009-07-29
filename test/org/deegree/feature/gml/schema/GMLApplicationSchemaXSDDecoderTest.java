@@ -42,7 +42,7 @@ import org.deegree.feature.types.FeatureType;
 import org.junit.Test;
 
 /**
- * Tests that check that the extraction of {@link FeatureType}s from GML application schemas works as expected.
+ * Tests that check the extraction of {@link FeatureType}s from GML application schemas.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
