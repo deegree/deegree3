@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
 import static org.junit.Assert.assertEquals;
@@ -41,7 +41,6 @@ import static org.junit.Assert.assertTrue;
 import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.geom.RasterReference.Type;
-import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.junit.Test;
@@ -49,12 +48,12 @@ import org.junit.Test;
 /**
  * Test the RasterReference implementation. Test calculations between raster(int) and world(double) coordinates,
  * calculation of raster sizes from envelopes and sub envelopes.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class RasterReferenceTest {
 
@@ -63,7 +62,7 @@ public class RasterReferenceTest {
     static GeometryFactory geomFactory = new GeometryFactory();
 
     /**
-     *
+     * 
      */
     @Test
     public void testSimple() {
@@ -86,7 +85,7 @@ public class RasterReferenceTest {
     }
 
     /**
-     *
+     * 
      */
     @Test
     public void testOffCenter() {
@@ -104,7 +103,7 @@ public class RasterReferenceTest {
     }
 
     /**
-     *
+     * 
      */
     @Test
     public void testConvertToRasterCRS() {
@@ -125,7 +124,7 @@ public class RasterReferenceTest {
     }
 
     /**
-     *
+     * 
      */
     @Test
     public void testNegResolution() {
@@ -151,12 +150,13 @@ public class RasterReferenceTest {
     }
 
     /**
-     *
+     * 
      */
     @Test
     public void testEnvelope() {
         RasterReference r = new RasterReference( Type.CENTER, 1.0, 19.0, 2.0, -2.0 );
-        Envelope envelope = geomFactory.createEnvelope( new double[] { 0.0, 10.00 }, new double[] { 20.00, 20.00 }, null );
+        Envelope envelope = geomFactory.createEnvelope( new double[] { 0.0, 10.00 }, new double[] { 20.00, 20.00 },
+                                                        null );
         RasterRect rEnv = r.convertEnvelopeToRasterCRS( envelope );
         assertEquals( 0, rEnv.x );
         assertEquals( 0, rEnv.y );
@@ -164,7 +164,7 @@ public class RasterReferenceTest {
         assertEquals( 5, rEnv.height );
 
         r = new RasterReference( Type.CENTER, 11.0, 29.0, 2.0, -2.0 );
-        envelope = geomFactory.createEnvelope( new double[] { 20.00, 10.00 }, new double[] { 30.00, 20.00 }, null);
+        envelope = geomFactory.createEnvelope( new double[] { 20.00, 10.00 }, new double[] { 30.00, 20.00 }, null );
         rEnv = r.convertEnvelopeToRasterCRS( envelope );
         assertEquals( 5, rEnv.x );
         assertEquals( 5, rEnv.y );
@@ -180,12 +180,13 @@ public class RasterReferenceTest {
     }
 
     /**
-     *
+     * 
      */
     @Test
     public void testCreateSubEnvelope() {
         RasterReference r = new RasterReference( Type.CENTER, 100.5, 109.5, 1.0, -1.0 );
-        Envelope envelope = geomFactory.createEnvelope( new double[] { 102.0, 106.0 }, new double[] { 104.0, 108.0 }, null );
+        Envelope envelope = geomFactory.createEnvelope( new double[] { 102.0, 106.0 }, new double[] { 104.0, 108.0 },
+                                                        null );
 
         assertTrue( r.getX0( Type.OUTER ) >= 100.0 );
         assertTrue( r.getY0( Type.OUTER ) <= 110.0 );
@@ -219,12 +220,13 @@ public class RasterReferenceTest {
     }
 
     /**
-     *
+     * 
      */
     @Test
     public void testCreateScaledEnvelope() {
         RasterReference r = new RasterReference( Type.OUTER, 10.0, 210.0, 1.0, -1.0 );
-        Envelope envelope = geomFactory.createEnvelope( new double[] { 10.0, 10.0 }, new double[] { 110.0, 210.0 }, null );
+        Envelope envelope = geomFactory.createEnvelope( new double[] { 10.0, 10.0 }, new double[] { 110.0, 210.0 },
+                                                        null );
         RasterReference scaled = r.createResizedEnvelope( envelope, 50, 25 );
         assertEquals( 10.0, scaled.getX0( Type.OUTER ), DELTA );
         assertEquals( 210.0, scaled.getY0( Type.OUTER ), DELTA );
@@ -240,7 +242,7 @@ public class RasterReferenceTest {
     }
 
     /**
-     *
+     * 
      */
     @Test
     public void testTiling() {
@@ -291,25 +293,16 @@ public class RasterReferenceTest {
     }
 
     /**
-     *
+     * 
      */
     @Test
     public void testGetSize() {
         RasterReference r = new RasterReference( 10.5, 209.5, 2.0, -1.0 );
-        Envelope envelope = geomFactory.createEnvelope( new double[] { 10.0, 10.0 }, new double[] { 110.0, 210.0 }, null );
+        Envelope envelope = geomFactory.createEnvelope( new double[] { 10.0, 10.0 }, new double[] { 110.0, 210.0 },
+                                                        null );
         int[] size = r.getSize( envelope );
         assertEquals( 50, size[0] );
         assertEquals( 200, size[1] );
-    }
-
-    @Test
-    public void testAxesOrientation() {
-        RasterReference rr = new RasterReference( Type.OUTER, 0.0, 0.0, 1.0, 1.0 );
-        Envelope env = rr.getEnvelope( 50, 30, new CRS( "EPSG:4326" ), Type.CENTER );
-        assertEquals( env.getMin().getX(), 0.5, DELTA );
-        assertEquals( env.getMin().getY(), 0.5, DELTA );
-        assertEquals( env.getMax().getX(), 49.5, DELTA );
-        assertEquals( env.getMax().getY(), 29.5, DELTA );
     }
 
 }

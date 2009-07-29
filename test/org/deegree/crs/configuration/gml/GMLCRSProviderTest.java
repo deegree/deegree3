@@ -118,7 +118,7 @@ public class GMLCRSProviderTest extends TestCase {
             // System.out.println ("id: " + id);
             // }
             // try loading the gaus krueger zone 3.
-            System.out.println( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
+            // System.out.println( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
             CoordinateSystem testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
             testCRS_31467( testCRS );
             testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "SOME_DUMMY_CODE" ) );
@@ -148,7 +148,7 @@ public class GMLCRSProviderTest extends TestCase {
         GeodeticDatum datum = realCRS.getGeodeticDatum();
         assertNotNull( datum );
         // assertEquals( "EPSG:6314", datum.getIdentifier() );
-        assertEquals( "urn:adv:datum:DHDN", datum.getCode() );
+        assertEquals( "urn:ogc:def:datum:EPSG::6314", datum.getCode().getOriginal() );
         // assertEquals( PrimeMeridian.GREENWICH, datum.getPrimeMeridian() );
         // assertEquals( "urn:adv:meridian:Greenwich", datum.getPrimeMeridian().getIdentifier() );
 
@@ -156,7 +156,7 @@ public class GMLCRSProviderTest extends TestCase {
         Ellipsoid ellips = datum.getEllipsoid();
         assertNotNull( ellips );
         // assertEquals( "EPSG:7004", ellips.getIdentifier() );
-        assertEquals( "urn:adv:ellipsoid:Bessel", ellips.getCode() );
+        assertEquals( "urn:ogc:def:ellipsoid:EPSG::7004", ellips.getCode().getOriginal() );
         assertEquals( Unit.METRE, ellips.getUnits() );
         assertEquals( 6377397.155, ellips.getSemiMajorAxis() );
         assertEquals( 299.1528128, ellips.getInverseFlattening() );
@@ -165,7 +165,7 @@ public class GMLCRSProviderTest extends TestCase {
         Helmert toWGS = datum.getWGS84Conversion();
         assertNotNull( toWGS );
         assertTrue( toWGS.hasValues() );
-        assertEquals( "urn:adv:coordinateOperation:DHDN_ETRS89_3m", toWGS.getCode() );
+        assertEquals( "urn:ogc:def:coordinateOperation:EPSG::1777", toWGS.getCode().getOriginal() );
         assertEquals( 598.1, toWGS.dx );
         assertEquals( 73.7, toWGS.dy );
         assertEquals( 418.2, toWGS.dz );
@@ -177,7 +177,7 @@ public class GMLCRSProviderTest extends TestCase {
         // test the geographic
         GeographicCRS geographic = realCRS.getGeographicCRS();
         assertNotNull( geographic );
-        assertEquals( "urn:adv:crs:DE_DHDN", geographic.getCode() );
+        assertEquals( "urn:ogc:def:crs:EPSG::4314", geographic.getCode().getOriginal() );
         // assertEquals( "EPSG:4314", geographic.getIdentifier() );
         Axis[] ax = geographic.getAxis();
         assertEquals( 2, ax.length );
@@ -196,7 +196,7 @@ public class GMLCRSProviderTest extends TestCase {
         CoordinateSystem testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
         testCRS_31467( testCRS );
 
-        testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:adv:crs:DE_DHDN_3GK3" ) );
+        testCRS = gProvider.getCRSByCode( CRSCodeType.valueOf( "urn:ogc:def:crs:EPSG::31467" ) );
         testCRS_31467( testCRS );
     }
 }

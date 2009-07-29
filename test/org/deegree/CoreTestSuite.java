@@ -67,6 +67,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.commons.utils.ArrayToolsTest.class, org.deegree.commons.utils.FileUtilsTest.class,
                 org.deegree.commons.utils.StringToolsTest.class, org.deegree.commons.utils.math.MathUtilsTest.class,
                 org.deegree.commons.utils.time.DateUtilsTest.class, org.deegree.commons.xml.XMLAdapterTest.class,
+                org.deegree.commons.xml.schema.XSModelAnalyzerTest.class,
                 org.deegree.coverage.raster.GeoTIFFTest.class, org.deegree.coverage.raster.RasterReferenceTest.class,
                 org.deegree.coverage.raster.WorldFileAccessTest.class, org.deegree.crs.CRSCodeTypeTest.class,
                 org.deegree.crs.components.UnitTest.class,

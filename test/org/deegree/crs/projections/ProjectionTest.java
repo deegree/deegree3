@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.projections;
 
@@ -47,20 +47,19 @@ import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.exceptions.ProjectionException;
-import org.deegree.crs.projections.Projection;
 import org.deegree.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * <code>ProjectionTest</code> is the base for all accuracy tests, this class doesn't really test anything.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class ProjectionTest extends TestCase {
 
@@ -74,7 +73,8 @@ public class ProjectionTest extends TestCase {
      * A common ellipsoid also known as GRS 1980
      */
     protected static final Ellipsoid ellipsoid_7019 = new Ellipsoid( 6378137.0, Unit.METRE, 298.257222101,
-                                                                     new CRSCodeType[] { new CRSCodeType( "7019", "ESPG" ) } );
+                                                                     new CRSCodeType[] { new CRSCodeType( "7019",
+                                                                                                          "ESPG" ) } );
 
     /**
      * No wgs84 conversion needed.
@@ -88,14 +88,21 @@ public class ProjectionTest extends TestCase {
     /**
      * European Terrestrial Reference System 1989
      */
-    protected static final GeodeticDatum datum_6258 = new GeodeticDatum( ellipsoid_7019, wgs_1188,
-                                                                         new CRSCodeType[] { new CRSCodeType( "6258", "ESPG" ) } );
+    protected static final GeodeticDatum datum_6258 = new GeodeticDatum(
+                                                                         ellipsoid_7019,
+                                                                         wgs_1188,
+                                                                         new CRSCodeType[] { new CRSCodeType( "6258",
+                                                                                                              "ESPG" ) } );
 
     /**
      * Also known as ETRS89
      */
-    protected static final GeographicCRS geographic_4258 = new GeographicCRS( datum_6258, axis_degree,
-                                                                              new CRSCodeType[] { new CRSCodeType( "4258", "ESPG" ) } );
+    protected static final GeographicCRS geographic_4258 = new GeographicCRS(
+                                                                              datum_6258,
+                                                                              axis_degree,
+                                                                              new CRSCodeType[] { new CRSCodeType(
+                                                                                                                   "4258",
+                                                                                                                   "ESPG" ) } );
 
     private static Logger LOG = LoggerFactory.getLogger( ProjectionTest.class );
 
@@ -109,7 +116,7 @@ public class ProjectionTest extends TestCase {
 
     /**
      * Creates an epsilon string with following layout axis.getName: origPoint - resultPoint = epsilon Unit.getName().
-     *
+     * 
      * @param sourceCoordinate
      *            on the given axis
      * @param targetCoordinate
@@ -137,7 +144,7 @@ public class ProjectionTest extends TestCase {
     /**
      * Transforms the given coordinates in the sourceCRS to the given targetCRS and checks if they lie within the given
      * epsilon range to the reference point. If successful the transformed will be logged.
-     *
+     * 
      * @param origPoint
      *            to transform
      * @param referencePoint
@@ -196,7 +203,7 @@ public class ProjectionTest extends TestCase {
 
     /**
      * Do a forward and inverse accuracy test, using the standard epsilon values.
-     *
+     * 
      * @param projection
      * @param source
      * @param target
@@ -228,6 +235,9 @@ public class ProjectionTest extends TestCase {
             inverseSuccess = false;
         }
         LOG.debug( output.toString() );
+        if ( !forwardSuccess || !inverseSuccess ) {
+            LOG.warn( output.toString() );
+        }
 
         assertEquals( true, forwardSuccess );
         assertEquals( true, inverseSuccess );
@@ -236,7 +246,7 @@ public class ProjectionTest extends TestCase {
 
     /**
      * Helper method to test if the projections have given values, and do not change internally.
-     *
+     * 
      * @param toBeTested
      * @param falseNorthing
      * @param falseEasting

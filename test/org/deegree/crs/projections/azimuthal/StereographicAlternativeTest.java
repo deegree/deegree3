@@ -98,15 +98,6 @@ public class StereographicAlternativeTest extends ProjectionTest {
                                                                                                    Unit.METRE,
                                                                                                    0.9999079 );
 
-    private static final StereographicAlternative projection_32661 = new StereographicAlternative(
-                                                                                                   GeographicCRS.WGS84,
-                                                                                                   200000,
-                                                                                                   2000000,
-                                                                                                   new Point2d(
-                                                                                                                Math.toRadians( 0 ),
-                                                                                                                Math.toRadians( 90 ) ),
-                                                                                                   Unit.METRE, 0.994 );
-
     /**
      * reference point created with proj4 command : <code>
      * proj -f "%.8f" +proj=sterea +ellps=bessel +lon_0=5.38763888888889 +lat_0=52.15616055555555 +k=0.9999079
@@ -126,27 +117,6 @@ public class StereographicAlternativeTest extends ProjectionTest {
         Point2d targetPoint = new Point2d( 236655.91462443, 583827.76880699 );
 
         doForwardAndInverse( projection_28992, sourcePoint, targetPoint );
-    }
-
-    /**
-     * reference point created with proj4 command : <code>
-     * proj -f "%.8f" +proj=sterea +ellps=bessel +lon_0=5.38763888888889 +lat_0=52.15616055555555 +k=0.9999079
-     * +x_0=155000 +y_0=463000.0
-     * 6.610765 53.235916
-     * 236655.91462443 583827.76880699
-     * </code>
-     * 
-     * @throws IllegalArgumentException
-     * @throws ProjectionException
-     */
-    @Test
-    public void testAccuracy2()
-                            throws IllegalArgumentException, ProjectionException {
-
-        Point2d sourcePoint = new Point2d( Math.toRadians( 2 ), Math.toRadians( 70 ) );
-        Point2d targetPoint = new Point2d( -29798.33199, 853312.58225 );
-
-        doForwardAndInverse( projection_32661, sourcePoint, targetPoint );
     }
 
     /**
