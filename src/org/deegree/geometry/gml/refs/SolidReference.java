@@ -58,7 +58,7 @@ public class SolidReference<T extends Solid> extends GeometryReference<T> implem
     }
 
     public ValueWithUnit getArea( Unit requestedBaseUnit ) {
-        return getGeometry().getArea( requestedBaseUnit );
+        return getReferencedGeometry().getArea( requestedBaseUnit );
     }
 
     public PrimitiveType getPrimitiveType() {
@@ -66,20 +66,20 @@ public class SolidReference<T extends Solid> extends GeometryReference<T> implem
     }
 
     public SolidType getSolidType() {
-        return getGeometry().getSolidType();
+        return getReferencedGeometry().getSolidType();
     }
 
     public ValueWithUnit getVolume( Unit requestedBaseUnit ) {
-        return getGeometry().getVolume( requestedBaseUnit );
+        return getReferencedGeometry().getVolume( requestedBaseUnit );
     }
 
     @Override
     public Surface getExteriorSurface() {
-        return getGeometry().getExteriorSurface();
+        return getReferencedGeometry().getExteriorSurface();
     }
 
     @Override
     public List<Surface> getInteriorSurfaces() {
-        return getGeometry().getInteriorSurfaces();
+        return getReferencedGeometry().getInteriorSurfaces();
     }
 }

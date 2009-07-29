@@ -37,11 +37,8 @@ package org.deegree.geometry.standard;
 
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
-import org.deegree.geometry.Geometry;
-import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
-import org.deegree.geometry.primitive.GeometricPrimitive;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.standard.points.PackedPoints;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
@@ -57,8 +54,6 @@ import com.vividsolutions.jts.geom.LinearRing;
  * @version $Revision:$, $Date:$
  */
 public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope {
-
-    private static GeometryFactory geomFactory = new GeometryFactory();
 
     private Point max;
 

@@ -50,6 +50,7 @@ import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.OrientableCurve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
+import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.uom.Unit;
 import org.deegree.geometry.uom.ValueWithUnit;
 
@@ -61,7 +62,7 @@ import org.deegree.geometry.uom.ValueWithUnit;
  * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultOrientableCurve implements OrientableCurve {
+public class DefaultOrientableCurve extends AbstractDefaultGeometry implements OrientableCurve {
 
     private String id;
 
@@ -86,8 +87,7 @@ public class DefaultOrientableCurve implements OrientableCurve {
      *            set to true, if the order of the base curve shall be reversed
      */
     public DefaultOrientableCurve( String id, CRS crs, Curve baseCurve, boolean isReversed ) {
-        this.id = id;
-        this.crs = crs;
+        super (id, crs, null);
         this.baseCurve = baseCurve;
         this.isReversed = isReversed;
     }

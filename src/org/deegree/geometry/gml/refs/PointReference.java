@@ -54,12 +54,12 @@ public class PointReference extends GeometricPrimitiveReference<Point> implement
 
     @Override
     public double get( int dimension ) {
-        return getGeometry().get( dimension );
+        return getReferencedGeometry().get( dimension );
     }
 
     @Override
     public double[] getAsArray() {
-        return getGeometry().getAsArray();
+        return getReferencedGeometry().getAsArray();
     }
 
     @Override
@@ -69,16 +69,16 @@ public class PointReference extends GeometricPrimitiveReference<Point> implement
 
     @Override
     public double getX() {
-        return getGeometry().getX();
+        return getReferencedGeometry().getX();
     }
 
     @Override
     public double getY() {
-        return getGeometry().getY();
+        return getReferencedGeometry().getY();
     }
 
     @Override
     public double getZ() {
-        return getGeometry().getZ();
+        return getReferencedGeometry().getZ();
     }
 }

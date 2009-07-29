@@ -42,6 +42,7 @@ import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.gml.refs.GeometryReference;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
@@ -68,10 +69,11 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
  * Abstract base class for the default {@link Geometry} implementation.
  * <p>
  * This implementation is built around <a href="http://tsusiatsoftware.net/jts/main.html">JTS (Java Topology Suite)</a>
- * geometries which are used to evaluate topological predicates (e.g. intersects) and spatial functions (e.g union).
- * Simple geometries (e.g. {@link LineString}s are represented directly by a corresponding JTS object, for complex ones
- * (e.g. {@link Curve}s with non-linear segments), the JTS geometry only approximates the original geometry. See <a
- * href="https://wiki.deegree.org/deegreeWiki/deegree3/MappingComplexGeometries">this page</a> for a discussion.
+ * geometries which are used to evaluate topological predicates (e.g. intersects) and perform spatial analysis
+ * operations (e.g union). Simple geometries (e.g. {@link LineString}s are mapped to a corresponding JTS
+ * object, for complex ones (e.g. {@link Curve}s with non-linear segments), the JTS geometry only approximates the
+ * original geometry. See <a href="https://wiki.deegree.org/deegreeWiki/deegree3/MappingComplexGeometries">this page</a>
+ * for a discussion.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -82,21 +84,23 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 public abstract class AbstractDefaultGeometry implements Geometry {
 
     /**
-     * May be used to built JTS geometries.
+     * Used to built JTS geometries.
      */
     protected final static com.vividsolutions.jts.geom.GeometryFactory jtsFactory = new com.vividsolutions.jts.geom.GeometryFactory();
 
-    // contains an equivalent (or best-fit) JTS geometry object
-    protected com.vividsolutions.jts.geom.Geometry jtsGeometry;
-
+    /** Geometry identifier. */
     protected String id;
 
+    /** Reference to a coordinate system. */
     protected CRS crs;
 
     protected PrecisionModel pm;
 
-    private StandardObjectProperties standardProps;
+    // contains an equivalent (or best-fit) JTS geometry object
+    protected com.vividsolutions.jts.geom.Geometry jtsGeometry;    
 
+    private StandardObjectProperties standardProps;    
+    
     /**
      * @param id
      * @param crs
@@ -185,7 +189,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     @Override
     public ValueWithUnit distance( Geometry geometry, Unit requestedUnit ) {
         // TODO respect unit
-        double dist = getJTSGeometry().distance( geometry.getJTSGeometry() );
+        double dist = getJTSGeometry().distance( getAsAbstractDefaultGeometry( geometry ).getJTSGeometry() );
         return new ValueWithUnit( Double.toString( dist ), null );
     }
 
@@ -233,7 +237,11 @@ public abstract class AbstractDefaultGeometry implements Geometry {
         return new DefaultEnvelope( null, crs, pm, min, max );
     }
 
-    @Override
+    /**
+     * Returns an equivalent (or best-fit) JTS geometry object.
+     * 
+     * @return an equivalent (or best-fit) JTS geometry
+     */
     public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
         if ( jtsGeometry == null ) {
             jtsGeometry = buildJTSGeometry();
@@ -260,7 +268,8 @@ public abstract class AbstractDefaultGeometry implements Geometry {
      * geometry by JTS spatial analysis methods.
      * 
      * @param jtsGeom
-     * @return geometry with precision model and CRS information that are identical to the ones of this geometry, or null if the given geometry is an empty collection
+     * @return geometry with precision model and CRS information that are identical to the ones of this geometry, or
+     *         null if the given geometry is an empty collection
      */
     @SuppressWarnings("unchecked")
     protected AbstractDefaultGeometry createFromJTS( com.vividsolutions.jts.geom.Geometry jtsGeom ) {
@@ -326,6 +335,19 @@ public abstract class AbstractDefaultGeometry implements Geometry {
                                         + jtsGeom.getClass().getName() + "'." );
         }
         return geom;
+    }
+
+    protected static AbstractDefaultGeometry getAsAbstractDefaultGeometry( Geometry geometry ) {
+        if ( geometry instanceof AbstractDefaultGeometry ) {
+            return (AbstractDefaultGeometry) geometry;
+        }
+        if ( geometry instanceof GeometryReference<?> ) {
+            Geometry refGeometry = ( (GeometryReference<?>) geometry ).getReferencedGeometry();
+            if ( refGeometry instanceof AbstractDefaultGeometry ) {
+                return (AbstractDefaultGeometry) refGeometry;
+            }
+        }
+        throw new RuntimeException( "Cannot convert Geometry to AbstractDefaultGeometry." );
     }
 
     private Points getAsPoints( CoordinateSequence seq ) {

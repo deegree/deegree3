@@ -83,7 +83,7 @@ public class DefaultMultiLineString extends DefaultMultiGeometry<LineString> imp
         com.vividsolutions.jts.geom.LineString[] jtsMembers = new com.vividsolutions.jts.geom.LineString[size()];
         int i = 0;
         for ( Curve geometry : members ) {
-            jtsMembers[i++] = (com.vividsolutions.jts.geom.LineString) geometry.getJTSGeometry();
+            jtsMembers[i++] = (com.vividsolutions.jts.geom.LineString) getAsAbstractDefaultGeometry( geometry ).getJTSGeometry();
         }
         return jtsFactory.createMultiLineString( jtsMembers );
     }

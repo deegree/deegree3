@@ -151,11 +151,11 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
     @Override
     protected com.vividsolutions.jts.geom.Geometry buildJTSGeometry() {
 
-        LinearRing shell = (LinearRing) exteriorRing.getJTSGeometry();
+        LinearRing shell = (LinearRing) getAsAbstractDefaultGeometry( exteriorRing).getJTSGeometry();
         LinearRing[] holes = new LinearRing[interiorRings.size()];
         int i = 0;
         for ( Ring ring : interiorRings ) {
-            holes[i++] = (LinearRing) ring.getJTSGeometry();
+            holes[i++] = (LinearRing) getAsAbstractDefaultGeometry(ring).getJTSGeometry();
         }
         return jtsFactory.createPolygon( shell, holes );
     }

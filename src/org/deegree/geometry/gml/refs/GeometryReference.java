@@ -106,7 +106,13 @@ public class GeometryReference<T extends Geometry> implements Geometry {
         this.referencedGeometry = geometry;
     }
 
-    protected T getGeometry() {
+    /**
+     * Returns the referenced {@link Geometry} object.
+     * 
+     * @return the referenced geometry
+     */
+    @SuppressWarnings("unchecked")
+    public T getReferencedGeometry() {
         if ( referencedGeometry == null ) {
             if ( isLocal ) {
                 String msg = "Internal error: Reference to local geometry (" + href + ") has not been resolved.";
@@ -133,109 +139,126 @@ public class GeometryReference<T extends Geometry> implements Geometry {
         return referencedGeometry;
     }
 
+    @Override    
     public boolean contains( Geometry geometry ) {
-        return getGeometry().contains( geometry );
+        return getReferencedGeometry().contains( geometry );
     }
 
+    @Override    
     public boolean crosses( Geometry geometry ) {
-        return getGeometry().crosses( geometry );
+        return getReferencedGeometry().crosses( geometry );
     }
 
+    @Override    
     public Geometry difference( Geometry geometry ) {
-        return getGeometry().difference( geometry );
+        return getReferencedGeometry().difference( geometry );
     }
 
+    @Override    
     public ValueWithUnit distance( Geometry geometry, Unit requestedUnits ) {
-        return getGeometry().distance( geometry, requestedUnits );
+        return getReferencedGeometry().distance( geometry, requestedUnits );
     }
 
+    @Override    
     public boolean equals( Geometry geometry ) {
-        return getGeometry().equals( geometry );
+        return getReferencedGeometry().equals( geometry );
     }
 
+    @Override    
     public Geometry getBuffer( ValueWithUnit distance ) {
-        return getGeometry().getBuffer( distance );
+        return getReferencedGeometry().getBuffer( distance );
     }
 
+    @Override
     public Geometry getConvexHull() {
-        return getGeometry().getConvexHull();
+        return getReferencedGeometry().getConvexHull();
     }
 
+    @Override    
     public int getCoordinateDimension() {
-        return getGeometry().getCoordinateDimension();
+        return getReferencedGeometry().getCoordinateDimension();
     }
 
+    @Override    
     public CRS getCoordinateSystem() {
-        return getGeometry().getCoordinateSystem();
+        return getReferencedGeometry().getCoordinateSystem();
     }
 
+    @Override    
     public Envelope getEnvelope() {
-        return getGeometry().getEnvelope();
+        return getReferencedGeometry().getEnvelope();
     }
 
+    @Override    
     public GeometryType getGeometryType() {
-        return getGeometry().getGeometryType();
+        return getReferencedGeometry().getGeometryType();
     }
 
+    @Override    
     public String getId() {
         if ( isLocal ) {
             return gid;
         }
-        return getGeometry().getId();
-    }
-
-    public PrecisionModel getPrecision() {
-        return getGeometry().getPrecision();
-    }
-
-    public Geometry intersection( Geometry geometry ) {
-        return getGeometry().intersection( geometry );
-    }
-
-    public boolean intersects( Geometry geometry ) {
-        return getGeometry().intersects( geometry );
-    }
-
-    public boolean isDisjoint( Geometry geometry ) {
-        return getGeometry().isDisjoint( geometry );
-    }
-
-    public boolean overlaps( Geometry geometry ) {
-        return getGeometry().overlaps( geometry );
-    }
-
-    public boolean touches( Geometry geometry ) {
-        return getGeometry().touches( geometry );
-    }
-
-    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
-        return getGeometry().isBeyond( geometry, distance );
-    }
-
-    public boolean isWithin( Geometry geometry ) {
-        return getGeometry().isWithin( geometry );
-    }
-
-    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
-        return getGeometry().isWithinDistance( geometry, distance );
-    }
-
-    public Geometry union( Geometry geometry ) {
-        return getGeometry().union( geometry );
+        return getReferencedGeometry().getId();
     }
 
     @Override
-    public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
-        return getGeometry().getJTSGeometry();
+    public PrecisionModel getPrecision() {
+        return getReferencedGeometry().getPrecision();
+    }
+
+    @Override
+    public Geometry intersection( Geometry geometry ) {
+        return getReferencedGeometry().intersection( geometry );
+    }
+
+    @Override    
+    public boolean intersects( Geometry geometry ) {
+        return getReferencedGeometry().intersects( geometry );
+    }
+
+    @Override    
+    public boolean isDisjoint( Geometry geometry ) {
+        return getReferencedGeometry().isDisjoint( geometry );
+    }
+
+    @Override    
+    public boolean overlaps( Geometry geometry ) {
+        return getReferencedGeometry().overlaps( geometry );
+    }
+
+    @Override
+    public boolean touches( Geometry geometry ) {
+        return getReferencedGeometry().touches( geometry );
+    }
+
+    @Override    
+    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
+        return getReferencedGeometry().isBeyond( geometry, distance );
+    }
+
+    @Override    
+    public boolean isWithin( Geometry geometry ) {
+        return getReferencedGeometry().isWithin( geometry );
+    }
+
+    @Override    
+    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
+        return getReferencedGeometry().isWithinDistance( geometry, distance );
+    }
+
+    @Override    
+    public Geometry union( Geometry geometry ) {
+        return getReferencedGeometry().union( geometry );
     }
 
     @Override
     public StandardObjectProperties getStandardGMLProperties() {
-        return getGeometry().getStandardGMLProperties();
+        return getReferencedGeometry().getStandardGMLProperties();
     }
 
     @Override
     public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
-        getGeometry().setStandardGMLProperties( standardProps );
+        getReferencedGeometry().setStandardGMLProperties( standardProps );
     }
 }

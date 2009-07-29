@@ -101,7 +101,7 @@ public class DefaultMultiGeometry<T extends Geometry> extends AbstractDefaultGeo
         com.vividsolutions.jts.geom.Geometry [] jtsMembers = new com.vividsolutions.jts.geom.Geometry[size()];
         int i = 0;
         for ( Geometry geometry : members ) {
-            jtsMembers[i++] = geometry.getJTSGeometry();
+            jtsMembers[i++] = getAsAbstractDefaultGeometry( geometry ).getJTSGeometry();
         }
         return jtsFactory.createGeometryCollection( jtsMembers );
     }

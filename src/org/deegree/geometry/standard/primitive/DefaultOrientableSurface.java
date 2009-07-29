@@ -48,6 +48,7 @@ import org.deegree.geometry.primitive.OrientableSurface;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.uom.Unit;
 import org.deegree.geometry.uom.ValueWithUnit;
 
@@ -59,7 +60,7 @@ import org.deegree.geometry.uom.ValueWithUnit;
  * 
  * @version $Revision:$, $Date:$
  */
-public class DefaultOrientableSurface implements OrientableSurface {
+public class DefaultOrientableSurface extends AbstractDefaultGeometry implements OrientableSurface {
 
     private String id;
 
@@ -84,8 +85,7 @@ public class DefaultOrientableSurface implements OrientableSurface {
      *            set to true, if the orientation of the base Surface shall be reversed
      */
     public DefaultOrientableSurface( String id, CRS crs, Surface baseSurface, boolean isReversed ) {
-        this.id = id;
-        this.crs = crs;
+        super( id, crs, null );
         this.baseSurface = baseSurface;
         this.isReversed = isReversed;
     }

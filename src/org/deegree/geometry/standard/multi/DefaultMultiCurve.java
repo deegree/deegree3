@@ -85,7 +85,7 @@ public class DefaultMultiCurve extends DefaultMultiGeometry<Curve> implements Mu
         LineString [] jtsMembers = new LineString[size()];
         int i = 0;
         for ( Curve geometry : members ) {
-            jtsMembers[i++] = (LineString) geometry.getJTSGeometry();
+            jtsMembers[i++] = (LineString) getAsAbstractDefaultGeometry( geometry ).getJTSGeometry();
         }
         return jtsFactory.createMultiLineString( jtsMembers );
     }
