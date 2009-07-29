@@ -40,9 +40,9 @@ import java.util.List;
 import org.deegree.geometry.primitive.Curve;
 
 /**
- * <code>CompositeCurve</code> is a geometry type with the same geometric properties as the (primitive) {@link Curve}
- * type. It is defined by a sequence of member curves such that the each curve in the sequence ends at the start point
- * of the subsequent curve in the list.
+ * A {@link CompositeCurve} is a geometry with the same topological properties as a (primitive) {@link Curve}. It is
+ * defined by a sequence of member curves such that the each curve in the sequence ends at the start point of the
+ * subsequent curve in the list.
  * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$

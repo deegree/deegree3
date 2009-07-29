@@ -43,6 +43,7 @@ import org.deegree.geometry.primitive.Point;
  *
  *
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  *
  * @version. $Revision$, $Date$
@@ -58,14 +59,16 @@ public interface Envelope extends Geometry {
     public GeometryType getGeometryType();
 
     /**
-     * returns the minimum coordinate of an envelope
-     * @return minimum coordinate of an envelope
+     * Returns the minimum coordinate of the envelope.
+     * 
+     * @return minimum coordinate
      */
     public Point getMin();
 
     /**
-     * returns the maximum coordinate of an envelope
-     * @return maximum coordinate of an envelope
+     * Returns the maximum coordinate of the envelope.
+     * 
+     * @return maximum coordinate
      */
     public Point getMax();
 

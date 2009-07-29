@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.composite;
 
 import java.util.List;
@@ -41,24 +41,25 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.primitive.GeometricPrimitive;
 
 /**
- * A <code>CompositeGeometry</code> is a geometric complex with an underlying core geometry that is isomorphic to a
- * primitive. Thus, a composite curve is a collection of curves whose geometry interface could be satisfied by a single
- * curve (albeit a much more complex one). Composites are intended for use as attribute values in datasets in which the
- * underlying geometry has been decomposed, usually to expose its topological nature.
- *
+ * A <code>CompositeGeometry</code> is a geometric complex with underlying core geometries that are (as a whole)
+ * isomorphic to a geometry primitive. E.g., a composite curve is a collection of curves whose geometry interface could
+ * be satisfied by a single curve (albeit a much more complex one). Composites are intended for use as attribute values
+ * in datasets in which the underlying geometry has been decomposed, usually to expose its topological nature.
+ * 
  * @param <T>
  *            type of the composited geometries
- *
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version. $Revision$, $Date$
  */
 public interface CompositeGeometry<T extends GeometricPrimitive> extends Geometry, List<T> {
 
     /**
      * Returns {@link Geometry.GeometryType#COMPOSITE_GEOMETRY}.
-     *
+     * 
      * @return {@link Geometry.GeometryType#COMPOSITE_GEOMETRY}
      */
     @Override
