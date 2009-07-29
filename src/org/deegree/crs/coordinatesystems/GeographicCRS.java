@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.coordinatesystems;
 
@@ -44,19 +44,19 @@ import org.deegree.crs.EPSGCode;
 import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.GeodeticDatum;
 import org.deegree.crs.components.Unit;
-import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
 import org.deegree.crs.i18n.Messages;
+import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
 
 /**
  * The <code>GeographicCoordinateSystem</code> (in epsg aka Geodetic CRS) is a two dimensional crs with axis of
  * lat-lon.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public class GeographicCRS extends CoordinateSystem {
@@ -69,9 +69,9 @@ public class GeographicCRS extends CoordinateSystem {
     public static final GeographicCRS WGS84 = new GeographicCRS(
                                                                  GeodeticDatum.WGS84,
                                                                  new Axis[] {
-                                                                             new Axis( Unit.DEGREE, "lon",
-                                                                                       Axis.AO_EAST ),
-                                                                             new Axis( Unit.DEGREE, "lat", Axis.AO_NORTH ) },
+                                                                             new Axis( Unit.DEGREE, "lon", Axis.AO_EAST ),
+                                                                             new Axis( Unit.DEGREE, "lat",
+                                                                                       Axis.AO_NORTH ) },
                                                                  new EPSGCode( 4326 ), "WGS 84" );
 
     /**
@@ -102,7 +102,7 @@ public class GeographicCRS extends CoordinateSystem {
     /**
      * @param datum
      * @param axisOrder
-     * @param identifiers
+     * @param codes
      * @param names
      * @param versions
      * @param descriptions
@@ -123,7 +123,7 @@ public class GeographicCRS extends CoordinateSystem {
     /**
      * @param datum
      * @param axisOrder
-     * @param identifiers
+     * @param codes
      */
     public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType[] codes ) {
         this( datum, axisOrder, codes, null, null, null, null );
@@ -132,7 +132,7 @@ public class GeographicCRS extends CoordinateSystem {
     /**
      * @param datum
      * @param axisOrder
-     * @param identifier
+     * @param code
      * @param name
      * @param version
      * @param description
@@ -147,7 +147,7 @@ public class GeographicCRS extends CoordinateSystem {
     /**
      * @param datum
      * @param axisOrder
-     * @param identifier
+     * @param code
      * @param name
      */
     public GeographicCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType code, String name ) {

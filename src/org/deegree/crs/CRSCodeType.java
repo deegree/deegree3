@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,28 +32,28 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs;
 
 /**
- * The <code>CRSCodeType</code> class formalizes the access to CRSIdentifiable, replacing the old "identifiers".
- * Any prefix patterns that are noticed as for example
+ * The <code>CRSCodeType</code> class formalizes the access to CRSIdentifiable, replacing the old "identifiers". Any
+ * prefix patterns that are noticed as for example
  * <ul>
  * <li>EPSG:****</li>
  * <li>URN:OGC:DEF:CRS:EPSG::****</li>
  * <li>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#****</li>
  * <li>URN:OPENGIS:DEF:CRS:EPSG::****</li>
  * </ul>
- * are encapsulated in codespace( in this case "EPSG") and code( the respective value).
- * If any new codetypes are noticed, please add them to the constructor and valueOf method.
- *
+ * are encapsulated in codespace( in this case "EPSG") and code( the respective value). If any new codetypes are
+ * noticed, please add them to the constructor and valueOf method.
+ * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- *
+ * 
  * @author last edited by: $Author: ionita $
- *
+ * 
  * @version $Revision: $, $Date: $
- *
+ * 
  */
 public class CRSCodeType {
 
@@ -62,12 +62,13 @@ public class CRSCodeType {
     private String codeVersion;
 
     private String codeSpace;
-    
+
     private String original;
 
     /**
-     * Create a CRSCodeType from the code and codeSpace. This constructor should be used when the
-     * "$codeSpace:$code" string is an actual id (and not just a compressed version).
+     * Create a CRSCodeType from the code and codeSpace. This constructor should be used when the "$codeSpace:$code"
+     * string is an actual id (and not just a compressed version).
+     * 
      * @param code
      * @param codeSpace
      */
@@ -84,8 +85,9 @@ public class CRSCodeType {
     }
 
     /**
-     * Create a CRSCodeType from a string. The string is parsed into code, codeSpace and codeVersion.
-     * When it cannot, only the original field is non-empty (it will be equal to codeAsString).  
+     * Create a CRSCodeType from a string. The string is parsed into code, codeSpace and codeVersion. When it cannot,
+     * only the original field is non-empty (it will be equal to codeAsString).
+     * 
      * @param codeAsString
      */
     public CRSCodeType( String codeAsString ) {
@@ -102,9 +104,10 @@ public class CRSCodeType {
         for ( int i = n - 1; i >= 0; i-- ) {
             if ( codeAsString.charAt( i ) >= '0' && codeAsString.charAt( i ) <= '9' && !numberFinished ) {
                 codenumber = codeAsString.charAt( i ) + codenumber;
-            } else if ( !versionFinished && ( ( codeAsString.charAt( i ) >= '0' && codeAsString.charAt( i ) <= '9' ) || codeAsString.charAt( i ) == '.' ) ) {
+            } else if ( !versionFinished
+                        && ( ( codeAsString.charAt( i ) >= '0' && codeAsString.charAt( i ) <= '9' ) || codeAsString.charAt( i ) == '.' ) ) {
                 codeversion = codeAsString.charAt( i ) + codeversion;
-            } else if ( codeAsString.charAt( i ) == ':' && !numberFinished ) { 
+            } else if ( codeAsString.charAt( i ) == ':' && !numberFinished ) {
                 numberFinished = true;
             } else if ( codeAsString.charAt( i ) == ':' && !versionFinished ) {
                 versionFinished = true;
@@ -115,11 +118,11 @@ public class CRSCodeType {
         }
 
         this.original = codeAsString;
-        if ( codenumber.trim().equals( "" ) || ! codeAsString.toUpperCase().contains( "EPSG" ) ) {
+        if ( codenumber.trim().equals( "" ) || !codeAsString.toUpperCase().contains( "EPSG" ) ) {
             this.code = "";
-            this.codeSpace = ""; 
+            this.codeSpace = "";
             this.codeVersion = "";
-        } else if ( codenumber.length() != 0 && codeversion.length() != 0 ) { 
+        } else if ( codenumber.length() != 0 && codeversion.length() != 0 ) {
             this.code = codenumber;
             this.codeVersion = codeversion;
             this.codeSpace = "EPSG";
@@ -133,18 +136,20 @@ public class CRSCodeType {
 
     /**
      * Returns the CRSCodeType that can be constructed from the string parameter.
+     * 
      * @param codeAsString
-     * @return
+     * @return the parsed string as a code type
      * @throws IllegalArgumentException
      */
-    public static CRSCodeType valueOf( String codeAsString ) throws IllegalArgumentException {
+    public static CRSCodeType valueOf( String codeAsString )
+                            throws IllegalArgumentException {
         return new CRSCodeType( codeAsString );
     }
 
     /**
      * 
-     * @return  the code number from the code (e.g. "4326" ). Can be an empty string if
-     * the id could not be parsed. To get the id use {@link #getOriginal()}
+     * @return the code number from the code (e.g. "4326" ). Can be an empty string if the id could not be parsed. To
+     *         get the id use {@link #getOriginal()}
      */
     public String getCode() {
         return code;
@@ -152,8 +157,7 @@ public class CRSCodeType {
 
     /**
      * 
-     * @return  the code space from the code (e.g. "EPSG" ). Can be an empty string if
-     * the id could not be parsed.
+     * @return the code space from the code (e.g. "EPSG" ). Can be an empty string if the id could not be parsed.
      */
     public String getCodeSpace() {
         return codeSpace;
@@ -161,35 +165,36 @@ public class CRSCodeType {
 
     /**
      * 
-     * @return  the version of the code. If it does not exist, an empty string is returned.
+     * @return the version of the code. If it does not exist, an empty string is returned.
      */
     public String getCodeVersion() {
         return codeVersion;
     }
-    
+
     /**
      * 
-     * @return  the code id before parsing. 
+     * @return the code id before parsing.
      */
     public String getOriginal() {
         return original;
     }
 
     /**
-     * @return The code used when a {@link CRSIdentifiable} has no id. The code used is "NOT PROVIDED". 
+     * @return The code used when a {@link CRSIdentifiable} has no id. The code used is "NOT PROVIDED".
      */
     public static CRSCodeType getUndefined() {
         return new CRSCodeType( "NOT PROVIDED" );
     }
 
     /**
-     * @return Displays the code under the format <b>code (codeSpace: $codespace[; version: $codeversion])</b>
-     * or simply the string if the code cannot be parsed into code/codespace/codeversion  
+     * @return Displays the code under the format <b>code (codeSpace: $codespace[; version: $codeversion])</b> or
+     *         simply the string if the code cannot be parsed into code/codespace/codeversion
      */
     @Override
     public String toString() {
         if ( !code.equals( "" ) ) {
-            return code + "(codeSpace: " + codeSpace + ( !codeVersion.equals( "" ) ? "; version: " + codeVersion : "" ) + ")";
+            return code + "(codeSpace: " + codeSpace + ( !codeVersion.equals( "" ) ? "; version: " + codeVersion : "" )
+                   + ")";
         }
         return original;
     }
@@ -211,17 +216,17 @@ public class CRSCodeType {
 
     /**
      * 
-     * @return the code in the form "$codeSpace:$codeVersion:$code" or "$codeSpace:$code" or 
-     * the original string if the id could not be parsed.    
+     * @return the code in the form "$codeSpace:$codeVersion:$code" or "$codeSpace:$code" or the original string if the
+     *         id could not be parsed.
      */
     public String getEquivalentString() {
-        if ( ! code.equals( "" ) ) {
+        if ( !code.equals( "" ) ) {
             if ( !codeVersion.equals( "" ) ) {
                 return codeSpace + ":" + codeVersion + ":" + code;
             }
-            return codeSpace + ":" + code;            
+            return codeSpace + ":" + code;
         }
-        
+
         return original;
     }
 }

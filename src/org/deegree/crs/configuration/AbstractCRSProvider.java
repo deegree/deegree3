@@ -202,7 +202,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
             if ( result == null ) {
                 LOG.debug( "No crs with id: " + id + " found in cache." );
                 try {
-                    result = parseCoordinateSystem( resolver.getURIAsType( id.getEquivalentString() ) );
+                    result = parseCoordinateSystem( resolver.getURIAsType( id.getOriginal() ) );
                 } catch ( IOException e ) {
                     LOG.debug( e.getLocalizedMessage(), e );
                     throw new CRSConfigurationException( e );
@@ -508,7 +508,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
                     cachedIdentifiables.put( idString, identifiable );
                 }
             } else {
-                LOG.warn( "Not adding the null string id to the cache of identifiable: " + identifiable.getCode() );
+                LOG.debug( "Not adding the null string id to the cache of identifiable: " + identifiable.getCode() );
             }
 
         }

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,42 +32,42 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs;
 
-import org.deegree.commons.types.ows.CodeType;
 
 /**
- * The <code>EPSGCode</code> class formalizes the CRSIdentifiables object codes that were issued by EPSG.
- * An instance of this class will represent all the EPSG codes variants that denote the same object.
- *
+ * The <code>EPSGCode</code> class formalizes the CRSIdentifiables object codes that were issued by EPSG. An instance
+ * of this class will represent all the EPSG codes variants that denote the same object.
+ * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- *
+ * 
  * @author last edited by: $Author: ionita $
- *
+ * 
  * @version $Revision: $, $Date: $
- *
+ * 
  */
 public class EPSGCode extends CRSCodeType {
 
     private int codeNo;
 
     /**
-     * Construct an EPSGCode, i.e. a CRSCodeType with code space equals "EPSG". <b>Note:</b> Use this 
-     * constructor when you know the code created is not a condensed form, but it actually exists, i.e.
-     * you mean "EPSG:4326" not "URN:OGC:DEF:CRS:EPSG:4326". It will matter when comparing them or the
-     * CRSIdentifiers that bear them.
+     * Construct an EPSGCode, i.e. a CRSCodeType with code space equals "EPSG". <b>Note:</b> Use this constructor when
+     * you know the code created is not a condensed form, but it actually exists, i.e. you mean "EPSG:4326" not
+     * "URN:OGC:DEF:CRS:EPSG:4326". It will matter when comparing them or the CRSIdentifiers that bear them.
+     * 
      * @param codeNo
      */
-    public EPSGCode (int codeNo) {
-        super ("" + codeNo, "EPSG" );
+    public EPSGCode( int codeNo ) {
+        super( "" + codeNo, "EPSG" );
         this.codeNo = codeNo;
     }
 
     /**
      * Returns the code number associated with this EPSG code
-     * @return
+     * 
+     * @return the code number
      */
     public int getCodeNo() {
         return codeNo;

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.crs.transformations.helmert;
 
 import static org.deegree.crs.projections.ProjectionUtils.EPS11;
@@ -52,14 +52,14 @@ import org.deegree.crs.transformations.Transformation;
  * Parameters for a geographic transformation into another datum. The Bursa Wolf parameters should be applied to
  * geocentric coordinates, where the X axis points towards the Greenwich Prime Meridian, the Y axis points East, and the
  * Z axis points North.
- *
- *
+ * 
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class Helmert extends Transformation {
 
@@ -115,7 +115,8 @@ public class Helmert extends Transformation {
      *            true if the rotation parameters are in radians
      */
     public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
-                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable identifiable, boolean inRadians ) {
+                    CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSIdentifiable identifiable,
+                    boolean inRadians ) {
         super( sourceCRS, targetCRS, identifiable );
         this.dx = dx;
         this.dy = dy;
@@ -156,13 +157,13 @@ public class Helmert extends Transformation {
 
     /**
      * Construct a conversion info with all parameters set to 0;
-     *
+     * 
      * @param sourceCRS
      *            of this helmert transformation
      * @param targetCRS
      *            of this helmert transformation
-     *
-     * @param identifiers
+     * 
+     * @param codes
      * @param names
      * @param versions
      * @param descriptions
@@ -171,17 +172,17 @@ public class Helmert extends Transformation {
     public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType[] codes, String[] names,
                     String[] versions, String[] descriptions, String[] areasOfUse ) {
         this( 0, 0, 0, 0, 0, 0, 0, sourceCRS, targetCRS, new CRSIdentifiable( codes, names, versions, descriptions,
-                                                                           areasOfUse ) );
+                                                                              areasOfUse ) );
     }
 
     /**
      * Construct a conversion info with all parameters set to 0;
-     *
+     * 
      * @param sourceCRS
      *            of this helmert transformation
      * @param targetCRS
      *            of this helmert transformation
-     * @param identifier
+     * @param code
      */
     public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType code ) {
         this( sourceCRS, targetCRS, new CRSCodeType[] { code } );
@@ -189,12 +190,12 @@ public class Helmert extends Transformation {
 
     /**
      * Construct a conversion info with all parameters set to 0;
-     *
+     * 
      * @param sourceCRS
      *            of this helmert transformation
      * @param targetCRS
      *            of this helmert transformation
-     * @param identifiers
+     * @param codes
      */
     public Helmert( CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType[] codes ) {
         this( sourceCRS, targetCRS, codes, null, null, null, null );
@@ -219,7 +220,7 @@ public class Helmert extends Transformation {
      *            of this helmert transformation
      * @param targetCRS
      *            of this helmert transformation
-     * @param identifiers
+     * @param codes
      * @param names
      * @param versions
      * @param descriptions
@@ -229,7 +230,7 @@ public class Helmert extends Transformation {
                     CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType[] codes, String[] names,
                     String[] versions, String[] descriptions, String[] areaOfUses ) {
         this( dx, dy, dz, ex, ey, ez, ppm, sourceCRS, targetCRS, new CRSIdentifiable( codes, names, versions,
-                                                                                   descriptions, areaOfUses ) );
+                                                                                      descriptions, areaOfUses ) );
     }
 
     /**
@@ -251,7 +252,7 @@ public class Helmert extends Transformation {
      *            of this helmert transformation
      * @param targetCRS
      *            of this helmert transformation
-     * @param identifier
+     * @param code
      * @param name
      * @param version
      * @param description
@@ -283,7 +284,7 @@ public class Helmert extends Transformation {
      *            of this helmert transformation
      * @param targetCRS
      *            of this helmert transformation
-     * @param identifiers
+     * @param codes
      */
     public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
                     CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType[] codes ) {
@@ -309,7 +310,7 @@ public class Helmert extends Transformation {
      *            of this helmert transformation
      * @param targetCRS
      *            of this helmert transformation
-     * @param identifier
+     * @param code
      */
     public Helmert( double dx, double dy, double dz, double ex, double ey, double ez, double ppm,
                     CoordinateSystem sourceCRS, CoordinateSystem targetCRS, CRSCodeType code ) {
@@ -319,25 +320,24 @@ public class Helmert extends Transformation {
     /**
      * Returns an affine transformation also known as the "Helmert" transformation. The matrix representation of this
      * transformation (also known as "Bursa Wolf" formula) is as follows:
-     *
+     * 
      * <blockquote>
-     *
+     * 
      * <pre>
      *       S = 1 + {@link #ppm}*1E-6
-     *
      *       [ X ]     [ S          -{@link #ez}*S  +{@link #ey}*S   {@link #dx} ]  [ X ]
      *       [ Y ]  = [ +{@link #ez}*S  S          -{@link #ex}*S   {@link #dy} ]  [ Y ]
      *       [ Z ]     [ -{@link #ey}*S   +{@link #ex}*S   S         {@link #dz} ]  [ Z ]
      *       [ 1 ]     [ 0           0           0           1 ]  [ 1 ]
      * </pre>
-     *
+     * 
      * </blockquote>
-     *
+     * 
      * This affine transform can be applied to transform <code>geocentric</code> coordinates from one datum into
      * <code>geocentric</code> coordinates of an other datum. see <a
      * href="http://www.posc.org/Epicentre.2_2/DataModel/ExamplesofUsage/eu_cs35.html#CS3523_helmert">
      * http://www.posc.org/Epicentre.2_2/DataModel/ExamplesofUsage/eu_cs35.html</a> for more information.
-     *
+     * 
      * @return the affine "Helmert" transformation as a Matrix4d.
      */
     public Matrix4d getAsAffineTransform() {
@@ -381,7 +381,7 @@ public class Helmert extends Transformation {
     /**
      * Returns the Well Know Text (WKT) for this object. The WKT is part of OpenGIS's specification and looks like
      * <code>TOWGS84[dx, dy, dz, ex, ey, ez, ppm]</code>.
-     *
+     * 
      * @return the Well Know Text (WKT) for this object.
      */
     @Override
@@ -420,9 +420,9 @@ public class Helmert extends Transformation {
      * <p>
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
-     *
+     * 
      * @return (int) ( result >>> 32 ) ^ (int) result;
-     *
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override

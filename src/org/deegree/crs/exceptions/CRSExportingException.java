@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,35 +32,50 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.exceptions;
 
 /**
- * The <code>CRSExportingException</code> class reports an error that occurred in the process of exporting a CRS to a file, database, etc.
- *
+ * The <code>CRSExportingException</code> class reports an error that occurred in the process of exporting a CRS to a
+ * file, database, etc.
+ * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- *
+ * 
  * @author last edited by: $Author: ionita $
- *
+ * 
  * @version $Revision: $, $Date: $
- *
+ * 
  */
 public class CRSExportingException extends RuntimeException {
 
     /**
-     *
+     * 
      */
     private static final long serialVersionUID = 253985026986808212L;
 
+    /**
+     * @param message
+     *            to be displayed
+     */
     public CRSExportingException( String message ) {
         super( message );
     }
 
-    public CRSExportingException( String message, Exception e ) {
+    /**
+     * @param message
+     *            to be displayed
+     * @param e
+     *            cause
+     */
+    public CRSExportingException( final String message, final Exception e ) {
         super( message, e );
     }
 
+    /**
+     * @param e
+     *            cause
+     */
     public CRSExportingException( Exception e ) {
         super( e );
     }

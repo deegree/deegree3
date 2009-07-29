@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.components;
 
@@ -41,13 +41,13 @@ import org.deegree.crs.CRSIdentifiable;
 
 /**
  * The <code>Axis</code> class describe the orientation, unit and the name of a crs-axis.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public class Axis extends CRSIdentifiable {
@@ -112,13 +112,14 @@ public class Axis extends CRSIdentifiable {
     /**
      * @param units
      *            of this axis
-     * @param name
+     * @param axisName
      *            of this axis (e.g. longitude...)
      * @param orientation
      *            of the positive scale direction, one of Axis.AO*. If an unknown value is supplied AO_OTHER is assumed.
      */
     public Axis( Unit units, String axisName, final int orientation ) {
-        super( new CRSCodeType[] { CRSCodeType.getUndefined() } , new String[] { axisName }, new String[] { }, new String[] { }, new String[] { } );
+        super( new CRSCodeType[] { CRSCodeType.getUndefined() }, new String[] { axisName }, new String[] {},
+               new String[] {}, new String[] {} );
         this.units = units;
         this.axisName = axisName;
         this.orientation = orientation;
@@ -132,16 +133,17 @@ public class Axis extends CRSIdentifiable {
     /**
      * Parses the given orientation and creates a valid orientation of it's non-case-sensitive version. If no conversion
      * was found, {@link #AO_OTHER} will be used.
-     *
+     * 
      * @param units
      *            of the axis.
-     * @param name
+     * @param axisName
      *            of the axis.
      * @param orientation
      *            of the axis as a string for example north
      */
     public Axis( Unit units, String axisName, String orientation ) {
-        super( new CRSCodeType[] { CRSCodeType.getUndefined() } , new String[] { axisName }, new String[] { }, new String[] { }, new String[] { } );
+        super( new CRSCodeType[] { CRSCodeType.getUndefined() }, new String[] { axisName }, new String[] {},
+               new String[] {}, new String[] {} );
         this.units = units;
         this.axisName = axisName;
         this.orientation = AO_OTHER;
@@ -171,7 +173,7 @@ public class Axis extends CRSIdentifiable {
 
     /**
      * An Axis with unit set to metre.
-     *
+     * 
      * @param name
      *            of this axis (e.g. longitude...)
      * @param orientation
@@ -184,7 +186,7 @@ public class Axis extends CRSIdentifiable {
     /**
      * Parses the given orientation and creates a valid orientation of it's non-case-sensitive version. If no conversion
      * was found, {@link #AO_OTHER} will be used. This axis will have metres as it's unit.
-     *
+     * 
      * @param name
      *            of the axis
      * @param orientation
@@ -194,12 +196,12 @@ public class Axis extends CRSIdentifiable {
         this( Unit.METRE, name, orientation );
     }
 
-//    /**
-//     * @return the name.
-//     */
-//    public final String getName() {
-//        return name;
-//    }
+    // /**
+    // * @return the name.
+    // */
+    // public final String getName() {
+    // return name;
+    // }
 
     /**
      * @return the orientation.
@@ -217,9 +219,10 @@ public class Axis extends CRSIdentifiable {
 
     @Override
     public String toString() {
-        return new StringBuilder( "name: " ).append( axisName ).append( " orientation: " ).append( getOrientationAsString() ).append(
-                                                                                                                                  " units: " ).append(
-                                                                                                                                                       units ).toString();
+        return new StringBuilder( "name: " ).append( axisName ).append( " orientation: " ).append(
+                                                                                                   getOrientationAsString() ).append(
+                                                                                                                                      " units: " ).append(
+                                                                                                                                                           units ).toString();
     }
 
     @Override
@@ -246,9 +249,9 @@ public class Axis extends CRSIdentifiable {
      * <p>
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
-     *
+     * 
      * @return (int) ( result >>> 32 ) ^ (int) result;
-     *
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override

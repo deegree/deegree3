@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.coordinatesystems;
 
@@ -48,13 +48,13 @@ import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
  * A <code>ProjectedCRS</code> is a coordinatesystem defined with a projection and a geographic crs. It allows for
  * transformation between projected coordinates (mostly in meters) and the lat/lon coordinates of the geographic crs and
  * vice versa.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public class ProjectedCRS extends CoordinateSystem {
@@ -81,7 +81,7 @@ public class ProjectedCRS extends CoordinateSystem {
      *            vice versa.
      * @param axisOrder
      *            of this projection.
-     * @param identifiers
+     * @param codes
      * @param names
      * @param versions
      * @param descriptions
@@ -96,13 +96,13 @@ public class ProjectedCRS extends CoordinateSystem {
     }
 
     /**
-     *
+     * 
      * @param projection
      *            the projection which converts coordinates from this ProjectedCRS into the underlying GeographicCRS and
      *            vice versa.
      * @param axisOrder
      *            of this projection.
-     * @param identifiers
+     * @param codes
      */
     public ProjectedCRS( Projection projection, Axis[] axisOrder, CRSCodeType[] codes ) {
         this( projection, axisOrder, codes, null, null, null, null );
@@ -114,7 +114,7 @@ public class ProjectedCRS extends CoordinateSystem {
      *            vice versa.
      * @param axisOrder
      *            of this projection.
-     * @param identifier
+     * @param code
      * @param name
      * @param version
      * @param description
@@ -127,13 +127,13 @@ public class ProjectedCRS extends CoordinateSystem {
     }
 
     /**
-     *
+     * 
      * @param projection
      *            the projection which converts coordinates from this ProjectedCRS into the underlying GeographicCRS and
      *            vice versa.
      * @param axisOrder
      *            of this projection.
-     * @param identifier
+     * @param code
      */
     public ProjectedCRS( Projection projection, Axis[] axisOrder, CRSCodeType code ) {
         this( projection, axisOrder, code, null, null, null, null );
@@ -149,7 +149,8 @@ public class ProjectedCRS extends CoordinateSystem {
      *            of this projection.
      * @param identity
      */
-    public ProjectedCRS( List<PolynomialTransformation> transformations, Projection projection, Axis[] axisOrder, CRSIdentifiable identity ) {
+    public ProjectedCRS( List<PolynomialTransformation> transformations, Projection projection, Axis[] axisOrder,
+                         CRSIdentifiable identity ) {
         super( transformations, projection.getGeographicCRS().getGeodeticDatum(), axisOrder, identity );
         this.underlyingCRS = projection.getGeographicCRS();
         this.projection = projection;
@@ -157,7 +158,7 @@ public class ProjectedCRS extends CoordinateSystem {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.deegree.crs.coordinatesystems.CoordinateSystem#getDimension()
      */
     @Override
@@ -215,9 +216,9 @@ public class ProjectedCRS extends CoordinateSystem {
      * <p>
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
-     *
+     * 
      * @return (int) ( result >>> 32 ) ^ (int) result;
-     *
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override

@@ -48,7 +48,6 @@ import org.deegree.crs.components.Axis;
 import org.deegree.crs.components.Unit;
 import org.deegree.crs.configuration.CRSProvider;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.crs.coordinatesystems.GeocentricCRS;
 import org.deegree.crs.coordinatesystems.GeographicCRS;
 import org.deegree.crs.coordinatesystems.ProjectedCRS;
 import org.deegree.crs.exceptions.CRSConfigurationException;
@@ -99,10 +98,8 @@ public class DatabaseCRSProvider implements CRSProvider {
      * @param identifiable
      *            the CRSIdentifiable object
      * @return the internal database ID
-     * @throws SQLException
      */
-    public int getInternalID( CRSIdentifiable identifiable )
-    throws SQLException {
+    public int getInternalID( CRSIdentifiable identifiable ) {
         return querier.getInternalID( identifiable );
     }
 
@@ -116,19 +113,18 @@ public class DatabaseCRSProvider implements CRSProvider {
      * @throws SQLException
      */
     public void setCode( int internalID, String code )
-    throws SQLException {
+                            throws SQLException {
         querier.setCode( internalID, code );
     }
 
     /**
      * @param sourceCRS
      * @param targetCRS
-     * @return
+     * @return <code>null</code>
      * @throws CRSConfigurationException
      */
-    public Transformation getTransformation( CoordinateSystem sourceCRS, 
-                                             CoordinateSystem targetCRS )
-    throws CRSConfigurationException {
+    public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS )
+                            throws CRSConfigurationException {
         return null;
     }
 
@@ -140,33 +136,28 @@ public class DatabaseCRSProvider implements CRSProvider {
      * @throws CRSConfigurationException
      */
     public CoordinateSystem getCRSByCode( CRSCodeType code )
-    throws CRSConfigurationException {
+                            throws CRSConfigurationException {
         CoordinateSystem result = null;
         try {
             result = querier.getCRSByCode( code );
 
-            if ( "4326".equals( code.getCode() ) || "31466".equals( code.getCode() )  
-                                    || "31467".equals( code.getCode() ) || "31468".equals( code.getCode() ) ) {
+            if ( "4326".equals( code.getCode() ) || "31466".equals( code.getCode() ) || "31467".equals( code.getCode() )
+                 || "31468".equals( code.getCode() ) ) {
                 if ( code.getCodeVersion() != null && code.getCodeVersion().length() > 0 ) {
                     // switch axes of the CRS 4326, 31466, 31467, 31468 that have a version! (e.g. 6.11)
                     if ( result instanceof GeographicCRS ) {
-                        CRSIdentifiable fiable = new CRSIdentifiable( result.getCodes(),
-                                                                      result.getNames(),
-                                                                      result.getVersions(),
-                                                                      result.getDescriptions(),
+                        CRSIdentifiable fiable = new CRSIdentifiable( result.getCodes(), result.getNames(),
+                                                                      result.getVersions(), result.getDescriptions(),
                                                                       result.getAreasOfUse() );
                         result = new GeographicCRS( result.getGeodeticDatum(), new Axis[] { result.getAxis()[1],
-                                                                                            result.getAxis()[0] },
-                                                                                            fiable );
+                                                                                           result.getAxis()[0] },
+                                                    fiable );
                     } else if ( result instanceof ProjectedCRS ) {
-                        CRSIdentifiable fiable = new CRSIdentifiable( result.getCodes(),
-                                                                      result.getNames(),
-                                                                      result.getVersions(),
-                                                                      result.getDescriptions(),
+                        CRSIdentifiable fiable = new CRSIdentifiable( result.getCodes(), result.getNames(),
+                                                                      result.getVersions(), result.getDescriptions(),
                                                                       result.getAreasOfUse() );
-                        result = new ProjectedCRS( ( (ProjectedCRS) result ).getProjection(), new Axis[] { result.getAxis()[1],
-                                                                                                             result.getAxis()[0] },
-                                                                                                             fiable );
+                        result = new ProjectedCRS( ( (ProjectedCRS) result ).getProjection(),
+                                                   new Axis[] { result.getAxis()[1], result.getAxis()[0] }, fiable );
                     }
                 }
             }
@@ -180,15 +171,13 @@ public class DatabaseCRSProvider implements CRSProvider {
 
     /**
      * @throws CRSConfigurationException
-     * @throws ClassNotFoundException
      */
-    public DatabaseCRSProvider() throws CRSConfigurationException, ClassNotFoundException {
+    public DatabaseCRSProvider() throws CRSConfigurationException {
         dbConnectionURL = System.getenv( "CRS_DB_URL" );
         if ( dbConnectionURL == null ) {
             dbConnectionURL = "jdbc:derby:classpath:META-INF/deegreeCRS";
         }
         LOG.debug( "using the connection protocol: " + dbConnectionURL );
-
 
         dbUser = System.getenv( "CRS_DB_USER" );
         dbPass = System.getenv( "CRS_DB_PASS" );
@@ -212,37 +201,34 @@ public class DatabaseCRSProvider implements CRSProvider {
         exporter.setConnection( conn );
         remover = new CRSRemover();
         remover.setConnection( conn );
-    }   
+    }
 
     /**
      * 
      * @param properties
      * @throws CRSConfigurationException
-     * @throws ClassNotFoundException
      */
-    public DatabaseCRSProvider( Properties properties ) throws CRSConfigurationException, ClassNotFoundException {
-        this(); // currently properties are not needed but the CRSConfiguration instantiation mechanism forces this parameter
+    public DatabaseCRSProvider( Properties properties ) throws CRSConfigurationException {
+        this(); // currently properties are not needed but the CRSConfiguration instantiation mechanism forces this
+        // parameter
     }
 
     /**
-     * @return 
-     *          whether there is an exported or not  
+     * @return whether there is an exported or not
      */
     public boolean canExport() {
         return exporter != null;
     }
 
     /**
-     * @return
-     *          a list of {@link CRSCodeType}s from all the available CRSs
+     * @return a list of {@link CRSCodeType}s from all the available CRSs
      */
     public List<CRSCodeType> getAvailableCRSCodes() {
         return querier.getAvailableCRSCodes();
     }
 
     /**
-     * @return
-     *          a list of {@link CoordinateSystem}s of all the available CRSs. 
+     * @return a list of {@link CoordinateSystem}s of all the available CRSs.
      */
     public List<CoordinateSystem> getAvailableCRSs() {
         try {
@@ -263,11 +249,12 @@ public class DatabaseCRSProvider implements CRSProvider {
 
     /**
      * 
-     * @param crsList   a list of {@link CoordinateSystem}s to be removed
+     * @param crsList
+     *            a list of {@link CoordinateSystem}s to be removed
      * @throws SQLException
      */
     public void remove( List<CoordinateSystem> crsList )
-    throws SQLException {
+                            throws SQLException {
         remover.removeCRSList( crsList );
     }
 
@@ -283,7 +270,7 @@ public class DatabaseCRSProvider implements CRSProvider {
      * @throws SQLException
      */
     public void changeAxisCode( String axisName, String axisOrientation, Unit uom, CRSCodeType code )
-    throws SQLException {
+                            throws SQLException {
         querier.changeAxisCode( axisName, axisOrientation, uom, code );
     }
 
@@ -291,23 +278,22 @@ public class DatabaseCRSProvider implements CRSProvider {
      * Export a list of CoordianteSystems to the database
      * 
      * @param crsList
-     * @throws ClassNotFoundException
      * @throws SQLException
      * @throws CRSException
      */
     public void export( List<CoordinateSystem> crsList )
-    throws ClassNotFoundException, SQLException, CRSException {
+                            throws SQLException, CRSException {
         String url = System.getenv( "CRS_DB_URL" );
         if ( url == null ) {
             throw new SQLException(
-            "Please specify the database connection by setting the CRS_DB_URL property (environment setting, for example derby: -DCRS_DB_URL=jdbc:derby:META-INF/deegreeCRS)" );
+                                    "Please specify the database connection by setting the CRS_DB_URL property (environment setting, for example derby: -DCRS_DB_URL=jdbc:derby:META-INF/deegreeCRS)" );
         }
         exporter.export( crsList );
     }
 
     /**
      * 
-     * @return      database connection
+     * @return database connection
      */
     public Connection getConnection() {
         return conn;
@@ -315,19 +301,20 @@ public class DatabaseCRSProvider implements CRSProvider {
 
     /**
      * 
-     * @return  the remover object that was initialized once the db crs provider was instantiated. 
+     * @return the remover object that was initialized once the db crs provider was instantiated.
      */
     public CRSRemover getRemover() {
         return remover;
     }
 
     /**
-     * @param   the {@link CRSCodeType} of the wanted identifiable 
-     * @return  the {@link CRSIdentifiable} object
+     * @param id
+     *            the {@link CRSCodeType} of the wanted identifiable
+     * @return the {@link CRSIdentifiable} object
      */
     @Override
     public CRSIdentifiable getIdentifiable( CRSCodeType id )
-    throws CRSConfigurationException {
+                            throws CRSConfigurationException {
         try {
             return querier.getIdentifiable( id );
         } catch ( SQLException e ) {

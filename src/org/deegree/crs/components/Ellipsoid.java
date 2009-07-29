@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.components;
 
@@ -44,13 +44,13 @@ import org.deegree.crs.CRSIdentifiable;
 /**
  * The <code>Ellipsoid</code> class hold all parameters which are necessary to define an Ellipsoid. Every Ellipsoid
  * has a semi-major-axis and one of inverse_flattening, eccentricity or semi-minor-axis.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public class Ellipsoid extends CRSIdentifiable {
@@ -58,8 +58,8 @@ public class Ellipsoid extends CRSIdentifiable {
     /**
      * WGS 1984 ellipsoid. This ellipsoid is used in the GPS system and is the "default" Ellipsoid.
      */
-    public static final Ellipsoid WGS84 = new Ellipsoid( 6378137.0, Unit.METRE, 298.257223563, new CRSCodeType( "7030", "EPSG" ),
-                                                         "WGS84_Ellipsoid" );
+    public static final Ellipsoid WGS84 = new Ellipsoid( 6378137.0, Unit.METRE, 298.257223563,
+                                                         new CRSCodeType( "7030", "EPSG" ), "WGS84_Ellipsoid" );
 
     /**
      * the larger one of the two (semi)axis of an ellipsoid
@@ -123,7 +123,7 @@ public class Ellipsoid extends CRSIdentifiable {
      * @param units
      * @param semiMajorAxis
      * @param semiMinorAxis
-     * @param identifiers
+     * @param codes
      * @param names
      * @param versions
      * @param descriptions
@@ -132,14 +132,14 @@ public class Ellipsoid extends CRSIdentifiable {
     public Ellipsoid( Unit units, double semiMajorAxis, double semiMinorAxis, CRSCodeType[] codes, String[] names,
                       String[] versions, String[] descriptions, String[] areasOfUse ) {
         this( units, semiMajorAxis, semiMinorAxis, new CRSIdentifiable( codes, names, versions, descriptions,
-                                                                     areasOfUse ) );
+                                                                        areasOfUse ) );
     }
 
     /**
      * @param units
      * @param semiMajorAxis
      * @param semiMinorAxis
-     * @param identifier
+     * @param code
      * @param name
      * @param version
      * @param description
@@ -155,7 +155,7 @@ public class Ellipsoid extends CRSIdentifiable {
      * @param units
      * @param semiMajorAxis
      * @param semiMinorAxis
-     * @param identifiers
+     * @param codes
      */
     public Ellipsoid( Unit units, double semiMajorAxis, double semiMinorAxis, CRSCodeType[] codes ) {
         this( units, semiMajorAxis, semiMinorAxis, codes, null, null, null, null );
@@ -165,7 +165,7 @@ public class Ellipsoid extends CRSIdentifiable {
      * @param units
      * @param semiMajorAxis
      * @param semiMinorAxis
-     * @param identifier
+     * @param code
      * @param name
      */
     public Ellipsoid( Unit units, double semiMajorAxis, double semiMinorAxis, CRSCodeType code, String name ) {
@@ -198,7 +198,7 @@ public class Ellipsoid extends CRSIdentifiable {
      * @param semiMajorAxis
      * @param units
      * @param inverseFlattening
-     * @param identifiers
+     * @param codes
      * @param names
      * @param versions
      * @param descriptions
@@ -207,14 +207,14 @@ public class Ellipsoid extends CRSIdentifiable {
     public Ellipsoid( double semiMajorAxis, Unit units, double inverseFlattening, CRSCodeType[] codes, String[] names,
                       String[] versions, String[] descriptions, String[] areasOfUse ) {
         this( semiMajorAxis, units, inverseFlattening, new CRSIdentifiable( codes, names, versions, descriptions,
-                                                                         areasOfUse ) );
+                                                                            areasOfUse ) );
     }
 
     /**
      * @param semiMajorAxis
      * @param units
      * @param inverseFlattening
-     * @param identifier
+     * @param code
      * @param name
      * @param version
      * @param description
@@ -230,7 +230,7 @@ public class Ellipsoid extends CRSIdentifiable {
      * @param semiMajorAxis
      * @param units
      * @param inverseFlattening
-     * @param identifiers
+     * @param codes
      */
     public Ellipsoid( double semiMajorAxis, Unit units, double inverseFlattening, CRSCodeType[] codes ) {
         this( semiMajorAxis, units, inverseFlattening, codes, null, null, null, null );
@@ -240,7 +240,7 @@ public class Ellipsoid extends CRSIdentifiable {
      * @param semiMajorAxis
      * @param units
      * @param inverseFlattening
-     * @param identifier
+     * @param code
      * @param name
      */
     public Ellipsoid( double semiMajorAxis, Unit units, double inverseFlattening, CRSCodeType code, String name ) {
@@ -274,7 +274,7 @@ public class Ellipsoid extends CRSIdentifiable {
      * @param semiMajorAxis
      * @param eccentricity
      * @param units
-     * @param identifiers
+     * @param codes
      * @param names
      * @param versions
      * @param descriptions
@@ -282,15 +282,15 @@ public class Ellipsoid extends CRSIdentifiable {
      */
     public Ellipsoid( double semiMajorAxis, double eccentricity, Unit units, CRSCodeType[] codes, String[] names,
                       String[] versions, String[] descriptions, String[] areasOfUse ) {
-        this( semiMajorAxis, eccentricity, units, new CRSIdentifiable( codes, names, versions, descriptions,
-                                                                    areasOfUse ) );
+        this( semiMajorAxis, eccentricity, units,
+              new CRSIdentifiable( codes, names, versions, descriptions, areasOfUse ) );
     }
 
     /**
      * @param semiMajorAxis
      * @param eccentricity
      * @param units
-     * @param identifier
+     * @param code
      * @param name
      * @param version
      * @param description
@@ -306,7 +306,7 @@ public class Ellipsoid extends CRSIdentifiable {
      * @param semiMajorAxis
      * @param eccentricity
      * @param units
-     * @param identifiers
+     * @param codes
      */
     public Ellipsoid( double semiMajorAxis, double eccentricity, Unit units, CRSCodeType[] codes ) {
         this( semiMajorAxis, eccentricity, units, codes, null, null, null, null );
@@ -316,7 +316,7 @@ public class Ellipsoid extends CRSIdentifiable {
      * @param semiMajorAxis
      * @param eccentricity
      * @param units
-     * @param identifier
+     * @param code
      * @param name
      */
     public Ellipsoid( double semiMajorAxis, double eccentricity, Unit units, CRSCodeType code, String name ) {
@@ -373,7 +373,7 @@ public class Ellipsoid extends CRSIdentifiable {
     }
 
     /**
-     *
+     * 
      * @param units
      */
     public final void setUnits( Unit units ) {
@@ -397,7 +397,7 @@ public class Ellipsoid extends CRSIdentifiable {
 
     /**
      * Calc the eccentricity from the flattening
-     *
+     * 
      * @param flattening
      *            given.
      * @return the squared eccentricity which is given by e^2 = 2*f - f*f.
@@ -408,7 +408,7 @@ public class Ellipsoid extends CRSIdentifiable {
 
     /**
      * calcs the flattening of an ellispoid using the eccentricity.
-     *
+     * 
      * @param eccentricity
      *            given
      * @return 1-sqrt( 1- e^2) or 0 if e^1 > 1
@@ -446,9 +446,9 @@ public class Ellipsoid extends CRSIdentifiable {
      * <p>
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
-     *
+     * 
      * @return (int) ( result >>> 32 ) ^ (int) result;
-     *
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override

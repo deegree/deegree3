@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.components;
 
@@ -43,13 +43,13 @@ import org.deegree.crs.CRSIdentifiable;
 
 /**
  * The <code>PrimeMeridian</code> class saves the longitude to the greenwich meridian.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public class PrimeMeridian extends CRSIdentifiable {
@@ -65,11 +65,13 @@ public class PrimeMeridian extends CRSIdentifiable {
                                                                      Unit.DEGREE,
                                                                      0,
                                                                      new CRSCodeType[] {
-                                                                                   new CRSCodeType( "8901", "EPSG" ),
-                                                                                   new CRSCodeType( "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#8901" ),
-                                                                                   new CRSCodeType( "URN:OPENGIS:DEF:CRS:EPSG::8901" ),
-                                                                                   new CRSCodeType( "URN:OGC:DEF:CRS:EPSG::8901" )
-                                                                                   },
+                                                                                        new CRSCodeType( "8901", "EPSG" ),
+                                                                                        new CRSCodeType(
+                                                                                                         "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#8901" ),
+                                                                                        new CRSCodeType(
+                                                                                                         "URN:OPENGIS:DEF:CRS:EPSG::8901" ),
+                                                                                        new CRSCodeType(
+                                                                                                         "URN:OGC:DEF:CRS:EPSG::8901" ) },
                                                                      new String[] { "Greenwich" },
                                                                      new String[] { "1995-06-02" }, null, null );
 
@@ -92,7 +94,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      *            Angular units of longitude, normally radians.
      * @param longitude
      *            (in given units) normally radians.
-     * @param identifiers
+     * @param codes
      * @param names
      * @param versions
      * @param descriptions
@@ -107,7 +109,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      * @param units
      *            Angular units of longitude.
      * @param longitude
-     * @param identifier
+     * @param code
      * @param name
      * @param version
      * @param description
@@ -123,7 +125,7 @@ public class PrimeMeridian extends CRSIdentifiable {
      * @param units
      *            Angular units of longitude.
      * @param longitude
-     * @param identifiers
+     * @param codes
      */
     public PrimeMeridian( Unit units, double longitude, CRSCodeType[] codes ) {
         this( units, longitude, codes, null, null, null, null );
@@ -133,29 +135,29 @@ public class PrimeMeridian extends CRSIdentifiable {
      * @param units
      *            Angular units of longitude.
      * @param longitude
-     * @param identifier
+     * @param code
      */
     public PrimeMeridian( Unit units, double longitude, CRSCodeType code ) {
         this( units, longitude, new CRSCodeType[] { code } );
     }
 
     /**
-     * A Prime meredian with 0 degrees longitude from the greenwich meridian.
-     *
+     * A Prime meridian with 0 degrees longitude from the greenwich meridian.
+     * 
      * @param units
      *            Angular units of longitude.
-     * @param identifiers
+     * @param codes
      */
     public PrimeMeridian( Unit units, CRSCodeType[] codes ) {
         this( units, 0, codes );
     }
 
     /**
-     * A Prime meredian with 0 degrees longitude from the greenwich meridian.
-     *
+     * A Prime meridian with 0 degrees longitude from the greenwich meridian.
+     * 
      * @param units
      *            Angular units of longitude.
-     * @param identifier
+     * @param code
      * @param name
      *            human readable name
      */
@@ -196,6 +198,10 @@ public class PrimeMeridian extends CRSIdentifiable {
         return units;
     }
 
+    /**
+     * @param units
+     *            to be used
+     */
     public void setAngularUnit( Unit units ) {
         this.units = units;
     }
@@ -234,9 +240,9 @@ public class PrimeMeridian extends CRSIdentifiable {
      * <p>
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
-     *
+     * 
      * @return (int) ( result >>> 32 ) ^ (int) result;
-     *
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override

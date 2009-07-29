@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,16 +32,14 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.gml;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.namespace.QName;
@@ -51,7 +49,6 @@ import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
-import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.configuration.resources.XMLFileResource;
 import org.deegree.crs.coordinatesystems.CompoundCRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
@@ -64,22 +61,21 @@ import org.deegree.crs.transformations.helmert.Helmert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * The <code>GMLFileResource</code> provides easy access to a gml3.2. dictionary file, which can be used together with
  * the {@link GMLCRSProvider}.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class GMLFileResource extends XMLFileResource {
 
     /**
-     *
+     * 
      */
     private static final long serialVersionUID = -4389365894942107300L;
 
@@ -91,8 +87,6 @@ public class GMLFileResource extends XMLFileResource {
                                                   + "Transformation";
 
     private List<OMElement> transformations;
-
-    private Map<CoordinateSystem, Helmert> cachedWGS84Transformations;
 
     private XMLAdapter adapter;
 
@@ -107,7 +101,6 @@ public class GMLFileResource extends XMLFileResource {
         } catch ( XMLParsingException e ) {
             LOG.error( e.getLocalizedMessage(), e );
         }
-        cachedWGS84Transformations = new HashMap<CoordinateSystem, Helmert>();
         adapter = new XMLAdapter();
     }
 
@@ -115,65 +108,52 @@ public class GMLFileResource extends XMLFileResource {
         if ( sourceCRS == null ) {
             return null;
         }
-        if ( LOG.isDebugEnabled() ) {
-            LOG.debug( "Searching for wgs84 transformation for given sourceCRS: "
-                       + Arrays.toString( sourceCRS.getCodes() ) );
-        }
-        Helmert result = cachedWGS84Transformations.get( sourceCRS );
-        if ( result == null ) {
-            Transformation parsedTransformation = getTransformation( sourceCRS, null );
-            if ( parsedTransformation instanceof Helmert ) {
-                LOG.debug( "Found an helmert transformation for sourceCRS: "
-                           + Arrays.toString( sourceCRS.getCodes() ) );
-                result = (Helmert) parsedTransformation;
-            } else {
-                if ( parsedTransformation instanceof CRSTransformation ) {
-                    CoordinateSystem target = ( (CRSTransformation) parsedTransformation ).getTargetCRS();
-                    GeographicCRS t = null;
-                    if ( LOG.isDebugEnabled() ) {
-                        LOG.debug( "Found crstransformation for sourceCRS: "
-                                   + Arrays.toString( sourceCRS.getCodes() ) + " and targetCRS: "
-                                   + Arrays.toString( target.getCodes() )
-                                   + " will now use the targetCRS to find a Helmert transformation." );
-                    }
-                    if ( target.getType() == CoordinateSystem.COMPOUND_CRS ) {
-                        if ( ( (CompoundCRS) target ).getUnderlyingCRS().getType() == CoordinateSystem.PROJECTED_CRS ) {
-                            t = ( (ProjectedCRS) ( (CompoundCRS) target ).getUnderlyingCRS() ).getGeographicCRS();
-                        } else if ( ( (CompoundCRS) target ).getUnderlyingCRS().getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
-                            t = (GeographicCRS) target;
-                        } else {
-                            LOG.warn( "Wgs84 Transformation lookup is currently only supported for GeographicCRS-chains." );
-                        }
-                    } else if ( target.getType() == CoordinateSystem.PROJECTED_CRS ) {
-                        t = ( (ProjectedCRS) target ).getGeographicCRS();
-                    } else if ( target.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
-                        t = (GeographicCRS) target;
-                    } else {
-                        LOG.warn( "Wgs84 Transformation lookup is currently only supported for GeographicCRS-chains." );
-                    }
-                    if ( t != null ) {
-                        if ( LOG.isDebugEnabled() ) {
-                            LOG.debug( "Trying to resolve target to find a wgs84transformation for the 'targetCRS': "
-                                       + Arrays.toString( t.getCodes() ) );
-                        }
-                        result = getWGS84Transformation( t );
-                    }
-                } else {
-                    LOG.warn( "The transformation is not an instance of CRSTransformation nor a Helmert, ignoring it." );
-                }
-            }
-        }
 
-        if ( result != null ) {
-            if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "For the given crs: " + sourceCRS.getCode()
-                           + " following helmert transformation was found:\n" + result );
-
-            }
-
-            cachedWGS84Transformations.put( sourceCRS, result );
+        Helmert result = null;
+        Transformation parsedTransformation = getTransformation( sourceCRS, null );
+        if ( parsedTransformation instanceof Helmert ) {
+            result = (Helmert) parsedTransformation;
         } else {
-            LOG.info( "No helmert transformation found for the given crs: " + sourceCRS.getCode() );
+            if ( parsedTransformation instanceof CRSTransformation ) {
+                CoordinateSystem target = ( (CRSTransformation) parsedTransformation ).getTargetCRS();
+                GeographicCRS geoCRS = getGeographicCRS( target );
+                if ( geoCRS != null ) {
+                    result = getWGS84Transformation( geoCRS );
+                }
+            } else {
+                LOG.warn( "The transformation is not an instance of CRSTransformation nor a Helmert, ignoring it." );
+            }
+        }
+
+        if ( result == null ) {
+            LOG.info( "No helmert transformation found for the given crs: " + sourceCRS.getCodeAndName() );
+        }
+        return result;
+    }
+
+    /**
+     * Retrieves the underlying geographic crs from the given coordinate system.
+     * 
+     * @param crs
+     *            to get the {@link GeographicCRS} from.
+     * @return the {@link GeographicCRS} or <code>null</code> if the crs has no underlying {@link GeographicCRS}.
+     */
+    private GeographicCRS getGeographicCRS( CoordinateSystem crs ) {
+        GeographicCRS result = null;
+        if ( crs.getType() == CoordinateSystem.COMPOUND_CRS ) {
+            if ( ( (CompoundCRS) crs ).getUnderlyingCRS().getType() == CoordinateSystem.PROJECTED_CRS ) {
+                result = ( (ProjectedCRS) ( (CompoundCRS) crs ).getUnderlyingCRS() ).getGeographicCRS();
+            } else if ( ( (CompoundCRS) crs ).getUnderlyingCRS().getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
+                result = (GeographicCRS) crs;
+            } else {
+                LOG.warn( "Wgs84 Transformation lookup is currently only supported for GeographicCRS-chains." );
+            }
+        } else if ( crs.getType() == CoordinateSystem.PROJECTED_CRS ) {
+            result = ( (ProjectedCRS) crs ).getGeographicCRS();
+        } else if ( crs.getType() == CoordinateSystem.GEOGRAPHIC_CRS ) {
+            result = (GeographicCRS) crs;
+        } else {
+            LOG.warn( "Wgs84 Transformation lookup is currently only supported for GeographicCRS-chains." );
         }
         return result;
     }
@@ -182,96 +162,120 @@ public class GMLFileResource extends XMLFileResource {
         if ( sourceCRS == null ) {
             return null;
         }
-        List<OMElement> toBeRemoved = new ArrayList<OMElement>( transformations.size() );
-        List<CRSCodeType> sourceCodes = Arrays.asList( sourceCRS.getCodes() );
-        List<String> sourceIDs = new ArrayList<String>();
-        for ( CRSCodeType sourceCode : sourceCodes )
-            sourceIDs.add( sourceCode.getEquivalentString() );
+        List<String> sourceIDs = Arrays.asList( sourceCRS.getOrignalCodeStrings() );
         List<String> targetIDs = null;
         if ( targetCRS != null ) {
-            targetIDs = new ArrayList<String>();
-            List<CRSCodeType> targetCodes = Arrays.asList( targetCRS.getCodes() );
-            for ( CRSCodeType targetCode : targetCodes )
-                targetIDs.add( targetCode.getEquivalentString() );
+            targetIDs = Arrays.asList( targetCRS.getOrignalCodeStrings() );
         } else {
             targetIDs = new ArrayList<String>();
+        }
+
+        if ( transformations.isEmpty() ) {
+            LOG.debug( "Apparently no transformations were found for the given CoordinateSystem: "
+                       + sourceCRS.getCode().getOriginal() );
+            return null;
         }
         Transformation result = null;
         for ( int i = 0; i < transformations.size() && result == null; ++i ) {
             OMElement transElem = transformations.get( i );
             if ( transElem != null ) {
                 try {
-                	OMElement sourceCRSProp = getRequiredElement( transElem, new XPath( PRE + "sourceCRS", nsContext  ) );
-
-                    String transformSourceID = null;
-                    String transformTargetID = null;
-                    if ( sourceCRSProp != null ) {
-                    	transformSourceID = sourceCRSProp.getAttribute( new QName( CommonNamespaces.XLNNS, "href" ) ).getNamespace().getNamespaceURI();
-
-                        if ( "".equals( transformSourceID ) ) {
-                        	transformSourceID = adapter.getRequiredNodeAsString( sourceCRSProp, new XPath( "*[1]/" + PRE
-                                    + "identifier", nsContext ) );
-                        }
-                    }
-                    if ( targetCRS != null ) {
-                        OMElement targetCRSProp = adapter.getRequiredElement( transElem, new XPath( PRE + "targetCRS", nsContext ) );
-                        if ( targetCRSProp != null ) {
-
-                        	transformTargetID = targetCRSProp.getAttribute( new QName( CommonNamespaces.XLNNS, "href" ) ).getNamespace().getNamespaceURI();
-                            if ( "".equals( transformTargetID ) ) {
-                            	transformTargetID = adapter.getRequiredNodeAsString( targetCRSProp, new XPath( "*[1]/" + PRE
-                                        + "identifier", nsContext ) );
-                            }
-                        }
-                    }
-
+                    String transformSourceID = getSourceTransformID( transElem );
                     if ( sourceIDs.contains( transformSourceID ) ) {
-                        result = getProvider().parseTransformation( transElem );
-                        if ( targetCRS == null ) {
-                            // Trying to find a helmert transformation
-                            LOG.debug( "Resolving a possible transformation." );
-                            if ( result != null && !( result instanceof Helmert ) ) {
-                                result = getTransformation( result.getTargetCRS(), null );
-                            }
-                        } else {
-                            if ( !targetIDs.contains( transformTargetID ) ) {
-                            	LOG.debug( "Found a transformation with gml:id: "
-                                        + transElem.getAttribute( new QName( CommonNamespaces.GML3_2_NS, "id" ) ).getNamespace().getNamespaceURI()
-                                        + ", but the target does not match the source crs, trying to build transformation chain." );
-                                Transformation second = getTransformation( result.getTargetCRS(), targetCRS );
-                                if ( second != null ) {
-                                    result = new ConcatenatedTransform( result, second );
-                                } else {
-                                	LOG.debug( "The transformation with gml:id: "
-                                            + transElem.getAttribute( new QName( CommonNamespaces.GML3_2_NS, "id" ) ).getNamespace().getNamespaceURI()
-                                            + " is not the start of transformation chain, discarding it. " );
-                                    result = null;
-                                }
-                            }
-                        }
+                        result = parseTransformation( transElem, targetIDs, targetCRS );
                     }
-
                 } catch ( XMLParsingException e ) {
-                    toBeRemoved.add( transElem );
-                    LOG.warn( "No source CRS id could be found in this transformation(gml:id): "
-                            + transElem.getAttribute( new QName( CommonNamespaces.GML3_2_NS, "id" ) ).getNamespace().getNamespaceURI()
-                            + " this is not correct, removing transformation from cache." );
-                    LOG.warn( e.getMessage() );
+                    LOG.debug( "Transformation with id: " + transElem.getLocalName() + " could not be used because:  "
+                               + e.getMessage() );
                 }
-            }
-            if ( toBeRemoved.size() > 0 ) {
-                transformations.removeAll( toBeRemoved );
             }
         }
         return result;
+    }
+
+    /**
+     * Parses the transformation from the given element and checks if a transformation chain needs to be build.
+     * 
+     * @param transformationElement
+     *            to parse
+     * @param targetIDs
+     * @param targetCRS
+     * @return
+     * @throws XMLParsingException
+     */
+    private Transformation parseTransformation( OMElement transformationElement, List<String> targetIDs,
+                                                CoordinateSystem targetCRS )
+                            throws XMLParsingException {
+        Transformation result = getProvider().parseTransformation( transformationElement );
+        if ( targetCRS == null ) {
+            // Trying to find a helmert transformation
+            LOG.debug( "Resolving a possible transformation." );
+            if ( result != null && !( result instanceof Helmert ) ) {
+                result = getTransformation( result.getTargetCRS(), null );
+            }
+        } else {
+            String transformTargetID = getTargetTransformID( transformationElement );
+            if ( !targetIDs.contains( transformTargetID ) ) {
+                LOG.debug( "Found a transformation with gml:id: "
+                           + transformationElement.getAttributeValue( new QName( CommonNamespaces.GML3_2_NS, "id" ) )
+                           + ", but the target does not match the source crs, trying to build transformation chain." );
+                Transformation second = getTransformation( result.getTargetCRS(), targetCRS );
+                if ( second != null ) {
+                    result = new ConcatenatedTransform( result, second );
+                } else {
+                    LOG.debug( "The transformation with gml:id: "
+                               + transformationElement.getAttributeValue( new QName( CommonNamespaces.GML3_2_NS, "id" ) )
+                               + " is not the start of transformation chain, discarding it. " );
+                    result = null;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @param transElem
+     * @return
+     * @throws XMLParsingException
+     */
+    private String getTargetTransformID( OMElement transElem )
+                            throws XMLParsingException {
+        OMElement targetCRSProp = adapter.getRequiredElement( transElem, new XPath( PRE + "targetCRS", nsContext ) );
+        return getIdFromElemOrXlink( targetCRSProp );
+    }
+
+    private String getSourceTransformID( OMElement transElem )
+                            throws XMLParsingException {
+        OMElement sourceCRSProp = adapter.getRequiredElement( transElem, new XPath( PRE + "sourceCRS", nsContext ) );
+        return getIdFromElemOrXlink( sourceCRSProp );
+    }
+
+    /**
+     * Get the id from an element of a href.
+     * 
+     * @param sourceCRSProp
+     * @return
+     * @throws XMLParsingException
+     */
+    private String getIdFromElemOrXlink( OMElement sourceCRSProp )
+                            throws XMLParsingException {
+        String result = sourceCRSProp.getAttributeValue( new QName( CommonNamespaces.XLNNS, "href" ) );
+        if ( result == null || "".equals( result ) ) {
+            result = adapter.getRequiredNodeAsString( sourceCRSProp,
+                                                      new XPath( "*[1]/" + PRE + "identifier", nsContext ) );
+        }
+        return result;
+
     }
 
     public OMElement getURIAsType( String uri )
                             throws IOException {
         OMElement result = null;
         try {
-        	result = adapter.getElement( getRootElement(), new XPath( "//gml3_2:dictionaryEntry/gml3_2:*[gml3_2:identifier='" + uri + "']" +
-        			" | //gml3_2:dictionaryEntry/gml3_2:*[gml3_2:name='" + uri + "']", nsContext ) );
+            XPath xpath = new XPath( "//" + PRE + "dictionaryEntry/" + PRE + "*[" + PRE + "identifier='" + uri + "']",
+                                     nsContext );
+            OMElement root = getRootElement();
+            result = adapter.getElement( root, xpath );
         } catch ( XMLParsingException e ) {
             LOG.error( e.getLocalizedMessage(), e );
         }

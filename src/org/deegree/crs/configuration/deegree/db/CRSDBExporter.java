@@ -113,18 +113,18 @@ public class CRSDBExporter {
     /**
      * Set the database connection (that is usually obtained from {@link DatabaseCRSProvider})
      * 
-     * @param connection        the database connection
-     * @throws ClassNotFoundException       when the connection 
+     * @param connection
+     *            the database connection
      */
-    protected void setConnection( Connection connection )
-                            throws ClassNotFoundException {
+    protected void setConnection( Connection connection ) {
         this.connection = connection;
     }
 
     /**
      * Insert into the database the core Identifiable properties of an object
      * 
-     * @param crsObject     any CRS object
+     * @param crsObject
+     *            any CRS object
      */
     protected void exportIdentifiableProperties( CRSIdentifiable crsObject ) {
         PreparedStatement preparedSt;
@@ -208,9 +208,11 @@ public class CRSDBExporter {
     /**
      * Insert into the database the Lambert Azimuthal Equal Area projection properties
      * 
-     * @param lambertAzimuthal      the Lambert Azimuthal Equal Area projection object
+     * @param lambertAzimuthal
+     *            the Lambert Azimuthal Equal Area projection object
      * @return the internal database ID assigned to the supplied object
-     * @throws SQLException     when an SQLException occurs 
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( LambertAzimuthalEqualArea lambertAzimuthal )
                             throws SQLException {
@@ -251,9 +253,11 @@ public class CRSDBExporter {
     /**
      * Inserts into the database the Stereographic Alternative projection properties
      * 
-     * @param stereographicAl   the Stereographic Alternative projection object
+     * @param stereographicAl
+     *            the Stereographic Alternative projection object
      * @return the internal database ID assigned to the object
-     * @throws SQLException     when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( StereographicAlternative stereographicAl )
                             throws SQLException {
@@ -293,9 +297,11 @@ public class CRSDBExporter {
     /**
      * Insert into the database the Stereographic Azimuthal projection properties
      * 
-     * @param stereographicAz   the Stereographic Azimuthal projection object
+     * @param stereographicAz
+     *            the Stereographic Azimuthal projection object
      * @return the internal database ID assigned to the object
-     * @throws SQLException     when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( StereographicAzimuthal stereographicAz )
                             throws SQLException {
@@ -336,9 +342,11 @@ public class CRSDBExporter {
     /**
      * Insert into the database the Lambert Conformal Conic projection properties
      * 
-     * @param lambertConformal      the Lambert Conformal projection object
+     * @param lambertConformal
+     *            the Lambert Conformal projection object
      * @return the internal database ID assigned to the object
-     * @throws SQLException         when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( LambertConformalConic lambertConformal )
                             throws SQLException {
@@ -382,9 +390,12 @@ public class CRSDBExporter {
      * Checks if the double variable to be inserted in the database is NULL, and if so, sets the database value to NULL.
      * Otherwise simply fill the insert statement with the double variable.
      * 
-     * @param d     the double variable from the insert statement
-     * @param pos   the position of the variable in the PreparedStatement from the java.sql
-     * @param preparedSt        the PreparedStatement
+     * @param d
+     *            the double variable from the insert statement
+     * @param pos
+     *            the position of the variable in the PreparedStatement from the java.sql
+     * @param preparedSt
+     *            the PreparedStatement
      */
     protected void setNullDoubleIf( double d, int pos, PreparedStatement preparedSt ) {
         try {
@@ -400,9 +411,11 @@ public class CRSDBExporter {
     /**
      * Inserts the Transverse Mercator projection into the database
      * 
-     * @param transMercator     the Transform Mercator projection object
+     * @param transMercator
+     *            the Transform Mercator projection object
      * @return the internal database ID assigned to the object
-     * @throws SQLException     when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( TransverseMercator transMercator )
                             throws SQLException {
@@ -443,9 +456,11 @@ public class CRSDBExporter {
     /**
      * Inserts the Mercator projection into the database
      * 
-     * @param mercator  the Mercator projection object
+     * @param mercator
+     *            the Mercator projection object
      * @return the internal database ID assigned to the object
-     * @throws SQLException     when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( Mercator mercator )
                             throws SQLException {
@@ -485,9 +500,11 @@ public class CRSDBExporter {
     /**
      * Inserts the Axis properties into the database
      * 
-     * @param axis      the Axis object
+     * @param axis
+     *            the Axis object
      * @return the internal database ID assigned to the Axis object
-     * @throws SQLException         when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( Axis axis )
                             throws SQLException {
@@ -521,9 +538,11 @@ public class CRSDBExporter {
     /**
      * Export the Vertical Datum to the database
      * 
-     * @param vDatum    the Vertical Datum object
+     * @param vDatum
+     *            the Vertical Datum object
      * @return the internal database ID assigned to the Vertical Datum
-     * @throws SQLException     when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( VerticalDatum vDatum )
                             throws SQLException {
@@ -557,9 +576,11 @@ public class CRSDBExporter {
     /**
      * Insert the Vertical CRS data into the database
      * 
-     * @param vertical      the Vertical CRS object
+     * @param vertical
+     *            the Vertical CRS object
      * @return the database internal ID assigned to the Vertical CRS
-     * @throws SQLException     when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( VerticalCRS vertical )
                             throws SQLException {
@@ -603,9 +624,11 @@ public class CRSDBExporter {
     /**
      * Insert the Helmert Transformation properties into the database
      * 
-     * @param helmert   the helmert transformation object to be exported
+     * @param helmert
+     *            the helmert transformation object to be exported
      * @return the internal database ID assigned to the Helmert transformation object
-     * @throws SQLException     when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( Helmert helmert )
                             throws SQLException {
@@ -658,9 +681,11 @@ public class CRSDBExporter {
     /**
      * Insert the Prime Meridian properties into the database
      * 
-     * @param pm    the Prime Meridian object
+     * @param pm
+     *            the Prime Meridian object
      * @return the internal database ID assigned to the object
-     * @throws SQLException     when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( PrimeMeridian pm )
                             throws SQLException {
@@ -695,9 +720,11 @@ public class CRSDBExporter {
     /**
      * Insert the Ellipsoid object data into the database
      * 
-     * @param ellipsoid     the ellipsoid object
+     * @param ellipsoid
+     *            the ellipsoid object
      * @return the internal database ID assigned to the ellipsoid
-     * @throws SQLException     when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( Ellipsoid ellipsoid )
                             throws SQLException {
@@ -740,9 +767,11 @@ public class CRSDBExporter {
     /**
      * Insert the Geodetic Datum properties into the database
      * 
-     * @param gdatum    the Geodetic Datum object
+     * @param gdatum
+     *            the Geodetic Datum object
      * @return the internal database ID assigned to the Geodetic Datum
-     * @throws SQLException     when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( GeodeticDatum gdatum )
                             throws SQLException {
@@ -839,9 +868,11 @@ public class CRSDBExporter {
     /**
      * Insert the Geocentric CRS data into the database
      * 
-     * @param geocentric    the Geocentric CRS object
+     * @param geocentric
+     *            the Geocentric CRS object
      * @return the database internal ID assigned to the Geocentric CRS
-     * @throws SQLException     when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( GeocentricCRS geocentric )
                             throws SQLException {
@@ -889,9 +920,11 @@ public class CRSDBExporter {
     /**
      * Inserts the GeographicCRS data into the database
      * 
-     * @param geographic    the Geographic CRS object
+     * @param geographic
+     *            the Geographic CRS object
      * @return the internal database ID for the Geographic CRS
-     * @throws SQLException     when an SQLException occurs
+     * @throws SQLException
+     *             when an SQLException occurs
      */
     protected int export( GeographicCRS geographic )
                             throws SQLException {
@@ -937,9 +970,11 @@ public class CRSDBExporter {
     /**
      * Checks for the type of projection that is supplied and delegates the insertion to the specific methods.
      * 
-     * @param projection    the Projection object
+     * @param projection
+     *            the Projection object
      * @return the internal database ID that was assigned to the projection
-     * @throws SQLException     when and SQLException occurs
+     * @throws SQLException
+     *             when and SQLException occurs
      */
     protected int export( Projection projection )
                             throws SQLException {
@@ -1015,8 +1050,8 @@ public class CRSDBExporter {
     /**
      * Inserts the Projected CRS data into the database
      * 
-     * @param geocentric
-     *            the Geocentric CRS object
+     * @param projected
+     *            the projected CRS object
      * @return the database internal ID assigned to the Geocentric CRS
      * @throws SQLException
      */
@@ -1167,13 +1202,10 @@ public class CRSDBExporter {
      * 
      * @param args
      * @throws IOException
-     * @throws SQLException
-     * @throws ClassNotFoundException
-     * @throws CRSException
      * @throws UnknownCRSException
      */
     public static void main( String[] args )
-                            throws IOException, SQLException, ClassNotFoundException, CRSException, UnknownCRSException {
+                            throws IOException, UnknownCRSException {
         // get the instantiated CRS from WKT format
         if ( args != null ) {
             if ( args.length == 2 ) {
@@ -1185,7 +1217,9 @@ public class CRSDBExporter {
                     crsList.add( crs );
 
                 } else if ( "xml".equals( args[0] ) ) {
-                    CoordinateSystem lookup = CRSRegistry.lookup( "org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider", args[1] );
+                    CoordinateSystem lookup = CRSRegistry.lookup(
+                                                                  "org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider",
+                                                                  args[1] );
                     crsList.add( lookup );
                 } else {
                     throw new IllegalArgumentException(
@@ -1205,10 +1239,8 @@ public class CRSDBExporter {
      *            the type to add to the database
      * @param className
      *            the class name of the object, so that the exporting method may be determined
-     * @throws ClassNotFoundException
      */
-    private void exportFromOther( CRSIdentifiable crsID )
-                            throws ClassNotFoundException {
+    private void exportFromOther( CRSIdentifiable crsID ) {
 
         // prepare the exporter ( and getting the database connection )
         CRSConfiguration dbConfig = CRSConfiguration.getCRSConfiguration();

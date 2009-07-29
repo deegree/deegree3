@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.coordinatesystems;
 
@@ -47,13 +47,13 @@ import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
 /**
  * A <code>GeocentricCRS</code> is a coordinatesystem having three axis and a mass point defined to be equivalent to
  * earths center.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public class GeocentricCRS extends CoordinateSystem {
@@ -63,7 +63,8 @@ public class GeocentricCRS extends CoordinateSystem {
      * axis points towards the prime meridian (e.g. front). The <var>Y</var> axis points East. The <var>Z</var> axis
      * points North.
      */
-    public static final GeocentricCRS WGS84 = new GeocentricCRS( GeodeticDatum.WGS84, CRSCodeType.valueOf( "GC_WGS84" ), "Geocentric WGS84" );
+    public static final GeocentricCRS WGS84 = new GeocentricCRS( GeodeticDatum.WGS84,
+                                                                 CRSCodeType.valueOf( "GC_WGS84" ), "Geocentric WGS84" );
 
     /**
      * @param datum
@@ -77,7 +78,7 @@ public class GeocentricCRS extends CoordinateSystem {
     /**
      * @param datum
      * @param axisOrder
-     * @param identifiers
+     * @param codes
      * @param names
      * @param versions
      * @param descriptions
@@ -91,7 +92,7 @@ public class GeocentricCRS extends CoordinateSystem {
     /**
      * @param datum
      * @param axisOrder
-     * @param identifier
+     * @param code
      * @param name
      * @param version
      * @param description
@@ -106,7 +107,7 @@ public class GeocentricCRS extends CoordinateSystem {
     /**
      * @param datum
      * @param axisOrder
-     * @param identifier
+     * @param code
      */
     public GeocentricCRS( GeodeticDatum datum, Axis[] axisOrder, CRSCodeType code ) {
         this( datum, axisOrder, new CRSCodeType[] { code }, null, null, null, null );
@@ -114,9 +115,9 @@ public class GeocentricCRS extends CoordinateSystem {
 
     /**
      * Geocentric crs with it's axis pointing to x=front, y=east, z=north.
-     *
+     * 
      * @param datum
-     * @param identifier
+     * @param code
      * @param name
      */
     public GeocentricCRS( GeodeticDatum datum, CRSCodeType code, String name ) {

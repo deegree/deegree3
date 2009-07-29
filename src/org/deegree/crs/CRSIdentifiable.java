@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs;
 
@@ -42,14 +42,15 @@ import java.util.Set;
 import org.deegree.crs.i18n.Messages;
 
 /**
- * The <code>CRSIdentifiable</code> class can be used to identify any crs, Ellipsoid, Geodetic Datum and Prime Meridian
- *
+ * The <code>CRSIdentifiable</code> class can be used to identify any crs, Ellipsoid, Geodetic Datum and Prime
+ * Meridian
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public class CRSIdentifiable {
@@ -66,17 +67,16 @@ public class CRSIdentifiable {
 
     /**
      * Takes the references of the other object and stores them in this CRSIdentifiable Object.
-     *
+     * 
      * @param other
      *            identifiable object.
      */
     public CRSIdentifiable( CRSIdentifiable other ) {
-        this( other.getCodes(), other.getNames(), other.getVersions(), other.getDescriptions(),
-              other.getAreasOfUse() );
+        this( other.getCodes(), other.getNames(), other.getVersions(), other.getDescriptions(), other.getAreasOfUse() );
     }
 
     /**
-     *
+     * 
      * @param codes
      * @param names
      *            the human readable names of the object.
@@ -87,7 +87,7 @@ public class CRSIdentifiable {
      *             if no identifier(s) was/were given.
      */
     public CRSIdentifiable( CRSCodeType[] codes, String[] names, String[] versions, String[] descriptions,
-                         String[] areasOfUse ) {
+                            String[] areasOfUse ) {
         if ( codes == null || codes.length == 0 ) {
             throw new IllegalArgumentException( "An identifiable object must at least have one identifier." );
         }
@@ -100,7 +100,7 @@ public class CRSIdentifiable {
 
     /**
      * Creates arrays fromt the given identifier and name without setting the versions, descriptions and areasOfUse.
-     *
+     * 
      * @param identifiers
      *            of the object.
      */
@@ -164,7 +164,7 @@ public class CRSIdentifiable {
 
     /**
      * throws an InvalidParameterException if the given object is null
-     *
+     * 
      * @param toBeChecked
      *            for <code>null</code>
      * @param message
@@ -186,7 +186,7 @@ public class CRSIdentifiable {
 
     /**
      * throws an InvalidParameterException if the given object is null
-     *
+     * 
      * @param toBeChecked
      *            for <code>null</code>
      * @param functionName
@@ -205,7 +205,7 @@ public class CRSIdentifiable {
 
     /**
      * throws an IllegalArgumentException if the given object array is null or empty
-     *
+     * 
      * @param toBeChecked
      *            for <code>null</code> or empty
      * @param message
@@ -287,11 +287,11 @@ public class CRSIdentifiable {
     @Override
     public boolean equals( Object other ) {
         if ( other != null && other instanceof CRSIdentifiable
-                             && ((CRSIdentifiable) other).getCodes().length == getCodes().length ) {
+             && ( (CRSIdentifiable) other ).getCodes().length == getCodes().length ) {
 
             // compare the codes from each part as sets
             CRSCodeType[] thisArray = getCodes();
-            CRSCodeType[] otherArray = ( (CRSIdentifiable) other).getCodes();
+            CRSCodeType[] otherArray = ( (CRSIdentifiable) other ).getCodes();
             Set<CRSCodeType> thisSet = new HashSet<CRSCodeType>();
             Set<CRSCodeType> otherSet = new HashSet<CRSCodeType>();
             int n = getCodes().length;
@@ -300,7 +300,7 @@ public class CRSIdentifiable {
                 otherSet.add( otherArray[i] );
             }
 
-            if ( ! thisSet.equals( otherSet ) )
+            if ( !thisSet.equals( otherSet ) )
                 return false;
 
             return true;
@@ -328,6 +328,17 @@ public class CRSIdentifiable {
      */
     public final CRSCodeType[] getCodes() {
         return codes;
+    }
+
+    /**
+     * @return the codetypes as the original strings, each identifiable object has atleast one id.
+     */
+    public final String[] getOrignalCodeStrings() {
+        String[] result = new String[codes.length];
+        for ( int i = 0; i < codes.length; ++i ) {
+            result[i] = codes[i].getOriginal();
+        }
+        return result;
     }
 
     /**

@@ -147,7 +147,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     /**
      * @param rootElement
      *            containing a gml:CRS dom representation.
-     * @return a {@link CoordinateSystem} instance initialized with values from the given xml-dom gml:CRS fragment or
+     * @return a {@link CoordinateSystem} instance initialized with values from the given XML-OM gml:CRS fragment or
      *         <code>null</code> if the given root element is <code>null</code>
      * @throws CRSConfigurationException
      *             if something went wrong.
@@ -228,8 +228,16 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             }
             // crsProp = getRequiredElement( rootElement, PRE + "targetCRS", nsContext );
             crsProp = adapter.getRequiredElement( rootElement, new XPath( PRE + "targetCRS", nsContext ) );
-            crsElem = getRequiredXlinkedElement( crsProp, "*[1]" );
-            CoordinateSystem targetCRS = parseCoordinateSystem( crsElem );
+            String tCRSLinked = retrieveXLink( crsProp );
+            CoordinateSystem targetCRS = null;
+            // rb: if the wgs 84 was referenced, use the default implementation, maybe this is not a good idea?
+            if ( tCRSLinked != null && ( tCRSLinked.contains( "4326" ) || tCRSLinked.toLowerCase().contains( "WGS84" ) ) ) {
+                targetCRS = GeographicCRS.WGS84;
+            } else {
+                crsElem = getRequiredXlinkedElement( crsProp, "*[1]" );
+                targetCRS = parseCoordinateSystem( crsElem );
+            }
+
             if ( targetCRS == null ) {
                 throw new XMLParsingException( adapter, rootElement,
                                                "The transformation could not be parsed, because the targetCRS is not supported." );
@@ -444,7 +452,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * 
      * @param rootElement
      *            containing a gml:CompoundCRS dom representation.
-     * @return a {@link CompoundCRS} instance initialized with values from the given xml-dom gml:CompoundCRS fragment.
+     * @return a {@link CompoundCRS} instance initialized with values from the given XML-OM gml:CompoundCRS fragment.
      * @throws XMLParsingException
      * @throws IOException
      */
@@ -538,7 +546,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     /**
      * @param rootElement
      *            containing a gml:ProjectedCRS dom representation.
-     * @return a {@link ProjectedCRS} instance initialized with values from the given xml-dom gml:ProjectedCRS fragment
+     * @return a {@link ProjectedCRS} instance initialized with values from the given XML-OM gml:ProjectedCRS fragment
      *         or <code>null</code> if the given root element is <code>null</code>
      * @throws XMLParsingException
      *             if the dom tree is not consistent or a required element is missing.
@@ -609,7 +617,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     /**
      * @param rootElement
      *            containing a gml:GeodeticCRS dom representation.
-     * @return a {@link CoordinateSystem} instance initialized with values from the given xml-dom gml:GeodeticCRS
+     * @return a {@link CoordinateSystem} instance initialized with values from the given XML-OM gml:GeodeticCRS
      *         fragment or <code>null</code> if the given root element is <code>null</code>. Note the result may be
      *         a {@link CompoundCRS}, a {@link GeographicCRS} or a {@link GeocentricCRS}, depending of the definition
      *         of the CS type.
@@ -678,7 +686,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     /**
      * @param rootElement
      *            containing a gml:GeodeticDatum dom representation.
-     * @return a {@link GeodeticDatum} instance initialized with values from the given xml-dom fragment or
+     * @return a {@link GeodeticDatum} instance initialized with values from the given XML-OM fragment or
      *         <code>null</code> if the given root element is <code>null</code>
      * @throws XMLParsingException
      *             if the dom tree is not consistent or a required element is missing.
@@ -722,8 +730,8 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * 
      * @param rootElement
      *            containing a (Ellipsoidal, Spherical, Cartesian) CS type dom representation.
-     * @return a {@link Axis} array instance initialized with values from the given xml-dom fragment or
-     *         <code>null</code> if the given root element is <code>null</code>
+     * @return a {@link Axis} array instance initialized with values from the given XML-OM fragment or <code>null</code>
+     *         if the given root element is <code>null</code>
      * @throws XMLParsingException
      *             if the dom tree is not consistent or a required element is missing.
      * @throws IOException
@@ -807,8 +815,8 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     /**
      * @param rootElement
      *            containing an gml:CoordinateSystemAxis type dom representation.
-     * @return an {@link Axis} instance initialized with values from the given xml-dom fragment or <code>null</code>
-     *         if the given root element is <code>null</code> if the axis could not be mapped it's orientation will be
+     * @return an {@link Axis} instance initialized with values from the given XML-OM fragment or <code>null</code> if
+     *         the given root element is <code>null</code> if the axis could not be mapped it's orientation will be
      *         {@link Axis#AO_OTHER}
      * 
      * @throws XMLParsingException
@@ -832,7 +840,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     /**
      * @param rootElement
      *            containing a gml:Ellipsoid dom representation.
-     * @return a {@link Ellipsoid} instance initialized with values from the given xml-dom fragment or <code>null</code>
+     * @return a {@link Ellipsoid} instance initialized with values from the given XML-OM fragment or <code>null</code>
      *         if the given root element is <code>null</code>
      * @throws XMLParsingException
      *             if the dom tree is not consistent or a required element is missing.
@@ -963,7 +971,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     /**
      * @param rootElement
      *            containing a gml:VerticalCRS dom representation.
-     * @return a {@link VerticalCRS} instance initialized with values from the given xml-dom fragment or
+     * @return a {@link VerticalCRS} instance initialized with values from the given XML-OM fragment or
      *         <code>null</code> if the given root element is <code>null</code>
      * @throws IOException
      * @throws XMLParsingException
@@ -998,7 +1006,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
     /**
      * @param rootElement
      *            containing a gml:VerticalDatum dom representation.
-     * @return a {@link VerticalDatum} instance initialized with values from the given xml-dom fragment or
+     * @return a {@link VerticalDatum} instance initialized with values from the given XML-OM fragment or
      *         <code>null</code> if the given root element is <code>null</code>
      * @throws XMLParsingException
      *             if the dom tree is not consistent or a required element is missing.
@@ -1033,7 +1041,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * @param underlyingCRS
      *            of the projection.
      * @return a Projection (Conversion) containing the mapped values from the given gml:Conversion
-     *         xml-dom-representation.
+     *         XML-OM-representation.
      * @throws XMLParsingException
      *             if the dom tree is not consistent or a required element is missing.
      * @throws IOException
@@ -1242,10 +1250,8 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
             return null;
         }
 
-        String uomAttribute = elementContainingUOMAttribute.getAttributeValue( new QName(
-                                                                                          elementContainingUOMAttribute.getNamespace().getNamespaceURI(),
-                                                                                          "uom" ) );
-        if ( "".equals( uomAttribute.trim() ) ) {
+        String uomAttribute = elementContainingUOMAttribute.getAttributeValue( new QName( "uom" ) );
+        if ( uomAttribute == null || "".equals( uomAttribute.trim() ) ) {
             return null;
         }
         Unit result = getCachedIdentifiable( Unit.class, uomAttribute );
@@ -1260,7 +1266,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                     // return null
                 }
                 if ( unitElement == null ) {
-                    LOG.error( "Although an uri was determined, the XLinkresolver was not able to retrieve a valid XML-DOM representation of the uom-uri. Error while resolving the following uom uri: "
+                    LOG.error( "Although an uri was determined, the XLinkresolver was not able to retrieve a valid XML-OM representation of the uom-uri. Error while resolving the following uom uri: "
                                + uomAttribute + "." );
                 } else {
                     CRSIdentifiable unitID = parseIdentifiedObject( unitElement );
@@ -1311,7 +1317,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
      * 
      * @param rootElement
      *            to retrieve and resolve
-     * @return the resolved xlink:href attribute as an xml-dom element or <code>null</code> if the xlink could not be
+     * @return the resolved xlink:href attribute as an XML-OM element or <code>null</code> if the xlink could not be
      *         resolved (or was not given) or the rootElement is null.
      * @throws IOException
      */
@@ -1323,13 +1329,13 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
         }
         String xlink = retrieveXLink( rootElement );
         OMElement result = null;
-        if ( !"".equals( xlink ) ) {
+        if ( null != xlink && !"".equals( xlink ) ) {
             LOG.debug( "Found an xlink: " + xlink );
             // The conversion is given by a link, so resolve it.
             result = getResolver().getURIAsType( xlink );
             if ( result == null ) {
-                LOG.error( "Although an xlink was given, the XLInkresolver was not able to retrieve a valid XML-DOM representation of the uri it denotes. Error while resolving the following conversion uri: "
-                           + xlink + ". No further evaluation can be done." );
+                LOG.error( "Although an xlink was given, the XLInkresolver was not able to retrieve a valid XML-OM representation of the uri it denotes. Error while resolving the following uri from rootElement: "
+                           + rootElement.getLocalName() + ": " + xlink + ". No further evaluation can be done." );
             }
         } else {
             LOG.debug( "No xlink found in: " + rootElement.getLocalName() );

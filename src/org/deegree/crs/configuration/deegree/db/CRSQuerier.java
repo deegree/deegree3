@@ -80,8 +80,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The <code>CRSQuerier</code> class instantiates all the CRSs, projections, 
- * transformations, datums, ellipsoids, prime meridians - from the database backend.
+ * The <code>CRSQuerier</code> class instantiates all the CRSs, projections, transformations, datums, ellipsoids,
+ * prime meridians - from the database backend.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -97,8 +97,7 @@ public class CRSQuerier {
     private Connection conn = null;
 
     /**
-     * maps based on internal database IDs -- called in getCRSByCode() where 
-     * queries return internal IDs
+     * maps based on internal database IDs -- called in getCRSByCode() where queries return internal IDs
      */
     private Map<Integer, Axis> loadedAxesMap = new HashMap<Integer, Axis>();
 
@@ -126,8 +125,7 @@ public class CRSQuerier {
     private Map<CRSCodeType, CRSIdentifiable> cachedCRSs = new HashMap<CRSCodeType, CRSIdentifiable>();
 
     /**
-     * Method currently used by the EPSGDatabaseSynchronizer to get the internal ID for 
-     * projections.
+     * Method currently used by the EPSGDatabaseSynchronizer to get the internal ID for projections.
      * 
      * @param identifiable
      *            CRS Identifiable object
@@ -154,8 +152,8 @@ public class CRSQuerier {
     }
 
     /**
-     * Method currently used by the EPSGDatabaseSynchronizer to update the in-house 
-     * database with the EPSG codes found in the EPSG database
+     * Method currently used by the EPSGDatabaseSynchronizer to update the in-house database with the EPSG codes found
+     * in the EPSG database
      * 
      * @param internalID
      *            internal database ID of the object that will get an EPSG id
@@ -164,7 +162,7 @@ public class CRSQuerier {
      * @throws SQLException
      */
     protected void setCode( int internalID, String code )
-    throws SQLException {
+                            throws SQLException {
         Statement stmt = conn.createStatement();
         // Execute the update
         int rows = stmt.executeUpdate( "UPDATE code SET code.code='" + code
@@ -178,13 +176,12 @@ public class CRSQuerier {
      * Gets the Projection identified by the supplied internal database ID
      * 
      * @param projectionId
-     *          the internal database ID
-     * @return 
-     *          the Projection object
+     *            the internal database ID
+     * @return the Projection object
      * @throws SQLException
      */
     protected Projection getProjection( int projectionId )
-    throws SQLException {
+                            throws SQLException {
         Projection proj = null;
 
         PreparedStatement prepSt = conn.prepareStatement( "SELECT table_name FROM projection_lookup WHERE id = "
@@ -213,17 +210,16 @@ public class CRSQuerier {
     }
 
     /**
-     * Gets the custom Projection (that is loaded using the information in the provided 
-     * classname attribute) that is identified by the supplied database internal ID.
+     * Gets the custom Projection (that is loaded using the information in the provided classname attribute) that is
+     * identified by the supplied database internal ID.
      * 
      * @param projectionID
-     *          the database internal ID
-     * @return 
-     *          the Projection object
+     *            the database internal ID
+     * @return the Projection object
      * @throws SQLException
      */
     protected Projection getCustomProjection( int projectionID )
-    throws SQLException {
+                            throws SQLException {
         Projection p = null;
         try {
             PreparedStatement ps = conn.prepareStatement( "SELECT id, geographic_crs_id, "
@@ -247,7 +243,7 @@ public class CRSQuerier {
             p = (Projection) constructor.newInstance( getGeographicCRS( rs.getInt( 2 ) ), rs.getDouble( 7 ),
                                                       rs.getDouble( 6 ), new Point2d( rs.getDouble( 1 ),
                                                                                       rs.getDouble( 2 ) ), projUnit,
-                                                                                      rs.getDouble( 5 ), null );
+                                                      rs.getDouble( 5 ), null );
 
         } catch ( ClassNotFoundException e ) {
             LOG.error( Messages.getMessage( "CUSTOM_PROJECTION_CLASS_INSTANTIATION", projectionID, e.getMessage() ), e );
@@ -265,18 +261,16 @@ public class CRSQuerier {
     }
 
     /**
-     * Gets the Lambert Azimuthal Equal Area projection data from the database 
-     * (identified by the supplied internal database ID) and instantiates an 
-     * LambertAzimuthalEqualArea object
+     * Gets the Lambert Azimuthal Equal Area projection data from the database (identified by the supplied internal
+     * database ID) and instantiates an LambertAzimuthalEqualArea object
      * 
      * @param projectionId
-     *          the internal database ID
-     * @return 
-     *          the LambertAzimuthalEqualArea object
+     *            the internal database ID
+     * @return the LambertAzimuthalEqualArea object
      * @throws SQLException
      */
     protected LambertAzimuthalEqualArea getLambertAzimuthalEqualArea( int projectionId )
-    throws SQLException {
+                            throws SQLException {
         LambertAzimuthalEqualArea laea = null;
         PreparedStatement ps = conn.prepareStatement( "SELECT natural_origin_lat, "
                                                       + "natural_origin_long, scale"
@@ -295,19 +289,17 @@ public class CRSQuerier {
     }
 
     /**
-     * Gets the Stereographic Alternative projection data from the database 
-     * (identified by the supplied internal database ID) and instantiates a 
-     * {@link StereographicAlternative} object
+     * Gets the Stereographic Alternative projection data from the database (identified by the supplied internal
+     * database ID) and instantiates a {@link StereographicAlternative} object
      * 
      * @param projectionId
-     *          the internal database ID
-     * @return 
-     *          the StereographicAlternative object
+     *            the internal database ID
+     * @return the StereographicAlternative object
      * @throws SQLException
      */
 
     protected StereographicAlternative getStereographicAlternative( int projectionId )
-    throws SQLException {
+                            throws SQLException {
         StereographicAlternative sal = null;
         PreparedStatement ps = conn.prepareStatement( "SELECT natural_origin_lat, "
                                                       + "natural_origin_long, scale"
@@ -326,17 +318,16 @@ public class CRSQuerier {
     }
 
     /**
-     * Gets the Mercator projection data from the database (identified by the 
-     * supplied internal database ID) and instantiates a {@link Mercator} object
+     * Gets the Mercator projection data from the database (identified by the supplied internal database ID) and
+     * instantiates a {@link Mercator} object
      * 
      * @param projectionId
-     *          the internal database ID
-     * @return
-     *          the Mercator object
+     *            the internal database ID
+     * @return the Mercator object
      * @throws SQLException
      */
     private Mercator getMercator( int projectionId )
-    throws SQLException {
+                            throws SQLException {
         PreparedStatement ps = conn.prepareStatement( "SELECT natural_origin_lat, " + "natural_origin_long, scale"
                                                       + ", false_easting, false_northing, "
                                                       + "geographic_crs_id, units, id FROM mercator WHERE " + "id = "
@@ -353,18 +344,16 @@ public class CRSQuerier {
     }
 
     /**
-     * Gets the Stereographic Azimuthal projection data from the database 
-     * (identified by the supplied internal database ID) and instantiates 
-     * a {@link StereographicAzimuthal} object
+     * Gets the Stereographic Azimuthal projection data from the database (identified by the supplied internal database
+     * ID) and instantiates a {@link StereographicAzimuthal} object
      * 
      * @param projectionId
-     *          the internal database ID
-     * @return 
-     *          the StereographicAzimuthal object
+     *            the internal database ID
+     * @return the StereographicAzimuthal object
      * @throws SQLException
      */
     protected StereographicAzimuthal getStereographicAzimuthal( int projectionId )
-    throws SQLException {
+                            throws SQLException {
         StereographicAzimuthal sa = null;
         PreparedStatement ps = conn.prepareStatement( "SELECT natural_origin_lat, "
                                                       + "natural_origin_long, scale"
@@ -383,18 +372,16 @@ public class CRSQuerier {
     }
 
     /**
-     * Gets the Lambert Conformal Conic projection data from the database 
-     * (identified by the supplied internal database ID) and instantiates 
-     * a {@link LambertConformalConic} object
+     * Gets the Lambert Conformal Conic projection data from the database (identified by the supplied internal database
+     * ID) and instantiates a {@link LambertConformalConic} object
      * 
      * @param projectionId
-     *          the internal database ID
-     * @return 
-     *          the LambertConformalConic object
+     *            the internal database ID
+     * @return the LambertConformalConic object
      * @throws SQLException
      */
     protected LambertConformalConic getLambertConformalConic( int projectionId )
-    throws SQLException {
+                            throws SQLException {
         LambertConformalConic lcc = null;
         PreparedStatement ps = conn.prepareStatement( "SELECT natural_origin_lat, "
                                                       + "natural_origin_long, scale"
@@ -421,18 +408,16 @@ public class CRSQuerier {
     }
 
     /**
-     * Gets the Transverse Mercator projection data from the database 
-     * (identified by the supplied internal database ID) and instantiates a 
-     * {@link TransverseMercator} object
+     * Gets the Transverse Mercator projection data from the database (identified by the supplied internal database ID)
+     * and instantiates a {@link TransverseMercator} object
      * 
      * @param projectionId
      *            the internal database ID
-     * @return 
-     *            the TransverseMercator object
+     * @return the TransverseMercator object
      * @throws SQLException
      */
     protected TransverseMercator getTransverseMercator( int projectionId )
-    throws SQLException {
+                            throws SQLException {
         if ( loadedTMercatorMap.containsKey( projectionId ) ) {
             return loadedTMercatorMap.get( projectionId );
         }
@@ -460,27 +445,26 @@ public class CRSQuerier {
     /**
      * Get the Geographic CRS object from the database given its internal ID
      * 
-     * @param geographicId      internal database ID of the Geographic CRS
-     * @return 
-     *            the Geographic CRS object
+     * @param geographicId
+     *            internal database ID of the Geographic CRS
+     * @return the Geographic CRS object
      * @throws SQLException
      */
     protected GeographicCRS getGeographicCRS( int geographicId )
-    throws SQLException {
+                            throws SQLException {
         if ( loadedGeographicsMap.containsKey( geographicId ) )
             return loadedGeographicsMap.get( geographicId );
 
         GeographicCRS geo = null;
         PreparedStatement ps = conn.prepareStatement( "SELECT axis1_id, axis2_id,"
-                                                      + " datum_id, id FROM geographic_crs WHERE id = "
-                                                      + geographicId );
+                                                      + " datum_id, id FROM geographic_crs WHERE id = " + geographicId );
         ResultSet rs = ps.executeQuery();
         rs.next();
 
         CRSIdentifiable identifiable = getIdentifiableAttributes( rs.getInt( 4 ) );
         geo = new GeographicCRS( getGeodeticDatum( rs.getInt( 3 ) ), new Axis[] { getAxis( rs.getInt( 1 ) ),
-                                                                                  getAxis( rs.getInt( 2 ) ) },
-                                                                                  identifiable );
+                                                                                 getAxis( rs.getInt( 2 ) ) },
+                                 identifiable );
         loadedGeographicsMap.put( geographicId, geo );
 
         return geo;
@@ -489,17 +473,17 @@ public class CRSQuerier {
     /**
      * Get the Vertical CRS object from the database given its internal ID.
      * 
-     * @param verticalID    internal database ID of the Vertical CRS
-     * @return
-     *          the {@link VerticalCRS} object
+     * @param verticalID
+     *            internal database ID of the Vertical CRS
+     * @return the {@link VerticalCRS} object
      * @throws SQLException
      */
     protected VerticalCRS getVerticalCRS( int verticalID )
-    throws SQLException {
+                            throws SQLException {
         ResultSet verticalRows = conn.prepareStatement(
-                                                       "SELECT axis_id, vertical_datum_id FROM "
-                                                       + " vertical_crs WHERE id = "
-                                                       + verticalID ).executeQuery();
+                                                        "SELECT axis_id, vertical_datum_id FROM "
+                                                                                + " vertical_crs WHERE id = "
+                                                                                + verticalID ).executeQuery();
         verticalRows.next();
         CRSIdentifiable identifiable = getIdentifiableAttributes( verticalID );
         return new VerticalCRS( getVerticalDatum( verticalRows.getInt( 2 ) ),
@@ -509,13 +493,13 @@ public class CRSQuerier {
     /**
      * Get the Vertical Datum from the database given its internal database ID
      * 
-     * @param vDatumID      the internal database ID of the Vertical Datum
-     * @return
-     *          the {@link VerticalDatum} object
+     * @param vDatumID
+     *            the internal database ID of the Vertical Datum
+     * @return the {@link VerticalDatum} object
      * @throws SQLException
      */
     protected VerticalDatum getVerticalDatum( int vDatumID )
-    throws SQLException {
+                            throws SQLException {
         CRSIdentifiable identifiable = getIdentifiableAttributes( vDatumID );
         return new VerticalDatum( identifiable );
     }
@@ -523,12 +507,13 @@ public class CRSQuerier {
     /**
      * Get the Geodetic Datum from the database given its internal database ID
      * 
-     * @param datumId       the internal database ID of the Geodetic Datum
+     * @param datumId
+     *            the internal database ID of the Geodetic Datum
      * @return the Geodetic Datum object
      * @throws SQLException
      */
     protected GeodeticDatum getGeodeticDatum( int datumId )
-    throws SQLException {
+                            throws SQLException {
         if ( loadedDatumsMap.containsKey( datumId ) )
             return loadedDatumsMap.get( datumId );
 
@@ -537,8 +522,8 @@ public class CRSQuerier {
                                                           + datumId );
         ResultSet rs = prepSt.executeQuery();
         if ( !rs.next() )
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "geodeticDatum",
-                                                                      datumId ) );
+            throw new CRSConfigurationException(
+                                                 Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "geodeticDatum", datumId ) );
         CRSIdentifiable identifiable = getIdentifiableAttributes( datumId );
         Ellipsoid ellipsoid = getEllipsoid( rs.getInt( 1 ) );
         if ( ellipsoid == null )
@@ -553,12 +538,13 @@ public class CRSQuerier {
     /**
      * Get the Helmert Transformation object from the database given its internal database ID
      * 
-     * @param helmertId     the database internal ID of the Helmert Transformation object
+     * @param helmertId
+     *            the database internal ID of the Helmert Transformation object
      * @return the Helmert Transformation object
      * @throws SQLException
      */
     protected Helmert getHelmertTransformation( int helmertId )
-    throws SQLException {
+                            throws SQLException {
         if ( loadedHelmertsMap.containsKey( helmertId ) )
             return loadedHelmertsMap.get( helmertId );
 
@@ -570,26 +556,26 @@ public class CRSQuerier {
                                                           + "FROM helmert_transformation WHERE id = " + helmertId );
         ResultSet rs = prepSt.executeQuery();
         if ( !rs.next() )
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT",
-                                                                      "wgs84transformation", helmertId ) );
+            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "wgs84transformation",
+                                                                      helmertId ) );
         CRSIdentifiable identifiable = getIdentifiableAttributes( helmertId );
-        h = new Helmert( rs.getDouble( 2 ), rs.getDouble( 3 ), rs.getDouble( 4 ), rs.getDouble( 5 ),
-                         rs.getDouble( 6 ), rs.getDouble( 7 ), rs.getDouble( 8 ), null, GeographicCRS.WGS84,
-                         identifiable, false );
+        h = new Helmert( rs.getDouble( 2 ), rs.getDouble( 3 ), rs.getDouble( 4 ), rs.getDouble( 5 ), rs.getDouble( 6 ),
+                         rs.getDouble( 7 ), rs.getDouble( 8 ), null, GeographicCRS.WGS84, identifiable, false );
         loadedHelmertsMap.put( helmertId, h );
         return h;
     }
 
     /**
-     * Gets the Prime Meridian data from the database ( given its intenal database ID ) 
-     * and instantiates a {@link PrimeMeridian} object
+     * Gets the Prime Meridian data from the database ( given its intenal database ID ) and instantiates a
+     * {@link PrimeMeridian} object
      * 
-     * @param pmId      the internal database ID of Prime Meridian
+     * @param pmId
+     *            the internal database ID of Prime Meridian
      * @return the PrimeMeridian object
      * @throws SQLException
      */
     protected PrimeMeridian getPrimeMeridian( int pmId )
-    throws SQLException {
+                            throws SQLException {
         if ( loadedPMeridiansMap.containsKey( pmId ) )
             return loadedPMeridiansMap.get( pmId );
 
@@ -598,8 +584,7 @@ public class CRSQuerier {
                                                           + pmId );
         ResultSet rs = prepSt.executeQuery();
         if ( !rs.next() )
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "primeMeridian",
-                                                                      pmId ) );
+            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "primeMeridian", pmId ) );
         Unit units = Unit.createUnitFromString( rs.getString( 1 ) );
         CRSIdentifiable identifiable = getIdentifiableAttributes( pmId );
         pm = new PrimeMeridian( units, rs.getDouble( 2 ), identifiable );
@@ -611,12 +596,13 @@ public class CRSQuerier {
     /**
      * Returns the ellipsoid identified by its internal database ID
      * 
-     * @param ellipsoidId   the internal database ID of the ellipsoid
+     * @param ellipsoidId
+     *            the internal database ID of the ellipsoid
      * @return the Ellipsoid object
      * @throws SQLException
      */
     protected Ellipsoid getEllipsoid( int ellipsoidId )
-    throws SQLException {
+                            throws SQLException {
         if ( loadedEllipsoidsMap.containsKey( ellipsoidId ) )
             return loadedEllipsoidsMap.get( ellipsoidId );
 
@@ -626,8 +612,8 @@ public class CRSQuerier {
                                                           + "FROM ellipsoid WHERE id = " + ellipsoidId );
         ResultSet rs = prepSt.executeQuery();
         if ( !rs.next() )
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "ellipsoid",
-                                                                      ellipsoidId ) );
+            throw new CRSConfigurationException(
+                                                 Messages.getMessage( "CRS_CONFIG_NO_ELEMENT", "ellipsoid", ellipsoidId ) );
 
         Unit units = Unit.createUnitFromString( rs.getString( 5 ) );
 
@@ -644,8 +630,7 @@ public class CRSQuerier {
         else if ( !Double.isNaN( semiMinorAxis ) )
             e = new Ellipsoid( units, semiMajorAxis, semiMinorAxis, identifiable );
         else
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_ELLIPSOID_MISSES_PARAM",
-                                                                      ellipsoidId ) );
+            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_ELLIPSOID_MISSES_PARAM", ellipsoidId ) );
         loadedEllipsoidsMap.put( ellipsoidId, e );
         return e;
     }
@@ -653,12 +638,13 @@ public class CRSQuerier {
     /**
      * Returns the Axis identified by a provided internal database ID
      * 
-     * @param axisId    the internal database ID for the Axis
+     * @param axisId
+     *            the internal database ID for the Axis
      * @return the Axis object
      * @throws SQLException
      */
     protected Axis getAxis( int axisId )
-    throws SQLException {
+                            throws SQLException {
         if ( loadedAxesMap.containsKey( axisId ) )
             return loadedAxesMap.get( axisId );
 
@@ -688,13 +674,13 @@ public class CRSQuerier {
      * @throws SQLException
      */
     protected void changeAxisCode( String name, String orientation, Unit uom, CRSCodeType code )
-    throws SQLException {
+                            throws SQLException {
         PreparedStatement ps = conn.prepareStatement( "SELECT id, name, units, axis_orientation FROM axis" );
         ResultSet rs = ps.executeQuery();
 
         while ( rs.next() ) {
             if ( name.equals( rs.getString( 2 ) ) && orientation.equals( rs.getString( 4 ) )
-                                    && uom.equals( Unit.createUnitFromString( rs.getString( 3 ) ) ) ) {
+                 && uom.equals( Unit.createUnitFromString( rs.getString( 3 ) ) ) ) {
                 setCode( rs.getInt( 1 ), code.getCode() );
             }
         }
@@ -714,7 +700,7 @@ public class CRSQuerier {
      * @throws SQLException
      */
     protected List<CoordinateSystem> getAvailableCRSs()
-    throws SQLException {
+                            throws SQLException {
         List<CoordinateSystem> CRSlist = new LinkedList<CoordinateSystem>();
 
         List<CRSCodeType> crsCodes = getAvailableCRSCodes();
@@ -738,12 +724,13 @@ public class CRSQuerier {
     /**
      * Constructs the CRSIdentifiable object that stands at the core of every CRS object.
      * 
-     * @param id    the internal database id of the object whose attributes are filled in
+     * @param id
+     *            the internal database id of the object whose attributes are filled in
      * @return the CRSIdentifiable object
      * @throws SQLException
      */
     protected CRSIdentifiable getIdentifiableAttributes( int id )
-    throws SQLException {
+                            throws SQLException {
         PreparedStatement ps = conn.prepareStatement( "SELECT code, codespace, name, version, description, area_of_use "
                                                       + "FROM code LEFT JOIN name ON code.ref_id = name.ref_id "
                                                       + "LEFT JOIN version ON code.ref_id = version.ref_id "
@@ -760,7 +747,7 @@ public class CRSQuerier {
 
         while ( rs.next() ) {
             codes.add( rs.getString( 2 ) == "" ? new CRSCodeType( rs.getString( 1 ) )
-            : new CRSCodeType( rs.getString( 1 ), rs.getString( 2 ) ) );
+                                              : new CRSCodeType( rs.getString( 1 ), rs.getString( 2 ) ) );
             if ( rs.getString( 3 ) != null )
                 names.add( rs.getString( 3 ) );
             if ( rs.getString( 4 ) != null )
@@ -781,12 +768,13 @@ public class CRSQuerier {
     /**
      * Gets the CompoundCRS identified by the supplied internal ID
      * 
-     * @param compoundId    an internal ID
+     * @param compoundId
+     *            an internal ID
      * @return the CompoundCRS object
      * @throws SQLException
      */
     protected CompoundCRS getCompoundCRS( int compoundId )
-    throws SQLException {
+                            throws SQLException {
         if ( loadedCompoundsMap.containsKey( compoundId ) )
             return loadedCompoundsMap.get( compoundId );
 
@@ -806,12 +794,13 @@ public class CRSQuerier {
     /**
      * Method currently used by getCompoundCRS() to retrieve the underlying CRS, given an internal database ID
      * 
-     * @param internalID    the internal database ID
+     * @param internalID
+     *            the internal database ID
      * @return the Coordinate System object
      * @throws SQLException
      */
     protected CoordinateSystem getCRSByInternalID( int internalID )
-    throws SQLException {
+                            throws SQLException {
         // TODO this gets called only from getCompoundCRS, which itself is rarely called - does it make sense to have a
         // map { internalID -> CoordinateSystem } ?
         CoordinateSystem result = null;
@@ -836,12 +825,13 @@ public class CRSQuerier {
     /**
      * Gets the GeocentricCRS identified by the supplied internal ID
      * 
-     * @param geocentricId      an internal ID
+     * @param geocentricId
+     *            an internal ID
      * @return the GeocentricCRS object
      * @throws SQLException
      */
     protected GeocentricCRS getGeocentricCRS( int geocentricId )
-    throws SQLException {
+                            throws SQLException {
         if ( loadedGeocentricsMap.containsKey( geocentricId ) )
             return loadedGeocentricsMap.get( geocentricId );
 
@@ -855,7 +845,7 @@ public class CRSQuerier {
         CRSIdentifiable identifiable = getIdentifiableAttributes( rs.getInt( 5 ) );
         geocentric_crs = new GeocentricCRS( getGeodeticDatum( rs.getInt( 4 ) ),
                                             new Axis[] { getAxis( rs.getInt( 1 ) ), getAxis( rs.getInt( 2 ) ),
-                                                         getAxis( rs.getInt( 3 ) ) }, identifiable );
+                                                        getAxis( rs.getInt( 3 ) ) }, identifiable );
         loadedGeocentricsMap.put( geocentricId, geocentric_crs );
         return geocentric_crs;
     }
@@ -863,12 +853,13 @@ public class CRSQuerier {
     /**
      * Gets the ProjectedCRS identified by the supplied internal ID
      * 
-     * @param projectedId   an internal ID
+     * @param projectedId
+     *            an internal ID
      * @return the ProjectedCRS object
      * @throws SQLException
      */
     protected ProjectedCRS getProjectedCRS( int projectedId )
-    throws SQLException {
+                            throws SQLException {
         if ( loadedProjectedsMap.containsKey( projectedId ) )
             return loadedProjectedsMap.get( projectedId );
 
@@ -881,16 +872,16 @@ public class CRSQuerier {
 
         CRSIdentifiable identifiable = getIdentifiableAttributes( projectedId );
         if ( getProjection( rs.getInt( 3 ) ) == null || getProjection( rs.getInt( 3 ) ).getGeographicCRS() == null
-                                || getProjection( rs.getInt( 3 ) ).getGeographicCRS().getType() != CoordinateSystem.GEOGRAPHIC_CRS )
+             || getProjection( rs.getInt( 3 ) ).getGeographicCRS().getType() != CoordinateSystem.GEOGRAPHIC_CRS )
             throw new CRSConfigurationException(
-                                                Messages.getMessage(
-                                                                    "CRS_CONFIG_PROJECTEDCRS_FALSE_CRSREF",
-                                                                    identifiable.getCode().getEquivalentString(),
-                                                                    getProjection( rs.getInt( 3 ) ).getGeographicCRS() ) );
+                                                 Messages.getMessage(
+                                                                      "CRS_CONFIG_PROJECTEDCRS_FALSE_CRSREF",
+                                                                      identifiable.getCode().getEquivalentString(),
+                                                                      getProjection( rs.getInt( 3 ) ).getGeographicCRS() ) );
 
         proj_crs = new ProjectedCRS( getProjection( rs.getInt( 3 ) ), new Axis[] { getAxis( rs.getInt( 1 ) ),
-                                                                                   getAxis( rs.getInt( 2 ) ) },
-                                                                                   identifiable );
+                                                                                  getAxis( rs.getInt( 2 ) ) },
+                                     identifiable );
         loadedProjectedsMap.put( projectedId, proj_crs );
         return proj_crs;
     }
@@ -899,7 +890,6 @@ public class CRSQuerier {
      * Gets the codes of all CoordinateSystems
      * 
      * @return a list with CRSCodeType elements
-     * @throws SQLException
      */
     protected List<CRSCodeType> getAvailableCRSCodes() {
         List<CRSCodeType> listCodes = new ArrayList<CRSCodeType>();
@@ -920,13 +910,14 @@ public class CRSQuerier {
     /**
      * Gets the CoordinateSystem object by supplying the code as a String
      * 
-     * @param crsCode   the code as a String
+     * @param crsCode
+     *            the code as a String
      * @return the CoordinateSystem object
      * @throws SQLException
      * @throws IllegalArgumentException
      */
     protected CoordinateSystem getCRSByCode( CRSCodeType crsCode )
-    throws IllegalArgumentException, SQLException {
+                            throws IllegalArgumentException, SQLException {
         CRSIdentifiable result = cachedCRSs.get( crsCode );
         if ( result == null ) {
             result = getNotCachedCRS( crsCode );
@@ -949,13 +940,13 @@ public class CRSQuerier {
      * @throws SQLException
      */
     protected CoordinateSystem getNotCachedCRS( CRSCodeType crsCode )
-    throws SQLException {
+                            throws SQLException {
         CoordinateSystem result = null;
 
         PreparedStatement ps;
         ps = conn.prepareStatement( "SELECT ref_id, code, codespace FROM code WHERE code = '" + crsCode.getCode()
                                     + "' AND codespace = '" + crsCode.getCodeSpace() + "'" );
-        
+
         ResultSet rs = ps.executeQuery();
         if ( !rs.next() ) {
             LOG.warn( "The database does not contain a crs with the code " + crsCode );
@@ -985,20 +976,21 @@ public class CRSQuerier {
     /**
      * Gets the Identifiable object by supplying the code as a String
      * 
-     * @param code   the code as a String
+     * @param code
+     *            the code as a String
      * @return the Identifiable object
      * @throws SQLException
-     */    
+     */
     protected CRSIdentifiable getIdentifiable( CRSCodeType code )
-    throws SQLException {
+                            throws SQLException {
         if ( cachedCRSs.containsKey( code ) ) // if it is a CRS that has been cached
             return cachedCRSs.get( code );
 
         ResultSet crsType = conn.prepareStatement(
-                                                  "SELECT table_name, id FROM identifiable_lookup, code "
-                                                  + "WHERE id = ref_id AND code = '"
-                                                  + code.getCode() + "' AND codespace = '"
-                                                  + code.getCodeSpace() + "'" ).executeQuery();
+                                                   "SELECT table_name, id FROM identifiable_lookup, code "
+                                                                           + "WHERE id = ref_id AND code = '"
+                                                                           + code.getCode() + "' AND codespace = '"
+                                                                           + code.getCodeSpace() + "'" ).executeQuery();
         if ( crsType.getString( 1 ).equalsIgnoreCase( "projected_crs" ) )
             return getProjectedCRS( crsType.getInt( 2 ) );
         else if ( crsType.getString( 1 ).equalsIgnoreCase( "geographic_crs" ) )
@@ -1032,14 +1024,14 @@ public class CRSQuerier {
         else if ( crsType.getString( 1 ).equalsIgnoreCase( "helmert_transformation" ) )
             return getStereographicAlternative( crsType.getInt( 2 ) );
         else
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ID",
-                                                                      code.getEquivalentString() ) );
+            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ID", code.getEquivalentString() ) );
     }
 
     /**
      * Gets the connection data that was establised in the DatabaseCRSProvider
      * 
-     * @param connection Connection
+     * @param connection
+     *            Connection
      */
     protected void setConnection( Connection connection ) {
         conn = connection;
@@ -1048,7 +1040,7 @@ public class CRSQuerier {
     /**
      * Checks to see if the connection has been passed from the db provider already or not
      * 
-     * @return  whether the connection is already set (true or false)
+     * @return whether the connection is already set (true or false)
      */
     protected boolean connectionAlreadySet() {
         return ( conn != null );
@@ -1060,7 +1052,7 @@ public class CRSQuerier {
      */
     static public void main( String[] args ) {
         DatabaseCRSProvider dbProvider = (DatabaseCRSProvider) CRSConfiguration.getCRSConfiguration(
-        "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
+                                                                                                     "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" ).getProvider();
         dbProvider.getAvailableCRSs();
     }
 

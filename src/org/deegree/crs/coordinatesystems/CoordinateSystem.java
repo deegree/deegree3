@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.coordinatesystems;
 
@@ -62,7 +62,7 @@ import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
  * defined (through a transformation) for an underlying Datum, which can have it's own axis with their own units. The
  * order of the position's coordinates are to be contrued to the axis order of the CRS</li>
  * </ul>
- *
+ * 
  * Summarizing it can be said, that each CRS has following features
  * <ul>
  * <li>A reference code (an casesensitive String identifying this CRS, for example 'EPGS:4326' or
@@ -73,13 +73,13 @@ import org.deegree.crs.transformations.polynomial.PolynomialTransformation;
  * <li>An optional area of use, describing where this CRS is used.</li>
  * <li>The order in which the axis of ther crs are defined.</li>
  * <li>The underlying Datum</li>
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public abstract class CoordinateSystem extends CRSIdentifiable {
@@ -131,7 +131,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      *            of this coordinate system.
      * @param axisOrder
      *            the axisorder of this coordinate system.
-     * @param identifiers
+     * @param codes
      *            of this coordinate system.
      * @param names
      * @param versions
@@ -244,7 +244,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
 
     /**
      * Converts the given coordinates in given to the unit of the respective axis.
-     *
+     * 
      * @param coordinates
      *            to convert to.
      * @param units
@@ -282,7 +282,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
 
     /**
      * Helper function to get the typename as a String.
-     *
+     * 
      * @return either the type as a name or 'Unknown' if the type is not known.
      */
     protected String getTypeName() {
@@ -302,7 +302,7 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
 
     /**
      * Checks if the given axis match this.axisOrder[] in length and order.
-     *
+     * 
      * @param otherAxis
      *            the axis to check
      * @return true if the given axis match this.axisOrder[] false otherwise.
@@ -348,9 +348,9 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
      * <p>
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
-     *
+     * 
      * @return (int) ( result >>> 32 ) ^ (int) result;
-     *
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -390,8 +390,8 @@ public abstract class CoordinateSystem extends CRSIdentifiable {
         return transformations;
     }
 
-//    public void setDefaultIdentifier( CRSCodeType crsCode ) {
-//        super.setDefaultIdentifier( crsCode );
-//    }
+    // public void setDefaultIdentifier( CRSCodeType crsCode ) {
+    // super.setDefaultIdentifier( crsCode );
+    // }
 
 }

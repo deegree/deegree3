@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.crs.components;
 
 import static org.deegree.crs.projections.ProjectionUtils.DTR;
@@ -44,13 +44,13 @@ import org.deegree.crs.CRSIdentifiable;
 /**
  * The <code>Unit</code> class defines a mechanism to convert between different measurements units, such as
  * british_yard and meter.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 
 public final class Unit extends CRSIdentifiable {
@@ -122,11 +122,11 @@ public final class Unit extends CRSIdentifiable {
 
     /**
      * Unit constructor.
-     *
+     * 
      * @param symbol
      * @param name
      *            of the unit, e.g. metre
-     * @param id
+     * @param code
      *            of the unit
      */
     public Unit( final String symbol, final String name, final CRSCodeType code ) {
@@ -138,7 +138,7 @@ public final class Unit extends CRSIdentifiable {
 
     /**
      * Unit constructor.
-     *
+     * 
      * @param symbol
      * @param name
      *            of the unit, e.g. metre
@@ -149,7 +149,7 @@ public final class Unit extends CRSIdentifiable {
 
     /**
      * Unit constructor, which uses the name as the id.
-     *
+     * 
      * @param symbol
      *            of the units, e.g. 'm'
      * @param name
@@ -165,12 +165,12 @@ public final class Unit extends CRSIdentifiable {
 
     /**
      * Unit constructor.
-     *
+     * 
      * @param symbol
      *            of the units, e.g. 'm'
      * @param name
      *            human readable name, e.g. metre
-     * @param id
+     * @param code
      *            of the unit.
      * @param scale
      *            to convert to the base type.
@@ -198,7 +198,8 @@ public final class Unit extends CRSIdentifiable {
                 return BRITISHYARD;
             } else if ( "USFOOT".equals( t ) || "FT".equals( t ) || matchEPSGString( unit, "uom", "9003" ) ) {
                 return USFOOT;
-            } else if ( "DEGREE".equals( t ) || "°".equals( t ) || matchEPSGString( unit, "uom", "9102" ) ) {
+            } else if ( "DEGREE".equals( t ) || "°".equals( t ) || matchEPSGString( unit, "uom", "9102" )
+                        || matchEPSGString( unit, "uom", "9122" ) ) {
                 return DEGREE;
             } else if ( "RADIAN".equals( t ) || "rad".equals( t ) || matchEPSGString( unit, "uom", "9101" ) ) {
                 return RADIAN;
@@ -218,7 +219,7 @@ public final class Unit extends CRSIdentifiable {
 
     /**
      * Check if amount of the specified unit can be converted into amount of this unit.
-     *
+     * 
      * @param other
      * @return true if this unit can be converted into the other unit
      */
@@ -228,7 +229,7 @@ public final class Unit extends CRSIdentifiable {
 
     /**
      * Convert a value in this unit to the given unit if possible.
-     *
+     * 
      * @param value
      *            to be converted
      * @param targetUnit
@@ -249,7 +250,7 @@ public final class Unit extends CRSIdentifiable {
 
     /**
      * Convert a value in this unit to the base unit, e.g. degree->radians
-     *
+     * 
      * @param value
      *            to be converted
      * @return the converted value or the same value if this unit is a base unit.
@@ -297,9 +298,9 @@ public final class Unit extends CRSIdentifiable {
      * <p>
      * Combining the hash code(s) computed above: result = 37 * result + code;
      * </p>
-     *
+     * 
      * @return (int) ( result >>> 32 ) ^ (int) result;
-     *
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override

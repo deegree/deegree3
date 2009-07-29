@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.resources;
 
@@ -51,15 +51,16 @@ import org.deegree.crs.exceptions.CRSConfigurationException;
 import org.deegree.crs.i18n.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * The <code>XMLFileResource</code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public abstract class XMLFileResource extends XMLAdapter implements XMLResource {
 
@@ -79,8 +80,8 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
      * @param requiredNamespace
      *            check for the root elements namespace, may be <code>null</code>
      */
-    public XMLFileResource( AbstractCRSProvider<OMElement> provider, Properties properties, String requiredRootLocalName,
-                            String requiredNamespace ) {
+    public XMLFileResource( AbstractCRSProvider<OMElement> provider, Properties properties,
+                            String requiredRootLocalName, String requiredNamespace ) {
         if ( properties == null ) {
             throw new IllegalArgumentException( "The properties may not be null" );
         }
@@ -132,7 +133,7 @@ public abstract class XMLFileResource extends XMLAdapter implements XMLResource 
                 }
             }
 
-        }  catch ( IOException e ) {
+        } catch ( IOException e ) {
             LOG.error( e.getLocalizedMessage(), e );
             throw new IllegalArgumentException( "File: " + fileName + " is an invalid xml file resource because: "
                                                 + e.getLocalizedMessage() );
