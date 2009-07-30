@@ -139,7 +139,7 @@ public class QTreeTest {
     // new float[] { -4.003f, 1.003f, -3.5003f, 1.497f }
     };
 
-    private static final boolean outputTree = true;
+    private static final boolean outputTree = false;
 
     private QTree<Integer> fillTree( boolean output )
                             throws IOException {
