@@ -181,8 +181,7 @@ public class GMLGeometryEncoderTest {
             writer.flush();
             writer.close();
 
-            XMLAssert.assertValidity( SCHEMA_LOCATION, new XMLInputSource( null, null, null, memoryWriter.getReader(),
-                                                                           null ) );
+            XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
         }
     }
 
@@ -218,8 +217,7 @@ public class GMLGeometryEncoderTest {
             writer.flush();
             writer.close();
 
-            XMLAssert.assertValidity( SCHEMA_LOCATION, new XMLInputSource( null, null, null, memoryWriter.getReader(),
-                                                                           null ) );
+            XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
         }
     }
 
@@ -253,8 +251,7 @@ public class GMLGeometryEncoderTest {
             writer.flush();
             writer.close();
 
-            XMLAssert.assertValidity( SCHEMA_LOCATION, new XMLInputSource( null, null, null, memoryWriter.getReader(),
-                                                                           null ) );
+            XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
         }
     }
 
@@ -286,8 +283,7 @@ public class GMLGeometryEncoderTest {
             writer.flush();
             writer.close();
 
-            XMLAssert.assertValidity( SCHEMA_LOCATION, new XMLInputSource( null, null, null, memoryWriter.getReader(),
-                                                                           null ) );
+            XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
         }
     }
 
@@ -321,9 +317,7 @@ public class GMLGeometryEncoderTest {
         exporter.export( geom );
         writer.flush();
         writer.close();
-        System.out.println (memoryWriter);
 
-        XMLAssert.assertValidity( SCHEMA_LOCATION,
-                                  new XMLInputSource( null, null, null, memoryWriter.getReader(), null ) );
+        XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
     }
 }

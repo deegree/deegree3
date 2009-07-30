@@ -36,6 +36,11 @@
 
 package org.deegree.commons.xml.schema;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,11 +51,17 @@ import org.apache.xerces.xni.parser.XMLErrorHandler;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.apache.xerces.xni.parser.XMLParseException;
 import org.apache.xerces.xni.parser.XMLParserConfiguration;
+import org.deegree.commons.utils.ProxyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides utility methods for the easy validation of XML documents against schemas.
+ * Provides utility methods for the easy validation of XML documents against XML schemas.
+ * <p>
+ * The XML schemas are either determined from the <code>xsi:schemaLocation</code> attribute of the document or may be
+ * explicitly specified. The validator uses the {@link RedirectingEntityResolver}, so OGC core schemas are not fetched
+ * over the network, but loaded from a local copy.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -76,35 +87,74 @@ public class SchemaValidator {
     /** Honour all schema locations feature id (http://apache.org/xml/features/honour-all-schemaLocations). */
     private static final String HONOUR_ALL_SCHEMA_LOCATIONS_ID = "http://apache.org/xml/features/honour-all-schemaLocations";
 
-    private static XMLParserConfiguration createValidatingParser( XMLEntityResolver entityResolver )
-                            throws XNIException {
-
-        XMLParserConfiguration parserConfiguration = new XIncludeAwareParserConfiguration();
-        parserConfiguration.setFeature( NAMESPACES_FEATURE_ID, true );
-        parserConfiguration.setFeature( VALIDATION_FEATURE_ID, true );
-        parserConfiguration.setFeature( SCHEMA_VALIDATION_FEATURE_ID, true );
-        parserConfiguration.setFeature( SCHEMA_FULL_CHECKING_FEATURE_ID, true );
-        parserConfiguration.setFeature( HONOUR_ALL_SCHEMA_LOCATIONS_ID, true );
-        if ( entityResolver != null ) {
-            parserConfiguration.setEntityResolver( entityResolver );
-        }
-        return parserConfiguration;
+    /**
+     * Validates the specified XML input document according to the contained schema references (
+     * <code>xsi:schemaLocation</code> attribute) and/or to the explicitly specified schema references.
+     * 
+     * @param source
+     *            provides the XML document to be validated, must not be null
+     * @param schemaUris
+     *            URIs of schema documents to be considered, can be null (only the <code>xsi:schemaLocation</code>
+     *            attribute is considered then)
+     * @return list of validation events (errors/warnings) that occured, never null, size of 0 means valid document
+     */
+    public static List<String> validate( Reader source, String... schemaUris ) {
+        return validate( new XMLInputSource( null, null, null, source, null ), schemaUris );
     }
 
     /**
      * Validates the specified XML input document according to the contained schema references (
-     * <code>xsi:schemaLocation</code> attribute).
+     * <code>xsi:schemaLocation</code> attribute) and/or to the explicitly specified schema references.
      * 
      * @param source
-     *            document to be validated
+     *            provides the XML document to be validated, must not be null
+     * @param schemaUris
+     *            URIs of schema documents to be considered, can be null (only the <code>xsi:schemaLocation</code>
+     *            attribute is considered then)
      * @return list of validation events (errors/warnings) that occured, never null, size of 0 means valid document
      */
-    public static List<String> validate( XMLInputSource source ) {
+    public static List<String> validate( InputStream source, String... schemaUris ) {
+        return validate( new XMLInputSource( null, null, null, source, null ), schemaUris );
+    }
+
+    /**
+     * Validates the specified XML input document according to the contained schema references (
+     * <code>xsi:schemaLocation</code> attribute) and/or to the explicitly specified schema references.
+     * 
+     * @param url
+     *            provides the XML document to be validated, must not be null
+     * @param schemaUris
+     *            URIs of schema documents to be considered, can be null (only the <code>xsi:schemaLocation</code>
+     *            attribute is considered then)
+     * @return list of validation events (errors/warnings) that occured, never null, size of 0 means valid document
+     * @throws IOException
+     * @throws MalformedURLException
+     */
+    public static List<String> validate( String url, String... schemaUris )
+                            throws MalformedURLException, IOException {
+        InputStream is = ProxyUtils.openURLConnection( new URL( url ), null, null ).getInputStream();
+        return validate( new XMLInputSource( null, null, null, is, null ), schemaUris );
+    }
+
+    /**
+     * Validates the specified XML input document according to the contained schema references (
+     * <code>xsi:schemaLocation</code> attribute) and/or to explicitly specified schema references.
+     * 
+     * @param source
+     *            provides the document to be validated, must not be null
+     * @param schemaUris
+     *            URIs of schema documents to be considered, can be null (only the <code>xsi:schemaLocation</code>
+     *            attribute is considered then)
+     * @return list of validation events (errors/warnings) that occured, never null, size of 0 means valid document
+     */
+    public static List<String> validate( XMLInputSource source, String... schemaUris ) {
         final List<String> errors = new LinkedList<String>();
 
         try {
-            XMLParserConfiguration parserConfig = createValidatingParser( new RedirectingEntityResolver() );
+            GrammarPool grammarPool = ( schemaUris == null ? null : GrammarPoolManager.getGrammarPool( schemaUris ) );
+            XMLParserConfiguration parserConfig = createValidatingParser( new RedirectingEntityResolver(), grammarPool );
             parserConfig.setErrorHandler( new XMLErrorHandler() {
+                @SuppressWarnings("synthetic-access")
                 @Override
                 public void error( String domain, String key, XMLParseException e )
                                         throws XNIException {
@@ -112,6 +162,7 @@ public class SchemaValidator {
                     errors.add( "Error: " + toString( e ) );
                 }
 
+                @SuppressWarnings("synthetic-access")
                 @Override
                 public void fatalError( String domain, String key, XMLParseException e )
                                         throws XNIException {
@@ -119,6 +170,7 @@ public class SchemaValidator {
                     errors.add( "Fatal error: " + toString( e ) );
                 }
 
+                @SuppressWarnings("synthetic-access")
                 @Override
                 public void warning( String domain, String key, XMLParseException e )
                                         throws XNIException {
@@ -139,5 +191,26 @@ public class SchemaValidator {
             errors.add( "Fatal error: " + e.getMessage() );
         }
         return errors;
+    }
+
+    private static XMLParserConfiguration createValidatingParser( XMLEntityResolver entityResolver,
+                                                                  GrammarPool grammarPool )
+                            throws XNIException {
+
+        XMLParserConfiguration parserConfiguration = null;
+        if ( grammarPool == null ) {
+            parserConfiguration = new XIncludeAwareParserConfiguration();
+        } else {
+            parserConfiguration = new XIncludeAwareParserConfiguration( grammarPool.getSymbolTable(), grammarPool );
+        }
+        parserConfiguration.setFeature( NAMESPACES_FEATURE_ID, true );
+        parserConfiguration.setFeature( VALIDATION_FEATURE_ID, true );
+        parserConfiguration.setFeature( SCHEMA_VALIDATION_FEATURE_ID, true );
+        parserConfiguration.setFeature( SCHEMA_FULL_CHECKING_FEATURE_ID, true );
+        parserConfiguration.setFeature( HONOUR_ALL_SCHEMA_LOCATIONS_ID, true );
+        if ( entityResolver != null ) {
+            parserConfiguration.setEntityResolver( entityResolver );
+        }
+        return parserConfiguration;
     }
 }

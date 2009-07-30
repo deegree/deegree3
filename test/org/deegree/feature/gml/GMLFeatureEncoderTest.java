@@ -45,7 +45,6 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.xerces.xni.parser.XMLInputSource;
 import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLParsingException;
@@ -111,6 +110,6 @@ public class GMLFeatureEncoderTest {
         writer.flush();
         writer.close();
 
-        XMLAssert.assertValidity( schemaURL, new XMLInputSource( null, null, null, memoryWriter.getReader(), null ) );
+        XMLAssert.assertValidity( memoryWriter.getReader(), schemaURL );
     }
 }

@@ -35,36 +35,23 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.junit;
 
-import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.io.Reader;
 import java.util.List;
-import java.util.Map;
 
-import javax.xml.XMLConstants;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-
-import org.apache.xerces.xni.XNIException;
-import org.apache.xerces.xni.parser.XMLErrorHandler;
 import org.apache.xerces.xni.parser.XMLInputSource;
-import org.apache.xerces.xni.parser.XMLParseException;
-import org.apache.xerces.xni.parser.XMLParserConfiguration;
-import org.deegree.commons.xml.schema.PreparserHelper;
+import org.deegree.commons.xml.schema.SchemaValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
- * This class contains static assert methods for XML validation. This class should only be used in JUnit tests and
- * <strong>not</strong> as a general schema validator, as it uses the JUnit specific mechanisms (e.g. <code>fail</code>)
- * to signal success or failure.
+ * This class contains static assert methods for using XML validation results in JUnit test cases.
+ * 
+ * @see SchemaValidator
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
  * 
  * @version $Revision$, $Date$
@@ -73,79 +60,46 @@ public class XMLAssert {
 
     private static final Logger LOG = LoggerFactory.getLogger( XMLAssert.class );
 
-    private static final Map<String, Schema> schemas = new HashMap<String, Schema>();
-
-    private static Schema getSchema( String schemaLocation ) {
-        synchronized ( schemas ) {
-            if ( schemas.containsKey( schemaLocation ) ) {
-                return schemas.get( schemaLocation );
-            }
-            Schema schema = createSchema( schemaLocation );
-            schemas.put( schemaLocation, schema );
-            return schema;
-        }
-    }
-
-    private static Schema createSchema( String schemaLocation ) {
-        try {
-            URL schemaDoc = new URL( schemaLocation );
-            SchemaFactory sf = SchemaFactory.newInstance( XMLConstants.W3C_XML_SCHEMA_NS_URI );
-            return sf.newSchema( schemaDoc );
-        } catch ( MalformedURLException e ) {
-            fail( "couldn't parse schema location url (" + schemaLocation + ")" );
-        } catch ( SAXException e ) {
-            fail( "couldn't parse schema (" + schemaLocation + "): " + e.getMessage() );
-        }
-        return null;
-    }
-
     /**
-     * Check if the input is valid against the xml schema.
-     * <p>
-     * The validator will cache the schema documents.
-     * </p>
+     * Asserts that the specified XML document is valid with respect to the schemas that it references (using
+     * <code>xsi:schemaLocation</code> attributes) and/or the specified schema documents.
      * 
-     * @param schemaLocation
-     * @param source
-     * @throws AssertionError
-     *             when the document is not valid against the schema
+     * @param reader
+     *            provides the XML document to be validated
+     * @param schemaLocations
+     *            optional locations of schema documents to be considered in the validation
      */
-    public static void assertValidity( String schemaLocation, XMLInputSource source ) {
-
-        final List<Exception> exceptions = new LinkedList<Exception>();
-
-        try {
-            XMLParserConfiguration parserConfig = PreparserHelper.getValidatingParser( schemaLocation );
-            parserConfig.setErrorHandler(new XMLErrorHandler() {
-                @Override
-                public void error( String arg0, String arg1, XMLParseException e )
-                                        throws XNIException {
-                    exceptions.add( e );
-                }
-
-                @Override
-                public void fatalError( String arg0, String arg1, XMLParseException e )
-                                        throws XNIException {
-                    exceptions.add( e );
-                }
-
-                @Override
-                public void warning( String arg0, String arg1, XMLParseException e )
-                                        throws XNIException {
-                    exceptions.add( e );
-                }
-                
-            });
-            parserConfig.parse( source );
-        } catch ( Exception e ) {
-            exceptions.add( e );
+    public static void assertValidity( Reader reader, String... schemaLocations ) {
+        XMLInputSource source = new XMLInputSource( null, null, null, reader, null );
+        List<String> messages = SchemaValidator.validate( source, schemaLocations );
+        if ( messages.size() > 0 ) {
+            fail( messages.get( 0 ) );
         }
         if ( LOG.isErrorEnabled() ) {
-            for ( Exception ex : exceptions ) {
-                LOG.error( "Parsing error: {}", ex.getMessage(), ex );
+            for ( String msg : messages ) {
+                LOG.error( msg );
             }
         }
-        assertEquals( "Caught some unexpected exceptions while validating against the schema. See error log", 0,
-                      exceptions.size() );
+    }    
+    
+    /**
+     * Asserts that the specified XML document is valid with respect to the schemas that it references (using
+     * <code>xsi:schemaLocation</code> attributes) and/or the specified schema documents.
+     * 
+     * @param source
+     *            provides the document to be validated
+     * @param schemaLocations
+     *            optional locations of schema documents to be considered in the validation
+     */
+    public static void assertValidity( XMLInputSource source, String... schemaLocations ) {
+        List<String> messages = SchemaValidator.validate( source, schemaLocations );
+        if ( messages.size() > 0 ) {
+            fail( messages.get( 0 ) );
+        }
+        if ( LOG.isErrorEnabled() ) {
+            for ( String msg : messages ) {
+                LOG.error( msg );
+            }
+        }
     }
 }

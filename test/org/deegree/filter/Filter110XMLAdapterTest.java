@@ -90,6 +90,6 @@ public class Filter110XMLAdapterTest {
         Filter110XMLEncoder.export( filter, writer.getXMLStreamWriter() );
 
         String schemaLocation = "http://schemas.opengis.net/filter/1.1.0/filter.xsd";
-        XMLAssert.assertValidity( schemaLocation, new XMLInputSource( null, null, null, writer.getReader(), null ) );
+        XMLAssert.assertValidity( new XMLInputSource( null, null, null, writer.getReader(), null ), schemaLocation );
     }
 }
