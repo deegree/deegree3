@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data.io.imageio;
 
 import java.awt.image.BufferedImage;
@@ -66,13 +66,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
- *
+ * 
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class IIORasterDataReader implements RasterDataReader {
 
@@ -98,7 +98,7 @@ public class IIORasterDataReader implements RasterDataReader {
 
     /**
      * Create a JAIRasterReader for given file
-     *
+     * 
      * @param file
      *            file to read
      * @param format
@@ -110,7 +110,7 @@ public class IIORasterDataReader implements RasterDataReader {
 
     /**
      * Create a JAIRasterReader for given stream
-     *
+     * 
      * @param stream
      *            stream to read
      * @param format
@@ -122,13 +122,15 @@ public class IIORasterDataReader implements RasterDataReader {
 
     /**
      * Reads data and returns a new RasterData object
-     *
+     * 
      * @return new RasterData
      */
     public ByteBufferRasterData read() {
-        openImageFile();
-        getHeight();
-        getWidth(); // cache size
+        if ( img == null ) {
+            openImageFile();
+            getHeight();
+            getWidth(); // cache size
+        }
 
         RenderedImage img = this.img;
         this.img = null; // remove reference to img
@@ -137,7 +139,7 @@ public class IIORasterDataReader implements RasterDataReader {
 
     /**
      * Retruns the width of the raster associated with the reader
-     *
+     * 
      * @return raster width
      */
     public int getWidth() {
@@ -152,7 +154,7 @@ public class IIORasterDataReader implements RasterDataReader {
 
     /**
      * Retruns the height of the raster associated with the reader
-     *
+     * 
      * @return raster height
      */
     public int getHeight() {
@@ -178,7 +180,7 @@ public class IIORasterDataReader implements RasterDataReader {
     /**
      * Removes the internal references to the loaded raster to allow garbage collection of the raster.
      */
-    void close() {
+    public void close() {
         img = null;
     }
 

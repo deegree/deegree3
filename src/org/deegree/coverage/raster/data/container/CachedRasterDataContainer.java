@@ -100,6 +100,7 @@ public class CachedRasterDataContainer implements RasterDataContainer, RasterDat
     }
 
     public void setRasterDataReader( RasterDataReader reader ) {
+        reader.close();
         this.reader = reader;
         this.identifier = UUID.randomUUID().toString();
     }

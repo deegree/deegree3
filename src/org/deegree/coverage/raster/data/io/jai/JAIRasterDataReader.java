@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data.io.jai;
 
 import java.awt.image.BufferedImage;
@@ -66,14 +66,14 @@ import com.sun.media.jai.codec.SeekableStream;
 
 /**
  * This class implements a simple reader for raster files.
- *
+ * 
  * It is based on Java Advanced Imaging and it returns RasterData objects.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author:otonnhofer $
- *
+ * 
  * @version $Revision:10872 $, $Date:2008-04-01 15:41:48 +0200 (Tue, 01 Apr 2008) $
- *
+ * 
  */
 public class JAIRasterDataReader implements RasterDataReader {
 
@@ -93,7 +93,7 @@ public class JAIRasterDataReader implements RasterDataReader {
 
     /**
      * Create a JAIRasterReader for given file
-     *
+     * 
      * @param file
      *            file to read
      */
@@ -103,7 +103,7 @@ public class JAIRasterDataReader implements RasterDataReader {
 
     /**
      * Create a JAIRasterReader for given stream
-     *
+     * 
      * @param stream
      *            stream to read
      */
@@ -113,7 +113,7 @@ public class JAIRasterDataReader implements RasterDataReader {
 
     /**
      * Reads data and returns a new RasterData object
-     *
+     * 
      * @return new RasterData
      */
     public ByteBufferRasterData read() {
@@ -129,7 +129,7 @@ public class JAIRasterDataReader implements RasterDataReader {
 
     /**
      * Retruns the width of the raster associated with the reader
-     *
+     * 
      * @return raster width
      */
     public int getWidth() {
@@ -144,7 +144,7 @@ public class JAIRasterDataReader implements RasterDataReader {
 
     /**
      * Retruns the height of the raster associated with the reader
-     *
+     * 
      * @return raster height
      */
     public int getHeight() {
@@ -160,7 +160,7 @@ public class JAIRasterDataReader implements RasterDataReader {
     /**
      * Removes the internal references to the loaded raster to allow garbage collection of the raster.
      */
-    void close() {
+    public void close() {
         img = null;
     }
 

@@ -82,7 +82,7 @@ public class LazyRasterDataContainer implements RasterDataContainer, RasterDataC
      * 
      * @see org.deegree.model.raster.RasterDataContainer#getRasterData()
      */
-    public RasterData getRasterData() {
+    public synchronized RasterData getRasterData() {
         if ( !rasterLoaded ) {
             if ( log.isDebugEnabled() ) {
                 log.debug( "reading: " + this.toString() );
@@ -119,6 +119,7 @@ public class LazyRasterDataContainer implements RasterDataContainer, RasterDataC
     public void setRasterDataReader( RasterDataReader reader ) {
         this.rasterLoaded = false;
         this.raster = null;
+        reader.close();
         this.reader = reader;
     }
 

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data.io.imageio;
 
 import java.io.File;
@@ -62,13 +62,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
- *
+ * 
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class IIORasterReader implements RasterIOProvider, RasterReader {
 
@@ -161,7 +161,8 @@ public class IIORasterReader implements RasterIOProvider, RasterReader {
 
         reader.close();
 
-        Envelope envelope = rasterReference.getEnvelope( width, height, new CRS (crs) );
+        CRS readCRS = crs == null ? null : new CRS( crs );
+        Envelope envelope = rasterReference.getEnvelope( width, height, readCRS );
 
         // RasterDataContainer source = RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
         RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy() );
