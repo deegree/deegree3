@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
 import java.io.BufferedOutputStream;
@@ -40,20 +40,23 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * This class contains static utility methods for handling files and filenames.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class FileUtils {
@@ -62,12 +65,14 @@ public class FileUtils {
 
     /**
      * Returns the filename, without any extension and path (Eg. /tmp/foo.txt -> foo)
-     *
+     * 
      * @param file
-     * @return the basename
+     * @return the basename or <code>null</code> if the file is null;
      */
     public static String getFilename( File file ) {
-
+        if ( file == null ) {
+            return null;
+        }
         String path = splitFilename( file ).first;
         String parent = file.getParent();
         return ( parent != null ) ? ( path.substring( file.getParent().length() + 1 ) ) : path;
@@ -75,7 +80,7 @@ public class FileUtils {
 
     /**
      * Returns the filename, without any extension. (Eg. /tmp/foo.txt -> /tmp/foo)
-     *
+     * 
      * @param file
      * @return the basename
      */
@@ -85,7 +90,7 @@ public class FileUtils {
 
     /**
      * Returns the file extension (Eg. /tmp/foo.txt -> txt)
-     *
+     * 
      * @param file
      * @return the file extension
      */
@@ -98,12 +103,12 @@ public class FileUtils {
      * to load it from the package of the given configuration class. Consider following example:
      * <p>
      * The org.deegree.geometry.GeometryFactory wants to load the File geometry_config.xml located in
-     * org.deegree.geometry.configuration (hence the filename will be <i>configuration/geometry_config.xml</i>)<br />
-     * . This method will first try to read geometry_config.xml (<b>without</b> the 'configuration' directory from the
+     * org.deegree.geometry.configuration (hence the filename will be <i>configuration/geometry_config.xml</i>)<br /> .
+     * This method will first try to read geometry_config.xml (<b>without</b> the 'configuration' directory from the
      * given fileName) from the root directory '/' (e.g. WEB-INF/classes in a serlvet environment)<br />
      * If this was unsuccessful this method will try to load the file from the given packageName with the relative
      * fileName appended to it.
-     *
+     * 
      * @param configurationClass
      *            will be used to read the stream from.
      * @param fileName
@@ -135,7 +140,7 @@ public class FileUtils {
 
     /**
      * Split a filename in basename and extension.
-     *
+     * 
      * @param file
      * @return a StringPair with basename and extension
      */
@@ -156,7 +161,7 @@ public class FileUtils {
 
     /**
      * Writes the given {@link String} to the specified file.
-     *
+     * 
      * @param file
      *            file to write to
      * @param content
@@ -181,7 +186,7 @@ public class FileUtils {
 
     /**
      * Writes the given {@link String} to a temporary file (created from specified prefix and suffix).
-     *
+     * 
      * @see File#createTempFile(String, String)
      * @param filePrefix
      *            prefix for the temp file name, must be at least three characters long
@@ -201,7 +206,7 @@ public class FileUtils {
 
     /**
      * Writes the given binary data to the specified file.
-     *
+     * 
      * @param file
      *            file to write to
      * @param data
@@ -227,7 +232,7 @@ public class FileUtils {
 
     /**
      * Writes the given binary data to a temporary file (created from specified prefix and suffix).
-     *
+     * 
      * @see File#createTempFile(String, String)
      * @param filePrefix
      *            prefix for the temp file name, must be at least three characters long
@@ -252,16 +257,17 @@ public class FileUtils {
      * NOTE: The implementation uses an idea from <a
      * href="http://weblogs.java.net/blog/kohsuke/archive/2007/04/how_to_convert.html">Kohsuke Kawaguchi</a>.
      * </p>
-     *
+     * 
      * @param url
      *            <code>file:/...</code> URL
      * @return corresponding file object
-     * @throws IllegalArgumentException if the given URL is not a <code>file:/...</code> URL
+     * @throws IllegalArgumentException
+     *             if the given URL is not a <code>file:/...</code> URL
      */
     public static File getAsFile( URL url )
                             throws IllegalArgumentException {
 
-        LOG.info ("Protocol: '" + url.getProtocol() + "'");
+        LOG.info( "Protocol: '" + url.getProtocol() + "'" );
 
         File f;
         try {
@@ -270,5 +276,51 @@ public class FileUtils {
             f = new File( url.getPath() );
         }
         return f;
+    }
+
+    /**
+     * Find the files in the given directory (and sub-directories) which match the given extension pattern(s).
+     * 
+     * @param topDirectory
+     *            to start the search from.
+     * @param recurse
+     * @param patternList
+     *            comma seperated list of extensions to search for.
+     * @return the list of files matching the given extension.
+     */
+    public static List<File> findFilesForExtensions( File topDirectory, boolean recurse, String patternList ) {
+        List<File> result = new LinkedList<File>();
+        if ( topDirectory.isDirectory() ) {
+            FilenameFilter f = buildFilenameFilter( patternList );
+            findFiles( topDirectory, result, recurse, f );
+        }
+        return result;
+    }
+
+    private static void findFiles( File dir, List<File> result, boolean recurse, FilenameFilter filter ) {
+        for ( File file : dir.listFiles() ) {
+            if ( file.isFile() ) {
+                if ( filter.accept( dir, file.getName() ) ) {
+                    result.add( file );
+                }
+            } else if ( file.isDirectory() && recurse ) {
+                findFiles( file, result, recurse, filter );
+            }
+        }
+    }
+
+    private static FilenameFilter buildFilenameFilter( String patternList ) {
+        final String[] patterns = patternList.split( "," );
+        FilenameFilter filter = new FilenameFilter() {
+            public boolean accept( File dir, String name ) {
+                for ( String pattern : patterns ) {
+                    if ( "*".equals( pattern ) || name.endsWith( pattern ) ) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        return filter;
     }
 }
