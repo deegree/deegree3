@@ -75,12 +75,17 @@ public class QTree<T> extends SpatialIndex<T> {
 
     private final int numberOfObjects;
 
-    private QTree( int numberOfObjects, float[] envelope ) {
+    private final byte currentDepth;
+
+    private final static byte MAX_DEPTH = 25;
+
+    private QTree( int numberOfObjects, float[] envelope, byte depth ) {
         if ( numberOfObjects < 1 ) {
             throw new IllegalArgumentException( "The number of objects per leaf may not be smaller than 1." );
         }
         this.numberOfObjects = numberOfObjects;
         this.envelope = envelope;
+        this.currentDepth = depth;
     }
 
     /**
@@ -89,19 +94,10 @@ public class QTree<T> extends SpatialIndex<T> {
      *            each node will contain
      */
     public QTree( Envelope validDomain, int numberOfObjects ) {
-        this( numberOfObjects, createEnvelope( validDomain ) );
+        this( numberOfObjects, createEnvelope( validDomain ), (byte) 0 );
         if ( validDomain == null ) {
             throw new IllegalArgumentException( "The envelope must be set." );
         }
-    }
-
-    /**
-     * @param envelope
-     * @param numberOfObjects
-     *            each leaf node will contain
-     */
-    public QTree( float[] envelope, int numberOfObjects ) {
-        this( numberOfObjects, envelope );
     }
 
     /**
@@ -426,7 +422,7 @@ public class QTree<T> extends SpatialIndex<T> {
      *         number of objects in a leaf
      */
     private boolean splitCriteria() {
-        return ( size() > numberOfObjects );
+        return ( size() > numberOfObjects ) && ( ( currentDepth + 1 ) < MAX_DEPTH );
     }
 
     /**
@@ -528,7 +524,7 @@ public class QTree<T> extends SpatialIndex<T> {
             newEnv[1] = getHalfHeight();
             break;
         }
-        return new QTree<T>( newEnv, numberOfObjects );
+        return new QTree<T>( numberOfObjects, newEnv, (byte) ( currentDepth + 1 ) );
     }
 
     /**
@@ -756,12 +752,12 @@ public class QTree<T> extends SpatialIndex<T> {
                 sb.append( s );
             }
             if ( leafObjects != null ) {
-                int i = 0;
-                sb.append( "L{" );
-                for ( Entry<T> t : leafObjects ) {
-                    sb.append( t.entryValue ).append( ( ++i < leafObjects.size() ? "," : "" ) );
-                }
-                sb.append( "}" );
+                // int i = 0;
+                // sb.append( "L{" );
+                // for ( Entry<T> t : leafObjects ) {
+                // sb.append( t.entryValue ).append( ( ++i < leafObjects.size() ? "," : "" ) );
+                // }
+                // sb.append( "}" );
             }
             label += "(" + ( totalSize() ) + ":[" + sb.toString() + "])";
             attList.add( GraphvizDot.getShapeDef( "box" ) );
@@ -782,15 +778,15 @@ public class QTree<T> extends SpatialIndex<T> {
 
     private StringBuilder getCoveringAsDot() {
         StringBuilder sb = null;
-        if ( objectsCoveringEnv != null ) {
-            sb = new StringBuilder();
-            int i = 0;
-            sb.append( "C{" );
-            for ( Entry<T> t : objectsCoveringEnv ) {
-                sb.append( t.entryValue ).append( ( ++i < objectsCoveringEnv.size() ? "," : "" ) );
-            }
-            sb.append( "}" );
-        }
+        // if ( objectsCoveringEnv != null ) {
+        // sb = new StringBuilder();
+        // int i = 0;
+        // sb.append( "C{" );
+        // for ( Entry<T> t : objectsCoveringEnv ) {
+        // sb.append( t.entryValue ).append( ( ++i < objectsCoveringEnv.size() ? "," : "" ) );
+        // }
+        // sb.append( "}" );
+        // }
         return sb;
     }
 
