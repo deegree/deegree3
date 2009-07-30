@@ -51,6 +51,9 @@ public class WCSConstants {
     /** Namespace for elements from the WCS 1.0.0 specification */
     public static final String WCS_100_NS = "http://www.opengis.net/wcs";
 
+    /** Location of the schema */
+    public static final String WCS_100_SCHEMA = "http://schemas.opengis.net/wcs/1.0.0/wcsCapabilities.xsd";
+
     /** Namespace for elements from the WCS 1.1.0 specification */
     public static final String WCS_110_NS = "http://www.opengis.net/wcs/1.1";
 
