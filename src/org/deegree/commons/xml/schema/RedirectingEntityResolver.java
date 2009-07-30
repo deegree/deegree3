@@ -111,7 +111,7 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
                             throws XNIException, IOException {
 
         String systemId = identifier.getExpandedSystemId();
-        String redirectedSystemId = redirect(systemId ); 
+        String redirectedSystemId = systemId != null ? redirect(systemId ) : null; 
         LOG.debug( "'" + systemId + "' -> '" + redirectedSystemId + "'" );
         return new XMLInputSource( null, redirectedSystemId, null );
     }

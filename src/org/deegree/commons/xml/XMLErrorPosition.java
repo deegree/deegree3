@@ -87,7 +87,8 @@ class XMLErrorPosition {
      * @return
      */
     String getAsMessage() {
-        String s = "'" + systemId + "', line: " + lineNumber;
+        String s = systemId != null && !"".equals( systemId ) ? ("file '" + systemId + "', ") : "";
+        s += "line: " + lineNumber;
         if ( columnNumber != -1 ) {
             s += ", column: " + columnNumber;
         }

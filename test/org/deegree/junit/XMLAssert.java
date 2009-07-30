@@ -145,7 +145,7 @@ public class XMLAssert {
                 LOG.error( "Parsing error: {}", ex.getMessage(), ex );
             }
         }
-        assertEquals( "catched some unexpected exceptions while validating against the schema. see error log", 0,
+        assertEquals( "Caught some unexpected exceptions while validating against the schema. See error log", 0,
                       exceptions.size() );
     }
 }

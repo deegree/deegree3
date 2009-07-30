@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
 import org.apache.axiom.om.OMElement;
@@ -43,11 +43,11 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
  * <p>
  * Helps to determine the error in the XML document by returning file name and position (column, line, character offset)
  * information in {@link #getMessage()} when they are available.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class XMLParsingException extends XMLProcessingException {
@@ -66,7 +66,7 @@ public class XMLParsingException extends XMLProcessingException {
 
     /**
      * Creates a new exception for a parsing error that occured in a StAX-based parsing method.
-     *
+     * 
      * @param xmlReader
      *            {@link XMLStreamReaderWrapper} that encountered the erroneous event
      * @param msg
@@ -79,7 +79,7 @@ public class XMLParsingException extends XMLProcessingException {
 
     /**
      * Creates a new exception for a parsing error that occured in an AXIOM-based parsing method.
-     *
+     * 
      * @param origin
      *            {@link XMLAdapter} that determined the error (usually use <code>this</code>)
      * @param erroneousElement
@@ -94,7 +94,7 @@ public class XMLParsingException extends XMLProcessingException {
 
     @Override
     public String getMessage() {
-
-        return ( ( errorPosition != null ) ? errorPosition.getAsMessage() : "Unknown error position" ) + ": " + msg;
+        return "Error in XML document ("
+               + ( ( errorPosition != null ) ? errorPosition.getAsMessage() : "Unknown error position" ) + "): " + msg;
     }
 }

@@ -942,7 +942,7 @@ public class XMLAdapter {
                             throws XMLParsingException {
         OMElement element = getElement( context, xpath );
         if ( element == null ) {
-            String msg = Messages.getMessage( "XML_REQUIRED_ELEMENT_MISSING", xpath, context );
+            String msg = Messages.getMessage( "XML_REQUIRED_ELEMENT_MISSING", xpath, context.getQName() );
             throw new XMLParsingException( this, context, msg );
         }
         return element;
@@ -952,7 +952,7 @@ public class XMLAdapter {
                             throws XMLParsingException {
         List<OMElement> elements = getElements( context, xpath );
         if ( elements.size() == 0 ) {
-            String msg = Messages.getMessage( "XML_REQUIRED_ELEMENT_MISSING", xpath, context );
+            String msg = Messages.getMessage( "XML_REQUIRED_ELEMENT_MISSING", xpath, context.getQName() );
             throw new XMLParsingException( this, context, msg );
         }
         return elements;
@@ -962,7 +962,7 @@ public class XMLAdapter {
                             throws XMLParsingException {
         Object node = getNode( context, xpath );
         if ( node == null ) {
-            String msg = Messages.getMessage( "XML_REQUIRED_NODE_MISSING", xpath, context );
+            String msg = Messages.getMessage( "XML_REQUIRED_NODE_MISSING", xpath, context.getQName() );
             throw new XMLParsingException( this, context, msg );
         }
         return node;
@@ -1011,7 +1011,7 @@ public class XMLAdapter {
 
         String value = getNodeAsString( context, xpath, null );
         if ( value == null ) {
-            String msg = Messages.getMessage( "XML_SYNTAX_ERROR_NODE_MISSING", xpath, context );
+            String msg = Messages.getMessage( "XML_REQUIRED_NODE_MISSING", xpath, context.getQName() );
             throw new XMLParsingException( this, context, msg );
         }
         return value;
@@ -1022,7 +1022,7 @@ public class XMLAdapter {
 
         QName value = getNodeAsQName( context, xpath, null );
         if ( value == null ) {
-            String msg = Messages.getMessage( "XML_SYNTAX_ERROR_NODE_MISSING", xpath, context );
+            String msg = Messages.getMessage( "XML_REQUIRED_NODE_MISSING", xpath, context.getQName() );
             throw new XMLParsingException( this, context, msg );
         }
         return value;
