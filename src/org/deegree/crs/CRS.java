@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.crs;
 
@@ -50,17 +50,17 @@ import org.deegree.geometry.Geometry;
  * <p>
  * Their are two aspects that this class takes care of:
  * <nl>
- * <li>In applications, coordinate system are usually identified using strings (such as 'EPSG:4326'). However, there are
- * multiple equivalent ways to encode coordinate system identifications (another one would be
+ * <li>In applications, coordinate system are usually identified using strings (such as 'EPSG:4326'). However, there
+ * are multiple equivalent ways to encode coordinate system identifications (another one would be
  * 'urn:ogc:def:crs:EPSG::4326'). By using this class to represent a CRS, the original spelling is maintained.</li>
- * <li>A coordinate system may be specified which is not known to the {@link CRSRegistry}. However, for some operations
- * this is not a necessarily a problem, e.g. a GML document may be read and transformed into {@link Feature} and
- * {@link Geometry} objects.</li>
+ * <li>A coordinate system may be specified which is not known to the {@link CRSRegistry}. However, for some
+ * operations this is not a necessarily a problem, e.g. a GML document may be read and transformed into {@link Feature}
+ * and {@link Geometry} objects.</li>
  * </nl>
- *
+ * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author last edited by: $Author: ionita $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class CRS {
@@ -77,7 +77,7 @@ public class CRS {
 
     /**
      * Creates a new {@link CRS} instance with a coordinate system name.
-     *
+     * 
      * @param crsName
      *            name of the crs (identification string) or null
      */
@@ -106,7 +106,7 @@ public class CRS {
 
     /**
      * Returns the string that identifies the {@link CRS}.
-     *
+     * 
      * @return the string that identifies the coordinate system
      */
     public String getName() {
@@ -115,7 +115,7 @@ public class CRS {
 
     /**
      * Returns the corresponding {@link CRS} object.
-     *
+     * 
      * @return the coordinate system, or null if the name is null
      * @throws UnknownCRSException
      */
@@ -125,6 +125,25 @@ public class CRS {
             crs = CRSRegistry.lookup( crsName );
         }
         return crs;
+    }
+
+    @Override
+    public boolean equals( Object other ) {
+        if ( other != null && other instanceof CRS ) {
+            final CRS that = (CRS) other;
+            boolean result = this.crsName != null && ( this.crsName.equals( that.crsName ) ) /* && to be done */;
+            if ( !result ) {
+                try {
+                    CoordinateSystem thisCRS = this.getWrappedCRS();
+                    CoordinateSystem thatCRS = that.getWrappedCRS();
+                    return thisCRS.equals( thatCRS );
+                } catch ( UnknownCRSException e ) {
+                    return result;
+                }
+
+            }
+        }
+        return false;
     }
 
     /**
