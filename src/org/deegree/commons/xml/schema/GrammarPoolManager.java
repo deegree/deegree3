@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
- * Manages pre-populated {@link GrammarPool} instances to minimize the fetching and parsing of XML schema documents. 
+ * Manages pre-populated {@link GrammarPool} instances to minimize fetching and parsing of XML schema documents. 
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -102,7 +102,7 @@ class GrammarPoolManager {
      * @throws XNIException
      */
     @SuppressWarnings("unchecked")
-    synchronized static GrammarPool getGrammarPool( String[] schemaUris )
+    synchronized static GrammarPool getGrammarPool( String...schemaUris )
                             throws XNIException, IOException {
 
         String id = "";
@@ -158,5 +158,4 @@ class GrammarPoolManager {
         grammarPool.lockPool();
         return grammarPool;
     }
-
 }
