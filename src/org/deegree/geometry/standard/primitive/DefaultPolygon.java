@@ -106,43 +106,6 @@ public class DefaultPolygon extends DefaultSurface implements Polygon {
         return SurfaceType.Polygon;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.geometry.standard.AbstractDefaultGeometry#getEnvelope()
-     */
-    @Override
-    public Envelope getEnvelope() {
-        if ( envelope == null ) {
-            Points points = exteriorRing.getControlPoints();
-            double[] min = new double[points.getDimension()];
-            double[] max = new double[points.getDimension()];
-            boolean first = true;
-            for ( Point point : points ) {
-                double[] d = point.getAsArray();
-                if ( first ) {
-                    for ( int i = 0; i < d.length; i++ ) {
-                        min[i] = d[i];
-                        max[i] = d[i];
-                    }
-                    first = false;
-                } else {
-                    for ( int i = 0; i < d.length; i++ ) {
-                        if ( d[i] < min[i] ) {
-                            min[i] = d[i];
-                        }
-                        if ( d[i] > max[i] ) {
-                            max[i] = d[i];
-                        }
-                    }
-                }
-            }
-            GeometryFactory gf = new GeometryFactory();
-            envelope = gf.createEnvelope( min, max, getCoordinateSystem() );
-        }
-        return envelope;
-    }
-
     @Override
     public List<PolygonPatch> getPatches() {
         return (List<PolygonPatch>) patches;
