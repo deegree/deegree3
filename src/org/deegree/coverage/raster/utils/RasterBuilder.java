@@ -174,7 +174,7 @@ public class RasterBuilder {
      *         with the given extension.
      */
     public static AbstractRaster buildTiledRaster( File directory, String extension, boolean recursive, CRS crs ) {
-        LOG.debug( "Scanning for files in directory: {}", directory.getAbsolutePath() );
+        LOG.info( "Scanning for files in directory: {}", directory.getAbsolutePath() );
         List<File> coverageFiles = FileUtils.findFilesForExtensions( directory, recursive, extension );
         TiledRaster raster = null;
         if ( !coverageFiles.isEmpty() ) {

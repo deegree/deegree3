@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.manager;
 
@@ -64,10 +64,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Manages the loading, unloading and caching of {@link FragmentTexture} objects and the enabling/disabling in a certain
  * GL context.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class TextureManager {
@@ -111,7 +111,7 @@ public class TextureManager {
     }
 
     /**
-     *
+     * 
      * @param unitsPerPixel
      * @return the matching resolution
      */
@@ -121,7 +121,7 @@ public class TextureManager {
 
     /**
      * Retrieves view-optimized textures for the {@link RenderMeshFragment}s.
-     *
+     * 
      * @param glRenderContext
      * @param maxProjectedTexelSize
      * @param fragments
@@ -185,7 +185,7 @@ public class TextureManager {
 
     /**
      * Enables this TextureManager.
-     *
+     * 
      * @param textures
      * @param gl
      */
@@ -208,7 +208,9 @@ public class TextureManager {
         float[] eyePos = new float[] { (float) eyePosPoint.x, (float) eyePosPoint.y, (float) eyePosPoint.z };
 
         for ( RenderMeshFragment fragment : fragments ) {
+
             float[][] fragmentBBox = fragment.getBBox();
+
             float[][] scaledBBox = new float[2][3];
             scaledBBox[0][0] = fragmentBBox[0][0];
             scaledBBox[0][1] = fragmentBBox[0][1];
@@ -229,6 +231,12 @@ public class TextureManager {
             float minY = fragment.getBBox()[0][1] - (float) translationToLocalCRS[1];
             float maxX = fragment.getBBox()[1][0] - (float) translationToLocalCRS[0];
             float maxY = fragment.getBBox()[1][1] - (float) translationToLocalCRS[1];
+
+            if ( LOG.isTraceEnabled() ) {
+                LOG.trace( "frag bbox: " + fragmentBBox[0][0] + "," + fragmentBBox[0][1] + " | " + fragmentBBox[1][0]
+                           + "," + fragmentBBox[1][1] );
+                LOG.trace( "requ bbox: " + minX + "," + minY + " | " + maxX + "," + maxY );
+            }
 
             requests.add( new TextureRequest( fragment, minX, minY, maxX, maxY, (float) metersPerPixel ) );
         }
@@ -288,18 +296,18 @@ public class TextureManager {
     }
 
     /**
-     *
+     * 
      * The <code>MemoryCache</code> maps texture request to their in memory counter part
-     *
+     * 
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
      * @author last edited by: $Author: rbezema $
      * @version $Revision: $, $Date: $
-     *
+     * 
      */
     private class MemoryCache extends LinkedHashMap<TextureRequest, FragmentTexture> {
 
         /**
-         *
+         * 
          */
         private static final long serialVersionUID = -2046226967090513718L;
 
@@ -312,7 +320,7 @@ public class TextureManager {
 
         /**
          * Overrides to the needs of a cache.
-         *
+         * 
          * @param eldest
          * @return true as defined by the contract in {@link LinkedHashMap}.
          */
@@ -328,16 +336,16 @@ public class TextureManager {
 
     /**
      * The <code>GPUCache</code> maps in memory fragment textures to their GPU counter part.
-     *
+     * 
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
      * @author last edited by: $Author: rbezema $
      * @version $Revision: $, $Date: $
-     *
+     * 
      */
     private class GPUCache extends LinkedHashMap<FragmentTexture, FragmentTexture> {
 
         /**
-         *
+         * 
          */
         private static final long serialVersionUID = -3224329551994159571L;
 
@@ -353,7 +361,7 @@ public class TextureManager {
 
         /**
          * Enable the given fragment texture.
-         *
+         * 
          * @param fragmentTexture
          * @param gl
          */
@@ -367,7 +375,7 @@ public class TextureManager {
 
         /**
          * Overrides to the needs of a cache.
-         *
+         * 
          * @param eldest
          * @return true as defined by the contract in {@link LinkedHashMap}.
          */

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
 import java.util.List;
@@ -48,14 +48,14 @@ import org.deegree.geometry.primitive.Point;
 
 /**
  * This class represents a tiled AbstractRaster.
- *
+ * 
  * A TiledRaster contains multiple non-overlapping (TODO verify this) AbstractRasters
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class TiledRaster extends AbstractRaster {
 
@@ -63,7 +63,7 @@ public class TiledRaster extends AbstractRaster {
 
     /**
      * Creates a new TiledRaster with tiles from the given TileContainer
-     *
+     * 
      * @param tileContainer
      *            wraps all tiles
      */
@@ -74,7 +74,7 @@ public class TiledRaster extends AbstractRaster {
 
     /**
      * Returns the wrapper for all tiles.
-     *
+     * 
      * @return The container for all tiles.
      */
     public TileContainer getTileContainer() {
@@ -181,7 +181,8 @@ public class TiledRaster extends AbstractRaster {
         if ( tiles == null || tiles.isEmpty() ) {
             throw new NullPointerException( "The given tile container does not contain any tiles. " );
         }
-        SimpleRaster result = tiles.get( 0 ).getAsSimpleRaster().createCompatibleSimpleRaster( getRasterReference(), env );
+        SimpleRaster result = tiles.get( 0 ).getAsSimpleRaster().createCompatibleSimpleRaster( getRasterReference(),
+                                                                                               env );
 
         for ( AbstractRaster r : tiles ) {
             Geometry intersec = r.getEnvelope().intersection( env );
