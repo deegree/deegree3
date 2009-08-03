@@ -140,6 +140,9 @@ public class ApplicationSchemaXSDEncoder {
     public void export( XMLStreamWriter writer, ApplicationSchema schema )
                             throws XMLStreamException {
 
+        // TODO prefix handling
+        writer.setPrefix( "app", schema.getFeatureTypes()[0].getName().getNamespaceURI() );
+        
         writer.setPrefix( XS_PREFIX, XSNS );
         writer.setPrefix( GML_PREFIX, gmlNsURI );
 
@@ -170,6 +173,9 @@ public class ApplicationSchemaXSDEncoder {
     public void export( XMLStreamWriter writer, List<FeatureType> fts )
                             throws XMLStreamException {
 
+        // TODO prefix handling
+        writer.setPrefix( "app", fts.get( 0 ).getName().getNamespaceURI() );        
+        
         writer.setPrefix( XS_PREFIX, XSNS );
         writer.setPrefix( GML_PREFIX, gmlNsURI );
 
@@ -270,21 +276,24 @@ public class ApplicationSchemaXSDEncoder {
         }
 
         if ( pt instanceof SimplePropertyType ) {
-
+            // TODO handle restricted types (e.g. 'xs:integer')
+            writer.writeAttribute( "type", "xs:string" );
         } else if ( pt instanceof GeometryPropertyType ) {
-
+            // TODO handle restricted types (e.g. 'gml:PointPropertyType')
+            writer.writeAttribute( "type", "gml:GeometryPropertyType" );
         } else if ( pt instanceof FeaturePropertyType ) {
             QName containedFt = ( (FeaturePropertyType) pt ).getFTName();
             if ( containedFt != null ) {
                 writer.writeStartElement( XSNS, "complexType" );
                 writer.writeStartElement( XSNS, "sequence" );
                 writer.writeEmptyElement( XSNS, "element" );
-                writer.writeAttribute( "ref", containedFt.getPrefix() + ":" + containedFt.getLocalPart() );
+                // TODO
+                writer.writeAttribute( "ref",  "app:" + containedFt.getLocalPart() );
                 writer.writeAttribute( "minOccurs", "0" );
-                writer.writeEmptyElement( XSNS, "attributeGroup" );
-                writer.writeAttribute( "ref", "gml:AssociationAttributeGroup" );
                 // end 'xs:sequence'
                 writer.writeEndElement();
+                writer.writeEmptyElement( XSNS, "attributeGroup" );
+                writer.writeAttribute( "ref", "gml:AssociationAttributeGroup" );
                 // end 'xs:complexType'
                 writer.writeEndElement();
             } else {

@@ -130,9 +130,22 @@ public class GML311FeatureEncoder {
         export( feature, 0 );
     }
 
-    public void export( FeatureCollection fc )
+    public void export( FeatureCollection fc, QName name )
                             throws XMLStreamException {
-        export( fc, -1 );
+        LOG.debug( "Exporting feature collection with explicit name." );
+        writer.setPrefix( "gml", GMLNS );
+        writer.writeStartElement( name.getNamespaceURI(), name.getLocalPart() );
+        for ( Feature member : fc ) {
+            String memberFid = member.getId();
+            writer.writeStartElement( "http://www.opengis.net/gml", "featureMember" );
+            if ( memberFid != null && exportedIds.contains( memberFid ) ) {
+                writer.writeAttribute( XLNNS, "href", "#" + memberFid );
+            } else {
+                export( member, 0 );
+            }
+            writer.writeEndElement();
+        }
+        writer.writeEndElement();
     }
 
     private void export( Feature feature, int inlineLevels )
@@ -161,7 +174,7 @@ public class GML311FeatureEncoder {
             LOG.debug( "Exporting Feature {} with ID {}", featureName, feature.getId() );
             writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
             if ( feature.getId() != null ) {
-                writer.writeAttribute( GMLNS, "id", feature.getId() );
+                writer.writeAttribute( "gml", GMLNS, "id", feature.getId() );
             }
             for ( Property<?> prop : feature.getProperties() ) {
                 export( prop, inlineLevels );
