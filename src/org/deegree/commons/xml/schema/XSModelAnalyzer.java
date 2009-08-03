@@ -35,12 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.schema;
 
+import static org.apache.xerces.impl.xs.XMLSchemaLoader.XMLGRAMMAR_POOL;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
+import org.apache.xerces.xni.XNIException;
+import org.apache.xerces.xni.parser.XMLConfigurationException;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSObjectList;
@@ -60,6 +65,7 @@ import org.w3c.dom.DOMErrorHandler;
  * </p>
  * 
  * @see XSModelGMLAnalyzer
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
@@ -168,6 +174,7 @@ public class XSModelAnalyzer {
                             IllegalAccessException {
 
         XMLSchemaLoader schemaLoader = new XMLSchemaLoader();
+
         DOMConfiguration config = schemaLoader.getConfig();
 
         // create and register DOMErrorHandler
@@ -196,6 +203,21 @@ public class XSModelAnalyzer {
 
         schemaLoader.setEntityResolver( new RedirectingEntityResolver() );
         
+//        // TODO what about preparsing of GML schemas?
+//      try {
+//      schemaLoader.setProperty( XMLGRAMMAR_POOL, GrammarPoolManager.getGrammarPool( "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd" ) );
+//  } catch ( XMLConfigurationException e ) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//  } catch ( XNIException e ) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//  } catch ( IOException e ) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//  }        
+        
+        // TODO what about multiple URLs?
         return schemaLoader.loadURI( url );
     }
 }

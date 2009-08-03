@@ -53,7 +53,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Xerces entity resolver that performs redirection of requests for OpenGIS core schemas (e.g. GML) to a local copy.
+ * Xerces entity resolver that performs redirection of requests for OpenGIS core schemas (e.g. GML) to a local copy on
+ * the classpath.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -64,8 +65,8 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
 
     private static final Logger LOG = LoggerFactory.getLogger( RedirectingEntityResolver.class );
 
-    private static final String SCHEMAS_OPENGIS_NET_URL ="http://schemas.opengis.net/";
-    
+    private static final String SCHEMAS_OPENGIS_NET_URL = "http://schemas.opengis.net/";
+
     private static final String ROOT = "/META-INF/SCHEMAS_OPENGIS_NET/";
 
     private static final String LISTING = ".LISTING";
@@ -73,31 +74,31 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
     private static final URL baseURL;
 
     private static Set<String> availableFiles = new HashSet<String>();
-    
+
     static {
         baseURL = RedirectingEntityResolver.class.getResource( ROOT + LISTING );
         if ( baseURL == null ) {
-            LOG.warn( getMessage( "XML_SCHEMAS_NO_LOCAL_COPY", ROOT + LISTING) );
+            LOG.warn( getMessage( "XML_SCHEMAS_NO_LOCAL_COPY", ROOT + LISTING ) );
         }
         try {
             BufferedReader reader = new BufferedReader(
                                                         new InputStreamReader( new URL( baseURL, LISTING ).openStream() ) );
             String line = null;
-            while ( ( line =  reader.readLine() ) != null  ) {                
-                availableFiles.add (line.trim());
+            while ( ( line = reader.readLine() ) != null ) {
+                availableFiles.add( line.trim() );
             }
         } catch ( Exception e ) {
             LOG.warn( getMessage( "XML_SCHEMAS_ERROR_READING_LISTING", ROOT + LISTING, e.getMessage() ) );
         }
     }
 
-    private String redirect (String systemId) {
-        if (systemId.startsWith( SCHEMAS_OPENGIS_NET_URL )) {
+    private String redirect( String systemId ) {
+        if ( systemId.startsWith( SCHEMAS_OPENGIS_NET_URL ) ) {
             String localPart = "./" + systemId.substring( SCHEMAS_OPENGIS_NET_URL.length() );
-            if (availableFiles.contains( localPart )) {
-                LOG.debug ("Mirror hit: " + systemId);
+            if ( availableFiles.contains( localPart ) ) {
+                LOG.debug( "Local hit: " + systemId );
                 try {
-                    return new URL (baseURL, localPart).toString();
+                    return new URL( baseURL, localPart ).toString();
                 } catch ( MalformedURLException e ) {
                     // should never happen
                 }
@@ -105,13 +106,13 @@ public class RedirectingEntityResolver implements XMLEntityResolver {
         }
         return systemId;
     }
-    
+
     @Override
     public XMLInputSource resolveEntity( XMLResourceIdentifier identifier )
                             throws XNIException, IOException {
 
         String systemId = identifier.getExpandedSystemId();
-        String redirectedSystemId = systemId != null ? redirect(systemId ) : null; 
+        String redirectedSystemId = systemId != null ? redirect( systemId ) : null;
         LOG.debug( "'" + systemId + "' -> '" + redirectedSystemId + "'" );
         return new XMLInputSource( null, redirectedSystemId, null );
     }
