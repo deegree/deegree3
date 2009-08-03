@@ -95,8 +95,7 @@
         </sql>
     </target>
 
-    <target name="drop-crs-db">
-        <!--run SQL script that drops all tables in the database backend-->
+    <target name="drop-crs-db" description="->drops all tables in the CRS database">
         <sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="${crs.derby.url}" userid="" password="" >
             <classpath>
                 <pathelement location="lib/derby/derby-10.4.2.0.jar" />
