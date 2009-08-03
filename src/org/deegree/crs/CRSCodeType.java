@@ -119,7 +119,7 @@ public class CRSCodeType {
 
         this.original = codeAsString;
         if ( codenumber.trim().equals( "" ) || !codeAsString.toUpperCase().contains( "EPSG" ) ) {
-            this.code = "";
+            this.code = codeAsString;
             this.codeSpace = "";
             this.codeVersion = "";
         } else if ( codenumber.length() != 0 && codeversion.length() != 0 ) {
