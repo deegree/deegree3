@@ -79,7 +79,7 @@ public class FilterEvaluationTest {
     public void setUp()
                             throws Exception {
         String schemaURL = this.getClass().getResource( "../feature/gml/testdata/schema/Philosopher.xsd" ).toString();
-        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL, GMLVersion.GML_31 );
+        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
         GMLIdContext idContext = new GMLIdContext();
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
@@ -154,7 +154,7 @@ public class FilterEvaluationTest {
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter6.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
-        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1");
+        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1" );
     }
 
     @Test
@@ -165,7 +165,7 @@ public class FilterEvaluationTest {
         adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter7.xml" ) );
         Filter filter = adapter.parse();
         Assert.assertNotNull( filter );
-        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1");
+        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1" );
     }
 
     private void assertResultSet( FeatureCollection fc, String... expectedIds ) {

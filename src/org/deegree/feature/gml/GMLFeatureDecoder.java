@@ -38,6 +38,7 @@ package org.deegree.feature.gml;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.xml.CommonNamespaces.XSINS;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -117,7 +118,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
 
     public GMLFeatureDecoder( ApplicationSchema schema, GMLIdContext idContext ) {
         this.schema = schema;
-        if (schema != null) {
+        if ( schema != null ) {
             this.xsModel = schema.getXSModel();
         }
         this.geomFac = new GeometryFactory();
@@ -254,23 +255,36 @@ public class GMLFeatureDecoder extends XMLAdapter {
         return feature;
     }
 
-    private ApplicationSchema buildApplicationSchema( XMLStreamReaderWrapper xmlStream ) throws XMLParsingException {
+    private ApplicationSchema buildApplicationSchema( XMLStreamReaderWrapper xmlStream )
+                            throws XMLParsingException {
         String schemaLocation = xmlStream.getAttributeValue( XSINS, "schemaLocation" );
         if ( schemaLocation == null ) {
-            throw new XMLParsingException( xmlStream, Messages.getMessage( "ERROR_NO_SCHEMA_LOCATION", xmlStream.getSystemId() ) );
+            throw new XMLParsingException( xmlStream, Messages.getMessage( "ERROR_NO_SCHEMA_LOCATION",
+                                                                           xmlStream.getSystemId() ) );
         }
-        String [] tokens = schemaLocation.split( "\\s" );
-        if (tokens.length % 2 != 0){
-            throw new XMLParsingException( xmlStream, Messages.getMessage( "ERROR_SCHEMA_LOCATION_TOKENS_COUNT", xmlStream.getSystemId() ) );
+        String[] tokens = schemaLocation.split( "\\s" );
+        if ( tokens.length % 2 != 0 ) {
+            throw new XMLParsingException( xmlStream, Messages.getMessage( "ERROR_SCHEMA_LOCATION_TOKENS_COUNT",
+                                                                           xmlStream.getSystemId() ) );
         }
+        String[] schemaUrls = new String[tokens.length / 2];
+        for ( int i = 0; i < schemaUrls.length; i++ ) {
+            String schemaUrl = tokens[i * 2 + 1];
+            try {
+                schemaUrls[i] = new URL( new URL( xmlStream.getSystemId() ), schemaUrl ).toString();
+            } catch ( MalformedURLException e ) {
+                throw new XMLParsingException( xmlStream, "Error parsing application schema: " + e.getMessage() );
+            }
+        }
+
         // TODO handle multi-namespace schemas
         ApplicationSchema schema = null;
         try {
-            URL source = new URL (new URL (xmlStream.getSystemId()),tokens[1] );
-            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( source.toString(), GMLVersion.GML_31);
+            ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaUrls );
             schema = decoder.extractFeatureTypeSchema();
         } catch ( Exception e ) {
-            throw new XMLParsingException (xmlStream, "Error parsing application schema: " + e.getMessage());
+            e.printStackTrace();
+            throw new XMLParsingException( xmlStream, "Error parsing application schema: " + e.getMessage() );
         }
         return schema;
     }

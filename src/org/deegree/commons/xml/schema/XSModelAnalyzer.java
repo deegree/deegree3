@@ -35,17 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml.schema;
 
-import static org.apache.xerces.impl.xs.XMLSchemaLoader.XMLGRAMMAR_POOL;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.apache.xerces.impl.xs.XMLSchemaLoader;
-import org.apache.xerces.xni.XNIException;
-import org.apache.xerces.xni.parser.XMLConfigurationException;
+import org.apache.xerces.impl.xs.util.StringListImpl;
 import org.apache.xerces.xs.XSElementDeclaration;
 import org.apache.xerces.xs.XSModel;
 import org.apache.xerces.xs.XSObjectList;
@@ -89,18 +85,18 @@ public class XSModelAnalyzer {
     }
 
     /**
-     * Creates a new <code>XSModelAnalyzer</code> that reads a schema document from the given URL.
+     * Creates a new <code>XSModelAnalyzer</code> that reads the schema documents from the given URLs.
      * 
-     * @param url
-     *            location of the schema document
+     * @param schemaUrls
+     *            locations of the schema documents
      * @throws ClassCastException
      * @throws ClassNotFoundException
      * @throws InstantiationException
      * @throws IllegalAccessException
      */
-    public XSModelAnalyzer( String url ) throws ClassCastException, ClassNotFoundException, InstantiationException,
-                            IllegalAccessException {
-        xmlSchema = loadModel( url );
+    public XSModelAnalyzer( String... schemaUrls ) throws ClassCastException, ClassNotFoundException,
+                            InstantiationException, IllegalAccessException {
+        xmlSchema = loadModel( schemaUrls );
     }
 
     /**
@@ -169,12 +165,15 @@ public class XSModelAnalyzer {
         return getSubstitutions( elementDecl, namespace, transitive, onlyConcrete );
     }
 
-    public static XSModel loadModel( String url )
+    public static XSModel loadModel( String... schemaUrls )
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
 
+        for ( String string : schemaUrls ) {
+            System.out.println (string);
+        }
+        
         XMLSchemaLoader schemaLoader = new XMLSchemaLoader();
-
         DOMConfiguration config = schemaLoader.getConfig();
 
         // create and register DOMErrorHandler
@@ -202,22 +201,22 @@ public class XSModelAnalyzer {
         config.setParameter( "validate", Boolean.TRUE );
 
         schemaLoader.setEntityResolver( new RedirectingEntityResolver() );
-        
-//        // TODO what about preparsing of GML schemas?
-//      try {
-//      schemaLoader.setProperty( XMLGRAMMAR_POOL, GrammarPoolManager.getGrammarPool( "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd" ) );
-//  } catch ( XMLConfigurationException e ) {
-//      // TODO Auto-generated catch block
-//      e.printStackTrace();
-//  } catch ( XNIException e ) {
-//      // TODO Auto-generated catch block
-//      e.printStackTrace();
-//  } catch ( IOException e ) {
-//      // TODO Auto-generated catch block
-//      e.printStackTrace();
-//  }        
-        
-        // TODO what about multiple URLs?
-        return schemaLoader.loadURI( url );
+
+        // // TODO what about preparsing of GML schemas?
+        // try {
+        // schemaLoader.setProperty( XMLGRAMMAR_POOL, GrammarPoolManager.getGrammarPool(
+        // "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd" ) );
+        // } catch ( XMLConfigurationException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // } catch ( XNIException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // } catch ( IOException e ) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
+        // }
+
+        return schemaLoader.loadURIList( new StringListImpl( schemaUrls, schemaUrls.length ) );
     }
 }

@@ -156,7 +156,7 @@ public class GML311GeometryEncoder {
                 writer.writeStartElement( GMLNS, "MultiCurve" );
                 if ( multiCurve.getId() != null )
                     writer.writeAttribute( "gml", GMLNS, "id", multiCurve.getId() );
-                writer.writeAttribute( "srsName", multiCurve.getCoordinateSystem().getName() );
+                writeSrsName( multiCurve );
                 writer.writeStartElement( GMLNS, "curveMembers" );
                 Iterator<Curve> iterator = multiCurve.iterator();
                 while ( iterator.hasNext() ) {
@@ -174,7 +174,7 @@ public class GML311GeometryEncoder {
                 writer.writeStartElement( GMLNS, "MultiGeometry" );
                 if ( multiGeometry.getId() != null )
                     writer.writeAttribute( "gml", GMLNS, "id", multiGeometry.getId() );
-                writer.writeAttribute( "srsName", multiGeometry.getCoordinateSystem().getName() );
+                writeSrsName( multiGeometry );
                 writer.writeStartElement( GMLNS, "geometryMembers" );
                 Iterator<Geometry> iteratorG = multiGeometry.iterator();
                 while ( iteratorG.hasNext() )
@@ -187,7 +187,7 @@ public class GML311GeometryEncoder {
                 writer.writeStartElement( GMLNS, "MultiLineString" );
                 if ( multiLineString.getId() != null )
                     writer.writeAttribute( "gml", GMLNS, "id", multiLineString.getId() );
-                writer.writeAttribute( "srsName", multiLineString.getCoordinateSystem().getName() );
+                writeSrsName( multiLineString );
                 Iterator<LineString> iteratorLS = multiLineString.iterator();
                 while ( iteratorLS.hasNext() ) {
                     writer.writeStartElement( GMLNS, "lineStringMember" );
@@ -201,12 +201,12 @@ public class GML311GeometryEncoder {
                 writer.writeStartElement( GMLNS, "MultiPoint" );
                 if ( multiPoint.getId() != null )
                     writer.writeAttribute( "gml", GMLNS, "id", multiPoint.getId() );
-                writer.writeAttribute( "srsName", multiPoint.getCoordinateSystem().getName() );
+                writeSrsName( multiPoint );
                 for ( Point point : multiPoint ) {
                     writer.writeStartElement( GMLNS, "pointMember" );
                     if ( point.getId() != null && exportedIds.contains( point.getId() ) ) {
                         writer.writeAttribute( "gml", GMLNS, "id", point.getId() );
-                    } else {                        
+                    } else {
                         export( point );
                     }
                     writer.writeEndElement();
@@ -219,7 +219,7 @@ public class GML311GeometryEncoder {
                 writer.writeStartElement( GMLNS, "MultiPolygon" );
                 if ( multiPolygon.getId() != null )
                     writer.writeAttribute( "gml", GMLNS, "id", multiPolygon.getId() );
-                writer.writeAttribute( "srsName", multiPolygon.getCoordinateSystem().getName() );
+                writeSrsName( multiPolygon );
                 Iterator<Polygon> iteratorPol = multiPolygon.iterator();
                 while ( iteratorPol.hasNext() ) {
                     writer.writeStartElement( GMLNS, "polygonMember" );
@@ -233,7 +233,7 @@ public class GML311GeometryEncoder {
                 writer.writeStartElement( GMLNS, "MultiSolid" );
                 if ( multiSolid.getId() != null )
                     writer.writeAttribute( "gml", GMLNS, "id", multiSolid.getId() );
-                writer.writeAttribute( "srsName", multiSolid.getCoordinateSystem().getName() );
+                writeSrsName( multiSolid );
                 writer.writeStartElement( GMLNS, "solidMembers" );
                 Iterator<Solid> iterator3 = multiSolid.iterator();
                 while ( iterator3.hasNext() ) {
@@ -252,7 +252,7 @@ public class GML311GeometryEncoder {
                 writer.writeStartElement( GMLNS, "MultiSurface" );
                 if ( multiSurface.getId() != null )
                     writer.writeAttribute( "gml", GMLNS, "id", multiSurface.getId() );
-                writer.writeAttribute( "srsName", multiSurface.getCoordinateSystem().getName() );
+                writeSrsName( multiSurface );
                 writer.writeStartElement( GMLNS, "surfaceMembers" );
                 Iterator<Surface> iterator2 = multiSurface.iterator();
                 while ( iterator2.hasNext() ) {
@@ -289,6 +289,9 @@ public class GML311GeometryEncoder {
     public void export( Point point )
                             throws XMLStreamException {
         writer.writeStartElement( GMLNS, "Point" );
+        if ( point.getId() != null )
+            writer.writeAttribute( "gml", GMLNS, "id", point.getId() );
+        writeSrsName( point );        
         exportedIds.add( point.getId() );
         exportAsPos( point );
         writer.writeEndElement();
@@ -313,7 +316,7 @@ public class GML311GeometryEncoder {
             writer.writeStartElement( GMLNS, "CompositeCurve" );
             if ( compositeCurve.getId() != null )
                 writer.writeAttribute( "gml", GMLNS, "id", compositeCurve.getId() );
-            writer.writeAttribute( "srsName", compositeCurve.getCoordinateSystem().getName() );
+            writeSrsName( compositeCurve );
             Iterator<Curve> iterator = compositeCurve.iterator();
             while ( iterator.hasNext() ) {
                 writer.writeStartElement( GMLNS, "curveMember" );
@@ -326,7 +329,7 @@ public class GML311GeometryEncoder {
             writer.writeStartElement( GMLNS, "Curve" );
             if ( curve.getId() != null )
                 writer.writeAttribute( "gml", GMLNS, "id", curve.getId() );
-            writer.writeAttribute( "srsName", curve.getCoordinateSystem().getName() );
+            writeSrsName( curve );            
             writer.writeStartElement( GMLNS, "segments" );
             for ( CurveSegment curveSeg : curve.getCurveSegments() )
                 export( curveSeg );
@@ -338,6 +341,7 @@ public class GML311GeometryEncoder {
             LineString lineString = (LineString) curve;
             if ( lineString.getId() != null )
                 writer.writeAttribute( "gml", GMLNS, "id", lineString.getId() );
+            writeSrsName( lineString );            
             int dim = lineString.getCoordinateDimension();
             export( lineString.getControlPoints(), dim );
             writer.writeEndElement();
@@ -347,6 +351,7 @@ public class GML311GeometryEncoder {
             OrientableCurve orientableCurve = (OrientableCurve) curve;
             if ( orientableCurve.getId() != null )
                 writer.writeAttribute( "gml", GMLNS, "id", orientableCurve.getId() );
+            writeSrsName( orientableCurve );            
             writer.writeAttribute( "orientation", orientableCurve.isReversed() ? "-" : "+" );
             Curve baseCurve = orientableCurve.getBaseCurve();
             if ( baseCurve.getId() != null && exportedIds.contains( baseCurve.getId() ) ) {
@@ -374,7 +379,7 @@ public class GML311GeometryEncoder {
             writer.writeStartElement( GMLNS, "CompositeSurface" );
             if ( compSurface.getId() != null )
                 writer.writeAttribute( "gml", GMLNS, "id", compSurface.getId() );
-            writer.writeAttribute( "srsName", compSurface.getCoordinateSystem().getName() );
+            writeSrsName( compSurface );
             Iterator<Surface> iterator = compSurface.iterator();
             while ( iterator.hasNext() ) {
                 writer.writeStartElement( GMLNS, "surfaceMember" );
@@ -403,7 +408,7 @@ public class GML311GeometryEncoder {
             writer.writeStartElement( GMLNS, "Polygon" );
             if ( polygon.getId() != null )
                 writer.writeAttribute( "gml", GMLNS, "id", polygon.getId() );
-            writer.writeAttribute( "srsName", polygon.getCoordinateSystem().getName() );
+            writeSrsName( polygon );
             Ring exteriorRing = polygon.getExteriorRing();
             if ( exteriorRing.getId() != null && exportedIds.contains( exteriorRing.getId() ) ) {
                 writer.writeEmptyElement( GMLNS, "exterior" );
@@ -509,7 +514,7 @@ public class GML311GeometryEncoder {
             writer.writeStartElement( GMLNS, "Solid" );
             if ( solid.getId() != null )
                 writer.writeAttribute( "gml", GMLNS, "id", solid.getId() );
-            writer.writeAttribute( "srsName", solid.getCoordinateSystem().getName() );
+            writeSrsName( solid );
             Surface exSurface = solid.getExteriorSurface();
             writer.writeStartElement( GMLNS, "exterior" );
             export( exSurface );
@@ -526,7 +531,7 @@ public class GML311GeometryEncoder {
             writer.writeStartElement( GMLNS, "CompositeSolid" );
             if ( compositeSolid.getId() != null )
                 writer.writeAttribute( "gml", GMLNS, "id", solid.getId() );
-            writer.writeAttribute( "srsName", compositeSolid.getCoordinateSystem().getName() );
+            writeSrsName( compositeSolid );
             Iterator<Solid> iterator = compositeSolid.iterator();
             while ( iterator.hasNext() ) {
                 Solid solidMember = iterator.next();
@@ -552,7 +557,7 @@ public class GML311GeometryEncoder {
             writer.writeStartElement( GMLNS, "Ring" );
             if ( ring.getId() != null )
                 writer.writeAttribute( "gml", GMLNS, "id", ring.getId() );
-            writer.writeAttribute( "srsName", ring.getCoordinateSystem().getName() );
+            writeSrsName( ring );
             for ( Curve c : ring.getMembers() ) {
                 writer.writeStartElement( GMLNS, "curveMember" );
                 export( c );
@@ -563,8 +568,9 @@ public class GML311GeometryEncoder {
         case LinearRing:
             LinearRing linearRing = (LinearRing) ring;
             writer.writeStartElement( GMLNS, "LinearRing" );
-            if ( linearRing.getCoordinateSystem() != null )
-                writer.writeAttribute( "srsName", linearRing.getCoordinateSystem().getName() );
+            if ( linearRing.getId() != null )
+                writer.writeAttribute( "gml", GMLNS, "id", ring.getId() );            
+            writeSrsName( ring );
             int dim = linearRing.getCoordinateDimension();
             export( linearRing.getControlPoints(), dim );
             writer.writeEndElement();
@@ -577,6 +583,7 @@ public class GML311GeometryEncoder {
         writer.writeStartElement( GMLNS, "CompositeCurve" );
         if ( compositeCurve.getId() != null )
             writer.writeAttribute( "gml", GMLNS, "id", compositeCurve.getId() );
+        writeSrsName( compositeCurve );        
         Iterator<Curve> iterator = compositeCurve.iterator();
         while ( iterator.hasNext() ) {
             writer.writeStartElement( GMLNS, "curveMember" );
@@ -591,6 +598,7 @@ public class GML311GeometryEncoder {
         writer.writeStartElement( GMLNS, "CompositeSurface" );
         if ( compositeSurface.getId() != null )
             writer.writeAttribute( "gml", GMLNS, "id", compositeSurface.getId() );
+        writeSrsName( compositeSurface );        
         writer.writeStartElement( GMLNS, "surfaceMember" );
         Iterator<Surface> iterator = compositeSurface.iterator();
         while ( iterator.hasNext() ) {
@@ -605,6 +613,7 @@ public class GML311GeometryEncoder {
         writer.writeStartElement( GMLNS, "CompositeSolid" );
         if ( compositeSolid.getId() != null )
             writer.writeAttribute( "gml", GMLNS, "id", compositeSolid.getId() );
+        writeSrsName( compositeSolid );        
         writer.writeStartElement( GMLNS, "solidMember" );
         Iterator<Solid> iterator = compositeSolid.iterator();
         while ( iterator.hasNext() ) {
@@ -1027,11 +1036,18 @@ public class GML311GeometryEncoder {
                 writer.writeStartElement( GMLNS, "pointProperty" );
                 if ( point.getId() != null && exportedIds.contains( point.getId() ) ) {
                     writer.writeAttribute( XLNNS, "href", "#" + point.getId() );
-                } else {                        
+                } else {
                     export( point );
                 }
                 writer.writeEndElement();
             }
+        }
+    }
+
+    private void writeSrsName( Geometry geom )
+                            throws XMLStreamException {
+        if ( geom.getCoordinateSystem() != null ) {
+            writer.writeAttribute( "srsName", geom.getCoordinateSystem().getName() );
         }
     }
 }

@@ -99,9 +99,9 @@ public class ApplicationSchemaXSDDecoder {
     // after all FeatureTypes have been created
     private List<FeaturePropertyType> featurePropertyTypes = new ArrayList<FeaturePropertyType>();
 
-    public ApplicationSchemaXSDDecoder( String url, GMLVersion gmlVersion ) throws ClassCastException,
+    public ApplicationSchemaXSDDecoder( GMLVersion gmlVersion, String...schemaUrls ) throws ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
-        analyzer = new XSModelGMLAnalyzer( url, gmlVersion );
+        analyzer = new XSModelGMLAnalyzer( gmlVersion, schemaUrls );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );
         for ( XSElementDeclaration elementDecl : featureElementDecls ) {
             QName ftName = new QName( elementDecl.getNamespace(), elementDecl.getName() );

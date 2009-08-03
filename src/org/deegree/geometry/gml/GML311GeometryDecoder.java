@@ -37,6 +37,7 @@ package org.deegree.geometry.gml;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.gml.GMLStandardPropsParser.parse311;
 import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
 import java.util.HashSet;
@@ -50,6 +51,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.types.Length;
+import org.deegree.commons.types.gml.StandardObjectProperties;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -853,9 +855,10 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         Point point = null;
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         // must contain one of the following child elements: "gml:pos", "gml:coordinates" or "gml:coord"
-        if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
+        if ( xmlStream.getEventType() == START_ELEMENT ) {
             String name = xmlStream.getLocalName();
             if ( "pos".equals( name ) ) {
                 double[] coords = parseDoubleList( xmlStream );
@@ -884,6 +887,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Point" );
+        point.setStandardGMLProperties( standardProps );
         idContext.addGeometry( point );
         return point;
     }
@@ -910,9 +914,10 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<Point> points = null;
-        if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
+        if ( xmlStream.getEventType() == XMLStreamConstants.START_ELEMENT ) {
             String name = xmlStream.getLocalName();
             if ( "posList".equals( name ) ) {
                 points = parsePosList( xmlStream, crs );
@@ -949,6 +954,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
         LineString lineString = geomFac.createLineString( gid, crs, new PointsList( points ) );
+        lineString.setStandardGMLProperties( standardProps );
         idContext.addGeometry( lineString );
         return lineString;
     }
@@ -973,8 +979,8 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
-        xmlStream.nextTag();
         xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "segments" );
         List<CurveSegment> segments = new LinkedList<CurveSegment>();
 
@@ -986,6 +992,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "Curve" );
         Curve curve = geomFac.createCurve( gid, segments.toArray( new CurveSegment[segments.size()] ), crs );
         idContext.addGeometry( curve );
+        curve.setStandardGMLProperties( standardProps );
         return curve;
     }
 
@@ -1010,14 +1017,15 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
         boolean isReversed = !parseOrientation( xmlStream );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
-        xmlStream.nextTag();
         xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "baseCurve" );
         Curve baseCurve = parseCurveProperty( xmlStream, crs );
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "OrientableCurve" );
 
         OrientableCurve orientableCurve = geomFac.createOrientableCurve( gid, crs, baseCurve, isReversed );
+        orientableCurve.setStandardGMLProperties( standardProps );
         idContext.addGeometry( orientableCurve );
         return orientableCurve;
     }
@@ -1042,6 +1050,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         Points points = curveSegmentParser.parseControlPoints( xmlStream, crs );
         if ( points.size() < 4 ) {
@@ -1050,6 +1059,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "LinearRing" );
         LinearRing linearRing = geomFac.createLinearRing( gid, crs, points );
+        linearRing.setStandardGMLProperties( standardProps );
         idContext.addGeometry( linearRing );
         return linearRing;
     }
@@ -1074,10 +1084,11 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<Curve> memberCurves = new LinkedList<Curve>();
 
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
+        while ( xmlStream.getEventType() == START_ELEMENT ) {
             // must be a 'gml:curveMember' element
             if ( !xmlStream.getLocalName().equals( "curveMember" ) ) {
                 String msg = "Error in 'gml:Ring' element. Expected a 'gml:curveMember' element.";
@@ -1085,9 +1096,11 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
             }
             memberCurves.add( parseCurveProperty( xmlStream, crs ) );
             xmlStream.require( END_ELEMENT, GMLNS, "curveMember" );
+            xmlStream.nextTag();
         }
         xmlStream.require( END_ELEMENT, GMLNS, "Ring" );
         Ring ring = geomFac.createRing( gid, crs, memberCurves );
+        ring.setStandardGMLProperties( standardProps );
         idContext.addGeometry( ring );
         return ring;
     }
@@ -1112,13 +1125,14 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         Ring exteriorRing = null;
         List<Ring> interiorRings = new LinkedList<Ring>();
 
         // NOTE: No need to check for xlink:href in the properties (AbstractRingPropertyType does not allow this).
         // 0 or 1 exterior/outerBoundaryIs element (yes, 0 is possible -- see section 9.2.2.5 of GML spec)
-        if ( xmlStream.nextTag() == START_ELEMENT ) {
+        if ( xmlStream.getEventType() == START_ELEMENT ) {
             if ( xmlStream.getLocalName().equals( "exterior" ) ) {
                 if ( xmlStream.nextTag() != START_ELEMENT ) {
                     String msg = "Error in 'gml:Polygon' element. Expected a 'gml:_Ring' element.";
@@ -1167,6 +1181,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "Polygon" );
         Polygon polygon = geomFac.createPolygon( gid, crs, exteriorRing, interiorRings );
+        polygon.setStandardGMLProperties( standardProps );
         idContext.addGeometry( polygon );
         return polygon;
     }
@@ -1191,9 +1206,9 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<SurfacePatch> memberPatches = new LinkedList<SurfacePatch>();
-        xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "patches" );
         while ( xmlStream.nextTag() == START_ELEMENT ) {
             memberPatches.add( surfacePatchParser.parseSurfacePatch( xmlStream, crs ) );
@@ -1202,6 +1217,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Surface" );
         Surface surface = geomFac.createSurface( gid, memberPatches, crs );
+        surface.setStandardGMLProperties( standardProps );
         idContext.addGeometry( surface );
         return surface;
     }
@@ -1226,9 +1242,9 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<PolygonPatch> memberPatches = new LinkedList<PolygonPatch>();
-        xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "polygonPatches" );
         while ( xmlStream.nextTag() == START_ELEMENT ) {
             memberPatches.add( surfacePatchParser.parsePolygonPatch( xmlStream, crs ) );
@@ -1237,6 +1253,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "PolyhedralSurface" );
         PolyhedralSurface polyhedralSurface = geomFac.createPolyhedralSurface( gid, crs, memberPatches );
+        polyhedralSurface.setStandardGMLProperties( standardProps );
         idContext.addGeometry( polyhedralSurface );
         return polyhedralSurface;
     }
@@ -1261,9 +1278,9 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<Triangle> memberPatches = new LinkedList<Triangle>();
-        xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "trianglePatches" );
         while ( xmlStream.nextTag() == START_ELEMENT ) {
             memberPatches.add( surfacePatchParser.parseTriangle( xmlStream, crs ) );
@@ -1272,6 +1289,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "TriangulatedSurface" );
         TriangulatedSurface triangulatedSurface = geomFac.createTriangulatedSurface( gid, crs, memberPatches );
+        triangulatedSurface.setStandardGMLProperties( standardProps );
         idContext.addGeometry( triangulatedSurface );
         return triangulatedSurface;
     }
@@ -1299,9 +1317,9 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<Triangle> memberPatches = new LinkedList<Triangle>();
-        xmlStream.nextTag();
         xmlStream.require( START_ELEMENT, GMLNS, "trianglePatches" );
         while ( xmlStream.nextTag() == START_ELEMENT ) {
             // validate syntactically, but ignore the content for instantiating the geometry
@@ -1375,6 +1393,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "Tin" );
         Tin tin = geomFac.createTin( gid, crs, stopLines, breakLines, maxLength, new PointsList( controlPoints ),
                                      memberPatches );
+        tin.setStandardGMLProperties( standardProps );
         idContext.addGeometry( tin );
         return tin;
     }
@@ -1400,8 +1419,8 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
         boolean isReversed = !parseOrientation( xmlStream );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
-        xmlStream.nextTag();
         xmlStream.require( XMLStreamConstants.START_ELEMENT, GMLNS, "baseSurface" );
         Surface baseSurface = parseSurfaceProperty( xmlStream, defaultCRS );
         xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "baseSurface" );
@@ -1409,6 +1428,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "OrientableSurface" );
 
         OrientableSurface orientableSurface = geomFac.createOrientableSurface( gid, crs, baseSurface, isReversed );
+        orientableSurface.setStandardGMLProperties( standardProps );
         idContext.addGeometry( orientableSurface );
         return orientableSurface;
     }
@@ -1433,12 +1453,13 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         Surface exteriorSurface = null;
         List<Surface> interiorSurfaces = new LinkedList<Surface>();
 
         // 0 or 1 exterior element (yes, 0 is possible -- see section 9.2.2.5 of GML spec)
-        if ( xmlStream.nextTag() == START_ELEMENT ) {
+        if ( xmlStream.getEventType() == START_ELEMENT ) {
             if ( xmlStream.getLocalName().equals( "exterior" ) ) {
                 exteriorSurface = parseSurfaceProperty( xmlStream, crs );
                 xmlStream.require( END_ELEMENT, GMLNS, "exterior" );
@@ -1460,7 +1481,8 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "Solid" );
         Solid solid = geomFac.createSolid( gid, crs, exteriorSurface, interiorSurfaces );
-        idContext.addGeometry( solid );
+        solid.setStandardGMLProperties( standardProps );
+        idContext.addGeometry( solid );        
         return solid;
     }
 
@@ -1484,21 +1506,19 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<Curve> memberCurves = new LinkedList<Curve>();
 
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
-            // must be a 'gml:curveMember' element
-            if ( !xmlStream.getLocalName().equals( "curveMember" ) ) {
-                String msg = "Error in 'gml:CompositeCurve' element. Expected a 'gml:curveMember' element.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
+        do {
+            xmlStream.require( START_ELEMENT, GMLNS, "curveMember" );
             memberCurves.add( parseCurveProperty( xmlStream, crs ) );
             xmlStream.require( END_ELEMENT, GMLNS, "curveMember" );
-        }
+        } while ( xmlStream.nextTag() == START_ELEMENT );
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeCurve" );
         CompositeCurve curve = geomFac.createCompositeCurve( gid, crs, memberCurves );
-        idContext.addGeometry( curve );
+        curve.setStandardGMLProperties( standardProps );
+        idContext.addGeometry( curve );        
         return curve;
     }
 
@@ -1522,21 +1542,19 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<Surface> memberSurfaces = new LinkedList<Surface>();
 
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
-            // must be a 'gml:surfaceMember' element
-            if ( !xmlStream.getLocalName().equals( "surfaceMember" ) ) {
-                String msg = "Error in 'gml:CompositeSurface' element. Expected a 'gml:surfaceMember' element.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
+        do {
+            xmlStream.require( START_ELEMENT, GMLNS, "surfaceMember" );
             memberSurfaces.add( parseSurfaceProperty( xmlStream, crs ) );
             xmlStream.require( END_ELEMENT, GMLNS, "surfaceMember" );
-        }
+        } while ( xmlStream.nextTag() == START_ELEMENT );
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeSurface" );
         CompositeSurface compositeSurface = geomFac.createCompositeSurface( gid, crs, memberSurfaces );
-        idContext.addGeometry( compositeSurface );
+        compositeSurface.setStandardGMLProperties( standardProps );
+        idContext.addGeometry( compositeSurface );        
         return compositeSurface;
     }
 
@@ -1560,21 +1578,18 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<Solid> memberSolids = new LinkedList<Solid>();
-
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
-            // must be a 'gml:solidMember' element
-            if ( !xmlStream.getLocalName().equals( "solidMember" ) ) {
-                String msg = "Error in 'gml:CompositeSolid' element. Expected a 'gml:solidMember' element.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
+        do {
+            xmlStream.require( START_ELEMENT, GMLNS, "solidMember" );
             memberSolids.add( parseSolidProperty( xmlStream, crs ) );
             xmlStream.require( END_ELEMENT, GMLNS, "solidMember" );
-        }
+        } while ( xmlStream.nextTag() == START_ELEMENT );
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeSolid" );
         CompositeSolid compositeSolid = geomFac.createCompositeSolid( gid, crs, memberSolids );
-        idContext.addGeometry( compositeSolid );
+        compositeSolid.setStandardGMLProperties( standardProps );
+        idContext.addGeometry( compositeSolid );        
         return compositeSolid;
     }
 
@@ -1598,22 +1613,20 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<GeometricPrimitive> memberSolids = new LinkedList<GeometricPrimitive>();
 
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
-            // must be a 'gml:element' element
-            if ( !xmlStream.getLocalName().equals( "element" ) ) {
-                String msg = "Error in 'gml:GeometricComplex' element. Expected a 'gml:element' element.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
+        do {
+            xmlStream.require( START_ELEMENT, GMLNS, "element" );
             memberSolids.add( parseGeometricPrimitiveProperty( xmlStream, crs ) );
             xmlStream.require( END_ELEMENT, GMLNS, "element" );
-        }
+        } while ( xmlStream.nextTag() == START_ELEMENT );
         xmlStream.require( END_ELEMENT, GMLNS, "GeometricComplex" );
         CompositeGeometry<GeometricPrimitive> compositeGeometry = geomFac.createCompositeGeometry( gid, crs,
                                                                                                    memberSolids );
-        idContext.addGeometry( compositeGeometry );
+        compositeGeometry.setStandardGMLProperties( standardProps );
+        idContext.addGeometry( compositeGeometry );        
         return compositeGeometry;
     }
 
@@ -1637,31 +1650,35 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<Point> members = new LinkedList<Point>();
 
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
-            String localName = xmlStream.getLocalName();
-            if ( localName.equals( "pointMember" ) ) {
-                members.add( parsePointProperty( xmlStream, crs ) );
-                xmlStream.require( END_ELEMENT, GMLNS, "pointMember" );
-            } else if ( localName.equals( "pointMembers" ) ) {
-                while ( xmlStream.nextTag() == START_ELEMENT ) {
-                    xmlStream.require( START_ELEMENT, GMLNS, "Point" );
-                    members.add( parsePoint( xmlStream, crs ) );
+        if ( xmlStream.isStartElement() ) {
+            do {
+                String localName = xmlStream.getLocalName();
+                if ( localName.equals( "pointMember" ) ) {
+                    members.add( parsePointProperty( xmlStream, crs ) );
+                    xmlStream.require( END_ELEMENT, GMLNS, "pointMember" );
+                } else if ( localName.equals( "pointMembers" ) ) {
+                    while ( xmlStream.nextTag() == START_ELEMENT ) {
+                        xmlStream.require( START_ELEMENT, GMLNS, "Point" );
+                        members.add( parsePoint( xmlStream, crs ) );
+                    }
+                    // pointMembers may only occur once (and behind all pointMember) elements
+                    xmlStream.nextTag();
+                    break;
+                } else {
+                    String msg = "Invalid 'gml:MultiPoint' element: unexpected element '" + localName
+                                 + "'. Expected 'pointMember' or 'pointMembers'.";
+                    throw new XMLParsingException( xmlStream, msg );
                 }
-                // pointMembers may only occur once (and behind all pointMember) elements
-                xmlStream.nextTag();
-                break;
-            } else {
-                String msg = "Invalid 'gml:MultiPoint' element: unexpected element '" + localName
-                             + "'. Expected 'pointMember' or 'pointMembers'.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
+            } while ( xmlStream.nextTag() == START_ELEMENT );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiPoint" );
         MultiPoint multiPoint = geomFac.createMultiPoint( gid, crs, members );
-        idContext.addGeometry( multiPoint );
+        multiPoint.setStandardGMLProperties( standardProps );
+        idContext.addGeometry( multiPoint );        
         return multiPoint;
     }
 
@@ -1685,30 +1702,34 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<Curve> members = new LinkedList<Curve>();
 
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
-            String localName = xmlStream.getLocalName();
-            if ( localName.equals( "curveMember" ) ) {
-                members.add( parseCurveProperty( xmlStream, crs ) );
-                xmlStream.require( END_ELEMENT, GMLNS, "curveMember" );
-            } else if ( localName.equals( "curveMembers" ) ) {
-                while ( xmlStream.nextTag() == START_ELEMENT ) {
-                    members.add( parseAbstractCurve( xmlStream, crs ) );
+        if ( xmlStream.isStartElement() ) {
+            do {
+                String localName = xmlStream.getLocalName();
+                if ( localName.equals( "curveMember" ) ) {
+                    members.add( parseCurveProperty( xmlStream, crs ) );
+                    xmlStream.require( END_ELEMENT, GMLNS, "curveMember" );
+                } else if ( localName.equals( "curveMembers" ) ) {
+                    while ( xmlStream.nextTag() == START_ELEMENT ) {
+                        members.add( parseAbstractCurve( xmlStream, crs ) );
+                    }
+                    // curveMembers may only occur once (and behind all curveMember) elements
+                    xmlStream.nextTag();
+                    break;
+                } else {
+                    String msg = "Invalid 'gml:MultiCurve' element: unexpected element '" + localName
+                                 + "'. Expected 'curveMember' or 'curveMembers'.";
+                    throw new XMLParsingException( xmlStream, msg );
                 }
-                // curveMembers may only occur once (and behind all curveMember) elements
-                xmlStream.nextTag();
-                break;
-            } else {
-                String msg = "Invalid 'gml:MultiCurve' element: unexpected element '" + localName
-                             + "'. Expected 'curveMember' or 'curveMembers'.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
+            } while ( xmlStream.nextTag() == START_ELEMENT );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiCurve" );
         MultiCurve multiCurve = geomFac.createMultiCurve( gid, crs, members );
-        idContext.addGeometry( multiCurve );
+        multiCurve.setStandardGMLProperties( standardProps );
+        idContext.addGeometry( multiCurve );        
         return multiCurve;
     }
 
@@ -1732,23 +1753,27 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
-
+        StandardObjectProperties standardProps = parse311( xmlStream );
         List<LineString> members = new LinkedList<LineString>();
 
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
-            String localName = xmlStream.getLocalName();
-            if ( localName.equals( "lineStringMember" ) ) {
-                members.add( parseLineStringProperty( xmlStream, crs ) );
-                xmlStream.require( END_ELEMENT, GMLNS, "lineStringMember" );
-            } else {
-                String msg = "Invalid 'gml:MultiLineString' element: unexpected element '" + localName
-                             + "'. Expected 'lineStringMember'.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
+        if ( xmlStream.isStartElement() ) {
+            do {
+                String localName = xmlStream.getLocalName();
+                if ( localName.equals( "lineStringMember" ) ) {
+                    members.add( parseLineStringProperty( xmlStream, crs ) );
+                    xmlStream.require( END_ELEMENT, GMLNS, "lineStringMember" );
+                } else {
+                    String msg = "Invalid 'gml:MultiLineString' element: unexpected element '" + localName
+                                 + "'. Expected 'lineStringMember'.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+            } while ( xmlStream.nextTag() == START_ELEMENT );
         }
+
         xmlStream.require( END_ELEMENT, GMLNS, "MultiLineString" );
         MultiLineString multiLineString = geomFac.createMultiLineString( gid, crs, members );
-        idContext.addGeometry( multiLineString );
+        multiLineString.setStandardGMLProperties( standardProps );
+        idContext.addGeometry( multiLineString );        
         return multiLineString;
     }
 
@@ -1772,30 +1797,34 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<Surface> members = new LinkedList<Surface>();
 
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
-            String localName = xmlStream.getLocalName();
-            if ( localName.equals( "surfaceMember" ) ) {
-                members.add( parseSurfaceProperty( xmlStream, crs ) );
-                xmlStream.require( END_ELEMENT, GMLNS, "surfaceMember" );
-            } else if ( localName.equals( "surfaceMembers" ) ) {
-                while ( xmlStream.nextTag() == START_ELEMENT ) {
-                    members.add( parseAbstractSurface( xmlStream, crs ) );
+        if ( xmlStream.isStartElement() ) {
+            do {
+                String localName = xmlStream.getLocalName();
+                if ( localName.equals( "surfaceMember" ) ) {
+                    members.add( parseSurfaceProperty( xmlStream, crs ) );
+                    xmlStream.require( END_ELEMENT, GMLNS, "surfaceMember" );
+                } else if ( localName.equals( "surfaceMembers" ) ) {
+                    while ( xmlStream.nextTag() == START_ELEMENT ) {
+                        members.add( parseAbstractSurface( xmlStream, crs ) );
+                    }
+                    // surfaceMembers may only occur once (and behind all surfaceMember) elements
+                    xmlStream.nextTag();
+                    break;
+                } else {
+                    String msg = "Invalid 'gml:MultiSurface' element: unexpected element '" + localName
+                                 + "'. Expected 'surfaceMember' or 'surfaceMembers'.";
+                    throw new XMLParsingException( xmlStream, msg );
                 }
-                // surfaceMembers may only occur once (and behind all surfaceMember) elements
-                xmlStream.nextTag();
-                break;
-            } else {
-                String msg = "Invalid 'gml:MultiSurface' element: unexpected element '" + localName
-                             + "'. Expected 'surfaceMember' or 'surfaceMembers'.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
+            } while ( xmlStream.nextTag() == START_ELEMENT );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiSurface" );
         MultiSurface multiSurface = geomFac.createMultiSurface( gid, crs, members );
-        idContext.addGeometry( multiSurface );
+        multiSurface.setStandardGMLProperties( standardProps );
+        idContext.addGeometry( multiSurface );        
         return multiSurface;
     }
 
@@ -1819,23 +1848,27 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<Polygon> members = new LinkedList<Polygon>();
 
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
-            String localName = xmlStream.getLocalName();
-            if ( localName.equals( "polygonMember" ) ) {
-                members.add( parsePolygonProperty( xmlStream, crs ) );
-                xmlStream.require( END_ELEMENT, GMLNS, "polygonMember" );
-            } else {
-                String msg = "Invalid 'gml:MultiPolygon' element: unexpected element '" + localName
-                             + "'. Expected 'polygonMember'.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
+        if ( xmlStream.isStartElement() ) {
+            do {
+                String localName = xmlStream.getLocalName();
+                if ( localName.equals( "polygonMember" ) ) {
+                    members.add( parsePolygonProperty( xmlStream, crs ) );
+                    xmlStream.require( END_ELEMENT, GMLNS, "polygonMember" );
+                } else {
+                    String msg = "Invalid 'gml:MultiPolygon' element: unexpected element '" + localName
+                                 + "'. Expected 'polygonMember'.";
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+            } while ( xmlStream.nextTag() == START_ELEMENT );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiPolygon" );
         MultiPolygon multiPolygon = geomFac.createMultiPolygon( gid, crs, members );
-        idContext.addGeometry( multiPolygon );
+        multiPolygon.setStandardGMLProperties( standardProps );
+        idContext.addGeometry( multiPolygon );        
         return multiPolygon;
     }
 
@@ -1859,30 +1892,34 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<Solid> members = new LinkedList<Solid>();
 
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
-            String localName = xmlStream.getLocalName();
-            if ( localName.equals( "solidMember" ) ) {
-                members.add( parseSolidProperty( xmlStream, crs ) );
-                xmlStream.require( END_ELEMENT, GMLNS, "solidMember" );
-            } else if ( localName.equals( "solidMembers" ) ) {
-                while ( xmlStream.nextTag() == START_ELEMENT ) {
-                    members.add( parseAbstractSolid( xmlStream, crs ) );
+        if ( xmlStream.isStartElement() ) {
+            do {
+                String localName = xmlStream.getLocalName();
+                if ( localName.equals( "solidMember" ) ) {
+                    members.add( parseSolidProperty( xmlStream, crs ) );
+                    xmlStream.require( END_ELEMENT, GMLNS, "solidMember" );
+                } else if ( localName.equals( "solidMembers" ) ) {
+                    while ( xmlStream.nextTag() == START_ELEMENT ) {
+                        members.add( parseAbstractSolid( xmlStream, crs ) );
+                    }
+                    // solidMembers may only occur once (and behind all surfaceMember) elements
+                    xmlStream.nextTag();
+                    break;
+                } else {
+                    String msg = "Invalid 'gml:MultiSolid' element: unexpected element '" + localName
+                                 + "'. Expected 'solidMember' or 'solidMembers'.";
+                    throw new XMLParsingException( xmlStream, msg );
                 }
-                // solidMembers may only occur once (and behind all surfaceMember) elements
-                xmlStream.nextTag();
-                break;
-            } else {
-                String msg = "Invalid 'gml:MultiSolid' element: unexpected element '" + localName
-                             + "'. Expected 'solidMember' or 'solidMembers'.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
+            } while ( xmlStream.nextTag() == START_ELEMENT );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiSolid" );
         MultiSolid multiSolid = geomFac.createMultiSolid( gid, crs, members );
-        idContext.addGeometry( multiSolid );
+        multiSolid.setStandardGMLProperties( standardProps );
+        idContext.addGeometry( multiSolid );        
         return multiSolid;
     }
 
@@ -1906,29 +1943,34 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String gid = parseGeometryId( xmlStream );
         CRS crs = determineActiveCRS( xmlStream, defaultCRS );
+        StandardObjectProperties standardProps = parse311( xmlStream );
 
         List<Geometry> members = new LinkedList<Geometry>();
 
-        while ( xmlStream.nextTag() == START_ELEMENT ) {
-            String localName = xmlStream.getLocalName();
-            if ( localName.equals( "geometryMember" ) ) {
-                members.add( parseGeometryProperty( xmlStream, crs ) );
-                xmlStream.require( END_ELEMENT, GMLNS, "geometryMember" );
-            } else if ( localName.equals( "geometryMembers" ) ) {
-                while ( xmlStream.nextTag() == START_ELEMENT ) {
-                    members.add( parseAbstractGeometry( xmlStream, crs ) );
+        if ( xmlStream.isStartElement() ) {
+            do {
+                String localName = xmlStream.getLocalName();
+                if ( localName.equals( "geometryMember" ) ) {
+                    members.add( parseGeometryProperty( xmlStream, crs ) );
+                    xmlStream.require( END_ELEMENT, GMLNS, "geometryMember" );
+                } else if ( localName.equals( "geometryMembers" ) ) {
+                    while ( xmlStream.nextTag() == START_ELEMENT ) {
+                        members.add( parseAbstractGeometry( xmlStream, crs ) );
+                    }
+                    // geometryMembers may only occur once (and behind all surfaceMember) elements
+                    xmlStream.nextTag();
+                    break;
+                } else {
+                    String msg = "Invalid 'gml:MultiGeometry' element: unexpected element '" + localName
+                                 + "'. Expected 'geometryMember' or 'geometryMembers'.";
+                    throw new XMLParsingException( xmlStream, msg );
                 }
-                // geometryMembers may only occur once (and behind all surfaceMember) elements
-                xmlStream.nextTag();
-                break;
-            } else {
-                String msg = "Invalid 'gml:MultiGeometry' element: unexpected element '" + localName
-                             + "'. Expected 'geometryMember' or 'geometryMembers'.";
-                throw new XMLParsingException( xmlStream, msg );
-            }
+            } while ( xmlStream.nextTag() == START_ELEMENT );
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiGeometry" );
         MultiGeometry<Geometry> multiGeometry = geomFac.createMultiGeometry( gid, crs, members );
+        multiGeometry.setStandardGMLProperties( standardProps );
+        idContext.addGeometry( multiGeometry );
         return multiGeometry;
     }
 

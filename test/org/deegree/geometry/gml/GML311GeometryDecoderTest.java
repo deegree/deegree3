@@ -817,6 +817,21 @@ public class GML311GeometryDecoderTest {
         }
     }
 
+    @Test
+    public void parseStandardProps()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, UnknownCRSException {
+        XMLStreamReaderWrapper xmlReader = getParser( "StandardProps.gml" );
+        Assert.assertEquals( XMLStreamConstants.START_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
+        Point point = (Point) new GML311GeometryDecoder().parseAbstractGeometry( xmlReader, null );
+        Assert.assertEquals( XMLStreamConstants.END_ELEMENT, xmlReader.getEventType() );
+        Assert.assertEquals( new QName( "http://www.opengis.net/gml", "Point" ), xmlReader.getName() );
+        Assert.assertEquals( 7.12, point.getX(), DELTA );
+        Assert.assertEquals( 50.72, point.getY(), DELTA );
+        Assert.assertEquals( 2, point.getCoordinateDimension() );
+        Assert.assertEquals( CRSRegistry.lookup( "EPSG:4326" ), point.getCoordinateSystem().getWrappedCRS() );
+    }    
+    
     private XMLStreamReaderWrapper getParser( String fileName )
                             throws XMLStreamException, FactoryConfigurationError, IOException {
         XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper(

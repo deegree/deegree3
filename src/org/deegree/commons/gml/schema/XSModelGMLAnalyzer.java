@@ -97,9 +97,9 @@ public class XSModelGMLAnalyzer extends XSModelAnalyzer {
 
     private XSElementDeclaration abstractSurfacePatchElementDecl;
 
-    public XSModelGMLAnalyzer( String url, GMLVersion mode ) throws ClassCastException, ClassNotFoundException,
+    public XSModelGMLAnalyzer( GMLVersion mode, String...schemaUrls ) throws ClassCastException, ClassNotFoundException,
                             InstantiationException, IllegalAccessException {
-        super( url );
+        super( schemaUrls );
         this.mode = mode;
         switch ( mode ) {
         case GML_2: {

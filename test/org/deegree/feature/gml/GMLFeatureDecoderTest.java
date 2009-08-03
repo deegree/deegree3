@@ -35,17 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.feature.gml;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
@@ -95,5 +99,28 @@ public class GMLFeatureDecoderTest {
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext );
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+    }
+    
+    @Test
+    public void testParsingCiteSF0()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException {
+
+        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "../schema/cite/dataset-sf0.xml" );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.next();
+        GMLIdContext idContext = new GMLIdContext();
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext );
+        XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
+        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+
+//        XMLStreamWriter writer = new FormattingXMLStreamWriter (XMLOutputFactory.newInstance().createXMLStreamWriter( new FileWriter( "/tmp/out.xml" ) ));
+//        writer.setPrefix( "sf", "http://cite.opengeospatial.org/gmlsf" );
+//        writer.setPrefix( "gml", "http://www.opengis.net/gml" );
+//        GML311FeatureEncoder encoder = new GML311FeatureEncoder( writer );
+//        encoder.export( fc );
+//        writer.close();
     }
 }

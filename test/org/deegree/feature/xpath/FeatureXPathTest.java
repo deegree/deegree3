@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
 import java.net.URL;
@@ -62,10 +62,10 @@ import org.junit.Test;
 
 /**
  * Tests the correct evaluation of {@link FeatureXPath} expressions.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class FeatureXPathTest {
@@ -84,8 +84,7 @@ public class FeatureXPathTest {
                             throws Exception {
 
         String schemaURL = this.getClass().getResource( "../gml/testdata/schema/Philosopher.xsd" ).toString();
-        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( schemaURL,
-                                                                                        GMLVersion.GML_31 );
+        ApplicationSchemaXSDDecoder xsdAdapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
         ApplicationSchema schema = xsdAdapter.extractFeatureTypeSchema();
         GMLIdContext idContext = new GMLIdContext();
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( schema, idContext );
@@ -95,7 +94,7 @@ public class FeatureXPathTest {
                                                                                          docURL.openStream() );
         xmlReader.next();
         fc = (FeatureCollection) gmlAdapter.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ),
-                                                          null);
+                                                          null );
         idContext.resolveXLinks( schema );
 
         nsContext = new SimpleNamespaceContext();
@@ -216,24 +215,24 @@ public class FeatureXPathTest {
         List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
         Set<String> names = new HashSet<String>();
         for ( Node node : selectedNodes ) {
-            names.add ((String) ((PropertyNode) node ).getProperty().getValue() );
+            names.add( (String) ( (PropertyNode) node ).getProperty().getValue() );
         }
-        Assert.assertEquals (2, names.size());
+        Assert.assertEquals( 2, names.size() );
         Assert.assertTrue( names.contains( "Friedrich Engels" ) );
         Assert.assertTrue( names.contains( "Karl Marx" ) );
     }
 
-//    @SuppressWarnings("unchecked")
-//    @Test
-//    public void testXPath10()
-//                            throws JaxenException {
-//        XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher/app:friend/app:Philosopher//app:name" );
-//        xpath.setNamespaceContext( nsContext );
-//        List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
-//        for ( Node node : selectedNodes ) {
-//            System.out.println( ( (PropertyNode) node ).getProperty().getValue() );
-//        }
-//    }
+    // @SuppressWarnings("unchecked")
+    // @Test
+    // public void testXPath10()
+    // throws JaxenException {
+    // XPath xpath = new FeatureXPath( "gml:featureMember/app:Philosopher/app:friend/app:Philosopher//app:name" );
+    // xpath.setNamespaceContext( nsContext );
+    // List<Node> selectedNodes = xpath.selectNodes( new FeatureNode( null, fc ) );
+    // for ( Node node : selectedNodes ) {
+    // System.out.println( ( (PropertyNode) node ).getProperty().getValue() );
+    // }
+    // }
 
     @SuppressWarnings("unchecked")
     @Test

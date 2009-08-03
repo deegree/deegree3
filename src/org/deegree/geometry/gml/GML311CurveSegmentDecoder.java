@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.gml;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
@@ -101,10 +101,10 @@ import org.slf4j.LoggerFactory;
  * <li><code>LineStringSegment</code></li>
  * <li><code>OffsetCurve</code></li>
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 class GML311CurveSegmentDecoder extends GML311BaseDecoder {
@@ -150,7 +150,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li><code>LineStringSegment</code></li>
      * <li><code>OffsetCurve</code></li>
      * </ul>
-     *
+     * 
      * @param defaultCRS
      *            default CRS for the geometry, this is only used if the "gml:_CurveSegment" has no <code>srsName</code>
      *            attribute
@@ -220,7 +220,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Arc&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Arc&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -234,6 +234,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc3Points" );
+        xmlStream.nextTag();
         Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() != 3 ) {
             String msg = "Error in 'gml:Arc' element. Must specify exactly three control points, but contains "
@@ -251,7 +252,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:ArcByBulge&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:ArcByBulge&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -265,6 +266,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc2PointWithBulge" );
+        xmlStream.nextTag();
         Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() != 2 ) {
             String msg = "Error in 'gml:ArcByBulge' element. Must contain exactly two control points.";
@@ -292,7 +294,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
      * (&lt;/gml:ArcByCenterPoint&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -306,6 +308,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArcCenterPointWithRadius" );
+        xmlStream.nextTag();
         Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() != 1 ) {
             String msg = "Error in 'gml:ArcByCenterPoint' element. Must contain one control point (the center point), but contains "
@@ -343,7 +346,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:ArcString&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:ArcString&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -357,6 +360,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc3Points" );
+        xmlStream.nextTag();
         Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() < 3 || points.size() % 2 != 1 ) {
             String msg = "Error in 'gml:ArcString' element. Invalid number of points (=" + points.size() + ").";
@@ -373,7 +377,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:ArcString&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:ArcString&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultCRS
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -387,6 +391,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc2PointWithBulge" );
+        xmlStream.nextTag();
         Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() < 2 ) {
             String msg = "Error in 'gml:ArcStringByBulge' element. Must contain at least two points.";
@@ -414,7 +419,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
         }
 
         xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "ArcStringByBulge" );
-        return geomFac.createArcStringByBulge( points, bulges, new PointsList(normals) );
+        return geomFac.createArcStringByBulge( points, bulges, new PointsList( normals ) );
     }
 
     /**
@@ -424,7 +429,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Bezier&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Bezier&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultCRS
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -438,6 +443,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "polynomialSpline" );
+        xmlStream.nextTag();
         Points points = parseControlPoints( xmlStream, defaultCRS );
 
         // TODO are the any more semantic constraints to be considered?
@@ -478,7 +484,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:BSpline&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:BSpline&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultCRS
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -505,6 +511,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
 
         // TODO what about the knotType attribute??
 
+        xmlStream.nextTag();
         Points points = parseControlPoints( xmlStream, defaultCRS );
 
         // TODO are the any more semantic constraints to be considered?
@@ -545,7 +552,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Circle&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Circle&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultCRS
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -559,6 +566,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArc3Points" );
+        xmlStream.nextTag();
         Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() != 3 ) {
             String msg = "Error in 'gml:Circle' element. Must specify exactly three control points, but contains "
@@ -577,7 +585,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
      * (&lt;/gml:CircleByCenterPoint&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultSrsName
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -591,6 +599,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "circularArcCenterPointWithRadius" );
+        xmlStream.nextTag();
         Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() != 1 ) {
             String msg = "Error in 'gml:CircleByCenterPoint' element. Must contain one control point (the center point), but contains "
@@ -638,7 +647,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Clothoid&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Clothoid&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultSrsName
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -677,7 +686,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
      * (&lt;/gml:AffinePlacement&gt;)</li>
      * </ul>
-     *
+     * 
      * @return corresponding {@link AffinePlacement} object
      * @throws XMLParsingException
      * @throws XMLStreamException
@@ -740,7 +749,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:CubicSpline&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:CubicSpline&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultSrsName
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -753,6 +762,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "cubicSpline" );
+        xmlStream.nextTag();
         Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() < 2 ) {
             String msg = "Error in 'gml:CubicSpline' element. Must consist of two points at least.";
@@ -776,7 +786,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Geodesic&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:Geodesic&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultSrsName
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -829,7 +839,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
      * (&lt;/gml:GeodesicString&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultSrsName
      *            default srs for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -871,7 +881,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
         xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "GeodesicString" );
-        return geomFac.createGeodesicString( new PointsList(points) );
+        return geomFac.createGeodesicString( new PointsList( points ) );
     }
 
     /**
@@ -882,7 +892,9 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event
      * (&lt;/gml:LineStringSegment&gt;)</li>
      * </ul>
-     *
+     * 
+     * @param xmlStream
+     * 
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -895,6 +907,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         validateInterpolationAttribute( xmlStream, "linear" );
+        xmlStream.nextTag();
         Points points = parseControlPoints( xmlStream, defaultCRS );
         if ( points.size() < 2 ) {
             String msg = "Error in 'gml:LineStringSegment' element. Must consist of two points at least.";
@@ -911,7 +924,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:OffsetCurve&gt;)</li>
      * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:OffsetCurve&gt;)</li>
      * </ul>
-     *
+     * 
      * @param defaultCRS
      *            default CRS for the geometry, this is propagated if no deeper <code>srsName</code> attribute is
      *            specified
@@ -946,7 +959,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      * Parses the control points of a curve segment element.
      * <p>
      * The parsed structure is specified by the following XSD choice:
-     *
+     * 
      * <pre>
      * &lt;choice&gt;
      *   &lt;choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
@@ -959,18 +972,20 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
      *   &lt;element ref=&quot;gml:coord&quot;/&gt;
      * &lt;/choice&gt;
      * </pre>
-     *
+     * 
      * </p>
      * <p>
-     * Precondition: the <b>next</b> tag event is expected to be the first <code>START_ELEMENT</code> of the choice. If
-     * this is not the case, an {@link XMLParsingException} is thrown.<br/>
+     * Precondition: the current event must be the first <code>START_ELEMENT</code> of the choice. If this is not the
+     * case, an {@link XMLParsingException} is thrown.<br/>
      * Postcondition: the current event is the first tag event after the last <code>END_ELEMENT</code> that belongs to
      * the choice
      * </p>
-     *
+     * 
+     * @param xmlStream
+     * 
      * @param crs
      *            default CRS for the points, this is used if no <code>srsName</code> attribute is specified
-     *
+     * 
      * @return control points of the curve segment, not null, but size may be zero
      * @throws XMLStreamException
      * @throws XMLParsingException
@@ -981,7 +996,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
 
         List<Point> controlPoints = null;
 
-        if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
+        if ( xmlStream.getEventType() == XMLStreamConstants.START_ELEMENT ) {
             String name = xmlStream.getLocalName();
             if ( "posList".equals( name ) ) {
                 controlPoints = parsePosList( xmlStream, crs );
@@ -1010,7 +1025,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
                 } while ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT );
             }
         }
-        return new PointsList(controlPoints);
+        return new PointsList( controlPoints );
     }
 
     private void validateInterpolationAttribute( XMLStreamReaderWrapper xmlStream, String expected )
