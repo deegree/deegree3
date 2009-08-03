@@ -146,7 +146,8 @@ class GrammarPoolManager {
         preparser.setFeature( VALIDATION_FEATURE_ID, true );
         preparser.setFeature( SCHEMA_VALIDATION_FEATURE_ID, true );
         preparser.setFeature( SCHEMA_FULL_CHECKING_FEATURE_ID, true );
-        preparser.setFeature( HONOUR_ALL_SCHEMA_LOCATIONS_ID, true );
+        // NOTE: don't set to true, or validation of WFS GetFeature responses will fail (Xerces error?)!
+        preparser.setFeature( HONOUR_ALL_SCHEMA_LOCATIONS_ID, false );
 
         // populate the pool with all schemaUris
         for ( String schemaUri : schemaUris ) {

@@ -207,7 +207,8 @@ public class SchemaValidator {
         parserConfiguration.setFeature( VALIDATION_FEATURE_ID, true );
         parserConfiguration.setFeature( SCHEMA_VALIDATION_FEATURE_ID, true );
         parserConfiguration.setFeature( SCHEMA_FULL_CHECKING_FEATURE_ID, true );
-        parserConfiguration.setFeature( HONOUR_ALL_SCHEMA_LOCATIONS_ID, true );
+        // NOTE: don't set to true, or validation of WFS GetFeature responses will fail (Xerces error?)!
+        parserConfiguration.setFeature( HONOUR_ALL_SCHEMA_LOCATIONS_ID, false );
         if ( entityResolver != null ) {
             parserConfiguration.setEntityResolver( entityResolver );
         }
