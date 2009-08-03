@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Arrays;
 
 import org.apache.xerces.impl.Constants;
 import org.apache.xerces.parsers.XMLGrammarPreparser;
@@ -51,8 +52,6 @@ import org.apache.xerces.xni.parser.XMLEntityResolver;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Manages pre-populated {@link GrammarPool} instances to minimize fetching and parsing of XML schema documents. 
