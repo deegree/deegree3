@@ -133,20 +133,14 @@ public class CRSDBExporter {
             // insert into the CODE table
             CRSCodeType[] codes = crsObject.getCodes();
             int nCodes = codes.length;
-            Set<String> insertedCodes = new HashSet<String>();
-            Set<String> insertedCodeSpaces = new HashSet<String>();
             for ( int i = 0; i < nCodes; i++ ) {
-                if ( !( insertedCodes.contains( codes[i].getCode() ) && insertedCodeSpaces.contains( codes[i].getCodeSpace() ) ) ) {
-
-                    preparedSt = connection.prepareStatement( "INSERT INTO code VALUES ( ?, ?, ?)" );
-                    preparedSt.setInt( 1, internalID );
-                    preparedSt.setString( 2, codes[i].getCode() );
-                    preparedSt.setString( 3, codes[i].getCodeSpace() );
-                    preparedSt.execute();
-
-                    insertedCodes.add( codes[i].getCode() );
-                    insertedCodeSpaces.add( codes[i].getCodeSpace() );
-                }
+                preparedSt = connection.prepareStatement( "INSERT INTO code VALUES ( ?, ?, ?, ?, ? )" );
+                preparedSt.setInt( 1, internalID );
+                preparedSt.setString( 2, codes[i].getCode() );
+                preparedSt.setString( 3, codes[i].getCodeSpace() );
+                preparedSt.setString( 4, codes[i].getCodeVersion() );
+                preparedSt.setString( 5, codes[i].getOriginal() );
+                preparedSt.execute();
             }
 
             // insert into the VERSION table
@@ -548,10 +542,8 @@ public class CRSDBExporter {
                             throws SQLException {
         LOG.info( "Exporting Vertical Datum..." );
         ResultSet rs = connection.prepareStatement(
-                                                    "SELECT ref_id FROM code, vertical_datum " + "WHERE code.code= '"
-                                                                            + vDatum.getCode().getCode()
-                                                                            + "' AND code.codespace = '"
-                                                                            + vDatum.getCode().getCodeSpace()
+                                                    "SELECT ref_id FROM code, vertical_datum WHERE original= '"
+                                                                            + vDatum.getCode().getOriginal()
                                                                             + "' AND vertical_datum.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
@@ -586,10 +578,8 @@ public class CRSDBExporter {
                             throws SQLException {
         LOG.info( "Exporting Vertical CRS..." );
         ResultSet rs = connection.prepareStatement(
-                                                    "SELECT ref_id FROM code, vertical_crs " + "WHERE code.code= '"
-                                                                            + vertical.getCode().getCode()
-                                                                            + "' AND code.codespace = '"
-                                                                            + vertical.getCode().getCodeSpace()
+                                                    "SELECT ref_id FROM code, vertical_crs WHERE original= '"
+                                                                            + vertical.getCode().getOriginal()
                                                                             + "' AND vertical_crs.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
@@ -634,14 +624,15 @@ public class CRSDBExporter {
                             throws SQLException {
         LOG.info( "Exporting Helmert Transformation..." );
         ResultSet rs = connection.prepareStatement(
-                                                    "SELECT id FROM helmert_transformation WHERE x_axis_translation = "
+                                                    "SELECT id FROM helmert_transformation, code WHERE x_axis_translation = "
                                                                             + helmert.dx + " AND y_axis_translation = "
                                                                             + helmert.dy + " AND z_axis_translation = "
                                                                             + helmert.dz + " AND x_axis_rotation = "
                                                                             + helmert.ex + " AND y_axis_rotation = "
                                                                             + helmert.ey + " AND z_axis_rotation = "
                                                                             + helmert.ez + " AND scale_difference = "
-                                                                            + helmert.ppm ).executeQuery();
+                                                                            + helmert.ppm + " AND ref_id = id "
+                                                                            + "AND original = '" + helmert.getCode().getOriginal() + "'" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
             return rs.getInt( 1 );
@@ -730,10 +721,8 @@ public class CRSDBExporter {
                             throws SQLException {
         LOG.info( "Exporting Ellipsoid..." );
         ResultSet rs = connection.prepareStatement(
-                                                    "SELECT ref_id FROM code, ellipsoid " + "WHERE code.code= '"
-                                                                            + ellipsoid.getCode().getCode()
-                                                                            + "' AND code.codespace = '"
-                                                                            + ellipsoid.getCode().getCodeSpace()
+                                                    "SELECT ref_id FROM code, ellipsoid " + "WHERE original= '"
+                                                                            + ellipsoid.getCode().getOriginal()
                                                                             + "' AND ellipsoid.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
@@ -779,10 +768,8 @@ public class CRSDBExporter {
         if ( !gdatum.getCode().getCode().equalsIgnoreCase( "NOT PROVIDED" ) ) {
             ResultSet rs = connection.prepareStatement(
                                                         "SELECT ref_id FROM code, geodetic_datum "
-                                                                                + "WHERE code.code= '"
-                                                                                + gdatum.getCode().getCode()
-                                                                                + "' AND code.codespace = '"
-                                                                                + gdatum.getCode().getCodeSpace()
+                                                                                + "WHERE original= '"
+                                                                                + gdatum.getCode().getOriginal()
                                                                                 + "' AND geodetic_datum.id = code.ref_id" ).executeQuery();
             if ( rs.next() ) {
                 LOG.info( "...found in the database already." );
@@ -793,10 +780,8 @@ public class CRSDBExporter {
                                                          "SELECT geodetic_datum.id FROM geodetic_datum, ellipsoid, code "
                                                                                  + "WHERE geodetic_datum.ellipsoid_id = ellipsoid.id "
                                                                                  + "AND ellipsoid.id = code.ref_id "
-                                                                                 + "AND code.code ='"
-                                                                                 + gdatum.getEllipsoid().getCode().getCode()
-                                                                                 + "' AND code.codespace = '"
-                                                                                 + gdatum.getEllipsoid().getCode().getCodeSpace()
+                                                                                 + "AND original ='"
+                                                                                 + gdatum.getEllipsoid().getCode().getOriginal()
                                                                                  + "'" ).executeQuery();
             Set<Integer> ellipsoidMatches = new HashSet<Integer>();
             while ( rs1.next() )
@@ -878,10 +863,8 @@ public class CRSDBExporter {
                             throws SQLException {
         LOG.info( "Exporting Geocentric CRS..." );
         ResultSet rs = connection.prepareStatement(
-                                                    "SELECT ref_id FROM code, geocentric_crs " + "WHERE code.code= '"
-                                                                            + geocentric.getCode().getCode()
-                                                                            + "' AND code.codespace = '"
-                                                                            + geocentric.getCode().getCodeSpace()
+                                                    "SELECT ref_id FROM code, geocentric_crs " + "WHERE original = '"
+                                                                            + geocentric.getCode().getOriginal()
                                                                             + "' AND geocentric_crs.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
@@ -930,10 +913,8 @@ public class CRSDBExporter {
                             throws SQLException {
         LOG.info( "Exporting Geographic CRS..." );
         ResultSet rs = connection.prepareStatement(
-                                                    "SELECT ref_id FROM code, geographic_crs " + "WHERE code.code= '"
-                                                                            + geographic.getCode().getCode()
-                                                                            + "' AND code.codespace = '"
-                                                                            + geographic.getCode().getCodeSpace()
+                                                    "SELECT ref_id FROM code, geographic_crs " + "WHERE original= '"
+                                                                            + geographic.getCode().getOriginal()
                                                                             + "' AND geographic_crs.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
@@ -1005,9 +986,8 @@ public class CRSDBExporter {
         // Export a custom projection
         //
         LOG.info( "Exporting a Custom Projection( that has class attribute)..." );
-        String statementStr = "SELECT ref_id FROM code, custom_projection " + "WHERE code.code= '"
-                              + projection.getCode().getCode() + "' AND code.codespace = '"
-                              + projection.getCode().getCodeSpace() + "'";
+        String statementStr = "SELECT ref_id FROM code, custom_projection " + "WHERE original= '"
+                              + projection.getCode().getOriginal() + "'";
         ResultSet rs = connection.prepareStatement( statementStr ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
@@ -1059,10 +1039,8 @@ public class CRSDBExporter {
                             throws SQLException {
         LOG.info( "Exporting Projected CRS..." );
         ResultSet rs = connection.prepareStatement(
-                                                    "SELECT ref_id FROM code, projected_crs " + "WHERE code.code= '"
-                                                                            + projected.getCode().getCode()
-                                                                            + "' AND code.codespace = '"
-                                                                            + projected.getCode().getCodeSpace()
+                                                    "SELECT ref_id FROM code, projected_crs WHERE original= '"
+                                                                            + projected.getCode().getOriginal()
                                                                             + "' AND projected_crs.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
@@ -1105,10 +1083,8 @@ public class CRSDBExporter {
                             throws SQLException, CRSException {
         LOG.info( "Exporting Compound CRS..." );
         ResultSet rs = connection.prepareStatement(
-                                                    "SELECT ref_id FROM code, compound_crs " + "WHERE code.code= '"
-                                                                            + compound.getCode().getCode()
-                                                                            + "' AND code.codespace = '"
-                                                                            + compound.getCode().getCodeSpace()
+                                                    "SELECT ref_id FROM code, compound_crs " + "WHERE original= '"
+                                                                            + compound.getCode().getOriginal()
                                                                             + "' AND compound_crs.id = code.ref_id" ).executeQuery();
         if ( rs.next() ) {
             LOG.info( "...found in the database already." );
@@ -1189,11 +1165,13 @@ public class CRSDBExporter {
         rs.next();
         internalID = rs.getInt( 1 ) + 1; // if rs.getInt(1) is NULL the value returned is 0 anyway
 
-        for ( CoordinateSystem crs : crsList )
-            if ( crs != null )
+        for ( CoordinateSystem crs : crsList ) {
+            if ( crs != null ) {
                 export( crs );
-            else
+            } else {
                 LOG.warn( "A null CRS in the exporting CRS list." );
+            }
+        }
     }
 
     /**
