@@ -142,7 +142,7 @@ public class ApplicationSchemaXSDEncoder {
 
         // TODO prefix handling
         final String uri = schema.getFeatureTypes()[0].getName().getNamespaceURI();
-        if ( !uri.isEmpty() ) {
+        if ( uri != null && !uri.isEmpty() ) {
             writer.setPrefix( "app", uri );
         }
 
@@ -177,7 +177,10 @@ public class ApplicationSchemaXSDEncoder {
                             throws XMLStreamException {
 
         // TODO prefix handling
-        writer.setPrefix( "app", fts.get( 0 ).getName().getNamespaceURI() );
+        final String ns = fts.get( 0 ).getName().getNamespaceURI();
+        if ( ns != null && !ns.isEmpty() ) {
+            writer.setPrefix( "app", ns );
+        }
 
         writer.setPrefix( XS_PREFIX, XSNS );
         writer.setPrefix( GML_PREFIX, gmlNsURI );
@@ -185,7 +188,6 @@ public class ApplicationSchemaXSDEncoder {
         writer.writeStartElement( XSNS, "schema" );
         writer.writeNamespace( XS_PREFIX, XSNS );
         writer.writeNamespace( GML_PREFIX, gmlNsURI );
-        String ns = fts.get( 0 ).getName().getNamespaceURI();
         if ( ns != null && !ns.isEmpty() ) {
             writer.writeAttribute( "targetNamespace", ns );
             writer.writeAttribute( "elementFormDefault", "qualified" );
