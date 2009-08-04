@@ -35,7 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
-import org.deegree.commons.types.Length;
+import org.deegree.commons.uom.Length;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.OffsetCurve;

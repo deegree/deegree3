@@ -42,6 +42,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.composite.CompositeCurve;
@@ -54,8 +56,6 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PointsPoints;
 import org.deegree.geometry.standard.primitive.DefaultLineString;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 import com.vividsolutions.jts.geom.MultiLineString;
 
@@ -129,7 +129,7 @@ public class DefaultCompositeCurve extends AbstractDefaultGeometry implements Co
     }
 
     @Override
-    public ValueWithUnit getLength( Unit requestedUnit ) {
+    public Measure getLength( Unit requestedUnit ) {
         // TODO
         throw new UnsupportedOperationException();
     }

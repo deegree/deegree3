@@ -35,8 +35,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
-import org.deegree.commons.types.Angle;
-import org.deegree.commons.types.Length;
+import org.deegree.commons.uom.Angle;
+import org.deegree.commons.uom.Length;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CircleByCenterPoint;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;

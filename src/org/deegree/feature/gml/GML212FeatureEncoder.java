@@ -47,9 +47,9 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.deegree.commons.types.Length;
-import org.deegree.commons.types.Measure;
 import org.deegree.commons.types.ows.CodeType;
+import org.deegree.commons.uom.Length;
+import org.deegree.commons.uom.Measure;
 import org.deegree.feature.Feature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.Property;

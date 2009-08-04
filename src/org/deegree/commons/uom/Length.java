@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,8 +32,12 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.uom;
+package org.deegree.commons.uom;
 
-public class Unit {
+public class Length extends Measure {
+
+    public Length( double value, String uomURI ) {
+        super( value, uomURI );
+    }
 
 }

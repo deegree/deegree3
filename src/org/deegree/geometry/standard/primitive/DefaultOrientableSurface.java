@@ -39,6 +39,8 @@ package org.deegree.geometry.standard.primitive;
 import java.util.List;
 
 import org.deegree.commons.types.gml.StandardObjectProperties;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -49,8 +51,6 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link OrientableSurface}.
@@ -133,7 +133,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
     }
 
     @Override
-    public ValueWithUnit distance( Geometry geometry, Unit requestedUnit ) {
+    public Measure distance( Geometry geometry, Unit requestedUnit ) {
         return baseSurface.distance( geometry, requestedUnit );
     }
 
@@ -141,11 +141,11 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.equals( geometry );
     }
 
-    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
+    public Measure getArea( Unit requestedBaseUnit ) {
         return baseSurface.getArea( requestedBaseUnit );
     }
 
-    public Geometry getBuffer( ValueWithUnit distance ) {
+    public Geometry getBuffer( Measure distance ) {
         return baseSurface.getBuffer( distance );
     }
 
@@ -174,7 +174,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.getPatches();
     }
 
-    public ValueWithUnit getPerimeter( Unit requestedUnit ) {
+    public Measure getPerimeter( Unit requestedUnit ) {
         return baseSurface.getPerimeter( requestedUnit );
     }
 
@@ -209,7 +209,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.touches( geometry );
     }
 
-    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
+    public boolean isBeyond( Geometry geometry, Measure distance ) {
         return baseSurface.isBeyond( geometry, distance );
     }
 
@@ -217,7 +217,7 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.isWithin( geometry );
     }
 
-    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
+    public boolean isWithinDistance( Geometry geometry, Measure distance ) {
         return baseSurface.isWithinDistance( geometry, distance );
     }
 

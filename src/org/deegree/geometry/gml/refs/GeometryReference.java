@@ -40,14 +40,14 @@ import java.net.URL;
 
 import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.types.gml.StandardObjectProperties;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.deegree.geometry.precision.PrecisionModel;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,7 +155,7 @@ public class GeometryReference<T extends Geometry> implements Geometry {
     }
 
     @Override    
-    public ValueWithUnit distance( Geometry geometry, Unit requestedUnits ) {
+    public Measure distance( Geometry geometry, Unit requestedUnits ) {
         return getReferencedGeometry().distance( geometry, requestedUnits );
     }
 
@@ -165,7 +165,7 @@ public class GeometryReference<T extends Geometry> implements Geometry {
     }
 
     @Override    
-    public Geometry getBuffer( ValueWithUnit distance ) {
+    public Geometry getBuffer( Measure distance ) {
         return getReferencedGeometry().getBuffer( distance );
     }
 
@@ -233,7 +233,7 @@ public class GeometryReference<T extends Geometry> implements Geometry {
     }
 
     @Override    
-    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
+    public boolean isBeyond( Geometry geometry, Measure distance ) {
         return getReferencedGeometry().isBeyond( geometry, distance );
     }
 
@@ -243,7 +243,7 @@ public class GeometryReference<T extends Geometry> implements Geometry {
     }
 
     @Override    
-    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
+    public boolean isWithinDistance( Geometry geometry, Measure distance ) {
         return getReferencedGeometry().isWithinDistance( geometry, distance );
     }
 

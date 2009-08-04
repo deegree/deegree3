@@ -36,17 +36,17 @@
 package org.deegree.geometry;
 
 import org.deegree.commons.types.gml.StandardObjectProperties;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.precision.PrecisionModel;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Base interface for all vector geometry types in deegree.
  * <p>
  * This is the root of deegree's ISO 19107/GML 3.1.1/GML 3.2.1 compliant geometry type hierarchy. It provides methods
  * for the common topological predicates (e.g. {@link #intersects(Geometry)} and {@link #touches(Geometry)} as well as
- * the usual geometry creation methods (e.g {@link #intersection(Geometry)} and {@link #getBuffer(ValueWithUnit)}).
+ * the usual geometry creation methods (e.g {@link #intersection(Geometry)} and {@link #getBuffer(Measure)}).
  * </p>
  * <p>
  * <h4>Topological predicates</h4>
@@ -58,7 +58,7 @@ import org.deegree.geometry.uom.ValueWithUnit;
  * <li>{@link #intersects(Geometry)}</li>
  * <li>{@link #isDisjoint(Geometry)}</li>
  * <li>{@link #isWithin(Geometry)}</li>
- * <li>{@link #isWithinDistance(Geometry,ValueWithUnit)}</li>
+ * <li>{@link #isWithinDistance(Geometry,Measure)}</li>
  * <li>{@link #touches(Geometry)}</li>
  * </ul>
  * </p>
@@ -67,7 +67,7 @@ import org.deegree.geometry.uom.ValueWithUnit;
  * Methods for deriving geometries that aid spatial analysis tasks:
  * <ul>
  * <li>{@link #difference(Geometry)}</li>
- * <li>{@link #getBuffer(ValueWithUnit)}</li>
+ * <li>{@link #getBuffer(Measure)}</li>
  * <li>{@link #getConvexHull()}</li>
  * <li>{@link #intersection(Geometry)}</li>
  * <li>{@link #union(Geometry)}</li>
@@ -238,7 +238,7 @@ public interface Geometry {
      * @param distance
      * @return buffer geometry
      */
-    public Geometry getBuffer( ValueWithUnit distance );    
+    public Geometry getBuffer( Measure distance );    
 
     /**
      * Returns true if this geometry is equal to the specified geometry. The behaviour of this method is not 100%
@@ -258,7 +258,7 @@ public interface Geometry {
      * @param distance
      * @return true if passed geometry is within a specified distance of this geometry.
      */
-    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance );
+    public boolean isWithinDistance( Geometry geometry, Measure distance );
 
     /**
      * tests whether the value of a geometric is beyond a specified distance of this geometry.
@@ -267,7 +267,7 @@ public interface Geometry {
      * @param distance
      * @return true if passed geometry is beyond a specified distance of this geometry.
      */
-    public boolean isBeyond( Geometry geometry, ValueWithUnit distance );
+    public boolean isBeyond( Geometry geometry, Measure distance );
 
     /**
      * The operation "distance" shall return the distance between this Geometry and another Geometry. This distance is
@@ -285,7 +285,7 @@ public interface Geometry {
      * @param requestedUnits
      * @return shortest distance between the two geometries
      */
-    public ValueWithUnit distance( Geometry geometry, Unit requestedUnits );    
+    public Measure distance( Geometry geometry, Unit requestedUnits );    
     
     /**
      * tests whether the value of a geometric is topological located within this geometry. This method is the opposite

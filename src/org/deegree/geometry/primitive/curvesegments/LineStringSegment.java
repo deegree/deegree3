@@ -39,8 +39,8 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * A <code>LineStringSegment</code> is a {@link CurveSegment} that is defined by two or more {@link Point}s, with linear
- * interpolation between them.
+ * A {@link CurveSegment} that is defined by two or more {@link Point}s, with linear interpolation between subsequent
+ * pairs.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

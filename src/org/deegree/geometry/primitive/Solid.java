@@ -37,8 +37,8 @@ package org.deegree.geometry.primitive;
 
 import java.util.List;
 
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 
 /**
  * <code>Solid</code> instances are 3D-geometries that ...
@@ -81,14 +81,14 @@ public interface Solid extends GeometricPrimitive {
      * @param requestedBaseUnit 
      * @return volume of the solid
      */
-    public ValueWithUnit getVolume( Unit requestedBaseUnit );
+    public Measure getVolume( Unit requestedBaseUnit );
 
     /**
      * 
      * @param requestedBaseUnit 
      * @return area of the solid's boundary
      */
-    public ValueWithUnit getArea( Unit requestedBaseUnit );
+    public Measure getArea( Unit requestedBaseUnit );
 
     /**
      * Returns the exterior surface (shell) of the solid.

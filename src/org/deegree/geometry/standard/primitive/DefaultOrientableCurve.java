@@ -39,6 +39,8 @@ package org.deegree.geometry.standard.primitive;
 import java.util.List;
 
 import org.deegree.commons.types.gml.StandardObjectProperties;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.commons.utils.Pair;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
@@ -51,8 +53,6 @@ import org.deegree.geometry.primitive.OrientableCurve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link OrientableCurve}.
@@ -163,7 +163,7 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     }
 
     @Override
-    public ValueWithUnit distance( Geometry geometry, Unit requestedUnit ) {
+    public Measure distance( Geometry geometry, Unit requestedUnit ) {
         return baseCurve.distance( geometry, requestedUnit );
     }
 
@@ -178,7 +178,7 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     }
 
     @Override
-    public Geometry getBuffer( ValueWithUnit distance ) {
+    public Geometry getBuffer( Measure distance ) {
         return baseCurve.getBuffer( distance );
     }
 
@@ -198,7 +198,7 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     }
 
     @Override
-    public ValueWithUnit getLength( Unit requestedUnit ) {
+    public Measure getLength( Unit requestedUnit ) {
         return baseCurve.getLength( requestedUnit );
     }
 
@@ -233,7 +233,7 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     }    
     
     @Override
-    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
+    public boolean isBeyond( Geometry geometry, Measure distance ) {
         return baseCurve.isBeyond( geometry, distance );
     }
 
@@ -248,7 +248,7 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     }
 
     @Override
-    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
+    public boolean isWithinDistance( Geometry geometry, Measure distance ) {
         return baseCurve.isWithinDistance( geometry, distance );
     }
 

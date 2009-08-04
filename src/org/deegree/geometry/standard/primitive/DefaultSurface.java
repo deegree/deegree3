@@ -38,6 +38,8 @@ package org.deegree.geometry.standard.primitive;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.points.Points;
@@ -48,8 +50,6 @@ import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link Surface}.
@@ -101,7 +101,7 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     }
 
     @Override
-    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
+    public Measure getArea( Unit requestedBaseUnit ) {
         throw new UnsupportedOperationException();
     }
 
@@ -116,7 +116,7 @@ public class DefaultSurface extends AbstractDefaultGeometry implements Surface {
     }
 
     @Override
-    public ValueWithUnit getPerimeter( Unit requestedUnit ) {
+    public Measure getPerimeter( Unit requestedUnit ) {
         throw new UnsupportedOperationException();
     }
 

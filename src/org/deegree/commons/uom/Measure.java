@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/geometry/primitive/CurveSegment.java $
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/feature/Feature.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,40 +33,61 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
-
-import org.deegree.commons.uom.Length;
-import org.deegree.geometry.primitive.Curve;
-import org.deegree.geometry.primitive.Point;
+package org.deegree.commons.uom;
 
 /**
- * A {@link CurveSegment} that is defined by a base {@link Curve} and an offset.
+ * Number with a scale.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public interface OffsetCurve extends CurveSegment {
+public class Measure {
 
-    /**
-     * Returns the {@link Curve} from which this curve segment is defined as using an offset.
-     *
-     * @return the <code>Curve</code> used as the base geometry
-     */
-    public Curve getBaseCurve();
+    private double value;
 
-    /**
-     * Returns the distance from the base curve.
-     *
-     * @return the distance
-     */
-    public Length getDistance();
+    private String uomURI;
 
-    /**
-     * Returns the direction of the offset.
-     *
-     * @return the direction of the offset
-     */
-    public Point getDirection();
+    public Measure( double value, String uomURI ) {
+        this.value = value;
+        this.uomURI = uomURI;
+    }
+
+    public Measure( String text, String distanceUnits ) {
+        // TODO Auto-generated constructor stub
+        throw new UnsupportedOperationException();
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public double getValueAsDouble() {
+        return value;
+    }    
+    
+    public String getUomUri() {
+        return uomURI;
+    }
+
+    public boolean equals( Object obj ) {
+        if ( !( obj instanceof Measure ) ) {
+            return false;
+        }
+        Measure m = (Measure) obj;
+        if ( value == m.value ) {
+            if ( uomURI != null ) {
+                return uomURI.equals( m.uomURI );
+            } else {
+                return m.uomURI == null;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return value + ( uomURI == null ? "" : " " + uomURI );
+    }
 }

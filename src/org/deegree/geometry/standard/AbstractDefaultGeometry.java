@@ -39,6 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.commons.types.gml.StandardObjectProperties;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
@@ -60,8 +62,6 @@ import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultLinearRing;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 import com.vividsolutions.jts.geom.CoordinateSequence;
 
@@ -158,13 +158,13 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
-    public boolean isWithinDistance( Geometry geometry, ValueWithUnit distance ) {
+    public boolean isWithinDistance( Geometry geometry, Measure distance ) {
         // TODO what about the UOM?
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isBeyond( Geometry geometry, ValueWithUnit distance ) {
+    public boolean isBeyond( Geometry geometry, Measure distance ) {
         throw new UnsupportedOperationException();
     }
 
@@ -187,10 +187,10 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
-    public ValueWithUnit distance( Geometry geometry, Unit requestedUnit ) {
+    public Measure distance( Geometry geometry, Unit requestedUnit ) {
         // TODO respect unit
         double dist = getJTSGeometry().distance( getAsAbstractDefaultGeometry( geometry ).getJTSGeometry() );
-        return new ValueWithUnit( Double.toString( dist ), null );
+        return new Measure( Double.toString( dist ), null );
     }
 
     @Override
@@ -215,7 +215,7 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
-    public Geometry getBuffer( ValueWithUnit distance ) {
+    public Geometry getBuffer( Measure distance ) {
         // TODO get double in CRS units
         double crsDistance = distance.getValueAsDouble();
         com.vividsolutions.jts.geom.Geometry jtsGeom = getJTSGeometry().buffer( crsDistance );

@@ -37,13 +37,13 @@ package org.deegree.geometry.primitive;
 
 import java.util.List;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.composite.CompositeCurve;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * <code>Curve</code> instances are 1D-geometries that consist of an arbitrary number of curve segments.
@@ -103,7 +103,7 @@ public interface Curve extends GeometricPrimitive {
      * @param requestedUnit
      * @return length of the curve
      */
-    public ValueWithUnit getLength( Unit requestedUnit );
+    public Measure getLength( Unit requestedUnit );
 
     /**
      * The boundary of a curve is the set of points at either end of the curve. If the curve is a cycle, the two ends

@@ -37,6 +37,8 @@ package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
@@ -44,8 +46,6 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.PolyhedralSurface;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link PolyhedralSurface}.
@@ -82,7 +82,7 @@ public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements
     }
 
     @Override
-    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
+    public Measure getArea( Unit requestedBaseUnit ) {
         throw new UnsupportedOperationException();
     }
 
@@ -97,7 +97,7 @@ public class DefaultPolyhedralSurface extends AbstractDefaultGeometry implements
     }
 
     @Override
-    public ValueWithUnit getPerimeter( Unit requestedUnit ) {
+    public Measure getPerimeter( Unit requestedUnit ) {
         throw new UnsupportedOperationException();
     }
 

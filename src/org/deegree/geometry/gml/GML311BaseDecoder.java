@@ -45,9 +45,9 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
-import org.deegree.commons.types.Angle;
-import org.deegree.commons.types.Length;
-import org.deegree.commons.types.Measure;
+import org.deegree.commons.uom.Angle;
+import org.deegree.commons.uom.Length;
+import org.deegree.commons.uom.Measure;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;

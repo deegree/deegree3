@@ -50,8 +50,8 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 
 import org.deegree.commons.gml.GMLIdContext;
-import org.deegree.commons.types.Length;
 import org.deegree.commons.types.gml.StandardObjectProperties;
+import org.deegree.commons.uom.Length;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;

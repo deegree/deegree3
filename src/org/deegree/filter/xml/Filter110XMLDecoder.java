@@ -51,6 +51,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
+import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.xml.FixedChildIterator;
 import org.deegree.commons.xml.XMLAdapter;
@@ -102,7 +103,6 @@ import org.deegree.filter.spatial.Within;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML311GeometryDecoder;
-import org.deegree.geometry.uom.ValueWithUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -519,7 +519,7 @@ public class Filter110XMLDecoder extends XMLAdapter {
             // third parameter: 'ogc:Distance'
             OMElement distanceElement = childElementIter.next();
             String distanceUnits = getRequiredNodeAsString( distanceElement, new XPath( "@units", nsContext ) );
-            ValueWithUnit distance = new ValueWithUnit( distanceElement.getText(), distanceUnits );
+            Measure distance = new Measure( distanceElement.getText(), distanceUnits );
 
             spatialOperator = new Beyond( param1, param2, distance );
             break;
@@ -609,7 +609,7 @@ public class Filter110XMLDecoder extends XMLAdapter {
             // third parameter: 'ogc:Distance'
             OMElement distanceElement = childElementIter.next();
             String distanceUnits = getRequiredNodeAsString( distanceElement, new XPath( "@units", nsContext ) );
-            ValueWithUnit distance = new ValueWithUnit( distanceElement.getText(), distanceUnits );
+            Measure distance = new Measure( distanceElement.getText(), distanceUnits );
 
             spatialOperator = new DWithin( param1, param2, distance );
             break;

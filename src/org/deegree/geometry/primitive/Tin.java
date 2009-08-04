@@ -37,7 +37,7 @@ package org.deegree.geometry.primitive;
 
 import java.util.List;
 
-import org.deegree.commons.types.Length;
+import org.deegree.commons.uom.Length;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 

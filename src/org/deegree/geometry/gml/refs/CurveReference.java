@@ -38,14 +38,14 @@ package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.commons.utils.Pair;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.CurveSegment;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -94,7 +94,7 @@ public class CurveReference<T extends Curve> extends GeometricPrimitiveReference
     }
 
     @Override
-    public ValueWithUnit getLength( Unit requestedUnit ) {
+    public Measure getLength( Unit requestedUnit ) {
         return getReferencedGeometry().getLength( requestedUnit );
     }
 

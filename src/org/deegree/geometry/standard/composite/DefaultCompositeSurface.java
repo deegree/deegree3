@@ -41,6 +41,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.composite.CompositeSurface;
 import org.deegree.geometry.points.Points;
@@ -49,8 +51,6 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link CompositeSurface}.
@@ -103,12 +103,12 @@ public class DefaultCompositeSurface extends AbstractDefaultGeometry implements 
     }
 
     @Override
-    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
+    public Measure getArea( Unit requestedBaseUnit ) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ValueWithUnit getPerimeter( Unit requestedUnit ) {
+    public Measure getPerimeter( Unit requestedUnit ) {
         throw new UnsupportedOperationException();
     }
 

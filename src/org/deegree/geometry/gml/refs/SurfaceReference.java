@@ -38,12 +38,12 @@ package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -62,7 +62,7 @@ public class SurfaceReference<T extends Surface> extends GeometricPrimitiveRefer
     }
 
     @Override
-    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
+    public Measure getArea( Unit requestedBaseUnit ) {
         return getReferencedGeometry().getArea( requestedBaseUnit );
     }
 
@@ -92,7 +92,7 @@ public class SurfaceReference<T extends Surface> extends GeometricPrimitiveRefer
     }
 
     @Override
-    public ValueWithUnit getPerimeter( Unit requestedUnit ) {
+    public Measure getPerimeter( Unit requestedUnit ) {
         return getReferencedGeometry().getPerimeter( requestedUnit );
     }
 }

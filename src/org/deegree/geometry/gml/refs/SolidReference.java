@@ -38,10 +38,10 @@ package org.deegree.geometry.gml.refs;
 
 import java.util.List;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -57,7 +57,7 @@ public class SolidReference<T extends Solid> extends GeometryReference<T> implem
         super( href,baseURL );
     }
 
-    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
+    public Measure getArea( Unit requestedBaseUnit ) {
         return getReferencedGeometry().getArea( requestedBaseUnit );
     }
 
@@ -69,7 +69,7 @@ public class SolidReference<T extends Solid> extends GeometryReference<T> implem
         return getReferencedGeometry().getSolidType();
     }
 
-    public ValueWithUnit getVolume( Unit requestedBaseUnit ) {
+    public Measure getVolume( Unit requestedBaseUnit ) {
         return getReferencedGeometry().getVolume( requestedBaseUnit );
     }
 

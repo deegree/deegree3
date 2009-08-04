@@ -1,4 +1,3 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/feature/Feature.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,52 +32,14 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.commons.types;
+package org.deegree.commons.uom;
 
-/**
- * Number with a scale.
- *
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- *
- * @version $Revision:$, $Date:$
- */
-public class Measure {
 
-    private double value;
+public class Angle extends Measure {
 
-    private String uomURI;
-
-    public Measure( double value, String uomURI ) {
-        this.value = value;
-        this.uomURI = uomURI;
+    public Angle( double value, String uomURI ) {
+        super( value, uomURI );
     }
 
-    public double getValue() {
-        return value;
-    }
 
-    public String getUomUri() {
-        return uomURI;
-    }
-
-    public boolean equals( Object obj ) {
-        if ( !( obj instanceof Measure ) ) {
-            return false;
-        }
-        Measure m = (Measure) obj;
-        if ( value == m.value ) {
-            if ( uomURI != null ) {
-                return uomURI.equals( m.uomURI );
-            } else {
-                return m.uomURI == null;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return value + ( uomURI == null ? "" : " " + uomURI );
-    }
 }

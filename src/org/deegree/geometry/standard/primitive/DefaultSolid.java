@@ -37,13 +37,13 @@ package org.deegree.geometry.standard.primitive;
 
 import java.util.List;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Solid;
 import org.deegree.geometry.primitive.Surface;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
-import org.deegree.geometry.uom.Unit;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * Default implementation of {@link Solid}.
@@ -110,12 +110,12 @@ public class DefaultSolid extends AbstractDefaultGeometry implements Solid {
     }
 
     @Override
-    public ValueWithUnit getArea( Unit requestedBaseUnit ) {
+    public Measure getArea( Unit requestedBaseUnit ) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ValueWithUnit getVolume( Unit requestedBaseUnit ) {
+    public Measure getVolume( Unit requestedBaseUnit ) {
         throw new UnsupportedOperationException();
     }
 }

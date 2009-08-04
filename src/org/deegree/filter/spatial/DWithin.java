@@ -35,11 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
+import org.deegree.commons.uom.Measure;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.uom.ValueWithUnit;
 
 /**
  * TODO add documentation here
@@ -55,9 +55,9 @@ public class DWithin extends SpatialOperator {
 
     private final Geometry param2;
 
-    private final ValueWithUnit distance;
+    private final Measure distance;
 
-    public DWithin( PropertyName param1, Geometry param2, ValueWithUnit distance ) {
+    public DWithin( PropertyName param1, Geometry param2, Measure distance ) {
         this.param1 = param1;
         this.param2 = param2;
         this.distance = distance;
