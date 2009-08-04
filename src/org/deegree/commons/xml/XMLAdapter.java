@@ -60,6 +60,7 @@ import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -74,9 +75,12 @@ import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.deegree.commons.i18n.Messages;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.jaxen.JaxenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 /**
  * <code>XMLAdapter</code> is the common base class of all hand-written (i.e. not automatically generated) XML parsers
@@ -1059,7 +1063,7 @@ public class XMLAdapter {
 
         NamespaceContext nsContext = new NamespaceContext();
         augmentNamespaceContext( element, nsContext );
-        System.out.println (nsContext);
+        System.out.println( nsContext );
         return nsContext;
     }
 
@@ -1186,6 +1190,9 @@ public class XMLAdapter {
     public static void writeElement( XMLStreamWriter writer, XMLStreamReader inStream )
                             throws XMLStreamException {
 
+        if ( inStream.getEventType() != XMLStreamConstants.START_ELEMENT ) {
+            throw new XMLStreamException( "Input stream does not point to a START_ELEMENT event." );
+        }
         int openElements = 0;
         boolean firstRun = true;
         while ( firstRun || openElements > 0 ) {
