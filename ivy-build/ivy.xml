@@ -1,6 +1,6 @@
 <!--
   # found in the ${basedir}/ivy-build/ivy.properties
-  module.organisation = org.deegree    
+  module.organisation = org.deegree
   module.name = ${ant.project.name}
 -->
 <ivy-module version="1.0">
@@ -31,37 +31,40 @@
     <dependency org="logging" name="slf4j-api" rev="1.5.8" conf="${module.name}-build" />
     <dependency org="logging" name="slf4j-log4j12" rev="1.5.8" conf="${module.name}-build" />
     <dependency org="logging" name="jcl-over-slf4j" rev="1.5.8" conf="${module.name}-build" />
-    <dependency org="logging" name="log4j" rev="1.2.15" transitive="false" conf="${module.name}-build" />    
+    <dependency org="logging" name="log4j" rev="1.2.15" transitive="false" conf="${module.name}-build" />
 
     <!-- mail -->
     <dependency org="mail" name="mail" rev="1.4" conf="${module.name}-build" />
 
     <!-- xml framework build dependencies -->
-    <dependency org="xml" name="jaxen" rev="1.1.1" conf="${module.name}-build" />    
+    <dependency org="xml" name="jaxen" rev="1.1.1" conf="${module.name}-build" />
     <dependency org="xml" name="axiom-api" rev="1.2.9-SNAPSHOT" conf="${module.name}-build" />
-    <dependency org="xml" name="axiom-impl" rev="1.2.9-SNAPSHOT" conf="${module.name}-build" />   
+    <dependency org="xml" name="axiom-impl" rev="1.2.9-SNAPSHOT" conf="${module.name}-build" />
     <dependency org="xerces" name="xercesImpl" rev="2.9.1" conf="${module.name}-build" />
-    
+
     <!--  for rendering and working with 3d stuff -->
     <dependency org="jogl" name="jogl" rev="1.1.2-+" transitive="false" conf="${module.name}-build" />
     <dependency org="jogl" name="gluegen-rt" rev="1.1.2-+" transitive="false" conf="${module.name}-build" />
-    
+
     <dependency org="jaxb" name="jaxb-impl" rev="2.1.10" transitive="false" conf="${module.name}-build" />
     <dependency org="jaxb" name="jaxb-xjc" rev="2.1.10" transitive="false" conf="${module.name}-build" />
 
     <!-- derby-->
     <dependency org="derby" name="derby" rev="10.4.2.0" conf="${module.name}-build" />
-    
+
     <dependency org="ehcache" name="ehcache" rev="1.6.0" transitive="false" conf="${module.name}-build" />
 
     <dependency org="jai" name="jai_codec" rev="" transitive="false" conf="${module.name}-build" />
     <dependency org="jai" name="jai_imageio" rev="" transitive="false" conf="${module.name}-build" />
-    
+
     <!-- for a postgis runtime -->
     <dependency org="postgis" name="postgresql" rev="8.3-+" transitive="false" conf="${module.name}-build" />
     <dependency org="postgis" name="postgis" rev="1.3.3" transitive="false" conf="${module.name}-build" />
-    
+
     <!-- local copy of OpenGIS schemas -->
     <dependency org="opengis-schemas" name="opengis_schemas_2009-05-08" rev="" transitive="false" conf="${module.name}-build" />
+
+    <!-- CUP runtime for generated parsers -->
+    <dependency org="cup" name="cup" rev="0.10k" transitive="false" conf="${module.name}-build" />
   </dependencies>
 </ivy-module>
