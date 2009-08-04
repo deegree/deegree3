@@ -56,6 +56,9 @@ public class CRSCodeTypeTest extends TestCase {
     
     @Test
     public void test1() {
+        CRSCodeType code0 = new CRSCodeType( "CRS:84" );
+        assertTrue( code0.getOriginal().equals( "CRS:84" ) );
+        
         CRSCodeType code1 = new CRSCodeType( "EPSG:4326" );
         assertEquals( code1.getEquivalentString(), "EPSG:4326" );
         assertEquals( CRSCodeType.valueOf( "EPSG:4326" ).getEquivalentString(), "EPSG:4326" );
