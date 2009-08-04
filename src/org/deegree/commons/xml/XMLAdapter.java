@@ -75,12 +75,9 @@ import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.deegree.commons.i18n.Messages;
-import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.jaxen.JaxenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 /**
  * <code>XMLAdapter</code> is the common base class of all hand-written (i.e. not automatically generated) XML parsers
