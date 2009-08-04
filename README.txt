@@ -106,10 +106,20 @@ Files: ehcache-1.6.0.jar
 URL: http://ehcache.sourceforge.net/
 Version: 1.6.0
 Description: Ehcache is a widely used java distributed cache for general purpose caching[..].
-             It features memory and disk stores, replicate by copy and invalidate, listeners, 
+             It features memory and disk stores, replicate by copy and invalidate, listeners,
              cache loaders, cache extensions, cache exception handlers, a gzip caching servlet
              filter and much more...
-Comments: 
+Comments:
 Used for: org.deegree.dataaccess.raster (caching of raster tiles)
 License: The Apache Software License, Version 2.0
 Responsible: rbezema
+
+=== cup ===
+Files: cup-0.10k.jar
+URL: http://www2.cs.tum.edu/projects/cup/
+Version: 0.10k
+Description: CUP is a LALR Parser Generator
+Used for: generation of small parsers
+Origin of files: CUP distribution or files included in Debian 5.0.1: http://www2.cs.tum.edu/projects/cup/java_cup_v10k.tar.gz
+Licence: Custom license
+Responsible: aschmitz
