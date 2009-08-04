@@ -731,33 +731,55 @@ public class CRSQuerier {
      */
     protected CRSIdentifiable getIdentifiableAttributes( int id )
                             throws SQLException {
-        PreparedStatement ps = conn.prepareStatement( "SELECT code, codespace, name, version, description, area_of_use "
-                                                      + "FROM code LEFT JOIN name ON code.ref_id = name.ref_id "
-                                                      + "LEFT JOIN version ON code.ref_id = version.ref_id "
-                                                      + "LEFT JOIN description ON code.ref_id = description.ref_id "
-                                                      + "LEFT JOIN area ON code.ref_id = area.ref_id "
-                                                      + "WHERE code.ref_id = " + id );
-        ResultSet rs = ps.executeQuery();
 
         List<CRSCodeType> codes = new ArrayList<CRSCodeType>();
-        List<String> names = new ArrayList<String>();
-        List<String> versions = new ArrayList<String>();
-        List<String> descriptions = new ArrayList<String>();
-        List<String> areas = new ArrayList<String>();
-
+        PreparedStatement ps = conn.prepareStatement( "SELECT original FROM code WHERE ref_id = " + id );
+        ResultSet rs = ps.executeQuery();
         while ( rs.next() ) {
-            codes.add( rs.getString( 2 ) == "" ? new CRSCodeType( rs.getString( 1 ) )
-                                              : new CRSCodeType( rs.getString( 1 ), rs.getString( 2 ) ) );
-            if ( rs.getString( 3 ) != null )
-                names.add( rs.getString( 3 ) );
-            if ( rs.getString( 4 ) != null )
-                versions.add( rs.getString( 4 ) );
-            if ( rs.getString( 5 ) != null )
-                descriptions.add( rs.getString( 5 ) );
-            if ( rs.getString( 6 ) != null )
-                areas.add( rs.getString( 6 ) );
+            codes.add( new CRSCodeType( rs.getString( 1 ) ) );
         }
+        ps.close();
 
+        List<String> names = new ArrayList<String>();
+        ps = conn.prepareStatement( "SELECT name FROM name WHERE ref_id = " + id );
+        rs = ps.executeQuery();
+        while ( rs.next() ) {
+            if ( rs.getString( 1 ) != null ) {
+                names.add( rs.getString( 1 ) );
+            }
+        }
+        ps.close();
+        
+        List<String> versions = new ArrayList<String>();
+        ps = conn.prepareStatement( "SELECT version FROM version WHERE ref_id = " + id );
+        rs = ps.executeQuery();
+        while ( rs.next() ) {
+            if ( rs.getString( 1 ) != null ) {
+                versions.add( rs.getString( 1 ) );
+            }
+        }
+        ps.close();
+        
+        List<String> descriptions = new ArrayList<String>();
+        ps = conn.prepareStatement( "SELECT description FROM description WHERE ref_id = " + id );
+        rs = ps.executeQuery();
+        while ( rs.next() ) {
+            if ( rs.getString( 1 ) != null ) {
+                descriptions.add( rs.getString( 1 ) );
+            }
+        }
+        ps.close();
+        
+        List<String> areas = new ArrayList<String>();
+        ps = conn.prepareStatement( "SELECT area_of_use FROM area WHERE ref_id = " + id );
+        rs = ps.executeQuery();
+        while ( rs.next() ) {
+            if ( rs.getString( 1 ) != null ) {
+                areas.add( rs.getString( 1 ) );
+            }
+        }
+        ps.close();
+        
         return new CRSIdentifiable( codes.toArray( new CRSCodeType[codes.size()] ),
                                     names.toArray( new String[names.size()] ),
                                     versions.toArray( new String[versions.size()] ),
@@ -895,11 +917,12 @@ public class CRSQuerier {
         List<CRSCodeType> listCodes = new ArrayList<CRSCodeType>();
 
         try {
-            PreparedStatement ps = conn.prepareStatement( "SELECT code, codespace "
+            PreparedStatement ps = conn.prepareStatement( "SELECT original "
                                                           + "FROM crs_lookup JOIN code ON crs_lookup.id = code.ref_id" );
             ResultSet rs = ps.executeQuery();
-            while ( rs.next() )
-                listCodes.add( new CRSCodeType( rs.getString( 1 ), rs.getString( 2 ) ) );
+            while ( rs.next() ) {
+                listCodes.add( new CRSCodeType( rs.getString( 1 ) ) );
+            }            
         } catch ( SQLException e ) {
             LOG.error( e.getMessage() );
         }
@@ -944,12 +967,11 @@ public class CRSQuerier {
         CoordinateSystem result = null;
 
         PreparedStatement ps;
-        ps = conn.prepareStatement( "SELECT ref_id, code, codespace FROM code WHERE code = '" + crsCode.getCode()
-                                    + "' AND codespace = '" + crsCode.getCodeSpace() + "'" );
+        ps = conn.prepareStatement( "SELECT ref_id FROM code WHERE original = '" + crsCode.getOriginal() + "'" );
 
         ResultSet rs = ps.executeQuery();
         if ( !rs.next() ) {
-            LOG.warn( "The database does not contain a crs with the code " + crsCode );
+            LOG.warn( "The database does not contain a crs with the code " + crsCode.getOriginal() );
             return null;
         }
 
