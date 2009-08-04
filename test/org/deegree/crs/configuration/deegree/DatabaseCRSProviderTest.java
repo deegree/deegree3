@@ -109,7 +109,7 @@ public class DatabaseCRSProviderTest extends TestCase {
         // test the datum.
         GeodeticDatum datum = realCRS.getGeodeticDatum();
         assertNotNull( datum );
-        assertEquals( CRSCodeType.valueOf( "EPSG:6314" ), datum.getCode() );
+        assertTrue( datum.getCode().getCode().equals( "6314" ) );
 
         // This assert will not be true since the new CRSIdentifiables have the series of codes reduced under the EPSG
         // codespace
@@ -118,7 +118,7 @@ public class DatabaseCRSProviderTest extends TestCase {
         // test the ellips
         Ellipsoid ellips = datum.getEllipsoid();
         assertNotNull( ellips );
-        assertEquals( CRSCodeType.valueOf( "EPSG:7004" ), ellips.getCode() );
+        assertTrue( ellips.getCode().getCode().equals( "7004" ) );
         assertEquals( Unit.METRE, ellips.getUnits() );
         assertEquals( 6377397.155, ellips.getSemiMajorAxis() );
         assertEquals( 299.1528128, ellips.getInverseFlattening() );
@@ -127,7 +127,7 @@ public class DatabaseCRSProviderTest extends TestCase {
         Helmert toWGS = datum.getWGS84Conversion();
         assertNotNull( toWGS );
         assertTrue( toWGS.hasValues() );
-        assertEquals( CRSCodeType.valueOf( "EPSG:1777" ), toWGS.getCode() );
+        assertTrue( toWGS.getCode().getCode().equals( "1777" ) );
         assertEquals( 598.1, toWGS.dx );
         assertEquals( 73.7, toWGS.dy );
         assertEquals( 418.2, toWGS.dz );
@@ -139,7 +139,7 @@ public class DatabaseCRSProviderTest extends TestCase {
         // test the geographic
         GeographicCRS geographic = realCRS.getGeographicCRS();
         assertNotNull( geographic );
-        assertEquals( CRSCodeType.valueOf( "EPSG:4314" ), geographic.getCode() );
+        assertTrue( geographic.getCode().getCode().equals( "4314" ) );
         Axis[] ax = geographic.getAxis();
         assertEquals( 2, ax.length );
         assertEquals( Axis.AO_EAST, ax[0].getOrientation() );
