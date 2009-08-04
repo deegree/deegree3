@@ -467,7 +467,7 @@ public class CRSDBExporter {
             // insert into projection_lookup table
             PreparedStatement ps = connection.prepareStatement( "INSERT INTO projection_lookup VALUES (?, ? )" );
             ps.setInt( 1, internalID );
-            ps.setString( 2, "transverse_mercator" );
+            ps.setString( 2, "mercator" );
             ps.execute();
 
             // insert into mercator
