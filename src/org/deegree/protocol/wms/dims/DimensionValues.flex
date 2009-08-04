@@ -17,6 +17,7 @@ import java_cup.runtime.*;
 %cup
 %line
 %column
+%public
 
 %{
 %}
