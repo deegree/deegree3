@@ -41,9 +41,13 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.xerces.dom.DOMInputImpl;
+import org.apache.xerces.impl.xs.XMLSchemaLoader;
 import org.apache.xerces.parsers.XIncludeAwareParserConfiguration;
 import org.apache.xerces.xni.XNIException;
 import org.apache.xerces.xni.parser.XMLEntityResolver;
@@ -51,16 +55,25 @@ import org.apache.xerces.xni.parser.XMLErrorHandler;
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.apache.xerces.xni.parser.XMLParseException;
 import org.apache.xerces.xni.parser.XMLParserConfiguration;
+import org.apache.xerces.xs.LSInputList;
 import org.deegree.commons.utils.ProxyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.ls.LSInput;
 
 /**
- * Provides utility methods for the easy validation of XML documents against XML schemas.
+ * Provides utility methods for the easy validation of XML instance documents against XML schemas and for the validation
+ * of XML schema documents.
  * <p>
+ * <h4>Validation of instance documents</h4>
  * The XML schemas are either determined from the <code>xsi:schemaLocation</code> attribute of the document or may be
  * explicitly specified. The validator uses the {@link RedirectingEntityResolver}, so OGC core schemas are not fetched
  * over the network, but loaded from a local copy.
+ * </p>
+ * <p>
+ * <h4>Validation of schema documents</h4>
+ * The validator uses the {@link RedirectingEntityResolver}, so OGC core schemas are not fetched over the network, but
+ * loaded from a local copy.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -88,7 +101,7 @@ public class SchemaValidator {
     private static final String HONOUR_ALL_SCHEMA_LOCATIONS_ID = "http://apache.org/xml/features/honour-all-schemaLocations";
 
     /**
-     * Validates the specified XML input document according to the contained schema references (
+     * Validates the specified XML instance document according to the contained schema references (
      * <code>xsi:schemaLocation</code> attribute) and/or to the explicitly specified schema references.
      * 
      * @param source
@@ -103,7 +116,7 @@ public class SchemaValidator {
     }
 
     /**
-     * Validates the specified XML input document according to the contained schema references (
+     * Validates the specified XML instance document according to the contained schema references (
      * <code>xsi:schemaLocation</code> attribute) and/or to the explicitly specified schema references.
      * 
      * @param source
@@ -118,7 +131,7 @@ public class SchemaValidator {
     }
 
     /**
-     * Validates the specified XML input document according to the contained schema references (
+     * Validates the specified XML instance document according to the contained schema references (
      * <code>xsi:schemaLocation</code> attribute) and/or to the explicitly specified schema references.
      * 
      * @param url
@@ -137,7 +150,7 @@ public class SchemaValidator {
     }
 
     /**
-     * Validates the specified XML input document according to the contained schema references (
+     * Validates the specified XML instance document according to the contained schema references (
      * <code>xsi:schemaLocation</code> attribute) and/or to explicitly specified schema references.
      * 
      * @param source
@@ -193,6 +206,118 @@ public class SchemaValidator {
         return errors;
     }
 
+    /**
+     * Validates the specified XML schema document, additionally in conjunction with more schemas.
+     * 
+     * @param inputSchemaUri
+     *            provides the XML schema document to be validated, must not be null
+     * @param additionalUris
+     *            additional schema documents to be considered, can be null
+     * @return list of validation events (errors/warnings) that occured, never null, size of 0 means valid document
+     */
+    public static List<String> validateSchema( String inputSchemaUri, String... additionalUris ) {
+        LSInput input = new DOMInputImpl( null, inputSchemaUri, null );
+        LSInput[] additionalSchemas = new LSInput[additionalUris.length];
+        for ( int i = 0; i < additionalUris.length; i++ ) {
+            additionalSchemas[i] = new DOMInputImpl( null, additionalUris[i], null );
+        }
+        return validateSchema( input, additionalSchemas );
+    }
+
+    /**
+     * Validates the specified XML schema document, additionally in conjunction with more schemas.
+     * 
+     * @param inputSchema
+     *            provides the XML schema document to be validated, must not be null
+     * @param additionalUris
+     *            additional schema documents to be considered, can be null
+     * @return list of validation events (errors/warnings) that occured, never null, size of 0 means valid document
+     */
+    public static List<String> validateSchema( Reader inputSchema, String... additionalUris ) {
+        LSInput input = new DOMInputImpl( null, null, null, inputSchema, null );
+        LSInput[] additionalSchemas = new LSInput[additionalUris.length];
+        for ( int i = 0; i < additionalUris.length; i++ ) {
+            additionalSchemas[i] = new DOMInputImpl( null, additionalUris[i], null );
+        }
+        return validateSchema( input, additionalSchemas );
+    }
+
+    /**
+     * Validates the specified XML schema document, additionally in conjunction with more schemas.
+     * 
+     * @param inputSchema
+     *            provides the XML schema document to be validated, must not be null
+     * @param encoding
+     *            encoding of the input stream, null means system default
+     * @param additionalUris
+     *            additional schema documents to be considered, can be null
+     * @return list of validation events (errors/warnings) that occured, never null, size of 0 means valid document
+     */
+    public static List<String> validateSchema( InputStream inputSchema, String encoding, String... additionalUris ) {
+        LSInput input = new DOMInputImpl( null, null, null, inputSchema, encoding );
+        LSInput[] additionalSchemas = new LSInput[additionalUris.length];
+        for ( int i = 0; i < additionalUris.length; i++ ) {
+            additionalSchemas[i] = new DOMInputImpl( null, additionalUris[i], null );
+        }
+        return validateSchema( input, additionalSchemas );
+    }
+
+    /**
+     * Validates the specified XML schema document, additionally in conjunction with more schemas.
+     * 
+     * @param inputSchema
+     *            provides the XML schema document to be validated, must not be null
+     * @param additionalSchemas
+     *            additional schema documents to be considered, can be null
+     * @return list of validation events (errors/warnings) that occured, never null, size of 0 means valid document
+     */
+    public static List<String> validateSchema( LSInput inputSchema, LSInput... additionalSchemas ) {
+
+        final List<String> errors = new LinkedList<String>();
+
+        XMLSchemaLoader schemaLoader = new XMLSchemaLoader();
+        schemaLoader.setFeature( SCHEMA_FULL_CHECKING_FEATURE_ID, true );
+        // NOTE: don't set to true, or validation of WFS GetFeature responses will fail (Xerces error?)!
+        schemaLoader.setFeature( HONOUR_ALL_SCHEMA_LOCATIONS_ID, false );
+        schemaLoader.setEntityResolver( new RedirectingEntityResolver() );
+
+        schemaLoader.setErrorHandler( new XMLErrorHandler() {
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public void error( String domain, String key, XMLParseException e )
+                                    throws XNIException {
+                LOG.debug( "Encountered error: " + toString( e ) );
+                errors.add( "Error: " + toString( e ) );
+            }
+
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public void fatalError( String domain, String key, XMLParseException e )
+                                    throws XNIException {
+                LOG.debug( "Encountered fatal error: " + toString( e ) );
+                errors.add( "Fatal error: " + toString( e ) );
+            }
+
+            @SuppressWarnings("synthetic-access")
+            @Override
+            public void warning( String domain, String key, XMLParseException e )
+                                    throws XNIException {
+                LOG.debug( "Encountered warning: " + toString( e ) );
+                errors.add( "Warning: " + toString( e ) );
+            }
+
+            private String toString( XMLParseException e ) {
+                String s = e.getLocalizedMessage();
+                s += " (line: " + e.getLineNumber() + ", column: " + e.getColumnNumber();
+                s += e.getExpandedSystemId() != null ? ", SystemID: '" + e.getExpandedSystemId() + "')" : ")";
+                return s;
+            }
+        } );
+
+        schemaLoader.loadInputList( new LSInputListImpl( inputSchema, additionalSchemas ) );
+        return errors;
+    }
+
     private static XMLParserConfiguration createValidatingParser( XMLEntityResolver entityResolver,
                                                                   GrammarPool grammarPool )
                             throws XNIException {
@@ -213,5 +338,25 @@ public class SchemaValidator {
             parserConfiguration.setEntityResolver( entityResolver );
         }
         return parserConfiguration;
+    }
+}
+
+class LSInputListImpl implements LSInputList {
+
+    private List<LSInput> inputs = new ArrayList<LSInput>();
+
+    LSInputListImpl( LSInput input, LSInput... additionalInputs ) {
+        inputs.add( input );
+        inputs.addAll( Arrays.asList( additionalInputs ) );
+    }
+
+    @Override
+    public int getLength() {
+        return inputs.size();
+    }
+
+    @Override
+    public LSInput item( int i ) {
+        return inputs.get( i );
     }
 }

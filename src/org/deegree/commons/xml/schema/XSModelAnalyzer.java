@@ -168,11 +168,7 @@ public class XSModelAnalyzer {
     public static XSModel loadModel( String... schemaUrls )
                             throws ClassCastException, ClassNotFoundException, InstantiationException,
                             IllegalAccessException {
-
-        for ( String string : schemaUrls ) {
-            System.out.println (string);
-        }
-        
+       
         XMLSchemaLoader schemaLoader = new XMLSchemaLoader();
         DOMConfiguration config = schemaLoader.getConfig();
 
