@@ -141,8 +141,11 @@ public class ApplicationSchemaXSDEncoder {
                             throws XMLStreamException {
 
         // TODO prefix handling
-        writer.setPrefix( "app", schema.getFeatureTypes()[0].getName().getNamespaceURI() );
-        
+        final String uri = schema.getFeatureTypes()[0].getName().getNamespaceURI();
+        if ( !uri.isEmpty() ) {
+            writer.setPrefix( "app", uri );
+        }
+
         writer.setPrefix( XS_PREFIX, XSNS );
         writer.setPrefix( GML_PREFIX, gmlNsURI );
 
@@ -174,8 +177,8 @@ public class ApplicationSchemaXSDEncoder {
                             throws XMLStreamException {
 
         // TODO prefix handling
-        writer.setPrefix( "app", fts.get( 0 ).getName().getNamespaceURI() );        
-        
+        writer.setPrefix( "app", fts.get( 0 ).getName().getNamespaceURI() );
+
         writer.setPrefix( XS_PREFIX, XSNS );
         writer.setPrefix( GML_PREFIX, gmlNsURI );
 
@@ -288,7 +291,7 @@ public class ApplicationSchemaXSDEncoder {
                 writer.writeStartElement( XSNS, "sequence" );
                 writer.writeEmptyElement( XSNS, "element" );
                 // TODO
-                writer.writeAttribute( "ref",  "app:" + containedFt.getLocalPart() );
+                writer.writeAttribute( "ref", "app:" + containedFt.getLocalPart() );
                 writer.writeAttribute( "minOccurs", "0" );
                 // end 'xs:sequence'
                 writer.writeEndElement();
