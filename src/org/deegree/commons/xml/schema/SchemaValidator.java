@@ -341,10 +341,26 @@ public class SchemaValidator {
     }
 }
 
+/**
+ * Simple <code>LSInputList</code> implementation.
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 class LSInputListImpl implements LSInputList {
 
     private List<LSInput> inputs = new ArrayList<LSInput>();
 
+    /**
+     * Creates a new {@link LSInputListImpl} instance.
+     * 
+     * @param input
+     *            first input, must not be null
+     * @param additionalInputs
+     *            additional inputs, may be null or empty
+     */
     LSInputListImpl( LSInput input, LSInput... additionalInputs ) {
         inputs.add( input );
         inputs.addAll( Arrays.asList( additionalInputs ) );
