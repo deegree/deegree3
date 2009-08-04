@@ -247,14 +247,14 @@ public class DeegreeCRSProvider extends AbstractCRSProvider<OMElement> {
         int count = 0;
         int percentage = (int) Math.round( total / 100.d );
         int number = 0;
-        LOG.info( "Trying to create a total of " + total + " coordinate systems." );
+        LOG.info( "Trying to create a total of " + total + " coordinate systems." );        
         for ( CRSCodeType crsID : allCRSIDs ) {
             if ( crsID != null ) {
                 // String id = crsID.getTextContent();
-                String id = crsID.getCode();
+                String id = crsID.getOriginal();
                 if ( id != null && !"".equals( id.trim() ) ) {
                     if ( count++ % percentage == 0 ) {
-                        System.out.print( "\r" + ( number ) + ( ( number++ < 10 ) ? "  " : " " ) + "% created" );
+                        System.out.println( ( number ) + ( ( number++ < 10 ) ? " " : "" ) + "% created" );
                     }
                     boolean createdAlready = false;
                     for ( int i = 0; i < allSystems.size() && !createdAlready; ++i ) {
