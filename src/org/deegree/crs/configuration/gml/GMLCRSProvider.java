@@ -1273,7 +1273,7 @@ public class GMLCRSProvider extends AbstractCRSProvider<OMElement> {
                     if ( unitID != null ) {
                         CRSCodeType[] codes = unitID.getCodes();
                         for ( int i = 0; i < codes.length && result == null; ++i ) {
-                            result = createUnitFromString( codes[i].getEquivalentString() );
+                            result = createUnitFromString( codes[i].getOriginal() );
                         }
                     }
 
