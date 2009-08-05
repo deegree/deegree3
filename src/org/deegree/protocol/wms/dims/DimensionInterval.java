@@ -44,21 +44,26 @@ package org.deegree.protocol.wms.dims;
  * 
  * @version $Revision$, $Date$
  * @param <T>
+ * @param <U>
+ * @param <V>
  */
-public class DimensionInterval<T> {
+public class DimensionInterval<T, U, V> {
 
-    T min;
+    /***/
+    public T min;
 
-    T max;
+    /***/
+    public U max;
 
-    T res;
+    /***/
+    public V res;
 
     /**
      * @param min
      * @param max
      * @param res
      */
-    public DimensionInterval( T min, T max, T res ) {
+    public DimensionInterval( T min, U max, V res ) {
         this.min = min;
         this.max = max;
         this.res = res;
