@@ -292,8 +292,8 @@ public class TransformationAccuracyTest extends TestCase {
         } else {
             sb.append( "[SUCCESS] " );
         }
-        sb.append( "Transformation (" ).append( sourceCRS.getCode().getEquivalentString() );
-        sb.append( " -> " ).append( targetCRS.getCode().getEquivalentString() ).append( ")\n" );
+        sb.append( "Transformation (" ).append( sourceCRS.getCode().toString() );
+        sb.append( " -> " ).append( targetCRS.getCode().toString() ).append( ")\n" );
         sb.append( xString );
         sb.append( "\n" ).append( yString );
         if ( targetCRS.getDimension() == 3 ) {
@@ -321,9 +321,9 @@ public class TransformationAccuracyTest extends TestCase {
     throws TransformationException {
         StringBuilder output = new StringBuilder();
         output.append( "Transforming forward/inverse -> projected with id: '" );
-        output.append( sourceCRS.getCode().getEquivalentString() );
+        output.append( sourceCRS.getCode().toString() );
         output.append( "' and projected with id: '" );
-        output.append( targetCRS.getCode().getEquivalentString() );
+        output.append( targetCRS.getCode().toString() );
         output.append( "'.\n" );
 
         // forward transform.
@@ -364,13 +364,13 @@ public class TransformationAccuracyTest extends TestCase {
         // Source crs espg:28992
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_28992, 20,
                                                  new CRSIdentifiable( new CRSCodeType[]
-                                                   { new CRSCodeType( projected_28992.getCode().getEquivalentString()
+                                                   { new CRSCodeType( projected_28992.getCode().getOriginal()
                                                                                      + "_compound" ) } ) );
 
         // Target crs espg:25832
         CompoundCRS targetCRS = new CompoundCRS( heightAxis, projected_25832, 20,
                                                  new CRSIdentifiable( new CRSCodeType[]
-                                                   { new CRSCodeType( projected_25832.getCode().getEquivalentString()
+                                                   { new CRSCodeType( projected_25832.getCode().getOriginal()
                                                                                      + "_compound" ) } ) );
 
         // reference created with coord tool from http://www.rdnap.nl/ (NL/Amsterdam/dam)
@@ -391,7 +391,7 @@ public class TransformationAccuracyTest extends TestCase {
         // Source crs espg:28992
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_28992, 20,
                                                  new CRSIdentifiable( new CRSCodeType[]
-                                                  { new CRSCodeType( projected_28992.getCode().getEquivalentString()
+                                                  { new CRSCodeType( projected_28992.getCode().getOriginal()
                                                                                      + "_compound" ) } ) );
 
         // Target crs espg:4258
@@ -419,7 +419,7 @@ public class TransformationAccuracyTest extends TestCase {
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_31467, 20,
                                                  new CRSIdentifiable(
                                                   new CRSCodeType[] {
-                                                     new CRSCodeType( projected_31467.getCode().getEquivalentString()
+                                                     new CRSCodeType( projected_31467.getCode().getOriginal()
                                                                                      + "_compound" ) } ) );
 
         // Target crs EPSG:4964
@@ -449,7 +449,7 @@ public class TransformationAccuracyTest extends TestCase {
                                                 20,
                                                 new CRSIdentifiable(
                                                      new CRSCodeType[] {
-                                                       new CRSCodeType( GeographicCRS.WGS84.getCode().getEquivalentString()
+                                                       new CRSCodeType( GeographicCRS.WGS84.getCode().getOriginal()
                                                                                    + "_compound" ) } ) );
 
         // Target EPSG:31467
