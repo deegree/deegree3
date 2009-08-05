@@ -894,12 +894,12 @@ public class CRSQuerier {
 
         CRSIdentifiable identifiable = getIdentifiableAttributes( projectedId );
         if ( getProjection( rs.getInt( 3 ) ) == null || getProjection( rs.getInt( 3 ) ).getGeographicCRS() == null
-             || getProjection( rs.getInt( 3 ) ).getGeographicCRS().getType() != CoordinateSystem.GEOGRAPHIC_CRS )
+             || getProjection( rs.getInt( 3 ) ).getGeographicCRS().getType() != CoordinateSystem.GEOGRAPHIC_CRS ) {
             throw new CRSConfigurationException(
                                                  Messages.getMessage(
                                                                       "CRS_CONFIG_PROJECTEDCRS_FALSE_CRSREF",
-                                                                      identifiable.getCode().getEquivalentString(),
-                                                                      getProjection( rs.getInt( 3 ) ).getGeographicCRS() ) );
+                                                                      identifiable.getCode().getEquivalentString()  ) );
+        }
 
         proj_crs = new ProjectedCRS( getProjection( rs.getInt( 3 ) ), new Axis[] { getAxis( rs.getInt( 1 ) ),
                                                                                   getAxis( rs.getInt( 2 ) ) },
@@ -967,7 +967,11 @@ public class CRSQuerier {
         CoordinateSystem result = null;
 
         PreparedStatement ps;
-        ps = conn.prepareStatement( "SELECT ref_id FROM code WHERE UPPER(original) = '" + crsCode.getOriginal().toUpperCase() + "'" );
+        if ( !crsCode.getCode().equals( "" ) ) {
+            ps = conn.prepareStatement( "SELECT ref_id FROM code WHERE code = '" + crsCode.getCode() + "' AND codespace = '" + crsCode.getCodeSpace() + "'" );
+        } else {
+            ps = conn.prepareStatement( "SELECT ref_id FROM code WHERE original = '" + crsCode.getOriginal() + "'" );
+        }        
 
         ResultSet rs = ps.executeQuery();
         if ( !rs.next() ) {
