@@ -56,41 +56,26 @@ public class CRSCodeTypeTest extends TestCase {
     
     @Test
     public void test1() {
-        CRSCodeType code0 = new CRSCodeType( "CRS:84" );
-        assertTrue( code0.getOriginal().equals( "CRS:84" ) );
-        
-        CRSCodeType code1 = new CRSCodeType( "EPSG:4326" );
-        assertEquals( code1.getEquivalentString(), "EPSG:4326" );
-        assertEquals( CRSCodeType.valueOf( "EPSG:4326" ).getEquivalentString(), "EPSG:4326" );
-        
-        CRSCodeType code2 = new CRSCodeType( "URN:X-OGC:DEF:CRS:EPSG:6.11:4326" );
-        assertEquals( code2.getEquivalentString(), "EPSG:6.11:4326" );
+        CRSCodeType code1 = new CRSCodeType( "URN:X-OGC:DEF:CRS:EPSG:6.11:4326" );
+        assertTrue( code1.toString().equals( "EPSG::6.11::4326" ) );
 
-        assertEquals( CRSCodeType.valueOf( "URN:X-OGC:DEF:CRS:EPSG:6.11:4326" ).getEquivalentString(), "EPSG:6.11:4326" );
+        CRSCodeType code2 = new CRSCodeType( "URN:X-OGC:DEF:CRS:EPSG:6.11.2:4326" );
+        assertEquals( code2.toString(), "EPSG::6.11.2::4326" );
+                
+        CRSCodeType code3 = new CRSCodeType( "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4326" );
+        assertTrue( code3.toString().equals( "EPSG::4326" ) );
         
-        CRSCodeType code3 = new CRSCodeType( "URN:X-OGC:DEF:CRS:EPSG:6.11.2:4326" );
-        assertEquals( code3.getEquivalentString(), "EPSG:6.11.2:4326" );
-        assertEquals( CRSCodeType.valueOf( "URN:X-OGC:DEF:CRS:EPSG:6.11.2:4326" ).getEquivalentString(), "EPSG:6.11.2:4326" );
+        CRSCodeType code4 = new CRSCodeType( "URN:OPENGIS:DEF:CRS:EPSG::4326" );
+        assertTrue( code4.toString().equals( "EPSG::4326" ) );
         
-        CRSCodeType code4 = new CRSCodeType( "URN:OGC:DEF:CRS:EPSG::4326" );
-        assertEquals( code4.getEquivalentString(), "EPSG:4326" );
-        assertEquals( CRSCodeType.valueOf( "URN:OGC:DEF:CRS:EPSG::4326" ).getEquivalentString(), "EPSG:4326" );
+        CRSCodeType code5 = new CRSCodeType( "CRS:84" );
+        assertTrue( code5.toString().equals( "CRS:84" ) );
         
-        CRSCodeType code5 = new CRSCodeType( "URN:OGC:DEF:CRS:EPSG:4326" );
-        assertEquals( code5.getEquivalentString(), "EPSG:4326" );
-        assertEquals( CRSCodeType.valueOf( "URN:OGC:DEF:CRS:EPSG:4326" ).getEquivalentString(), "EPSG:4326" );
+        CRSCodeType code6 = new CRSCodeType( "URN:OGC:DEF:CRS:OGC:1.3:CRS84" );
+        assertTrue( code6.toString().equals( "URN:OGC:DEF:CRS:OGC:1.3:CRS84" ) );
         
-        CRSCodeType code6 = new CRSCodeType( "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4326" );
-        assertEquals( code6.getEquivalentString(), "EPSG:4326" );
-        assertEquals( CRSCodeType.valueOf( "HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#4326" ).getEquivalentString(), "EPSG:4326" );
-        
-        CRSCodeType code7 = new CRSCodeType( "URN:OPENGIS:DEF:CRS:EPSG::4326" );
-        assertEquals( code7.getEquivalentString(), "EPSG:4326" );
-        assertEquals( CRSCodeType.valueOf( "URN:OPENGIS:DEF:CRS:EPSG::4326" ).getEquivalentString(), "EPSG:4326" );
-        
-        CRSCodeType code8 = new CRSCodeType( "URN:X-OGC:DEF:CRS:EPSG:4326" );        
-        assertEquals( code8.getEquivalentString(), "EPSG:4326" );
-        assertEquals( CRSCodeType.valueOf( "URN:X-OGC:DEF:CRS:EPSG:4326" ).getEquivalentString(), "EPSG:4326" );
+        CRSCodeType code7 = new CRSCodeType( "WGS84(DD)" );
+        assertTrue( code7.toString().equals( "WGS84(DD)" ) );
     }
 
 }
