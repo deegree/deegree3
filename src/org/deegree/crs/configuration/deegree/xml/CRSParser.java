@@ -1127,63 +1127,7 @@ public class CRSParser extends XMLFileResource {
                                                  e );
 
         }
-    }
-
-    /**
-     * @param <T>
-     *            should be at least of Type CRSIdentifiable.
-     * @param uniqueList
-     *            to check against
-     * @param mapping
-     *            to added the id of T to if it is found duplicate.
-     * @param toBeChecked
-     *            to check.
-     * @return the cached T if found or the given identifiable.
-     */
-    protected <T extends CRSIdentifiable> T checkForUniqueness( List<T> uniqueList, Map<String, String> mapping,
-                                                                T toBeChecked ) {
-        T result = toBeChecked;
-        if ( uniqueList.contains( toBeChecked ) ) {
-            int index = uniqueList.indexOf( toBeChecked );
-            LOG.info( "The CRSIdentifiable with id: " + toBeChecked.getCode() + " was found to be equal with: "
-                      + uniqueList.get( index ).getCode() );
-            String key = uniqueList.get( index ).getCode().getEquivalentString();
-            boolean updatedEPSG = false;
-            if ( key != null && !"".equals( key.trim() ) ) {
-                String value = mapping.get( key );
-                String tbcID = toBeChecked.getCode().getEquivalentString().toUpperCase();
-                // it would be nicest to get the epsg code if any.
-                if ( !key.toUpperCase().startsWith( "EPSG:" ) && tbcID.startsWith( "EPSG:" ) ) {
-                    if ( value == null || "".equals( value ) ) {
-                        value = key;
-                    } else {
-                        value += ", " + key;
-                    }
-                    updatedEPSG = true;
-                    mapping.remove( key );
-                    key = toBeChecked.getCode().getEquivalentString();
-                } else {
-                    if ( value == null || "".equals( value ) ) {
-                        value = toBeChecked.getCode().getEquivalentString();
-                    } else {
-                        value += ", " + toBeChecked.getCode();
-                    }
-                }
-                mapping.put( key, value );
-            }
-            // if updated to epsg, cache the epsg instead and remove the old identifiable.
-            if ( updatedEPSG ) {
-                uniqueList.remove( index );
-                uniqueList.add( toBeChecked );
-            } else {
-                result = uniqueList.get( index );
-            }
-        } else {
-            LOG.debug( "Adding: " + toBeChecked.getCode() + " to cache." );
-            uniqueList.add( toBeChecked );
-        }
-        return result;
-    }
+    }   
 
     public Transformation getTransformation( CoordinateSystem sourceCRS, CoordinateSystem targetCRS ) {
         LOG.error( "The retrieval of transformations is not supported for this deegree crs configuration format." );
