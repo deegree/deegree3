@@ -186,19 +186,6 @@ public class CRSCodeType {
         return new CRSCodeType( "NOT PROVIDED" );
     }
 
-    /**
-     * @return Displays the code under the format <b>code (codeSpace: $codespace[; version: $codeversion])</b> or
-     *         simply the string if the code cannot be parsed into code/codespace/codeversion
-     */
-    @Override
-    public String toString() {
-        if ( !code.equals( "" ) ) {
-            return code + "(codeSpace: " + codeSpace + ( !codeVersion.equals( "" ) ? "; version: " + codeVersion : "" )
-                   + ")";
-        }
-        return original;
-    }
-
     @Override
     public int hashCode() {
         return original.hashCode();
@@ -215,16 +202,17 @@ public class CRSCodeType {
     }
 
     /**
-     * 
-     * @return the code in the form "$codeSpace:$codeVersion:$code" or "$codeSpace:$code" or the original string if the
-     *         id could not be parsed.
+     * Returns the codespace codeversion and code, or just the original string
+     * if it could not be parsed. Recommended for presentation purposes only.
+     * @return  the code in the form $codespace::$codeversion::$code 
      */
-    public String getEquivalentString() {
+    @Override
+    public String toString() {
         if ( !code.equals( "" ) ) {
             if ( !codeVersion.equals( "" ) ) {
-                return codeSpace + ":" + codeVersion + ":" + code;
+                return codeSpace + "::" + codeVersion + "::" + code;
             }
-            return codeSpace + ":" + code;
+            return codeSpace + "::" + code;
         }
 
         return original;
