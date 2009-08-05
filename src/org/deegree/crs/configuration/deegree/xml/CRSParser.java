@@ -613,7 +613,7 @@ public class CRSParser extends XMLFileResource {
         Axis[] axis = parseAxisOrder( crsElement );
         List<PolynomialTransformation> transformations = parseAlternativeTransformations( crsElement );
         // get the datum
-        GeodeticDatum usedDatum = parseReferencedGeodeticDatum( crsElement, id.getCode().getEquivalentString() );
+        GeodeticDatum usedDatum = parseReferencedGeodeticDatum( crsElement, id.getCode().getOriginal() );
 
         GeographicCRS result = new GeographicCRS( transformations, usedDatum, axis, id );
         // adding to cache will be done in AbstractCRSProvider.
@@ -633,7 +633,7 @@ public class CRSParser extends XMLFileResource {
         CRSIdentifiable id = parseIdentifiable( crsElement );
         Axis[] axis = parseAxisOrder( crsElement );
         List<PolynomialTransformation> transformations = parseAlternativeTransformations( crsElement );
-        GeodeticDatum usedDatum = parseReferencedGeodeticDatum( crsElement, id.getCode().getEquivalentString() );
+        GeodeticDatum usedDatum = parseReferencedGeodeticDatum( crsElement, id.getCode().getOriginal() );
         GeocentricCRS result = new GeocentricCRS( transformations, usedDatum, axis, id );
         // adding to cache will be done in AbstractCRSProvider.
         return result;
