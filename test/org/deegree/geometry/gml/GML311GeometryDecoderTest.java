@@ -53,7 +53,6 @@ import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.composite.CompositeGeometry;
 import org.deegree.geometry.composite.CompositeSolid;
 import org.deegree.geometry.composite.CompositeSurface;
-import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
@@ -402,7 +401,7 @@ public class GML311GeometryDecoderTest {
         Assert.assertEquals( SurfaceType.Tin, surface.getSurfaceType() );
         Assert.assertEquals( 2, surface.getStopLines().size() );
         Assert.assertEquals( 1, surface.getBreakLines().size() );
-        Assert.assertEquals( 15.0, surface.getMaxLength().getValue(), DELTA );
+        Assert.assertEquals( 15.0, surface.getMaxLength(null).getValue(), DELTA );
         Assert.assertEquals( 3, surface.getControlPoints().size() );
         Assert.assertEquals( 3.0, surface.getControlPoints().get( 2 ).getX(), DELTA );
         Assert.assertEquals( 4.0, surface.getControlPoints().get( 2 ).getY(), DELTA );

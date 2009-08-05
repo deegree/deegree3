@@ -56,6 +56,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.gml.GMLFeatureDecoderTest;
+import org.deegree.feature.persistence.gml.GMLMemoryStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
 import org.deegree.filter.Filter;
