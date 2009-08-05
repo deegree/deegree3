@@ -370,7 +370,7 @@ public class TransformationAccuracyTest extends TestCase {
 
         // Source crs espg:28992
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_28992, 20,
-                                                 new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( projected_28992.getCode().getEquivalentString()
+                                                 new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( projected_28992.getCode().getOriginal()
                                                                                      + "_compound" ) } ) );
 
         ProjectedCRS projected_25832 = (ProjectedCRS) dbProvider.getCRSByCode( new CRSCodeType( "EPSG:25832" ) );
@@ -378,7 +378,7 @@ public class TransformationAccuracyTest extends TestCase {
 
         // Target crs espg:25832
         CompoundCRS targetCRS = new CompoundCRS( heightAxis, projected_25832, 20,
-                                                 new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( projected_25832.getCode().getEquivalentString() + "_compound" ) } ) );
+                                                 new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( projected_25832.getCode().getOriginal() + "_compound" ) } ) );
 
         // reference created with coord tool from http://www.rdnap.nl/ (NL/Amsterdam/dam)
         Point3d sourcePoint = new Point3d( 121397.572, 487325.817, 6.029 );
@@ -402,7 +402,7 @@ public class TransformationAccuracyTest extends TestCase {
 
         // Source crs espg:28992
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_28992, 20,
-                                                 new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( projected_28992.getCode().getEquivalentString()
+                                                 new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( projected_28992.getCode().getOriginal()
                                                                                      + "_compound" ) } ) );
 
         // Target crs espg:4258
@@ -431,7 +431,7 @@ public class TransformationAccuracyTest extends TestCase {
         CoordinateSystem projected_31467 = dbProvider.getCRSByCode( new CRSCodeType( "31467", "EPSG" ) );
         // source crs epsg:31467
         CompoundCRS sourceCRS = new CompoundCRS( heightAxis, projected_31467 , 20,
-                                                 new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( projected_31467.getCode().getEquivalentString()
+                                                 new CRSIdentifiable( new CRSCodeType[] { CRSCodeType.valueOf( projected_31467.getCode().getOriginal()
                                                                                      + "_compound" ) } ) );
 
         // Target crs EPSG:4964
@@ -462,7 +462,7 @@ public class TransformationAccuracyTest extends TestCase {
                                                  GeographicCRS.WGS84,
                                                  20,
                                                  new CRSIdentifiable(
-                                                                      new CRSCodeType[] { CRSCodeType.valueOf( GeographicCRS.WGS84.getCode().getEquivalentString()
+                                                                      new CRSCodeType[] { CRSCodeType.valueOf( GeographicCRS.WGS84.getCode().getOriginal()
                                                                                      + "_compound" ) } ) );
 
         // Target EPSG:31467
