@@ -121,7 +121,7 @@ public class CRSRegistry {
             LOG.error( e.getMessage(), e );
         }
         if ( realCRS == null ) {
-            throw new UnknownCRSException( name.getEquivalentString() );
+            throw new UnknownCRSException( name.getOriginal() );
         }
         LOG.debug( "Successfully created the crs with id: " + name );
         return realCRS;
