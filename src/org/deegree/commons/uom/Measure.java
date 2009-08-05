@@ -49,7 +49,17 @@ public class Measure {
 
     private String uomURI;
 
+    //angular degree --> urn:ogc:def:uom:EPSG:6.3:9102
+    //radian --> urn:ogc:def:uom:EPSG::9101 
+    //meter --> urn:ogc:def:uom:EPSG:6.3:9001
+    //unity --> urn:ogc:def:uom:EPSG:6.3:8805
+    // from URN definitions
     public Measure( double value, String uomURI ) {
+        this.value = value;
+        this.uomURI = uomURI;
+    }
+    
+    public Measure( double value, Unit units ) {
         this.value = value;
         this.uomURI = uomURI;
     }
