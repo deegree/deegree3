@@ -298,7 +298,7 @@ public class CRSExporter {
             CoordinateSystem underCRS = compoundCRS.getUnderlyingCRS();
             // usedCRS element
             xmlWriter.writeStartElement( CRSNS, "usedCRS" );
-            xmlWriter.writeCharacters( underCRS.getCode().getEquivalentString() );
+            xmlWriter.writeCharacters( underCRS.getCode().toString() );
             xmlWriter.writeEndElement();
             // heightAxis element
             Axis heightAxis = compoundCRS.getHeightAxis();
@@ -329,7 +329,7 @@ public class CRSExporter {
             exportAbstractCRS( projectedCRS, xmlWriter );
 
             xmlWriter.writeStartElement( CRSNS, "usedGeographicCRS" );
-            xmlWriter.writeCharacters( projectedCRS.getGeographicCRS().getCode().getEquivalentString() );
+            xmlWriter.writeCharacters( projectedCRS.getGeographicCRS().getCode().toString() );
             xmlWriter.writeEndElement();
 
             // projection
@@ -424,7 +424,7 @@ public class CRSExporter {
 
             exportAbstractCRS( geoGraphicCRS, xmlWriter );
             xmlWriter.writeStartElement( CRSNS, "usedDatum" );
-            xmlWriter.writeCharacters( geoGraphicCRS.getDatum().getCode().getEquivalentString() );
+            xmlWriter.writeCharacters( geoGraphicCRS.getDatum().getCode().toString() );
             xmlWriter.writeEndElement();
             xmlWriter.writeEndElement();
         }
@@ -445,7 +445,7 @@ public class CRSExporter {
             xmlWriter.writeStartElement( CRSNS, "geocentricCRS" );
             exportAbstractCRS( geocentricCRS, xmlWriter );
             xmlWriter.writeStartElement( CRSNS, "usedDatum" );
-            xmlWriter.writeCharacters( geocentricCRS.getDatum().getCode().getEquivalentString() );
+            xmlWriter.writeCharacters( geocentricCRS.getDatum().getCode().toString() );
             xmlWriter.writeEndElement();
             xmlWriter.writeEndElement();
         }
@@ -520,7 +520,7 @@ public class CRSExporter {
                 xmlWriter.writeEndElement();
                 // targetCRS
                 xmlWriter.writeStartElement( CRSNS, "targetCRS" );
-                xmlWriter.writeCharacters( transformation.getTargetCRS().getCode().getEquivalentString() );
+                xmlWriter.writeCharacters( transformation.getTargetCRS().getCode().toString() );
                 xmlWriter.writeEndElement();
 
                 xmlWriter.writeEndElement();
@@ -593,20 +593,20 @@ public class CRSExporter {
             exportIdentifiable( datum, xmlWriter );
             // usedEllipsoid element
             xmlWriter.writeStartElement( CRSNS, "usedEllipsoid" );
-            xmlWriter.writeCharacters( datum.getEllipsoid().getCode().getEquivalentString() );
+            xmlWriter.writeCharacters( datum.getEllipsoid().getCode().toString() );
             xmlWriter.writeEndElement();
             // usedPrimeMeridian element
             PrimeMeridian pm = datum.getPrimeMeridian();
             if ( pm != null ) {
                 xmlWriter.writeStartElement( CRSNS, "usedPrimeMeridian" );
-                xmlWriter.writeCharacters( pm.getCode().getEquivalentString() );
+                xmlWriter.writeCharacters( pm.getCode().toString() );
                 xmlWriter.writeEndElement();
             }
             // usedWGS84ConversionInfo element
             Helmert convInfo = datum.getWGS84Conversion();
             if ( convInfo != null ) {
                 xmlWriter.writeStartElement( CRSNS, "usedWGS84ConversionInfo" );
-                xmlWriter.writeCharacters( convInfo.getCode().getEquivalentString() );
+                xmlWriter.writeCharacters( convInfo.getCode().toString() );
                 xmlWriter.writeEndElement();
             }
             xmlWriter.writeEndElement();
