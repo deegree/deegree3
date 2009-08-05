@@ -756,7 +756,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         for ( CRSCodeType name : codes ) {
             if ( name != null ) {
-                String compare = name.getEquivalentString();
+                String compare = name.getOriginal();
                 if ( "Latitude of natural origin".equalsIgnoreCase( compare )
                      || "Latitude of false origin".equalsIgnoreCase( compare )
                      || "central latitude".equalsIgnoreCase( compare )
