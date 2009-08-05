@@ -893,12 +893,14 @@ public class CRSQuerier {
         rs.next();
 
         CRSIdentifiable identifiable = getIdentifiableAttributes( projectedId );
-        if ( getProjection( rs.getInt( 3 ) ) == null || getProjection( rs.getInt( 3 ) ).getGeographicCRS() == null
-             || getProjection( rs.getInt( 3 ) ).getGeographicCRS().getType() != CoordinateSystem.GEOGRAPHIC_CRS ) {
+        int projectionID = rs.getInt( 3 );
+        Projection proj = getProjection( projectionID );
+        if ( proj == null || proj.getGeographicCRS() == null || proj.getGeographicCRS().getType() != CoordinateSystem.GEOGRAPHIC_CRS ) {
             throw new CRSConfigurationException(
                                                  Messages.getMessage(
                                                                       "CRS_CONFIG_PROJECTEDCRS_FALSE_CRSREF",
-                                                                      identifiable.getCode().getEquivalentString()  ) );
+                                                                      identifiable.getCode().toString(),
+                                                                      getProjection( projectionID ) ) );
         }
 
         proj_crs = new ProjectedCRS( getProjection( rs.getInt( 3 ) ), new Axis[] { getAxis( rs.getInt( 1 ) ),
@@ -1050,7 +1052,7 @@ public class CRSQuerier {
         else if ( crsType.getString( 1 ).equalsIgnoreCase( "helmert_transformation" ) )
             return getStereographicAlternative( crsType.getInt( 2 ) );
         else
-            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ID", code.getEquivalentString() ) );
+            throw new CRSConfigurationException( Messages.getMessage( "CRS_CONFIG_NO_ID", code.toString() ) );
     }
 
     /**
