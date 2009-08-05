@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,8 +32,10 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.gml.schema;
+
+import static org.deegree.commons.xml.CommonNamespaces.GMLNS;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,6 +56,7 @@ import org.apache.xerces.xs.XSTerm;
 import org.apache.xerces.xs.XSTypeDefinition;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.gml.schema.XSModelGMLAnalyzer;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.GenericFeatureCollectionType;
@@ -73,11 +76,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides convenient access to the {@link FeatureType} hierarchy defined in an GML schema infoset.
- *
+ * Provides convenient access to the {@link FeatureType} hierarchy defined in a GML schema infoset.
+ * <p>
+ * Note that the generated {@link ApplicationSchema} contains only user-defined feature types, i.e. all types from the
+ * GML namespace (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>) are ignored. This supports to
+ * work with the application schemas without relying on GML (and GML-version) specific details.
+ * </p>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class ApplicationSchemaXSDDecoder {
@@ -99,7 +107,7 @@ public class ApplicationSchemaXSDDecoder {
     // after all FeatureTypes have been created
     private List<FeaturePropertyType> featurePropertyTypes = new ArrayList<FeaturePropertyType>();
 
-    public ApplicationSchemaXSDDecoder( GMLVersion gmlVersion, String...schemaUrls ) throws ClassCastException,
+    public ApplicationSchemaXSDDecoder( GMLVersion gmlVersion, String... schemaUrls ) throws ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
         analyzer = new XSModelGMLAnalyzer( gmlVersion, schemaUrls );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );
@@ -120,20 +128,15 @@ public class ApplicationSchemaXSDDecoder {
         }
     }
 
-    private void resolveFtReferences() {
-        for ( FeaturePropertyType pt : featurePropertyTypes ) {
-            LOG.debug( "Resolving reference to feature type: '" + pt.getFTName() + "'" );
-            pt.resolve( ftNameToft.get( pt.getFTName() ) );
-        }
-    }
-
     public ApplicationSchema extractFeatureTypeSchema() {
 
         for ( QName ftName : ftNameToftElement.keySet() ) {
             FeatureType ft = buildFeatureType( ftNameToftElement.get( ftName ) );
-            ftNameToft.put( ftName, ft );
+            if ( !CommonNamespaces.GMLNS.equals( ft.getName().getNamespaceURI() ) ) {
+                ftNameToft.put( ftName, ft );
+            }
         }
-//        resolveFtReferences();
+        // resolveFtReferences();
 
         FeatureType[] fts = ftNameToft.values().toArray( new FeatureType[ftNameToft.size()] );
         Map<FeatureType, FeatureType> ftSubstitution = new HashMap<FeatureType, FeatureType>();
@@ -142,6 +145,13 @@ public class ApplicationSchemaXSDDecoder {
             ftSubstitution.put( ftNameToft.get( ftName ), ftNameToft.get( substitutionFtName ) );
         }
         return new ApplicationSchema( fts, ftSubstitution, analyzer.getXSModel() );
+    }
+
+    private void resolveFtReferences() {
+        for ( FeaturePropertyType pt : featurePropertyTypes ) {
+            LOG.debug( "Resolving reference to feature type: '" + pt.getFTName() + "'" );
+            pt.resolve( ftNameToft.get( pt.getFTName() ) );
+        }
     }
 
     private FeatureType buildFeatureType( XSElementDeclaration featureElementDecl ) {
@@ -298,7 +308,7 @@ public class ApplicationSchemaXSDDecoder {
         XSTypeDefinition typeDef = elementDecl.getTypeDefinition();
         switch ( typeDef.getTypeCategory() ) {
         case XSTypeDefinition.SIMPLE_TYPE: {
-            PrimitiveType type = getPrimitiveType ((XSSimpleType) typeDef);
+            PrimitiveType type = getPrimitiveType( (XSSimpleType) typeDef );
             pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, type );
             break;
         }
@@ -347,7 +357,7 @@ public class ApplicationSchemaXSDDecoder {
     /**
      * Analyzes the given complex type definition and returns a {@link FeaturePropertyType} if it defines a feature
      * property.
-     *
+     * 
      * @param elementDecl
      * @param typeDef
      * @param minOccurs
@@ -391,8 +401,13 @@ public class ApplicationSchemaXSDDecoder {
                         QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
                         if ( ftNameToftElement.get( elementName ) != null ) {
                             LOG.debug( "Identified a feature property." );
-                            FeaturePropertyType pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementName );
-                            featurePropertyTypes.add( pt );
+                            FeaturePropertyType pt = null;
+                            if (GMLNS.equals( elementName.getNamespaceURI() )) {
+                                pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null );
+                            } else {
+                                pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementName );
+                            }
+                            featurePropertyTypes.add( pt );                            
                             return pt;
                         }
                     }
@@ -435,7 +450,7 @@ public class ApplicationSchemaXSDDecoder {
     /**
      * Analyzes the given complex type definition and returns a {@link GeometryPropertyType} if it defines a geometry
      * property.
-     *
+     * 
      * @param elementDecl
      * @param typeDef
      * @param minOccurs
@@ -481,7 +496,8 @@ public class ApplicationSchemaXSDDecoder {
                         if ( geometryNameToGeometryElement.get( elementName ) != null ) {
                             LOG.debug( "Identified a geometry property." );
                             GeometryType geometryType = getGeometryType( elementName );
-                            return new GeometryPropertyType( ptName, minOccurs, maxOccurs, geometryType, CoordinateDimension.DIM_2_OR_3 );
+                            return new GeometryPropertyType( ptName, minOccurs, maxOccurs, geometryType,
+                                                             CoordinateDimension.DIM_2_OR_3 );
                         }
                     }
                     case XSConstants.WILDCARD: {
@@ -520,13 +536,13 @@ public class ApplicationSchemaXSDDecoder {
         return null;
     }
 
-    private GeometryType getGeometryType (QName gmlGeometryName) {
-        LOG.debug( "Mapping '" + gmlGeometryName + "'...");
+    private GeometryType getGeometryType( QName gmlGeometryName ) {
+        LOG.debug( "Mapping '" + gmlGeometryName + "'..." );
         return null;
     }
 
     private PrimitiveType getPrimitiveType( XSSimpleType typeDef ) {
-        LOG.debug( "Mapping '" + typeDef.getName() + "'...");
+        LOG.debug( "Mapping '" + typeDef.getName() + "'..." );
         return null;
     }
 }

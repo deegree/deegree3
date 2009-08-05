@@ -37,7 +37,8 @@ package org.deegree.geometry.primitive;
 
 import java.util.List;
 
-import org.deegree.commons.uom.Length;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 
@@ -71,7 +72,7 @@ public interface Tin extends TriangulatedSurface {
 
     public List<List<LineStringSegment>> getBreakLines();
 
-    public Length getMaxLength();
+    public Measure getMaxLength(Unit requestedUnits);
 
     public Points getControlPoints();
 }

@@ -245,7 +245,7 @@ public class FileAlterationMonitor {
             }
             if ( recurse ) {
                 scannedDirs.add( dir.getCanonicalFile() );
-                for ( File file : files ) {
+                for ( File file : dir.listFiles() ) {
                     if ( file.isDirectory() && !scannedDirs.contains( file.getCanonicalFile() ) ) {
                         scanDir( file, recurse, filter, foundFiles, scannedDirs );
                     }

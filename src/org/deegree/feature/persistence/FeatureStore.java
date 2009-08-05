@@ -44,6 +44,9 @@ import org.deegree.protocol.wfs.getfeature.Query;
 
 /**
  * Base interface of the {@link Feature} persistence layer, provides access to stored {@link Feature} instances.
+ * <p>
+ * Note that a {@link FeatureStore} instance is always associated with exactly one {@link ApplicationSchema} instance.
+ * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
@@ -52,12 +55,16 @@ import org.deegree.protocol.wfs.getfeature.Query;
  */
 public interface FeatureStore {
 
+    public void init();
+
+    public void destroy();
+
     /**
      * Returns the application schema that this {@link FeatureStore} serves.
      * 
      * @return the served application schema
      */
-    public abstract ApplicationSchema getSchema();
+    public ApplicationSchema getSchema();
 
     /**
      * Performs the given {@link Query} and returns the matching features as a {@link FeatureCollection}.
@@ -66,7 +73,7 @@ public interface FeatureStore {
      *            query to be performed
      * @return matching features
      */
-    public abstract FeatureCollection performQuery( Query query );
+    public FeatureCollection performQuery( Query query );
 
     /**
      * Retrieves the stored object with a certain id.
@@ -78,6 +85,16 @@ public interface FeatureStore {
      * @return the stored object (either a {@link Feature} or a {@link Geometry}) or null if no object with the given id
      *         is known
      */
-    public abstract Object getObjectById( String id );
+    public Object getObjectById( String id );
+
+    /**
+     * Acquires transactional access to the feature store.
+     * 
+     * @return transaction object that allows to perform transactions operations on the datastore
+     * @throws FeatureStoreException
+     *             if the transactional access could not be acquired
+     */
+    public FeatureStoreTransaction acquireTransaction()
+                            throws FeatureStoreException;
 
 }

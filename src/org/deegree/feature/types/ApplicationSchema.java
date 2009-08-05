@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
 import java.util.ArrayList;
@@ -58,10 +58,10 @@ import org.slf4j.LoggerFactory;
  * 3.2: gml:AbstractFeature). This is not necessary, as each {@link FeatureType} object is already identified as a
  * feature type by its class.</li>
  * </ul>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class ApplicationSchema {
@@ -82,7 +82,7 @@ public class ApplicationSchema {
     /**
      * Creates a new <code>ApplicationSchema</code> from the given {@link FeatureType}s and their substitution group
      * relation.
-     *
+     * 
      * @param fts
      *            all feature types (abstract and non-abstract)
      * @param ftSubstitutionGroupRelation
@@ -116,31 +116,34 @@ public class ApplicationSchema {
             for ( PropertyType pt : ft.getPropertyDeclarations() ) {
                 if ( pt instanceof FeaturePropertyType ) {
                     QName referencedFtName = ( (FeaturePropertyType) pt ).getFTName();
-                    FeatureType referencedFt = ftNameToFt.get( referencedFtName );
-                    if ( referencedFt == null ) {
-                        String msg = Messages.getMessage( "ERROR_SCHEMA_UNKNOWN_FEATURE_TYPE_IN_PROPERTY",
-                                                          referencedFtName, pt.getName() );
-                        throw new IllegalArgumentException( msg );
+                    if ( referencedFtName != null ) {
+                        FeatureType referencedFt = ftNameToFt.get( referencedFtName );
+                        if ( referencedFt == null ) {
+                            String msg = Messages.getMessage( "ERROR_SCHEMA_UNKNOWN_FEATURE_TYPE_IN_PROPERTY",
+                                                              referencedFtName, pt.getName() );
+                            throw new IllegalArgumentException( msg );
+                        }
+                        ( (FeaturePropertyType) pt ).resolve( referencedFt );
                     }
-                    ( (FeaturePropertyType) pt ).resolve( referencedFt );
                 }
             }
         }
 
         // add type for 'gml:FeatureCollection' element
         // TODO do this someplace else (maybe in GMLFeatureParser)
-//        List<PropertyType> props = new ArrayList<PropertyType>( 1 );
-//        props.add( new FeaturePropertyType( new QName( "http://www.opengis.net/gml", "featureMember" ), 0, -1, null ) );
-//        FeatureCollectionType fc = new GenericFeatureCollectionType( new QName( "http://www.opengis.net/gml",
-//                                                                                "FeatureCollection" ), props, false );
-//        ftNameToFt.put( fc.getName(), fc );
+        // List<PropertyType> props = new ArrayList<PropertyType>( 1 );
+        // props.add( new FeaturePropertyType( new QName( "http://www.opengis.net/gml", "featureMember" ), 0, -1, null )
+        // );
+        // FeatureCollectionType fc = new GenericFeatureCollectionType( new QName( "http://www.opengis.net/gml",
+        // "FeatureCollection" ), props, false );
+        // ftNameToFt.put( fc.getName(), fc );
 
         this.model = model;
     }
 
     /**
      * Returns all feature types that are defined in this application schema.
-     *
+     * 
      * @return all feature types that are defined in this application schema
      */
     public FeatureType[] getFeatureTypes() {
@@ -154,7 +157,7 @@ public class ApplicationSchema {
 
     /**
      * Retrieves the feature type with the given name.
-     *
+     * 
      * @param ftName
      *            feature type name to look up
      * @return the feature type with the given name, or null if no such feature type exists
@@ -165,7 +168,7 @@ public class ApplicationSchema {
 
     /**
      * Retrieves all substitutions (abstract and non-abstract ones) for the given feature type.
-     *
+     * 
      * @param ft
      * @return all substitutions for the given feature type
      */
@@ -175,7 +178,7 @@ public class ApplicationSchema {
 
     /**
      * Retrieves all concrete substitutions for the given feature type.
-     *
+     * 
      * @param ft
      * @return all concrete substitutions for the given feature type
      */
@@ -192,7 +195,7 @@ public class ApplicationSchema {
      * <li>in the substitutionGroup of <code>ft</code></li>
      * <li>transititively substitutable for <code>ft</code></li>
      * </ul>
-     *
+     * 
      * @param ft
      * @param substitution
      * @return true, if the first feature type is a valid substitution for the second

@@ -480,8 +480,8 @@ public class GML311GeometryEncoder {
                 writer.writeEndElement();
             }
             writer.writeStartElement( GMLNS, "maxLength" );
-            writer.writeAttribute( "uom", tin.getMaxLength().getUomUri() );
-            writer.writeCharacters( String.valueOf( tin.getMaxLength().getValue() ) );
+            writer.writeAttribute( "uom", tin.getMaxLength(null).getUomUri() );
+            writer.writeCharacters( String.valueOf( tin.getMaxLength(null).getValue() ) );
             writer.writeEndElement();
             writer.writeStartElement( GMLNS, "controlPoint" );
             int dim = tin.getCoordinateDimension();

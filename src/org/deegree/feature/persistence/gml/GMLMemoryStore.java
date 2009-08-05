@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,12 +32,13 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
-package org.deegree.feature.persistence;
+package org.deegree.feature.persistence.gml;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,6 +56,10 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.gml.GMLFeatureDecoder;
+import org.deegree.feature.i18n.Messages;
+import org.deegree.feature.persistence.FeatureStore;
+import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
@@ -64,10 +69,10 @@ import org.deegree.protocol.wfs.getfeature.Query;
 
 /**
  * {@link FeatureStore} implementation that is backed by a GML file which is kept in memory.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class GMLMemoryStore implements FeatureStore {
@@ -78,9 +83,23 @@ public class GMLMemoryStore implements FeatureStore {
 
     private final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();
 
+    private GMLMemoryStoreTransaction activeTransaction;
+
+    private Thread transactionHolder;
+
+    /**
+     * Creates a new {@link GMLMemoryStore} for the given {@link ApplicationSchema}.
+     * 
+     * @param schema
+     *            application schema, must not be null
+     */
+    public GMLMemoryStore( ApplicationSchema schema ) {
+        this.schema = schema;
+    }
+
     /**
      * Creates a new {@link GMLMemoryStore} that is backed by the given GML file.
-     *
+     * 
      * @param docURL
      * @param schema
      * @throws XMLStreamException
@@ -97,10 +116,7 @@ public class GMLMemoryStore implements FeatureStore {
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.next();
-        FeatureCollection fc = (FeatureCollection) parser.parseFeature(
-                                                                        new XMLStreamReaderWrapper( xmlReader,
-                                                                                                    docURL.toString() ),
-                                                                        null );
+        parser.parseFeature( new XMLStreamReaderWrapper( xmlReader, docURL.toString() ), null );
         idContext.resolveXLinks( schema );
         xmlReader.close();
 
@@ -125,6 +141,52 @@ public class GMLMemoryStore implements FeatureStore {
         }
     }
 
+    /**
+     * Adds the given {@link Feature} instances.
+     * 
+     * @param features
+     *            features
+     */
+    void addFeatures( Collection<Feature> features ) {
+        for ( Feature feature : features ) {
+            FeatureType ft = feature.getType();
+            // TODO check
+            FeatureCollection fc2 = ftToFeatures.get( ft );
+            if ( fc2 == null ) {
+                fc2 = new GenericFeatureCollection();
+                ftToFeatures.put( ft, fc2 );
+            }
+            fc2.add( feature );
+            if ( feature.getId() != null ) {
+                idToObject.put( feature.getId(), feature );
+            }
+        }
+    }
+
+    /**
+     * Adds the given identified {@link Geometry} instances.
+     * 
+     * @param geometries
+     *            geometries with ids
+     */
+    void addGeometries( Collection<Geometry> geometries ) {
+        for ( Geometry geometry : geometries ) {
+            idToObject.put( geometry.getId(), geometry );
+        }
+    }
+
+    @Override
+    public void destroy() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+
+    }
+
     @Override
     public ApplicationSchema getSchema() {
         return schema;
@@ -146,14 +208,14 @@ public class GMLMemoryStore implements FeatureStore {
         }
 
         FeatureCollection fc = ftToFeatures.get( ft );
-        if (query instanceof FilterQuery) {
-        if ( ((FilterQuery)query).getFilter() != null ) {
-            try {
-                fc = fc.getMembers( ((FilterQuery)query).getFilter() );
-            } catch ( FilterEvaluationException e ) {
-                throw new RuntimeException( e.getMessage() );
+        if ( query instanceof FilterQuery ) {
+            if ( ( (FilterQuery) query ).getFilter() != null ) {
+                try {
+                    fc = fc.getMembers( ( (FilterQuery) query ).getFilter() );
+                } catch ( FilterEvaluationException e ) {
+                    throw new RuntimeException( e.getMessage() );
+                }
             }
-        }
         }
 
         return fc;
@@ -162,5 +224,59 @@ public class GMLMemoryStore implements FeatureStore {
     @Override
     public Object getObjectById( String id ) {
         return idToObject.get( id );
+    }
+
+    @Override
+    public synchronized FeatureStoreTransaction acquireTransaction()
+                            throws FeatureStoreException {
+
+        while ( this.activeTransaction != null ) {
+            Thread holder = this.transactionHolder;
+            // check if transaction holder variable has (just) been cleared or if the other thread
+            // has been killed (avoid deadlocks)
+            if ( holder == null || !holder.isAlive() ) {
+                this.activeTransaction = null;
+                this.transactionHolder = null;
+                break;
+            }
+
+            try {
+                // wait until the transaction holder wakes us, but not longer than 5000
+                // milliseconds (as the transaction holder may very rarely get killed without
+                // signalling us)
+                wait( 5000 );
+            } catch ( InterruptedException e ) {
+                // nothing to do
+            }
+        }
+
+        this.activeTransaction = new GMLMemoryStoreTransaction( this );
+        this.transactionHolder = Thread.currentThread();
+        return this.activeTransaction;
+    }
+
+    /**
+     * Returns the transaction to the datastore. This makes the transaction available to other clients again (via
+     * {@link #acquireTransaction()}.
+     * <p>
+     * The transaction should be terminated, i.e. commit() or rollback() must have been called before.
+     * 
+     * @param ta
+     *            the DatastoreTransaction to be returned
+     * @throws FeatureStoreException
+     */
+    void releaseTransaction( GMLMemoryStoreTransaction ta )
+                            throws FeatureStoreException {
+        if ( ta.getStore() != this ) {
+            String msg = Messages.getMessage( "DATASTORE_TA_NOT_OWNER" );
+            throw new FeatureStoreException( msg );
+        }
+        if ( ta != this.activeTransaction ) {
+            String msg = Messages.getMessage( "DATASTORE_TA_NOT_ACTIVE" );
+            throw new FeatureStoreException( msg );
+        }
+        this.activeTransaction = null;
+        this.transactionHolder = null;
+        notifyAll();
     }
 }

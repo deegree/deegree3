@@ -166,7 +166,7 @@ public class DefaultTin extends AbstractDefaultGeometry implements Tin {
     }
 
     @Override
-    public Length getMaxLength() {
+    public Measure getMaxLength(Unit requestedUnit) {
         return maxLength;
     }
 
