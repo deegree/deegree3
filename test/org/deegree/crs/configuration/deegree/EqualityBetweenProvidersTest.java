@@ -36,34 +36,6 @@
 
 package org.deegree.crs.configuration.deegree;
 
-import static org.deegree.crs.projections.ProjectionUtils.EPS11;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.deegree.crs.CRSCodeType;
-import org.deegree.crs.components.Axis;
-import org.deegree.crs.components.Ellipsoid;
-import org.deegree.crs.components.GeodeticDatum;
-import org.deegree.crs.components.PrimeMeridian;
-import org.deegree.crs.configuration.CRSConfiguration;
-import org.deegree.crs.configuration.CRSProvider;
-import org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider;
-import org.deegree.crs.configuration.deegree.xml.DeegreeCRSProvider;
-import org.deegree.crs.coordinatesystems.CompoundCRS;
-import org.deegree.crs.coordinatesystems.CoordinateSystem;
-import org.deegree.crs.coordinatesystems.GeocentricCRS;
-import org.deegree.crs.coordinatesystems.GeographicCRS;
-import org.deegree.crs.coordinatesystems.ProjectedCRS;
-import org.deegree.crs.coordinatesystems.VerticalCRS;
-import org.deegree.crs.projections.Projection;
-import org.deegree.crs.transformations.helmert.Helmert;
 import org.junit.Test;
 
 import junit.framework.TestCase;
@@ -80,8 +52,6 @@ import junit.framework.TestCase;
  * </ol>
  * Nevertheless, for an exhaustive comparison, all the identifiable attributes should be inspected.
  *
- *
- *
  * @author <a href="mailto:ionita@deegree.org">Andrei Ionita</a>
  *
  * @author last edited by: $Author: ionita $
@@ -91,8 +61,11 @@ import junit.framework.TestCase;
  */
 public class EqualityBetweenProvidersTest extends TestCase {
 
-//    @Test
-//    public void testEqualityBetweenCRSs() throws SQLException {
+    /**
+     * 
+     */
+    @Test
+    public void testEqualityBetweenCRSs() {
 //        // Load the database provider
 //        CRSProvider provider1 =  CRSConfiguration.
 //        getCRSConfiguration( "org.deegree.crs.configuration.deegree.db.DatabaseCRSProvider" )
@@ -111,32 +84,24 @@ public class EqualityBetweenProvidersTest extends TestCase {
 //
 //        List<CRSCodeType> dbCodes = dbProvider.getAvailableCRSCodes();
 //        List<CRSCodeType> xmlCodes = xmlProvider.getAvailableCRSCodes();
-//
-//        for ( int i = 0 ; i < dbCodes.size(); i++) {
-//            if (! xmlCodes.contains( dbCodes.get( i ) ) )
-//                System.out.println( "It seems there is a code from the DB backend: " + dbCodes.get( i ) + " that is not in the XML backend." );
+//        
+//        for ( int i = 0 ; i < dbCodes.size(); i++) {            
+//            assertTrue( xmlCodes.contains( dbCodes.get( i ) ) );
 //
 //            CoordinateSystem dbCRS = dbProvider.getCRSByCode( dbCodes.get( i ) );
 //            CoordinateSystem xmlCRS = xmlProvider.getCRSByCode( dbCodes.get( i ) );
 //
-//            if ( ! dbCRS.equals( xmlCRS ) ) {
-//                System.out.println( "CRSs with code " + dbCodes.get( i ) + " are different!" );
-//            }
+//            assertTrue( dbCRS.equals( xmlCRS ) );
 //        }
 //
-//        // Takes too long since there are many more codes coming from the xml backend
-////        for ( int i = 0 ; i < xmlCodes.size(); i++) {
-////            if (! dbCodes.contains( xmlCodes.get( i ) ) )
-////                System.out.println( "It seems there is a code from the XML backend: " + xmlCodes.get( i ) + " that is not in the DB backend." );
-////            else {
-////                CoordinateSystem dbCRS = dbProvider.getCRSByCode( xmlCodes.get( i ) );
-////                CoordinateSystem xmlCRS = xmlProvider.getCRSByCode( xmlCodes.get( i ) );
-////                if ( ! dbCRS.equals( xmlCRS ) )
-////                    System.out.println( "CRSs with code " + xmlCodes.get( i ) + " are different!" );
-////            }
-////        }
+//        for ( int i = 0 ; i < xmlCodes.size(); i++) {
+//            assertTrue( dbCodes.contains( xmlCodes.get( i ) ) );
 //
-//        System.out.println(" In total,  " + dbCodes.size() + " number of DB crs codes and " + xmlCodes.size() + " number of XML codes");
+//            CoordinateSystem dbCRS = dbProvider.getCRSByCode( xmlCodes.get( i ) );            
+//            CoordinateSystem xmlCRS = xmlProvider.getCRSByCode( xmlCodes.get( i ) );
+//            
+//            assertTrue( xmlCRS.equals( dbCRS ) );
+//        }
 //
-//    }
+    }
 }
