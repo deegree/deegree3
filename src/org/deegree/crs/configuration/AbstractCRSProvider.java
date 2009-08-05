@@ -711,7 +711,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         for ( CRSCodeType code : codes ) {
             if ( code != null ) {
-                String compare = code.getEquivalentString();
+                String compare = code.getOriginal();
                 if ( "TransverseMercator".equalsIgnoreCase( compare )
                      || "Transverse Merctator".equalsIgnoreCase( compare )
                      || matchEPSGString( compare, "method", "9807" ) ) {
@@ -826,7 +826,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         for ( CRSCodeType code : codes ) {
             if ( code != null ) {
-                String compare = code.getEquivalentString();
+                String compare = code.getOriginal();
                 if ( "Longitude rotation".equalsIgnoreCase( compare ) || matchEPSGString( compare, "method", "9601" ) ) {
                     return SupportedTransformations.LONGITUDE_ROTATION;
                 } else if ( "Geographic/geocentric conversions".equalsIgnoreCase( compare )
@@ -864,7 +864,7 @@ public abstract class AbstractCRSProvider<T> implements CRSProvider {
         }
         for ( CRSCodeType code : codes ) {
             if ( code != null ) {
-                String compare = code.getEquivalentString();
+                String compare = code.getOriginal();
                 if ( "Longitude offset".equalsIgnoreCase( compare ) || matchEPSGString( compare, "parameter", "8602" ) ) {
                     return SupportedTransformationParameters.LONGITUDE_OFFSET;
                 } else if ( "X-axis translation".equalsIgnoreCase( compare )
