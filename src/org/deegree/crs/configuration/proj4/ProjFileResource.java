@@ -124,7 +124,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
         CRSCodeType[] codes = sourceCRS.getCodes();
         String[] ids = new String[ codes.length ];
         for ( int i = 0; i < ids.length; i++ )
-            ids[i] = codes[i].getEquivalentString();
+            ids[i] = codes[i].getOriginal();
 
         for ( String id : ids ) {
             Map<String, String> params = null;
@@ -187,7 +187,7 @@ public class ProjFileResource implements CRSResource<Map<String, String>> {
                                      + sourceCRS.getCode() + "identifier";
                 String name = "Proj4 defined toWGS84 params";
 
-                String id = Transformation.createFromTo( sourceCRS.getCode().getEquivalentString(), GeographicCRS.WGS84.getCode().getEquivalentString() );
+                String id = Transformation.createFromTo( sourceCRS.getCode().getOriginal(), GeographicCRS.WGS84.getCode().getOriginal() );
 
                 if ( values.length == 3 ) {
                     result = new Helmert( values[0], values[1], values[2], 0, 0, 0, 0, sourceCRS, GeographicCRS.WGS84,
