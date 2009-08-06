@@ -122,7 +122,7 @@
                 <path refid="build.path"/>
                 <pathelement location="${classes.dir}"/>
             </classpath>
-            <arg line="${wkt.file}" />
+						<arg line="${crs.id}" />
             <env key="CRS_DB_URL" value="${crs.derby.url}" />
         </java>
     </target>
