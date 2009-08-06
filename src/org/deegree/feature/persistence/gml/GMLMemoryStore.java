@@ -110,6 +110,7 @@ public class GMLMemoryStore implements FeatureStore {
      */
     public GMLMemoryStore( URL docURL, ApplicationSchema schema ) throws XMLStreamException, XMLParsingException,
                             UnknownCRSException, FactoryConfigurationError, IOException {
+
         this.schema = schema;
         GMLIdContext idContext = new GMLIdContext();
         GMLFeatureDecoder parser = new GMLFeatureDecoder( schema, idContext );
@@ -169,7 +170,7 @@ public class GMLMemoryStore implements FeatureStore {
      * @param geometries
      *            geometries with ids
      */
-    void addGeometries( Collection<Geometry> geometries ) {
+    void addGeometriesWithId( Collection<Geometry> geometries ) {
         for ( Geometry geometry : geometries ) {
             idToObject.put( geometry.getId(), geometry );
         }
@@ -277,6 +278,6 @@ public class GMLMemoryStore implements FeatureStore {
         }
         this.activeTransaction = null;
         this.transactionHolder = null;
-        notifyAll();
+//        notifyAll();
     }
 }

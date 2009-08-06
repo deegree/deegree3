@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,15 +32,21 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.feature.persistence.gml;
 
+import static org.deegree.feature.persistence.IDGenMode.USE_EXISTING;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
@@ -50,6 +56,7 @@ import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.geometry.Geometry;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -59,7 +66,7 @@ import org.deegree.filter.OperatorFilter;
  * 
  * @version $Revision$, $Date$
  */
-class GMLMemoryStoreTransaction implements FeatureStoreTransaction  {
+class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
 
     private GMLMemoryStore store;
 
@@ -93,7 +100,45 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction  {
     @Override
     public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
-        return null;
+
+        if ( mode != USE_EXISTING ) {
+            throw new FeatureStoreException( "Only USE_EXISTING is currently implemented." );
+        }
+
+        Set<Geometry> geometries = new HashSet<Geometry>();
+        Set<Feature> features = new HashSet<Feature>();
+
+        findFeaturesAndGeometries( fc, geometries, features );
+
+        store.addFeatures( features );
+        store.addGeometriesWithId( geometries );
+
+        return new ArrayList<String>();
+    }
+
+    private void findFeaturesAndGeometries( Feature feature, Set<Geometry> geometries, Set<Feature> features ) {
+
+        if ( !features.contains( feature ) ) {
+            if ( feature instanceof FeatureCollection ) {
+                for ( Feature member : (FeatureCollection) feature ) {
+                    findFeaturesAndGeometries( member, geometries, features );
+                }
+            } else {
+                features.add( feature );
+                for ( Object propertyValue : feature.getProperties() ) {
+                    if ( propertyValue instanceof Feature ) {
+                        findFeaturesAndGeometries( (Feature) propertyValue, geometries, features );
+                    } else if ( propertyValue instanceof Geometry ) {
+                        findGeometries( (Geometry) propertyValue, geometries );
+                    }
+                }
+            }
+        }
+    }
+
+    private void findGeometries( Geometry geometry, Set<Geometry> geometries ) {
+        geometries.add( geometry );
+        // TODO traverse further
     }
 
     @Override

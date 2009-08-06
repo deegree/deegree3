@@ -106,7 +106,7 @@ public interface FeatureStoreTransaction {
      * Performs an update operation against the {@link FeatureStore}.
      * 
      * @param ftName
-     *            feature type of the features to be updated, must not be null and served by the store
+     *            name of the feature type of the features to be updated, must not be null and served by the store
      * @param replacementProps
      *            properties and their replacement values
      * @param filter
