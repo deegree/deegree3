@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,11 +32,12 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive.curvesegments;
 
 import org.deegree.commons.uom.Angle;
-import org.deegree.commons.uom.Length;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Point;
 
 /**
@@ -45,38 +46,40 @@ import org.deegree.geometry.primitive.Point;
  * This variant of the arc requires that the points on the arc have to be computed instead of storing the coordinates
  * directly. The control point is the center point of the arc plus the radius and the bearing at start and end. This
  * representation can be used only in 2D.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public interface ArcByCenterPoint extends CurveSegment {
 
     /**
      * Returns the center point of the arc.
-     *
+     * 
      * @return the center point of the arc
      */
     public Point getMidPoint();
 
     /**
      * Returns the radius of the arc.
-     *
+     * 
+     * @param requestedUnits
+     *            units that the radius should be expressed as
      * @return the radius of the arc
      */
-    public Length getRadius();
+    public Measure getRadius( Unit requestedUnits );
 
     /**
      * Returns the bearing of the arc at the start.
-     *
+     * 
      * @return the bearing of the arc at the start
      */
     public Angle getStartAngle();
 
     /**
      * Returns the bearing of the arc at the end.
-     *
+     * 
      * @return the bearing of the arc at the end
      */
     public Angle getEndAngle();

@@ -81,14 +81,6 @@ public class DefaultBSpline implements BSpline {
     }
 
     @Override
-    public Interpolation getInterpolation() {
-        if ( isPolynomial ) {
-            return Interpolation.polynomialSpline;
-        }
-        return Interpolation.rationalSpline;
-    }
-
-    @Override
     public Points getControlPoints() {
         return controlPoints;
     }
@@ -116,5 +108,10 @@ public class DefaultBSpline implements BSpline {
     @Override
     public CurveSegmentType getSegmentType() {
         return CurveSegmentType.BSPLINE;
+    }
+
+    @Override
+    public boolean isPolynomial() {
+        return isPolynomial;
     }
 }

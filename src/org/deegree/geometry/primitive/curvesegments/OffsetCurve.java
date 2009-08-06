@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,40 +32,43 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive.curvesegments;
 
-import org.deegree.commons.uom.Length;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 
 /**
  * A {@link CurveSegment} that is defined by a base {@link Curve} and an offset.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public interface OffsetCurve extends CurveSegment {
 
     /**
      * Returns the {@link Curve} from which this curve segment is defined as using an offset.
-     *
+     * 
      * @return the <code>Curve</code> used as the base geometry
      */
     public Curve getBaseCurve();
 
     /**
      * Returns the distance from the base curve.
-     *
+     * 
+     * @param requestedUnits
+     *            units that the distance shall be expressed as 
      * @return the distance
      */
-    public Length getDistance();
+    public Measure getDistance( Unit requestedUnit );
 
     /**
      * Returns the direction of the offset.
-     *
+     * 
      * @return the direction of the offset
      */
     public Point getDirection();

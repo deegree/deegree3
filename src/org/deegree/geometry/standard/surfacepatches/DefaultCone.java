@@ -38,12 +38,10 @@ package org.deegree.geometry.standard.surfacepatches;
 
 import java.util.List;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.surfacepatches.Cone;
-import org.deegree.geometry.primitive.surfacepatches.GriddedSurfacePatch;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
-import org.deegree.geometry.primitive.surfacepatches.GriddedSurfacePatch.GriddedSurfaceType;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch.SurfacePatchType;
 
 /**
  * TODO add class documentation here.
@@ -99,7 +97,7 @@ public class DefaultCone implements Cone {
     }
 
     @Override
-    public double getArea() {
+    public Measure getArea( Unit requestedBaseUnit ) {
         // TODO
         throw new UnsupportedOperationException();
     }

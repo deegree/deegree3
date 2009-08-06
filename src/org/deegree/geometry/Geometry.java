@@ -122,7 +122,7 @@ public interface Geometry {
      * <code>gid</code> (GML 2) attribute of the geometry element.
      * </p>
      * 
-     * @return the id of the geometry
+     * @return the id of the geometry, or null if it is an anonymous (unidentified) geometry
      */
     public String getId();
 

@@ -87,11 +87,6 @@ public class DefaultCubicSpline implements CubicSpline {
     }
 
     @Override
-    public Interpolation getInterpolation() {
-        return Interpolation.cubicSpline;
-    }
-
-    @Override
     public Points getControlPoints() {
         return controlPoints;
     }

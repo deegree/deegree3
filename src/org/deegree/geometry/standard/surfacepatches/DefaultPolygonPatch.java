@@ -39,6 +39,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
 
@@ -87,7 +89,8 @@ public class DefaultPolygonPatch implements PolygonPatch {
     }
 
     @Override
-    public double getArea() {
+    public Measure getArea( Unit requestedBaseUnit ) {
+        // TODO
         throw new UnsupportedOperationException();
     }
 

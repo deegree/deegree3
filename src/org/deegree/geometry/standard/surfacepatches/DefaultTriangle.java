@@ -38,6 +38,8 @@ package org.deegree.geometry.standard.surfacepatches;
 import java.util.Collections;
 import java.util.List;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
@@ -91,7 +93,8 @@ public class DefaultTriangle implements Triangle {
     }
 
     @Override
-    public double getArea() {
+    public Measure getArea( Unit requestedBaseUnit ) {
+        // TODO
         throw new UnsupportedOperationException();
     }
 

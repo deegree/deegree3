@@ -35,6 +35,8 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.Circle;
 
@@ -65,7 +67,7 @@ public class DefaultCircle extends DefaultArc implements Circle {
     }
 
     @Override
-    public double getRadius() {
+    public Measure getRadius(Unit requestedUnits) {
         throw new UnsupportedOperationException();
     }
 

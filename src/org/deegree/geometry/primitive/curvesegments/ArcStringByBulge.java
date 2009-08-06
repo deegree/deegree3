@@ -38,7 +38,7 @@ package org.deegree.geometry.primitive.curvesegments;
 import org.deegree.geometry.points.Points;
 
 /**
- * An <code>ArcStringByBulge</code> is a circular {@link CurveSegment}.
+ * Circular {@link CurveSegment}.
  * <p>
  * From the GML 3.1.1 spec: This variant of the arc computes the mid points of the arcs instead of storing the
  * coordinates directly. The control point sequence consists of the start and end points of each arc plus the bulge.

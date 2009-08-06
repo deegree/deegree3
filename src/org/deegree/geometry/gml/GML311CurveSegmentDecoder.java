@@ -73,7 +73,6 @@ import org.deegree.geometry.primitive.curvesegments.GeodesicString;
 import org.deegree.geometry.primitive.curvesegments.Knot;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.curvesegments.OffsetCurve;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.Interpolation;
 import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
@@ -497,12 +496,12 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
     private BSpline parseBSpline( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
-        Interpolation interpolation = null;
+        boolean isPolynomial = false;
         String interpolationAttrValue = xmlStream.getAttributeValueWDefault( "interpolation", "polynomialSpline" );
         if ( "rationalSpline".equals( interpolationAttrValue ) ) {
-            interpolation = Interpolation.rationalSpline;
+            isPolynomial = true;
         } else if ( "polynomialSpline".equals( interpolationAttrValue ) ) {
-            interpolation = Interpolation.polynomialSpline;
+            isPolynomial = false;
         } else {
             String msg = "Invalid value ('" + interpolationAttrValue + "') for interpolation attribute in element '"
                          + xmlStream.getName() + "'. Must be 'rationalSpline' or 'polynomialSpline'.";
@@ -542,7 +541,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
         xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "BSpline" );
-        return geomFac.createBSpline( points, degree, knots, interpolation == Interpolation.polynomialSpline );
+        return geomFac.createBSpline( points, degree, knots, isPolynomial );
     }
 
     /**
@@ -739,7 +738,7 @@ class GML311CurveSegmentDecoder extends GML311BaseDecoder {
         xmlStream.nextTag();
 
         xmlStream.require( XMLStreamConstants.END_ELEMENT, GMLNS, "AffinePlacement" );
-        return new AffinePlacement( location, refDirections, inDimension, outDimension );
+        return new AffinePlacement( location, new PointsList( refDirections ), inDimension, outDimension );
     }
 
     /**

@@ -40,7 +40,7 @@ import java.util.List;
 import org.deegree.geometry.points.Points;
 
 /**
- * A <code>BSpline</code> is a {@link CurveSegment} that uses either polynomial or rational interpolation.
+ * {@link CurveSegment} that uses either polynomial or rational interpolation.
  * <p>
  * Description from the GML 3.1.1 schema:
  * <p>
@@ -72,13 +72,11 @@ public interface BSpline extends CurveSegment {
     public int getPolynomialDegree();
 
     /**
-     * Returns the curve interpolation mechanism used for this segment, this is either
-     * {@link CurveSegment.Interpolation#polynomialSpline} or {@link CurveSegment.Interpolation#rationalSpline}.
+     * Returns whether the interpolation is polynomial or rational.
      *
-     * @returns the curve interpolation mechanism
+     * @returns true, if the interpolation is polynomial, false if it's rational 
      */
-    @Override
-    public Interpolation getInterpolation();
+    public boolean isPolynomial();
 
     /**
      * Returns the knots that define the spline basis functions.

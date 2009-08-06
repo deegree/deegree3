@@ -91,11 +91,6 @@ public class DefaultBezier implements Bezier {
     }
 
     @Override
-    public Interpolation getInterpolation() {
-        return Interpolation.polynomialSpline;
-    }
-
-    @Override
     public Points getControlPoints() {
         return controlPoints;
     }
@@ -123,5 +118,10 @@ public class DefaultBezier implements Bezier {
     @Override
     public CurveSegmentType getSegmentType() {
         return CurveSegmentType.BEZIER;
+    }
+
+    @Override
+    public boolean isPolynomial() {
+        return true;
     }
 }

@@ -67,11 +67,6 @@ public class DefaultGeodesicString implements GeodesicString {
     }
 
     @Override
-    public Interpolation getInterpolation() {
-        return Interpolation.geodesic;
-    }
-
-    @Override
     public Points getControlPoints() {
         return points;
     }

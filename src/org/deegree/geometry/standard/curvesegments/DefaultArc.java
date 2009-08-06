@@ -87,11 +87,6 @@ public class DefaultArc implements Arc {
     }
 
     @Override
-    public Interpolation getInterpolation() {
-        return Interpolation.circularArc3Points;
-    }
-
-    @Override
     public Points getControlPoints() {
         return points;
     }

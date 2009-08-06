@@ -48,8 +48,6 @@ import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
-import org.deegree.geometry.gml.GML311CurveSegmentDecoder;
-import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.deegree.geometry.primitive.curvesegments.Arc;
 import org.deegree.geometry.primitive.curvesegments.ArcByBulge;
 import org.deegree.geometry.primitive.curvesegments.ArcByCenterPoint;
@@ -64,7 +62,6 @@ import org.deegree.geometry.primitive.curvesegments.Geodesic;
 import org.deegree.geometry.primitive.curvesegments.GeodesicString;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 import org.deegree.geometry.primitive.curvesegments.OffsetCurve;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.Interpolation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -130,8 +127,8 @@ public class GML311CurveSegmentDecoderTest {
         Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
         Assert.assertEquals( 47.0, arc.getMidPoint().getX() );
         Assert.assertEquals( 11.0, arc.getMidPoint().getY() );
-        Assert.assertEquals( 1.0, arc.getRadius().getValue() );
-        Assert.assertEquals( "whatever#metres", arc.getRadius().getUomUri() );
+        Assert.assertEquals( 1.0, arc.getRadius(null).getValue() );
+        Assert.assertEquals( "whatever#metres", arc.getRadius(null).getUomUri() );
         Assert.assertEquals( 180.0, arc.getStartAngle().getValue() );
         Assert.assertEquals( "whatever#degrees", arc.getStartAngle().getUomUri() );
         Assert.assertEquals( 360.0, arc.getEndAngle().getValue() );
@@ -193,7 +190,6 @@ public class GML311CurveSegmentDecoderTest {
         Assert.assertEquals( 3.0, arc.getControlPoints().get( 2 ).getY() );
         Assert.assertEquals( -6.0, arc.getControlPoints().get( 3 ).getX() );
         Assert.assertEquals( 4.0, arc.getControlPoints().get( 3 ).getY() );
-        Assert.assertEquals( Interpolation.polynomialSpline, arc.getInterpolation() );
         Assert.assertEquals( 4, arc.getPolynomialDegree() );
         Assert.assertEquals( 2, arc.getKnots().size() );
         Assert.assertEquals( 1.0, arc.getKnot1().getValue() );
@@ -218,7 +214,6 @@ public class GML311CurveSegmentDecoderTest {
         Assert.assertEquals( 3.0, arc.getControlPoints().get( 2 ).getY() );
         Assert.assertEquals( -6.0, arc.getControlPoints().get( 3 ).getX() );
         Assert.assertEquals( 4.0, arc.getControlPoints().get( 3 ).getY() );
-        Assert.assertEquals( Interpolation.polynomialSpline, arc.getInterpolation() );
         Assert.assertEquals( 4, arc.getPolynomialDegree() );
         Assert.assertEquals( 2, arc.getKnots().size() );
         Assert.assertEquals( 1.0, arc.getKnots().get( 0 ).getValue() );
@@ -254,8 +249,8 @@ public class GML311CurveSegmentDecoderTest {
         Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
         Assert.assertEquals( 47.0, arc.getMidPoint().getX() );
         Assert.assertEquals( 11.0, arc.getMidPoint().getY() );
-        Assert.assertEquals( 1.0, arc.getRadius().getValue() );
-        Assert.assertEquals( "whatever#metres", arc.getRadius().getUomUri() );
+        Assert.assertEquals( 1.0, arc.getRadius(null).getValue() );
+        Assert.assertEquals( "whatever#metres", arc.getRadius(null).getUomUri() );
         Assert.assertEquals( 0.0, arc.getStartAngle().getValue() );
         Assert.assertEquals( "whatever#degrees", arc.getStartAngle().getUomUri() );
         Assert.assertEquals( 0.0, arc.getEndAngle().getValue() );
@@ -352,7 +347,7 @@ public class GML311CurveSegmentDecoderTest {
                             UnknownCRSException {
         OffsetCurve segment = (OffsetCurve) getParser().parseCurveSegment( getReader( "OffsetCurve.gml" ),
                                                                            new CRS( "EPSG:4326" ) );
-        Assert.assertEquals( 1.0, segment.getDistance().getValue() );
+        Assert.assertEquals( 1.0, segment.getDistance(null).getValue() );
         Assert.assertEquals( 0.0, segment.getDirection().getX() );
         Assert.assertEquals( 1.0, segment.getDirection().getY() );
     }

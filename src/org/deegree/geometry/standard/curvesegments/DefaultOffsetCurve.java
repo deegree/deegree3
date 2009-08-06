@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,20 +32,21 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
-import org.deegree.commons.uom.Length;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.OffsetCurve;
 
 /**
  * Default implementation of {@link OffsetCurve} segments.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class DefaultOffsetCurve implements OffsetCurve {
@@ -54,11 +55,11 @@ public class DefaultOffsetCurve implements OffsetCurve {
 
     private Point direction;
 
-    private Length distance;
+    private Measure distance;
 
     /**
      * Creates a new <code>DefaultOffsetCurve</code> instance from the given parameters.
-     *
+     * 
      * @param baseCurve
      *            the base geometry
      * @param direction
@@ -66,7 +67,7 @@ public class DefaultOffsetCurve implements OffsetCurve {
      * @param distance
      *            the distance from the base curve
      */
-    public DefaultOffsetCurve( Curve baseCurve, Point direction, Length distance ) {
+    public DefaultOffsetCurve( Curve baseCurve, Point direction, Measure distance ) {
         this.baseCurve = baseCurve;
         this.direction = direction;
         this.distance = distance;
@@ -83,18 +84,13 @@ public class DefaultOffsetCurve implements OffsetCurve {
     }
 
     @Override
-    public Length getDistance() {
+    public Measure getDistance( Unit requestedUnits ) {
         return distance;
     }
 
     @Override
     public int getCoordinateDimension() {
         return baseCurve.getCoordinateDimension();
-    }
-
-    @Override
-    public Interpolation getInterpolation() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

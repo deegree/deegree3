@@ -291,7 +291,7 @@ public class GML311GeometryEncoder {
         writer.writeStartElement( GMLNS, "Point" );
         if ( point.getId() != null )
             writer.writeAttribute( "gml", GMLNS, "id", point.getId() );
-        writeSrsName( point );        
+        writeSrsName( point );
         exportedIds.add( point.getId() );
         exportAsPos( point );
         writer.writeEndElement();
@@ -329,7 +329,7 @@ public class GML311GeometryEncoder {
             writer.writeStartElement( GMLNS, "Curve" );
             if ( curve.getId() != null )
                 writer.writeAttribute( "gml", GMLNS, "id", curve.getId() );
-            writeSrsName( curve );            
+            writeSrsName( curve );
             writer.writeStartElement( GMLNS, "segments" );
             for ( CurveSegment curveSeg : curve.getCurveSegments() )
                 export( curveSeg );
@@ -341,7 +341,7 @@ public class GML311GeometryEncoder {
             LineString lineString = (LineString) curve;
             if ( lineString.getId() != null )
                 writer.writeAttribute( "gml", GMLNS, "id", lineString.getId() );
-            writeSrsName( lineString );            
+            writeSrsName( lineString );
             int dim = lineString.getCoordinateDimension();
             export( lineString.getControlPoints(), dim );
             writer.writeEndElement();
@@ -351,7 +351,7 @@ public class GML311GeometryEncoder {
             OrientableCurve orientableCurve = (OrientableCurve) curve;
             if ( orientableCurve.getId() != null )
                 writer.writeAttribute( "gml", GMLNS, "id", orientableCurve.getId() );
-            writeSrsName( orientableCurve );            
+            writeSrsName( orientableCurve );
             writer.writeAttribute( "orientation", orientableCurve.isReversed() ? "-" : "+" );
             Curve baseCurve = orientableCurve.getBaseCurve();
             if ( baseCurve.getId() != null && exportedIds.contains( baseCurve.getId() ) ) {
@@ -480,8 +480,8 @@ public class GML311GeometryEncoder {
                 writer.writeEndElement();
             }
             writer.writeStartElement( GMLNS, "maxLength" );
-            writer.writeAttribute( "uom", tin.getMaxLength(null).getUomUri() );
-            writer.writeCharacters( String.valueOf( tin.getMaxLength(null).getValue() ) );
+            writer.writeAttribute( "uom", tin.getMaxLength( null ).getUomUri() );
+            writer.writeCharacters( String.valueOf( tin.getMaxLength( null ).getValue() ) );
             writer.writeEndElement();
             writer.writeStartElement( GMLNS, "controlPoint" );
             int dim = tin.getCoordinateDimension();
@@ -569,7 +569,7 @@ public class GML311GeometryEncoder {
             LinearRing linearRing = (LinearRing) ring;
             writer.writeStartElement( GMLNS, "LinearRing" );
             if ( linearRing.getId() != null )
-                writer.writeAttribute( "gml", GMLNS, "id", ring.getId() );            
+                writer.writeAttribute( "gml", GMLNS, "id", ring.getId() );
             writeSrsName( ring );
             int dim = linearRing.getCoordinateDimension();
             export( linearRing.getControlPoints(), dim );
@@ -583,7 +583,7 @@ public class GML311GeometryEncoder {
         writer.writeStartElement( GMLNS, "CompositeCurve" );
         if ( compositeCurve.getId() != null )
             writer.writeAttribute( "gml", GMLNS, "id", compositeCurve.getId() );
-        writeSrsName( compositeCurve );        
+        writeSrsName( compositeCurve );
         Iterator<Curve> iterator = compositeCurve.iterator();
         while ( iterator.hasNext() ) {
             writer.writeStartElement( GMLNS, "curveMember" );
@@ -598,7 +598,7 @@ public class GML311GeometryEncoder {
         writer.writeStartElement( GMLNS, "CompositeSurface" );
         if ( compositeSurface.getId() != null )
             writer.writeAttribute( "gml", GMLNS, "id", compositeSurface.getId() );
-        writeSrsName( compositeSurface );        
+        writeSrsName( compositeSurface );
         writer.writeStartElement( GMLNS, "surfaceMember" );
         Iterator<Surface> iterator = compositeSurface.iterator();
         while ( iterator.hasNext() ) {
@@ -613,7 +613,7 @@ public class GML311GeometryEncoder {
         writer.writeStartElement( GMLNS, "CompositeSolid" );
         if ( compositeSolid.getId() != null )
             writer.writeAttribute( "gml", GMLNS, "id", compositeSolid.getId() );
-        writeSrsName( compositeSolid );        
+        writeSrsName( compositeSolid );
         writer.writeStartElement( GMLNS, "solidMember" );
         Iterator<Solid> iterator = compositeSolid.iterator();
         while ( iterator.hasNext() ) {
@@ -642,7 +642,7 @@ public class GML311GeometryEncoder {
     private void export( LineStringSegment lineStringSeg )
                             throws XMLStreamException {
         writer.writeStartElement( GMLNS, "LineStringSegment" );
-        writer.writeAttribute( "interpolation", lineStringSeg.getInterpolation().toString() );
+        writer.writeAttribute( "interpolation", "linear" );
         int dim = lineStringSeg.getCoordinateDimension();
         export( lineStringSeg.getControlPoints(), dim );
         writer.writeEndElement();
@@ -788,12 +788,12 @@ public class GML311GeometryEncoder {
         case ARC_BY_CENTER_POINT:
             writer.writeStartElement( GMLNS, "ArcByCenterPoint" );
             ArcByCenterPoint arcCenterP = (ArcByCenterPoint) curveSeg;
-            writer.writeAttribute( "interpolation", arcCenterP.getInterpolation().toString() );
+            writer.writeAttribute( "interpolation", "circularArcCenterPointWithRadius" );
             writer.writeAttribute( "numArc", "1" ); // TODO have a getNumArcs() method in ArcByCenterPoint ???
             exportAsPos( arcCenterP.getMidPoint() );
             writer.writeStartElement( GMLNS, "radius" );
-            writer.writeAttribute( "uom", arcCenterP.getRadius().getUomUri() );
-            writer.writeCharacters( String.valueOf( arcCenterP.getRadius().getValue() ) );
+            writer.writeAttribute( "uom", arcCenterP.getRadius( null ).getUomUri() );
+            writer.writeCharacters( String.valueOf( arcCenterP.getRadius( null ).getValue() ) );
             writer.writeEndElement();
             writer.writeStartElement( GMLNS, "startAngle" );
             writer.writeAttribute( "uom", arcCenterP.getStartAngle().getUomUri() );
@@ -808,7 +808,7 @@ public class GML311GeometryEncoder {
         case ARC_STRING:
             writer.writeStartElement( GMLNS, "ArcString" );
             ArcString arcString = (ArcString) curveSeg;
-            writer.writeAttribute( "interpolation", arcString.getInterpolation().toString() );
+            writer.writeAttribute( "interpolation", "circularArc3Points" );
             writer.writeAttribute( "numArc", String.valueOf( arcString.getNumArcs() ) );
             int dim = arcString.getCoordinateDimension();
             export( arcString.getControlPoints(), dim );
@@ -817,7 +817,7 @@ public class GML311GeometryEncoder {
         case ARC_STRING_BY_BULGE:
             writer.writeStartElement( GMLNS, "ArcStringByBulge" );
             ArcStringByBulge arcStringBulge = (ArcStringByBulge) curveSeg;
-            writer.writeAttribute( "interpolation", arcStringBulge.getInterpolation().toString() );
+            writer.writeAttribute( "interpolation", "circularArc2PointWithBulge" );
             writer.writeAttribute( "numArc", String.valueOf( arcStringBulge.getNumArcs() ) );
             dim = arcStringBulge.getCoordinateDimension();
             export( arcStringBulge.getControlPoints(), dim );
@@ -839,7 +839,7 @@ public class GML311GeometryEncoder {
         case BEZIER:
             writer.writeStartElement( GMLNS, "Bezier" );
             Bezier bezier = (Bezier) curveSeg;
-            writer.writeAttribute( "interpolation", bezier.getInterpolation().toString() );
+            writer.writeAttribute( "interpolation", "polynomialSpline" );
             dim = bezier.getCoordinateDimension();
             export( bezier.getControlPoints(), dim );
             writer.writeStartElement( GMLNS, "degree" );
@@ -852,7 +852,7 @@ public class GML311GeometryEncoder {
         case BSPLINE:
             writer.writeStartElement( GMLNS, "BSpline" );
             BSpline bSpline = (BSpline) curveSeg;
-            writer.writeAttribute( "interpolation", bSpline.getInterpolation().toString() );
+            writer.writeAttribute( "interpolation", "polynomialSpline" );
             dim = bSpline.getCoordinateDimension();
             export( bSpline.getControlPoints(), dim );
             writer.writeStartElement( GMLNS, "degree" );
@@ -865,7 +865,7 @@ public class GML311GeometryEncoder {
         case CIRCLE:
             writer.writeStartElement( GMLNS, "Circle" );
             Circle circle = (Circle) curveSeg;
-            writer.writeAttribute( "interpolation", circle.getInterpolation().toString() );
+            writer.writeAttribute( "interpolation", "circularArc3Points" );
             dim = circle.getCoordinateDimension();
             export( circle.getControlPoints(), dim );
             writer.writeEndElement();
@@ -873,12 +873,12 @@ public class GML311GeometryEncoder {
         case CIRCLE_BY_CENTER_POINT:
             writer.writeStartElement( GMLNS, "CircleByCenterPoint" );
             CircleByCenterPoint circleCenterP = (CircleByCenterPoint) curveSeg;
-            writer.writeAttribute( "interpolation", circleCenterP.getInterpolation().toString() );
+            writer.writeAttribute( "interpolation", "circularArcCenterPointWithRadius" );
             writer.writeAttribute( "numArc", "1" );
             exportAsPos( circleCenterP.getMidPoint() );
             writer.writeStartElement( GMLNS, "radius" );
-            writer.writeAttribute( "uom", circleCenterP.getRadius().getUomUri() );
-            writer.writeCharacters( String.valueOf( circleCenterP.getRadius().getValue() ) );
+            writer.writeAttribute( "uom", circleCenterP.getRadius( null ).getUomUri() );
+            writer.writeCharacters( String.valueOf( circleCenterP.getRadius( null ).getValue() ) );
             writer.writeEndElement();
             writer.writeStartElement( GMLNS, "startAngle" );
             writer.writeAttribute( "uom", circleCenterP.getStartAngle().getUomUri() );
@@ -930,7 +930,7 @@ public class GML311GeometryEncoder {
         case CUBIC_SPLINE:
             writer.writeStartElement( GMLNS, "CubicSpline" );
             CubicSpline cubicSpline = (CubicSpline) curveSeg;
-            writer.writeAttribute( "interpolation", cubicSpline.getInterpolation().toString() );
+            writer.writeAttribute( "interpolation", "cubicSpline" );
             dim = cubicSpline.getCoordinateDimension();
             export( cubicSpline.getControlPoints(), dim );
             writer.writeStartElement( GMLNS, "vectorAtStart" );
@@ -948,7 +948,7 @@ public class GML311GeometryEncoder {
         case GEODESIC:
             writer.writeStartElement( GMLNS, "Geodesic" );
             Geodesic geodesic = (Geodesic) curveSeg;
-            writer.writeAttribute( "interpolation", geodesic.getInterpolation().toString() );
+            writer.writeAttribute( "interpolation", "geodesic" );
             int geodesicDim = geodesic.getCoordinateDimension();
             export( geodesic.getControlPoints(), geodesicDim );
             writer.writeEndElement();
@@ -956,7 +956,7 @@ public class GML311GeometryEncoder {
         case GEODESIC_STRING:
             writer.writeStartElement( GMLNS, "GeodesicString" );
             GeodesicString geodesicString = (GeodesicString) curveSeg;
-            writer.writeAttribute( "interpolation", geodesicString.getInterpolation().toString() );
+            writer.writeAttribute( "interpolation", "geodesic" );
             dim = geodesicString.getCoordinateDimension();
             export( geodesicString.getControlPoints(), dim );
             writer.writeEndElement();
@@ -978,8 +978,8 @@ public class GML311GeometryEncoder {
                 writer.writeEndElement();
             }
             writer.writeStartElement( GMLNS, "distance" );
-            writer.writeAttribute( "uom", offsetCurve.getDistance().getUomUri() );
-            writer.writeCharacters( String.valueOf( offsetCurve.getDistance().getValue() ) );
+            writer.writeAttribute( "uom", offsetCurve.getDistance(null).getUomUri() );
+            writer.writeCharacters( String.valueOf( offsetCurve.getDistance(null).getValue() ) );
             writer.writeEndElement();
             writer.writeStartElement( GMLNS, "refDirection" );
             exportAsPos( offsetCurve.getDirection() );

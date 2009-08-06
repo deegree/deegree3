@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,22 +32,36 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive.curvesegments;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * A <code>Circle</code> is an {@link Arc} whose ends coincide to form a simple closed loop.
- *
+ * An {@link Arc} whose ends coincide to form a simple closed loop.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public interface Circle extends Arc {
 
+    /**
+     * Returns the mid-point of the circle.
+     * 
+     * @return the mid-point
+     */
     public Point getMidPoint();
 
-    public double getRadius();
+    /**
+     * Returns the radius of the circle.
+     * 
+     * @param requestedUnits
+     *            units that the radius should be expressed as
+     * @return the radius of the arc
+     */
+    public Measure getRadius( Unit requestedUnits );
 }

@@ -35,8 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.standard.curvesegments;
 
-import java.util.List;
-
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
 /**
@@ -52,7 +51,7 @@ public class AffinePlacement {
 
     private Point location;
 
-    private List<Point> refDirections;
+    private Points refDirections;
 
     private int inDimension;
 
@@ -70,7 +69,7 @@ public class AffinePlacement {
      * @param outDimension
      *            the dimension of the coordinate space
      */
-    public AffinePlacement( Point location, List<Point> refDirections, int inDimension, int outDimension ) {
+    public AffinePlacement( Point location, Points refDirections, int inDimension, int outDimension ) {
         this.location = location;
         this.refDirections = refDirections;
         this.inDimension = inDimension;
@@ -95,7 +94,7 @@ public class AffinePlacement {
      *
      * @return the target directions
      */
-    public List<Point> getRefDirections() {
+    public Points getRefDirections() {
         return refDirections;
     }
 

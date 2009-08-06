@@ -103,11 +103,6 @@ public class DefaultArcStringByBulge implements ArcStringByBulge {
     }
 
     @Override
-    public Interpolation getInterpolation() {
-        return CurveSegment.Interpolation.circularArc2PointWithBulge;
-    }
-
-    @Override
     public Points getControlPoints() {
         return controlPoints;
     }

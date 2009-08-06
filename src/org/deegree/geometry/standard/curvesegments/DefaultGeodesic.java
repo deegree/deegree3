@@ -78,11 +78,6 @@ public class DefaultGeodesic implements Geodesic {
     }
 
     @Override
-    public Interpolation getInterpolation() {
-        return Interpolation.geodesic;
-    }
-
-    @Override
     public Points getControlPoints() {
         return controlPoints;
     }

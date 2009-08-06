@@ -56,67 +56,11 @@ public interface CurveSegment {
     }
 
     /**
-     * All known curve segment interpolations.
-     */
-    public enum Interpolation {
-        /**
-         * A linear interpolation.
-         */
-        linear,
-        /**
-         * A geodesic interpolation.
-         */
-        geodesic,
-        /**
-         * A circularArcCenterPointWithRadius interpolation.
-         */
-        circularArcCenterPointWithRadius,
-        /**
-         * A circularArc3Points interpolation.
-         */
-        circularArc3Points,
-        /**
-         * A circularArc2PointWithBulge interpolation.
-         */
-        circularArc2PointWithBulge,
-        /**
-         * A elliptical interpolation.
-         */
-        elliptical,
-        /**
-         * A clothoid interpolation.
-         */
-        clothoid,
-        /**
-         * A conic interpolation.
-         */
-        conic,
-        /**
-         * A cubicSpline interpolation.
-         */
-        cubicSpline,
-        /**
-         * A polynomialSpline interpolation.
-         */
-        polynomialSpline,
-        /**
-         * A rationalSpline interpolation.
-         */
-        rationalSpline
-    }
-
-    /**
      * Returns the coordinate dimension, i.e. the dimension of the space that the curve is embedded in.
      * 
      * @return the coordinate dimension
      */
     public int getCoordinateDimension();
-
-    /**
-     *
-     * @return interpolation method used by this curve segment
-     */
-    public Interpolation getInterpolation();
 
     /**
      * Returns the type of curve segment.

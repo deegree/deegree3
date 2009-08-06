@@ -38,7 +38,7 @@ package org.deegree.geometry.primitive.curvesegments;
 import org.deegree.geometry.points.Points;
 
 /**
- * An <code>ArcString</code> is a {@link CurveSegment} that uses three-point circular arc interpolation.
+ * {@link CurveSegment} that uses three-point circular arc interpolation.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

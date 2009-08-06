@@ -102,11 +102,6 @@ public class DefaultClothoid implements Clothoid {
     }
 
     @Override
-    public Interpolation getInterpolation() {
-        return Interpolation.clothoid;
-    }
-
-    @Override
     public Point getStartPoint() {
         throw new UnsupportedOperationException();
     }

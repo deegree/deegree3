@@ -38,6 +38,8 @@ package org.deegree.geometry.standard.surfacepatches;
 
 import java.util.List;
 
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.surfacepatches.Sphere;
 
@@ -95,7 +97,7 @@ public class DefaultSphere implements Sphere {
     }
 
     @Override
-    public double getArea() {
+    public Measure getArea( Unit requestedBaseUnit ) {
         // TODO
         throw new UnsupportedOperationException();
     }

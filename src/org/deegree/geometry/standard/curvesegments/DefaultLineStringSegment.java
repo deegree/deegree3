@@ -67,11 +67,6 @@ public class DefaultLineStringSegment implements LineStringSegment {
     }
 
     @Override
-    public Interpolation getInterpolation() {
-        return Interpolation.linear;
-    }
-
-    @Override
     public Points getControlPoints() {
         return points;
     }

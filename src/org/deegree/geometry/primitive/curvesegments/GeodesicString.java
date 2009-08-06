@@ -54,5 +54,4 @@ public interface GeodesicString extends CurveSegment {
      * @return the control points of the string
      */
     public Points getControlPoints();
-
 }

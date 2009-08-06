@@ -117,11 +117,6 @@ public class DefaultArcByBulge implements ArcByBulge {
     }
 
     @Override
-    public Interpolation getInterpolation() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Points getControlPoints() {
         return controlPoints;
     }

@@ -36,7 +36,8 @@
 package org.deegree.geometry.standard.curvesegments;
 
 import org.deegree.commons.uom.Angle;
-import org.deegree.commons.uom.Length;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.curvesegments.ArcByCenterPoint;
 
@@ -52,7 +53,7 @@ public class DefaultArcByCenterPoint implements ArcByCenterPoint {
 
     private Point midPoint;
 
-    private Length radius;
+    private Measure radius;
 
     private Angle startAngle;
 
@@ -66,7 +67,7 @@ public class DefaultArcByCenterPoint implements ArcByCenterPoint {
      * @param startAngle
      * @param endAngle
      */
-    public DefaultArcByCenterPoint( Point midPoint, Length radius, Angle startAngle, Angle endAngle ) {
+    public DefaultArcByCenterPoint( Point midPoint, Measure radius, Angle startAngle, Angle endAngle ) {
         this.midPoint = midPoint;
         this.radius = radius;
         this.startAngle = startAngle;
@@ -84,7 +85,7 @@ public class DefaultArcByCenterPoint implements ArcByCenterPoint {
     }
 
     @Override
-    public Length getRadius() {
+    public Measure getRadius(Unit requestedUnits) {
         return radius;
     }
 
@@ -96,11 +97,6 @@ public class DefaultArcByCenterPoint implements ArcByCenterPoint {
     @Override
     public int getCoordinateDimension() {
         return midPoint.getCoordinateDimension();
-    }
-
-    @Override
-    public Interpolation getInterpolation() {
-        return Interpolation.circularArcCenterPointWithRadius;
     }
 
     @Override

@@ -40,7 +40,7 @@ import org.deegree.geometry.primitive.Point;
 
 /**
  * A {@link CurveSegment} that is defined by two or more {@link Point}s, with linear interpolation between subsequent
- * pairs.
+ * pairs of points.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

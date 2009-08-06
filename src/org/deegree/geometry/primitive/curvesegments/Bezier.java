@@ -36,7 +36,7 @@
 package org.deegree.geometry.primitive.curvesegments;
 
 /**
- * Special case of the {@link BSpline} curve segment with two knots.
+ * Special case of a {@link BSpline} curve segment with two knots.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
