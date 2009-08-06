@@ -61680,34 +61680,6 @@
   </crs:projection>
  </crs:projectedCRS>
  <crs:projectedCRS>
-  <crs:id>EPSG:3857</crs:id>
-  <!-- any other id that equivalent ids that belong here should be added -->
-  <crs:name>WGS 84 / Pseudo-Mercator</crs:name>
-  <crs:name>WGS 84 / Popular Visualisation Pseudo-Mercator</crs:name>
-  <crs:version>2009-08-05</crs:version><!-- the date this CRS was added to this file -->
-  <crs:Axis>
-   <crs:name>x</crs:name>
-   <crs:units>metre</crs:units>
-   <crs:axisOrientation>east</crs:axisOrientation>
-  </crs:Axis>
-  <crs:Axis>
-   <crs:name>y</crs:name>
-   <crs:units>metre</crs:units>
-   <crs:axisOrientation>north</crs:axisOrientation>
-  </crs:Axis>
-  <crs:axisOrder>x, y</crs:axisOrder>
-  <crs:usedGeographicCRS>EPSG:4326</crs:usedGeographicCRS>
-  <crs:projection>
-   <crs:mercator>
-    <crs:latitudeOfNaturalOrigin inDegrees="true">0.0</crs:latitudeOfNaturalOrigin>
-    <crs:longitudeOfNaturalOrigin inDegrees="true">0.0</crs:longitudeOfNaturalOrigin>
-    <crs:scaleFactor>1.0</crs:scaleFactor>
-    <crs:falseEasting>0.0</crs:falseEasting>
-    <crs:falseNorthing>0.0</crs:falseNorthing>
-   </crs:mercator>
-  </crs:projection>
- </crs:projectedCRS>
- <crs:projectedCRS>
   <crs:id>EPSG:2850</crs:id>
   <crs:id>URN:OGC:DEF:CRS:EPSG::2850</crs:id>
   <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#2850</crs:id>
@@ -82235,6 +82207,10 @@
  <crs:projectedCRS>
   <crs:id>OSM_SLIPPY_MAP</crs:id>
   <crs:id>GOOGLE_MAPS</crs:id>
+  <crs:id>EPSG:3857</crs:id>
+  <!-- any other id that equivalent ids that belong here should be added -->
+  <crs:name>WGS 84 / Pseudo-Mercator</crs:name>
+  <crs:name>WGS 84 / Popular Visualisation Pseudo-Mercator</crs:name>  
   <crs:name>OSM_Slippy_Map</crs:name>
   <crs:Axis>
    <crs:name>x</crs:name>
