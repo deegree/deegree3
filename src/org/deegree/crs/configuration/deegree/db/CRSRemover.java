@@ -600,8 +600,8 @@ public class CRSRemover {
      * </ul>
      * 
      * To run this you have to set the environment variable CRS_DB_URL to 
-     * ${your-workspace-path}/d3_core/src/META-INF/deegreeCRS, otherwise the database will be accessed
-     * read-only, hence no changes will be possible.
+     * jdbc:derby:${your-workspace-path}/d3_core/src/META-INF/deegreeCRS, otherwise 
+     * the database will be accessed read-only, hence no changes will be possible.
      * 
      * @param args
      * @throws Exception
