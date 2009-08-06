@@ -103,12 +103,6 @@ public interface Surface extends GeometricPrimitive {
     public Measure getPerimeter( Unit requestedUnit );
 
     /**
-     * 
-     * @return centroid of a Surface
-     */
-    public Point getCentroid();
-
-    /**
      * Returns the patches that constitute this surface.
      * 
      * @return the patches that constitute this surface

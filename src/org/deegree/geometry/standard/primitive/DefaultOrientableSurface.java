@@ -128,13 +128,13 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.crosses( geometry );
     }
 
-    public Geometry difference( Geometry geometry ) {
-        return baseSurface.difference( geometry );
+    public Geometry getDifference( Geometry geometry ) {
+        return baseSurface.getDifference( geometry );
     }
 
     @Override
-    public Measure distance( Geometry geometry, Unit requestedUnit ) {
-        return baseSurface.distance( geometry, requestedUnit );
+    public Measure getDistance( Geometry geometry, Unit requestedUnit ) {
+        return baseSurface.getDistance( geometry, requestedUnit );
     }
 
     public boolean equals( Geometry geometry ) {
@@ -186,8 +186,8 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.getPrimitiveType();
     }
 
-    public Geometry intersection( Geometry geometry ) {
-        return baseSurface.intersection( geometry );
+    public Geometry getIntersection( Geometry geometry ) {
+        return baseSurface.getIntersection( geometry );
     }
 
     public boolean intersects( Geometry geometry ) {
@@ -221,8 +221,8 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
         return baseSurface.isWithinDistance( geometry, distance );
     }
 
-    public Geometry union( Geometry geometry ) {
-        return baseSurface.union( geometry );
+    public Geometry getUnion( Geometry geometry ) {
+        return baseSurface.getUnion( geometry );
     }
 
     @Override
@@ -239,15 +239,5 @@ public class DefaultOrientableSurface extends AbstractDefaultGeometry implements
     public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public StandardObjectProperties getStandardGMLProperties() {
-        return standardProps;
-    }
-
-    @Override
-    public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
-        this.standardProps = standardProps;
     }
 }

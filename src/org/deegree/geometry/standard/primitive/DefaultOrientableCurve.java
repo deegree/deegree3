@@ -158,13 +158,13 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     }    
     
     @Override
-    public Geometry difference( Geometry geometry ) {
-        return baseCurve.difference( geometry );
+    public Geometry getDifference( Geometry geometry ) {
+        return baseCurve.getDifference( geometry );
     }
 
     @Override
-    public Measure distance( Geometry geometry, Unit requestedUnit ) {
-        return baseCurve.distance( geometry, requestedUnit );
+    public Measure getDistance( Geometry geometry, Unit requestedUnit ) {
+        return baseCurve.getDistance( geometry, requestedUnit );
     }
 
     @Override
@@ -208,8 +208,8 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     }
 
     @Override
-    public Geometry intersection( Geometry geometry ) {
-        return baseCurve.intersection( geometry );
+    public Geometry getIntersection( Geometry geometry ) {
+        return baseCurve.getIntersection( geometry );
     }
 
     @Override
@@ -253,8 +253,8 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     }
 
     @Override
-    public Geometry union( Geometry geometry ) {
-        return baseCurve.union( geometry );
+    public Geometry getUnion( Geometry geometry ) {
+        return baseCurve.getUnion( geometry );
     }
 
     @Override
@@ -276,15 +276,5 @@ public class DefaultOrientableCurve extends AbstractDefaultGeometry implements O
     public com.vividsolutions.jts.geom.Geometry getJTSGeometry() {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public StandardObjectProperties getStandardGMLProperties() {
-        return standardProps;
-    }
-
-    @Override
-    public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
-        this.standardProps = standardProps;
     }
 }

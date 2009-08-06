@@ -100,29 +100,29 @@ public class GeometryAnalysisTest {
 
     @Test
     public void testIntersectionPointPoint() {
-        Geometry result = p1.intersection( p1 );
+        Geometry result = p1.getIntersection( p1 );
         assertTrue( p1.equals( result ) );
     }
 
     @Test
     public void testIntersectionPointLineString() {
-        Geometry result = p1.intersection( l1 );
+        Geometry result = p1.getIntersection( l1 );
         Assert.assertNull( result );
 
-        result = p4.intersection( l1 );
+        result = p4.getIntersection( l1 );
         assertTrue( result instanceof Point );
         assertTrue( p4.equals( result ) );
     }
 
     @Test
     public void testIntersectionLineStringLineString() {
-        Geometry result = l1.intersection( l1 );
+        Geometry result = l1.getIntersection( l1 );
         Assert.assertTrue( l1.equals( result ) );
 
-        result = l2.intersection( l1 );
+        result = l2.getIntersection( l1 );
         Assert.assertTrue( result.equals( new DefaultPoint( null, new CRS("EPSG:4326"), null, new double [] {15.0,9.0} ) ) );
         
-        result = l3.intersection( l4 );
+        result = l3.getIntersection( l4 );
         Assert.assertNull( result );
     }
 

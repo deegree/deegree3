@@ -48,6 +48,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.deegree.geometry.precision.PrecisionModel;
+import org.deegree.geometry.primitive.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,8 +123,8 @@ public class GeometryReference<T extends Geometry> implements Geometry {
             GML311GeometryDecoder decoder = new GML311GeometryDecoder();
             try {
                 URL resolvedURL = null;
-                if (baseURL != null) {
-                    resolvedURL = new URL (new URL(baseURL), href);
+                if ( baseURL != null ) {
+                    resolvedURL = new URL( new URL( baseURL ), href );
                 } else {
                     resolvedURL = new URL( href );
                 }
@@ -139,32 +140,32 @@ public class GeometryReference<T extends Geometry> implements Geometry {
         return referencedGeometry;
     }
 
-    @Override    
+    @Override
     public boolean contains( Geometry geometry ) {
         return getReferencedGeometry().contains( geometry );
     }
 
-    @Override    
+    @Override
     public boolean crosses( Geometry geometry ) {
         return getReferencedGeometry().crosses( geometry );
     }
 
-    @Override    
-    public Geometry difference( Geometry geometry ) {
-        return getReferencedGeometry().difference( geometry );
+    @Override
+    public Geometry getDifference( Geometry geometry ) {
+        return getReferencedGeometry().getDifference( geometry );
     }
 
-    @Override    
-    public Measure distance( Geometry geometry, Unit requestedUnits ) {
-        return getReferencedGeometry().distance( geometry, requestedUnits );
+    @Override
+    public Measure getDistance( Geometry geometry, Unit requestedUnits ) {
+        return getReferencedGeometry().getDistance( geometry, requestedUnits );
     }
 
-    @Override    
+    @Override
     public boolean equals( Geometry geometry ) {
         return getReferencedGeometry().equals( geometry );
     }
 
-    @Override    
+    @Override
     public Geometry getBuffer( Measure distance ) {
         return getReferencedGeometry().getBuffer( distance );
     }
@@ -174,27 +175,27 @@ public class GeometryReference<T extends Geometry> implements Geometry {
         return getReferencedGeometry().getConvexHull();
     }
 
-    @Override    
+    @Override
     public int getCoordinateDimension() {
         return getReferencedGeometry().getCoordinateDimension();
     }
 
-    @Override    
+    @Override
     public CRS getCoordinateSystem() {
         return getReferencedGeometry().getCoordinateSystem();
     }
 
-    @Override    
+    @Override
     public Envelope getEnvelope() {
         return getReferencedGeometry().getEnvelope();
     }
 
-    @Override    
+    @Override
     public GeometryType getGeometryType() {
         return getReferencedGeometry().getGeometryType();
     }
 
-    @Override    
+    @Override
     public String getId() {
         if ( isLocal ) {
             return gid;
@@ -208,21 +209,21 @@ public class GeometryReference<T extends Geometry> implements Geometry {
     }
 
     @Override
-    public Geometry intersection( Geometry geometry ) {
-        return getReferencedGeometry().intersection( geometry );
+    public Geometry getIntersection( Geometry geometry ) {
+        return getReferencedGeometry().getIntersection( geometry );
     }
 
-    @Override    
+    @Override
     public boolean intersects( Geometry geometry ) {
         return getReferencedGeometry().intersects( geometry );
     }
 
-    @Override    
+    @Override
     public boolean isDisjoint( Geometry geometry ) {
         return getReferencedGeometry().isDisjoint( geometry );
     }
 
-    @Override    
+    @Override
     public boolean overlaps( Geometry geometry ) {
         return getReferencedGeometry().overlaps( geometry );
     }
@@ -232,33 +233,53 @@ public class GeometryReference<T extends Geometry> implements Geometry {
         return getReferencedGeometry().touches( geometry );
     }
 
-    @Override    
+    @Override
     public boolean isBeyond( Geometry geometry, Measure distance ) {
         return getReferencedGeometry().isBeyond( geometry, distance );
     }
 
-    @Override    
+    @Override
     public boolean isWithin( Geometry geometry ) {
         return getReferencedGeometry().isWithin( geometry );
     }
 
-    @Override    
+    @Override
     public boolean isWithinDistance( Geometry geometry, Measure distance ) {
         return getReferencedGeometry().isWithinDistance( geometry, distance );
     }
 
-    @Override    
-    public Geometry union( Geometry geometry ) {
-        return getReferencedGeometry().union( geometry );
+    @Override
+    public Geometry getUnion( Geometry geometry ) {
+        return getReferencedGeometry().getUnion( geometry );
     }
 
     @Override
-    public StandardObjectProperties getStandardGMLProperties() {
-        return getReferencedGeometry().getStandardGMLProperties();
+    public StandardObjectProperties getAttachedProperties() {
+        return getReferencedGeometry().getAttachedProperties();
     }
 
     @Override
-    public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
-        getReferencedGeometry().setStandardGMLProperties( standardProps );
+    public void setAttachedProperties( StandardObjectProperties standardProps ) {
+        getReferencedGeometry().setAttachedProperties( standardProps );
+    }
+
+    @Override
+    public Point getCentroid() {
+        return getReferencedGeometry().getCentroid();
+    }
+
+    @Override
+    public void setCoordinateSystem( CRS crs ) {
+        getReferencedGeometry().setCoordinateSystem( crs );
+    }
+
+    @Override
+    public void setId( String id ) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setPrecision( PrecisionModel pm ) {
+        getReferencedGeometry().setPrecision( pm );
     }
 }

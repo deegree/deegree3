@@ -111,7 +111,7 @@ public class TiledRaster extends AbstractRaster {
 
         for ( AbstractRaster r : tileContainer.getTiles( env ) ) {
             try {
-                Geometry intersection = r.getEnvelope().intersection( env );
+                Geometry intersection = r.getEnvelope().getIntersection( env );
 
                 // rb: is this actually needed, because the tilecontainer checks this as well?
                 if ( intersection == null ) {
@@ -143,7 +143,7 @@ public class TiledRaster extends AbstractRaster {
         for ( AbstractRaster r : getTileContainer().getTiles( envelope ) ) {
             if ( r instanceof SimpleRaster ) {
                 SimpleRaster sr = (SimpleRaster) r;
-                Envelope subsetEnv = sr.getEnvelope().intersection( envelope ).getEnvelope();
+                Envelope subsetEnv = sr.getEnvelope().getIntersection( envelope ).getEnvelope();
                 sr.setSubRaster( subsetEnv, source );
             } else {
                 throw new UnsupportedOperationException();
@@ -185,7 +185,7 @@ public class TiledRaster extends AbstractRaster {
                                                                                                env );
 
         for ( AbstractRaster r : tiles ) {
-            Geometry intersec = r.getEnvelope().intersection( env );
+            Geometry intersec = r.getEnvelope().getIntersection( env );
             if ( intersec != null ) {
                 if ( intersec instanceof Point ) {
                     continue;

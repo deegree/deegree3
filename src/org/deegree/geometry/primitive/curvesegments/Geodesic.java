@@ -38,7 +38,7 @@ package org.deegree.geometry.primitive.curvesegments;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * A {@link GeodesicString} that consists only of one arc.
+ * A {@link GeodesicString} that consists of a single arc only.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$

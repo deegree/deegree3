@@ -182,7 +182,7 @@ public class RasterTransformer extends Transformer {
         Envelope workEnv = (Envelope) srcTransf.transform( dstEnvelope, getTargetCRS() );
 
         // the envelope from which we have data
-        Geometry dataEnvGeom = workEnv.intersection( sourceRaster.getEnvelope() );
+        Geometry dataEnvGeom = workEnv.getIntersection( sourceRaster.getEnvelope() );
         if ( dataEnvGeom == null ) {
             LOG.debug( "no intersection for " + sourceRaster + " and " + dstEnvelope );
             // todo create subclass of TransformationException

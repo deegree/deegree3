@@ -40,13 +40,14 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.precision.PrecisionModel;
+import org.deegree.geometry.primitive.Point;
 
 /**
- * Base interface for all vector geometry types in deegree.
+ * Base interface for all vector geometry types.
  * <p>
- * This is the root of deegree's ISO 19107/GML 3.1.1/GML 3.2.1 compliant geometry type hierarchy. It provides methods
- * for the common topological predicates (e.g. {@link #intersects(Geometry)} and {@link #touches(Geometry)} as well as
- * the usual geometry creation methods (e.g {@link #intersection(Geometry)} and {@link #getBuffer(Measure)}).
+ * Root of the ISO 19107/GML 3.1.1/GML 3.2.1 compliant geometry type hierarchy. All geometries inherit methods for the
+ * common topological predicates (e.g. {@link #intersects(Geometry)} and {@link #touches(Geometry)} as well as the usual
+ * geometry creation methods (e.g {@link #getIntersection(Geometry)} and {@link #getBuffer(Measure)}).
  * </p>
  * <p>
  * <h4>Topological predicates</h4>
@@ -66,24 +67,26 @@ import org.deegree.geometry.precision.PrecisionModel;
  * <h4>Set-theoretic methods</h4>
  * Methods for deriving geometries that aid spatial analysis tasks:
  * <ul>
- * <li>{@link #difference(Geometry)}</li>
  * <li>{@link #getBuffer(Measure)}</li>
+ * <li>{@link #getCentroid()}</li>
  * <li>{@link #getConvexHull()}</li>
- * <li>{@link #intersection(Geometry)}</li>
- * <li>{@link #union(Geometry)}</li>
+ * <li>{@link #getDifference(Geometry)}</li>
+ * <li>{@link #getEnvelope()}</li>
+ * <li>{@link #getIntersection(Geometry)}</li>
+ * <li>{@link #getUnion(Geometry)}</li>
  * </ul>
  * Distance calculation:
  * <ul>
- * <li>{@link #distance(Geometry, Unit)}</li>
+ * <li>{@link #getDistance(Geometry, Unit)}</li>
  * </ul>
  * </p>
  * <p>
  * <h4>Notes on the representation of GML geometries</h4>
  * The "StandardObjectProperties" defined by GML (e.g. multiple <code>gml:name</code> elements or
  * <code>gml:description</code>) which are inherited by any GML geometry type definition are treated in a specific way.
- * They are modelled using the {@link StandardObjectProperties} class. This design decision has been driven by the goal
- * to make the implementation less GML (and GML-version) specific and to allow for example to export a {@link Geometry}
- * instance as either GML 3.2.1 or GML 3.1.1 (different namespaces for the standard properties).
+ * They are modelled using the {@link ObjectProperties} class. This design decision has been driven by the goal to make
+ * the implementation less GML (and GML-version) specific and to allow for example to export a {@link Geometry} instance
+ * as either GML 3.2.1 or GML 3.1.1 (different namespaces for the standard properties).
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -127,18 +130,27 @@ public interface Geometry {
     public String getId();
 
     /**
-     * Returns the minimal bounding box of the geometry.
+     * Sets the id of the geometry.
      * 
-     * @return the minimal bounding box of the geometry
+     * @param id
+     *            id of the geometry
      */
-    public Envelope getEnvelope();
+    public void setId( String id );
 
     /**
-     * Returns the coordinate dimension, i.e. the dimension of the space that the geometry is embedded in.
+     * Returns the {@link PrecisionModel} of the geometry.
      * 
-     * @return the coordinate dimension
+     * @return the precision model
      */
-    public int getCoordinateDimension();
+    public PrecisionModel getPrecision();
+
+    /**
+     * Sets the {@link PrecisionModel} of the geometry.
+     * 
+     * @param pm
+     *            the precision model to set
+     */
+    public void setPrecision( PrecisionModel pm );
 
     /**
      * Returns the associated spatial reference system.
@@ -148,145 +160,100 @@ public interface Geometry {
     public CRS getCoordinateSystem();
 
     /**
-     * The Boolean valued operation "contains" shall return TRUE if this Geometry contains another Geometry.
+     * Sets the associated spatial reference system.
+     * 
+     * @param crs
+     *            spatial reference system, may be null
+     */
+    public void setCoordinateSystem( CRS crs );
+
+    /**
+     * Returns attached properties (e.g. GML standard properties, such as <code>gml:name</code>).
+     * 
+     * @return the attached properties, may be null
+     */
+    public StandardObjectProperties getAttachedProperties();
+
+    /**
+     * Sets the attached properties (e.g. GML standard properties, such as <code>gml:name</code>).
+     * 
+     * @param props
+     *            properties to be attached
+     */
+    public void setAttachedProperties( StandardObjectProperties props );
+
+    /**
+     * Returns the coordinate dimension, i.e. the dimension of the space that the geometry is embedded in.
+     * 
+     * @return the coordinate dimension
+     */
+    public int getCoordinateDimension();
+
+    /**
+     * Tests whether this geometry contains the specified geometry.
+     * 
+     * TODO formal explanation (DE9IM)
      * 
      * @param geometry
-     * @return true if this Geometry contains the other
+     *            the {@link Geometry} to test this {@link Geometry} against
+     * @return true if this {@link Geometry} contains <code>geometry</code>
      */
     public boolean contains( Geometry geometry );
 
     /**
-     * The Boolean valued operation "contains" shall return TRUE if this Geometry crosses another Geometry.
+     * Tests whether this geometry crosses the specified geometry.
+     * 
+     * TODO formal explanation (DE9IM)
      * 
      * @param geometry
-     * @return true if this Geometry contains the other
+     *            the {@link Geometry} to test this {@link Geometry} against
+     * @return true if this {@link Geometry} crosses <code>geometry</code>
      */
     public boolean crosses( Geometry geometry );
 
     /**
-     * The Boolean valued operation "intersects" shall return TRUE if this Geometry intersects another Geometry. Within
-     * a Complex, the Primitives do not intersect one another. In general, topologically structured data uses shared
-     * geometric objects to capture intersection information.
+     * Tests whether this geometry is equal to the specified geometry.
+     * 
+     * TODO formal explanation (DE9IM)
      * 
      * @param geometry
-     * @return true if both Geometries intersects
-     */
-    public boolean intersects( Geometry geometry );
-
-    /**
-     * 
-     * @param geometry
-     * @return true if both Geometries are disjoint
-     */
-    public boolean isDisjoint( Geometry geometry );
-
-    /**
-     * The Boolean valued operation "overlaps"...
-     * 
-     * @param geometry
-     * @return true if both Geometries overlap
-     */
-    public boolean overlaps( Geometry geometry );
-
-    /**
-     * The Boolean valued operation "touches"...
-     * 
-     * @param geometry
-     * @return true if both Geometries overlap
-     */
-    public boolean touches( Geometry geometry );
-
-    /**
-     * Returns the set-theoretic difference of this and the passed {@link Geometry}.
-     * 
-     * @param geometry
-     *            other geometry, must not be null
-     * @return difference Geometry or <code>null</code> (empty set)
-     */
-    public Geometry difference( Geometry geometry );    
-    
-    /**
-     * Returns the set-theoretic intersection of this and the passed {@link Geometry}.
-     * 
-     * @param geometry
-     *            other geometry, must not be null
-     * @return intersection Geometry or <code>null</code> (empty set)
-     */
-    public Geometry intersection( Geometry geometry );
-
-    /**
-     * Returns the set-theoretic union of this and the passed {@link Geometry}.
-     * 
-     * @param geometry
-     *            other geometry, must not be null
-     * @return united Geometry (never null)
-     */
-    public Geometry union( Geometry geometry );
-    
-    /**
-     * 
-     * @return convex hull of a Geometry
-     */
-    public Geometry getConvexHull();
-
-    /**
-     * The operation "buffer" shall return a Geometry containing all points whose distance from this Geometry is less
-     * than or equal to the "distance" passed as a parameter. The Geometry returned is in the same reference system as
-     * this original Geometry. The dimension of the returned Geometry is normally the same as the coordinate dimension -
-     * a collection of Surfaces in 2D space and a collection of Solids in 3D space, but this may be application defined.
-     * 
-     * @param distance
-     * @return buffer geometry
-     */
-    public Geometry getBuffer( Measure distance );    
-
-    /**
-     * Returns true if this geometry is equal to the specified geometry. The behaviour of this method is not 100%
-     * specified and may differ with other implementations. E.g. a MULTIPOINT(A, B) could be equal to MULTIPOINT(B, A)
-     * or not, depending on the implementation. If the internal order is the same however, this method returns the
-     * expected result.
-     * 
-     * @param geometry
-     * @return true if the geometries are equal
+     *            the {@link Geometry} to test this {@link Geometry} against
+     * @return true if this {@link Geometry} is equal to <code>geometry</code>
      */
     public boolean equals( Geometry geometry );
 
     /**
-     * tests whether the value of a geometric is within a specified distance of this geometry.
+     * Tests whether this geometry intersects the specified geometry.
+     * 
+     * TODO formal explanation (DE9IM)
      * 
      * @param geometry
-     * @param distance
-     * @return true if passed geometry is within a specified distance of this geometry.
+     *            the {@link Geometry} to test this {@link Geometry} against
+     * @return true if this {@link Geometry} intersects <code>geometry</code>
      */
-    public boolean isWithinDistance( Geometry geometry, Measure distance );
+    public boolean intersects( Geometry geometry );
 
     /**
-     * tests whether the value of a geometric is beyond a specified distance of this geometry.
+     * Tests whether this geometry is beyond a specified distance of a second geometry.
      * 
      * @param geometry
+     *            second geometry
      * @param distance
-     * @return true if passed geometry is beyond a specified distance of this geometry.
+     * @return true, iff the minimum distance between this and the second geometry is greater than <code>distance</code>
      */
     public boolean isBeyond( Geometry geometry, Measure distance );
 
     /**
-     * The operation "distance" shall return the distance between this Geometry and another Geometry. This distance is
-     * defined to be the greatest lower bound of the set of distances between all pairs of points that include one each
-     * from each of the two Geometries. A "distance" value shall be a positive number associated to distance units such
-     * as meters or standard foot. If necessary, the second geometric object shall be transformed into the same
-     * coordinate reference system as the first before the distance is calculated.
-     * <p>
-     * </p>
-     * If the geometric objects overlap, or touch, then their distance apart shall be zero. Some current implementations
-     * use a "negative" distance for such cases, but the approach is neither consistent between implementations, nor
-     * theoretically viable.
+     * Tests whether this geometry is disjoint from the specified geometry.
+     * 
+     * TODO formal explanation (DE9IM)
      * 
      * @param geometry
-     * @param requestedUnits
-     * @return shortest distance between the two geometries
+     *            the {@link Geometry} to test this {@link Geometry} against
+     * @return true if this {@link Geometry} is disjoint from <code>geometry</code>
      */
-    public Measure distance( Geometry geometry, Unit requestedUnits );    
-    
+    public boolean isDisjoint( Geometry geometry );
+
     /**
      * tests whether the value of a geometric is topological located within this geometry. This method is the opposite
      * of {@link #contains(Geometry)} method
@@ -297,25 +264,102 @@ public interface Geometry {
     public boolean isWithin( Geometry geometry );
 
     /**
-     * Returns the {@link PrecisionModel} of the geometry.
+     * Tests whether this geometry is within a specified distance of a second geometry.
      * 
-     * @return the precision model
+     * @param geometry
+     *            second geometry
+     * @param distance
+     * @return true, iff the distance between this and the second geometry is less than or equal <code>distance</code>
      */
-    public PrecisionModel getPrecision();
+    public boolean isWithinDistance( Geometry geometry, Measure distance );
 
     /**
-     * Returns a representation of the standard GML properties (e.g. <code>gml:name</code> or
-     * <code>gml:description</code).
+     * Tests whether this geometry overlaps the specified geometry.
      * 
-     * @return a representation of the standard GML properties, may be null
+     * TODO formal explanation (DE9IM)
+     * 
+     * @param geometry
+     *            the {@link Geometry} to test this {@link Geometry} against
+     * @return true if this {@link Geometry} overlaps <code>geometry</code>
      */
-    public StandardObjectProperties getStandardGMLProperties();
+    public boolean overlaps( Geometry geometry );
 
     /**
-     * Sets the standard GML properties (e.g. <code>gml:name</code> or <code>gml:description</code).
+     * Tests whether this geometry touches the specified geometry.
      * 
-     * @param standardProps
-     *            representation of the standard GML properties
+     * TODO formal explanation (DE9IM)
+     * 
+     * @param geometry
+     *            the {@link Geometry} to test this {@link Geometry} against
+     * @return true if this {@link Geometry} touches <code>geometry</code>
      */
-    public void setStandardGMLProperties( StandardObjectProperties standardProps );
+    public boolean touches( Geometry geometry );
+
+    /**
+     * Return a new {@link Geometry} that contains all points with a distance from this Geometry that is less than or
+     * equal to the specified distance.
+     * 
+     * @param distance
+     * @return buffer geometry
+     */
+    public Geometry getBuffer( Measure distance );
+
+    /**
+     * Returns the centroid of the geometry.
+     * 
+     * @return a {@link Point} that is the centroid of this geometry
+     */
+    public Point getCentroid();
+
+    /**
+     * Returns the minimal bounding box of the geometry.
+     * 
+     * @return the minimal bounding box of the geometry
+     */
+    public Envelope getEnvelope();
+
+    /**
+     * Returns the set-theoretic difference of this and the passed {@link Geometry}.
+     * 
+     * @param geometry
+     *            other geometry, must not be null
+     * @return difference Geometry or <code>null</code> (empty set)
+     */
+    public Geometry getDifference( Geometry geometry );
+
+    /**
+     * Returns the set-theoretic intersection of this and the passed {@link Geometry}.
+     * 
+     * @param geometry
+     *            other geometry, must not be null
+     * @return intersection Geometry or <code>null</code> (empty set)
+     */
+    public Geometry getIntersection( Geometry geometry );
+
+    /**
+     * Returns the set-theoretic union of this and the passed {@link Geometry}.
+     * 
+     * @param geometry
+     *            other geometry, must not be null
+     * @return united Geometry (never null)
+     */
+    public Geometry getUnion( Geometry geometry );
+
+    /**
+     * Returns the convex hull of the geometry.
+     * 
+     * @return convex hull of a Geometry
+     */
+    public Geometry getConvexHull();
+
+    /**
+     * Returns the minimum distance between this and the specified geometry.
+     * 
+     * @param geometry
+     *            second geometry
+     * @param requestedUnits
+     *            unit of the
+     * @return shortest distance between the two geometries
+     */
+    public Measure getDistance( Geometry geometry, Unit requestedUnits );
 }

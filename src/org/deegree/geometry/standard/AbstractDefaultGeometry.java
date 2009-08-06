@@ -70,10 +70,10 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
  * <p>
  * This implementation is built around <a href="http://tsusiatsoftware.net/jts/main.html">JTS (Java Topology Suite)</a>
  * geometries which are used to evaluate topological predicates (e.g. intersects) and perform spatial analysis
- * operations (e.g union). Simple geometries (e.g. {@link LineString}s are mapped to a corresponding JTS
- * object, for complex ones (e.g. {@link Curve}s with non-linear segments), the JTS geometry only approximates the
- * original geometry. See <a href="https://wiki.deegree.org/deegreeWiki/deegree3/MappingComplexGeometries">this page</a>
- * for a discussion.
+ * operations (e.g union). Simple geometries (e.g. {@link LineString}s are mapped to a corresponding JTS object, for
+ * complex ones (e.g. {@link Curve}s with non-linear segments), the JTS geometry only approximates the original
+ * geometry. See <a href="https://wiki.deegree.org/deegreeWiki/deegree3/MappingComplexGeometries">this page</a> for a
+ * discussion.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -97,10 +97,10 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     protected PrecisionModel pm;
 
     // contains an equivalent (or best-fit) JTS geometry object
-    protected com.vividsolutions.jts.geom.Geometry jtsGeometry;    
+    protected com.vividsolutions.jts.geom.Geometry jtsGeometry;
 
-    private StandardObjectProperties standardProps;    
-    
+    private StandardObjectProperties standardProps;
+
     /**
      * @param id
      * @param crs
@@ -118,13 +118,28 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
+    public void setId( String id ) {
+        this.id = id;
+    }
+
+    @Override
     public CRS getCoordinateSystem() {
         return crs;
     }
 
     @Override
+    public void setCoordinateSystem( CRS crs ) {
+        this.crs = crs;
+    }
+
+    @Override
     public PrecisionModel getPrecision() {
         return pm;
+    }
+
+    @Override
+    public void setPrecision( PrecisionModel pm ) {
+        this.pm = pm;
     }
 
     @Override
@@ -187,28 +202,33 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
-    public Measure distance( Geometry geometry, Unit requestedUnit ) {
+    public Point getCentroid() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Measure getDistance( Geometry geometry, Unit requestedUnit ) {
         // TODO respect unit
         double dist = getJTSGeometry().distance( getAsAbstractDefaultGeometry( geometry ).getJTSGeometry() );
         return new Measure( Double.toString( dist ), null );
     }
 
     @Override
-    public Geometry intersection( Geometry geometry ) {
+    public Geometry getIntersection( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
         com.vividsolutions.jts.geom.Geometry jtsGeom = jtsGeoms.first.intersection( jtsGeoms.second );
         return createFromJTS( jtsGeom );
     }
 
     @Override
-    public Geometry union( Geometry geometry ) {
+    public Geometry getUnion( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
         com.vividsolutions.jts.geom.Geometry jtsGeom = jtsGeoms.first.union( jtsGeoms.second );
         return createFromJTS( jtsGeom );
     }
 
     @Override
-    public Geometry difference( Geometry geometry ) {
+    public Geometry getDifference( Geometry geometry ) {
         JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
         com.vividsolutions.jts.geom.Geometry jtsGeom = jtsGeoms.first.difference( jtsGeoms.second );
         return createFromJTS( jtsGeom );
@@ -254,12 +274,12 @@ public abstract class AbstractDefaultGeometry implements Geometry {
     }
 
     @Override
-    public StandardObjectProperties getStandardGMLProperties() {
+    public StandardObjectProperties getAttachedProperties() {
         return standardProps;
     }
 
     @Override
-    public void setStandardGMLProperties( StandardObjectProperties standardProps ) {
+    public void setAttachedProperties( StandardObjectProperties standardProps ) {
         this.standardProps = standardProps;
     }
 

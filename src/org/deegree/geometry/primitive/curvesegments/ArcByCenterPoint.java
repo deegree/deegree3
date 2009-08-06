@@ -41,7 +41,7 @@ import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * Circular {@link CurveSegment} that consists of a single arc.
+ * Circular {@link CurveSegment} that consists of a single arc only.
  * <p>
  * This variant of the arc requires that the points on the arc have to be computed instead of storing the coordinates
  * directly. The control point is the center point of the arc plus the radius and the bearing at start and end. This

@@ -46,7 +46,7 @@ import org.deegree.geometry.primitive.curvesegments.CurveSegment;
 import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
 
 /**
- * <code>Curve</code> instances are 1D-geometries that consist of an arbitrary number of curve segments.
+ * <code>Curve</code> instances are 1D-geometries that consist of a number of curve segments.
  * 
  * @see CompositeCurve
  * @see LineString

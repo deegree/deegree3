@@ -46,14 +46,14 @@ package org.deegree.geometry.primitive.curvesegments;
 public interface Bezier extends BSpline {
 
     /**
-     * Returns the first knot that defines the spline basis functions.
+     * Returns the first knot that defines the spline's basis functions.
      *
      * @return first knot
      */
     public Knot getKnot1();
 
     /**
-     * Returns the second knot that defines the spline basis functions.
+     * Returns the second knot that defines the spline's basis functions.
      *
      * @return second knot
      */

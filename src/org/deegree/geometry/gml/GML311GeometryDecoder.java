@@ -887,7 +887,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Point" );
-        point.setStandardGMLProperties( standardProps );
+        point.setAttachedProperties( standardProps );
         idContext.addGeometry( point );
         return point;
     }
@@ -954,7 +954,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
         LineString lineString = geomFac.createLineString( gid, crs, new PointsList( points ) );
-        lineString.setStandardGMLProperties( standardProps );
+        lineString.setAttachedProperties( standardProps );
         idContext.addGeometry( lineString );
         return lineString;
     }
@@ -992,7 +992,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "Curve" );
         Curve curve = geomFac.createCurve( gid, segments.toArray( new CurveSegment[segments.size()] ), crs );
         idContext.addGeometry( curve );
-        curve.setStandardGMLProperties( standardProps );
+        curve.setAttachedProperties( standardProps );
         return curve;
     }
 
@@ -1025,7 +1025,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "OrientableCurve" );
 
         OrientableCurve orientableCurve = geomFac.createOrientableCurve( gid, crs, baseCurve, isReversed );
-        orientableCurve.setStandardGMLProperties( standardProps );
+        orientableCurve.setAttachedProperties( standardProps );
         idContext.addGeometry( orientableCurve );
         return orientableCurve;
     }
@@ -1059,7 +1059,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "LinearRing" );
         LinearRing linearRing = geomFac.createLinearRing( gid, crs, points );
-        linearRing.setStandardGMLProperties( standardProps );
+        linearRing.setAttachedProperties( standardProps );
         idContext.addGeometry( linearRing );
         return linearRing;
     }
@@ -1100,7 +1100,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "Ring" );
         Ring ring = geomFac.createRing( gid, crs, memberCurves );
-        ring.setStandardGMLProperties( standardProps );
+        ring.setAttachedProperties( standardProps );
         idContext.addGeometry( ring );
         return ring;
     }
@@ -1181,7 +1181,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "Polygon" );
         Polygon polygon = geomFac.createPolygon( gid, crs, exteriorRing, interiorRings );
-        polygon.setStandardGMLProperties( standardProps );
+        polygon.setAttachedProperties( standardProps );
         idContext.addGeometry( polygon );
         return polygon;
     }
@@ -1217,7 +1217,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "Surface" );
         Surface surface = geomFac.createSurface( gid, memberPatches, crs );
-        surface.setStandardGMLProperties( standardProps );
+        surface.setAttachedProperties( standardProps );
         idContext.addGeometry( surface );
         return surface;
     }
@@ -1253,7 +1253,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "PolyhedralSurface" );
         PolyhedralSurface polyhedralSurface = geomFac.createPolyhedralSurface( gid, crs, memberPatches );
-        polyhedralSurface.setStandardGMLProperties( standardProps );
+        polyhedralSurface.setAttachedProperties( standardProps );
         idContext.addGeometry( polyhedralSurface );
         return polyhedralSurface;
     }
@@ -1289,7 +1289,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.nextTag();
         xmlStream.require( END_ELEMENT, GMLNS, "TriangulatedSurface" );
         TriangulatedSurface triangulatedSurface = geomFac.createTriangulatedSurface( gid, crs, memberPatches );
-        triangulatedSurface.setStandardGMLProperties( standardProps );
+        triangulatedSurface.setAttachedProperties( standardProps );
         idContext.addGeometry( triangulatedSurface );
         return triangulatedSurface;
     }
@@ -1393,7 +1393,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "Tin" );
         Tin tin = geomFac.createTin( gid, crs, stopLines, breakLines, maxLength, new PointsList( controlPoints ),
                                      memberPatches );
-        tin.setStandardGMLProperties( standardProps );
+        tin.setAttachedProperties( standardProps );
         idContext.addGeometry( tin );
         return tin;
     }
@@ -1428,7 +1428,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "OrientableSurface" );
 
         OrientableSurface orientableSurface = geomFac.createOrientableSurface( gid, crs, baseSurface, isReversed );
-        orientableSurface.setStandardGMLProperties( standardProps );
+        orientableSurface.setAttachedProperties( standardProps );
         idContext.addGeometry( orientableSurface );
         return orientableSurface;
     }
@@ -1481,7 +1481,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "Solid" );
         Solid solid = geomFac.createSolid( gid, crs, exteriorSurface, interiorSurfaces );
-        solid.setStandardGMLProperties( standardProps );
+        solid.setAttachedProperties( standardProps );
         idContext.addGeometry( solid );        
         return solid;
     }
@@ -1517,7 +1517,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         } while ( xmlStream.nextTag() == START_ELEMENT );
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeCurve" );
         CompositeCurve curve = geomFac.createCompositeCurve( gid, crs, memberCurves );
-        curve.setStandardGMLProperties( standardProps );
+        curve.setAttachedProperties( standardProps );
         idContext.addGeometry( curve );        
         return curve;
     }
@@ -1553,7 +1553,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         } while ( xmlStream.nextTag() == START_ELEMENT );
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeSurface" );
         CompositeSurface compositeSurface = geomFac.createCompositeSurface( gid, crs, memberSurfaces );
-        compositeSurface.setStandardGMLProperties( standardProps );
+        compositeSurface.setAttachedProperties( standardProps );
         idContext.addGeometry( compositeSurface );        
         return compositeSurface;
     }
@@ -1588,7 +1588,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         } while ( xmlStream.nextTag() == START_ELEMENT );
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeSolid" );
         CompositeSolid compositeSolid = geomFac.createCompositeSolid( gid, crs, memberSolids );
-        compositeSolid.setStandardGMLProperties( standardProps );
+        compositeSolid.setAttachedProperties( standardProps );
         idContext.addGeometry( compositeSolid );        
         return compositeSolid;
     }
@@ -1625,7 +1625,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "GeometricComplex" );
         CompositeGeometry<GeometricPrimitive> compositeGeometry = geomFac.createCompositeGeometry( gid, crs,
                                                                                                    memberSolids );
-        compositeGeometry.setStandardGMLProperties( standardProps );
+        compositeGeometry.setAttachedProperties( standardProps );
         idContext.addGeometry( compositeGeometry );        
         return compositeGeometry;
     }
@@ -1677,7 +1677,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiPoint" );
         MultiPoint multiPoint = geomFac.createMultiPoint( gid, crs, members );
-        multiPoint.setStandardGMLProperties( standardProps );
+        multiPoint.setAttachedProperties( standardProps );
         idContext.addGeometry( multiPoint );        
         return multiPoint;
     }
@@ -1728,7 +1728,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiCurve" );
         MultiCurve multiCurve = geomFac.createMultiCurve( gid, crs, members );
-        multiCurve.setStandardGMLProperties( standardProps );
+        multiCurve.setAttachedProperties( standardProps );
         idContext.addGeometry( multiCurve );        
         return multiCurve;
     }
@@ -1772,7 +1772,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         xmlStream.require( END_ELEMENT, GMLNS, "MultiLineString" );
         MultiLineString multiLineString = geomFac.createMultiLineString( gid, crs, members );
-        multiLineString.setStandardGMLProperties( standardProps );
+        multiLineString.setAttachedProperties( standardProps );
         idContext.addGeometry( multiLineString );        
         return multiLineString;
     }
@@ -1823,7 +1823,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiSurface" );
         MultiSurface multiSurface = geomFac.createMultiSurface( gid, crs, members );
-        multiSurface.setStandardGMLProperties( standardProps );
+        multiSurface.setAttachedProperties( standardProps );
         idContext.addGeometry( multiSurface );        
         return multiSurface;
     }
@@ -1867,7 +1867,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiPolygon" );
         MultiPolygon multiPolygon = geomFac.createMultiPolygon( gid, crs, members );
-        multiPolygon.setStandardGMLProperties( standardProps );
+        multiPolygon.setAttachedProperties( standardProps );
         idContext.addGeometry( multiPolygon );        
         return multiPolygon;
     }
@@ -1918,7 +1918,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiSolid" );
         MultiSolid multiSolid = geomFac.createMultiSolid( gid, crs, members );
-        multiSolid.setStandardGMLProperties( standardProps );
+        multiSolid.setAttachedProperties( standardProps );
         idContext.addGeometry( multiSolid );        
         return multiSolid;
     }
@@ -1969,7 +1969,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         }
         xmlStream.require( END_ELEMENT, GMLNS, "MultiGeometry" );
         MultiGeometry<Geometry> multiGeometry = geomFac.createMultiGeometry( gid, crs, members );
-        multiGeometry.setStandardGMLProperties( standardProps );
+        multiGeometry.setAttachedProperties( standardProps );
         idContext.addGeometry( multiGeometry );
         return multiGeometry;
     }
