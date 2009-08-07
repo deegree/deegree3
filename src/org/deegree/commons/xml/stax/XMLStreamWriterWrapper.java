@@ -161,8 +161,7 @@ public class XMLStreamWriterWrapper implements XMLStreamWriter {
                             throws XMLStreamException {
         writer.writeEmptyElement( localName );
         if ( firstElement ) {
-            writer.setPrefix( "xsi", XSINS );
-            writer.writeAttribute( XSINS, "schemaLocation", schemaLocation );
+            writer.writeAttribute( "xsi", XSINS, "schemaLocation", schemaLocation );
             firstElement = false;
         }
     }
@@ -171,8 +170,7 @@ public class XMLStreamWriterWrapper implements XMLStreamWriter {
                             throws XMLStreamException {
         writer.writeEmptyElement( namespaceURI, localName );
         if ( firstElement ) {
-            writer.setPrefix( "xsi", XSINS );
-            writer.writeAttribute( XSINS, "schemaLocation", schemaLocation );
+            writer.writeAttribute( "xsi", XSINS, "schemaLocation", schemaLocation );
             firstElement = false;
         }
     }
@@ -181,8 +179,7 @@ public class XMLStreamWriterWrapper implements XMLStreamWriter {
                             throws XMLStreamException {
         writer.writeEmptyElement( prefix, localName, namespaceURI );
         if ( firstElement ) {
-            writer.setPrefix( "xsi", XSINS );
-            writer.writeAttribute( XSINS, "schemaLocation", schemaLocation );
+            writer.writeAttribute( "xsi", XSINS, "schemaLocation", schemaLocation );
             firstElement = false;
         }
     }
@@ -226,7 +223,6 @@ public class XMLStreamWriterWrapper implements XMLStreamWriter {
                             throws XMLStreamException {
         writer.writeStartElement( localName );
         if ( firstElement ) {
-            writer.setPrefix( "xsi", XSINS );
             writer.writeAttribute( CommonNamespaces.XSINS, "schemaLocation", schemaLocation );
             firstElement = false;
         }
@@ -236,8 +232,7 @@ public class XMLStreamWriterWrapper implements XMLStreamWriter {
                             throws XMLStreamException {
         writer.writeStartElement( namespaceURI, localName );
         if ( firstElement ) {
-            writer.setPrefix( "xsi", XSINS );
-            writer.writeAttribute( XSINS, "schemaLocation", schemaLocation );
+            writer.writeAttribute( "xsi", XSINS, "schemaLocation", schemaLocation );
             firstElement = false;
         }
     }
@@ -246,7 +241,7 @@ public class XMLStreamWriterWrapper implements XMLStreamWriter {
                             throws XMLStreamException {
         writer.writeStartElement( prefix, localName, namespaceURI );
         if ( firstElement ) {
-            writer.writeAttribute( XSINS, "schemaLocation", schemaLocation );
+            writer.writeAttribute( "xsi", XSINS, "schemaLocation", schemaLocation );
             firstElement = false;
         }
     }
