@@ -45,7 +45,6 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.xerces.xni.parser.XMLInputSource;
 import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
@@ -152,6 +151,13 @@ public class GMLGeometryEncoderTest {
         envelopeSources.add( "Envelope.gml" );
     }
 
+    /**
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     * @throws FactoryConfigurationError
+     * @throws IOException
+     */
     @Test
     public void testValidatingExportedAbstractGeometryTypes()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
@@ -167,9 +173,9 @@ public class GMLGeometryEncoderTest {
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );
             XMLMemoryStreamWriter memoryWriter = new XMLMemoryStreamWriter();
+            
             XMLStreamWriterWrapper writer = new XMLStreamWriterWrapper( memoryWriter.getXMLStreamWriter(),
                                                                         SCHEMA_LOCATION_ATTRIBUTE );
-
             writer.setPrefix( "app", "http://www.deegree.org/app" );
             writer.setPrefix( "gml", "http://www.opengis.net/gml" );
             writer.setPrefix( "ogc", "http://www.opengis.net/ogc" );
@@ -180,11 +186,18 @@ public class GMLGeometryEncoderTest {
             exporter.export( geom );
             writer.flush();
             writer.close();
-
+            
             XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
         }
     }
 
+    /**
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     * @throws FactoryConfigurationError
+     * @throws IOException
+     */
     @Test
     public void testValidatingExportedSurfacePatches()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
@@ -213,14 +226,21 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
             GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer );
-            exporter.export( surfPatch );
+            exporter.exportSurfacePatch( surfPatch );
             writer.flush();
             writer.close();
-
+            
             XMLAssert.assertValidity( memoryWriter.getReader(), SCHEMA_LOCATION );
         }
     }
 
+    /**
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     * @throws FactoryConfigurationError
+     * @throws IOException
+     */
     @Test
     public void testValidatingExportedCurveSegments()
                             throws XMLStreamException, XMLParsingException, UnknownCRSException,
@@ -247,7 +267,7 @@ public class GMLGeometryEncoderTest {
             writer.setPrefix( "xlink", "http://www.w3.org/1999/xlink" );
             writer.setPrefix( "xsi", "http://www.w3.org/2001/XMLSchema-instance" );
             GML311GeometryEncoder exporter = new GML311GeometryEncoder( writer );
-            exporter.export( curveSegment );
+            exporter.exportCurveSegment( curveSegment );
             writer.flush();
             writer.close();
 
@@ -255,6 +275,13 @@ public class GMLGeometryEncoderTest {
         }
     }
 
+    /**
+     * @throws XMLStreamException
+     * @throws FactoryConfigurationError
+     * @throws IOException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     */
     @Test
     public void testValidatingExportedEnvelope()
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
@@ -287,6 +314,13 @@ public class GMLGeometryEncoderTest {
         }
     }
 
+    /**
+     * @throws XMLParsingException
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     * @throws FactoryConfigurationError
+     * @throws IOException
+     */
     @Test
     public void testValidatingExportedXLinkMultiGeometry1()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
