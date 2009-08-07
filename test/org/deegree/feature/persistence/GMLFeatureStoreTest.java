@@ -163,6 +163,6 @@ public class GMLFeatureStoreTest {
         XMLStreamWriter writer = outputFactory.createXMLStreamWriter( out );
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
         GML311GeometryEncoder exporter = new GML311GeometryEncoder(writer );
-        exporter.export( (Ring) o);
+        exporter.exportRing( (Ring) o);
     }
 }
