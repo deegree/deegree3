@@ -236,15 +236,22 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         complexElements.add( "GeometricComplex" );
     }
 
+    /**
+     * 
+     */
+    public GML311GeometryDecoder() {
+        this( new GeometryFactory(), new GMLIdContext() );
+    }    
+    
+    /**
+     * @param geomFac
+     * @param idContext
+     */
     public GML311GeometryDecoder( GeometryFactory geomFac, GMLIdContext idContext ) {
         super( geomFac );
         this.idContext = idContext;
         curveSegmentParser = new GML311CurveSegmentDecoder( this, geomFac );
         surfacePatchParser = new GML311SurfacePatchDecoder( this, geomFac );
-    }
-
-    public GML311GeometryDecoder() {
-        this( new GeometryFactory(), new GMLIdContext() );
     }
 
     /**
@@ -1482,7 +1489,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "Solid" );
         Solid solid = geomFac.createSolid( gid, crs, exteriorSurface, interiorSurfaces );
         solid.setAttachedProperties( standardProps );
-        idContext.addGeometry( solid );        
+        idContext.addGeometry( solid );
         return solid;
     }
 
@@ -1518,7 +1525,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeCurve" );
         CompositeCurve curve = geomFac.createCompositeCurve( gid, crs, memberCurves );
         curve.setAttachedProperties( standardProps );
-        idContext.addGeometry( curve );        
+        idContext.addGeometry( curve );
         return curve;
     }
 
@@ -1554,7 +1561,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeSurface" );
         CompositeSurface compositeSurface = geomFac.createCompositeSurface( gid, crs, memberSurfaces );
         compositeSurface.setAttachedProperties( standardProps );
-        idContext.addGeometry( compositeSurface );        
+        idContext.addGeometry( compositeSurface );
         return compositeSurface;
     }
 
@@ -1589,7 +1596,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "CompositeSolid" );
         CompositeSolid compositeSolid = geomFac.createCompositeSolid( gid, crs, memberSolids );
         compositeSolid.setAttachedProperties( standardProps );
-        idContext.addGeometry( compositeSolid );        
+        idContext.addGeometry( compositeSolid );
         return compositeSolid;
     }
 
@@ -1626,7 +1633,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         CompositeGeometry<GeometricPrimitive> compositeGeometry = geomFac.createCompositeGeometry( gid, crs,
                                                                                                    memberSolids );
         compositeGeometry.setAttachedProperties( standardProps );
-        idContext.addGeometry( compositeGeometry );        
+        idContext.addGeometry( compositeGeometry );
         return compositeGeometry;
     }
 
@@ -1678,7 +1685,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "MultiPoint" );
         MultiPoint multiPoint = geomFac.createMultiPoint( gid, crs, members );
         multiPoint.setAttachedProperties( standardProps );
-        idContext.addGeometry( multiPoint );        
+        idContext.addGeometry( multiPoint );
         return multiPoint;
     }
 
@@ -1729,7 +1736,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "MultiCurve" );
         MultiCurve multiCurve = geomFac.createMultiCurve( gid, crs, members );
         multiCurve.setAttachedProperties( standardProps );
-        idContext.addGeometry( multiCurve );        
+        idContext.addGeometry( multiCurve );
         return multiCurve;
     }
 
@@ -1773,7 +1780,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "MultiLineString" );
         MultiLineString multiLineString = geomFac.createMultiLineString( gid, crs, members );
         multiLineString.setAttachedProperties( standardProps );
-        idContext.addGeometry( multiLineString );        
+        idContext.addGeometry( multiLineString );
         return multiLineString;
     }
 
@@ -1824,7 +1831,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "MultiSurface" );
         MultiSurface multiSurface = geomFac.createMultiSurface( gid, crs, members );
         multiSurface.setAttachedProperties( standardProps );
-        idContext.addGeometry( multiSurface );        
+        idContext.addGeometry( multiSurface );
         return multiSurface;
     }
 
@@ -1868,7 +1875,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "MultiPolygon" );
         MultiPolygon multiPolygon = geomFac.createMultiPolygon( gid, crs, members );
         multiPolygon.setAttachedProperties( standardProps );
-        idContext.addGeometry( multiPolygon );        
+        idContext.addGeometry( multiPolygon );
         return multiPolygon;
     }
 
@@ -1919,7 +1926,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         xmlStream.require( END_ELEMENT, GMLNS, "MultiSolid" );
         MultiSolid multiSolid = geomFac.createMultiSolid( gid, crs, members );
         multiSolid.setAttachedProperties( standardProps );
-        idContext.addGeometry( multiSolid );        
+        idContext.addGeometry( multiSolid );
         return multiSolid;
     }
 
@@ -2076,7 +2083,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
-                idContext.addGeometryReference( (GeometryReference) point );
+                idContext.addGeometryReference( (GeometryReference<?>) point );
             }
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
@@ -2129,7 +2136,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
-                idContext.addGeometryReference( (GeometryReference) lineString );
+                idContext.addGeometryReference( (GeometryReference<?>) lineString );
             }
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
@@ -2178,11 +2185,11 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            curve = new CurveReference( href, xmlStream.getSystemId() );
+            curve = new CurveReference<Curve>( href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
-                idContext.addGeometryReference( (GeometryReference) curve );
+                idContext.addGeometryReference( (GeometryReference<?>) curve );
             }
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
@@ -2230,7 +2237,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
-                idContext.addGeometryReference( (GeometryReference) polygon );
+                idContext.addGeometryReference( (GeometryReference<?>) polygon );
             }
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
@@ -2279,11 +2286,11 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            surface = new SurfaceReference( href, xmlStream.getSystemId() );
+            surface = new SurfaceReference<Surface>( href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
-                idContext.addGeometryReference( (GeometryReference) surface );
+                idContext.addGeometryReference( (GeometryReference<?>) surface );
             }
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
@@ -2327,11 +2334,11 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            solid = new SolidReference( href, xmlStream.getSystemId() );
+            solid = new SolidReference<Solid>( href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
-                idContext.addGeometryReference( (GeometryReference) solid );
+                idContext.addGeometryReference( (GeometryReference<?>) solid );
             }
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
@@ -2380,11 +2387,11 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            primitive = new GeometricPrimitiveReference( href, xmlStream.getSystemId() );
+            primitive = new GeometricPrimitiveReference<GeometricPrimitive>( href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
-                idContext.addGeometryReference( (GeometryReference) primitive );
+                idContext.addGeometryReference( (GeometryReference<?>) primitive );
             }
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
@@ -2428,11 +2435,11 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         String href = xmlStream.getAttributeValue( CommonNamespaces.XLNNS, "href" );
         if ( href != null && href.length() > 0 ) {
             LOG.debug( "Found geometry reference (xlink): '" + href + "'" );
-            geometry = new GeometryReference( href, xmlStream.getSystemId() );
+            geometry = new GeometryReference<Geometry>( href, xmlStream.getSystemId() );
 
             // local geometry reference?
             if ( href.startsWith( "#" ) ) {
-                idContext.addGeometryReference( (GeometryReference) geometry );
+                idContext.addGeometryReference( (GeometryReference<?>) geometry );
             }
             if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
                 String msg = "Unexpected element '" + xmlStream.getName()
