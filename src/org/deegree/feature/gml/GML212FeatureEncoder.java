@@ -202,7 +202,7 @@ public class GML212FeatureEncoder {
             writer.writeEndElement();
 
         } else if ( propertyType instanceof EnvelopePropertyType ) {
-            geometryExporter.export( (Envelope) value );
+            geometryExporter.exportEnvelope( (Envelope) value );
 
         } else if ( propertyType instanceof LengthPropertyType ) {
             Length length = (Length) value;
