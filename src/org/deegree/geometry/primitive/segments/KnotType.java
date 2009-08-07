@@ -33,52 +33,39 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.surfacepatches;
-
-import java.util.List;
-
-import org.deegree.geometry.primitive.LinearRing;
-import org.deegree.geometry.primitive.Point;
+package org.deegree.geometry.primitive.segments;
 
 /**
- * A {@link Triangle} is a {@link SurfacePatch} defined by three planar points.
+ * Defines allowed values for the knots' type. Uniform knots implies that all knots are of multiplicity 1 and they
+ * differ by a positive constant from the preceding knot. Knots are quasi-uniform iff they are of multiplicity (degree +
+ * 1) at the ends, of multiplicity 1 elsewhere, and they differ by a positive constant from the preceding knot.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public interface Triangle extends PolygonPatch {
+public enum KnotType {
 
     /**
-     * Returns the first of the three control points.
      *
-     * @return the first control point
      */
-    public Point getPoint1();
+    UNSPECIFIED,
 
     /**
-     * Returns the second of the three control points.
-     *
-     * @return the second control point
+     * All knots are of multiplicity 1 and they differ by a positive constant from the preceding knot.
      */
-    public Point getPoint2();
+    UNIFORM,
 
     /**
-     * Returns the last of the three control points.
-     *
-     * @return the third control point
+     * Multiplicity of the knots is (degree + 1) at the ends, 1 elsewhere, and knots differ by a positive constant from
+     * the preceding knot.
      */
-    public Point getPoint3();
+    QUASI_UNIFORM,
 
     /**
-     * Returns the sequence of control points as a {@link LinearRing}.
-     *
-     * @return the exterior ring
+     * ???
      */
-    @Override
-    public LinearRing getExteriorRing();
+    BEZIER
 
-    @Override
-    public List<LinearRing> getBoundaryRings();
 }

@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/geometry/primitive/CurveSegment.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,32 +33,55 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
+package org.deegree.geometry.primitive.segments;
 
-import org.deegree.geometry.primitive.Point;
+import java.util.List;
+
+import org.deegree.geometry.points.Points;
 
 /**
- * A {@link GeodesicString} that consists of a single arc only.
+ * {@link CurveSegment} that uses either polynomial or rational interpolation.
+ * <p>
+ * Description from the GML 3.1.1 schema:
+ * <p>
+ * A B-Spline is a piecewise parametric polynomial or rational curve described in terms of control points and basis
+ * functions. Knots are breakpoints on the curve that connect its pieces. They are given as a non-decreasing sequence of
+ * real numbers. If the weights in the knots are equal then it is a polynomial spline. The degree is the algebraic
+ * degree of the basis functions.
+ * </p>
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public interface Geodesic extends GeodesicString {
+public interface BSpline extends CurveSegment {
 
     /**
-     * Returns the first control point.
+     * Returns the control points of the segment.
      *
-     * @return the first control point
+     * @return the control points of the segment
      */
-    public Point getPoint1();
+    public Points getControlPoints();
 
     /**
-     * Returns the second control point.
+     * Returns the degree of the polynomial used for interpolation in this spline.
      *
-     * @return the second control point
+     * @return the degree of the polynomial
      */
-    public Point getPoint2();
+    public int getPolynomialDegree();
 
+    /**
+     * Returns whether the interpolation is polynomial or rational.
+     *
+     * @return true, if the interpolation is polynomial, false if it's rational 
+     */
+    public boolean isPolynomial();
+
+    /**
+     * Returns the knots that define the spline basis functions.
+     *
+     * @return list of distinctive knots
+     */
+    public List<Knot> getKnots();
 }

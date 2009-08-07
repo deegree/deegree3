@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/geometry/primitive/CurveSegment.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,31 +33,52 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
+package org.deegree.geometry.primitive.patches;
 
-import org.deegree.geometry.points.Points;
+import java.util.List;
+
+import org.deegree.geometry.primitive.LinearRing;
+import org.deegree.geometry.primitive.Point;
 
 /**
- * {@link CurveSegment} that uses three-point circular arc interpolation.
+ * A {@link Triangle} is a {@link SurfacePatch} defined by three planar points.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public interface ArcString extends CurveSegment {
+public interface Triangle extends PolygonPatch {
 
     /**
-     * Returns the number of arcs of the string.
+     * Returns the first of the three control points.
      *
-     * @return the number of arcs
+     * @return the first control point
      */
-    public int getNumArcs();
+    public Point getPoint1();
 
     /**
-     * Returns the control points of the interpolation.
+     * Returns the second of the three control points.
      *
-     * @return the control points of the interpolation
+     * @return the second control point
      */
-    public Points getControlPoints();
+    public Point getPoint2();
+
+    /**
+     * Returns the last of the three control points.
+     *
+     * @return the third control point
+     */
+    public Point getPoint3();
+
+    /**
+     * Returns the sequence of control points as a {@link LinearRing}.
+     *
+     * @return the exterior ring
+     */
+    @Override
+    public LinearRing getExteriorRing();
+
+    @Override
+    public List<LinearRing> getBoundaryRings();
 }

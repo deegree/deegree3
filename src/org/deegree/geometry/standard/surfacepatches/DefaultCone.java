@@ -41,7 +41,7 @@ import java.util.List;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.points.Points;
-import org.deegree.geometry.primitive.surfacepatches.Cone;
+import org.deegree.geometry.primitive.patches.Cone;
 
 /**
  * TODO add class documentation here.

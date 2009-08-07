@@ -33,46 +33,61 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
-
-import org.deegree.geometry.standard.curvesegments.AffinePlacement;
+package org.deegree.geometry.primitive.segments;
 
 /**
- * A clothoid, or Cornu's spiral, is a plane {@link CurveSegment} whose curvature is a fixed function of its length.
- *
+ * Used to define the basis functions of a {@link BSpline}.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
- *
- * @version $Revision:$, $Date:$
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision: 33706 $, $Date: 2009-08-07 00:49:16 +0200 (Fr, 07 Aug 2009) $
  */
-public interface Clothoid extends CurveSegment {
+public class Knot {
+
+    private double value;
+
+    private int multiplicity;
+
+    private double weight;
 
     /**
-     * Returns the affine mapping that places the curve defined by the Fresnel Integrals into the coordinate reference
-     * system of this object.
-     *
-     * @return the affine mapping
+     * Creates a new {@link Knot} instance.
+     * 
+     * @param value
+     * @param multiplicity
+     * @param weight
      */
-    public AffinePlacement getReferenceLocation();
+    public Knot( double value, int multiplicity, double weight ) {
+        this.value = value;
+        this.multiplicity = multiplicity;
+        this.weight = weight;
+    }
 
     /**
-     * Returns the value for the constant in the Fresnel's integrals.
-     *
-     * @return the value for the constant in the Fresnel's integrals
+     * Returns the knot's value.
+     * 
+     * @return the knot's value
      */
-    public double getScaleFactor();
+    public double getValue() {
+        return value;
+    }
 
     /**
-     * Returns the arc length distance from the inflection point that will be the start point for this curve segment.
-     *
-     * @return the arc length distance that defines the start point
-     */
-    public double getStartParameter();
+     * Returns the knot's multiplicity.
+     * 
+     * @return the knot's multiplicity
+     */    
+    public int getMultiplicity() {
+        return multiplicity;
+    }
 
     /**
-     * Returns the arc length distance from the inflection point that will be the end point for this curve segment.
-     *
-     * @return the arc length distance that defines the end point
-     */
-    public double getEndParameter();
+     * Returns the knot's weight.
+     * 
+     * @return the knot's weight
+     */    
+    public double getWeight() {
+        return weight;
+    }
 }

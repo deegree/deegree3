@@ -51,7 +51,7 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.OrientableCurve;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment;
+import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**

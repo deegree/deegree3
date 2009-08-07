@@ -58,10 +58,10 @@ import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment;
-import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
+import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.points.PointsList;
 
 /**
@@ -287,8 +287,8 @@ public class GeometryTransformer extends Transformer {
     private MultiCurve transform( MultiCurve geo, Transformation trans )
                             throws TransformationException {
         List<Curve> curves = new ArrayList<Curve>( geo.size() );
-        for ( int i = 0; i < geo.size(); i++ ) {
-            curves.add( transform( geo.get( i ), trans ) );
+        for ( Curve curve : geo ) {
+            curves.add( transform( curve, trans ) );
         }
         return geomFactory.createMultiCurve( geo.getId(), geo.getCoordinateSystem(), curves );
     }
@@ -315,8 +315,8 @@ public class GeometryTransformer extends Transformer {
     private MultiSurface transform( MultiSurface geo, Transformation trans )
                             throws TransformationException {
         List<Surface> surfaces = new ArrayList<Surface>( geo.size() );
-        for ( int i = 0; i < geo.size(); i++ ) {
-            surfaces.add( transform( geo.get( i ), trans ) );
+        for ( Surface surface : geo ) {
+            surfaces.add( transform( surface, trans ) );
         }
         return geomFactory.createMultiSurface( geo.getId(), geo.getCoordinateSystem(), surfaces );
     }
@@ -353,7 +353,7 @@ public class GeometryTransformer extends Transformer {
             result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y, tmp.z },
                                                  new CRS( trans.getTargetCRS() ) ) );
         }
-        return new PointsList(result);
+        return new PointsList( result );
     }
 
     /**

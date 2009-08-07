@@ -43,8 +43,8 @@ import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.surfacepatches.Triangle;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch.SurfacePatchType;
+import org.deegree.geometry.primitive.patches.Triangle;
+import org.deegree.geometry.primitive.patches.SurfacePatch.SurfacePatchType;
 
 /**
  * Default implementation of {@link Triangle}.

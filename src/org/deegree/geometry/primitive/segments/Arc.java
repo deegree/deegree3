@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+   Department of Geography, University of Bonn
  and
- lat/lon GmbH
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,17 +32,39 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
+----------------------------------------------------------------------------*/
+package org.deegree.geometry.primitive.segments;
+
+import org.deegree.geometry.primitive.Point;
 
 /**
- * An {@link ArcByCenterPoint} with identical start and end angles to form a full circle.
- * 
+ * An {@link ArcString} that consists of a single arc only.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public interface CircleByCenterPoint extends ArcByCenterPoint {
-    // nothing new here, this interface is only necessary for a type-based differentiation
+public interface Arc extends ArcString {
+
+    /**
+     * Returns the first of the three control points.
+     *
+     * @return the first control point
+     */
+    public Point getPoint1();
+
+    /**
+     * Returns the second of the three control points.
+     *
+     * @return the second control point
+     */
+    public Point getPoint2();
+
+    /**
+     * Returns the last of the three control points.
+     *
+     * @return the third control point
+     */
+    public Point getPoint3();
 }

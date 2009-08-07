@@ -39,8 +39,8 @@ import java.util.List;
 
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.curvesegments.BSpline;
-import org.deegree.geometry.primitive.curvesegments.Knot;
+import org.deegree.geometry.primitive.segments.BSpline;
+import org.deegree.geometry.primitive.segments.Knot;
 
 /**
  * Default implementation of {@link BSpline} segments.

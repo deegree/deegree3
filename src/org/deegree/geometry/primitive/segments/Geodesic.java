@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+   Department of Geography, University of Bonn
  and
- lat/lon GmbH
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,27 +32,33 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
+----------------------------------------------------------------------------*/
+package org.deegree.geometry.primitive.segments;
 
-import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * A {@link CurveSegment} that is defined by two or more {@link Point}s, with linear interpolation between subsequent
- * pairs of points.
- * 
+ * A {@link GeodesicString} that consists of a single arc only.
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- * 
+ *
  * @version $Revision:$, $Date:$
  */
-public interface LineStringSegment extends CurveSegment {
+public interface Geodesic extends GeodesicString {
 
     /**
-     * Returns the control points of the string.
-     * 
-     * @return the control points of the string
+     * Returns the first control point.
+     *
+     * @return the first control point
      */
-    public Points getControlPoints();
+    public Point getPoint1();
+
+    /**
+     * Returns the second control point.
+     *
+     * @return the second control point
+     */
+    public Point getPoint2();
+
 }

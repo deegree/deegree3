@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/geometry/primitive/CurveSegment.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,45 +33,59 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
+package org.deegree.geometry.primitive.patches;
 
+import java.util.List;
+
+import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * An {@link ArcStringByBulge} that consists of a single arc only.
+ * A {@link Rectangle} is a {@link PolygonPatch} defined by four planar points.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public interface ArcByBulge extends ArcStringByBulge {
+public interface Rectangle extends PolygonPatch {
 
     /**
-     * Returns the first control point.
+     * Returns the first of the four control points.
      *
      * @return the first control point
      */
     public Point getPoint1();
 
     /**
-     * Returns the second control point.
+     * Returns the second of the four control points.
      *
      * @return the second control point
      */
     public Point getPoint2();
 
     /**
-     * Returns the single bulge value.
+     * Returns the third of the four control points.
      *
-     * @return the bulge value
+     * @return the third control point
      */
-    public double getBulge();
+    public Point getPoint3();
 
     /**
-     * Returns the single normal vector for the bulge.
+     * Returns the last of the four control points.
      *
-     * @return the bulge's normal vector
+     * @return the last control point
      */
-    public Point getNormal();
+    public Point getPoint4();
+
+    /**
+     * Returns the sequence of control points as a {@link LinearRing}.
+     *
+     * @return the exterior ring
+     */
+    @Override
+    public LinearRing getExteriorRing();
+
+    @Override
+    public List<LinearRing> getBoundaryRings();
 }

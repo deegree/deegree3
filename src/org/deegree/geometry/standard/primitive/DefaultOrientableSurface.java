@@ -49,7 +49,7 @@ import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.OrientableSurface;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**

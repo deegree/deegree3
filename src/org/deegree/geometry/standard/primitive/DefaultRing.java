@@ -55,9 +55,9 @@ import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment;
-import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
+import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.geometry.primitive.segments.LineStringSegment;
+import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 import org.deegree.geometry.standard.points.PointsPoints;
 

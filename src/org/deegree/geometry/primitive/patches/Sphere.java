@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/geometry/primitive/CurveSegment.java $
+//$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,43 +33,31 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
 
-import org.deegree.commons.uom.Measure;
-import org.deegree.commons.uom.Unit;
-import org.deegree.geometry.primitive.Curve;
-import org.deegree.geometry.primitive.Point;
+package org.deegree.geometry.primitive.patches;
 
 /**
- * A {@link CurveSegment} that is defined by a base {@link Curve} and an offset.
+ * The <code>Sphere</code> class represents (according to GML-3.1 spec) a gridded surface given as a family of circles
+ * whose positions vary linearly along the axis of the sphere, and whose radius varies in proportions to the cosine
+ * function of the central angle. The horizontal circles resemble lines of constant latitude, and the vertical arcs
+ * resemble lines of constant longitude.
  * 
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
- * @version $Revision:$, $Date:$
+ * @author last edited by: $Author: ionita $
+ * 
+ * @version $Revision: $, $Date: $
+ * 
  */
-public interface OffsetCurve extends CurveSegment {
+public interface Sphere extends GriddedSurfacePatch {
+
+    // nothing new here, this interface is only necessary for a type-based differentiation
 
     /**
-     * Returns the {@link Curve} from which this curve segment is defined as using an offset.
+     * Must always return {@link GriddedSurfacePatch.GriddedSurfaceType#SPHERE}.
      * 
-     * @return the <code>Curve</code> used as the base geometry
+     * @return {@link GriddedSurfacePatch.GriddedSurfaceType#SPHERE}
      */
-    public Curve getBaseCurve();
-
-    /**
-     * Returns the distance from the base curve.
-     * 
-     * @param requestedUnits
-     *            units that the distance shall be expressed as 
-     * @return the distance
-     */
-    public Measure getDistance( Unit requestedUnit );
-
-    /**
-     * Returns the direction of the offset.
-     * 
-     * @return the direction of the offset
-     */
-    public Point getDirection();
+    @Override
+    public GriddedSurfaceType getGriddedSurfaceType();
 }

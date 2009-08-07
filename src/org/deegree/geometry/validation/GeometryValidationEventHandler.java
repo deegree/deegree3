@@ -41,7 +41,7 @@ import java.util.List;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
 
 /**
  * Implementations of this interface

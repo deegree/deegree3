@@ -43,7 +43,7 @@ import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.surfacepatches.Rectangle;
+import org.deegree.geometry.primitive.patches.Rectangle;
 
 /**
  * Default implementation of {@link Rectangle}.

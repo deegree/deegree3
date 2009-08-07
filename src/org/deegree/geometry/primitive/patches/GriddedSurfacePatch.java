@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.surfacepatches;
+package org.deegree.geometry.primitive.patches;
 
 import java.util.List;
 

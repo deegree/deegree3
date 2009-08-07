@@ -1,10 +1,10 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/geometry/primitive/CurveSegment.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,60 +32,26 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.surfacepatches;
+ ----------------------------------------------------------------------------*/
+package org.deegree.geometry.primitive.segments;
 
-import java.util.List;
-
-import org.deegree.geometry.primitive.LinearRing;
-import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.points.Points;
 
 /**
- * A {@link Rectangle} is a {@link PolygonPatch} defined by four planar points.
- *
+ * A <code>GeodesicString</code> is computed from two or more positions and an interpolation using geodesics defined
+ * from the geoid (or ellipsoid) of the coordinate reference system being used.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
-public interface Rectangle extends PolygonPatch {
+public interface GeodesicString extends CurveSegment {
 
     /**
-     * Returns the first of the four control points.
-     *
-     * @return the first control point
+     * Returns the control points of the string.
+     * 
+     * @return the control points of the string
      */
-    public Point getPoint1();
-
-    /**
-     * Returns the second of the four control points.
-     *
-     * @return the second control point
-     */
-    public Point getPoint2();
-
-    /**
-     * Returns the third of the four control points.
-     *
-     * @return the third control point
-     */
-    public Point getPoint3();
-
-    /**
-     * Returns the last of the four control points.
-     *
-     * @return the last control point
-     */
-    public Point getPoint4();
-
-    /**
-     * Returns the sequence of control points as a {@link LinearRing}.
-     *
-     * @return the exterior ring
-     */
-    @Override
-    public LinearRing getExteriorRing();
-
-    @Override
-    public List<LinearRing> getBoundaryRings();
+    public Points getControlPoints();
 }

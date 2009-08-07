@@ -1,4 +1,4 @@
-//$HeadURL$
+//$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,39 +33,28 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
+
+package org.deegree.geometry.primitive.patches;
 
 /**
- * Defines allowed values for the knots' type. Uniform knots implies that all knots are of multiplicity 1 and they
- * differ by a positive constant from the preceding knot. Knots are quasi-uniform iff they are of multiplicity (degree +
- * 1) at the ends, of multiplicity 1 elsewhere, and they differ by a positive constant from the preceding knot.
+ * The <code>Cylinder</code> class represents (according to the GML-3.1 spec) a gridded surface given as a
+ * family of circles whose positions vary along a set of parallel lines, keeping the cross sectional horizontal
+ * curves of a constant shape.
  *
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+ * @author last edited by: $Author: ionita $
  *
- * @version $Revision:$, $Date:$
+ * @version $Revision: $, $Date: $
  */
-public enum KnotType {
+public interface Cylinder extends GriddedSurfacePatch {
+
+    // nothing new here, this interface is only necessary for a type-based differentiation
 
     /**
+     * Must always return {@link GriddedSurfacePatch.GriddedSurfaceType#CYLINDER}.
      *
+     * @return {@link GriddedSurfacePatch.GriddedSurfaceType#CYLINDER}
      */
-    UNSPECIFIED,
-
-    /**
-     * All knots are of multiplicity 1 and they differ by a positive constant from the preceding knot.
-     */
-    UNIFORM,
-
-    /**
-     * Multiplicity of the knots is (degree + 1) at the ends, 1 elsewhere, and knots differ by a positive constant from
-     * the preceding knot.
-     */
-    QUASI_UNIFORM,
-
-    /**
-     * ???
-     */
-    BEZIER
-
+    @Override
+    public GriddedSurfaceType getGriddedSurfaceType();
 }

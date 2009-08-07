@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.surfacepatches;
+package org.deegree.geometry.primitive.patches;
 
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
@@ -50,22 +50,26 @@ import org.deegree.geometry.primitive.Surface;
  */
 public interface SurfacePatch {
 
+    /**
+     * Convenience enum type for discriminating the different surface patch variants in switch statements.
+     */
     public enum SurfacePatchType {
-        // TODO no class for it currently
+        /** Patch is a {@link GriddedSurfacePatch}. */
         GRIDDED_SURFACE_PATCH,
-
+        /** Patch is a {@link PolygonPatch}. */
         POLYGON_PATCH,
-
+        /** Patch is a {@link Rectangle}. */
         RECTANGLE,
-
+        /** Patch is a {@link Triangle}. */
         TRIANGLE
     }
 
     /**
+     * Returns the type of surface patch.
      * 
-     * @return area of the patch in the requested units
+     * @return the type of surface patch
      */
-    public Measure getArea( Unit requestedBaseUnit );
+    public SurfacePatchType getSurfacePatchType();
 
     /**
      * Returns the coordinate dimension, i.e. the dimension of the space that the patch is embedded in.
@@ -75,8 +79,10 @@ public interface SurfacePatch {
     public int getCoordinateDimension();
 
     /**
-     * @return the kind of SurfacePatch the object represents, an element of {@link SurfacePatchType}
+     * Returns the area covered by the patch.
+     * 
+     * @param uom
+     * @return area covered by the patch in the requested uom
      */
-    public SurfacePatchType getSurfacePatchType();
-
+    public Measure getArea( Unit uom );
 }

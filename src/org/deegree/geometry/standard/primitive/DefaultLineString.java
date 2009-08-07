@@ -41,8 +41,8 @@ import org.deegree.crs.CRS;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.LineString;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment;
-import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.curvesegments.DefaultLineStringSegment;
 
 /**

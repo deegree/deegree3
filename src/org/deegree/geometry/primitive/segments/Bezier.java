@@ -33,42 +33,29 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.surfacepatches;
-
-import java.util.List;
-
-import org.deegree.geometry.primitive.Ring;
+package org.deegree.geometry.primitive.segments;
 
 /**
- * A {@link PolygonPatch} is a {@link SurfacePatch} that is defined by a set of boundary curves and an underlying
- * surface to which these curves adhere. The curves are coplanar and the polygon uses planar interpolation in its
- * interior. Implements <code>GM_Polygon</code> of ISO 19107.
+ * Special case of a {@link BSpline} curve segment with two knots.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public interface PolygonPatch extends SurfacePatch {
-
-    public List<? extends Ring> getBoundaryRings();
+public interface Bezier extends BSpline {
 
     /**
-     * Returns the exterior ring of the polygon.
-     * <p>
-     * Please note that the exterior may be empty (null). The following explanation is from the GML 3.1.1 spec (section
-     * 9.2.2.5): In the normal 2D case, one of these rings is distinguished as being the exterior boundary. In a general
-     * manifold this is not always possible, in which case all boundaries shall be listed as interior boundaries, and
-     * the exterior will be empty.
+     * Returns the first knot that defines the spline's basis functions.
      *
-     * @return the exterior ring, or null
+     * @return first knot
      */
-    public Ring getExteriorRing();
+    public Knot getKnot1();
 
     /**
-     * Returns the interior rings (holes) of the polygon.
+     * Returns the second knot that defines the spline's basis functions.
      *
-     * @return the interior rings (holes) of the polygon, list may be empty (but not null)
+     * @return second knot
      */
-    public List<Ring> getInteriorRings();
+    public Knot getKnot2();
 }

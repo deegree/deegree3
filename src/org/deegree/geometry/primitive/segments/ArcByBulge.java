@@ -33,40 +33,45 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
+package org.deegree.geometry.primitive.segments;
 
-import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * A {@link CurveSegment} that uses the control points and a set of derivative parameters to define a piecewise 3rd
- * degree polynomial interpolation.
+ * An {@link ArcStringByBulge} that consists of a single arc only.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public interface CubicSpline extends CurveSegment {
+public interface ArcByBulge extends ArcStringByBulge {
 
     /**
-     * Returns the control points of the spline.
+     * Returns the first control point.
      *
-     * @return the control points of the spline
+     * @return the first control point
      */
-    public Points getControlPoints();
+    public Point getPoint1();
 
     /**
-     * Returns the unit tangent vector at the start point of the spline.
+     * Returns the second control point.
      *
-     * @return the unit tangent vector at the start point of the spline
+     * @return the second control point
      */
-    public Point getVectorAtStart();
+    public Point getPoint2();
 
     /**
-     * Returns the unit tangent vector at the end point of the spline.
+     * Returns the single bulge value.
      *
-     * @return the unit tangent vector at the end point of the spline
+     * @return the bulge value
      */
-    public Point getVectorAtEnd();
+    public double getBulge();
+
+    /**
+     * Returns the single normal vector for the bulge.
+     *
+     * @return the bulge's normal vector
+     */
+    public Point getNormal();
 }

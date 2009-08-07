@@ -33,35 +33,26 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
+package org.deegree.geometry.primitive.segments;
 
-import org.deegree.commons.uom.Measure;
-import org.deegree.commons.uom.Unit;
+import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 
 /**
- * An {@link Arc} whose ends coincide to form a simple closed loop.
+ * A {@link CurveSegment} that is defined by two or more {@link Point}s, with linear interpolation between subsequent
+ * pairs of points.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  * 
  * @version $Revision:$, $Date:$
  */
-public interface Circle extends Arc {
+public interface LineStringSegment extends CurveSegment {
 
     /**
-     * Returns the mid-point of the circle.
+     * Returns the control points of the string.
      * 
-     * @return the mid-point
+     * @return the control points of the string
      */
-    public Point getMidPoint();
-
-    /**
-     * Returns the radius of the circle.
-     * 
-     * @param requestedUnits
-     *            units that the radius should be expressed as
-     * @return the radius of the arc
-     */
-    public Measure getRadius( Unit requestedUnits );
+    public Points getControlPoints();
 }

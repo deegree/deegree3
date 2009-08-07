@@ -49,10 +49,10 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.curvesegments.Arc;
-import org.deegree.geometry.primitive.curvesegments.Circle;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment;
-import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.geometry.primitive.segments.Arc;
+import org.deegree.geometry.primitive.segments.Circle;
+import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.points.PointsList;
 
 /**

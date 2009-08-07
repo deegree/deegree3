@@ -49,12 +49,12 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.gml.GML311GeometryDecoder;
 import org.deegree.geometry.gml.GML311SurfacePatchDecoder;
-import org.deegree.geometry.primitive.surfacepatches.Cone;
-import org.deegree.geometry.primitive.surfacepatches.Cylinder;
-import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
-import org.deegree.geometry.primitive.surfacepatches.Rectangle;
-import org.deegree.geometry.primitive.surfacepatches.Sphere;
-import org.deegree.geometry.primitive.surfacepatches.Triangle;
+import org.deegree.geometry.primitive.patches.Cone;
+import org.deegree.geometry.primitive.patches.Cylinder;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
+import org.deegree.geometry.primitive.patches.Rectangle;
+import org.deegree.geometry.primitive.patches.Sphere;
+import org.deegree.geometry.primitive.patches.Triangle;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -35,7 +35,7 @@
 package org.deegree.geometry.standard.curvesegments;
 
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.curvesegments.Clothoid;
+import org.deegree.geometry.primitive.segments.Clothoid;
 
 /**
  * Default implementation of {@link Clothoid} segments.

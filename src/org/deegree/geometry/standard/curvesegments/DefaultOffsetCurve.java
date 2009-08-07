@@ -39,7 +39,7 @@ import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.curvesegments.OffsetCurve;
+import org.deegree.geometry.primitive.segments.OffsetCurve;
 
 /**
  * Default implementation of {@link OffsetCurve} segments.

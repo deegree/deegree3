@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/geometry/primitive/CurveSegment.java $
+//$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,38 +33,32 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
 
-import org.deegree.geometry.primitive.Point;
+package org.deegree.geometry.primitive.patches;
 
 /**
- * An {@link ArcString} that consists of a single arc only.
+ * The <code>Cone</code> class represents (according to GML-3.1 spec ) a gridded surface given as a family of
+ * conic sections whose control points vary linearly.
+ * A 5-point ellipse with all defining positions identical is a point. Thus, a truncated elliptical cone can be
+ * given as a 2x5 set of control points <<P1, P1, P1, P1, P1>, <P2, P3, P4, P5, P6>>. P1 is the apex of the
+ * cone. P2, P3, P4, P5 and P6 are any five distinct points around the base ellipse of the cone. If the horizontal
+ * curves are circles as opposed to ellipses, the circular cone can be constructed using <<P1, P1, P1>, <P2, P3,
+ * P4>>.
  *
- * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
+ * @author last edited by: $Author: ionita $
  *
- * @version $Revision:$, $Date:$
+ * @version $Revision: $, $Date: $
  */
-public interface Arc extends ArcString {
+public interface Cone extends GriddedSurfacePatch {
+
+    // nothing new here, this interface is only necessary for a type-based differentiation
 
     /**
-     * Returns the first of the three control points.
+     * Must always return {@link GriddedSurfacePatch.GriddedSurfaceType#CONE}.
      *
-     * @return the first control point
+     * @return {@link GriddedSurfacePatch.GriddedSurfaceType#CONE}
      */
-    public Point getPoint1();
-
-    /**
-     * Returns the second of the three control points.
-     *
-     * @return the second control point
-     */
-    public Point getPoint2();
-
-    /**
-     * Returns the last of the three control points.
-     *
-     * @return the third control point
-     */
-    public Point getPoint3();
+    @Override
+    public GriddedSurfaceType getGriddedSurfaceType();
 }

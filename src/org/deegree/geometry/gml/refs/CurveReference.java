@@ -45,7 +45,7 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LineString;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment;
+import org.deegree.geometry.primitive.segments.CurveSegment;
 
 /**
  * The <code></code> class TODO add class documentation here.

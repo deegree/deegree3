@@ -57,7 +57,6 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
-import org.deegree.feature.i18n.Messages;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
@@ -73,6 +72,7 @@ import org.deegree.geometry.gml.refs.PointReference;
 import org.deegree.geometry.gml.refs.PolygonReference;
 import org.deegree.geometry.gml.refs.SolidReference;
 import org.deegree.geometry.gml.refs.SurfaceReference;
+import org.deegree.geometry.i18n.Messages;
 import org.deegree.geometry.multi.MultiCurve;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.multi.MultiLineString;
@@ -99,11 +99,11 @@ import org.deegree.geometry.primitive.Curve.CurveType;
 import org.deegree.geometry.primitive.Ring.RingType;
 import org.deegree.geometry.primitive.Solid.SolidType;
 import org.deegree.geometry.primitive.Surface.SurfaceType;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment;
-import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
-import org.deegree.geometry.primitive.surfacepatches.Triangle;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
+import org.deegree.geometry.primitive.patches.Triangle;
+import org.deegree.geometry.primitive.segments.CurveSegment;
+import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.points.PointsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2477,7 +2477,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         // a separating colon (only at the first position a colon is allowed) and must not
         // start with a digit.
         if ( gid != null && gid.length() > 0 && !gid.matches( "[^\\d][^:]+" ) ) {
-            String msg = Messages.getMessage( "ERROR_INVALID_FEATUREID", gid );
+            String msg = Messages.getMessage( "GML_INVALID_GEOMETRYID", gid );
             throw new IllegalArgumentException( msg );
         }
         return gid;

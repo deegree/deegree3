@@ -33,25 +33,44 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
+package org.deegree.geometry.primitive.segments;
 
-import org.deegree.geometry.points.Points;
+import org.deegree.commons.uom.Measure;
+import org.deegree.commons.uom.Unit;
+import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.Point;
 
 /**
- * A <code>GeodesicString</code> is computed from two or more positions and an interpolation using geodesics defined
- * from the geoid (or ellipsoid) of the coordinate reference system being used.
+ * A {@link CurveSegment} that is defined by a base {@link Curve} and an offset vector.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author:$
+ * @author last edited by: $Author$
  * 
- * @version $Revision:$, $Date:$
+ * @version $Revision$
  */
-public interface GeodesicString extends CurveSegment {
+public interface OffsetCurve extends CurveSegment {
 
     /**
-     * Returns the control points of the string.
+     * Returns the {@link Curve} that the curve segment's definition is based on.
      * 
-     * @return the control points of the string
+     * @return the <code>Curve</code> used as the base geometry
      */
-    public Points getControlPoints();
+    public Curve getBaseCurve();
+
+    /**
+     * Returns the distance from the base {@link Curve}.
+     * 
+     * @param uom
+     *            units-of-measure that the distance shall be expressed as, or null for units of the underlying
+     *            coordinate system
+     * @return the distance in the the requested uom
+     */
+    public Measure getDistance( Unit uom );
+
+    /**
+     * Returns the direction of the offset from the base {@link Curve}.
+     * 
+     * @return the direction of the offset (to be understood as an offset vector)
+     */
+    public Point getDirection();
 }

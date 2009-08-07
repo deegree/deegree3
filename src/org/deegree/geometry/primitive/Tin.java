@@ -40,39 +40,62 @@ import java.util.List;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.points.Points;
-import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
+import org.deegree.geometry.primitive.segments.LineStringSegment;
 
 /**
- * A {@link Tin} is a {@link TriangulatedSurface} that uses the Delauny algorithm or a similar algorithm complemented
- * with consideration of breaklines, stoplines, and maximum length of triangle sides. These networks satisfy the
- * Delauny's criterion away from the modifications: For each triangle in the network, the circle passing through its
- * vertices does not contain, in its interior, the vertex of any other triangle.
+ * A {@link TriangulatedSurface} that uses the Delaunay algorithm or a similar algorithm complemented with consideration
+ * of breaklines, stoplines, and maximum length of triangle sides. These networks satisfy the Delaunay's criterion away
+ * from the modifications: For each triangle in the network, the circle passing through its vertices does not contain,
+ * in its interior, the vertex of any other triangle.
  * <p>
- * One can notice that the useful information provided for the Tin element is solely the trianglePatches, since
- * the stopLines and breakLines (along with maxLength and ControlPoints) are only needed to obtain this
- * triangulation.
- *
+ * One can notice that the useful information provided for the Tin element is solely the trianglePatches, since the
+ * stopLines and breakLines (along with maxLength and ControlPoints) are only needed to obtain the triangulation.
+ * However, GML allows to specify both, so the interface provides access to them.
+ * </p>
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: mschneider $
- *
- * @version. $Revision: 14412 $, $Date: 2008-10-23 19:29:57 +0200 (Do, 23 Okt 2008) $
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$
  */
 public interface Tin extends TriangulatedSurface {
 
     /**
      * Must always return {@link Surface.SurfaceType#Tin}.
-     *
+     * 
      * @return {@link Surface.SurfaceType#Tin}
      */
-    @Override
     public SurfaceType getSurfaceType();
 
+    /**
+     * Returns the stop lines that must be respected by the triangulation.
+     * 
+     * @return the stop lines
+     */
     public List<List<LineStringSegment>> getStopLines();
 
+    /**
+     * Returns the break lines that must be respected by the triangulation.
+     * 
+     * @return the break lines
+     */
     public List<List<LineStringSegment>> getBreakLines();
 
-    public Measure getMaxLength(Unit requestedUnits);
+    /**
+     * Returns the maximum length of all triangle side.
+     * 
+     * @param uom
+     *            units-of-measure that the length shall be expressed as, or null for units of the underlying coordinate
+     *            system
+     * @return the length in the the requested uom
+     */
+    public Measure getMaxLength( Unit uom );
 
+    /**
+     * Returns the control points (vertices) of the triangles.
+     * 
+     * @return the control points
+     */
     public Points getControlPoints();
 }

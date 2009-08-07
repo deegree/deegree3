@@ -40,9 +40,9 @@ import java.util.List;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.points.Points;
-import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
-import org.deegree.geometry.primitive.surfacepatches.Triangle;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
+import org.deegree.geometry.primitive.patches.Triangle;
 
 /**
  * <code>Surface</code> instances are 2D-geometries that consist of an arbitrary number of surface patches which are not
@@ -65,8 +65,10 @@ public interface Surface extends GeometricPrimitive {
         Polygon,
         /** Surface that consists of (planar) {@link PolygonPatch}es only. */
         PolyhedralSurface,
-        /** Surface that consists of (planar) {@link Triangle}s only. */
-        TriangulatedSurface, Tin,
+        /** Surface that consists of {@link Triangle}s only. */
+        TriangulatedSurface,
+        /** Surface that consists of {@link Triangle}s only (which meet the Delaunay criterion). */
+        Tin,
         /** Surface composited from multiple members surfaces. */
         CompositeSurface,
         /** Surface that wraps a base surface with additional orientation flag. */

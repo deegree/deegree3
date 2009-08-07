@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://aionita@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/geometry/primitive/CurveSegment.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -33,28 +33,31 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
+package org.deegree.geometry.primitive.segments;
 
-package org.deegree.geometry.primitive.surfacepatches;
+import org.deegree.geometry.points.Points;
 
 /**
- * The <code>Cylinder</code> class represents (according to the GML-3.1 spec) a gridded surface given as a
- * family of circles whose positions vary along a set of parallel lines, keeping the cross sectional horizontal
- * curves of a constant shape.
+ * {@link CurveSegment} that uses three-point circular arc interpolation.
  *
- * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: ionita $
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
+ * @author last edited by: $Author:$
  *
- * @version $Revision: $, $Date: $
+ * @version $Revision:$, $Date:$
  */
-public interface Cylinder extends GriddedSurfacePatch {
-
-    // nothing new here, this interface is only necessary for a type-based differentiation
+public interface ArcString extends CurveSegment {
 
     /**
-     * Must always return {@link GriddedSurfacePatch.GriddedSurfaceType#CYLINDER}.
+     * Returns the number of arcs of the string.
      *
-     * @return {@link GriddedSurfacePatch.GriddedSurfaceType#CYLINDER}
+     * @return the number of arcs
      */
-    @Override
-    public GriddedSurfaceType getGriddedSurfaceType();
+    public int getNumArcs();
+
+    /**
+     * Returns the control points of the interpolation.
+     *
+     * @return the control points of the interpolation
+     */
+    public Points getControlPoints();
 }

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
+package org.deegree.geometry.primitive.segments;
 
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
@@ -50,25 +50,54 @@ import org.deegree.geometry.primitive.Point;
 public interface CurveSegment {
 
     /**
-     * Convenience enum type for discriminating the different curve segment variants.
+     * Convenience enum type for discriminating the different curve segment variants in switch statements.
      */
     public enum CurveSegmentType {
-        ARC, ARC_BY_BULGE, ARC_BY_CENTER_POINT, ARC_STRING, ARC_STRING_BY_BULGE, BEZIER, BSPLINE, CIRCLE, CIRCLE_BY_CENTER_POINT, CLOTHOID, CUBIC_SPLINE, GEODESIC, GEODESIC_STRING, LINE_STRING_SEGMENT, OFFSET_CURVE
+        /** Segment is an {@link Arc}. */
+        ARC,
+        /** Segment is an {@link ArcByBulge}. */
+        ARC_BY_BULGE,
+        /** Segment is an {@link ArcByCenterPoint}. */
+        ARC_BY_CENTER_POINT,
+        /** Segment is an {@link ArcString}. */
+        ARC_STRING,
+        /** Segment is an {@link ArcStringByBulge}. */
+        ARC_STRING_BY_BULGE,
+        /** Segment is a {@link Bezier}. */
+        BEZIER,
+        /** Segment is a {@link BSpline}. */
+        BSPLINE,
+        /** Segment is a {@link Circle}. */
+        CIRCLE,
+        /** Segment is a {@link CircleByCenterPoint}. */
+        CIRCLE_BY_CENTER_POINT,
+        /** Segment is a {@link Clothoid}. */
+        CLOTHOID,
+        /** Segment is a {@link CubicSpline}. */
+        CUBIC_SPLINE,
+        /** Segment is a {@link Geodesic}. */
+        GEODESIC,
+        /** Segment is a {@link GeodesicString}. */
+        GEODESIC_STRING,
+        /** Segment is a {@link LineStringSegment}. */
+        LINE_STRING_SEGMENT,
+        /** Segment is an {@link OffsetCurve}. */
+        OFFSET_CURVE
     }
-
-    /**
-     * Returns the coordinate dimension, i.e. the dimension of the space that the curve is embedded in.
-     * 
-     * @return the coordinate dimension
-     */
-    public int getCoordinateDimension();
 
     /**
      * Returns the type of curve segment.
      *
      * @return the type of curve segment
      */
-    public CurveSegmentType getSegmentType();
+    public CurveSegmentType getSegmentType();    
+    
+    /**
+     * Returns the coordinate dimension, i.e. the dimension of the space that the curve is embedded in.
+     * 
+     * @return the coordinate dimension
+     */
+    public int getCoordinateDimension();
 
     /**
      * Returns the start point of the segment.

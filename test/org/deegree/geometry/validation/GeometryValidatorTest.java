@@ -55,7 +55,7 @@ import org.deegree.geometry.gml.GML311GeometryDecoderTest;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.junit.Test;
 
 /**

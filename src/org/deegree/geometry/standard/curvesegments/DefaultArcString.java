@@ -37,7 +37,7 @@ package org.deegree.geometry.standard.curvesegments;
 
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.curvesegments.ArcString;
+import org.deegree.geometry.primitive.segments.ArcString;
 
 /**
  * Default implementation of {@link ArcString} segments.

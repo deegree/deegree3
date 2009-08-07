@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+   Department of Geography, University of Bonn
  and
- lat/lon GmbH
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,58 +32,52 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive;
+----------------------------------------------------------------------------*/
+package org.deegree.geometry.primitive.patches;
 
 import java.util.List;
 
-import org.deegree.geometry.primitive.patches.PolygonPatch;
+import org.deegree.geometry.primitive.Ring;
 
 /**
- * A {@link Surface} that consists of one single planar patch (a {@link PolygonPatch}).
+ * A {@link PolygonPatch} is a planar {@link SurfacePatch} that is defined by a set of boundary curves and an underlying
+ * surface to which these curves adhere. The curves are coplanar and the polygon uses planar interpolation in its
+ * interior. Implements <code>GM_Polygon</code> of ISO 19107.
  * <p>
- * Please note that a {@link Polygon} is not restricted to use linear interpolation for its exterior and interior rings
- * (just as a {@link PolygonPatch}).
+ * Please note that a {@link PolygonPatch} is not restricted to use linear interpolation for its exterior and interior
+ * rings.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
- * @author last edited by: $Author$
+ * @author last edited by: $Author: markusschneider $
  * 
  * @version $Revision: 33706 $, $Date: 2009-08-07 00:49:16 +0200 (Fr, 07 Aug 2009) $
  */
-public interface Polygon extends Surface {
+public interface PolygonPatch extends SurfacePatch {
 
     /**
-     * Must always return {@link Surface.SurfaceType#Polygon}.
+     * Returns the boundary rings (interior + exteriors)
      * 
-     * @return {@link Surface.SurfaceType#Polygon}
+     * @return the boundary rings, list may be empty (but not null)
      */
-    public SurfaceType getSurfaceType();
+    public List<? extends Ring> getBoundaryRings();
 
     /**
-     * Returns the exterior ring of the polygon.
+     * Returns the exterior ring of the patch.
      * <p>
-     * Please note that this method may return null. The following explanation is from the GML 3.1.1 spec (section
+     * Please note that the exterior may be empty (null). The following explanation is from the GML 3.1.1 spec (section
      * 9.2.2.5): In the normal 2D case, one of these rings is distinguished as being the exterior boundary. In a general
      * manifold this is not always possible, in which case all boundaries shall be listed as interior boundaries, and
      * the exterior will be empty.
      * 
-     * @return the exterior ring, or null if no ring is distinguished as being the exterior boundary
+     * @return the exterior ring, or null
      */
     public Ring getExteriorRing();
 
     /**
-     * Returns the interior rings (holes) of the polygon.
+     * Returns the interior rings (holes) of the patch.
      * 
-     * @return the interior rings (holes) of the polygon, list may be empty (but not null)
+     * @return the interior rings (holes) of the patch, list may be empty (but not null)
      */
     public List<Ring> getInteriorRings();
-
-    /**
-     * Returns a list that contains the one {@link PolygonPatch} that constitutes this polygon.
-     * 
-     * @return a list that contains the single planar patch that constitutes this surface
-     */
-    @Override
-    public List<PolygonPatch> getPatches();
 }

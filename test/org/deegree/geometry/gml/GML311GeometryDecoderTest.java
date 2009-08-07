@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.geometry.gml;
 
-import static org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType.ARC;
-import static org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType.LINE_STRING_SEGMENT;
+import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType.ARC;
+import static org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType.LINE_STRING_SEGMENT;
 
 import java.io.IOException;
 
@@ -78,10 +78,10 @@ import org.deegree.geometry.primitive.Curve.CurveType;
 import org.deegree.geometry.primitive.Ring.RingType;
 import org.deegree.geometry.primitive.Solid.SolidType;
 import org.deegree.geometry.primitive.Surface.SurfaceType;
-import org.deegree.geometry.primitive.curvesegments.Arc;
-import org.deegree.geometry.primitive.curvesegments.LineStringSegment;
-import org.deegree.geometry.primitive.curvesegments.CurveSegment.CurveSegmentType;
-import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
+import org.deegree.geometry.primitive.segments.Arc;
+import org.deegree.geometry.primitive.segments.LineStringSegment;
+import org.deegree.geometry.primitive.segments.CurveSegment.CurveSegmentType;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -42,7 +42,7 @@ import java.util.List;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
 
 /**
  * Default implementation of {@link PolygonPatch}.

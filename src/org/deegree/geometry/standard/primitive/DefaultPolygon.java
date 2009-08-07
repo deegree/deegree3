@@ -43,7 +43,7 @@ import org.deegree.geometry.Envelope;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Polygon;
 import org.deegree.geometry.primitive.Ring;
-import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
 import org.deegree.geometry.standard.surfacepatches.DefaultPolygonPatch;
 
 import com.vividsolutions.jts.geom.LinearRing;

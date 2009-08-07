@@ -39,7 +39,7 @@ import org.deegree.commons.uom.Angle;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.curvesegments.ArcByCenterPoint;
+import org.deegree.geometry.primitive.segments.ArcByCenterPoint;
 
 /**
  * Default implementation of {@link ArcByCenterPoint} segments.

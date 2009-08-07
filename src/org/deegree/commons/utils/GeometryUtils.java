@@ -58,8 +58,8 @@ import org.deegree.geometry.primitive.LinearRing;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
 import org.deegree.geometry.standard.points.PointsList;
 import org.deegree.rendering.r2d.strokes.TextStroke;
 

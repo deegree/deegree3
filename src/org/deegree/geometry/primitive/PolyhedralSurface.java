@@ -35,7 +35,7 @@
 ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
-import org.deegree.geometry.primitive.surfacepatches.PolygonPatch;
+import org.deegree.geometry.primitive.patches.PolygonPatch;
 
 /**
  * A {@link Surface} that consists only of {@link PolygonPatch} patches.

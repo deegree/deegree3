@@ -43,7 +43,7 @@ import org.deegree.commons.uom.Unit;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Surface;
-import org.deegree.geometry.primitive.surfacepatches.SurfacePatch;
+import org.deegree.geometry.primitive.patches.SurfacePatch;
 
 /**
  * The <code></code> class TODO add class documentation here.

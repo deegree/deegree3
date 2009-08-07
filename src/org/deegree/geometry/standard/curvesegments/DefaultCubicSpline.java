@@ -37,7 +37,7 @@ package org.deegree.geometry.standard.curvesegments;
 
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
-import org.deegree.geometry.primitive.curvesegments.CubicSpline;
+import org.deegree.geometry.primitive.segments.CubicSpline;
 
 /**
  * Default implementation of {@link CubicSpline} segments.

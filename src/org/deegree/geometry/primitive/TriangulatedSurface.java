@@ -37,7 +37,7 @@ package org.deegree.geometry.primitive;
 
 import java.util.List;
 
-import org.deegree.geometry.primitive.surfacepatches.Triangle;
+import org.deegree.geometry.primitive.patches.Triangle;
 
 /**
  * A {@link Surface} that consists only of {@link Triangle} patches.

@@ -33,29 +33,46 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.geometry.primitive.curvesegments;
+package org.deegree.geometry.primitive.segments;
+
+import org.deegree.geometry.standard.curvesegments.AffinePlacement;
 
 /**
- * Special case of a {@link BSpline} curve segment with two knots.
+ * A clothoid, or Cornu's spiral, is a plane {@link CurveSegment} whose curvature is a fixed function of its length.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
  *
  * @version $Revision:$, $Date:$
  */
-public interface Bezier extends BSpline {
+public interface Clothoid extends CurveSegment {
 
     /**
-     * Returns the first knot that defines the spline's basis functions.
+     * Returns the affine mapping that places the curve defined by the Fresnel Integrals into the coordinate reference
+     * system of this object.
      *
-     * @return first knot
+     * @return the affine mapping
      */
-    public Knot getKnot1();
+    public AffinePlacement getReferenceLocation();
 
     /**
-     * Returns the second knot that defines the spline's basis functions.
+     * Returns the value for the constant in the Fresnel's integrals.
      *
-     * @return second knot
+     * @return the value for the constant in the Fresnel's integrals
      */
-    public Knot getKnot2();
+    public double getScaleFactor();
+
+    /**
+     * Returns the arc length distance from the inflection point that will be the start point for this curve segment.
+     *
+     * @return the arc length distance that defines the start point
+     */
+    public double getStartParameter();
+
+    /**
+     * Returns the arc length distance from the inflection point that will be the end point for this curve segment.
+     *
+     * @return the arc length distance that defines the end point
+     */
+    public double getEndParameter();
 }

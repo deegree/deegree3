@@ -44,7 +44,7 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.TriangulatedSurface;
-import org.deegree.geometry.primitive.surfacepatches.Triangle;
+import org.deegree.geometry.primitive.patches.Triangle;
 import org.deegree.geometry.standard.AbstractDefaultGeometry;
 
 /**
