@@ -93,8 +93,10 @@ public class ApplicationSchema {
      */
     public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftSubstitutionGroupRelation,
                               XSModel model ) throws IllegalArgumentException {
+
         for ( FeatureType ft : fts ) {
             ftNameToFt.put( ft.getName(), ft );
+            ft.setSchema (this);
         }
 
         // build substitution group lookup maps

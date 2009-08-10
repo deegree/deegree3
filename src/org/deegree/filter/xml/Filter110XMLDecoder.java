@@ -519,7 +519,7 @@ public class Filter110XMLDecoder extends XMLAdapter {
             // third parameter: 'ogc:Distance'
             OMElement distanceElement = childElementIter.next();
             String distanceUnits = getRequiredNodeAsString( distanceElement, new XPath( "@units", nsContext ) );
-            Measure distance = new Measure( distanceElement.getText(), distanceUnits );
+            Measure distance = new Measure( distanceUnits, null );
 
             spatialOperator = new Beyond( param1, param2, distance );
             break;
@@ -609,7 +609,7 @@ public class Filter110XMLDecoder extends XMLAdapter {
             // third parameter: 'ogc:Distance'
             OMElement distanceElement = childElementIter.next();
             String distanceUnits = getRequiredNodeAsString( distanceElement, new XPath( "@units", nsContext ) );
-            Measure distance = new Measure( distanceElement.getText(), distanceUnits );
+            Measure distance = new Measure( distanceUnits, null );
 
             spatialOperator = new DWithin( param1, param2, distance );
             break;

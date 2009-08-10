@@ -95,6 +95,9 @@ public class GMLMemoryStore implements FeatureStore {
      */
     public GMLMemoryStore( ApplicationSchema schema ) {
         this.schema = schema;
+        for ( FeatureType ft : schema.getFeatureTypes() ) {
+            ftToFeatures.put( ft, new GenericFeatureCollection() );
+        }
     }
 
     /**
@@ -127,10 +130,6 @@ public class GMLMemoryStore implements FeatureStore {
             Feature feature = idToFeature.get( id );
             FeatureType ft = feature.getType();
             FeatureCollection fc2 = ftToFeatures.get( ft );
-            if ( fc2 == null ) {
-                fc2 = new GenericFeatureCollection();
-                ftToFeatures.put( ft, fc2 );
-            }
             fc2.add( feature );
             idToObject.put( id, feature );
         }
@@ -153,10 +152,6 @@ public class GMLMemoryStore implements FeatureStore {
             FeatureType ft = feature.getType();
             // TODO check
             FeatureCollection fc2 = ftToFeatures.get( ft );
-            if ( fc2 == null ) {
-                fc2 = new GenericFeatureCollection();
-                ftToFeatures.put( ft, fc2 );
-            }
             fc2.add( feature );
             if ( feature.getId() != null ) {
                 idToObject.put( feature.getId(), feature );
@@ -278,6 +273,6 @@ public class GMLMemoryStore implements FeatureStore {
         }
         this.activeTransaction = null;
         this.transactionHolder = null;
-//        notifyAll();
+        // notifyAll();
     }
 }

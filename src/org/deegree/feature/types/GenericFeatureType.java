@@ -64,6 +64,8 @@ public class GenericFeatureType implements FeatureType {
 
     private boolean isAbstract;
 
+    private ApplicationSchema schema;
+
     public GenericFeatureType( QName name, List<PropertyType> propDecls, boolean isAbstract ) {
         this.name = name;
         for ( PropertyType propDecl : propDecls ) {
@@ -103,10 +105,14 @@ public class GenericFeatureType implements FeatureType {
 
     @Override
     public ApplicationSchema getSchema() {
-        // TODO Auto-generated method stub
-        return null;
+        return schema;
     }
 
+    @Override
+    public void setSchema( ApplicationSchema schema ) {
+       this.schema = schema;
+    }       
+    
     @Override
     public String toString () {
         String s = "- Feature type '" + name + "', abstract: " + isAbstract;

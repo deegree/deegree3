@@ -57,6 +57,8 @@ import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.GeometryPropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.feature.types.property.SimplePropertyType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generates GML application schemas from {@link ApplicationSchema} instances.
@@ -76,6 +78,8 @@ import org.deegree.feature.types.property.SimplePropertyType;
  */
 public class ApplicationSchemaXSDEncoder {
 
+    private static final Logger LOG = LoggerFactory.getLogger( ApplicationSchemaXSDEncoder.class );    
+    
     private static final String GML_212_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/2.1.2.1/feature.xsd";
 
     private static final String GML_311_DEFAULT_INCLUDE = "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd";
@@ -176,6 +180,10 @@ public class ApplicationSchemaXSDEncoder {
     public void export( XMLStreamWriter writer, List<FeatureType> fts )
                             throws XMLStreamException {
 
+        for (FeatureType ft : fts) {
+            LOG.debug ("Exporting ft " + ft.getName());
+        }
+        
         // TODO prefix handling
         final String ns = fts.get( 0 ).getName().getNamespaceURI();
         if ( ns != null && !ns.isEmpty() ) {

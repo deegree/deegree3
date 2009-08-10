@@ -65,8 +65,8 @@ public class Measure {
     }
 
     public Measure( String text, String distanceUnits ) {
-        // TODO Auto-generated constructor stub
-        throw new UnsupportedOperationException();
+        this.value = Double.parseDouble( text );
+        this.uomURI = distanceUnits;
     }
 
     public double getValue() {

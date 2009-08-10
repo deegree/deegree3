@@ -59,6 +59,8 @@ public class PersistentFeatureType implements FeatureType {
     private final FeatureType ft;
 
     private final FeatureStore store;
+
+    private ApplicationSchema schema;
     
     /**
      * @param ft
@@ -94,11 +96,6 @@ public class PersistentFeatureType implements FeatureType {
     }
 
     @Override
-    public ApplicationSchema getSchema() {
-        return ft.getSchema();
-    }
-
-    @Override
     public boolean isAbstract() {
         return ft.isAbstract();
     }
@@ -107,4 +104,14 @@ public class PersistentFeatureType implements FeatureType {
     public Feature newFeature( String fid, List<Property<?>> props ) {
         return ft.newFeature( fid, props );
     }
+    
+    @Override
+    public ApplicationSchema getSchema() {
+        return schema;
+    }
+
+    @Override
+    public void setSchema( ApplicationSchema schema ) {
+       this.schema = schema;
+    }     
 }

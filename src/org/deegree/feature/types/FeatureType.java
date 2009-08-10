@@ -103,4 +103,6 @@ public interface FeatureType {
      * @return the corresponding <code>ApplicationSchema</code> or null if this feature type has none
      */
     public ApplicationSchema getSchema();
+
+    public void setSchema( ApplicationSchema applicationSchema );
 }
