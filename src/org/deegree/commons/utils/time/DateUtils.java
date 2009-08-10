@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils.time;
 
@@ -52,7 +52,7 @@ import java.util.regex.Pattern;
  * Many of the methods that convert dates to and from strings utilize the <a
  * href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601:2004</a> standard string format
  * <code>yyyy-MM-ddTHH:mm:ss.SSSZ</code>, where <blockquote>
- *
+ * 
  * <pre>
  * Symbol   Meaning                 Presentation        Example
  * ------   -------                 ------------        -------
@@ -66,23 +66,25 @@ import java.util.regex.Pattern;
  * S        millisecond             (Number)            978
  * Z        time zone               (Number)            -0600
  * </pre>
- *
+ * 
  * </blockquote>
  * </p>
  * <p>
  * This class is written to be thread safe. As {@link SimpleDateFormat} is not threadsafe, no shared instances are used.
  * </p>
- *
+ * 
  * @author Randall Hauch
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version r304 http://anonsvn.jboss.org/repos/dna/trunk/dna-common/src/main/java/org/jboss/dna/common/util/
  * @version $Revision$, $Date$
  */
 public final class DateUtils {
 
     private static final String ISO_8601_2004_FORMAT_GMT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    private static final String ISO_8601_2004_FORMAT_GMT_WO_MS = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     private static final String JDBC_TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
@@ -140,7 +142,7 @@ public final class DateUtils {
      * <dd>The 2-digit hour offset from UTC</dd>
      * </dl>
      * </p>
-     *
+     * 
      * @param dateString
      *            the string containing the date to be parsed
      * @return the parsed date as a {@link Calendar} object. The return value is always in UTC time zone. Conversion
@@ -279,7 +281,7 @@ public final class DateUtils {
 
     /**
      * Parses ISO8601 duration strings like P1Y2MT5H, PT5M
-     *
+     * 
      * @param duration
      * @return a new duration
      * @throws ParseException
@@ -332,7 +334,7 @@ public final class DateUtils {
 
     /**
      * Obtain an ISO 8601:2004 string representation of the supplied date.
-     *
+     * 
      * @param date
      *            the date
      * @return the string in the {@link #ISO_8601_2004_FORMAT_GMT standard format}
@@ -344,8 +346,18 @@ public final class DateUtils {
     }
 
     /**
+     * @param date
+     * @return the date string WithOutMilliSeconds
+     */
+    public static String formatISO8601DateWOMS( final java.util.Date date ) {
+        SimpleDateFormat sdf = new SimpleDateFormat( ISO_8601_2004_FORMAT_GMT_WO_MS );
+        sdf.setTimeZone( GMT );
+        return sdf.format( date );
+    }
+
+    /**
      * Obtain an ISO 8601:2004 string representation of the date given the supplied milliseconds since the epoch.
-     *
+     * 
      * @param date
      *            the date in calendar form
      * @return the string in the {@link #ISO_8601_2004_FORMAT_GMT standard format}
@@ -356,7 +368,7 @@ public final class DateUtils {
 
     /**
      * Obtain an ISO 8601:2004 string representation of the duration given.
-     *
+     * 
      * @param duration
      * @return the duration string (eg. P1Y3M, PT6H30M, ...)
      */
@@ -385,7 +397,7 @@ public final class DateUtils {
 
     /**
      * Obtain an JDBC timestamp string representation of the supplied date.
-     *
+     * 
      * @param date
      *            the date
      * @return the string in the JDBC timestamp format
@@ -398,7 +410,7 @@ public final class DateUtils {
 
     /**
      * Obtain an JDBC timestamp string representation of the supplied date.
-     *
+     * 
      * @param date
      *            the date
      * @param tz
@@ -413,7 +425,7 @@ public final class DateUtils {
 
     /**
      * Return a string representation of the supplied date with the current default locale.
-     *
+     * 
      * @param date
      * @return the string in locale format
      */
@@ -423,7 +435,7 @@ public final class DateUtils {
 
     /**
      * Return a string representation of the supplied date with the supplied locale.
-     *
+     * 
      * @param date
      * @param locale
      * @return the string in locale format
