@@ -88,10 +88,32 @@ public class PropertyIsBetween extends ComparisonOperator {
     public boolean evaluate( MatchableObject obj )
                             throws FilterEvaluationException {
 
-        Comparable<Object> propertyValue = checkComparableOrNull( expression.evaluate( obj ) );
-        Comparable<Object> upperBoundaryValue = checkComparableOrNull( upperBoundary.evaluate( obj ) );
-        Comparable<Object> lowerBoundaryValue = checkComparableOrNull( lowerBoundary.evaluate( obj ) );
-        return upperBoundaryValue.compareTo( propertyValue ) >= 0 && lowerBoundaryValue.compareTo( propertyValue ) <= 0;
+        Object[] propertyValues = expression.evaluate( obj );
+        Object[] upperBoundaryValues = upperBoundary.evaluate( obj );
+        Object[] lowerBoundaryValues = lowerBoundary.evaluate( obj );
+
+        for ( Object propertyValue : propertyValues ) {
+            Comparable<Object> prop = checkComparableOrNull( propertyValue );
+            // check for one upper value that is larger than the propertyValue
+            boolean found = false;
+            for ( Object upperValue : upperBoundaryValues ) {
+                Comparable<Object> upper = checkComparableOrNull( upperValue );
+                if ( upper.compareTo( prop ) >= 0 ) {
+                    found = true;
+                    break;
+                }
+            }
+            if ( !found ) {
+                // check for one lower value that is smaller than the propertyValue
+                for ( Object lowerValue : lowerBoundaryValues ) {
+                    Comparable<Object> lower = checkComparableOrNull( lowerValue );
+                    if ( lower.compareTo( prop ) <= 0 ) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @Override
