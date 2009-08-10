@@ -98,7 +98,7 @@ public class PropertyIsBetween extends ComparisonOperator {
             boolean found = false;
             for ( Object upperValue : upperBoundaryValues ) {
                 Comparable<Object> upper = checkComparableOrNull( upperValue );
-                if ( upper.compareTo( prop ) >= 0 ) {
+                if ( upper != null && upper.compareTo( prop ) >= 0 ) {
                     found = true;
                     break;
                 }
@@ -107,7 +107,7 @@ public class PropertyIsBetween extends ComparisonOperator {
                 // check for one lower value that is smaller than the propertyValue
                 for ( Object lowerValue : lowerBoundaryValues ) {
                     Comparable<Object> lower = checkComparableOrNull( lowerValue );
-                    if ( lower.compareTo( prop ) <= 0 ) {
+                    if ( lower != null && lower.compareTo( prop ) <= 0 ) {
                         return true;
                     }
                 }
