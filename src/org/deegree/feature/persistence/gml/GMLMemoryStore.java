@@ -114,7 +114,7 @@ public class GMLMemoryStore implements FeatureStore {
     public GMLMemoryStore( URL docURL, ApplicationSchema schema ) throws XMLStreamException, XMLParsingException,
                             UnknownCRSException, FactoryConfigurationError, IOException {
 
-        this.schema = schema;
+        this (schema);
         GMLIdContext idContext = new GMLIdContext();
         GMLFeatureDecoder parser = new GMLFeatureDecoder( schema, idContext );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
