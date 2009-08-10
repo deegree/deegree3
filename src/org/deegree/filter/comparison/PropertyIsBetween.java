@@ -103,7 +103,7 @@ public class PropertyIsBetween extends ComparisonOperator {
                     break;
                 }
             }
-            if ( !found ) {
+            if ( found ) {
                 // check for one lower value that is smaller than the propertyValue
                 for ( Object lowerValue : lowerBoundaryValues ) {
                     Comparable<Object> lower = checkComparableOrNull( lowerValue );
@@ -119,9 +119,9 @@ public class PropertyIsBetween extends ComparisonOperator {
     @Override
     public String toString( String indent ) {
         String s = indent + "-PropertyIsBetween\n";
-        s += upperBoundary.toString( indent + "  " );
-        s += expression.toString( indent + "  " );
         s += lowerBoundary.toString( indent + "  " );
+        s += expression.toString( indent + "  " );
+        s += upperBoundary.toString( indent + "  " );        
         return s;
     }
 }
