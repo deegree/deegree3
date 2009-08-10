@@ -330,14 +330,18 @@ public class ShapeDatastore {
                 fields = dbf.getFields();
             }
         }
-        GeometryPropertyType geom = (GeometryPropertyType) featureType.getPropertyDeclarations().get(
-                                                                                                      featureType.getPropertyDeclarations().size() - 1 );
+        final int geomIdx = featureType.getPropertyDeclarations().size() - 1;
+        GeometryPropertyType geom = (GeometryPropertyType) featureType.getPropertyDeclarations().get( geomIdx );
         if ( withGeometries ) {
             fields.add( geom );
         }
 
         if ( withGeometries ) {
             fields.removeLast();
+        }
+
+        if ( filter != null ) {
+            LOG.debug( "Performing additional filtering:\n{}", filter );
         }
 
         while ( !list.isEmpty() ) {
@@ -365,6 +369,8 @@ public class ShapeDatastore {
                 feats.add( feat );
             }
         }
+
+        LOG.debug( "After custom filtering {} features match.", feats.size() );
 
         return new GenericFeatureCollection( null, feats );
     }
