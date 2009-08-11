@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,56 +32,62 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry.primitive;
 
 /**
  * 0-dimensional primitive.
- *
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version. $Revision$, $Date$
  */
 public interface Point extends GeometricPrimitive {
 
     /**
      * Must always return {@link GeometricPrimitive.PrimitiveType#Point}.
-     *
+     * 
      * @return {@link GeometricPrimitive.PrimitiveType#Point}
      */
-    @Override
     public PrimitiveType getPrimitiveType();
 
     /**
-     *
-     * @return x coordinate
+     * Returns the value of the first ordinate.
+     * 
+     * @return value of the first ordinate
      */
-    public double getX();
+    public double get0();
 
     /**
-     *
-     * @return y coordinate
+     * Returns the value of the second ordinate.
+     * 
+     * @return value of the second ordinate, or <code>Double.NAN</code> if the point only has one dimension
      */
-    public double getY();
+    public double get1();
 
     /**
-     *
-     * @return z coordinate
+     * Returns the value of the third ordinate.
+     * 
+     * @return value of the third ordinate, or <code>Double.NAN</code> if the point only has one or two dimensions
      */
-    public double getZ();
+    public double get2();
 
     /**
-     *
+     * Returns the value of the specified ordinate.
+     * 
      * @param dimension
-     * @return coordinate of passed dimension. If passed dimension is not supported by a point Double.NAN will be
-     *         returned
+     *            ordinate to be returned (first dimension=0)
+     * @return ordinate value of the passed dimension, or <code>Double.NAN</code> if <code>dimension</code> is greater
+     *         than the number of actual dimensions
      */
     public double get( int dimension );
 
     /**
-     *
-     * @return a points coordinates as an array
+     * Returns all ordinates.
+     * 
+     * @return all ordinates, the length of the array is equal to the number of dimensions
      */
     public double[] getAsArray();
 }
