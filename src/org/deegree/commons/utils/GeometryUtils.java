@@ -86,7 +86,7 @@ public class GeometryUtils {
         GeometryFactory fac = new GeometryFactory();
         if ( geom instanceof Point ) {
             Point p = (Point) geom;
-            return fac.createPoint( geom.getId(), new double[] { p.getX() + offx, p.getY() + offy },
+            return fac.createPoint( geom.getId(), new double[] { p.get0() + offx, p.get1() + offy },
                                     p.getCoordinateSystem() );
         }
         if ( geom instanceof Curve ) {
@@ -133,7 +133,7 @@ public class GeometryUtils {
         List<Point> movedPoints = new ArrayList<Point>( points.size() );
         GeometryFactory fac = new GeometryFactory();
         for ( Point point : points ) {
-            double[] movedCoordinates = new double[] { point.getX() + offx, point.getY() + offy };
+            double[] movedCoordinates = new double[] { point.get0() + offx, point.get1() + offy };
             movedPoints.add( fac.createPoint( point.getId(), movedCoordinates, point.getCoordinateSystem() ) );
         }
         return new PointsList( movedPoints );

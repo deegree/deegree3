@@ -101,7 +101,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
     @Override
     public double getHeight() {
-        return max.getY() - min.getY();
+        return max.get1() - min.get1();
     }
 
     @Override
@@ -116,7 +116,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
     @Override
     public double getWidth() {
-        return max.getX() - min.getX();
+        return max.get0() - min.get0();
     }
 
     @Override
@@ -164,8 +164,8 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
 
     @Override
     protected com.vividsolutions.jts.geom.Polygon buildJTSGeometry() {
-        Points points = new PackedPoints( new double[] { min.getX(), min.getY(), max.getX(), min.getY(), max.getX(),
-                                                        max.getY(), min.getX(), max.getY(), min.getX(), min.getY() }, 2 );
+        Points points = new PackedPoints( new double[] { min.get0(), min.get1(), max.get0(), min.get1(), max.get0(),
+                                                        max.get1(), min.get0(), max.get1(), min.get0(), min.get1() }, 2 );
         LinearRing shell = jtsFactory.createLinearRing( ( points ) );
         return jtsFactory.createPolygon( shell, null );
     }

@@ -513,8 +513,8 @@ public class WMSClient111 {
                     url += url.indexOf( "?" ) == -1 ? "?" : "&";
                 }
                 url += "request=GetMap&version=1.1.1&service=WMS&layers=" + join( ",", layers ) + "&styles=&width="
-                       + width + "&height=" + height + "&bbox=" + bbox.getMin().getX() + "," + bbox.getMin().getY()
-                       + "," + bbox.getMax().getX() + "," + bbox.getMax().getY() + "&srs=" + srs.getName() + "&format="
+                       + width + "&height=" + height + "&bbox=" + bbox.getMin().get0() + "," + bbox.getMin().get1()
+                       + "," + bbox.getMax().get0() + "," + bbox.getMax().get1() + "&srs=" + srs.getName() + "&format="
                        + format + "&transparent=" + transparent;
 
                 URL theUrl = new URL( url );

@@ -242,7 +242,7 @@ public class DefaultRing extends AbstractDefaultGeometry implements Ring {
         Points points = lsSegment.getControlPoints();
         List<Coordinate> coordinates = new ArrayList<Coordinate>( points.size() );
         for ( Point point : points ) {
-            coordinates.add( new Coordinate( point.getX(), point.getY(), point.getZ() ) );
+            coordinates.add( new Coordinate( point.get0(), point.get1(), point.get2() ) );
         }
         return coordinates;
     }

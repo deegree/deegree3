@@ -92,10 +92,10 @@ public class WorldFileAccessTest {
             assertEquals( -8.0, renv.getYRes(), delta );
 
             Envelope env = renv.getEnvelope( 500, 500 );
-            assertEquals( 423996.000, env.getMax().getX(), delta );
-            assertEquals( 4520003.000, env.getMax().getY(), delta );
-            assertEquals( 419996.000, env.getMin().getX(), delta );
-            assertEquals( 4516003.000, env.getMin().getY(), delta );
+            assertEquals( 423996.000, env.getMax().get0(), delta );
+            assertEquals( 4520003.000, env.getMax().get1(), delta );
+            assertEquals( 419996.000, env.getMin().get0(), delta );
+            assertEquals( 4516003.000, env.getMin().get1(), delta );
 
             int[] size = renv.getSize( env );
             assertEquals( 500, size[0] );

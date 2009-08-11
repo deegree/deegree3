@@ -68,17 +68,17 @@ public class PointReference extends GeometricPrimitiveReference<Point> implement
     }
 
     @Override
-    public double getX() {
-        return getReferencedGeometry().getX();
+    public double get0() {
+        return getReferencedGeometry().get0();
     }
 
     @Override
-    public double getY() {
-        return getReferencedGeometry().getY();
+    public double get1() {
+        return getReferencedGeometry().get1();
     }
 
     @Override
-    public double getZ() {
-        return getReferencedGeometry().getZ();
+    public double get2() {
+        return getReferencedGeometry().get2();
     }
 }

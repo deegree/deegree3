@@ -745,7 +745,7 @@ public class SHPReader {
         Coordinate[] cs = new Coordinate[ps.size()];
         int i = 0;
         for ( Point p : ps ) {
-            cs[i++] = new Coordinate( p.getX(), p.getY() );
+            cs[i++] = new Coordinate( p.get0(), p.get1() );
         }
 
         return CGAlgorithms.isCCW( cs );

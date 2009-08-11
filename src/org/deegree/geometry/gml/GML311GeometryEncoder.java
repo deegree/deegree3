@@ -1216,7 +1216,7 @@ public class GML311GeometryEncoder {
         writer.writeEndElement();
         
         writer.writeStartElement( "gml", "normal", GMLNS );
-        writer.writeCharacters( String.valueOf( arcBulge.getNormal().getX() ) );
+        writer.writeCharacters( String.valueOf( arcBulge.getNormal().get0() ) );
         writer.writeEndElement();
         
         writer.writeEndElement();

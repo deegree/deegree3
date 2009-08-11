@@ -238,8 +238,8 @@ public abstract class AbstractRaster extends AbstractCoverage {
             epsg = getEnvelope().getCoordinateSystem().getName(); // added .toString() since the code retrieved was a
             // CRSCodeType
         }
-        return epsg + " " + getEnvelope().getMin().getX() + " " + getEnvelope().getMin().getY() + " "
-               + getEnvelope().getMax().getX() + " " + getEnvelope().getMax().getY();
+        return epsg + " " + getEnvelope().getMin().get0() + " " + getEnvelope().getMin().get1() + " "
+               + getEnvelope().getMax().get0() + " " + getEnvelope().getMax().get1();
     }
 
     /**

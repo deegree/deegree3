@@ -121,7 +121,7 @@ public class PointsList implements Points {
     @Override
     public Envelope expandEnvelope( Envelope env ) {
         for ( Point p : points ) {
-            env.expandToInclude( p.getX(), p.getY() );
+            env.expandToInclude( p.get0(), p.get1() );
         }
         return env;
     }
@@ -129,21 +129,21 @@ public class PointsList implements Points {
     @Override
     public Coordinate getCoordinate( int index ) {
         Point point = points.get(index);
-        return new Coordinate( point.getX(), point.getY(), point.getZ() );   
+        return new Coordinate( point.get0(), point.get1(), point.get2() );   
     }
 
     @Override
     public void getCoordinate( int index, Coordinate coord ) {
         Point point = points.get(index);
-        coord.x = point.getX();
-        coord.y = point.getY();
-        coord.z = point.getZ();
+        coord.x = point.get0();
+        coord.y = point.get1();
+        coord.z = point.get2();
     }
 
     @Override
     public Coordinate getCoordinateCopy( int index ) {
         Point point = points.get(index);
-        return new Coordinate( point.getX(), point.getY(), point.getZ() );        
+        return new Coordinate( point.get0(), point.get1(), point.get2() );        
     }
 
     @Override
@@ -153,12 +153,12 @@ public class PointsList implements Points {
 
     @Override
     public double getX( int index ) {
-        return points.get( index ).getX();
+        return points.get( index ).get0();
     }
 
     @Override
     public double getY( int index ) {
-        return points.get( index ).getY();
+        return points.get( index ).get1();
     }
 
     @Override
@@ -171,7 +171,7 @@ public class PointsList implements Points {
         Coordinate[] coords = new Coordinate[size()];
         int i = 0;
         for ( Point p : this ) {
-            coords[i++] = new Coordinate( p.getX(), p.getY() );
+            coords[i++] = new Coordinate( p.get0(), p.get1() );
         }
         return coords;
     }

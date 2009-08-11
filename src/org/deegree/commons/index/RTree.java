@@ -150,8 +150,8 @@ public class RTree<T> extends SpatialIndex<T> {
     @Override
     public LinkedList<T> query( Envelope env ) {
         if ( root != null ) {
-            final float[] bbox = new float[] { (float) env.getMin().getX(), (float) env.getMin().getY(),
-                                              (float) env.getMax().getX(), (float) env.getMax().getY() };
+            final float[] bbox = new float[] { (float) env.getMin().get0(), (float) env.getMin().get1(),
+                                              (float) env.getMax().get0(), (float) env.getMax().get1() };
 
             if ( intersects( bbox, this.bbox ) ) {
                 return query( bbox, root );

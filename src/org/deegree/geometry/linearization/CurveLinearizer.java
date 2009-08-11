@@ -244,12 +244,12 @@ public class CurveLinearizer {
         List<Point> interpolationPoints = new ArrayList<Point>( numPoints );
         Point center = calcCircleCenter( p0, p1, p2 );
 
-        double centerX = center.getX();
-        double centerY = center.getY();
-        double dx = p0.getX() - centerX;
-        double dy = p0.getY() - centerY;
-        double ex = p2.getX() - centerX;
-        double ey = p2.getY() - centerY;
+        double centerX = center.get0();
+        double centerY = center.get1();
+        double dx = p0.get0() - centerX;
+        double dy = p0.get1() - centerY;
+        double ex = p2.get0() - centerX;
+        double ey = p2.get1() - centerY;
 
         double startAngle = Math.atan2( dy, dx );
         double endAngle = isCircle ? startAngle : Math.atan2( ey, ex );
@@ -290,9 +290,9 @@ public class CurveLinearizer {
     Point calcCircleCenter( Point p0, Point p1, Point p2 )
                             throws IllegalArgumentException {
 
-        Vector3d a = new Vector3d( p0.getX(), p0.getY(), p0.getZ() );
-        Vector3d b = new Vector3d( p1.getX(), p1.getY(), p1.getZ() );
-        Vector3d c = new Vector3d( p2.getX(), p2.getY(), p2.getZ() );
+        Vector3d a = new Vector3d( p0.get0(), p0.get1(), p0.get2() );
+        Vector3d b = new Vector3d( p1.get0(), p1.get1(), p1.get2() );
+        Vector3d c = new Vector3d( p2.get0(), p2.get1(), p2.get2() );
 
         if ( Double.isNaN( a.z ) ) {
             a.z = 0.0;
@@ -354,8 +354,8 @@ public class CurveLinearizer {
     boolean isClockwise( Point p0, Point p1, Point p2 )
                             throws IllegalArgumentException {
 
-        double res = ( p2.getX() - p0.getX() ) * ( ( p2.getY() + p0.getY() ) / 2 ) + ( p1.getX() - p2.getX() )
-                     * ( ( p1.getY() + p2.getY() ) / 2 ) + ( p0.getX() - p1.getX() ) * ( ( p0.getY() + p1.getY() ) / 2 );
+        double res = ( p2.get0() - p0.get0() ) * ( ( p2.get1() + p0.get1() ) / 2 ) + ( p1.get0() - p2.get0() )
+                     * ( ( p1.get1() + p2.get1() ) / 2 ) + ( p0.get0() - p1.get0() ) * ( ( p0.get1() + p1.get1() ) / 2 );
         if ( Math.abs( res ) < 1E-12 ) {
             throw new IllegalArgumentException( "Cannot evaluate isClockwise(). The three points are collinear." );
         }
@@ -374,8 +374,8 @@ public class CurveLinearizer {
      * @return true, if points are collinear, false otherwise
      */
     boolean arePointsCollinear( Point p0, Point p1, Point p2 ) {
-        double res = ( p2.getX() - p0.getX() ) * ( ( p2.getY() + p0.getY() ) / 2 ) + ( p1.getX() - p2.getX() )
-                     * ( ( p1.getY() + p2.getY() ) / 2 ) + ( p0.getX() - p1.getX() ) * ( ( p0.getY() + p1.getY() ) / 2 );
+        double res = ( p2.get0() - p0.get0() ) * ( ( p2.get1() + p0.get1() ) / 2 ) + ( p1.get0() - p2.get0() )
+                     * ( ( p1.get1() + p2.get1() ) / 2 ) + ( p0.get0() - p1.get0() ) * ( ( p0.get1() + p1.get1() ) / 2 );
         return Math.abs( res ) < 1E-12;
     }
 }

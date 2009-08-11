@@ -143,8 +143,8 @@ public class RasterReference {
      * @param height
      */
     public RasterReference( Envelope env, int width, int height ) {
-        this.x0 = env.getMin().getX();
-        this.y0 = env.getMax().getY();
+        this.x0 = env.getMin().get0();
+        this.y0 = env.getMax().get1();
 
         this.xRes = env.getWidth() / width;
         this.yRes = -1 * env.getHeight() / height;
@@ -208,8 +208,8 @@ public class RasterReference {
      */
     private double[] calculateNewOrigin( Envelope envelope ) {
         // +-delta so an evelope on the border of a pixel gets the inner pixel
-        int[] min = convertToRasterCRS( envelope.getMin().getX() + delta, envelope.getMin().getY() + delta );
-        int[] max = convertToRasterCRS( envelope.getMax().getX() - delta, envelope.getMax().getY() - delta );
+        int[] min = convertToRasterCRS( envelope.getMin().get0() + delta, envelope.getMin().get1() + delta );
+        int[] max = convertToRasterCRS( envelope.getMax().get0() - delta, envelope.getMax().get1() - delta );
         double[] origin = convertToCRS( min( min[0], max[0] ), min( min[1], max[1] ) );
 
         return origin;
@@ -268,8 +268,8 @@ public class RasterReference {
     public RasterRect convertEnvelopeToRasterCRS( Envelope envelope ) {
         RasterRect result = new RasterRect();
 
-        int[] min = convertToRasterCRS( envelope.getMin().getX() + delta, envelope.getMax().getY() - delta );
-        int[] max = convertToRasterCRS( envelope.getMax().getX() - delta, envelope.getMin().getY() + delta );
+        int[] min = convertToRasterCRS( envelope.getMin().get0() + delta, envelope.getMax().get1() - delta );
+        int[] max = convertToRasterCRS( envelope.getMax().get0() - delta, envelope.getMin().get1() + delta );
 
         result.x = abs( min( min[0], max[0] ) );
         result.y = abs( min( min[1], max[1] ) );

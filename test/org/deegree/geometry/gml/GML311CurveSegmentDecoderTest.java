@@ -91,12 +91,12 @@ public class GML311CurveSegmentDecoderTest {
         Arc arc = (Arc) getParser().parseCurveSegment( getReader( "Arc.gml" ), new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 1, arc.getNumArcs() );
         Assert.assertEquals( 3, arc.getControlPoints().size() );
-        Assert.assertEquals( 2.0, arc.getPoint1().getX() );
-        Assert.assertEquals( 0.0, arc.getPoint1().getY() );
-        Assert.assertEquals( 0.0, arc.getPoint2().getX() );
-        Assert.assertEquals( 2.0, arc.getPoint2().getY() );
-        Assert.assertEquals( -2.0, arc.getPoint3().getX() );
-        Assert.assertEquals( 0.0, arc.getPoint3().getY() );
+        Assert.assertEquals( 2.0, arc.getPoint1().get0() );
+        Assert.assertEquals( 0.0, arc.getPoint1().get1() );
+        Assert.assertEquals( 0.0, arc.getPoint2().get0() );
+        Assert.assertEquals( 2.0, arc.getPoint2().get1() );
+        Assert.assertEquals( -2.0, arc.getPoint3().get0() );
+        Assert.assertEquals( 0.0, arc.getPoint3().get1() );
     }
 
     @Test
@@ -107,15 +107,15 @@ public class GML311CurveSegmentDecoderTest {
                                                                      new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 1, arc.getNumArcs() );
         Assert.assertEquals( 2, arc.getControlPoints().size() );
-        Assert.assertEquals( 2.0, arc.getPoint1().getX() );
-        Assert.assertEquals( 0.0, arc.getPoint1().getY() );
-        Assert.assertEquals( -2.0, arc.getPoint2().getX() );
-        Assert.assertEquals( 0.0, arc.getPoint2().getY() );
+        Assert.assertEquals( 2.0, arc.getPoint1().get0() );
+        Assert.assertEquals( 0.0, arc.getPoint1().get1() );
+        Assert.assertEquals( -2.0, arc.getPoint2().get0() );
+        Assert.assertEquals( 0.0, arc.getPoint2().get1() );
         Assert.assertEquals( 1, arc.getBulges().length );
         Assert.assertEquals( 2.0, arc.getBulge() );
         Assert.assertEquals( 1, arc.getNormals().size() );
 //        Assert.assertEquals( 1, arc.getNormal().getCoordinateDimension() ); TODO Since every point we're working with has 2 or 3 coords, find a way around this gml:vectortype
-        Assert.assertEquals( -1.0, arc.getNormal().getX() );
+        Assert.assertEquals( -1.0, arc.getNormal().get0() );
     }
 
     @Test
@@ -125,8 +125,8 @@ public class GML311CurveSegmentDecoderTest {
         ArcByCenterPoint arc = (ArcByCenterPoint) getParser().parseCurveSegment( getReader( "ArcByCenterPoint.gml" ),
                                                                                  new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
-        Assert.assertEquals( 47.0, arc.getMidPoint().getX() );
-        Assert.assertEquals( 11.0, arc.getMidPoint().getY() );
+        Assert.assertEquals( 47.0, arc.getMidPoint().get0() );
+        Assert.assertEquals( 11.0, arc.getMidPoint().get1() );
         Assert.assertEquals( 1.0, arc.getRadius(null).getValue() );
         Assert.assertEquals( "whatever#metres", arc.getRadius(null).getUomUri() );
         Assert.assertEquals( 180.0, arc.getStartAngle().getValue() );
@@ -142,20 +142,20 @@ public class GML311CurveSegmentDecoderTest {
         ArcString arc = (ArcString) getParser().parseCurveSegment( getReader( "ArcString.gml" ), null );
         Assert.assertEquals( 3, arc.getNumArcs() );
         Assert.assertEquals( 7, arc.getControlPoints().size() );
-        Assert.assertEquals( 2.0, arc.getControlPoints().get( 0 ).getX() );
-        Assert.assertEquals( 0.0, arc.getControlPoints().get( 0 ).getY() );
-        Assert.assertEquals( 0.0, arc.getControlPoints().get( 1 ).getX() );
-        Assert.assertEquals( 2.0, arc.getControlPoints().get( 1 ).getY() );
-        Assert.assertEquals( -2.0, arc.getControlPoints().get( 2 ).getX() );
-        Assert.assertEquals( 0.0, arc.getControlPoints().get( 2 ).getY() );
-        Assert.assertEquals( -4.0, arc.getControlPoints().get( 3 ).getX() );
-        Assert.assertEquals( -2.0, arc.getControlPoints().get( 3 ).getY() );
-        Assert.assertEquals( -6.0, arc.getControlPoints().get( 4 ).getX() );
-        Assert.assertEquals( 0.0, arc.getControlPoints().get( 4 ).getY() );
-        Assert.assertEquals( -8.0, arc.getControlPoints().get( 5 ).getX() );
-        Assert.assertEquals( 2.0, arc.getControlPoints().get( 5 ).getY() );
-        Assert.assertEquals( -10.0, arc.getControlPoints().get( 6 ).getX() );
-        Assert.assertEquals( 0.0, arc.getControlPoints().get( 6 ).getY() );
+        Assert.assertEquals( 2.0, arc.getControlPoints().get( 0 ).get0() );
+        Assert.assertEquals( 0.0, arc.getControlPoints().get( 0 ).get1() );
+        Assert.assertEquals( 0.0, arc.getControlPoints().get( 1 ).get0() );
+        Assert.assertEquals( 2.0, arc.getControlPoints().get( 1 ).get1() );
+        Assert.assertEquals( -2.0, arc.getControlPoints().get( 2 ).get0() );
+        Assert.assertEquals( 0.0, arc.getControlPoints().get( 2 ).get1() );
+        Assert.assertEquals( -4.0, arc.getControlPoints().get( 3 ).get0() );
+        Assert.assertEquals( -2.0, arc.getControlPoints().get( 3 ).get1() );
+        Assert.assertEquals( -6.0, arc.getControlPoints().get( 4 ).get0() );
+        Assert.assertEquals( 0.0, arc.getControlPoints().get( 4 ).get1() );
+        Assert.assertEquals( -8.0, arc.getControlPoints().get( 5 ).get0() );
+        Assert.assertEquals( 2.0, arc.getControlPoints().get( 5 ).get1() );
+        Assert.assertEquals( -10.0, arc.getControlPoints().get( 6 ).get0() );
+        Assert.assertEquals( 0.0, arc.getControlPoints().get( 6 ).get1() );
     }
 
     @Test
@@ -166,14 +166,14 @@ public class GML311CurveSegmentDecoderTest {
                                                                                  new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 3, arc.getNumArcs() );
         Assert.assertEquals( 4, arc.getControlPoints().size() );
-        Assert.assertEquals( 2.0, arc.getControlPoints().get( 0 ).getX() );
-        Assert.assertEquals( 0.0, arc.getControlPoints().get( 0 ).getY() );
-        Assert.assertEquals( -2.0, arc.getControlPoints().get( 1 ).getX() );
-        Assert.assertEquals( 0.0, arc.getControlPoints().get( 1 ).getY() );
-        Assert.assertEquals( -4.0, arc.getControlPoints().get( 2 ).getX() );
-        Assert.assertEquals( 0.0, arc.getControlPoints().get( 2 ).getY() );
-        Assert.assertEquals( -6.0, arc.getControlPoints().get( 3 ).getX() );
-        Assert.assertEquals( 0.0, arc.getControlPoints().get( 3 ).getY() );
+        Assert.assertEquals( 2.0, arc.getControlPoints().get( 0 ).get0() );
+        Assert.assertEquals( 0.0, arc.getControlPoints().get( 0 ).get1() );
+        Assert.assertEquals( -2.0, arc.getControlPoints().get( 1 ).get0() );
+        Assert.assertEquals( 0.0, arc.getControlPoints().get( 1 ).get1() );
+        Assert.assertEquals( -4.0, arc.getControlPoints().get( 2 ).get0() );
+        Assert.assertEquals( 0.0, arc.getControlPoints().get( 2 ).get1() );
+        Assert.assertEquals( -6.0, arc.getControlPoints().get( 3 ).get0() );
+        Assert.assertEquals( 0.0, arc.getControlPoints().get( 3 ).get1() );
     }
 
     @Test
@@ -182,14 +182,14 @@ public class GML311CurveSegmentDecoderTest {
                             UnknownCRSException {
         Bezier arc = (Bezier) getParser().parseCurveSegment( getReader( "Bezier.gml" ), new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 4, arc.getControlPoints().size() );
-        Assert.assertEquals( 2.0, arc.getControlPoints().get( 0 ).getX() );
-        Assert.assertEquals( 1.0, arc.getControlPoints().get( 0 ).getY() );
-        Assert.assertEquals( -2.0, arc.getControlPoints().get( 1 ).getX() );
-        Assert.assertEquals( 2.0, arc.getControlPoints().get( 1 ).getY() );
-        Assert.assertEquals( -4.0, arc.getControlPoints().get( 2 ).getX() );
-        Assert.assertEquals( 3.0, arc.getControlPoints().get( 2 ).getY() );
-        Assert.assertEquals( -6.0, arc.getControlPoints().get( 3 ).getX() );
-        Assert.assertEquals( 4.0, arc.getControlPoints().get( 3 ).getY() );
+        Assert.assertEquals( 2.0, arc.getControlPoints().get( 0 ).get0() );
+        Assert.assertEquals( 1.0, arc.getControlPoints().get( 0 ).get1() );
+        Assert.assertEquals( -2.0, arc.getControlPoints().get( 1 ).get0() );
+        Assert.assertEquals( 2.0, arc.getControlPoints().get( 1 ).get1() );
+        Assert.assertEquals( -4.0, arc.getControlPoints().get( 2 ).get0() );
+        Assert.assertEquals( 3.0, arc.getControlPoints().get( 2 ).get1() );
+        Assert.assertEquals( -6.0, arc.getControlPoints().get( 3 ).get0() );
+        Assert.assertEquals( 4.0, arc.getControlPoints().get( 3 ).get1() );
         Assert.assertEquals( 4, arc.getPolynomialDegree() );
         Assert.assertEquals( 2, arc.getKnots().size() );
         Assert.assertEquals( 1.0, arc.getKnot1().getValue() );
@@ -206,14 +206,14 @@ public class GML311CurveSegmentDecoderTest {
                             UnknownCRSException {
         BSpline arc = (BSpline) getParser().parseCurveSegment( getReader( "BSpline.gml" ), new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 4, arc.getControlPoints().size() );
-        Assert.assertEquals( 2.0, arc.getControlPoints().get( 0 ).getX() );
-        Assert.assertEquals( 1.0, arc.getControlPoints().get( 0 ).getY() );
-        Assert.assertEquals( -2.0, arc.getControlPoints().get( 1 ).getX() );
-        Assert.assertEquals( 2.0, arc.getControlPoints().get( 1 ).getY() );
-        Assert.assertEquals( -4.0, arc.getControlPoints().get( 2 ).getX() );
-        Assert.assertEquals( 3.0, arc.getControlPoints().get( 2 ).getY() );
-        Assert.assertEquals( -6.0, arc.getControlPoints().get( 3 ).getX() );
-        Assert.assertEquals( 4.0, arc.getControlPoints().get( 3 ).getY() );
+        Assert.assertEquals( 2.0, arc.getControlPoints().get( 0 ).get0() );
+        Assert.assertEquals( 1.0, arc.getControlPoints().get( 0 ).get1() );
+        Assert.assertEquals( -2.0, arc.getControlPoints().get( 1 ).get0() );
+        Assert.assertEquals( 2.0, arc.getControlPoints().get( 1 ).get1() );
+        Assert.assertEquals( -4.0, arc.getControlPoints().get( 2 ).get0() );
+        Assert.assertEquals( 3.0, arc.getControlPoints().get( 2 ).get1() );
+        Assert.assertEquals( -6.0, arc.getControlPoints().get( 3 ).get0() );
+        Assert.assertEquals( 4.0, arc.getControlPoints().get( 3 ).get1() );
         Assert.assertEquals( 4, arc.getPolynomialDegree() );
         Assert.assertEquals( 2, arc.getKnots().size() );
         Assert.assertEquals( 1.0, arc.getKnots().get( 0 ).getValue() );
@@ -231,12 +231,12 @@ public class GML311CurveSegmentDecoderTest {
         Circle circle = (Circle) getParser().parseCurveSegment( getReader( "Circle.gml" ), null );
         Assert.assertEquals( 1, circle.getNumArcs() );
         Assert.assertEquals( 3, circle.getControlPoints().size() );
-        Assert.assertEquals( 2.0, circle.getPoint1().getX() );
-        Assert.assertEquals( 0.0, circle.getPoint1().getY() );
-        Assert.assertEquals( 0.0, circle.getPoint2().getX() );
-        Assert.assertEquals( 2.0, circle.getPoint2().getY() );
-        Assert.assertEquals( -2.0, circle.getPoint3().getX() );
-        Assert.assertEquals( 0.0, circle.getPoint3().getY() );
+        Assert.assertEquals( 2.0, circle.getPoint1().get0() );
+        Assert.assertEquals( 0.0, circle.getPoint1().get1() );
+        Assert.assertEquals( 0.0, circle.getPoint2().get0() );
+        Assert.assertEquals( 2.0, circle.getPoint2().get1() );
+        Assert.assertEquals( -2.0, circle.getPoint3().get0() );
+        Assert.assertEquals( 0.0, circle.getPoint3().get1() );
     }
 
     @Test
@@ -247,8 +247,8 @@ public class GML311CurveSegmentDecoderTest {
                                                                                  getReader( "CircleByCenterPoint.gml" ),
                                                                                  new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 2, arc.getMidPoint().getCoordinateDimension() );
-        Assert.assertEquals( 47.0, arc.getMidPoint().getX() );
-        Assert.assertEquals( 11.0, arc.getMidPoint().getY() );
+        Assert.assertEquals( 47.0, arc.getMidPoint().get0() );
+        Assert.assertEquals( 11.0, arc.getMidPoint().get1() );
         Assert.assertEquals( 1.0, arc.getRadius(null).getValue() );
         Assert.assertEquals( "whatever#metres", arc.getRadius(null).getUomUri() );
         Assert.assertEquals( 0.0, arc.getStartAngle().getValue() );
@@ -262,16 +262,16 @@ public class GML311CurveSegmentDecoderTest {
                             throws XMLStreamException, FactoryConfigurationError, IOException, XMLParsingException,
                             UnknownCRSException {
         Clothoid segment = (Clothoid) getParser().parseCurveSegment( getReader( "Clothoid.gml" ), new CRS( "EPSG:4326" ) );
-        Assert.assertEquals( 47.0, segment.getReferenceLocation().getLocation().getX() );
-        Assert.assertEquals( 11.0, segment.getReferenceLocation().getLocation().getY() );
-        Assert.assertEquals( 13.0, segment.getReferenceLocation().getLocation().getZ() );
+        Assert.assertEquals( 47.0, segment.getReferenceLocation().getLocation().get0() );
+        Assert.assertEquals( 11.0, segment.getReferenceLocation().getLocation().get1() );
+        Assert.assertEquals( 13.0, segment.getReferenceLocation().getLocation().get2() );
         Assert.assertEquals( 2, segment.getReferenceLocation().getRefDirections().size() );
-        Assert.assertEquals( 3.0, segment.getReferenceLocation().getRefDirections().get( 0 ).getX() );
-        Assert.assertEquals( 4.0, segment.getReferenceLocation().getRefDirections().get( 0 ).getY() );
-        Assert.assertEquals( 8.0, segment.getReferenceLocation().getRefDirections().get( 0 ).getZ() );
-        Assert.assertEquals( 5.0, segment.getReferenceLocation().getRefDirections().get( 1 ).getX() );
-        Assert.assertEquals( 6.0, segment.getReferenceLocation().getRefDirections().get( 1 ).getY() );
-        Assert.assertEquals( 9.0, segment.getReferenceLocation().getRefDirections().get( 1 ).getZ() );
+        Assert.assertEquals( 3.0, segment.getReferenceLocation().getRefDirections().get( 0 ).get0() );
+        Assert.assertEquals( 4.0, segment.getReferenceLocation().getRefDirections().get( 0 ).get1() );
+        Assert.assertEquals( 8.0, segment.getReferenceLocation().getRefDirections().get( 0 ).get2() );
+        Assert.assertEquals( 5.0, segment.getReferenceLocation().getRefDirections().get( 1 ).get0() );
+        Assert.assertEquals( 6.0, segment.getReferenceLocation().getRefDirections().get( 1 ).get1() );
+        Assert.assertEquals( 9.0, segment.getReferenceLocation().getRefDirections().get( 1 ).get2() );
         Assert.assertEquals( 2, segment.getReferenceLocation().getInDimension() );
         Assert.assertEquals( 3, segment.getReferenceLocation().getOutDimension() );
         Assert.assertEquals( 0.9, segment.getScaleFactor() );
@@ -286,16 +286,16 @@ public class GML311CurveSegmentDecoderTest {
         CubicSpline segment = (CubicSpline) getParser().parseCurveSegment( getReader( "CubicSpline.gml" ),
                                                                            new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 3, segment.getControlPoints().size() );
-        Assert.assertEquals( -2.0, segment.getControlPoints().get( 0 ).getX() );
-        Assert.assertEquals( 0.0, segment.getControlPoints().get( 0 ).getY() );
-        Assert.assertEquals( -4.0, segment.getControlPoints().get( 1 ).getX() );
-        Assert.assertEquals( 0.0, segment.getControlPoints().get( 1 ).getY() );
-        Assert.assertEquals( -6.0, segment.getControlPoints().get( 2 ).getX() );
-        Assert.assertEquals( 1.0, segment.getControlPoints().get( 2 ).getY() );
-        Assert.assertEquals( 0.0, segment.getVectorAtStart().getX() );
-        Assert.assertEquals( -1.0, segment.getVectorAtStart().getY() );
-        Assert.assertEquals( -1.0, segment.getVectorAtEnd().getX() );
-        Assert.assertEquals( 1.0, segment.getVectorAtEnd().getY() );
+        Assert.assertEquals( -2.0, segment.getControlPoints().get( 0 ).get0() );
+        Assert.assertEquals( 0.0, segment.getControlPoints().get( 0 ).get1() );
+        Assert.assertEquals( -4.0, segment.getControlPoints().get( 1 ).get0() );
+        Assert.assertEquals( 0.0, segment.getControlPoints().get( 1 ).get1() );
+        Assert.assertEquals( -6.0, segment.getControlPoints().get( 2 ).get0() );
+        Assert.assertEquals( 1.0, segment.getControlPoints().get( 2 ).get1() );
+        Assert.assertEquals( 0.0, segment.getVectorAtStart().get0() );
+        Assert.assertEquals( -1.0, segment.getVectorAtStart().get1() );
+        Assert.assertEquals( -1.0, segment.getVectorAtEnd().get0() );
+        Assert.assertEquals( 1.0, segment.getVectorAtEnd().get1() );
     }
 
     @Test
@@ -304,10 +304,10 @@ public class GML311CurveSegmentDecoderTest {
                             UnknownCRSException {
         Geodesic segment = (Geodesic) getParser().parseCurveSegment( getReader( "Geodesic.gml" ), null );
         Assert.assertEquals( 2, segment.getControlPoints().size() );
-        Assert.assertEquals( 2.0, segment.getControlPoints().get( 0 ).getX() );
-        Assert.assertEquals( 0.0, segment.getControlPoints().get( 0 ).getY() );
-        Assert.assertEquals( 0.0, segment.getControlPoints().get( 1 ).getX() );
-        Assert.assertEquals( 2.0, segment.getControlPoints().get( 1 ).getY() );
+        Assert.assertEquals( 2.0, segment.getControlPoints().get( 0 ).get0() );
+        Assert.assertEquals( 0.0, segment.getControlPoints().get( 0 ).get1() );
+        Assert.assertEquals( 0.0, segment.getControlPoints().get( 1 ).get0() );
+        Assert.assertEquals( 2.0, segment.getControlPoints().get( 1 ).get1() );
     }
 
     @Test
@@ -317,12 +317,12 @@ public class GML311CurveSegmentDecoderTest {
         GeodesicString segment = (GeodesicString) getParser().parseCurveSegment( getReader( "GeodesicString.gml" ),
                                                                                  null );
         Assert.assertEquals( 3, segment.getControlPoints().size() );
-        Assert.assertEquals( 2.0, segment.getControlPoints().get( 0 ).getX() );
-        Assert.assertEquals( 0.0, segment.getControlPoints().get( 0 ).getY() );
-        Assert.assertEquals( 0.0, segment.getControlPoints().get( 1 ).getX() );
-        Assert.assertEquals( 2.0, segment.getControlPoints().get( 1 ).getY() );
-        Assert.assertEquals( -2.0, segment.getControlPoints().get( 2 ).getX() );
-        Assert.assertEquals( 0.0, segment.getControlPoints().get( 2 ).getY() );
+        Assert.assertEquals( 2.0, segment.getControlPoints().get( 0 ).get0() );
+        Assert.assertEquals( 0.0, segment.getControlPoints().get( 0 ).get1() );
+        Assert.assertEquals( 0.0, segment.getControlPoints().get( 1 ).get0() );
+        Assert.assertEquals( 2.0, segment.getControlPoints().get( 1 ).get1() );
+        Assert.assertEquals( -2.0, segment.getControlPoints().get( 2 ).get0() );
+        Assert.assertEquals( 0.0, segment.getControlPoints().get( 2 ).get1() );
     }
 
     @Test
@@ -333,12 +333,12 @@ public class GML311CurveSegmentDecoderTest {
                                                                                    getReader( "LineStringSegment.gml" ),
                                                                                    null );
         Assert.assertEquals( 3, arc.getControlPoints().size() );
-        Assert.assertEquals( 2.0, arc.getControlPoints().get( 0 ).getX() );
-        Assert.assertEquals( 0.0, arc.getControlPoints().get( 0 ).getY() );
-        Assert.assertEquals( 0.0, arc.getControlPoints().get( 1 ).getX() );
-        Assert.assertEquals( 2.0, arc.getControlPoints().get( 1 ).getY() );
-        Assert.assertEquals( -2.0, arc.getControlPoints().get( 2 ).getX() );
-        Assert.assertEquals( 0.0, arc.getControlPoints().get( 2 ).getY() );
+        Assert.assertEquals( 2.0, arc.getControlPoints().get( 0 ).get0() );
+        Assert.assertEquals( 0.0, arc.getControlPoints().get( 0 ).get1() );
+        Assert.assertEquals( 0.0, arc.getControlPoints().get( 1 ).get0() );
+        Assert.assertEquals( 2.0, arc.getControlPoints().get( 1 ).get1() );
+        Assert.assertEquals( -2.0, arc.getControlPoints().get( 2 ).get0() );
+        Assert.assertEquals( 0.0, arc.getControlPoints().get( 2 ).get1() );
     }
 
     @Test
@@ -348,8 +348,8 @@ public class GML311CurveSegmentDecoderTest {
         OffsetCurve segment = (OffsetCurve) getParser().parseCurveSegment( getReader( "OffsetCurve.gml" ),
                                                                            new CRS( "EPSG:4326" ) );
         Assert.assertEquals( 1.0, segment.getDistance(null).getValue() );
-        Assert.assertEquals( 0.0, segment.getDirection().getX() );
-        Assert.assertEquals( 1.0, segment.getDirection().getY() );
+        Assert.assertEquals( 0.0, segment.getDirection().get0() );
+        Assert.assertEquals( 1.0, segment.getDirection().get1() );
     }
 
     private XMLStreamReaderWrapper getReader( String fileName )

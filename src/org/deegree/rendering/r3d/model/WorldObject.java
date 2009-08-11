@@ -126,8 +126,8 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
         Point p = bbox.getCentroid();
         double[] min = bbox.getMin().getAsArray();
         double[] max = bbox.getMax().getAsArray();
-        position = new float[] { (float) p.getX(), (float) p.getY(),
-                                (float) ( ( p.getCoordinateDimension() == 3 ) ? p.getZ() : 0 ) };
+        position = new float[] { (float) p.get0(), (float) p.get1(),
+                                (float) ( ( p.getCoordinateDimension() == 3 ) ? p.get2() : 0 ) };
         if ( bbox.getMin().getCoordinateDimension() == 2 ) {
             min = new double[] { min[0], min[1], 0 };
         }
@@ -267,8 +267,8 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
         Point p = bbox.getCentroid();
         double[] min = bbox.getMin().getAsArray();
         double[] max = bbox.getMax().getAsArray();
-        position = new float[] { (float) p.getX(), (float) p.getY(),
-                                (float) ( ( p.getCoordinateDimension() == 3 ) ? p.getZ() : 0 ) };
+        position = new float[] { (float) p.get0(), (float) p.get1(),
+                                (float) ( ( p.getCoordinateDimension() == 3 ) ? p.get2() : 0 ) };
         if ( bbox.getMin().getCoordinateDimension() == 2 ) {
             min = new double[] { min[0], min[1], 0 };
         }

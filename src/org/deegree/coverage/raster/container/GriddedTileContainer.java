@@ -99,8 +99,8 @@ public abstract class GriddedTileContainer implements TileContainer {
      */
     protected GriddedTileContainer( Envelope envelope, int rows, int columns, int tileSamplesX, int tileSamplesY ) {
         this.envelope = envelope;
-        this.envelopeWidth = envelope.getMax().getX() - envelope.getMin().getX();
-        this.envelopeHeight = envelope.getMax().getY() - envelope.getMin().getY();
+        this.envelopeWidth = envelope.getMax().get0() - envelope.getMin().get0();
+        this.envelopeHeight = envelope.getMax().get1() - envelope.getMin().get1();
         this.rows = rows;
         this.columns = columns;
         this.tileSamplesX = tileSamplesX;
@@ -129,10 +129,10 @@ public abstract class GriddedTileContainer implements TileContainer {
 
         List<AbstractRaster> tiles = new ArrayList<AbstractRaster>();
 
-        int minColumnId = getColumnIdx( env.getMin().getX() );
-        int minRowId = getRowIdx( env.getMax().getY() );
-        int maxColumnId = getColumnIdx( env.getMax().getX() );
-        int maxRowId = getRowIdx( env.getMin().getY() );
+        int minColumnId = getColumnIdx( env.getMin().get0() );
+        int minRowId = getRowIdx( env.getMax().get1() );
+        int maxColumnId = getColumnIdx( env.getMax().get0() );
+        int maxRowId = getRowIdx( env.getMin().get1() );
 
         for ( int rowId = minRowId; rowId <= maxRowId; rowId++ ) {
             for ( int columnId = minColumnId; columnId <= maxColumnId; columnId++ ) {
@@ -199,8 +199,8 @@ public abstract class GriddedTileContainer implements TileContainer {
         double xOffset = columnId * tileWidth;
         double yOffset = ( rows - rowId - 1 ) * tileHeight;
 
-        double minX = envelope.getMin().getX() + xOffset;
-        double minY = envelope.getMin().getY() + yOffset;
+        double minX = envelope.getMin().get0() + xOffset;
+        double minY = envelope.getMin().get1() + yOffset;
         double maxX = minX + tileWidth;
         double maxY = minY + tileHeight;
 
@@ -209,13 +209,13 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     private int getColumnIdx( double x ) {
 
-        if ( x < envelope.getMin().getX() || x > envelope.getMax().getX() ) {
-            String msg = "Specified x coordinate (=" + x + ") is out of range [" + envelope.getMin().getX() + ";"
-                         + envelope.getMax().getX() + "]";
+        if ( x < envelope.getMin().get0() || x > envelope.getMax().get0() ) {
+            String msg = "Specified x coordinate (=" + x + ") is out of range [" + envelope.getMin().get0() + ";"
+                         + envelope.getMax().get0() + "]";
             throw new IllegalArgumentException( msg );
         }
 
-        double dx = x - envelope.getMin().getX();
+        double dx = x - envelope.getMin().get0();
         int columnIdx = (int) ( columns * dx / envelopeWidth );
         if ( columnIdx < 0 ) {
             columnIdx = 0;
@@ -228,13 +228,13 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     private int getRowIdx( double y ) {
 
-        if ( y < envelope.getMin().getY() || y > envelope.getMax().getY() ) {
-            String msg = "Specified y coordinate (=" + y + ") is out of range [" + envelope.getMin().getY() + ";"
-                         + envelope.getMax().getY() + "]";
+        if ( y < envelope.getMin().get1() || y > envelope.getMax().get1() ) {
+            String msg = "Specified y coordinate (=" + y + ") is out of range [" + envelope.getMin().get1() + ";"
+                         + envelope.getMax().get1() + "]";
             throw new IllegalArgumentException( msg );
         }
 
-        double dy = y - envelope.getMin().getY();
+        double dy = y - envelope.getMin().get1();
         int rowIdx = (int) ( rows * ( envelopeHeight - dy ) / envelopeHeight );
         if ( rowIdx < 0 ) {
             rowIdx = 0;

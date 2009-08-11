@@ -98,17 +98,17 @@ public class DefaultPoint extends AbstractDefaultGeometry implements Point {
     }
 
     @Override
-    public double getX() {
+    public double get0() {
         return coordinates[0];
     }
 
     @Override
-    public double getY() {
+    public double get1() {
         return coordinates[1];
     }
 
     @Override
-    public double getZ() {
+    public double get2() {
         if ( coordinates.length > 2 ) {
             return coordinates[2];
         }

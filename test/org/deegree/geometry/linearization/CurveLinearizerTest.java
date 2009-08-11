@@ -79,8 +79,8 @@ public class CurveLinearizerTest {
     }
 
     private double getDistance( Point p0, Point p1 ) {
-        double dx = p1.getX() - p0.getX();
-        double dy = p1.getY() - p0.getY();
+        double dx = p1.get0() - p0.get0();
+        double dy = p1.get1() - p0.get1();
         return Math.sqrt( dx * dx + dy * dy );
     }
 
@@ -106,8 +106,8 @@ public class CurveLinearizerTest {
         Point lastPoint = null;
         for ( Point point : positions ) {
             if ( lastPoint != null ) {
-                double delta = Math.sqrt( ( point.getX() - lastPoint.getX() ) * ( point.getX() - lastPoint.getX() )
-                                          + ( point.getY() - lastPoint.getY() ) * ( point.getY() - lastPoint.getY() ) );
+                double delta = Math.sqrt( ( point.get0() - lastPoint.get0() ) * ( point.get0() - lastPoint.get0() )
+                                          + ( point.get1() - lastPoint.get1() ) * ( point.get1() - lastPoint.get1() ) );
             }
             lastPoint = point;
         }
@@ -177,17 +177,17 @@ public class CurveLinearizerTest {
         Point lastPoint = null;
         for ( Point point : positions ) {
             if ( lastPoint != null ) {
-                double delta = Math.sqrt( ( point.getX() - lastPoint.getX() ) * ( point.getX() - lastPoint.getX() )
-                                          + ( point.getY() - lastPoint.getY() ) * ( point.getY() - lastPoint.getY() ) );
+                double delta = Math.sqrt( ( point.get0() - lastPoint.get0() ) * ( point.get0() - lastPoint.get0() )
+                                          + ( point.get1() - lastPoint.get1() ) * ( point.get1() - lastPoint.get1() ) );
                 Assert.assertEquals( 0.199115, delta, 0.000001 );
             }
             lastPoint = point;
         }
         Assert.assertEquals( 15, positions.size() );
-        Assert.assertEquals( p0[0], positions.get( 0 ).getX() );
-        Assert.assertEquals( p0[1], positions.get( 0 ).getY() );
-        Assert.assertEquals( p2[0], positions.get( positions.size() - 1 ).getX() );
-        Assert.assertEquals( p2[1], positions.get( positions.size() - 1 ).getY() );
+        Assert.assertEquals( p0[0], positions.get( 0 ).get0() );
+        Assert.assertEquals( p0[1], positions.get( 0 ).get1() );
+        Assert.assertEquals( p2[0], positions.get( positions.size() - 1 ).get0() );
+        Assert.assertEquals( p2[1], positions.get( positions.size() - 1 ).get1() );
     }
 
     /**
@@ -203,10 +203,10 @@ public class CurveLinearizerTest {
         Points positions = createLinearArc( p0, p1, p2, false );
 
         Assert.assertEquals( 2, positions.size() );
-        Assert.assertEquals( p0[0], positions.get( 0 ).getX() );
-        Assert.assertEquals( p0[1], positions.get( 0 ).getY() );
-        Assert.assertEquals( p2[0], positions.get( 1 ).getX() );
-        Assert.assertEquals( p2[1], positions.get( 1 ).getY() );
+        Assert.assertEquals( p0[0], positions.get( 0 ).get0() );
+        Assert.assertEquals( p0[1], positions.get( 0 ).get1() );
+        Assert.assertEquals( p2[0], positions.get( 1 ).get0() );
+        Assert.assertEquals( p2[1], positions.get( 1 ).get1() );
     }
 
     /**
@@ -222,12 +222,12 @@ public class CurveLinearizerTest {
         Points positions = createLinearArc( p0, p1, p2, true );
 
         Assert.assertEquals( 3, positions.size() );
-        Assert.assertEquals( p0[0], positions.get( 0 ).getX() );
-        Assert.assertEquals( p0[1], positions.get( 0 ).getY() );
-        Assert.assertEquals( p1[0], positions.get( 1 ).getX() );
-        Assert.assertEquals( p1[1], positions.get( 1 ).getY() );
-        Assert.assertEquals( p0[0], positions.get( 2 ).getX() );
-        Assert.assertEquals( p0[1], positions.get( 2 ).getY() );
+        Assert.assertEquals( p0[0], positions.get( 0 ).get0() );
+        Assert.assertEquals( p0[1], positions.get( 0 ).get1() );
+        Assert.assertEquals( p1[0], positions.get( 1 ).get0() );
+        Assert.assertEquals( p1[1], positions.get( 1 ).get1() );
+        Assert.assertEquals( p0[0], positions.get( 2 ).get0() );
+        Assert.assertEquals( p0[1], positions.get( 2 ).get1() );
     }
 
     /**
@@ -426,7 +426,7 @@ public class CurveLinearizerTest {
         Coordinate[] coords = new Coordinate[points.size()];
         for ( int i = 0; i < points.size(); ++i ) {
             Point p = points.get( i );
-            coords[i] = new Coordinate( p.getX(), p.getY() );
+            coords[i] = new Coordinate( p.get0(), p.get1() );
         }
         CoordinateSequence cs = new CoordinateArraySequence( coords );
         LineString ls = new LineString( cs, new GeometryFactory() );

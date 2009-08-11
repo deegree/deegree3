@@ -106,10 +106,10 @@ public class MapUtils {
             }
             double dx = bbox.getWidth() / mapWidth;
             double dy = bbox.getHeight() / mapHeight;
-            double minx = bbox.getMin().getX() + dx * ( mapWidth / 2d - 1 );
-            double miny = bbox.getMin().getY() + dy * ( mapHeight / 2d - 1 );
-            double maxx = bbox.getMin().getX() + dx * ( mapWidth / 2d );
-            double maxy = bbox.getMin().getY() + dy * ( mapHeight / 2d );
+            double minx = bbox.getMin().get0() + dx * ( mapWidth / 2d - 1 );
+            double miny = bbox.getMin().get1() + dy * ( mapHeight / 2d - 1 );
+            double maxx = bbox.getMin().get0() + dx * ( mapWidth / 2d );
+            double maxy = bbox.getMin().get1() + dy * ( mapHeight / 2d );
 
             double distance = calcDistance( minx, miny, maxx, maxy );
 
@@ -161,10 +161,10 @@ public class MapUtils {
             double dx = bbox.getWidth() / mapWidth;
             double dy = bbox.getHeight() / mapHeight;
 
-            double minx = bbox.getMin().getX() + dx * ( mapWidth / 2d - 1 );
-            double miny = bbox.getMin().getY() + dy * ( mapHeight / 2d - 1 );
-            double maxx = bbox.getMin().getX() + dx * ( mapWidth / 2d );
-            double maxy = bbox.getMin().getY() + dy * ( mapHeight / 2d - 1 );
+            double minx = bbox.getMin().get0() + dx * ( mapWidth / 2d - 1 );
+            double miny = bbox.getMin().get1() + dy * ( mapHeight / 2d - 1 );
+            double maxx = bbox.getMin().get0() + dx * ( mapWidth / 2d );
+            double maxy = bbox.getMin().get1() + dy * ( mapHeight / 2d - 1 );
 
             double distance = calcDistance( minx, miny, maxx, maxy );
 

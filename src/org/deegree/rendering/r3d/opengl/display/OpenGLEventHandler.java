@@ -141,8 +141,8 @@ public class OpenGLEventHandler implements GLEventListener {
      *
      */
     public void calcViewParameters() {
-        centroid = new float[] { (float) bbox.getCentroid().getX(), (float) bbox.getCentroid().getY(),
-                                (float) bbox.getCentroid().getZ() };
+        centroid = new float[] { (float) bbox.getCentroid().get0(), (float) bbox.getCentroid().get1(),
+                                (float) bbox.getCentroid().get2() };
         lookAt = new float[] { centroid[0], centroid[1], centroid[2] };
         farClippingPlane = 20 * (float) Math.max( bbox.getWidth(), bbox.getHeight() );
         eye = new float[] { centroid[0], centroid[1] + ( farClippingPlane * .5f ),
@@ -210,9 +210,9 @@ public class OpenGLEventHandler implements GLEventListener {
         Envelope env = getDefaultBBox();
         return ( Math.abs( bbox.getWidth() - env.getWidth() ) < 1E-11 )
                && ( Math.abs( bbox.getHeight() - env.getHeight() ) < 1E-11 )
-               && ( Math.abs( bbox.getMin().getX() - env.getMin().getX() ) < 1E-11 )
-               && ( Math.abs( bbox.getMin().getY() - env.getMin().getY() ) < 1E-11 )
-               && ( Math.abs( bbox.getMin().getZ() - env.getMin().getZ() ) < 1E-11 );
+               && ( Math.abs( bbox.getMin().get0() - env.getMin().get0() ) < 1E-11 )
+               && ( Math.abs( bbox.getMin().get1() - env.getMin().get1() ) < 1E-11 )
+               && ( Math.abs( bbox.getMin().get2() - env.getMin().get2() ) < 1E-11 );
     }
 
     /**

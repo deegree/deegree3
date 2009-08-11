@@ -116,7 +116,7 @@ public class Java2DRenderer implements Renderer {
             double scaley = height / bbox.getHeight();
 
             // we have to flip horizontally, so invert y scale and add the screen height
-            worldToScreen.translate( -bbox.getMin().getX() * scalex, bbox.getMin().getY() * scaley + height );
+            worldToScreen.translate( -bbox.getMin().get0() * scalex, bbox.getMin().get1() * scaley + height );
             worldToScreen.scale( scalex, -scaley );
 
             LOG.debug( "For coordinate transformations, scaling by x = {} and y = {}", scalex, -scaley );
@@ -236,7 +236,7 @@ public class Java2DRenderer implements Renderer {
     }
 
     private void render( TextStyling styling, Font font, String text, Point p ) {
-        Point2D.Double pt = (Point2D.Double) worldToScreen.transform( new Point2D.Double( p.getX(), p.getY() ), null );
+        Point2D.Double pt = (Point2D.Double) worldToScreen.transform( new Point2D.Double( p.get0(), p.get1() ), null );
         double x = pt.x + styling.displacementX;
         double y = pt.y + styling.displacementY;
         graphics.setFont( font );
@@ -366,7 +366,7 @@ public class Java2DRenderer implements Renderer {
         }
 
         if ( geom instanceof Point ) {
-            render( styling, ( (Point) geom ).getX(), ( (Point) geom ).getY() );
+            render( styling, ( (Point) geom ).get0(), ( (Point) geom ).get1() );
         }
         // TODO properly convert'em
         if ( geom instanceof Surface ) {
@@ -409,12 +409,12 @@ public class Java2DRenderer implements Renderer {
 
         Points points = curve.getControlPoints();
         Point p = points.get( 0 );
-        line.moveTo( p.getX(), p.getY() );
+        line.moveTo( p.get0(), p.get1() );
         for ( Point point : points ) {
             if ( point == p ) {
                 continue;
             }
-            line.lineTo( point.getX(), point.getY() );
+            line.lineTo( point.get0(), point.get1() );
         }
         line.transform( worldToScreen );
 

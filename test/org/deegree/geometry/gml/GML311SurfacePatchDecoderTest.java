@@ -83,10 +83,10 @@ public class GML311SurfacePatchDecoderTest {
                             UnknownCRSException {
         XMLStreamReaderWrapper parser = getParser( "PolygonPatch.gml" );
         PolygonPatch patch = (PolygonPatch) getPatchParser().parseSurfacePatch( parser, new CRS( "EPSG:4326" ) );
-        Assert.assertEquals( 2.0, patch.getExteriorRing().getStartPoint().getX() );
-        Assert.assertEquals( 0.0, patch.getExteriorRing().getStartPoint().getY() );
-        Assert.assertEquals( 2.0, patch.getExteriorRing().getEndPoint().getX() );
-        Assert.assertEquals( 0.0, patch.getExteriorRing().getEndPoint().getY() );
+        Assert.assertEquals( 2.0, patch.getExteriorRing().getStartPoint().get0() );
+        Assert.assertEquals( 0.0, patch.getExteriorRing().getStartPoint().get1() );
+        Assert.assertEquals( 2.0, patch.getExteriorRing().getEndPoint().get0() );
+        Assert.assertEquals( 0.0, patch.getExteriorRing().getEndPoint().get1() );
         Assert.assertEquals( 2, patch.getInteriorRings().size() );
     }
 

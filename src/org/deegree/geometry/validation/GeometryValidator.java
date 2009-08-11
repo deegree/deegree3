@@ -237,7 +237,7 @@ public class GeometryValidator {
         for ( CurveSegment segment : curve.getCurveSegments() ) {
             Point startPoint = segment.getStartPoint();
             if ( lastSegmentEndPoint != null ) {
-                if ( startPoint.getX() != lastSegmentEndPoint.getX() || startPoint.getY() != lastSegmentEndPoint.getY() ) {
+                if ( startPoint.get0() != lastSegmentEndPoint.get0() || startPoint.get1() != lastSegmentEndPoint.get1() ) {
                     LOG.debug( "Found discontinuous segments." );
                     if ( !eventHandler.curveDiscontinuity( curve, segmentIdx, affectedGeometryParticles2 ) ) {
                         isValid = false;
@@ -469,7 +469,7 @@ public class GeometryValidator {
         List<Coordinate> coordinates = new LinkedList<Coordinate>();
         for ( CurveSegment segment : linearizedCurve.getCurveSegments() ) {
             for ( Point point : ( (LineStringSegment) segment ).getControlPoints() ) {
-                coordinates.add( new Coordinate( point.getX(), point.getY() ) );
+                coordinates.add( new Coordinate( point.get0(), point.get1() ) );
             }
         }
         return jtsFactory.createLineString( coordinates.toArray( new Coordinate[coordinates.size()] ) );
@@ -492,7 +492,7 @@ public class GeometryValidator {
         for ( Curve member : linearizedRing.getMembers() ) {
             for ( CurveSegment segment : member.getCurveSegments() ) {
                 for ( Point point : ( (LineStringSegment) segment ).getControlPoints() ) {
-                    coordinates.add( new Coordinate( point.getX(), point.getY() ) );
+                    coordinates.add( new Coordinate( point.get0(), point.get1() ) );
                 }
             }
         }

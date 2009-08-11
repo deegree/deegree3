@@ -227,10 +227,10 @@ public class GeometryTransformer extends Transformer {
             pointsPerSide = (int) Math.ceil( ( numPoints - 4 ) / 4.0 );
         }
 
-        double x1 = envelope.getMin().getX();
-        double y1 = envelope.getMin().getY();
-        double x2 = envelope.getMax().getX();
-        double y2 = envelope.getMax().getY();
+        double x1 = envelope.getMin().get0();
+        double y1 = envelope.getMin().get1();
+        double x2 = envelope.getMax().get0();
+        double y2 = envelope.getMax().get1();
 
         double width = envelope.getWidth();
         double height = envelope.getHeight();
@@ -341,12 +341,12 @@ public class GeometryTransformer extends Transformer {
 
         List<Point> result = new ArrayList<Point>( points.size() );
         for ( Point point : points ) {
-            Point3d coord = new Point3d( point.getX(), point.getY(), point.getZ() );
+            Point3d coord = new Point3d( point.get0(), point.get1(), point.get2() );
             Point3d tmp = new Point3d( coord );
 
             tmp = trans.doTransform( coord );
 
-            if ( Double.isNaN( point.getZ() ) ) {
+            if ( Double.isNaN( point.get2() ) ) {
                 result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y },
                                                      new CRS( trans.getTargetCRS() ) ) );
             }
@@ -364,12 +364,12 @@ public class GeometryTransformer extends Transformer {
     private Point transform( Point geo, Transformation trans )
                             throws TransformationException {
 
-        Point3d coord = new Point3d( geo.getX(), geo.getY(), geo.getZ() );
+        Point3d coord = new Point3d( geo.get0(), geo.get1(), geo.get2() );
         Point3d result = new Point3d( coord );
 
         result = trans.doTransform( coord );
 
-        if ( Double.isNaN( geo.getZ() ) ) {
+        if ( Double.isNaN( geo.get2() ) ) {
             return geomFactory.createPoint( geo.getId(), new double[] { result.x, result.y },
                                             new CRS( trans.getTargetCRS() ) );
         }
