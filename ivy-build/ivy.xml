@@ -20,6 +20,9 @@
     <dependency org="commons" name="commons-pool" rev="1.4" transitive="false" conf="${module.name}-build" />
     <dependency org="commons" name="commons-dbcp" rev="1.2.2" transitive="false" conf="${module.name}-build" />
     <dependency org="jai" name="jai_core" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="jai" name="jai_imageio" rev="" transitive="false" conf="${module.name}-build" />
+    <dependency org="jai" name="jai_codec" rev="" transitive="false" conf="${module.name}-build" />
+    
 
     <!-- Needed for various calculations on points -->
     <dependency org="java3d" name="vecmath" rev="1.5.2" conf="${module.name}-build" />
