@@ -50,8 +50,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.deegree.crs.CRS;
+import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.LinearRing;
@@ -236,6 +241,35 @@ public class GeometryUtils {
         }
 
         return res;
+    }
+
+    /**
+     * Converts the given Envelope into an envelope with the given coordinate system. Basically this is a delegate call
+     * to the {@link GeometryTransformer}.
+     * 
+     * @param sourceEnvelope
+     *            to convert
+     * @param targetCRS
+     * @return the target Envelope
+     * @throws TransformationException
+     * @throws TransformationException
+     *             if the transformation between the source and target crs cannot be created.
+     */
+    public static Envelope createConvertedEnvelope( Envelope sourceEnvelope, CRS targetCRS )
+                            throws TransformationException {
+        Envelope result = sourceEnvelope;
+        if ( !sourceEnvelope.getCoordinateSystem().equals( targetCRS ) ) {
+            try {
+                result = (Envelope) new GeometryTransformer( targetCRS.getWrappedCRS() ).transform( sourceEnvelope );
+            } catch ( IllegalArgumentException e ) {
+                throw new TransformationException( "Could not transform to given envelope because: "
+                                                   + e.getLocalizedMessage(), e );
+            } catch ( UnknownCRSException e ) {
+                throw new TransformationException( "Could not transform to given envelope because: "
+                                                   + e.getLocalizedMessage(), e );
+            }
+        }
+        return result;
     }
 
 }
