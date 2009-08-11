@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
 import java.io.File;
@@ -62,12 +62,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This class transforms raster to a taget coordinate system .
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class RasterTransformer extends Transformer {
 
@@ -87,7 +87,7 @@ public class RasterTransformer extends Transformer {
 
     /**
      * Creates a new RasterTransformer with the given target CRS.
-     *
+     * 
      * @param targetCRS
      *            to transform incoming coordinates to.
      * @throws IllegalArgumentException
@@ -99,7 +99,7 @@ public class RasterTransformer extends Transformer {
 
     /**
      * Creates a new RasterTransformer with the given id as the target CRS.
-     *
+     * 
      * @param targetCRS
      *            an identifier to which all incoming coordinates shall be transformed.
      * @throws UnknownCRSException
@@ -113,12 +113,12 @@ public class RasterTransformer extends Transformer {
 
     /**
      * Creates a transformed raster from a given source raster.
-     *
+     * 
      * <p>
      * This method transforms the requested envelope and returns a new raster with the requested size. The source raster
      * can be larger than the requested envelope (like a large tiled raster), or smaller (the source raster nodata value
      * will be used outside the source raster).
-     *
+     * 
      * @param sourceRaster
      *            the source raster
      * @param dstEnvelope
@@ -144,6 +144,7 @@ public class RasterTransformer extends Transformer {
         RasterData srcRaster = source.getAsSimpleRaster().getReadOnlyRasterData();
 
         RasterData dstRaster = srcRaster.createCompatibleRasterData( dstWidth, dstHeight );
+
         RasterReference srcREnv = source.getRasterReference();
         RasterReference dstREnv = new RasterReference( dstEnvelope, dstWidth, dstHeight );
 
@@ -248,11 +249,11 @@ public class RasterTransformer extends Transformer {
 
     /**
      * Transform a raster to the target coordinate system.
-     *
+     * 
      * <p>
      * This method transforms the whole raster into the target CRS of this RasterTransformer. The size of the output
      * raster will be calculated, so that the pixels keep the aspect ratio (i.e. keep square pixels).
-     *
+     * 
      * @param sourceRaster
      *            the raster to be transformed
      * @param interpolationType
@@ -264,7 +265,8 @@ public class RasterTransformer extends Transformer {
     public SimpleRaster transform( AbstractRaster sourceRaster, InterpolationType interpolationType )
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
         GeometryTransformer gt = new GeometryTransformer( getTargetCRS() );
-        Envelope dstEnvelope = gt.transform( sourceRaster.getEnvelope(), sourceRaster.getCoordinateSystem().getWrappedCRS() ).getEnvelope();
+        Envelope dstEnvelope = gt.transform( sourceRaster.getEnvelope(),
+                                             sourceRaster.getCoordinateSystem().getWrappedCRS() ).getEnvelope();
 
         int srcWidth = sourceRaster.getColumns();
         int srcHeight = sourceRaster.getRows();
@@ -284,7 +286,7 @@ public class RasterTransformer extends Transformer {
 
     /**
      * Sets the background for the raster transformation.
-     *
+     * 
      * @param backgroundValue
      */
     public void setBackgroundValue( byte[] backgroundValue ) {

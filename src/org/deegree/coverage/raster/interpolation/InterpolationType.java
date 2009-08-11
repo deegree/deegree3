@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,38 +32,35 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.interpolation;
 
 /**
  * Enum for all implemented interpolation types.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public enum InterpolationType {
-    /**
-     * bilinear interpolation
-     */
+    /** bilinear interpolation */
     BILINEAR,
-    /**
-     * nearest neighbor interpolation
-     */
-    NEAREST_NEIGHBOR;
+    /** nearest neighbor interpolation */
+    NEAREST_NEIGHBOR,
+    /** No interpolation */
+    NONE;
 
     /**
      * Get interpolation for the given string. This method is case insensitive, words can be separated with a
      * whitespace, minus or underscore.
-     *
+     * 
      * @param interpolation
      * @return the interpolation
      */
     public static InterpolationType fromString( String interpolation ) {
         String key = interpolation.toUpperCase();
-        key = key.replace( "-", "_" );
-        key = key.replace( " ", "_" );
+        key = key.replaceAll( "-\\s", "_" );
         return InterpolationType.valueOf( key );
     }
 }
