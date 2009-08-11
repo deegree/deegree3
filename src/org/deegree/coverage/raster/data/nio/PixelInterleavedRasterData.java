@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data.nio;
 
 import java.nio.ByteBuffer;
@@ -45,17 +45,17 @@ import org.deegree.coverage.raster.geom.RasterRect;
 
 /**
  * This class implements a pixel-interleaved, ByteBuffer-based RasterData.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class PixelInterleavedRasterData extends ByteBufferRasterData {
 
     /**
      * Creates a new PixelInterleavedRasterData with given size, number of bands and data type
-     *
+     * 
      * @param sampleDomain
      *            the raster rectangle defining the sample domain of this raster data.
      * @param rasterWidth
@@ -73,7 +73,7 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
     }
 
     /**
-     *
+     * 
      * @param sampleDomain
      *            the raster rectangle defining the sample domain of this raster data.
      * @param rasterWidth
@@ -144,12 +144,18 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
 
     @Override
     public void setPixel( int x, int y, byte[] result ) {
+        if ( data == null ) {
+            initByteBuffer();
+        }
         data.position( calculatePos( x, y ) );
         data.put( result );
     }
 
     @Override
     public void setSubset( int x0, int y0, int width, int height, RasterData srcRaster, int xOffset, int yOffset ) {
+        if ( data == null ) {
+            initByteBuffer();
+        }
         // clamp to maximum possible size
         // int wx0 = this.rasterWidth - x0;
         // int hy0 = this.rasterHeight - y0;
