@@ -65,6 +65,21 @@ public class WFSConstants {
 
     /** WFS protocol version 2.0.0 */
     public static final Version VERSION_200 = Version.parseVersion( "2.0.0" );
+    
+    /** URL of the WFS 1.0.0 basic schema*/
+    public static final String WFS_100_BASIC_SCHEMA_URL = "http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd";
+
+    /** URL of the WFS 1.0.0 capabilities schema */
+    public static final String WFS_100_CAPABILITIES_SCHEMA_URL = "http://schemas.opengis.net/wfs/1.0.0/WFS-capabilities.xsd";
+
+    /** URL of the WFS 1.0.0 transaction schema */
+    public static final String WFS_100_TRANSACTION_URL = "http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd";
+
+    /** URL of the WFS 1.1.0 schema */
+    public static final String WFS_110_SCHEMA_URL = "http://schemas.opengis.net/wfs/1.1.0/wfs.xsd";
+
+    /** URL of the WFS 2.0.0 schema */
+    public static final String WFS_200_SCHEMA_URL = "http://schemas.opengis.net/wfs/2.0.0/wfs.xsd";    
 
     /**
      * Enum type for discriminating between the different types of WebFeatureService (WFS) requests.
