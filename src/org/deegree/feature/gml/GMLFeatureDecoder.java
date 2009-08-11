@@ -250,8 +250,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
                 throw new XMLParsingException( xmlStream, msg );
             }
             idContext.addFeature( feature );
-        }
-
+        }        
         return feature;
     }
 

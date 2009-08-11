@@ -150,7 +150,7 @@ public class GMLMemoryStore implements FeatureStore {
     void addFeatures( Collection<Feature> features ) {
         for ( Feature feature : features ) {
             FeatureType ft = feature.getType();
-            // TODO check
+            // TODO check if served
             FeatureCollection fc2 = ftToFeatures.get( ft );
             fc2.add( feature );
             if ( feature.getId() != null ) {
@@ -215,6 +215,12 @@ public class GMLMemoryStore implements FeatureStore {
         }
 
         return fc;
+    }
+
+    @Override
+    public int performHitsQuery( Query query ) {
+        // TODO maybe implement this more efficiently
+        return performQuery( query ).size();
     }
 
     @Override

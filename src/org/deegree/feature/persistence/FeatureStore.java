@@ -76,6 +76,15 @@ public interface FeatureStore {
     public FeatureCollection performQuery( Query query );
 
     /**
+     * Returns the number of features that are matched by the given {@link Query}.
+     * 
+     * @param query
+     *            query to be performed
+     * @return number of matching features
+     */
+    public int performHitsQuery( Query query );
+
+    /**
      * Retrieves the stored object with a certain id.
      * 
      * TODO check if common interface for returned objects can be used here
@@ -96,5 +105,4 @@ public interface FeatureStore {
      */
     public FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException;
-
 }

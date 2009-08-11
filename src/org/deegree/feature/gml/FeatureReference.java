@@ -144,7 +144,10 @@ public class FeatureReference implements Feature {
 
     @Override    
     public FeatureType getType() {
-        return ft;
+        if (feature == null) {
+            return ft;            
+        }
+        return feature.getType();
     }
 
     @Override

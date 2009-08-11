@@ -109,7 +109,7 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
         Set<Feature> features = new HashSet<Feature>();
 
         findFeaturesAndGeometries( fc, geometries, features );
-
+        
         store.addFeatures( features );
         store.addGeometriesWithId( geometries );
 

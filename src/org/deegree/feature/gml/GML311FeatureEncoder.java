@@ -263,4 +263,8 @@ public class GML311FeatureEncoder {
             writer.writeEmptyElement( namespaceURI, localname );
         }
     }
+
+    public boolean isExported( String memberFid ) {
+        return exportedIds.contains( memberFid );
+    }
 }
