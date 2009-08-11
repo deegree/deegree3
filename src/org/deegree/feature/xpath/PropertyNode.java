@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,29 +32,49 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.xpath;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.feature.Property;
+import org.deegree.feature.types.property.PropertyType;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class PropertyNode extends ElementNode {
 
     private FeatureNode parent;
 
-    private Property prop;
+    private Property<String> prop;
 
-    PropertyNode( FeatureNode parent, Property prop ) {
-        super (prop.getName());
+    PropertyNode( FeatureNode parent, final Property<?> prop ) {
+        super( prop.getName() );
         this.parent = parent;
-        this.prop = prop;
+        // TODO temporary hack to get the xpath expressions to evaluate properly
+        this.prop = new Property<String>() {
+
+            @Override
+            public QName getName() {
+                return prop.getName();
+            }
+
+            @Override
+            public PropertyType getType() {
+                return prop.getType();
+            }
+
+            @Override
+            public String getValue() {
+                return prop.getValue().toString();
+            }
+        };
     }
 
     @Override
@@ -62,7 +82,10 @@ public class PropertyNode extends ElementNode {
         return parent;
     }
 
-    public Property getProperty() {
+    /**
+     * @return the modified property which converts values to strings
+     */
+    public Property<String> getProperty() {
         return prop;
     }
 }
