@@ -131,7 +131,7 @@ public class CRS {
     public boolean equals( Object other ) {
         if ( other != null && other instanceof CRS ) {
             final CRS that = (CRS) other;
-            boolean result = this.crsName != null && ( this.crsName.equals( that.crsName ) ) /* && to be done */;
+            boolean result = this.crsName != null && ( this.crsName.equals( that.crsName ) );
             if ( !result ) {
                 try {
                     CoordinateSystem thisCRS = this.getWrappedCRS();
@@ -143,14 +143,6 @@ public class CRS {
 
             }
         }
-        return false;
-    }
-
-    /**
-     * @param otherCRS
-     * @return false
-     */
-    public boolean equals2( CRS otherCRS ) {
         return false;
     }
 
