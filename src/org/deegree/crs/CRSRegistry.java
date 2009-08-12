@@ -94,7 +94,12 @@ public class CRSRegistry {
         try {
             realCRS = crsProvider.getCRSByCode( CRSCodeType.valueOf( name ) );
         } catch ( CRSConfigurationException e ) {
-            LOG.error( e.getMessage(), e );
+            // throw new RuntimeException( "The crs configuration is broken, no way to recover from this." );
+            throw new RuntimeException(
+                                        "The crs configuration is broken, the crs: "
+                                                                + name
+                                                                + " could not be loaded, and there is no way to recover from this, original message: "
+                                                                + e.getMessage(), e );
         }
         if ( realCRS == null ) {
             throw new UnknownCRSException( name );

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,19 +32,19 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.crs.exceptions;
 
 import org.deegree.crs.i18n.Messages;
 
 /**
- *
- * The <code>UnknownCRSException</code> class just wraps a message telling the user, his/her
- * requested CRS is not known to the CRSPovider.
- *
+ * 
+ * The <code>UnknownCRSException</code> class just wraps a message telling the user, his/her requested CRS is not
+ * known to the CRSPovider.
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class UnknownCRSException extends Exception {
@@ -56,11 +56,23 @@ public class UnknownCRSException extends Exception {
 
     /**
      * Creates a simple Exception telling the user that the requested CoordinateSystem is unknown.
-     *
+     * 
      * @param crsName
      *            the name of the requested crs.
      */
     public UnknownCRSException( String crsName ) {
         super( Messages.getMessage( "CRS_UNKNOWN_CRS", crsName ) );
+    }
+
+    /**
+     * Creates a simple Exception telling the user that the requested CoordinateSystem is unknown.
+     * 
+     * @param crsName
+     *            the name of the requested crs.
+     * @param cause
+     *            of the exception.
+     */
+    public UnknownCRSException( String crsName, Throwable cause ) {
+        super( Messages.getMessage( "CRS_UNKNOWN_CRS", crsName ), cause );
     }
 }
