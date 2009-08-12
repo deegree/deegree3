@@ -122,8 +122,8 @@
                 <path refid="build.path"/>
                 <pathelement location="${classes.dir}"/>
             </classpath>
-						<arg line="${crs.id}" />
-            <env key="CRS_DB_URL" value="${crs.derby.url}" />
+            <arg line="xml ${crs.id}" />
+            <env key="CRS_DB_URL" value="jdbc:derby:src/META-INF/deegreeCRS" />
         </java>
     </target>
 
@@ -135,7 +135,7 @@
                 <pathelement location="${classes.dir}"/>
             </classpath>
             <arg line="${wkt.file}" />
-            <env key="CRS_DB_URL" value="${crs.derby.url}" />
+            <env key="CRS_DB_URL" value="jdbc:derby:src/META-INF/deegreeCRS" />
         </java>
     </target>
 
