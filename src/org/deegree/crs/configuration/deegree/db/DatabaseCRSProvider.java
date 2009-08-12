@@ -162,9 +162,11 @@ public class DatabaseCRSProvider implements CRSProvider {
                 }
             }
         } catch ( IllegalArgumentException e ) {
-            LOG.error( e.getMessage(), e );
+            LOG.warn( "Instantiation for code: " + code.getOriginal() + " could not be forefullfilled, because: "
+                      + e.getLocalizedMessage() );
         } catch ( SQLException e ) {
-            LOG.error( e.getMessage(), e );
+            throw new CRSConfigurationException( "Could not get an CoordinateSystem from code: " + code.getOriginal()
+                                                 + " because: " + e.getLocalizedMessage(), e );
         }
         return result;
     }
