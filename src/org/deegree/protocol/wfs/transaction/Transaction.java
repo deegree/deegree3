@@ -1,7 +1,5 @@
 package org.deegree.protocol.wfs.transaction;
 
-import java.util.Collection;
-
 import org.deegree.commons.types.ows.Version;
 import org.deegree.protocol.wfs.AbstractWFSRequest;
 
@@ -25,14 +23,14 @@ import org.deegree.protocol.wfs.AbstractWFSRequest;
  */
 public class Transaction extends AbstractWFSRequest {
 
-    private Collection<TransactionOperation> operations;
+    private Iterable<TransactionOperation> operations;
 
     private String lockId;
 
-    private RELEASE_ACTION releaseAction;
+    private ReleaseAction releaseAction;
 
     /** Controls how locked features are treated when a transaction request is completed. */
-    public static enum RELEASE_ACTION {
+    public static enum ReleaseAction {
 
         /**
          * Indicates that the locks on all feature instances locked using the associated lockId should be released when
@@ -65,8 +63,8 @@ public class Transaction extends AbstractWFSRequest {
      * @param operations
      *            operations to be performed as parts of the transaction, can be null
      */
-    public Transaction( Version version, String handle, String lockId, RELEASE_ACTION releaseAction,
-                        Collection<TransactionOperation> operations ) {
+    public Transaction( Version version, String handle, String lockId, ReleaseAction releaseAction,
+                        Iterable<TransactionOperation> operations ) {
         super( version, handle );
         this.lockId = lockId;
         this.releaseAction = releaseAction;
@@ -85,11 +83,11 @@ public class Transaction extends AbstractWFSRequest {
     /**
      * Returns the release action mode to be applied after the transaction has been executed successfully.
      * 
-     * @see RELEASE_ACTION
+     * @see ReleaseAction
      * @return the release action mode to be applied after the transaction has been executed successfully, or null if it
      *         is unspecified
      */
-    public RELEASE_ACTION getReleaseAction() {
+    public ReleaseAction getReleaseAction() {
         return this.releaseAction;
     }
 
@@ -98,7 +96,7 @@ public class Transaction extends AbstractWFSRequest {
      * 
      * @return the contained operations, can be null
      */
-    public Collection<TransactionOperation> getOperations() {
+    public Iterable<TransactionOperation> getOperations() {
         return this.operations;
     }
 }

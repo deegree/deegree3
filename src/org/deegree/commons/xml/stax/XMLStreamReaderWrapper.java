@@ -165,6 +165,32 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
         return attrValue;
     }
 
+    public QName getElementTextAsQName()
+                            throws XMLParsingException {
+        QName result = null;
+        try {
+            String s = getElementText();
+            int colonIdx = s.indexOf( ':' );
+            if ( colonIdx < 0 ) {
+                result = new QName( s );
+            } else if ( colonIdx == s.length() - 1 ) {
+                throw new XMLParsingException( this, "Invalid QName '" + s + "': no local name." );
+            } else {
+                String prefix = s.substring( 0, colonIdx );
+                String localPart = s.substring( colonIdx + 1 );
+                String nsUri = getNamespaceURI( prefix );
+                if ( nsUri == null ) {
+                    throw new XMLParsingException( this, "Invalid QName '" + s + "': prefix '" + prefix
+                                                         + "' is unbound." );
+                }
+                result = new QName( nsUri, localPart, prefix );
+            }
+        } catch ( XMLStreamException e ) {
+            throw new XMLParsingException( this, e.getMessage() );
+        }
+        return result;
+    }
+
     public double getElementTextAsDouble()
                             throws XMLParsingException {
         String s = null;
@@ -279,6 +305,30 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
         return reader.getAttributeValue( namespaceURI, localName );
     }
 
+    public QName getAttributeValueAsQName( String namespaceURI, String localName )
+                            throws XMLParsingException {
+        QName result = null;
+        String s = reader.getAttributeValue( namespaceURI, localName );
+        if ( s == null ) {
+            throw new XMLParsingException( this, "No attribute with name {" + namespaceURI + "}" + localName + "." );
+        }
+        int colonIdx = s.indexOf( ':' );
+        if ( colonIdx < 0 ) {
+            result = new QName( s );
+        } else if ( colonIdx == s.length() - 1 ) {
+            throw new XMLParsingException( this, "Invalid QName '" + s + "': no local name." );
+        } else {
+            String prefix = s.substring( 0, colonIdx );
+            String localPart = s.substring( colonIdx + 1 );
+            String nsUri = getNamespaceURI( prefix );
+            if ( nsUri == null ) {
+                throw new XMLParsingException( this, "Invalid QName '" + s + "': prefix '" + prefix + "' is unbound." );
+            }
+            result = new QName( nsUri, localPart, prefix );
+        }
+        return result;
+    }
+
     @Override
     public String getCharacterEncodingScheme() {
         return reader.getCharacterEncodingScheme();
@@ -303,7 +353,8 @@ public class XMLStreamReaderWrapper implements XMLStreamReader {
                         || eventType == XMLStreamConstants.COMMENT ) {
                 // skipping
             } else if ( eventType == XMLStreamConstants.END_DOCUMENT ) {
-                throw new XMLStreamException( "unexpected end of document when reading element text content", getLocation() );
+                throw new XMLStreamException( "unexpected end of document when reading element text content",
+                                              getLocation() );
             } else if ( eventType == XMLStreamConstants.START_ELEMENT ) {
                 throw new XMLStreamException( "element text content may not contain START_ELEMENT", getLocation() );
             } else {
