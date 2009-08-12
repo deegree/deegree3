@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -47,14 +48,19 @@ import junit.framework.Assert;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.geom.RasterReference.Type;
 import org.deegree.coverage.raster.io.RasterFactory;
+import org.deegree.crs.CRS;
+import org.deegree.crs.CRSCodeType;
+import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.UnknownCRSException;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.GeometryFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
  * This class tests the loading of GeoTIFF files. It doesn't test the various TIFF formats, but only the georeferencing
- * metadata.
+ * metadata. Be careful this test will only work with the IIORasterReader, the JAIRasterReader doesn't support meta-data
+ * reading (yet?).
  * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
@@ -89,7 +95,17 @@ public class GeoTIFFTest {
     @Test
     public void geoTIFFCRS()
                             throws UnknownCRSException {
-        assertTrue( raster.getEnvelope().getCoordinateSystem().getWrappedCRS().getCode().getCode().equals( "4326" ) );
+        Envelope env = raster.getEnvelope();
+        Assert.assertNotNull( env );
+        CRS crs = env.getCoordinateSystem();
+        Assert.assertNotNull( crs );
+        CoordinateSystem coordSys = crs.getWrappedCRS();
+        assertNotNull( coordSys );
+        CRSCodeType code = coordSys.getCode();
+        assertNotNull( code );
+        String c = code.getCode();
+        assertNotNull( c );
+        assertTrue( "4326".equals( c ) );
     }
 
     /**
