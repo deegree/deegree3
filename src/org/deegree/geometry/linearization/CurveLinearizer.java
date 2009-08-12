@@ -51,6 +51,7 @@ import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.Circle;
+import org.deegree.geometry.primitive.segments.CubicSpline;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.points.PointsList;
@@ -144,6 +145,10 @@ public class CurveLinearizer {
             lineSegment = (LineStringSegment) segment;
             break;
         }
+        case CUBIC_SPLINE: {
+            lineSegment = linearizeCubicSpline( (CubicSpline) segment, crit );
+            break;
+        }
         case ARC_STRING:
         case ARC_BY_BULGE:
         case ARC_BY_CENTER_POINT:
@@ -152,7 +157,6 @@ public class CurveLinearizer {
         case BSPLINE:
         case CIRCLE_BY_CENTER_POINT:
         case CLOTHOID:
-        case CUBIC_SPLINE:
         case GEODESIC:
         case GEODESIC_STRING:
         case OFFSET_CURVE: {
@@ -204,6 +208,24 @@ public class CurveLinearizer {
                                                                         arc instanceof Circle ) );
         }
         return lineSegment;
+    }
+
+    /**
+     * Returns a linearized version (i.e. a {@link LineStringSegment}) of the given {@link CubicSpline}.
+     *
+     * @param spline
+     *            curve segment to be linearized
+     * @param crit
+     *            determines the interpolation quality / number of interpolation points
+     * @return linearized version of the input segment
+     */
+    public LineStringSegment linearizeCubicSpline( CubicSpline spline, LinearizationCriterion crit ) {
+    
+        if ( !( crit instanceof NumPointsCriterion ) ) {
+            String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
+            throw new IllegalArgumentException( msg );
+        }
+        throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     private double createAngleStep( double startAngle, double endAngle, int numPoints, boolean isClockwise ) {
@@ -377,5 +399,5 @@ public class CurveLinearizer {
         double res = ( p2.get0() - p0.get0() ) * ( ( p2.get1() + p0.get1() ) / 2 ) + ( p1.get0() - p2.get0() )
                      * ( ( p1.get1() + p2.get1() ) / 2 ) + ( p0.get0() - p1.get0() ) * ( ( p0.get1() + p1.get1() ) / 2 );
         return Math.abs( res ) < 1E-12;
-    }
+    }    
 }
