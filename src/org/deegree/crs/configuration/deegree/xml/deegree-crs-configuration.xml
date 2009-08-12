@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <crs:definitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="0.1.0" xsi:schemaLocation="http://www.deegree.org/crs ..\..\..\..\..\..\..\resources\schema\crsdefinition.xsd">
  <crs:ellipsoid>
+  <crs:id>GOOGLE_MAPS_SPHERE</crs:id>
+  <crs:name>Spherical google_maps definition of WGS84_Ellipsoid</crs:name>
+  <crs:version>2009-12-09T13:39</crs:version>
+  <crs:semiMajorAxis>6378137.0</crs:semiMajorAxis>
+  <crs:semiMinorAxis>6378137.0</crs:semiMinorAxis>
+  <crs:units>metre</crs:units>
+ </crs:ellipsoid>
+ <crs:ellipsoid>
   <crs:id>ELLIPSOID_11</crs:id>
   <crs:name>Proj4 defined ellipsoid</crs:name>
   <crs:version>2008-1-16T9:49</crs:version>
@@ -405,6 +413,14 @@
   <crs:inverseFlattening>298.25722356299553</crs:inverseFlattening>
   <crs:units>metre</crs:units>
  </crs:ellipsoid>
+ <crs:geodeticDatum>
+  <crs:id>GOOGLE_MAPS_DATUM</crs:id>
+  <crs:name>Google maps WGS_1984 datum</crs:name>
+  <crs:version>2009-12-09T13:39</crs:version>  
+  <crs:usedEllipsoid>GOOGLE_MAPS_SPHERE</crs:usedEllipsoid>
+  <crs:usedPrimeMeridian>EPSG:8901</crs:usedPrimeMeridian>
+  <crs:usedWGS84ConversionInfo>EPSG:1188</crs:usedWGS84ConversionInfo>
+ </crs:geodeticDatum> 
  <crs:geodeticDatum>
   <crs:id>DATUM_2010</crs:id>
   <crs:name>Proj4 defined datum</crs:name>
@@ -2232,6 +2248,33 @@
   <crs:usedWGS84ConversionInfo>TOWGS_190</crs:usedWGS84ConversionInfo>
  </crs:geodeticDatum>
  <crs:projectedCRS>
+  <crs:id>EPSG:900913</crs:id>
+  <crs:name>Google_Maps projected crs based on a mercator projection</crs:name>
+  <crs:version>2009-12-09T13:39</crs:version>
+  <crs:description>Projected crs based on the spherical ellipsoid, google maps uses, note this might be changed in the future.</crs:description>  
+  <crs:Axis>
+   <crs:name>x</crs:name>
+   <crs:units>metre</crs:units>
+   <crs:axisOrientation>east</crs:axisOrientation>
+  </crs:Axis>
+  <crs:Axis>
+   <crs:name>y</crs:name>
+   <crs:units>metre</crs:units>
+   <crs:axisOrientation>north</crs:axisOrientation>
+  </crs:Axis>
+  <crs:axisOrder>x, y</crs:axisOrder>
+  <crs:usedGeographicCRS>GOOGLE_MAPS_GEOGRAPHICCRS</crs:usedGeographicCRS>
+  <crs:projection>
+   <crs:mercator>
+    <crs:latitudeOfNaturalOrigin inDegrees="true">0.0</crs:latitudeOfNaturalOrigin>
+    <crs:longitudeOfNaturalOrigin inDegrees="true">0.0</crs:longitudeOfNaturalOrigin>
+    <crs:scaleFactor>1.0</crs:scaleFactor>
+    <crs:falseEasting>0</crs:falseEasting>
+    <crs:falseNorthing>0</crs:falseNorthing>
+   </crs:mercator>
+  </crs:projection>
+ </crs:projectedCRS> 
+ <crs:projectedCRS>
   <crs:id>EPSG:21781</crs:id>
   <crs:id>URN:OGC:DEF:CRS:EPSG::21781</crs:id>
   <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#21781</crs:id>
@@ -2310,6 +2353,33 @@
    <crs:lambertConformalConic>
     <crs:latitudeOfNaturalOrigin inDegrees="true">51</crs:latitudeOfNaturalOrigin>
     <crs:longitudeOfNaturalOrigin inDegrees="true">10.5</crs:longitudeOfNaturalOrigin>
+    <crs:scaleFactor>1.0</crs:scaleFactor>
+    <crs:falseEasting>0.0</crs:falseEasting>
+    <crs:falseNorthing>0.0</crs:falseNorthing>
+    <crs:firstParallelLatitude inDegrees="true">48.66666666666666</crs:firstParallelLatitude>
+    <crs:secondParallelLatitude inDegrees="true">53.66666666666666</crs:secondParallelLatitude>
+   </crs:lambertConformalConic>
+  </crs:projection>
+ </crs:projectedCRS> 
+ <crs:projectedCRS>
+  <crs:id>BWL:0001</crs:id>
+  <crs:name>Custom projected crs for german electoral districts as published by the Bundeswahlleiter</crs:name>
+  <crs:Axis>
+   <crs:name>x</crs:name>
+   <crs:units>metre</crs:units>
+   <crs:axisOrientation>east</crs:axisOrientation>
+  </crs:Axis>
+  <crs:Axis>
+   <crs:name>y</crs:name>
+   <crs:units>metre</crs:units>
+   <crs:axisOrientation>north</crs:axisOrientation>
+  </crs:Axis>
+  <crs:axisOrder>x, y</crs:axisOrder>
+  <crs:usedGeographicCRS>EPSG:4314</crs:usedGeographicCRS>
+  <crs:projection>
+   <crs:lambertConformalConic>
+    <crs:latitudeOfNaturalOrigin inDegrees="true">0.0</crs:latitudeOfNaturalOrigin>
+    <crs:longitudeOfNaturalOrigin inDegrees="true">10.0</crs:longitudeOfNaturalOrigin>
     <crs:scaleFactor>1.0</crs:scaleFactor>
     <crs:falseEasting>0.0</crs:falseEasting>
     <crs:falseNorthing>0.0</crs:falseNorthing>
@@ -82179,11 +82249,11 @@
   <crs:id>OSM_SLIPPY_MAP</crs:id>
   <crs:id>GOOGLE_MAPS</crs:id>
   <crs:id>EPSG:3857</crs:id>
-  <!-- any other 3857 equivalent ids that belong here should be added -->  
+  <!-- any other variants of 3857 ids that belong here should be added -->
   <crs:id>EPSG:3395</crs:id>
   <crs:id>URN:OGC:DEF:CRS:EPSG::3395</crs:id>
   <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#3395</crs:id>
-  <crs:id>URN:OPENGIS:DEF:CRS:EPSG::3395</crs:id> 
+  <crs:id>URN:OPENGIS:DEF:CRS:EPSG::3395</crs:id>  
   <crs:name>OSM_Slippy_Map</crs:name>
   <crs:name>Google_Maps</crs:name>
   <crs:name>WGS 84 / Pseudo-Mercator</crs:name>
@@ -82211,6 +82281,24 @@
    </crs:mercator>
   </crs:projection>
  </crs:projectedCRS>
+ <crs:geographicCRS>
+  <crs:id>GOOGLE_MAPS_GEOGRAPHICCRS</crs:id>
+  <crs:name>Geographic crs based on the spherical ellipsoid, google maps uses</crs:name>
+  <crs:version>2009-12-09T13:39</crs:version>
+  <crs:description>Geographic crs based on the spherical ellipsoid, google maps uses, note this might be changed in the future.</crs:description>
+  <crs:Axis>
+   <crs:name>longitude</crs:name>
+   <crs:units>degree</crs:units>
+   <crs:axisOrientation>east</crs:axisOrientation>
+  </crs:Axis>
+  <crs:Axis>
+   <crs:name>latitude</crs:name>
+   <crs:units>degree</crs:units>
+   <crs:axisOrientation>north</crs:axisOrientation>
+  </crs:Axis>
+  <crs:axisOrder>longitude, latitude</crs:axisOrder>
+  <crs:usedDatum>GOOGLE_MAPS_DATUM</crs:usedDatum>
+ </crs:geographicCRS> 
  <crs:geographicCRS>
   <crs:id>EPSG:4010</crs:id>
   <crs:id>URN:OGC:DEF:CRS:EPSG::4010</crs:id>
