@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,28 +32,29 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Implementation of Jaxen's (http://jaxen.codehaus.org) <code>NamespaceContext</code> interface.
  * <p>
- * NOTE: This should be used everywhere inside deegree, don't use <code>org.jaxen.SimpleNamespaceContext</code> --
- * this prevents unnecessary binding to Jaxen.
- *
+ * NOTE: This should be used everywhere inside deegree, don't use <code>org.jaxen.SimpleNamespaceContext</code> -- this
+ * prevents unnecessary binding to Jaxen.
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class NamespaceContext implements org.jaxen.NamespaceContext {
 
     // keys: prefices (String), values: namespaces (String)
     private Map<String, String> namespaceMap = new HashMap<String, String>();
+
+    private javax.xml.namespace.NamespaceContext javaNsc;
 
     /**
      * Creates a new instance of <code>NamespaceContext</code> with only the prefix 'xmlns:' being bound.
@@ -65,7 +66,7 @@ public class NamespaceContext implements org.jaxen.NamespaceContext {
     /**
      * Creates a new instance of <code>NamespaceContext</code> that contains all the bindings from the argument
      * <code>NamespaceContext</code>.
-     *
+     * 
      * @param nsContext
      *            bindings to copy
      */
@@ -74,16 +75,19 @@ public class NamespaceContext implements org.jaxen.NamespaceContext {
     }
 
     /**
-     *
-     * @return map of all defined namespaces
+     * Creates a new instance of <code>NamespaceContext</code> that contains all the bindings from the argument
+     * <code>NamespaceContext</code>.
+     * 
+     * @param nsContext
+     *            bindings to copy
      */
-    public Map<String, String> getNamespaceMap() {
-        return namespaceMap;
+    public NamespaceContext( javax.xml.namespace.NamespaceContext nsContext ) {
+        this.javaNsc = nsContext;
     }
 
     /**
      * registers a new prefix with an assigned namespace URI
-     *
+     * 
      * @param prefix
      * @param namespace
      */
@@ -91,28 +95,16 @@ public class NamespaceContext implements org.jaxen.NamespaceContext {
         namespaceMap.put( prefix, namespace );
     }
 
-    /**
-     * registeres all prexifes and assigned namespaces from another NamespaceContext. If a prefix already exists in this
-     * NamespaceContext it will be ignored.
-     *
-     * @param nsc
-     */
-    public void addAll( NamespaceContext nsc ) {
-        Map<String, String> map = nsc.getNamespaceMap();
-        Set<String> keys = map.keySet();
-        for ( String key : keys ) {
-            if ( namespaceMap.get( key ) == null ) {
-                namespaceMap.put( key, map.get( key ) );
-            }
-        }
-    }
-
     public String translateNamespacePrefixToUri( String prefix ) {
+        // TODO remove this hack
+        if ( javaNsc != null ) {
+            return namespaceMap.get( prefix );
+        }
         return namespaceMap.get( prefix );
     }
 
     /**
-     *
+     * 
      * @param prefix
      * @return namespcae URI assigned to a prefix
      */

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,20 +32,21 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
 import javax.xml.stream.Location;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 
 /**
  * Encapsulates information to locate the cause {@link XMLParsingException}.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 class XMLErrorPosition {
@@ -61,8 +62,14 @@ class XMLErrorPosition {
     /**
      * @param xmlReader
      */
-    XMLErrorPosition( XMLStreamReaderWrapper xmlReader ) {
-        systemId = xmlReader.getSystemId();
+    XMLErrorPosition( XMLStreamReader xmlReader ) {
+
+        if ( xmlReader instanceof XMLStreamReaderWrapper ) {
+            systemId = ( (XMLStreamReaderWrapper) xmlReader ).getSystemId();
+        } else {
+            systemId = "unknown source";
+        }
+
         Location location = xmlReader.getLocation();
         lineNumber = location.getLineNumber();
         columnNumber = location.getColumnNumber();
@@ -83,11 +90,11 @@ class XMLErrorPosition {
 
     /**
      * Returns the location information in a human readable form.
-     *
+     * 
      * @return
      */
     String getAsMessage() {
-        String s = systemId != null && !"".equals( systemId ) ? ("file '" + systemId + "', ") : "";
+        String s = systemId != null && !"".equals( systemId ) ? ( "file '" + systemId + "', " ) : "";
         s += "line: " + lineNumber;
         if ( columnNumber != -1 ) {
             s += ", column: " + columnNumber;
@@ -99,7 +106,7 @@ class XMLErrorPosition {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return getAsMessage();
     }
 }

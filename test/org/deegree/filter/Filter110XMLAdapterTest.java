@@ -35,7 +35,14 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.io.InputStream;
+
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.xerces.xni.parser.XMLInputSource;
 import org.deegree.commons.xml.XMLParsingException;
@@ -57,12 +64,40 @@ import org.junit.Test;
 public class Filter110XMLAdapterTest {
 
     @Test
-    public void parseFilterDocument() {
-        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
-        adapter.load( Filter110XMLAdapterTest.class.getResourceAsStream( "testfilter_110.xml" ) );
-        Filter filter = adapter.parse();
-        Assert.assertNotNull( filter );
+    public void parseIdFilter()
+                            throws XMLStreamException, FactoryConfigurationError {
+        Filter filter = parse( "testfilter_110_id.xml" );
+        assertNotNull( filter );
+        Assert.assertEquals( Filter.Type.ID_FILTER, filter.getType() );
+        IdFilter idFilter = (IdFilter) filter;
+        Assert.assertEquals( 4, idFilter.getMatchingIds().size() );
+        Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_966" ) );
+        Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_967" ) );
+        Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_968" ) );
+        Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_969" ) );
     }
+
+    @Test
+    public void parseMixedIdFilter()
+                            throws XMLStreamException, FactoryConfigurationError {
+        Filter filter = parse( "testfilter_110_id_mixed.xml" );
+        assertNotNull( filter );
+        Assert.assertEquals( Filter.Type.ID_FILTER, filter.getType() );
+        IdFilter idFilter = (IdFilter) filter;
+        Assert.assertEquals( 4, idFilter.getMatchingIds().size() );
+        Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_966" ) );
+        Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_967" ) );
+        Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_968" ) );
+        Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_969" ) );
+    }
+
+//    @Test
+//    public void parseFilterDocument()
+//                            throws XMLStreamException, FactoryConfigurationError {
+//        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
+//        Filter filter = parse( "testfilter_110.xml" );
+//        Assert.assertNotNull( filter );
+//    }
 
     @Test(expected = XMLParsingException.class)
     public void parseBrokenIdFilterDocument() {
@@ -90,6 +125,14 @@ public class Filter110XMLAdapterTest {
         Filter110XMLEncoder.export( filter, writer.getXMLStreamWriter() );
 
         String schemaLocation = "http://schemas.opengis.net/filter/1.1.0/filter.xsd";
-        XMLAssert.assertValidity( new XMLInputSource( null, null, null, writer.getReader(), null ), schemaLocation );
+        XMLAssert.assertValidity( writer.getReader(), schemaLocation );
+    }
+
+    private Filter parse( String resourceName )
+                            throws XMLStreamException, FactoryConfigurationError {
+        InputStream is = Filter110XMLAdapterTest.class.getResourceAsStream( resourceName );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
+        xmlStream.nextTag();
+        return Filter110XMLDecoder.parse( xmlStream );
     }
 }

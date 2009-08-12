@@ -36,6 +36,7 @@
 package org.deegree.filter.xml;
 
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAsBoolean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
@@ -54,10 +56,12 @@ import org.apache.axiom.om.OMElement;
 import org.deegree.commons.uom.Measure;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.xml.FixedChildIterator;
+import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XMLProcessingException;
 import org.deegree.commons.xml.XPath;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.filter.Expression;
@@ -76,6 +80,7 @@ import org.deegree.filter.comparison.PropertyIsLessThanOrEqualTo;
 import org.deegree.filter.comparison.PropertyIsLike;
 import org.deegree.filter.comparison.PropertyIsNotEqualTo;
 import org.deegree.filter.comparison.PropertyIsNull;
+import org.deegree.filter.comparison.ComparisonOperator.SubType;
 import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Div;
 import org.deegree.filter.expression.Function;
@@ -938,4 +943,300 @@ public class Filter110XMLDecoder extends XMLAdapter {
         }
         return ArrayUtils.join( ", ", names );
     }
+
+    /**
+     * Returns the object representation for the given <code>wfs:Filter</code> element event that the cursor of the
+     * associated <code>XMLStreamReader</code> points at.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Filter&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/wfs:Filter&gt;)</li>
+     * </ul>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;wfs:Filter&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/wfs:Filter&gt;) afterwards
+     * @return corresponding {@link Filter} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "wfs:Filter" element
+     * @throws XMLStreamException
+     */
+    public static Filter parse( XMLStreamReader xmlStream )
+                            throws XMLParsingException, XMLStreamException {
+
+        Filter filter = null;
+        xmlStream.require( START_ELEMENT, OGC_NS, "Filter" );
+        xmlStream.nextTag();
+        if ( xmlStream.getEventType() != START_ELEMENT ) {
+            throw new XMLParsingException( xmlStream, Messages.getMessage( "FILTER_PARSER_FILTER_EMPTY",
+                                                                           new QName( OGC_NS, "Filter" ) ) );
+        }
+        QName elementName = xmlStream.getName();
+        if ( GML_OBJECT_ID_ELEMENT.equals( elementName ) || FEATURE_ID_ELEMENT.equals( elementName ) ) {
+            LOG.debug( "Building id filter" );
+            filter = parseIdFilter( xmlStream );
+        } else {
+            LOG.debug( "Building operator filter" );
+            Operator rootOperator = parseOperator( xmlStream );
+            filter = new OperatorFilter( rootOperator );
+        }
+
+        xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "Filter" );
+        return filter;
+    }
+
+    private static IdFilter parseIdFilter( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        Set<String> matchingIds = new HashSet<String>();
+
+        while ( xmlStream.getEventType() == START_ELEMENT ) {
+            QName childElementName = xmlStream.getName();
+            if ( GML_OBJECT_ID_ELEMENT.equals( childElementName ) ) {
+                String id = xmlStream.getAttributeValue( GML_NS, "id" );
+                if ( id == null || id.length() == 0 ) {
+                    String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", GML_OBJECT_ID_ELEMENT,
+                                                      GML_ID_ATTR_NAME );
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                matchingIds.add( id );
+                xmlStream.nextTag();
+                xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "GmlObjectId" );
+            } else if ( FEATURE_ID_ELEMENT.equals( childElementName ) ) {
+                String id = xmlStream.getAttributeValue( null, "fid" );
+                if ( id == null || id.length() == 0 ) {
+                    String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_NO_ID", FEATURE_ID_ELEMENT,
+                                                      FID_ATTR_NAME );
+                    throw new XMLParsingException( xmlStream, msg );
+                }
+                matchingIds.add( id );
+                xmlStream.nextTag();
+                xmlStream.require( XMLStreamConstants.END_ELEMENT, OGC_NS, "FeatureId" );
+            } else {
+                String msg = Messages.getMessage( "FILTER_PARSER_ID_FILTER_UNEXPECTED_ELEMENT", childElementName,
+                                                  GML_OBJECT_ID_ELEMENT, FEATURE_ID_ELEMENT );
+                throw new XMLParsingException( xmlStream, msg );
+            }
+            xmlStream.nextTag();
+        }
+        return new IdFilter( matchingIds );
+    }
+
+    private static Operator parseOperator( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        Operator operator = null;
+
+        // check if element name is a valid operator element
+        Operator.Type type = elementNameToOperatorType.get( xmlStream.getName() );
+        if ( type == null ) {
+            String expectedList = elemNames( Operator.Type.class, logicalOperatorTypeToElementName ) + ", "
+                                  + elemNames( Operator.Type.class, spatialOperatorTypeToElementName ) + ", "
+                                  + elemNames( Operator.Type.class, comparisonOperatorTypeToElementName );
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(), expectedList );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        switch ( type ) {
+        case COMPARISON:
+            LOG.debug( "Building comparison operator" );
+            operator = parseComparisonOperator( xmlStream );
+            break;
+        case LOGICAL:
+            LOG.debug( "Building logical operator" );
+            operator = parseLogicalOperator( xmlStream );
+            break;
+        case SPATIAL:
+            LOG.debug( "Building spatial operator" );
+            operator = parseSpatialOperator( xmlStream );
+            break;
+        }
+        return operator;
+    }
+
+    private static ComparisonOperator parseComparisonOperator( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        ComparisonOperator comparisonOperator = null;
+
+        // check if element name is a valid comparison operator element
+        ComparisonOperator.SubType type = elementNameToComparisonOperatorType.get( xmlStream.getName() );
+
+        if ( type == null ) {
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
+                                              elemNames( ComparisonOperator.SubType.class,
+                                                         comparisonOperatorTypeToElementName ) );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        switch ( type ) {
+        case PROPERTY_IS_EQUAL_TO:
+        case PROPERTY_IS_GREATER_THAN:
+        case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
+        case PROPERTY_IS_LESS_THAN:
+        case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
+        case PROPERTY_IS_NOT_EQUAL_TO:
+            comparisonOperator = parseBinaryComparisonOperator( xmlStream, type );
+            break;
+        case PROPERTY_IS_BETWEEN:
+            comparisonOperator = parsePropertyIsBetweenOperator( xmlStream );
+            break;
+        case PROPERTY_IS_LIKE:
+            comparisonOperator = parsePropertyIsLikeOperator( xmlStream );
+            break;
+        case PROPERTY_IS_NULL:
+            comparisonOperator = parsePropertyIsNullOperator( xmlStream );
+            break;
+        }
+        return comparisonOperator;
+    }
+
+    private static ComparisonOperator parseBinaryComparisonOperator( XMLStreamReader xmlStream, SubType type )
+                            throws XMLStreamException {
+
+        BinaryComparisonOperator comparisonOperator = null;
+
+        boolean matchCase = getAttributeValueAsBoolean( xmlStream, null, "matchCase", false );
+
+        xmlStream.nextTag();
+        StAXParsingHelper.require( xmlStream, START_ELEMENT );
+        Expression parameter1 = parseExpression( xmlStream );
+        xmlStream.nextTag();
+        StAXParsingHelper.require( xmlStream, START_ELEMENT );
+        Expression parameter2 = parseExpression( xmlStream );
+
+        switch ( type ) {
+        case PROPERTY_IS_EQUAL_TO:
+            comparisonOperator = new PropertyIsEqualTo( parameter1, parameter2, matchCase );
+            break;
+        case PROPERTY_IS_NOT_EQUAL_TO:
+            comparisonOperator = new PropertyIsNotEqualTo( parameter1, parameter2, matchCase );
+            break;
+        case PROPERTY_IS_LESS_THAN:
+            comparisonOperator = new PropertyIsLessThan( parameter1, parameter2, matchCase );
+            break;
+        case PROPERTY_IS_LESS_THAN_OR_EQUAL_TO:
+            comparisonOperator = new PropertyIsLessThanOrEqualTo( parameter1, parameter2, matchCase );
+            break;
+        case PROPERTY_IS_GREATER_THAN:
+            comparisonOperator = new PropertyIsGreaterThan( parameter1, parameter2, matchCase );
+            break;
+        case PROPERTY_IS_GREATER_THAN_OR_EQUAL_TO:
+            comparisonOperator = new PropertyIsGreaterThanOrEqualTo( parameter1, parameter2, matchCase );
+            break;
+        default:
+            assert false;
+        }
+
+        xmlStream.nextTag();
+
+        return comparisonOperator;
+    }
+
+    private static Expression parseExpression( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        Expression expression = null;
+
+        // check if element name is a valid expression element
+        Expression.Type type = elementNameToExpressionType.get( xmlStream.getName() );
+        if ( type == null ) {
+            String msg = Messages.getMessage( "FILTER_PARSER_UNEXPECTED_ELEMENT", xmlStream.getName(),
+                                              elemNames( Expression.Type.class, expressionTypeToElementName ) );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        // skip to the next element event (must be START_ELEMENT)
+        xmlStream.nextTag();
+        StAXParsingHelper.require( xmlStream, START_ELEMENT );
+
+        switch ( type ) {
+        case ADD: {
+            Expression param1 = parseExpression( xmlStream );
+            xmlStream.nextTag();
+            StAXParsingHelper.require( xmlStream, START_ELEMENT );
+            Expression param2 = parseExpression( xmlStream );
+            expression = new Add( param1, param2 );
+            break;
+        }
+        case SUB: {
+            Expression param1 = parseExpression( xmlStream );
+            xmlStream.nextTag();
+            StAXParsingHelper.require( xmlStream, START_ELEMENT );
+            Expression param2 = parseExpression( xmlStream );
+            expression = new Add( param1, param2 );
+            break;
+        }
+        case MUL: {
+            Expression param1 = parseExpression( xmlStream );
+            xmlStream.nextTag();
+            StAXParsingHelper.require( xmlStream, START_ELEMENT );
+            Expression param2 = parseExpression( xmlStream );
+            expression = new Add( param1, param2 );
+            break;
+        }
+        case DIV: {
+            Expression param1 = parseExpression( xmlStream );
+            xmlStream.nextTag();
+            StAXParsingHelper.require( xmlStream, START_ELEMENT );
+            Expression param2 = parseExpression( xmlStream );
+            expression = new Add( param1, param2 );
+            break;
+        }
+        case PROPERTY_NAME: {
+            expression = parsePropertyName( xmlStream );
+            break;
+        }
+        case LITERAL: {
+            expression = new Literal( xmlStream.getText() );
+            break;
+        }
+        case FUNCTION: {
+            String name = StAXParsingHelper.getRequiredAttributeValue( xmlStream, null, "name" );
+            List<Expression> params = new ArrayList<Expression>();
+            while ( xmlStream.getEventType() == START_ELEMENT ) {
+                params.add( parseExpression( xmlStream ) );
+                xmlStream.nextTag();
+            }
+            expression = new Function( name, params );
+            break;
+        }
+        }
+        return expression;
+    }
+
+    private static Expression parsePropertyName( XMLStreamReader xmlStream ) {
+        NamespaceContext nsc = StAXParsingHelper.getDeegreeNamespaceContext( xmlStream );
+        String propName = xmlStream.getText().trim();
+        if ( propName.isEmpty() ) {
+            // TODO filter encoding guy: use whatever exception shall be used here. But make sure that the
+            // GetObservation100XMLAdapter gets an exception from here as the compliance of the SOS hangs on it's thread
+            throw new XMLParsingException( xmlStream, Messages.getMessage( "FILTER_PARSER_PROPERTY_NAME_EMPTY",
+                                                                           new QName( OGC_NS, "PropertyName" ) ) );
+        }
+        return new PropertyName( propName, nsc );
+    }
+
+    private static ComparisonOperator parsePropertyIsBetweenOperator( XMLStreamReader xmlStream ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static ComparisonOperator parsePropertyIsLikeOperator( XMLStreamReader xmlStream ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static ComparisonOperator parsePropertyIsNullOperator( XMLStreamReader xmlStream ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static LogicalOperator parseLogicalOperator( XMLStreamReader xmlStream ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private static SpatialOperator parseSpatialOperator( XMLStreamReader xmlStream ) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

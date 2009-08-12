@@ -35,8 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.commons.xml;
 
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.axiom.om.OMElement;
-import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 
 /**
  * Thrown when a syntactic or semantic error has been encountered during the parsing process in an {@link XMLAdapter}.
@@ -68,11 +69,11 @@ public class XMLParsingException extends XMLProcessingException {
      * Creates a new exception for a parsing error that occured in a StAX-based parsing method.
      * 
      * @param xmlReader
-     *            {@link XMLStreamReaderWrapper} that encountered the erroneous event
+     *            {@link XMLStreamReader} that encountered the erroneous event
      * @param msg
      *            error information that explains the problem
      */
-    public XMLParsingException( XMLStreamReaderWrapper xmlReader, String msg ) {
+    public XMLParsingException( XMLStreamReader xmlReader, String msg ) {
         this.msg = msg;
         this.errorPosition = new XMLErrorPosition( xmlReader );
     }

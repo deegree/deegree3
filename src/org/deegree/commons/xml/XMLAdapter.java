@@ -1040,10 +1040,7 @@ public class XMLAdapter {
     private AXIOMXPath getAXIOMXPath( XPath xpath )
                             throws JaxenException {
         AXIOMXPath compiledXPath = new AXIOMXPath( xpath.getXPath() );
-        Map<String, String> nsMap = xpath.getNamespaceContext().getNamespaceMap();
-        for ( String prefix : nsMap.keySet() ) {
-            compiledXPath.addNamespace( prefix, nsMap.get( prefix ) );
-        }
+        compiledXPath.setNamespaceContext( xpath.getNamespaceContext() );
         return compiledXPath;
     }
 
