@@ -40,6 +40,7 @@ import javax.xml.namespace.QName;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.property.PropertyType;
+import org.deegree.geometry.Geometry;
 
 /**
  * TODO add documentation here
@@ -73,7 +74,7 @@ public class PropertyNode extends ElementNode {
 
             @Override
             public Object getValue() {
-                if ( prop.getValue() instanceof Feature ) {
+                if ( prop.getValue() instanceof Feature || prop.getValue() instanceof Geometry ) {
                     return prop.getValue();
                 }
                 return prop.getValue().toString();
