@@ -37,6 +37,7 @@ package org.deegree.feature.xpath;
 
 import javax.xml.namespace.QName;
 
+import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
 import org.deegree.feature.types.property.PropertyType;
 
@@ -52,13 +53,13 @@ public class PropertyNode extends ElementNode {
 
     private FeatureNode parent;
 
-    private Property<String> prop;
+    private Property<Object> prop;
 
     PropertyNode( FeatureNode parent, final Property<?> prop ) {
         super( prop.getName() );
         this.parent = parent;
         // TODO temporary hack to get the xpath expressions to evaluate properly
-        this.prop = new Property<String>() {
+        this.prop = new Property<Object>() {
 
             @Override
             public QName getName() {
@@ -71,7 +72,10 @@ public class PropertyNode extends ElementNode {
             }
 
             @Override
-            public String getValue() {
+            public Object getValue() {
+                if ( prop.getValue() instanceof Feature ) {
+                    return prop.getValue();
+                }
                 return prop.getValue().toString();
             }
         };
@@ -85,7 +89,7 @@ public class PropertyNode extends ElementNode {
     /**
      * @return the modified property which converts values to strings
      */
-    public Property<String> getProperty() {
+    public Property<Object> getProperty() {
         return prop;
     }
 }
