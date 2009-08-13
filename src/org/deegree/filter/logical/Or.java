@@ -61,12 +61,12 @@ public class Or extends LogicalOperator {
      * 
      * @param paramsArray
      *            an arbitrary number of parameters
-     * @throws Exception
+     * @throws IllegalArgumentException
      *             when less than 2 parameters are provided
      */
-    public Or( Operator... paramsArray ) throws Exception {
+    public Or( Operator... paramsArray ) throws IllegalArgumentException {
         if ( paramsArray.length < 2 ) {
-            throw new Exception( "Or operator must have at least 2 arguments" );
+            throw new IllegalArgumentException( "Or operator must have at least 2 arguments" );
         }
 
         params = new ArrayList<Operator>( paramsArray.length );

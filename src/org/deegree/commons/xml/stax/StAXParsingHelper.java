@@ -49,12 +49,17 @@ import static javax.xml.stream.XMLStreamConstants.SPACE;
 import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
+import java.util.Collection;
+
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.i18n.Messages;
+import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.filter.Expression;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -65,6 +70,17 @@ import org.deegree.commons.xml.XMLParsingException;
  * @version $Revision$, $Date$
  */
 public class StAXParsingHelper {
+
+    public static void skipStartDocument( XMLStreamReader xmlStream ) throws XMLStreamException {
+        if ( xmlStream.getEventType() == START_DOCUMENT ) {
+            xmlStream.nextTag();
+        }
+    }
+
+    public static String getRequiredAttributeValue( XMLStreamReader xmlStream, String localName )
+                            throws XMLParsingException {
+        return getRequiredAttributeValue( xmlStream, null, localName );
+    }
 
     public static String getRequiredAttributeValue( XMLStreamReader xmlStream, String namespaceURI, String localName )
                             throws XMLParsingException {
@@ -119,9 +135,32 @@ public class StAXParsingHelper {
         return result;
     }
 
+    public static void requireStartElement( XMLStreamReader xmlStream, Collection<QName> expectedElements )
+                            throws XMLParsingException {
+        if ( xmlStream.getEventType() != START_ELEMENT ) {
+            String msg = Messages.getMessage( "XML_EXPECTED_ELEMENT_1", getEventTypeString( xmlStream.getEventType() ),
+                                              ArrayUtils.join( ",", expectedElements ) );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+        if ( !expectedElements.contains( xmlStream.getName() ) ) {
+            String msg = Messages.getMessage( "XML_EXPECTED_ELEMENT_2", xmlStream.getName(),
+                                              ArrayUtils.join( ",", expectedElements ) );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+    }
+
     public static void require( XMLStreamReader xmlStream, int eventType )
                             throws XMLParsingException {
         if ( xmlStream.getEventType() != eventType ) {
+            String msg = Messages.getMessage( "XML_UNEXPECTED_TYPE", getEventTypeString( xmlStream.getEventType() ),
+                                              getEventTypeString( eventType ) );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+    }
+
+    public static void requireNextTag( XMLStreamReader xmlStream, int eventType )
+                            throws XMLParsingException, XMLStreamException {
+        if ( xmlStream.nextTag() != eventType ) {
             String msg = Messages.getMessage( "XML_UNEXPECTED_TYPE", getEventTypeString( xmlStream.getEventType() ),
                                               getEventTypeString( eventType ) );
             throw new XMLParsingException( xmlStream, msg );

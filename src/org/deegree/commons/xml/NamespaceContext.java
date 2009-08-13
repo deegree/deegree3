@@ -98,7 +98,7 @@ public class NamespaceContext implements org.jaxen.NamespaceContext {
     public String translateNamespacePrefixToUri( String prefix ) {
         // TODO remove this hack
         if ( javaNsc != null ) {
-            return namespaceMap.get( prefix );
+            return javaNsc.getNamespaceURI( prefix );
         }
         return namespaceMap.get( prefix );
     }

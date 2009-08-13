@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.types.ows.Version;
@@ -251,17 +253,28 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             List<Function> functions = new ArrayList<Function>();
             List<OMElement> functionElements = getElements( queryEl, new XPath( "ogc:Function", nsContext ) );
             for ( OMElement functionEl : functionElements ) {
-                Filter110XMLDecoder filterAdapter = new Filter110XMLDecoder();
-                Function function = (Function) filterAdapter.parseExpression( functionEl );
-                functions.add( function );
+                try {
+                    XMLStreamReader xmlStream = functionEl.getXMLStreamReaderWithoutCaching();
+                    // skip START_DOCUMENT
+                    xmlStream.nextTag();
+                    Function function = Filter110XMLDecoder.parseFunction( xmlStream );
+                    functions.add( function );
+                } catch ( XMLStreamException e ) {
+                    throw new XMLParsingException( this, functionEl, e.getMessage() );
+                }
             }
 
             Filter filter = null;
-            OMElement filterEl = queryEl.getFirstChildWithName( new QName(OGCNS, "Filter"));
+            OMElement filterEl = queryEl.getFirstChildWithName( new QName( OGCNS, "Filter" ) );
             if ( filterEl != null ) {
-                Filter110XMLDecoder filterAdapter = new Filter110XMLDecoder();
-                filterAdapter.setRootElement( filterEl );
-                filter = filterAdapter.parse();
+                try {
+                    XMLStreamReader xmlStream = filterEl.getXMLStreamReaderWithoutCaching();
+                    // skip START_DOCUMENT
+                    xmlStream.nextTag();
+                    filter = Filter110XMLDecoder.parse( xmlStream );
+                } catch ( XMLStreamException e ) {
+                    throw new XMLParsingException( this, filterEl, e.getMessage() );
+                }
             }
 
             List<SortProperty> sortProps = new ArrayList<SortProperty>();

@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -99,61 +100,43 @@ public class FilterEvaluationTest {
 
     @Test
     public void filterCollection1()
-                            throws FilterEvaluationException {
-        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
-        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter1.xml" ) );
-        Filter filter = adapter.parse();
-        Assert.assertNotNull( filter );
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
+        Filter filter = parseFilter( "testfilter1.xml" );
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_7" );
     }
 
     @Test
     public void filterCollection2()
-                            throws FilterEvaluationException {
-        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
-        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter2.xml" ) );
-        Filter filter = adapter.parse();
-        Assert.assertNotNull( filter );
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
+        Filter filter = parseFilter( "testfilter2.xml" );
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_2" );
     }
 
     @Test
     public void filterCollection3()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
-        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter3.xml" ) );
-        Filter filter = adapter.parse();
-        Assert.assertNotNull( filter );
+        Filter filter = parseFilter( "testfilter3.xml" );
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_5", "PHILOSOPHER_6" );
     }
 
     @Test
     public void filterCollection4()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
-        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter4.xml" ) );
-        Filter filter = adapter.parse();
-        Assert.assertNotNull( filter );
+        Filter filter = parseFilter( "testfilter4.xml" );
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1", "PHILOSOPHER_2" );
     }
 
     @Test
     public void filterCollection5()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
-        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter5.xml" ) );
-        Filter filter = adapter.parse();
-        Assert.assertNotNull( filter );
+        Filter filter = parseFilter( "testfilter5.xml" );
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1", "PHILOSOPHER_2" );
     }
 
     @Test
     public void filterCollection6()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError {
-        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
-        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter6.xml" ) );
-        Filter filter = adapter.parse();
-        Assert.assertNotNull( filter );
+        Filter filter = parseFilter( "testfilter6.xml" );
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1" );
     }
 
@@ -161,10 +144,7 @@ public class FilterEvaluationTest {
     public void filterCollection7()
                             throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
                             JaxenException {
-        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
-        adapter.load( FilterEvaluationTest.class.getResourceAsStream( "testdata/testfilter7.xml" ) );
-        Filter filter = adapter.parse();
-        Assert.assertNotNull( filter );
+        Filter filter = parseFilter( "testfilter7.xml" );
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1" );
     }
 
@@ -177,5 +157,13 @@ public class FilterEvaluationTest {
         for ( String string : expectedIds ) {
             Assert.assertTrue( ids.contains( string ) );
         }
+    }
+
+    private Filter parseFilter( String resourceName )
+                            throws XMLStreamException, FactoryConfigurationError {
+        InputStream is = FilterEvaluationTest.class.getResourceAsStream( "testdata/" + resourceName );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
+        xmlStream.nextTag();
+        return Filter110XMLDecoder.parse( xmlStream );
     }
 }

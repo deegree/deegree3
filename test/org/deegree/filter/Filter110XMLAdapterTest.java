@@ -44,8 +44,10 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.xerces.xni.parser.XMLInputSource;
 import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.filter.comparison.ComparisonOperator;
+import org.deegree.filter.logical.And;
+import org.deegree.filter.logical.LogicalOperator;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.filter.xml.Filter110XMLEncoder;
 import org.deegree.junit.XMLAssert;
@@ -91,35 +93,41 @@ public class Filter110XMLAdapterTest {
         Assert.assertTrue( idFilter.getMatchingIds().contains( "PHILOSOPHER_969" ) );
     }
 
-//    @Test
-//    public void parseFilterDocument()
-//                            throws XMLStreamException, FactoryConfigurationError {
-//        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
-//        Filter filter = parse( "testfilter_110.xml" );
-//        Assert.assertNotNull( filter );
-//    }
-
-    @Test(expected = XMLParsingException.class)
-    public void parseBrokenIdFilterDocument() {
-        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
-        adapter.load( Filter110XMLAdapterTest.class.getResourceAsStream( "testfilter_110_id2.invalid_xml" ) );
-        adapter.parse();
+    @Test
+    public void parseOperatorFilter()
+                            throws XMLStreamException, FactoryConfigurationError {
+        Filter filter = parse( "testfilter_110_operator.xml" );
+        Assert.assertNotNull( filter );
+        Assert.assertEquals( Filter.Type.OPERATOR_FILTER, filter.getType() );
+        OperatorFilter operatorFilter = (OperatorFilter) filter;
+        Assert.assertEquals( Operator.Type.LOGICAL, operatorFilter.getOperator().getType() );
+        LogicalOperator logicalOperator = (LogicalOperator) operatorFilter.getOperator();
+        Assert.assertEquals( LogicalOperator.SubType.AND, logicalOperator.getSubType() );
+        And and = (And) logicalOperator;
+        Assert.assertEquals( 2, and.getSize() );
+        Assert.assertEquals( Operator.Type.COMPARISON, and.getParameter( 0 ).getType() );
+        ComparisonOperator param1Oper = (ComparisonOperator) and.getParameter( 0 );
+        Assert.assertEquals( ComparisonOperator.SubType.PROPERTY_IS_GREATER_THAN, param1Oper.getSubType() );
+        Assert.assertEquals( Operator.Type.COMPARISON, and.getParameter( 1 ).getType() );
+        ComparisonOperator param2Oper = (ComparisonOperator) and.getParameter( 1 );
+        Assert.assertEquals( ComparisonOperator.SubType.PROPERTY_IS_EQUAL_TO, param2Oper.getSubType() );
     }
 
     @Test(expected = XMLParsingException.class)
-    public void parseBrokenIdFilterDocument2() {
-        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
-        adapter.load( Filter110XMLAdapterTest.class.getResourceAsStream( "testfilter_110_id2.invalid_xml" ) );
-        adapter.parse();
+    public void parseBrokenIdFilterDocument() throws XMLStreamException, FactoryConfigurationError {
+        parse( "testfilter_110_id.invalid_xml" );
+    }
+
+    @Test(expected = XMLParsingException.class)
+    public void parseBrokenIdFilterDocument2() throws XMLStreamException, FactoryConfigurationError {
+        parse( "testfilter_110_id2.invalid_xml" );
     }
 
     @Test
     public void parseAndExportFilterDocument()
                             throws XMLStreamException {
 
-        Filter110XMLDecoder adapter = new Filter110XMLDecoder();
-        adapter.load( Filter110XMLAdapterTest.class.getResourceAsStream( "testfilter_110.xml" ) );
-        Filter filter = adapter.parse();
+        Filter filter = parse( "testfilter_110_operator.xml" );
 
         XMLMemoryStreamWriter writer = new XMLMemoryStreamWriter();
         Filter110XMLEncoder.export( filter, writer.getXMLStreamWriter() );

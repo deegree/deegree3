@@ -52,6 +52,8 @@ import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMText;
@@ -59,6 +61,7 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
@@ -185,7 +188,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
             public void update( LineStyling obj, String val ) {
                 obj.perpendicularOffset = Double.parseDouble( val );
             }
-        }, new Filter110XMLDecoder(), contn );
+        }, contn );
 
         if ( contn == null ) {
             return new Symbolizer<LineStyling>( baseOrEvaluated, geom, name );
@@ -241,7 +244,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
             public void update( PolygonStyling obj, String val ) {
                 obj.perpendicularOffset = Double.parseDouble( val );
             }
-        }, new Filter110XMLDecoder(), contn );
+        }, contn );
 
         contn = updateOrContinue( root, "se:Displacement/se:DisplacementX", baseOrEvaluated,
                                   new Updater<PolygonStyling>() {
@@ -249,7 +252,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                                       public void update( PolygonStyling obj, String val ) {
                                           obj.displacementX = Double.parseDouble( val );
                                       }
-                                  }, new Filter110XMLDecoder(), contn );
+                                  }, contn );
 
         contn = updateOrContinue( root, "se:Displacement/se:DisplacementY", baseOrEvaluated,
                                   new Updater<PolygonStyling>() {
@@ -257,7 +260,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                                       public void update( PolygonStyling obj, String val ) {
                                           obj.displacementY = Double.parseDouble( val );
                                       }
-                                  }, new Filter110XMLDecoder(), contn );
+                                  }, contn );
 
         if ( contn == null ) {
             return new Symbolizer<PolygonStyling>( baseOrEvaluated, geom, name );
@@ -277,14 +280,13 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
         TextStyling baseOrEvaluated = new TextStyling();
         Continuation<TextStyling> contn = null;
 
-        Filter110XMLDecoder parser = new Filter110XMLDecoder();
         contn = updateOrContinue( root, "se:LabelPlacement/se:PointPlacement/se:AnchorPoint/se:AnchorPointX",
                                   baseOrEvaluated, new Updater<TextStyling>() {
                                       @Override
                                       public void update( TextStyling obj, String val ) {
                                           obj.anchorPointX = Double.parseDouble( val );
                                       }
-                                  }, parser, contn );
+                                  }, contn );
 
         contn = updateOrContinue( root, "se:LabelPlacement/se:PointPlacement/se:AnchorPoint/se:AnchorPointY",
                                   baseOrEvaluated, new Updater<TextStyling>() {
@@ -292,7 +294,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                                       public void update( TextStyling obj, String val ) {
                                           obj.anchorPointY = Double.parseDouble( val );
                                       }
-                                  }, parser, contn );
+                                  }, contn );
 
         contn = updateOrContinue( root, "se:LabelPlacement/se:PointPlacement/se:Displacement/se:DisplacementX",
                                   baseOrEvaluated, new Updater<TextStyling>() {
@@ -300,7 +302,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                                       public void update( TextStyling obj, String val ) {
                                           obj.displacementX = Double.parseDouble( val );
                                       }
-                                  }, parser, contn );
+                                  }, contn );
 
         contn = updateOrContinue( root, "se:LabelPlacement/se:PointPlacement/se:Displacement/se:DisplacementY",
                                   baseOrEvaluated, new Updater<TextStyling>() {
@@ -308,7 +310,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                                       public void update( TextStyling obj, String val ) {
                                           obj.displacementY = Double.parseDouble( val );
                                       }
-                                  }, parser, contn );
+                                  }, contn );
 
         contn = updateOrContinue( root, "se:LabelPlacement/se:PointPlacement/se:Rotation", baseOrEvaluated,
                                   new Updater<TextStyling>() {
@@ -316,7 +318,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                                       public void update( TextStyling obj, String val ) {
                                           obj.rotation = Double.parseDouble( val );
                                       }
-                                  }, parser, contn );
+                                  }, contn );
 
         final Pair<LinePlacement, Continuation<LinePlacement>> pair = parseLinePlacement( root );
         if ( pair != null ) {
@@ -380,7 +382,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                                                                  public void update( StringBuffer obj, String val ) {
                                                                      obj.append( val );
                                                                  }
-                                                             }, parser, null );
+                                                             }, null );
 
         if ( contn == null ) {
             Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, geom, name );
@@ -399,32 +401,30 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
 
         Font baseOrEvaluated = new Font();
         Continuation<Font> contn = null;
-        Filter110XMLDecoder parser = new Filter110XMLDecoder();
-
         contn = updateOrContinue( root, "se:SvgParameter[@name='font-family']", baseOrEvaluated, new Updater<Font>() {
             @Override
             public void update( Font obj, String val ) {
                 obj.fontFamily.add( val );
             }
-        }, parser, contn );
+        }, contn );
         contn = updateOrContinue( root, "se:SvgParameter[@name='font-style']", baseOrEvaluated, new Updater<Font>() {
             @Override
             public void update( Font obj, String val ) {
                 obj.fontStyle = Style.valueOf( val.toUpperCase() );
             }
-        }, parser, contn );
+        }, contn );
         contn = updateOrContinue( root, "se:SvgParameter[@name='font-weight']", baseOrEvaluated, new Updater<Font>() {
             @Override
             public void update( Font obj, String val ) {
                 obj.bold = val.equalsIgnoreCase( "bold" );
             }
-        }, parser, contn );
+        }, contn );
         contn = updateOrContinue( root, "se:SvgParameter[@name='font-size']", baseOrEvaluated, new Updater<Font>() {
             @Override
             public void update( Font obj, String val ) {
                 obj.fontSize = Integer.parseInt( val );
             }
-        }, parser, contn );
+        }, contn );
 
         return new Pair<Font, Continuation<Font>>( baseOrEvaluated, contn );
 
@@ -445,7 +445,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.radius = Double.parseDouble( val );
 
             }
-        }, new Filter110XMLDecoder(), contn );
+        }, contn );
 
         final Pair<Fill, Continuation<Fill>> fillPair = parseFill( root );
 
@@ -480,7 +480,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.perpendicularOffset = Double.parseDouble( val );
 
             }
-        }, new Filter110XMLDecoder(), contn );
+        }, contn );
 
         contn = updateOrContinue( root, "se:InitialGap", baseOrEvaluated, new Updater<LinePlacement>() {
             @Override
@@ -488,7 +488,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.initialGap = Double.parseDouble( val );
 
             }
-        }, new Filter110XMLDecoder(), contn );
+        }, contn );
 
         contn = updateOrContinue( root, "se:Gap", baseOrEvaluated, new Updater<LinePlacement>() {
             @Override
@@ -496,7 +496,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.gap = Double.parseDouble( val );
 
             }
-        }, new Filter110XMLDecoder(), contn );
+        }, contn );
 
         contn = updateOrContinue( root, "se:GeneralizeLine", baseOrEvaluated, new Updater<LinePlacement>() {
             @Override
@@ -504,7 +504,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.generalizeLine = Boolean.parseBoolean( val );
 
             }
-        }, new Filter110XMLDecoder(), contn );
+        }, contn );
 
         contn = updateOrContinue( root, "se:IsAligned", baseOrEvaluated, new Updater<LinePlacement>() {
             @Override
@@ -512,7 +512,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.isAligned = Boolean.parseBoolean( val );
 
             }
-        }, new Filter110XMLDecoder(), contn );
+        }, contn );
 
         contn = updateOrContinue( root, "se:IsRepeated", baseOrEvaluated, new Updater<LinePlacement>() {
             @Override
@@ -520,7 +520,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.repeat = Boolean.parseBoolean( val );
 
             }
-        }, new Filter110XMLDecoder(), contn );
+        }, contn );
 
         return new Pair<LinePlacement, Continuation<LinePlacement>>( baseOrEvaluated, contn );
     }
@@ -530,8 +530,6 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
      * @return a base graphic and a continuation, or an evaluated graphic
      */
     private Pair<Graphic, Continuation<Graphic>> parseGraphic( OMElement root ) {
-        Filter110XMLDecoder parser = new Filter110XMLDecoder();
-
         OMElement graphic = getElement( root, new XPath( "se:Graphic", nscontext ) );
 
         if ( graphic == null ) {
@@ -577,43 +575,43 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
             public void update( Graphic obj, String val ) {
                 obj.opacity = Double.parseDouble( val );
             }
-        }, parser, contn );
+        }, contn );
 
         contn = updateOrContinue( graphic, "se:Size", base, new Updater<Graphic>() {
             public void update( Graphic obj, String val ) {
                 obj.size = Double.parseDouble( val );
             }
-        }, parser, contn );
+        }, contn );
 
         contn = updateOrContinue( graphic, "se:Rotation", base, new Updater<Graphic>() {
             public void update( Graphic obj, String val ) {
                 obj.rotation = Double.parseDouble( val );
             }
-        }, parser, contn );
+        }, contn );
 
         contn = updateOrContinue( graphic, "se:AnchorPoint/se:AnchorPointX", base, new Updater<Graphic>() {
             public void update( Graphic obj, String val ) {
                 obj.anchorPointX = Double.parseDouble( val );
             }
-        }, parser, contn );
+        }, contn );
 
         contn = updateOrContinue( graphic, "se:AnchorPoint/se:AnchorPointY", base, new Updater<Graphic>() {
             public void update( Graphic obj, String val ) {
                 obj.anchorPointY = Double.parseDouble( val );
             }
-        }, parser, contn );
+        }, contn );
 
         contn = updateOrContinue( graphic, "se:Displacement/se:DisplacementX", base, new Updater<Graphic>() {
             public void update( Graphic obj, String val ) {
                 obj.displacementX = Double.parseDouble( val );
             }
-        }, parser, contn );
+        }, contn );
 
         contn = updateOrContinue( graphic, "se:Displacement/se:DisplacementY", base, new Updater<Graphic>() {
             public void update( Graphic obj, String val ) {
                 obj.displacementY = Double.parseDouble( val );
             }
-        }, parser, contn );
+        }, contn );
 
         return new Pair<Graphic, Continuation<Graphic>>( base, contn );
     }
@@ -702,8 +700,6 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
             return null;
         }
 
-        Filter110XMLDecoder parser = new Filter110XMLDecoder();
-
         Fill base = new Fill();
         Continuation<Fill> contn = null;
 
@@ -731,7 +727,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.color = decode( val );
                 obj.color = new Color( obj.color.getRed(), obj.color.getGreen(), obj.color.getBlue(), alpha );
             }
-        }, parser, contn );
+        }, contn );
 
         contn = updateOrContinue( fill, "se:SvgParameter[@name='fill-opacity']", base, new Updater<Fill>() {
             @Override
@@ -741,7 +737,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 float[] cols = obj.color.getRGBColorComponents( null );
                 obj.color = new Color( cols[0], cols[1], cols[2], alpha );
             }
-        }, parser, contn );
+        }, contn );
 
         return new Pair<Fill, Continuation<Fill>>( base, contn );
     }
@@ -756,8 +752,6 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
             return null;
         }
 
-        Filter110XMLDecoder parser = new Filter110XMLDecoder();
-
         Stroke base = new Stroke();
         Continuation<Stroke> contn = null;
 
@@ -769,7 +763,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 obj.color = decode( val );
                 obj.color = new Color( obj.color.getRed(), obj.color.getGreen(), obj.color.getBlue(), alpha );
             }
-        }, parser, contn );
+        }, contn );
 
         contn = updateOrContinue( stroke, "se:SvgParameter[@name='stroke-opacity']", base, new Updater<Stroke>() {
             @Override
@@ -779,42 +773,42 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                 float[] cols = obj.color.getRGBColorComponents( null );
                 obj.color = new Color( cols[0], cols[1], cols[2], alpha );
             }
-        }, parser, contn );
+        }, contn );
 
         contn = updateOrContinue( stroke, "se:SvgParameter[@name='stroke-width']", base, new Updater<Stroke>() {
             @Override
             public void update( Stroke obj, String val ) {
                 obj.width = Double.parseDouble( val );
             }
-        }, parser, contn );
+        }, contn );
 
         contn = updateOrContinue( stroke, "se:SvgParameter[@name='stroke-linejoin']", base, new Updater<Stroke>() {
             @Override
             public void update( Stroke obj, String val ) {
                 obj.linejoin = LineJoin.valueOf( val.toUpperCase() );
             }
-        }, parser, contn );
+        }, contn );
 
         contn = updateOrContinue( stroke, "se:SvgParameter[@name='stroke-linecap']", base, new Updater<Stroke>() {
             @Override
             public void update( Stroke obj, String val ) {
                 obj.linecap = LineCap.valueOf( val.toUpperCase() );
             }
-        }, parser, contn );
+        }, contn );
 
         contn = updateOrContinue( stroke, "se:SvgParameter[@name='stroke-dasharray']", base, new Updater<Stroke>() {
             @Override
             public void update( Stroke obj, String val ) {
                 obj.dasharray = splitAsDoubles( val, " " );
             }
-        }, parser, contn );
+        }, contn );
 
         contn = updateOrContinue( stroke, "se:SvgParameter[@name='stroke-dashoffset']", base, new Updater<Stroke>() {
             @Override
             public void update( Stroke obj, String val ) {
                 obj.dashoffset = Double.parseDouble( val );
             }
-        }, parser, contn );
+        }, contn );
 
         OMElement graphicFill = getElement( stroke, new XPath( "se:GraphicFill", nscontext ) );
         if ( graphicFill != null ) {
@@ -852,14 +846,14 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                     public void update( Stroke obj, String val ) {
                         obj.strokeInitialGap = Double.parseDouble( val );
                     }
-                }, parser, contn );
+                }, contn );
 
                 contn = updateOrContinue( stroke, "se:GraphicStroke/se:Gap", base, new Updater<Stroke>() {
                     @Override
                     public void update( Stroke obj, String val ) {
                         obj.strokeGap = Double.parseDouble( val );
                     }
-                }, parser, contn );
+                }, contn );
             }
 
         }
@@ -879,9 +873,14 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
             OMElement fil = getElement( elem, new XPath( "ogc:Filter", nscontext ) );
             Filter filter = null;
             if ( fil != null ) {
-                Filter110XMLDecoder parser = new Filter110XMLDecoder();
-                parser.setRootElement( fil );
-                filter = parser.parse();
+                try {
+                    XMLStreamReader xmlStream = fil.getXMLStreamReaderWithoutCaching();
+                    // skip START_DOCUMENT
+                    xmlStream.nextTag();
+                    filter = Filter110XMLDecoder.parse( xmlStream );
+                } catch ( XMLStreamException e ) {
+                    throw new XMLParsingException( this, fil, e.getMessage() );
+                }
             } else {
                 fil = getElement( elem, new XPath( "se:ElseFilter", nscontext ) );
                 if ( fil != null ) {
@@ -957,7 +956,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
      * @return a continuation or null, if none was created and input
      */
     private <T> Continuation<T> updateOrContinue( OMElement root, String name, T obj, final Updater<T> updater,
-                                                  Filter110XMLDecoder parser, Continuation<T> contn ) {
+                                                  Continuation<T> contn ) {
         for ( OMElement elem : getElements( root, new XPath( name, nscontext ) ) ) {
             if ( elem != null ) {
                 Iterator<?> iter = elem.getChildren();
@@ -968,7 +967,15 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
                     Object cur = iter.next();
                     if ( cur instanceof OMElement ) {
                         OMElement om = (OMElement) cur;
-                        Expression expr = parser.parseExpression( (OMElement) cur );
+                        Expression expr = null;
+                        try {
+                            XMLStreamReader xmlStream = om.getXMLStreamReaderWithoutCaching();
+                            // skip START_DOCUMENT
+                            xmlStream.nextTag();
+                            expr = Filter110XMLDecoder.parseExpression( xmlStream );
+                        } catch ( XMLStreamException e ) {
+                            throw new XMLParsingException( this, om, e.getMessage() );
+                        }
                         Pair<Expression, String> second = new Pair<Expression, String>( expr, get( "R2D.LINE",
                                                                                                    om.getLineNumber(),
                                                                                                    om ) );
