@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.ows.capabilities;
 
 import java.util.ArrayList;
@@ -59,10 +59,10 @@ import org.deegree.commons.types.ows.Version;
  * Supports multilingual services according to OWS Common change request OGC 08-016r2. This is already used by the WPS
  * Specification 1.0.0.
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class GetCapabilities {
@@ -81,7 +81,7 @@ public class GetCapabilities {
 
     /**
      * Constructs a new <code>GetCapabilities</code> request.
-     *
+     * 
      * @param acceptVersions
      *            acceptable protocol versions in order of client preference, may be empty or null
      * @param sections
@@ -113,7 +113,37 @@ public class GetCapabilities {
     /**
      * Constructs a new <code>GetCapabilities</code> request that specifies the requested version in a pre-OWS fashion
      * (see section D.11 of OGC 06-121r3).
-     *
+     * 
+     * @param version
+     *            old-style version information, may be null
+     * @param sections
+     *            queried section names, may be empty or null
+     * @param acceptFormats
+     *            acceptable response formats, may be empty or null
+     * @param updateSequence
+     *            TODO (what does it do exactly), may be null
+     * @param languages
+     *            RFC 4646 language codes for human readable text (e.g. "en-CA,fr-CA"), may be emtpy or null
+     */
+    public GetCapabilities( Version version, Collection<String> sections, Collection<String> acceptFormats,
+                            String updateSequence, Collection<String> languages ) {
+        this.version = version;
+        if ( sections != null ) {
+            this.sections.addAll( sections );
+        }
+        if ( acceptFormats != null ) {
+            this.acceptFormats.addAll( acceptFormats );
+        }
+        this.updateSequence = updateSequence;
+        if ( languages != null ) {
+            this.languages.addAll( languages );
+        }
+    }
+
+    /**
+     * Constructs a new <code>GetCapabilities</code> request that specifies the requested version in a pre-OWS fashion
+     * (see section D.11 of OGC 06-121r3).
+     * 
      * @param version
      *            old-style version information, may be null
      */
@@ -124,7 +154,7 @@ public class GetCapabilities {
     /**
      * Returns the old-style version information (used by pre-OWS GetCapabilities requests, see section D.11 of OGC
      * 06-121r3).
-     *
+     * 
      * @return old-style version information, may be null (if this is an OWS-style request or an pre-OWS request without
      *         version specification)
      */
@@ -134,7 +164,7 @@ public class GetCapabilities {
 
     /**
      * Returns the acceptable {@link Version}s in order of client preference (most preferred version comes first).
-     *
+     * 
      * @return the acceptable <code>Version</code>s, in order of preference, may be empty, but not null
      */
     public List<Version> getAcceptVersions() {
@@ -143,7 +173,7 @@ public class GetCapabilities {
 
     /**
      * Returns the sections requested by the client.
-     *
+     * 
      * @return the requested sections, may be empty, but not null
      */
     public Set<String> getSections() {
@@ -160,7 +190,7 @@ public class GetCapabilities {
 
     /**
      * Returns the languages for human readable text requested by the client.
-     *
+     * 
      * @return list of RFC 4646 language codes, may be empty, but not null
      */
     public List<String> getLanguages() {
