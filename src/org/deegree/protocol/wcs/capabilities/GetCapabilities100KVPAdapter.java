@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,10 +32,9 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wcs.capabilities;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,10 +45,10 @@ import org.deegree.protocol.ows.capabilities.GetCapabilities;
 
 /**
  * This is a KVP adapter for WCS 1.0.0 GetCapabilities requests.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class GetCapabilities100KVPAdapter {
@@ -68,8 +67,7 @@ public class GetCapabilities100KVPAdapter {
         if ( versionString == null || versionString.length() == 0 ) {
             versionString = "1.0.0";
         }
-        List<Version> acceptVersions = new LinkedList<Version>();
-        acceptVersions.add( Version.parseVersion( versionString ) );
+        Version version = Version.parseVersion( versionString );
 
         // SECTION (optional)
         List<String> sections = KVPUtils.splitAll( kvpParams, "SECTION" );
@@ -77,6 +75,6 @@ public class GetCapabilities100KVPAdapter {
         // UPDATESEQUENCE (optional)
         String updateSequence = KVPUtils.getDefault( kvpParams, "UPDATESEQUENCE", "" );
 
-        return new GetCapabilities( acceptVersions, sections, null, updateSequence, null );
+        return new GetCapabilities( version, sections, null, updateSequence, null );
     }
 }
