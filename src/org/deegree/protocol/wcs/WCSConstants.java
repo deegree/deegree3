@@ -93,6 +93,22 @@ public class WCSConstants {
 
     /**
      * 
+     * The <code>ExeptionCode_1_0_0</code> defines the exception codes for the WCS 1.0.0 specification.
+     * 
+     * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
+     * @author last edited by: $Author: rbezema $
+     * @version $Revision: $, $Date: $
+     * 
+     */
+    public enum ExeptionCode_1_0_0 {
+        /** the current update sequence equals the requested one */
+        CurrentUpdateSequence,
+        /** the current update sequence is lower than the requested one */
+        InvalidUpdateSequence
+    }
+
+    /**
+     * 
      * The <code>InterpolationMethod</code> class maps Interpolations to the wcs 1.0.0 protocol name.
      * 
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
