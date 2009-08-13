@@ -60,7 +60,8 @@ public enum InterpolationType {
      */
     public static InterpolationType fromString( String interpolation ) {
         String key = interpolation.toUpperCase();
-        key = key.replaceAll( "-\\s", "_" );
+        key = key.replaceAll( "-", "_" );
+        key = key.replaceAll( "\\s", "_" );
         return InterpolationType.valueOf( key );
     }
 }

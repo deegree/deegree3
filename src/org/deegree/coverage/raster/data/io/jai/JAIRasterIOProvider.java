@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data.io.jai;
 
 import java.util.HashMap;
@@ -47,34 +47,39 @@ import org.deegree.coverage.raster.io.RasterWriter;
 /**
  * This class is a RasterIOProvider and makes the JAIRasterReader and JAIRasterWriter available to the deegree raster
  * IO.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class JAIRasterIOProvider implements RasterIOProvider {
 
-    private static final Set<String> SUPPORTED_TYPES;
+    /** Holds the list of supported image formats of the JAI library. */
+    protected static final Set<String> SUPPORTED_TYPES;
 
     // maps a file extension to the JAI type name
     private static Map<String, String> EXT_TO_FORMAT;
 
     static {
+
+        // rb: where to get the supported file types from?
         EXT_TO_FORMAT = new HashMap<String, String>();
-        EXT_TO_FORMAT.put( "tif", "TIFF" );
-        EXT_TO_FORMAT.put( "tiff", "TIFF" );
+        EXT_TO_FORMAT.put( "bmp", "BMP" );
+        EXT_TO_FORMAT.put( "gif", "GIF" );
+        EXT_TO_FORMAT.put( "j2k", "JPEG2000" );
+        EXT_TO_FORMAT.put( "jp2", "JPEG2000" );
         EXT_TO_FORMAT.put( "jpg", "JPEG" );
         EXT_TO_FORMAT.put( "jpeg", "JPEG" );
-        EXT_TO_FORMAT.put( "gif", "GIF" );
         EXT_TO_FORMAT.put( "png", "PNG" );
-        EXT_TO_FORMAT.put( "jp2", "JPEG2000" );
-        EXT_TO_FORMAT.put( "j2k", "JPEG2000" );
+        EXT_TO_FORMAT.put( "pnm", "PNM" );
+        EXT_TO_FORMAT.put( "tif", "TIFF" );
+        EXT_TO_FORMAT.put( "tiff", "TIFF" );
 
         SUPPORTED_TYPES = new HashSet<String>();
-        SUPPORTED_TYPES.add( JAIRasterReader.class.getCanonicalName() );
-        SUPPORTED_TYPES.add( "jai" );
-        SUPPORTED_TYPES.add( "jai-reader" );
+        // SUPPORTED_TYPES.add( JAIRasterReader.class.getCanonicalName() );
+        // SUPPORTED_TYPES.add( "jai" );
+        // SUPPORTED_TYPES.add( "jai-reader" );
         SUPPORTED_TYPES.addAll( EXT_TO_FORMAT.keySet() );
     }
 
@@ -100,6 +105,16 @@ public class JAIRasterIOProvider implements RasterIOProvider {
             return null;
         }
         return new JAIRasterWriter();
+    }
+
+    @Override
+    public Set<String> getRasterReaderFormats() {
+        return SUPPORTED_TYPES;
+    }
+
+    @Override
+    public Set<String> getRasterWriterFormats() {
+        return SUPPORTED_TYPES;
     }
 
 }

@@ -39,11 +39,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
@@ -52,9 +50,7 @@ import org.deegree.coverage.raster.data.container.RasterDataContainer;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
-import org.deegree.coverage.raster.io.RasterIOProvider;
 import org.deegree.coverage.raster.io.RasterReader;
-import org.deegree.coverage.raster.io.RasterWriter;
 import org.deegree.crs.CRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;
@@ -70,7 +66,7 @@ import org.slf4j.LoggerFactory;
  * @version $Revision$, $Date$
  * 
  */
-public class IIORasterReader implements RasterIOProvider, RasterReader {
+public class IIORasterReader implements RasterReader {
 
     private File file;
 
@@ -80,34 +76,30 @@ public class IIORasterReader implements RasterIOProvider, RasterReader {
 
     static {
         SUPPORTED_TYPES = new HashSet<String>();
-        SUPPORTED_TYPES.add( IIORasterReader.class.getCanonicalName() );
-        SUPPORTED_TYPES.add( "iio" );
-        SUPPORTED_TYPES.add( "imageio" );
-        SUPPORTED_TYPES.add( "iio-reader" );
-        String[] types = new String[] { "jpg", "jpeg", "png", "tif", "tiff", "jp2", "gif" };
 
-        for ( String type : types ) {
-            Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix( type );
-            if ( iter != null && iter.hasNext() ) {
-                SUPPORTED_TYPES.add( type.toLowerCase() );
-                LOG.debug( "register ImageReader for " + type );
-            } else {
-                LOG.error( "no ImageReader for " + type + " found" );
+        String[] readerFormatNames = ImageIO.getReaderFormatNames();
+        if ( readerFormatNames != null ) {
+            for ( String format : readerFormatNames ) {
+                if ( format != null && !"".equals( format.trim() ) && !format.contains( " " ) ) {
+                    SUPPORTED_TYPES.add( format.toLowerCase() );
+                }
             }
         }
-    }
-
-    @Override
-    public RasterReader getRasterReader( String type ) {
-        if ( SUPPORTED_TYPES.contains( type ) ) {
-            return this;
-        }
-        return null;
-    }
-
-    @Override
-    public RasterWriter getRasterWriter( String type ) {
-        return null;
+        // SUPPORTED_TYPES.add( IIORasterReader.class.getCanonicalName() );
+        // SUPPORTED_TYPES.add( "iio" );
+        // SUPPORTED_TYPES.add( "imageio" );
+        // SUPPORTED_TYPES.add( "iio-reader" );
+        // String[] types = new String[] { "jpg", "jpeg", "png", "tif", "tiff", "jp2", "gif" };
+        //
+        // for ( String type : types ) {
+        // Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix( type );
+        // if ( iter != null && iter.hasNext() ) {
+        // SUPPORTED_TYPES.add( type.toLowerCase() );
+        // LOG.debug( "register ImageReader for " + type );
+        // } else {
+        // LOG.error( "no ImageReader for " + type + " found" );
+        // }
+        // }
     }
 
     public boolean canLoad( File filename ) {
@@ -167,6 +159,11 @@ public class IIORasterReader implements RasterIOProvider, RasterReader {
         // RasterDataContainer source = RasterDataContainerFactory.withDefaultLoadingPolicy( reader );
         RasterDataContainer source = RasterDataContainerFactory.withLoadingPolicy( reader, options.getLoadingPolicy() );
         return new SimpleRaster( source, envelope, rasterReference );
+    }
+
+    @Override
+    public Set<String> getSupportedFormats() {
+        return SUPPORTED_TYPES;
     }
 
 }

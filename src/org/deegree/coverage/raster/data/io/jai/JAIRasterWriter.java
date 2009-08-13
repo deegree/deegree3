@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,12 +32,13 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data.io.jai;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Set;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -50,10 +51,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @version $Revision$
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  */
 public class JAIRasterWriter implements RasterWriter {
 
@@ -66,14 +67,15 @@ public class JAIRasterWriter implements RasterWriter {
         String ext = FileUtils.getFileExtension( file );
         String format = JAIRasterIOProvider.getJAIFormat( ext );
         if ( format != null ) {
-            JAIRasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(), file.getAbsolutePath(), format );
+            JAIRasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(),
+                                                      file.getAbsolutePath(), format );
         } else {
-            JAIRasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(), file.getAbsolutePath() );
+            JAIRasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(),
+                                                      file.getAbsolutePath() );
         }
         RasterReference rasterEnv = raster.getRasterReference();
         WorldFileAccess.writeWorldFile( rasterEnv, file );
     }
-
 
     @Override
     public void write( AbstractRaster raster, OutputStream out, RasterIOOptions options )
@@ -91,5 +93,10 @@ public class JAIRasterWriter implements RasterWriter {
     @Override
     public boolean canWrite( AbstractRaster raster, RasterIOOptions options ) {
         return true;
+    }
+
+    @Override
+    public Set<String> getSupportedFormats() {
+        return JAIRasterIOProvider.SUPPORTED_TYPES;
     }
 }

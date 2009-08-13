@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,14 +32,16 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.io;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.LinkedHashSet;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -49,14 +51,14 @@ import org.slf4j.LoggerFactory;
 /**
  * This class reads and writes raster files. The actual raster loading and writing is handled by {@link RasterReader}
  * and {@link RasterWriter} implementations.
- *
+ * 
  * TODO use the new, not yet implemented, configuration framework to allow customization of the IO classes
- *
+ * 
  * @version $Revision$
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  */
 
 public class RasterFactory {
@@ -66,6 +68,7 @@ public class RasterFactory {
             return ServiceLoader.load( RasterIOProvider.class );
         }
     }
+
     @SuppressWarnings("synthetic-access")
     private static ThreadLocalServiceLoader serviceLoader = new ThreadLocalServiceLoader();
 
@@ -73,7 +76,7 @@ public class RasterFactory {
 
     /**
      * Load a raster from a file.
-     *
+     * 
      * @param filename
      *            the filename of the raster
      * @return the loaded raster as an AbstractRaster
@@ -87,7 +90,7 @@ public class RasterFactory {
 
     /**
      * Load a raster from a file.
-     *
+     * 
      * @param filename
      *            the filename of the raster
      * @param options
@@ -106,7 +109,7 @@ public class RasterFactory {
 
     /**
      * Load a raster from a stream.
-     *
+     * 
      * @param in
      * @param options
      *            map with options for the raster writer
@@ -124,10 +127,9 @@ public class RasterFactory {
         return reader.load( in, options );
     }
 
-
     /**
      * Save a raster to a file.
-     *
+     * 
      * @param raster
      * @param filename
      * @throws IOException
@@ -139,7 +141,7 @@ public class RasterFactory {
 
     /**
      * Save a raster to a file.
-     *
+     * 
      * @param raster
      * @param filename
      * @param options
@@ -163,7 +165,7 @@ public class RasterFactory {
 
     /**
      * Save a raster to a stream.
-     *
+     * 
      * @param raster
      * @param out
      * @param options
@@ -217,5 +219,21 @@ public class RasterFactory {
             }
         }
         return null;
+    }
+
+    /**
+     * Find all RasterIOLoaders and retrieve all the (image) formats they support on writing.
+     * 
+     * @return a set of supported writable mime-types.
+     */
+    public static Set<String> getAllSupportedWritingFormats() {
+        Set<String> result = new LinkedHashSet<String>();
+        for ( RasterIOProvider reader : getRasterIOLoader() ) {
+            Set<String> formats = reader.getRasterWriterFormats();
+            if ( formats != null && !formats.isEmpty() ) {
+                result.addAll( formats );
+            }
+        }
+        return result;
     }
 }

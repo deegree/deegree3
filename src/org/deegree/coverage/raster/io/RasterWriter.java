@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,29 +32,30 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.io;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Set;
 
 import org.deegree.coverage.raster.AbstractRaster;
 
 /**
  * This interface is for abstraction of the raster writing handling.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$
- *
+ * 
  */
 public interface RasterWriter {
 
     /**
      * Write the raster into file.
-     *
+     * 
      * @param raster
      * @param file
      * @param options
@@ -67,7 +68,7 @@ public interface RasterWriter {
 
     /**
      * Write the raster into strem.
-     *
+     * 
      * @param raster
      * @param out
      * @param options
@@ -80,11 +81,16 @@ public interface RasterWriter {
 
     /**
      * Check if the raster writer is able to write the given raster.
-     *
+     * 
      * @param raster
      * @param options
      * @return true if the class can write the raster
      */
     public boolean canWrite( AbstractRaster raster, RasterIOOptions options );
+
+    /**
+     * @return a {@link Set} of (image) formats mime/types the implementation is able to write.
+     */
+    public Set<String> getSupportedFormats();
 
 }

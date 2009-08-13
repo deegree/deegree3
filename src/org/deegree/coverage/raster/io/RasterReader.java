@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,28 +32,29 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.io;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 import org.deegree.coverage.raster.AbstractRaster;
 
 /**
  * This interface is for abstraction of the raster loading handling.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$
- *
+ * 
  */
 public interface RasterReader {
     /**
      * Read the given raster file into an abstract raster.
-     *
+     * 
      * @param filename
      * @param options
      * @return the loaded raster
@@ -65,7 +66,7 @@ public interface RasterReader {
 
     /**
      * Read the given input stream into an abstract raster.
-     *
+     * 
      * @param stream
      * @param options
      * @return the loaded raster
@@ -77,10 +78,15 @@ public interface RasterReader {
 
     /**
      * Check if the raster reader is able to read the given raster file.
-     *
+     * 
      * @param filename
      * @return true if the class can read the raster
      */
     public boolean canLoad( File filename );
+
+    /**
+     * @return a {@link Set} of (image) formats mime/types the implementation is able to read.
+     */
+    public Set<String> getSupportedFormats();
 
 }

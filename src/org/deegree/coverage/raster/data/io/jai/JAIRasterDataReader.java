@@ -202,7 +202,6 @@ public class JAIRasterDataReader implements RasterDataReader {
 
     private static ByteBufferRasterData rasterDataFromImage( RenderedImage img ) {
         ByteBufferRasterData result = null;
-
         if ( img != null ) {
             Raster raster = img.getData();
 
