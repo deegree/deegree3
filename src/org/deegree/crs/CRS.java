@@ -50,10 +50,10 @@ import org.deegree.geometry.Geometry;
  * <p>
  * Their are two aspects that this class takes care of:
  * <nl>
- * <li>In applications, coordinate system are usually identified using strings (such as 'EPSG:4326'). However, there
- * are multiple equivalent ways to encode coordinate system identifications (another one would be
+ * <li>In applications, coordinate reference system are usually identified using strings (such as 'EPSG:4326'). However,
+ * there are multiple equivalent ways to encode coordinate reference system identifications (another one would be
  * 'urn:ogc:def:crs:EPSG::4326'). By using this class to represent a CRS, the original spelling is maintained.</li>
- * <li>A coordinate system may be specified which is not known to the {@link CRSRegistry}. However, for some
+ * <li>A coordinate reference system may be specified which is not known to the {@link CRSRegistry}. However, for some
  * operations this is not a necessarily a problem, e.g. a GML document may be read and transformed into {@link Feature}
  * and {@link Geometry} objects.</li>
  * </nl>
@@ -66,7 +66,7 @@ import org.deegree.geometry.Geometry;
 public class CRS {
 
     /**
-     * The string used to identify the coordinate system.
+     * The string used to identify the coordinate reference system.
      */
     private String crsName;
 
@@ -76,7 +76,7 @@ public class CRS {
     private CoordinateSystem crs;
 
     /**
-     * Creates a new {@link CRS} instance with a coordinate system name.
+     * Creates a new {@link CRS} instance with a coordinate reference system name.
      * 
      * @param crsName
      *            name of the crs (identification string) or null
@@ -107,7 +107,7 @@ public class CRS {
     /**
      * Returns the string that identifies the {@link CRS}.
      * 
-     * @return the string that identifies the coordinate system
+     * @return the string that identifies the coordinate reference system
      */
     public String getName() {
         return crsName;
@@ -116,7 +116,7 @@ public class CRS {
     /**
      * Returns the corresponding {@link CRS} object.
      * 
-     * @return the coordinate system, or null if the name is null
+     * @return the coordinate reference system, or null if the name is null
      * @throws UnknownCRSException
      */
     public CoordinateSystem getWrappedCRS()
