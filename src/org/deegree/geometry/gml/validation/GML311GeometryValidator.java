@@ -121,7 +121,7 @@ public class GML311GeometryValidator extends XMLAdapter {
         ValidationEventRedirector eventRedirector = new ValidationEventRedirector( gmlErrorHandler, identifier );
         GeometryValidator geometryValidator = new GeometryValidator( eventRedirector );
         try {
-            geometryValidator.validateGeometry( geomParser.parseAbstractGeometry(xmlStream, new CRS("EPSG:28992") ) );
+            geometryValidator.validateGeometry( geomParser.parse(xmlStream, new CRS("EPSG:28992") ) );
         } catch ( XMLParsingException e ) {
             gmlErrorHandler.geometryParsingError( identifier, e );
         } catch ( XMLStreamException e ) {

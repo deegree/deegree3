@@ -271,7 +271,7 @@ public class GeometryValidatorTest {
                                                                        GML311GeometryDecoderTest.class.getResource( BASE_DIR
                                                                                                                     + fileName ) );
         xmlReader.nextTag();
-        return new GML311GeometryDecoder( geomFac, new GMLIdContext() ).parseAbstractGeometry( xmlReader, null );
+        return new GML311GeometryDecoder( geomFac, new GMLIdContext() ).parse( xmlReader, null );
     }
 }
 

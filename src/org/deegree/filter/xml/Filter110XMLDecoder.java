@@ -238,8 +238,8 @@ public class Filter110XMLDecoder {
      */
     public static Filter parse( XMLStreamReader xmlStream )
                             throws XMLParsingException, XMLStreamException {
-        
-        Filter filter = null;        
+
+        Filter filter = null;
         xmlStream.require( START_ELEMENT, OGC_NS, "Filter" );
         xmlStream.nextTag();
         if ( xmlStream.getEventType() != START_ELEMENT ) {
@@ -361,9 +361,39 @@ public class Filter110XMLDecoder {
         return expression;
     }
 
+    /**
+     * Returns the object representation for the given <code>ogc:expression</code> element event that the cursor of the
+     * associated <code>XMLStreamReader</code> points at.
+     * <p>
+     * The element must be one of the following:
+     * <ul>
+     * <li>ogc:Add</li>
+     * <li>ogc:Sub</li>
+     * <li>ogc:Div</li>
+     * <li>ogc:Mul</li>
+     * <li>ogc:PropertyName</li>
+     * <li>ogc:Literal</li>
+     * <li>ogc:Function</li>
+     * </ul>
+     * </p>
+     * <p>
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;)</li>
+     * </ul>
+     * </p>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;ogc:expression&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/ogc:expression&gt;) afterwards
+     * @return corresponding {@link Expression} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "ogc:expression" element
+     * @throws XMLStreamException
+     */    
     public static Function parseFunction( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-    
+
         xmlStream.require( START_ELEMENT, OGC_NS, "Function" );
         xmlStream.nextTag();
         String name = getRequiredAttributeValue( xmlStream, null, "name" );
@@ -561,7 +591,7 @@ public class Filter110XMLDecoder {
 
     private static PropertyName parsePropertyName( XMLStreamReader xmlStream )
                             throws XMLStreamException {
-    
+
         NamespaceContext nsc = StAXParsingHelper.getDeegreeNamespaceContext( xmlStream );
         String propName = xmlStream.getElementText().trim();
         if ( propName.isEmpty() ) {
@@ -696,79 +726,79 @@ public class Filter110XMLDecoder {
             case BBOX: {
                 // second parameter: 'gml:Envelope'
                 xmlStream.require( START_ELEMENT, GML_NS, "Envelope" );
-                Envelope param2 = geomParser.parseEnvelope( wrapper, null );
+                Envelope param2 = geomParser.parseEnvelope( wrapper );
                 spatialOperator = new BBOX( param1, param2 );
                 break;
             }
             case BEYOND: {
                 // second parameter: 'gml:_Geometry'
-                xmlStream.require( START_ELEMENT, GML_NS, "Envelope" );
-                Geometry param2 = geomParser.parseAbstractGeometry( wrapper, null );
+                Geometry param2 = geomParser.parse( wrapper );
                 // third parameter: 'ogc:Distance'
                 xmlStream.nextTag();
                 xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
                 String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
+                xmlStream.nextTag();
                 Measure distance = new Measure( distanceUnits, null );
                 spatialOperator = new Beyond( param1, param2, distance );
                 break;
             }
             case INTERSECTS: {
-                // second parameter: 'gml:_Geometry'
-                Geometry param2 = geomParser.parseAbstractGeometry( wrapper, null );
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Intersects( param1, param2 );
                 break;
             }
             case CONTAINS: {
-                // second parameter: 'gml:_Geometry'
-                Geometry param2 = geomParser.parseAbstractGeometry( wrapper, null );
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Contains( param1, param2 );
                 break;
             }
             case CROSSES: {
-                // second parameter: 'gml:_Geometry'
-                Geometry param2 = geomParser.parseAbstractGeometry( wrapper, null );
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Crosses( param1, param2 );
                 break;
             }
             case DISJOINT: {
                 // second parameter: 'gml:_Geometry'
-                Geometry param2 = geomParser.parseAbstractGeometry( wrapper, null );
+                Geometry param2 = geomParser.parse( wrapper );
                 spatialOperator = new Disjoint( param1, param2 );
                 break;
             }
             case DWITHIN: {
                 // second parameter: 'gml:_Geometry'
-                xmlStream.require( START_ELEMENT, GML_NS, "Envelope" );
-                Geometry param2 = geomParser.parseAbstractGeometry( wrapper, null );
+                Geometry param2 = geomParser.parse( wrapper );
                 // third parameter: 'ogc:Distance'
                 xmlStream.nextTag();
                 xmlStream.require( START_ELEMENT, OGC_NS, "Distance" );
                 String distanceUnits = getRequiredAttributeValue( xmlStream, "units" );
                 Measure distance = new Measure( distanceUnits, null );
                 spatialOperator = new DWithin( param1, param2, distance );
+                xmlStream.nextTag();
                 break;
             }
             case EQUALS: {
                 // second parameter: 'gml:_Geometry'
-                Geometry param2 = geomParser.parseAbstractGeometry( wrapper, null );
+                Geometry param2 = geomParser.parse( wrapper, null );
                 spatialOperator = new Equals( param1, param2 );
                 break;
             }
             case OVERLAPS: {
-                // second parameter: 'gml:_Geometry'
-                Geometry param2 = geomParser.parseAbstractGeometry( wrapper, null );
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Overlaps( param1, param2 );
                 break;
             }
             case TOUCHES: {
-                // second parameter: 'gml:_Geometry'
-                Geometry param2 = geomParser.parseAbstractGeometry( wrapper, null );
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Touches( param1, param2 );
                 break;
             }
             case WITHIN: {
-                // second parameter: 'gml:_Geometry'
-                Geometry param2 = geomParser.parseAbstractGeometry( wrapper, null );
+                // second parameter: 'gml:_Geometry' or 'gml:Envelope'
+                Geometry param2 = geomParser.parseGeometryOrEnvelope( wrapper );
                 spatialOperator = new Within( param1, param2 );
             }
             }

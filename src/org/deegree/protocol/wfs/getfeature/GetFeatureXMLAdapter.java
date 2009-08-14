@@ -52,6 +52,8 @@ import org.deegree.commons.utils.kvp.InvalidParameterValueException;
 import org.deegree.commons.utils.kvp.MissingParameterException;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
 import org.deegree.filter.Filter;
 import org.deegree.filter.expression.Function;
@@ -268,11 +270,16 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             OMElement filterEl = queryEl.getFirstChildWithName( new QName( OGCNS, "Filter" ) );
             if ( filterEl != null ) {
                 try {
-                    XMLStreamReader xmlStream = filterEl.getXMLStreamReaderWithoutCaching();
+                    // TODO remove usage of wrapper (necessary at the moment to work around problems with AXIOM's
+                    // XMLStreamReader)
+                    XMLStreamReader xmlStream = new XMLStreamReaderWrapper(
+                                                                            filterEl.getXMLStreamReaderWithoutCaching(),
+                                                                            null );
                     // skip START_DOCUMENT
                     xmlStream.nextTag();
                     filter = Filter110XMLDecoder.parse( xmlStream );
                 } catch ( XMLStreamException e ) {
+                    e.printStackTrace();
                     throw new XMLParsingException( this, filterEl, e.getMessage() );
                 }
             }

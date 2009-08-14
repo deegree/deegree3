@@ -168,7 +168,7 @@ public class GMLGeometryEncoderTest {
             URL docURL = GMLGeometryEncoderTest.class.getResource( DIR + source );
             XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( docURL );
             xmlReader.nextTag();
-            Geometry geom = parser.parseAbstractGeometry( xmlReader, null );
+            Geometry geom = parser.parse( xmlReader, null );
 
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             outputFactory.setProperty( "javax.xml.stream.isRepairingNamespaces", new Boolean( true ) );

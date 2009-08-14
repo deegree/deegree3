@@ -140,6 +140,11 @@ import org.slf4j.LoggerFactory;
  * <li><code>MultiGeometry</code></li>
  * </p>
  * <p>
+ * Additionally, the parsing of <code>Envelope</code> elements is supported, @see
+ * {@link #parseEnvelope(XMLStreamReaderWrapper)} and {@link #parseGeometryOrEnvelope(XMLStreamReaderWrapper)
+ * (XMLStreamReaderWrapper)}.
+ * </p>
+ * <p>
  * Currently unsupported are the elements from the <code>_ImplicitGeometry</code> substitution group, i.e.
  * <code>Grid</code> and <code>RectifiedGrid</code>):
  * </p>
@@ -241,8 +246,8 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
      */
     public GML311GeometryDecoder() {
         this( new GeometryFactory(), new GMLIdContext() );
-    }    
-    
+    }
+
     /**
      * @param geomFac
      * @param idContext
@@ -270,6 +275,55 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         return primitiveElements.contains( localName ) || ringElements.contains( localName )
                || aggregateElements.contains( localName ) || complexElements.contains( localName )
                || implictGeometryElements.contains( localName );
+    }
+
+    /**
+     * Returns whether the given element name denotes a GML 3.1.1 geometry (a concrete element substitutable for
+     * "gml:_Geometry") or envelope element.
+     * 
+     * @param elName
+     *            qualified element name to check
+     * @return true, if the element is a GML 3.1.1 geometry or a GML 3.1.1 envelope element, false otherwise
+     */
+    public boolean isGeometryOrEnvelopeElement( QName elName ) {
+        if ( !GMLNS.equals( elName.getNamespaceURI() ) ) {
+            return false;
+        }
+        String localName = elName.getLocalPart();
+        return "Envelope".equals( localName ) || primitiveElements.contains( localName )
+               || ringElements.contains( localName ) || aggregateElements.contains( localName )
+               || complexElements.contains( localName ) || implictGeometryElements.contains( localName );
+    }
+
+    /**
+     * Returns the object representation for the given <code>gml:_Geometry</code> element event that the cursor of the
+     * associated <code>XMLStreamReader</code> points at.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Geometry&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt;)</li>
+     * </ul>
+     * <p>
+     * GML 3.1.1 specifies the following elements to be <b>directly</b> substitutable for <code>gml:_Geometry</code>:
+     * <ul>
+     * <li><code>_GeometricPrimitive</code></li>
+     * <li><code>_Ring</code></li>
+     * <li><code>_GeometricAggregate</code></li>
+     * <li><code>GeometricComplex</code></li>
+     * <li><code>_ImplicitGeometry</code></li>
+     * </ul>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Geometry&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt;) afterwards
+     * @return corresponding {@link Geometry} object
+     * @throws XMLParsingException
+     *             if the element is not a valid "gml:_Geometry" element
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     */
+    public Geometry parse( XMLStreamReaderWrapper xmlStream )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+        return parse( xmlStream, null );
     }
 
     /**
@@ -301,7 +355,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public Geometry parseAbstractGeometry( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Geometry parse( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         Geometry geometry = null;
@@ -314,19 +368,86 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
 
         String name = xmlStream.getLocalName();
         if ( primitiveElements.contains( name ) ) {
-            geometry = parseAbstractGeometricPrimitive( xmlStream, defaultCRS );
+            geometry = parseGeometricPrimitive( xmlStream, defaultCRS );
         } else if ( ringElements.contains( name ) ) {
             geometry = parseAbstractRing( xmlStream, defaultCRS );
         } else if ( aggregateElements.contains( name ) ) {
-            geometry = parseAbstractGeometricAggregate( xmlStream, defaultCRS );
+            geometry = parseGeometricAggregate( xmlStream, defaultCRS );
         } else if ( "GeometricComplex".equals( name ) ) {
             geometry = parseGeometricComplex( xmlStream, defaultCRS );
         } else if ( implictGeometryElements.contains( name ) ) {
-            geometry = parseAbstractImplicitGeometry( xmlStream, defaultCRS );
+            geometry = parseImplicitGeometry( xmlStream, defaultCRS );
         } else {
             String msg = "Invalid GML geometry: '" + xmlStream.getName()
                          + "' does not denote a GML 3.1.1 geometry element.";
             throw new XMLParsingException( xmlStream, msg );
+        }
+        return geometry;
+    }
+
+    /**
+     * Returns the object representation for the given <code>gml:_Geometry/gml:Envelope</code> element event that the
+     * cursor of the associated <code>XMLStreamReader</code> points at.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Geometry&gt; or
+     * &lt;gml:Envelope&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt; or
+     * &lt;gml:Envelope&gt;)</li>
+     * </ul>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Geometry&gt; or
+     *            &lt;gml:Envelope&gt;), points at the corresponding <code>END_ELEMENT</code> event
+     *            (&lt;/gml:_Geometry&gt; or &lt;gml:Envelope&gt;) afterwards
+     * @return corresponding {@link Geometry} object
+     * @throws XMLParsingException
+     *             if the element is not a valid <code>gml:_Geometry</code> or <code>gml:Envelope</code> element
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     */
+    public Geometry parseGeometryOrEnvelope( XMLStreamReaderWrapper xmlStream )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+        return parseGeometryOrEnvelope( xmlStream, null );
+    }
+
+    /**
+     * Returns the object representation for the given <code>gml:_Geometry/gml:Envelope</code> element event that the
+     * cursor of the associated <code>XMLStreamReader</code> points at.
+     * <ul>
+     * <li>Precondition: cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Geometry&gt; or
+     * &lt;gml:Envelope&gt;)</li>
+     * <li>Postcondition: cursor points at the corresponding <code>END_ELEMENT</code> event (&lt;/gml:_Geometry&gt; or
+     * &lt;gml:Envelope&gt;)</li>
+     * </ul>
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:_Geometry&gt; or
+     *            &lt;gml:Envelope&gt;), points at the corresponding <code>END_ELEMENT</code> event
+     *            (&lt;/gml:_Geometry&gt; or &lt;gml:Envelope&gt;) afterwards
+     * @param defaultCRS
+     *            default CRS for the geometry, this is only used if the geometry element has no own
+     *            <code>srsName</code> attribute
+     * @return corresponding {@link Geometry} object
+     * @throws XMLParsingException
+     *             if the element is not a valid <code>gml:_Geometry</code> or <code>gml:Envelope</code> element
+     * @throws XMLStreamException
+     * @throws UnknownCRSException
+     */
+    public Geometry parseGeometryOrEnvelope( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+
+        Geometry geometry = null;
+
+        if ( !GMLNS.equals( xmlStream.getNamespaceURI() ) ) {
+            String msg = "Unexpected element: " + xmlStream.getName()
+                         + "' is not a GML geometry or envelope element. Not in the gml namespace.";
+            throw new XMLParsingException( xmlStream, msg );
+        }
+
+        if ( "Envelope".equals( xmlStream.getName() ) ) {
+            geometry = parseEnvelope( xmlStream, defaultCRS );
+        } else {
+            geometry = parse( xmlStream, defaultCRS );
         }
         return geometry;
     }
@@ -361,7 +482,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public GeometricPrimitive parseAbstractGeometricPrimitive( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public GeometricPrimitive parseGeometricPrimitive( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         GeometricPrimitive primitive = null;
@@ -424,8 +545,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
      * @throws XMLStreamException
      * @throws UnknownCRSException
      */
-    public MultiGeometry<? extends Geometry> parseAbstractGeometricAggregate( XMLStreamReaderWrapper xmlStream,
-                                                                              CRS defaultCRS )
+    public MultiGeometry<? extends Geometry> parseGeometricAggregate( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException, UnknownCRSException {
 
         MultiGeometry<? extends Geometry> geometry = null;
@@ -548,7 +668,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
      *             if the element is not a valid "gml:_ImplicitGeometry" element
      * @throws XMLStreamException
      */
-    public Geometry parseAbstractImplicitGeometry( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
+    public Geometry parseImplicitGeometry( XMLStreamReaderWrapper xmlStream, CRS defaultCRS )
                             throws XMLParsingException, XMLStreamException {
 
         // Geometry geometry = null;
@@ -1962,7 +2082,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
                     xmlStream.require( END_ELEMENT, GMLNS, "geometryMember" );
                 } else if ( localName.equals( "geometryMembers" ) ) {
                     while ( xmlStream.nextTag() == START_ELEMENT ) {
-                        members.add( parseAbstractGeometry( xmlStream, crs ) );
+                        members.add( parse( xmlStream, crs ) );
                     }
                     // geometryMembers may only occur once (and behind all surfaceMember) elements
                     xmlStream.nextTag();
@@ -1979,6 +2099,23 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
         multiGeometry.setAttachedProperties( standardProps );
         idContext.addGeometry( multiGeometry );
         return multiGeometry;
+    }
+
+    /**
+     * Returns the object representation of a <code>gml:Envelope</code> element. Consumes all corresponding events from
+     * the associated <code>XMLStream</code>.
+     * 
+     * @param xmlStream
+     *            cursor must point at the <code>START_ELEMENT</code> event (&lt;gml:Envelope&gt;), points at the
+     *            corresponding <code>END_ELEMENT</code> event (&lt;/gml:Envelope&gt;) afterwards
+     * @return corresponding {@link Envelope} object
+     * @throws XMLStreamException
+     * @throws XMLParsingException
+     * @throws UnknownCRSException
+     */
+    public Envelope parseEnvelope( XMLStreamReaderWrapper xmlStream )
+                            throws XMLParsingException, XMLStreamException, UnknownCRSException {
+        return parseEnvelope( xmlStream, null );
     }
 
     /**
@@ -2399,7 +2536,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
                 throw new XMLParsingException( xmlStream, msg );
             }
         } else if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
-            primitive = parseAbstractGeometricPrimitive( xmlStream, defaultCRS );
+            primitive = parseGeometricPrimitive( xmlStream, defaultCRS );
             xmlStream.nextTag();
         } else {
             String msg = "Error in geometric primitive property element. Expected a 'gml:_GeometricPrimiitve' element or an 'xlink:href' attribute.";
@@ -2447,7 +2584,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
                 throw new XMLParsingException( xmlStream, msg );
             }
         } else if ( xmlStream.nextTag() == XMLStreamConstants.START_ELEMENT ) {
-            geometry = parseAbstractGeometry( xmlStream, defaultCRS );
+            geometry = parse( xmlStream, defaultCRS );
             xmlStream.nextTag();
         } else {
             String msg = "Error in geometry property element. Expected a 'gml:_Geometry' element or an 'xlink:href' attribute.";

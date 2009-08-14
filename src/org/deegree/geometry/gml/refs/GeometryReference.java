@@ -130,7 +130,7 @@ public class GeometryReference<T extends Geometry> implements Geometry {
                 }
                 XMLStreamReaderWrapper xmlReader = new XMLStreamReaderWrapper( resolvedURL );
                 xmlReader.nextTag();
-                referencedGeometry = (T) decoder.parseAbstractGeometry( xmlReader, null );
+                referencedGeometry = (T) decoder.parse( xmlReader, null );
                 LOG.debug( "Read GML geometry: '" + referencedGeometry.getClass() + "'" );
                 xmlReader.close();
             } catch ( Exception e ) {
