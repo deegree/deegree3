@@ -62,6 +62,8 @@ import org.deegree.geometry.standard.primitive.DefaultLineString;
 import org.deegree.geometry.standard.primitive.DefaultLinearRing;
 import org.deegree.geometry.standard.primitive.DefaultPoint;
 import org.deegree.geometry.standard.primitive.DefaultPolygon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vividsolutions.jts.geom.CoordinateSequence;
 
@@ -77,12 +79,14 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: schneider $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
 public abstract class AbstractDefaultGeometry implements Geometry {
 
+    private static final Logger LOG = LoggerFactory.getLogger( AbstractDefaultGeometry.class );    
+    
     /**
      * Used to built JTS geometries.
      */
@@ -174,13 +178,14 @@ public abstract class AbstractDefaultGeometry implements Geometry {
 
     @Override
     public boolean isWithinDistance( Geometry geometry, Measure distance ) {
-        // TODO what about the UOM?
-        throw new UnsupportedOperationException();
+        LOG.warn ("TODO: Respect UOM in evaluation of topological predicate.");
+        JTSGeometryPair jtsGeoms = JTSGeometryPair.createCompatiblePair( this, geometry );
+        return jtsGeoms.first.isWithinDistance( jtsGeoms.second, distance.getValueAsDouble() );
     }
 
     @Override
-    public boolean isBeyond( Geometry geometry, Measure distance ) {
-        throw new UnsupportedOperationException();
+    public boolean isBeyond( Geometry geometry, Measure distance ) {        
+        return !isWithinDistance( geometry, distance );
     }
 
     @Override
