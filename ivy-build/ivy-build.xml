@@ -89,6 +89,7 @@
         <propertyfile file="${classes.dir}/${module.name}_moduleinfo.properties">
             <entry key="build.version" value="${ivy.new.revision}" />
             <entry key="build.date" type="date" value="now" pattern="yyyy/MM/dd HH:mm"/>
+            <entry key="nightly.date" type="date" value="now" pattern="yyyy-MM-dd"/>
             <entry key="build.by" value="${user.name}" />
         </propertyfile>
     	
@@ -241,8 +242,7 @@
     </target>
     
     <target name="publish-nightly" depends="build-jar" if="compile.change" description="-> publish ${module.name}-build in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
-        <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
-        <echo message="project ${module.name}-build released with version ${build.version}" />
+        <ivy:publish conf="${module.name}-release" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
     </target>
 
     <target name="publish" depends="publish-local-all" if="compile.change" description="-> publish ${module.name} in the global ivy repository.">
