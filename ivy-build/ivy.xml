@@ -8,13 +8,11 @@
   <configurations>
     <conf name="${module.name}-build" description="Dependencies needed to build the core jar" />
     <conf name="${module.name}-src" description="The source" visibility="private" />
-    <conf name="${module.name}-release" depends="${module-name}-build" description="Dependencies to build the core jar and release it's sources" />
   </configurations>
 
   <publications defaultconf="${module.name}-build">
     <artifact name="deegree-${module.name}" type="jar" conf="${module.name}-build" ext="jar" />
     <!-- artifact name="deegree-${module.name}-src" type="zip" conf="${module.name}-src" ext="zip" /-->
-    <artifact name="deegree-${module.name}" type="jar" conf="${module.name}-release" ext="jar" />
   </publications>
   <dependencies defaultconfmapping="${module.name}-build->default">
     <dependency org="commons" name="commons-httpclient" rev="3.1" transitive="false" conf="${module.name}-build" />
