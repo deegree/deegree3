@@ -37,10 +37,16 @@
 package org.deegree.protocol.wfs.transaction;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.protocol.wfs.WFSConstants;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -54,15 +60,59 @@ class LazyOperationsIterable implements Iterable<TransactionOperation> {
 
     private Version version;
 
-    private XMLStreamReader xmlReader;
+    private XMLStreamReader xmlStream;
 
-    LazyOperationsIterable( Version version, XMLStreamReader xmlReader ) {
+    private boolean createdIterator;
+
+    /**
+     * Creates a new {@link LazyOperationsIterable} that provides sequential access to the given XML-encoded
+     * {@link TransactionOperation}s.
+     * 
+     * @param version
+     * @param xmlStream
+     */
+    LazyOperationsIterable( Version version, XMLStreamReader xmlStream ) {
+        System.out.println (xmlStream.getEventType() == XMLStreamConstants.START_ELEMENT);
+        System.out.println (xmlStream.getName());
         this.version = version;
-        this.xmlReader = xmlReader;
+        this.xmlStream = xmlStream;
     }
 
     @Override
-    public Iterator<TransactionOperation> iterator() {
-        return null;
+    public synchronized Iterator<TransactionOperation> iterator() {
+        if ( createdIterator ) {
+            throw new RuntimeException( "Iteration over the transaction operations can only be done once." );
+        }
+        createdIterator = true;
+        return new Iterator<TransactionOperation>() {
+
+            @Override
+            public boolean hasNext() {
+                return xmlStream.isStartElement();
+            }
+
+            @Override
+            public TransactionOperation next() {
+                if ( !hasNext() ) {
+                    throw new NoSuchElementException();
+                }
+                TransactionOperation operation = null;
+                if ( version == WFSConstants.VERSION_110 ) {
+                    try {
+                        operation = TransactionXMLAdapter.parseOperation110( xmlStream );
+                    }  catch ( XMLStreamException e ) {
+                       throw new XMLParsingException( xmlStream, "Error parsing transaction operation: " + e.getMessage() );
+                    }
+                } else {
+                    throw new UnsupportedOperationException ("Only WFS 1.1.0 transaction are implemented at the moment.");
+                }
+                return operation;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 }

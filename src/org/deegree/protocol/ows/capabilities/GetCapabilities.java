@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.utils.ArrayUtils;
 
 /**
  * Generic representation of an OWS/OGC GetCapabilities request. Used for <code>GetCapabilities</code> requests to all
@@ -83,15 +84,16 @@ public class GetCapabilities {
      * Constructs a new <code>GetCapabilities</code> request.
      * 
      * @param acceptVersions
-     *            acceptable protocol versions in order of client preference, may be empty or null
+     *            acceptable protocol versions in order of client preference, may be empty or <code>null</code>
      * @param sections
-     *            queried section names, may be empty or null
+     *            queried section names, may be empty or <code>null</code>
      * @param acceptFormats
-     *            acceptable response formats, may be empty or null
+     *            acceptable response formats, may be empty or <code>null</code>
      * @param updateSequence
-     *            TODO (what does it do exactly), may be null
+     *            TODO (what does it do exactly), may be <code>null</code>
      * @param languages
-     *            RFC 4646 language codes for human readable text (e.g. "en-CA,fr-CA"), may be emtpy or null
+     *            RFC 4646 language codes for human readable text (e.g. "en-CA,fr-CA"), may be emtpy or
+     *            <code>null</code>
      */
     public GetCapabilities( Collection<Version> acceptVersions, Collection<String> sections,
                             Collection<String> acceptFormats, String updateSequence, Collection<String> languages ) {
@@ -115,15 +117,16 @@ public class GetCapabilities {
      * (see section D.11 of OGC 06-121r3).
      * 
      * @param version
-     *            old-style version information, may be null
+     *            old-style version information, may be <code>null</code>
      * @param sections
-     *            queried section names, may be empty or null
+     *            queried section names, may be empty or <code>null</code>
      * @param acceptFormats
-     *            acceptable response formats, may be empty or null
+     *            acceptable response formats, may be empty or <code>null</code>
      * @param updateSequence
-     *            TODO (what does it do exactly), may be null
+     *            TODO (what does it do exactly), may be <code>null</code>
      * @param languages
-     *            RFC 4646 language codes for human readable text (e.g. "en-CA,fr-CA"), may be emtpy or null
+     *            RFC 4646 language codes for human readable text (e.g. "en-CA,fr-CA"), may be emtpy or
+     *            <code>null</code>
      */
     public GetCapabilities( Version version, Collection<String> sections, Collection<String> acceptFormats,
                             String updateSequence, Collection<String> languages ) {
@@ -145,7 +148,7 @@ public class GetCapabilities {
      * (see section D.11 of OGC 06-121r3).
      * 
      * @param version
-     *            old-style version information, may be null
+     *            old-style version information, may be <code>null</code>
      */
     public GetCapabilities( Version version ) {
         this.version = version;
@@ -155,8 +158,8 @@ public class GetCapabilities {
      * Returns the old-style version information (used by pre-OWS GetCapabilities requests, see section D.11 of OGC
      * 06-121r3).
      * 
-     * @return old-style version information, may be null (if this is an OWS-style request or an pre-OWS request without
-     *         version specification)
+     * @return old-style version information, may be <code>null</code> (if this is an OWS-style request or an pre-OWS
+     *         request without version specification)
      */
     public Version getVersion() {
         return version;
@@ -165,7 +168,7 @@ public class GetCapabilities {
     /**
      * Returns the acceptable {@link Version}s in order of client preference (most preferred version comes first).
      * 
-     * @return the acceptable <code>Version</code>s, in order of preference, may be empty, but not null
+     * @return the acceptable <code>Version</code>s, in order of preference, may be empty, but not <code>null</code>
      */
     public List<Version> getAcceptVersions() {
         return acceptVersions;
@@ -174,16 +177,26 @@ public class GetCapabilities {
     /**
      * Returns the sections requested by the client.
      * 
-     * @return the requested sections, may be empty, but not null
+     * @return the requested sections, may be empty, but not <code>null</code>
      */
     public Set<String> getSections() {
         return sections;
     }
 
+    /**
+     * Returns the formats accepted by the client.
+     * 
+     * @return the accepted formats, may be empty, but not <code>null</code>
+     */
     public Set<String> getAcceptFormats() {
         return acceptFormats;
     }
 
+    /**
+     * Returns the update sequence value.
+     * 
+     * @return the update sequence value or <code>null</code> if unspecified
+     */
     public String getUpdateSequence() {
         return updateSequence;
     }
@@ -191,9 +204,21 @@ public class GetCapabilities {
     /**
      * Returns the languages for human readable text requested by the client.
      * 
-     * @return list of RFC 4646 language codes, may be empty, but not null
+     * @return list of RFC 4646 language codes, may be empty, but not <code>null</code>
      */
     public List<String> getLanguages() {
         return languages;
+    }
+
+    @Override
+    public String toString() {
+        String s = "{version=" + getVersion() + ",";
+        s += "acceptVersions={" + ArrayUtils.join( ",", acceptVersions ) + "},";
+        s += "sections={" + ArrayUtils.join( ",", sections ) + "},";
+        s += "acceptFormats={" + ArrayUtils.join( ",", acceptFormats ) + "},";
+        s += "updateSequence=" + updateSequence + "},";
+        s += "languages={" + ArrayUtils.join( ",", languages ) + "}";
+        s += "}";
+        return s;
     }
 }

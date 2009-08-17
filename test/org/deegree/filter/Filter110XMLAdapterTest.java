@@ -37,9 +37,12 @@ package org.deegree.filter;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.Location;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -67,7 +70,7 @@ public class Filter110XMLAdapterTest {
 
     @Test
     public void parseIdFilter()
-                            throws XMLStreamException, FactoryConfigurationError {
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter filter = parse( "testfilter_110_id.xml" );
         assertNotNull( filter );
         Assert.assertEquals( Filter.Type.ID_FILTER, filter.getType() );
@@ -81,7 +84,7 @@ public class Filter110XMLAdapterTest {
 
     @Test
     public void parseMixedIdFilter()
-                            throws XMLStreamException, FactoryConfigurationError {
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter filter = parse( "testfilter_110_id_mixed.xml" );
         assertNotNull( filter );
         Assert.assertEquals( Filter.Type.ID_FILTER, filter.getType() );
@@ -95,7 +98,7 @@ public class Filter110XMLAdapterTest {
 
     @Test
     public void parseOperatorFilter()
-                            throws XMLStreamException, FactoryConfigurationError {
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
         Filter filter = parse( "testfilter_110_operator.xml" );
         Assert.assertNotNull( filter );
         Assert.assertEquals( Filter.Type.OPERATOR_FILTER, filter.getType() );
@@ -114,18 +117,18 @@ public class Filter110XMLAdapterTest {
     }
 
     @Test(expected = XMLParsingException.class)
-    public void parseBrokenIdFilterDocument() throws XMLStreamException, FactoryConfigurationError {
+    public void parseBrokenIdFilterDocument() throws XMLStreamException, FactoryConfigurationError, IOException {
         parse( "testfilter_110_id.invalid_xml" );
     }
 
     @Test(expected = XMLParsingException.class)
-    public void parseBrokenIdFilterDocument2() throws XMLStreamException, FactoryConfigurationError {
+    public void parseBrokenIdFilterDocument2() throws XMLStreamException, FactoryConfigurationError, IOException {
         parse( "testfilter_110_id2.invalid_xml" );
     }
 
     @Test
     public void parseAndExportFilterDocument()
-                            throws XMLStreamException {
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
 
         Filter filter = parse( "testfilter_110_operator.xml" );
 
@@ -137,10 +140,14 @@ public class Filter110XMLAdapterTest {
     }
 
     private Filter parse( String resourceName )
-                            throws XMLStreamException, FactoryConfigurationError {
-        InputStream is = Filter110XMLAdapterTest.class.getResourceAsStream( resourceName );
-        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( is );
+                            throws XMLStreamException, FactoryConfigurationError, IOException {
+        URL url = Filter110XMLAdapterTest.class.getResource( resourceName );
+        XMLStreamReader xmlStream = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(), url.openStream() );        
         xmlStream.nextTag();
+        Location loc = xmlStream.getLocation();
+        System.out.println (loc.getLineNumber());
+        System.out.println (loc.getSystemId());
+        System.out.println (loc.getColumnNumber());
         return Filter110XMLDecoder.parse( xmlStream );
     }
 }

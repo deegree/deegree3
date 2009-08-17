@@ -59,7 +59,6 @@ import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLParsingException;
-import org.deegree.filter.Expression;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -71,10 +70,16 @@ import org.deegree.filter.Expression;
  */
 public class StAXParsingHelper {
 
-    public static void skipStartDocument( XMLStreamReader xmlStream ) throws XMLStreamException {
+    public static void skipStartDocument( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
         if ( xmlStream.getEventType() == START_DOCUMENT ) {
             xmlStream.nextTag();
         }
+    }
+
+    public static String getAttributeValue( XMLStreamReader xmlStream, String localName )
+                            throws XMLParsingException {
+        return xmlStream.getAttributeValue( null, localName );
     }
 
     public static String getRequiredAttributeValue( XMLStreamReader xmlStream, String localName )
