@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.geometry.linearization;
 
@@ -55,6 +55,7 @@ import org.deegree.geometry.primitive.segments.CubicSpline;
 import org.deegree.geometry.primitive.segments.CurveSegment;
 import org.deegree.geometry.primitive.segments.LineStringSegment;
 import org.deegree.geometry.standard.points.PointsList;
+import org.deegree.geometry.standard.primitive.DefaultPoint;
 
 /**
  * Provides methods for the linearization of {@link Curve}s and {@link CurveSegment}s.
@@ -65,13 +66,15 @@ import org.deegree.geometry.standard.points.PointsList;
  * <li>{@link Arc}</li>
  * <li>{@link Circle}</li>
  * </ul>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: elmasri$
- *
+ * 
  * @version $Revision: $, $Date: 9 May 2008 13:09:29$
  */
 public class CurveLinearizer {
+
+    private static final double EPSILON = 1E-12;
 
     private GeometryFactory geomFac;
 
@@ -89,7 +92,7 @@ public class CurveLinearizer {
      * <p>
      * NOTE: This method respects the semantic difference between {@link Curve} and {@link Ring} geometries: if the
      * input is a {@link Ring}, a ring geometry will be returned.
-     *
+     * 
      * @param curve
      * @param crit
      * @return linearized version of the input curve
@@ -127,7 +130,7 @@ public class CurveLinearizer {
 
     /**
      * Returns a linearized version (i.e. a {@link LineStringSegment}) of the given {@link CurveSegment}.
-     *
+     * 
      * @param segment
      *            the segment to be linearized
      * @param crit
@@ -177,7 +180,7 @@ public class CurveLinearizer {
      * <li>Generic {@link Arc}: returns the linear segment <code>(p0, p2)</code></li>
      * <li>{@link Circle}: returns the linear segment <code>(p0, p1, p0)</code></li>
      * </ul>
-     *
+     * 
      * @param arc
      *            curve segment to be linearized
      * @param crit
@@ -193,12 +196,13 @@ public class CurveLinearizer {
 
         LineStringSegment lineSegment = null;
 
-        if ( arePointsCollinear( arc.getPoint1(), arc.getPoint2(), arc.getPoint3() ) ) {
+        if ( areCollinear( arc.getPoint1(), arc.getPoint2(), arc.getPoint3() ) ) {
             Points points = null;
             if ( arc instanceof Circle ) {
-                points = new PointsList(Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint2(), arc.getPoint1() } ));
+                points = new PointsList(
+                                         Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint2(), arc.getPoint1() } ) );
             } else {
-                points = new PointsList(Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint3() } ));
+                points = new PointsList( Arrays.asList( new Point[] { arc.getPoint1(), arc.getPoint3() } ) );
             }
             lineSegment = geomFac.createLineStringSegment( points );
         } else {
@@ -212,7 +216,7 @@ public class CurveLinearizer {
 
     /**
      * Returns a linearized version (i.e. a {@link LineStringSegment}) of the given {@link CubicSpline}.
-     *
+     * 
      * @param spline
      *            curve segment to be linearized
      * @param crit
@@ -220,12 +224,12 @@ public class CurveLinearizer {
      * @return linearized version of the input segment
      */
     public LineStringSegment linearizeCubicSpline( CubicSpline spline, LinearizationCriterion crit ) {
-    
+
         if ( !( crit instanceof NumPointsCriterion ) ) {
             String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
             throw new IllegalArgumentException( msg );
         }
-        throw new UnsupportedOperationException("Not implemented yet.");
+        throw new UnsupportedOperationException( "Not implemented yet." );
     }
 
     private double createAngleStep( double startAngle, double endAngle, int numPoints, boolean isClockwise ) {
@@ -263,24 +267,39 @@ public class CurveLinearizer {
     }
 
     private Points interpolate( Point p0, Point p1, Point p2, int numPoints, boolean isCircle ) {
+
+        // shift the points down (to reduce the occurrence of floating point errors), independently on the x and y axes
+        double minOrd0 = CurveLinearizer.findShiftOrd0( p0, p1, p2 );
+        double minOrd1 = CurveLinearizer.findShiftOrd1( p0, p1, p2 );
+
+        // if the points are already shifted, this does no harm!
+        Point p0Shifted = new DefaultPoint( null, p0.getCoordinateSystem(), p0.getPrecision(),
+                                            new double[] { p0.get0() - minOrd0, p0.get1() - minOrd1 } );
+        Point p1Shifted = new DefaultPoint( null, p1.getCoordinateSystem(), p1.getPrecision(),
+                                            new double[] { p1.get0() - minOrd0, p1.get1() - minOrd1 } );
+        Point p2Shifted = new DefaultPoint( null, p2.getCoordinateSystem(), p2.getPrecision(),
+                                            new double[] { p2.get0() - minOrd0, p2.get1() - minOrd1 } );
+
         List<Point> interpolationPoints = new ArrayList<Point>( numPoints );
-        Point center = calcCircleCenter( p0, p1, p2 );
+        Point center = calcCircleCenter( p0Shifted, p1Shifted, p2Shifted );
 
         double centerX = center.get0();
         double centerY = center.get1();
-        double dx = p0.get0() - centerX;
-        double dy = p0.get1() - centerY;
-        double ex = p2.get0() - centerX;
-        double ey = p2.get1() - centerY;
+
+        double dx = p0Shifted.get0() - centerX;
+        double dy = p0Shifted.get1() - centerY;
+        double ex = p2Shifted.get0() - centerX;
+        double ey = p2Shifted.get1() - centerY;
 
         double startAngle = Math.atan2( dy, dx );
         double endAngle = isCircle ? startAngle : Math.atan2( ey, ex );
         double radius = Math.sqrt( dx * dx + dy * dy );
 
-        double angleStep = createAngleStep( startAngle, endAngle, numPoints, isClockwise( p0, p1, p2 ) );
-        CRS crs = p0.getCoordinateSystem();
+        double angleStep = createAngleStep( startAngle, endAngle, numPoints, isClockwise( p0Shifted, p1Shifted,
+                                                                                          p2Shifted ) );
+        CRS crs = p0Shifted.getCoordinateSystem();
         // ensure numerical stability for start point (= use original circle start point)
-        interpolationPoints.add( p0 );
+        interpolationPoints.add( p0Shifted );
 
         // calculate intermediate (=interpolated) points on arc
         for ( int i = 1; i < numPoints - 1; i++ ) {
@@ -290,15 +309,24 @@ public class CurveLinearizer {
             interpolationPoints.add( geomFac.createPoint( null, new double[] { x, y }, crs ) );
         }
         // ensure numerical stability for end point (= use original circle start point)
-        interpolationPoints.add( isCircle ? p0 : p2 );
-        return new PointsList(interpolationPoints);
+        interpolationPoints.add( isCircle ? p0Shifted : p2Shifted );
+
+        // shift the points back up
+        List<Point> realPoints = new ArrayList<Point>( interpolationPoints.size() );
+        for ( Point p : interpolationPoints ) {
+            realPoints.add( new DefaultPoint( null, p.getCoordinateSystem(), p.getPrecision(),
+                                              new double[] { p.get0() + minOrd0, p.get1() + minOrd1 } ) );
+        }
+
+        return new PointsList( realPoints );
     }
 
     /**
      * Finds the center of a circle/arc that is specified by three points that lie on the circle's boundary.
      * <p>
-     * Credits go to <a href="http://en.wikipedia.org/wiki/Circumradius#Coordinates_of_circumcenter">wikipedia</a>.
-     *
+     * Credits go to <a href="http://en.wikipedia.org/wiki/Circumradius#Coordinates_of_circumcenter">wikipedia</a>
+     * (visited on 13/08/09).
+     * 
      * @param p0
      *            first point
      * @param p1
@@ -312,9 +340,25 @@ public class CurveLinearizer {
     Point calcCircleCenter( Point p0, Point p1, Point p2 )
                             throws IllegalArgumentException {
 
-        Vector3d a = new Vector3d( p0.get0(), p0.get1(), p0.get2() );
-        Vector3d b = new Vector3d( p1.get0(), p1.get1(), p1.get2() );
-        Vector3d c = new Vector3d( p2.get0(), p2.get1(), p2.get2() );
+        // shift the points down (to reduce the occurrence of floating point errors), independently on the x and y axes
+        double minOrd0 = CurveLinearizer.findShiftOrd0( p0, p1, p2 );
+        double minOrd1 = CurveLinearizer.findShiftOrd1( p0, p1, p2 );
+
+        // if the points are already shifted, this does no harm!
+        Point p0Shifted = new DefaultPoint( null, p0.getCoordinateSystem(), p0.getPrecision(),
+                                            new double[] { p0.get0() - minOrd0, p0.get1() - minOrd1 } );
+        Point p1Shifted = new DefaultPoint( null, p1.getCoordinateSystem(), p1.getPrecision(),
+                                            new double[] { p1.get0() - minOrd0, p1.get1() - minOrd1 } );
+        Point p2Shifted = new DefaultPoint( null, p2.getCoordinateSystem(), p2.getPrecision(),
+                                            new double[] { p2.get0() - minOrd0, p2.get1() - minOrd1 } );
+
+        if ( areCollinear( p0Shifted, p1Shifted, p2Shifted ) ) {
+            throw new IllegalArgumentException( "The given points are collinear, no circum center can be calculated." );
+        }
+
+        Vector3d a = new Vector3d( p0Shifted.get0(), p0Shifted.get1(), p0Shifted.get2() );
+        Vector3d b = new Vector3d( p1Shifted.get0(), p1Shifted.get1(), p1Shifted.get2() );
+        Vector3d c = new Vector3d( p2Shifted.get0(), p2Shifted.get1(), p2Shifted.get2() );
 
         if ( Double.isNaN( a.z ) ) {
             a.z = 0.0;
@@ -345,10 +389,6 @@ public class CurveLinearizer {
         cros.cross( ab, bc );
         double crosSquare = 2 * cros.length() * cros.length();
 
-        if ( Math.abs( crosSquare ) < 1E-11 ) {
-            throw new IllegalArgumentException( "The given points are collinear, no circum center can be calculated." );
-        }
-
         a.scale( ( ( bc.length() * bc.length() ) * ab.dot( ac ) ) / crosSquare );
         b.scale( ( ( ac.length() * ac.length() ) * ba.dot( bc ) ) / crosSquare );
         c.scale( ( ( ab.length() * ab.length() ) * ca.dot( cb ) ) / crosSquare );
@@ -356,13 +396,75 @@ public class CurveLinearizer {
         Point3d circle = new Point3d( a );
         circle.add( b );
         circle.add( c );
-        return geomFac.createPoint( null, new double[] { circle.getX(), circle.getY() }, p0.getCoordinateSystem() );
+
+        // shift the center circle back up
+        circle.x += minOrd0;
+        circle.y += minOrd1;
+
+        return geomFac.createPoint( null, new double[] { circle.getX(), circle.getY() },
+                                    p0Shifted.getCoordinateSystem() );
+    }
+
+    /**
+     * Find the midpoint between the highest and the lowest ordonate 1 axis among the 3 points
+     * 
+     * @param p0
+     * @param p1
+     * @param p2
+     * @return
+     */
+    private static double findShiftOrd1( Point p0, Point p1, Point p2 ) {
+        double minOrd1 = p0.get1();
+        if ( p1.get1() < minOrd1 ) {
+            minOrd1 = p1.get1();
+        }
+        if ( p2.get1() < minOrd1 ) {
+            minOrd1 = p2.get1();
+        }
+
+        double maxOrd1 = p0.get1();
+        if ( p1.get1() > maxOrd1 ) {
+            maxOrd1 = p1.get1();
+        }
+        if ( p2.get1() > maxOrd1 ) {
+            maxOrd1 = p2.get1();
+        }
+
+        return ( maxOrd1 + minOrd1 ) / 2;
+    }
+
+    /**
+     * Find the midpoint between the highest and the lowest ordonate 0 axis among the 3 points
+     * 
+     * @param p0
+     * @param p1
+     * @param p2
+     * @return
+     */
+    private static double findShiftOrd0( Point p0, Point p1, Point p2 ) {
+        double minOrd0 = p0.get0();
+        if ( p1.get0() < minOrd0 ) {
+            minOrd0 = p1.get0();
+        }
+        if ( p2.get0() < minOrd0 ) {
+            minOrd0 = p2.get0();
+        }
+
+        double maxOrd0 = p0.get0();
+        if ( p1.get0() > minOrd0 ) {
+            maxOrd0 = p1.get0();
+        }
+        if ( p2.get0() > minOrd0 ) {
+            maxOrd0 = p2.get0();
+        }
+
+        return ( maxOrd0 + minOrd0 ) / 2;
     }
 
     /**
      * Returns whether the order of the given three points is clockwise or counterclockwise. Uses the (signed) area of a
      * planar triangle to get to know about the order of the points.
-     *
+     * 
      * @param p0
      *            first point
      * @param p1
@@ -375,29 +477,29 @@ public class CurveLinearizer {
      */
     boolean isClockwise( Point p0, Point p1, Point p2 )
                             throws IllegalArgumentException {
-
-        double res = ( p2.get0() - p0.get0() ) * ( ( p2.get1() + p0.get1() ) / 2 ) + ( p1.get0() - p2.get0() )
-                     * ( ( p1.get1() + p2.get1() ) / 2 ) + ( p0.get0() - p1.get0() ) * ( ( p0.get1() + p1.get1() ) / 2 );
-        if ( Math.abs( res ) < 1E-12 ) {
+        if ( areCollinear( p0, p1, p2 ) ) {
             throw new IllegalArgumentException( "Cannot evaluate isClockwise(). The three points are collinear." );
         }
+        double res = ( p2.get0() - p0.get0() ) * ( ( p2.get1() + p0.get1() ) / 2 ) + ( p1.get0() - p2.get0() )
+                     * ( ( p1.get1() + p2.get1() ) / 2 ) + ( p0.get0() - p1.get0() ) * ( ( p0.get1() + p1.get1() ) / 2 );
+
         return res < 0.0 ? true : false;
     }
 
     /**
      * Tests if the given three points are collinear.
-     *
+     * <p>
+     * NOTE: Only this method should be used throughout the whole linearization process for testing collinearity to
+     * avoid inconsistent results (the necessary EPSILON would differ).
+     * 
      * @param p0
-     *            first point
      * @param p1
-     *            second point
      * @param p2
-     *            third point
-     * @return true, if points are collinear, false otherwise
+     * @return true if the points are collinear, false otherwise
      */
-    boolean arePointsCollinear( Point p0, Point p1, Point p2 ) {
+    public static boolean areCollinear( Point p0, Point p1, Point p2 ) {
         double res = ( p2.get0() - p0.get0() ) * ( ( p2.get1() + p0.get1() ) / 2 ) + ( p1.get0() - p2.get0() )
                      * ( ( p1.get1() + p2.get1() ) / 2 ) + ( p0.get0() - p1.get0() ) * ( ( p0.get1() + p1.get1() ) / 2 );
-        return Math.abs( res ) < 1E-12;
-    }    
+        return Math.abs( res ) < EPSILON;
+    }
 }
