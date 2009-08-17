@@ -3,7 +3,7 @@
 <ivysettings>
   <settings defaultResolver="deegree-resolver" />
   <resolvers>
-    <ssh name="nightly-publisher" user="${nightly.user}" host="${nightly.deploy.host}">
+    <ssh name="nightly-publisher" user="${nightly.user}" host="${nightly.deploy.host}" userPassword="${nightly.password}">
       <artifact pattern="${nightly.publish.path}/[organisation]/[module]/[artifact]-nightly-${nightly.date}.[ext]" />
     </ssh>
     <chain name="deegree-resolver" returnFirst="true">
