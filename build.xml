@@ -141,7 +141,7 @@
 
 
 
-    <target name="hudson-build" depends="publish-nightly,javadoc">
+    <target name="hudson-build" depends="publish-nightly">
         <echo message="A nightly build has been created"/>
     </target>
 

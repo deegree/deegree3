@@ -3,6 +3,9 @@
 <ivysettings>
   <settings defaultResolver="deegree-resolver" />
   <resolvers>
+    <ssh name="nightly-publisher" user="${nightly.user}" host="${nightly.deploy.host}">
+      <artifact pattern="${nightly.publish.path}/[organisation]/[module]/[artifact]-nightly-${nightly.date}.[ext]" />
+    </ssh>
     <chain name="deegree-resolver" returnFirst="true">
       <filesystem name="scm-libs" local="true">
         <artifact pattern="${basedir}/lib/[organisation]/[artifact](-[revision]).[ext]" />
@@ -14,9 +17,7 @@
       <!-- Should we include the maven repositories? -->
       <!-- ibiblio name="ibiblio" m2compatible="true" root="http://mirrors.ibiblio.org/pub/mirrors/maven2/" /-->
     </chain>
-    <ssh name="nightly-publisher" user="${nightly.user}" host="${nightly.deploy.host}">
-      <artifact pattern="${nightly.publish.path}/[organisation]/[module]/[artifact]-nightly-${nightly-date}.[ext]" />
-    </ssh>
+
 
   </resolvers>
   <caches useOrigin="true" />

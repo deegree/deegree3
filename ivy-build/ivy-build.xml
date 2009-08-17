@@ -20,6 +20,7 @@
         <mkdir dir="${classes.dir}" />
         <mkdir dir="${lib.dir}" />
         <mkdir dir="${repository.dir}" />
+        <available property="has.api-src" file="${src-api.dir}/org/deegree/" />
     </target>
 
     <target name="download-ivy" depends="init" unless="download.ivy">
@@ -33,6 +34,9 @@
     </target>
 
     <target name="load-ivy" depends="download-ivy" unless="ivy.new.revision">
+        <tstamp>
+            <format property="nightly.date" pattern="yyyy-MM-dd" />
+        </tstamp>
         <path id="ivy.lib.path">
             <fileset dir="${ivy.jar.dir}" includes="*.jar" />
         </path>
@@ -88,11 +92,10 @@
         <!-- create moduleinfo file (version) in classpath for later inclusion in jar -->
         <propertyfile file="${classes.dir}/${module.name}_moduleinfo.properties">
             <entry key="build.version" value="${ivy.new.revision}" />
-            <entry key="build.date" type="date" value="now" pattern="yyyy/MM/dd HH:mm"/>
-            <entry key="nightly.date" type="date" value="now" pattern="yyyy-MM-dd"/>
+            <entry key="build.date" type="date" value="now" pattern="yyyy/MM/dd HH:mm" />
             <entry key="build.by" value="${user.name}" />
         </propertyfile>
-    	
+
         <!-- load generated moduleinfo file -->
         <property file="${classes.dir}/${module.name}_moduleinfo.properties" />
         <echo message="Building version: ${build.version}" />
@@ -113,7 +116,7 @@
              -->
         <dependset>
             <srcfileset dir="${lib.dir}" includes="*jar" />
-            <targetfileset dir="${classes.dir}" includes="**/*.class" excludes="**/package-info.class"/>
+            <targetfileset dir="${classes.dir}" includes="**/*.class" excludes="**/package-info.class" />
         </dependset>
         <!-- for the record: the snipped RIGHT ABOVE does the deleting. What a
         wonder why I did not notice it, with that name... -->
@@ -129,7 +132,7 @@
         <!--updateProperty needs ant 1.7.1 -->
         <javac updatedProperty="compile.change" destdir="${classes.dir}" classpathref="build.path" fork="true" memorymaximumsize="512M" encoding="utf-8" debug="${debug.enabled}" source="${source.version}" target="${target.version}">
             <src path="${src.dir}" />
-            <src path="${src-api.dir}"/>
+            <src path="${src-api.dir}" />
         </javac>
 
         <!-- Needed for the copying of the resources in the sources dir,
@@ -143,10 +146,10 @@
         <fileset dir="${src.dir}" id="sources.resources">
             <exclude name="**/package.html" />
             <exclude name="**/*.java" />
-						<exclude name="META-INF/deegreeCRS/log/*" />
-						<exclude name="META-INF/deegreeCRS/tmp" />
-						<exclude name="META-INF/deegreeCRS/db.lck" />
-						<exclude name="META-INF/deegreeCRS/dbex.lck" />																								
+            <exclude name="META-INF/deegreeCRS/log/*" />
+            <exclude name="META-INF/deegreeCRS/tmp" />
+            <exclude name="META-INF/deegreeCRS/db.lck" />
+            <exclude name="META-INF/deegreeCRS/dbex.lck" />
         </fileset>
         <dependset>
             <srcfileset refid="sources.resources" />
@@ -166,15 +169,15 @@
           target: impl-jar              
          ================================= -->
     <target name="build-jar" depends="compile" if="compile.change" description="-> create a jar file in ${classed.dir}/${jar.file}.jar">
-    	<pathconvert property="lib-path" pathsep=" " refid="build.path">
-	        <map from="${build.dir}/" to=""/>
+        <pathconvert property="lib-path" pathsep=" " refid="build.path">
+            <map from="${build.dir}/" to="" />
         </pathconvert>
         <jar destfile="${jar.file}.jar">
             <fileset dir="${classes.dir}" />
             <manifest>
                 <attribute name="Built-By" value="${build.by}" />
                 <attribute name="Build-Version" value="${build.version}" />
-            	<attribute name="Class-Path" value="${lib-path}" />
+                <attribute name="Class-Path" value="${lib-path}" />
             </manifest>
         </jar>
     </target>
@@ -182,12 +185,23 @@
     <!-- ================================= 
           target: zip-sources packs all java sources in a zip file.              
          ================================= -->
-    <target name="zip-sources" depends="load-ivy" description="-> zip all *java files in the ${src.dir}">
-        <zip destfile="${build.dir}/${module.name}-src.zip">
-            <fileset dir="${src.dir}">
-                <include name="**java" />
-            </fileset>
-        </zip>
+
+    <target name="tar-sources-api" if="has.api-src">
+        <tar destfile="${build.dir}/deegree-${module.name}-src.tar.bz2" compression="bzip2">
+            <tarfileset dir="${src-api.dir}" prefix="src-api">
+                <include name="**/*.java" />
+                <include name="**/*.properties" />
+            </tarfileset>
+        </tar>
+
+    </target>
+    <target name="tar-sources" depends="load-ivy, tar-sources-api" description="-> zip all *java files in the ${src.dir}">
+        <tar destfile="${build.dir}/deegree-${module.name}-src.tar.bz2" compression="bzip2">
+            <tarfileset dir="${src.dir}">
+                <include name="**/*.java" />
+                <include name="**/*.properties" />
+            </tarfileset>
+        </tar>
     </target>
 
     <!-- ====================================
@@ -201,8 +215,24 @@
     <!-- creates API JavaDoc                                                  -->
     <!-- =================================================================== -->
 
-    <target name="javadoc" depends="compile" description="-> creates API JavaDoc">
-        <javadoc source="${source.version}" sourcepath="${src.dir}" packagenames="org.deegree.*" overview="${src.dir}/overview.html" destdir="${javadoc.dir}" author="true" version="true" verbose="${debug}" use="true" package="true" linksource="true" windowtitle="${doc.window}" maxmemory="512m" encoding="utf-8">
+    <target name="javadoc-src-api" if="has.api-src">
+        <javadoc source="${source.version}" sourcepath="${src-api.dir}" packagenames="*" destdir="${javadoc.dir}" author="true" version="true" verbose="${debug}" use="true" package="true" windowtitle="${doc.window}" maxmemory="512m" encoding="utf-8" failonerror="0">
+            <doctitle>${doc.title}</doctitle>
+            <header>${doc.header}</header>
+            <footer>${doc.footer}</footer>
+            <bottom>${doc.bottom}</bottom>
+
+            <link href="${doc.sun.link}" />
+
+            <classpath>
+                <path refid="build.path" />
+            </classpath>
+        </javadoc>
+
+    </target>
+
+    <target name="javadoc" depends="compile,javadoc-src-api" description="-> creates API JavaDoc">
+        <javadoc source="${source.version}" sourcepath="${src.dir}" packagenames="org.deegree.*" overview="${src.dir}/overview.html" destdir="${javadoc.dir}" author="true" version="true" verbose="${debug}" use="true" package="true" windowtitle="${doc.window}" maxmemory="512m" encoding="utf-8">
             <doctitle>${doc.title}</doctitle>
             <header>${doc.header}</header>
             <footer>${doc.footer}</footer>
@@ -216,33 +246,34 @@
         </javadoc>
     </target>
 
+    <target name="tar-javadoc" depends="javadoc" description="-> create a tar.bz2 from JavaDoc">
+        <tar destfile="${build.dir}/deegree-${module.name}-javadoc.tar.bz2" compression="bzip2" longfile="gnu">
+            <tarfileset dir="${javadoc.dir}">
+                <include name="**" />
+            </tarfileset>
+        </tar>
+    </target>
+
+
 
     <!-- =================================
           publish targets, publishing means: make the current 'revision' available for all other modules by putting them in a (local) repository.
          ================================= -->
 
-    <target name="publish-local-src" depends="zip-sources" description="-> publish ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
-        <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" conf="${module-name}-src" status="integration" forcedeliver="true" overwrite="true" />
-        <echo message="project ${module.name} released with version ${build.version}" />
-    </target>
-
     <target name="publish-local-build" depends="build-jar" if="compile.change" description="-> publish ${module.name}-build in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
         <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
         <echo message="project ${module.name}-build released with version ${build.version}" />
     </target>
-    
+
     <target name="publish-local-all" depends="build-jar" if="compile.change" description="-> publish all configurations of ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
         <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
         <echo message="project ${module.name}-build released with version ${build.version}" />
     </target>
-    
-    <target name="publish-local-release" depends="publish-local-src, publish-local-build" if="compile.change" description="-> publish ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
-        <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" conf="${module-name}-release" status="integration" forcedeliver="true" overwrite="true" />
-        <echo message="project ${module.name} released with version ${build.version}" />
-    </target>
-    
-    <target name="publish-nightly" depends="build-jar" if="compile.change" description="-> publish ${module.name}-build in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
-        <ivy:publish conf="${module.name}-release" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+
+    <target name="publish-nightly" depends="build-jar,tar-javadoc,tar-sources" if="compile.change" description="-> publish ${module.name}-build in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
+        <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <ivy:publish conf="${module.name}-javadoc" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <ivy:publish conf="${module.name}-src" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
     </target>
 
     <target name="publish" depends="publish-local-all" if="compile.change" description="-> publish ${module.name} in the global ivy repository.">
