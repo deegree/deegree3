@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,15 +32,39 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.capabilities;
 
 import org.deegree.commons.types.ows.Version;
 import org.deegree.protocol.ows.capabilities.GetCapabilities;
 import org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParser;
+import org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureType;
 
+/**
+ * Adapter between XML encoded <code>GetCapabilities</code> requests (WFS) and {@link GetCapabilities} objects.
+ * <p>
+ * TODO code for exporting
+ * 
+ * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
+ * @author last edited by: $Author: schneider $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class GetCapabilitiesXMLAdapter extends GetCapabilitiesXMLParser {
-
+  
+    /**
+     * Parses a WFS <code>GetCapabilities</code> document into a {@link GetCapabilities} request.
+     * <p>
+     * Supported versions:
+     * <ul>
+     * <li>WFS 1.0.0</li>
+     * <li>WFS 1.1.0</li>
+     * </ul>
+     *
+     * @param version 
+     * 
+     * @return parsed {@link DescribeFeatureType} request
+     */
     public GetCapabilities parse( Version version ) {
         GetCapabilities request = null;
         if ( version != null ) {
