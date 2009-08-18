@@ -204,6 +204,10 @@ public class Update extends TransactionOperation {
             xmlStream.require( START_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
             filter = Filter110XMLDecoder.parse( xmlStream );
             xmlStream.require( END_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
+            // contract: skip to wfs:Update END_ELEMENT
+            xmlStream.nextTag();
+            // contract: skip to next operation START_ELEMENT
+            xmlStream.nextTag();            
         }
         return filter;
     }

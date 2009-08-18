@@ -152,12 +152,15 @@ public class TransactionXMLAdapter {
         String localName = xmlStream.getLocalName();
         if ( "Delete".equals( localName ) ) {
             operation = parseDelete110( xmlStream );
+            xmlStream.nextTag();
+            xmlStream.require( END_ELEMENT, WFS_NS, "Delete" );
+            xmlStream.nextTag();
         } else if ( "Insert".equals( localName ) ) {
             operation = parseInsert110( xmlStream );
         } else if ( "Native".equals( localName ) ) {
             operation = parseNative110( xmlStream );
         } else if ( "Update".equals( localName ) ) {
-            operation = parseUpdate110( xmlStream );
+            operation = parseUpdate110( xmlStream );       
         }
         return operation;
     }
