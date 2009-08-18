@@ -24,7 +24,6 @@
     </target>
 
     <target name="download-ivy" depends="init" unless="download.ivy" >
-        <echo>hiers</echo>
         <!-- try to load ivy here from home ivy dir, in case the user has not already dropped
                   it into ant's lib dir (note that the latter copy will always take precedence).
                   We will not fail as long as ivy home lib dir exists (it may be empty) and
@@ -265,8 +264,6 @@
          ================================= -->
 
     <target name="publish-local"  description="-> publish all configurations of ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
-        <!-- define the resolver for a local build -->
-        <property name="default.resolver" value="deegree-resolver"/>
         <!-- fake a key file, else the ivysettings will not be valid -->
         <property name="nightly.keyfile" value="${ivy.jar.file}"/>
         <ant target="local-publish"/>
@@ -279,14 +276,13 @@
 
     <target name="publish-nightly" description="-> publish ${module.name}-build in the nightly ivy  repository">
         <!-- define the resolver for a local build -->
-        <property name="default.resolver" value="nightly-publisher"/>
         <ant target="nightly-publish"/>
     </target>
 
     <target name="nightly-publish" depends="build-jar,tar-javadoc,tar-sources" if="compile.change">
-        <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="${default.resolver}" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
-        <ivy:publish conf="${module.name}-javadoc" artifactspattern="${build.dir}/[artifact].[ext]" resolver="${default.resolver}"  pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
-        <ivy:publish conf="${module.name}-src" artifactspattern="${build.dir}/[artifact].[ext]" resolver="${default.resolver}"  pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <ivy:publish conf="${module.name}-javadoc" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher"  pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <ivy:publish conf="${module.name}-src" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher"  pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
     </target>
 
 
