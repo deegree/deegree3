@@ -273,7 +273,7 @@
     </target>
 
     <target name="local-publish" depends="build-jar" if="compile.change" >
-        <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
         <echo message="project ${module.name}-build released with version ${build.version}" />
     </target>
 
