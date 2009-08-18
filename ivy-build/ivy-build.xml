@@ -14,7 +14,13 @@
     <!--Check if the ivy jar is present, if so please don't try to download it all the time"-->
     <available file="${ivy.jar.file}" property="download.ivy" />
 
-    <target name="init">
+    <target name="check-key-file" unless="nightly.keyfile">
+        <!-- fake a key file, else the ivysettings will not be valid -->
+        <property name="nightly.keyfile" value="${ivy.jar.file}" />
+    </target>
+
+
+    <target name="init" depends="check-key-file">
         <echo message="init: ${module.name}" />
         <mkdir dir="${ivy.jar.dir}" />
         <mkdir dir="${classes.dir}" />
@@ -137,7 +143,9 @@
             <src path="${src.dir}" />
             <src path="${src-api.dir}" />
         </javac>
+    </target>
 
+    <target name="copy-resources">
         <!-- Needed for the copying of the resources in the sources dir,
             if any of the resources is changed, all old resources will be deleted and the compile.change property will be set.
             todo maybe only copy the updated file, the uptodate task just didn't do the trick (or maybe I'm just too stupid :-) ) -->
@@ -168,10 +176,12 @@
         </copy>
     </target>
 
+    <target name="compile-and-copy" depends="compile, copy-resources" />
+
     <!-- ================================= 
           target: impl-jar              
          ================================= -->
-    <target name="build-jar" depends="compile" if="compile.change" description="-> create a jar file in ${classed.dir}/${jar.file}.jar">
+    <target name="build-jar" depends="compile-and-copy" if="compile.change" description="-> create a jar file in ${classed.dir}/${jar.file}.jar">
         <pathconvert property="lib-path" pathsep=" " refid="build.path">
             <map from="${build.dir}/" to="" />
         </pathconvert>
@@ -189,22 +199,22 @@
           target: zip-sources packs all java sources in a zip file.              
          ================================= -->
 
-    <target name="tar-sources-api" if="has.api-src">
-        <tar destfile="${build.dir}/deegree-${module.name}-src.tar.bz2" compression="bzip2">
-            <tarfileset dir="${src-api.dir}" prefix="src-api">
+    <target name="zip-sources-api" if="has.api-src">
+        <zip destfile="${build.dir}/deegree-${module.name}-src.zip" update="true">
+            <zipfileset dir="${src-api.dir}" prefix="${src-api.dir}">
                 <include name="**/*.java" />
                 <include name="**/*.properties" />
-            </tarfileset>
-        </tar>
-
+            </zipfileset>
+        </zip>
     </target>
-    <target name="tar-sources" depends="load-ivy, tar-sources-api" description="-> zip all *java files in the ${src.dir}">
-        <tar destfile="${build.dir}/deegree-${module.name}-src.tar.bz2" compression="bzip2">
-            <tarfileset dir="${src.dir}">
+
+    <target name="zip-sources" depends="load-ivy, zip-sources-api" description="-> zip all *java files in the ${src.dir}" >
+        <zip destfile="${build.dir}/deegree-${module.name}-src.zip" update="true">
+            <zipfileset dir="${src.dir}" prefix="${src.dir}">
                 <include name="**/*.java" />
                 <include name="**/*.properties" />
-            </tarfileset>
-        </tar>
+            </zipfileset>
+        </zip>
     </target>
 
     <!-- ====================================
@@ -219,14 +229,15 @@
     <!-- =================================================================== -->
 
     <target name="javadoc-src-api" if="has.api-src">
-        <javadoc source="${source.version}" sourcepath="${src-api.dir}" packagenames="*" destdir="${javadoc.dir}" author="true" version="true" verbose="${debug}" use="true" package="true" windowtitle="${doc.window}" maxmemory="512m" encoding="utf-8" failonerror="0">
+        <javadoc source="${source.version}" packagenames="org.deegree.*" destdir="${javadoc.dir}" overview="${src.dir}/overview.html" author="true" version="true" verbose="${debug}" use="true" package="true" windowtitle="${doc.window}" maxmemory="512m" encoding="utf-8" failonerror="0">
             <doctitle>${doc.title}</doctitle>
             <header>${doc.header}</header>
             <footer>${doc.footer}</footer>
             <bottom>${doc.bottom}</bottom>
 
             <link href="${doc.sun.link}" />
-
+            <packageset dir="${src.dir}"/>
+            <packageset dir="${src-api.dir}"/>
             <classpath>
                 <path refid="build.path" />
             </classpath>
@@ -234,27 +245,27 @@
 
     </target>
 
-    <target name="javadoc" depends="compile,javadoc-src-api" description="-> creates API JavaDoc">
-        <javadoc source="${source.version}" sourcepath="${src.dir}" packagenames="org.deegree.*" overview="${src.dir}/overview.html" destdir="${javadoc.dir}" author="true" version="true" verbose="${debug}" use="true" package="true" windowtitle="${doc.window}" maxmemory="512m" encoding="utf-8">
+    <target name="javadoc" depends="compile,javadoc-src-api" unless="has.api-src" description="-> creates API JavaDoc">
+        <javadoc source="${source.version}" packagenames="org.deegree.*" overview="${src.dir}/overview.html" destdir="${javadoc.dir}" author="true" version="true" verbose="${debug}" use="true" package="true" windowtitle="${doc.window}" maxmemory="512m" encoding="utf-8">
             <doctitle>${doc.title}</doctitle>
             <header>${doc.header}</header>
             <footer>${doc.footer}</footer>
             <bottom>${doc.bottom}</bottom>
 
             <link href="${doc.sun.link}" />
-
+            <packageset dir="${src.dir}"/>
             <classpath>
                 <path refid="build.path" />
             </classpath>
         </javadoc>
     </target>
 
-    <target name="tar-javadoc" depends="javadoc" description="-> create a tar.bz2 from JavaDoc">
-        <tar destfile="${build.dir}/deegree-${module.name}-javadoc.tar.bz2" compression="bzip2" longfile="gnu">
-            <tarfileset dir="${javadoc.dir}">
+    <target name="zip-javadoc" depends="javadoc" description="-> create a zip from JavaDoc">
+        <zip destfile="${build.dir}/deegree-${module.name}-javadoc.zip" update="true">
+            <zipfileset dir="${javadoc.dir}">
                 <include name="**" />
-            </tarfileset>
-        </tar>
+            </zipfileset>
+        </zip>
     </target>
 
 
@@ -264,8 +275,6 @@
          ================================= -->
 
     <target name="publish-local"  description="-> publish all configurations of ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
-        <!-- fake a key file, else the ivysettings will not be valid -->
-        <property name="nightly.keyfile" value="${ivy.jar.file}"/>
         <ant target="local-publish"/>
     </target>
 
@@ -279,7 +288,7 @@
         <ant target="nightly-publish"/>
     </target>
 
-    <target name="nightly-publish" depends="build-jar,tar-javadoc,tar-sources" if="compile.change">
+    <target name="nightly-publish" depends="build-jar,zip-javadoc,zip-sources" if="compile.change">
         <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
         <ivy:publish conf="${module.name}-javadoc" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher"  pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
         <ivy:publish conf="${module.name}-src" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher"  pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
