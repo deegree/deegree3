@@ -36,7 +36,7 @@
 
 package org.deegree.rendering.r2d.se.parser;
 
-import static org.deegree.rendering.r2d.se.parser.SLD100Parser.parseSymbolizer;
+import static org.deegree.rendering.r2d.se.parser.SLD100Parser.parse;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -82,14 +82,14 @@ public class SLD100ParserTest extends TestCase {
                 LOG.info( "Expecting {} to parse fine.", f );
                 XMLStreamReader in = fac.createXMLStreamReader( f.toString(), new FileInputStream( f ) );
                 in.next();
-                assertNotNull( parseSymbolizer( in ) );
+                assertNotNull( parse( in ) );
             }
             if ( f.getName().endsWith( ".bad" ) ) {
                 LOG.info( "Expecting {} to fail.", f );
                 XMLStreamReader in = fac.createXMLStreamReader( f.toString(), new FileInputStream( f ) );
                 in.next();
                 try {
-                    parseSymbolizer( in );
+                    parse( in );
                     assertEquals( true, false );
                 } catch ( XMLParsingException e ) {
                     assertNotNull( e );

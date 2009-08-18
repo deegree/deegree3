@@ -44,6 +44,7 @@ import static org.deegree.commons.xml.CommonNamespaces.SLDNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.asQName;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.resolve;
+import static org.deegree.filter.Filter.Type.ELSE_FILTER;
 import static org.deegree.rendering.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -51,6 +52,7 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
@@ -62,7 +64,9 @@ import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
+import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.filter.MatchableObject;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
@@ -95,6 +99,8 @@ import org.slf4j.Logger;
 public class SLD100Parser {
 
     static final Logger LOG = getLogger( SLD100Parser.class );
+
+    static final ElseFilter ELSEFILTER = new ElseFilter();
 
     // done and tested, same as SE
     private static Pair<Fill, Continuation<Fill>> parseFill( XMLStreamReader in )
@@ -1166,6 +1172,115 @@ public class SLD100Parser {
         }
 
         return new Pair<LinePlacement, Continuation<LinePlacement>>( baseOrEvaluated, contn );
+    }
+
+    /**
+     * @param in
+     * @return null, if no symbolizer and no feature type style was found
+     * @throws XMLStreamException
+     */
+    public static org.deegree.rendering.r2d.se.unevaluated.Style parse( XMLStreamReader in )
+                            throws XMLStreamException {
+        if ( in.getLocalName().endsWith( "Symbolizer" ) ) {
+            Pair<Symbolizer<?>, Continuation<StringBuffer>> pair = parseSymbolizer( in );
+            return new org.deegree.rendering.r2d.se.unevaluated.Style( pair.first, pair.second );
+        }
+        if ( in.getLocalName().equals( "FeatureTypeStyle" ) ) {
+            return parseFeatureTypeStyle( in );
+        }
+        return null;
+    }
+
+    /**
+     * @param in
+     * @return a new style
+     * @throws XMLStreamException
+     */
+    public static org.deegree.rendering.r2d.se.unevaluated.Style parseFeatureTypeStyle( XMLStreamReader in )
+                            throws XMLStreamException {
+        LinkedList<Continuation<LinkedList<Symbolizer<?>>>> result = new LinkedList<Continuation<LinkedList<Symbolizer<?>>>>();
+        HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
+        // TODO name, description, ftname, semantictypeidentifier, online resource
+
+        in.require( START_ELEMENT, SLDNS, "FeatureTypeStyle" );
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "FeatureTypeStyle" ) ) ) {
+            in.nextTag();
+
+            if ( in.getLocalName().equals( "Rule" ) ) {
+                Filter filter = null;
+                LinkedList<Symbolizer<?>> syms = new LinkedList<Symbolizer<?>>();
+
+                while ( !( in.isEndElement() && in.getLocalName().equals( "Rule" ) ) ) {
+                    in.nextTag();
+
+                    if ( in.getLocalName().equals( "Name" ) ) {
+                        in.next();
+                        // name = in.getText();
+                        in.nextTag();
+                        in.require( END_ELEMENT, SLDNS, "Name" );
+                    }
+
+                    if ( in.getLocalName().equals( "Filter" ) ) {
+                        filter = Filter110XMLDecoder.parse( in );
+                    }
+
+                    if ( in.getLocalName().equals( "ElseFilter" ) ) {
+                        filter = ELSEFILTER;
+                        in.nextTag();
+                    }
+
+                    // TODO description, legendgraphic, scales
+                    if ( in.getLocalName().endsWith( "Symbolizer" ) ) {
+                        Pair<Symbolizer<?>, Continuation<StringBuffer>> parsedSym = parseSymbolizer( in );
+                        if ( parsedSym.second != null ) {
+                            labels.put( (Symbolizer) parsedSym.first, parsedSym.second );
+                        }
+                        syms.add( parsedSym.first );
+                    }
+                }
+
+                result.add( new FilterContinuation( filter, syms ) );
+            }
+        }
+
+        return new org.deegree.rendering.r2d.se.unevaluated.Style( result, labels );
+    }
+
+    static class ElseFilter implements Filter {
+        @Override
+        public boolean evaluate( MatchableObject object )
+                                throws FilterEvaluationException {
+            return false; // always to false, has to be checked differently, see FilterContinuation below
+        }
+
+        @Override
+        public Type getType() {
+            return ELSE_FILTER;
+        }
+    }
+
+    static class FilterContinuation extends Continuation<LinkedList<Symbolizer<?>>> {
+        private Filter filter;
+
+        private LinkedList<Symbolizer<?>> syms;
+
+        FilterContinuation( Filter filter, LinkedList<Symbolizer<?>> syms ) {
+            this.filter = filter;
+            this.syms = syms;
+        }
+
+        @Override
+        public void updateStep( LinkedList<Symbolizer<?>> base, Feature f ) {
+            try {
+                if ( filter == null || filter.evaluate( f ) || ( base.isEmpty() && filter == ELSEFILTER ) ) {
+                    base.addAll( syms );
+                }
+            } catch ( FilterEvaluationException e ) {
+                LOG.warn( get( "R2D.ERROR_EVAL" ), e.getLocalizedMessage(), filter.toString() );
+            }
+        }
+
     }
 
 }
