@@ -300,6 +300,7 @@ public class SLD100Parser {
         return new Pair<Stroke, Continuation<Stroke>>( base, contn );
     }
 
+    // done and tested, same as SE
     private static Pair<Mark, Continuation<Mark>> parseMark( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, SLDNS, "Mark" );
@@ -327,7 +328,6 @@ public class SLD100Parser {
                         }
                     };
                 }
-                in.nextTag();
             }
 
             if ( in.getLocalName().equals( "Stroke" ) ) {
@@ -341,7 +341,6 @@ public class SLD100Parser {
                         }
                     };
                 }
-                in.nextTag();
             }
         }
 
@@ -370,6 +369,7 @@ public class SLD100Parser {
         return null;
     }
 
+    // done and tested, same as SE
     private static Pair<Graphic, Continuation<Graphic>> parseGraphic( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, SLDNS, "Graphic" );
@@ -392,16 +392,12 @@ public class SLD100Parser {
                                 pair.second.evaluate( base.mark, f );
                             }
                         };
-                        break;
                     }
                 }
             }
             if ( in.getLocalName().equals( "ExternalGraphic" ) ) {
                 try {
                     base.image = parseExternalGraphic( in );
-                    if ( base.image != null ) {
-                        break;
-                    }
                 } catch ( IOException e ) {
                     LOG.debug( "Stack trace", e );
                     LOG.warn( get( "R2D.EXTERNAL_GRAPHIC_NOT_LOADED" ),
@@ -410,74 +406,111 @@ public class SLD100Parser {
                 }
             }
 
-            contn = updateOrContinue( in, "Opacity", base, new Updater<Graphic>() {
-                public void update( Graphic obj, String val ) {
-                    obj.opacity = Double.parseDouble( val );
-                }
-            }, contn );
+            if ( in.getLocalName().equals( "Opacity" ) ) {
+                contn = updateOrContinue( in, "Opacity", base, new Updater<Graphic>() {
+                    public void update( Graphic obj, String val ) {
+                        obj.opacity = Double.parseDouble( val );
+                    }
+                }, contn );
+            }
 
-            contn = updateOrContinue( in, "Size", base, new Updater<Graphic>() {
-                public void update( Graphic obj, String val ) {
-                    obj.size = Double.parseDouble( val );
-                }
-            }, contn );
+            if ( in.getLocalName().equals( "Size" ) ) {
+                contn = updateOrContinue( in, "Size", base, new Updater<Graphic>() {
+                    public void update( Graphic obj, String val ) {
+                        obj.size = Double.parseDouble( val );
+                    }
+                }, contn );
+            }
 
-            contn = updateOrContinue( in, "Rotation", base, new Updater<Graphic>() {
-                public void update( Graphic obj, String val ) {
-                    obj.rotation = Double.parseDouble( val );
-                }
-            }, contn );
+            if ( in.getLocalName().equals( "Rotation" ) ) {
+                contn = updateOrContinue( in, "Rotation", base, new Updater<Graphic>() {
+                    public void update( Graphic obj, String val ) {
+                        obj.rotation = Double.parseDouble( val );
+                    }
+                }, contn );
+            }
 
-            contn = updateOrContinue( in, "se:AnchorPoint/se:AnchorPointX", base, new Updater<Graphic>() {
-                public void update( Graphic obj, String val ) {
-                    obj.anchorPointX = Double.parseDouble( val );
-                }
-            }, contn );
+            if ( in.getLocalName().equals( "AnchorPoint" ) ) {
+                while ( !( in.isEndElement() && in.getLocalName().equals( "AnchorPoint" ) ) ) {
+                    in.nextTag();
 
-            contn = updateOrContinue( in, "se:AnchorPoint/se:AnchorPointY", base, new Updater<Graphic>() {
-                public void update( Graphic obj, String val ) {
-                    obj.anchorPointY = Double.parseDouble( val );
+                    if ( in.getLocalName().equals( "AnchorPointX" ) ) {
+                        contn = updateOrContinue( in, "AnchorPointX", base, new Updater<Graphic>() {
+                            public void update( Graphic obj, String val ) {
+                                obj.anchorPointX = Double.parseDouble( val );
+                            }
+                        }, contn );
+                    }
+                    if ( in.getLocalName().equals( "AnchorPointY" ) ) {
+                        contn = updateOrContinue( in, "AnchorPointY", base, new Updater<Graphic>() {
+                            public void update( Graphic obj, String val ) {
+                                obj.anchorPointY = Double.parseDouble( val );
+                            }
+                        }, contn );
+                    }
                 }
-            }, contn );
+            }
 
-            contn = updateOrContinue( in, "se:Displacement/se:DisplacementX", base, new Updater<Graphic>() {
-                public void update( Graphic obj, String val ) {
-                    obj.displacementX = Double.parseDouble( val );
-                }
-            }, contn );
+            if ( in.getLocalName().equals( "Displacement" ) ) {
+                while ( !( in.isEndElement() && in.getLocalName().equals( "Displacement" ) ) ) {
+                    in.nextTag();
 
-            contn = updateOrContinue( in, "se:Displacement/se:DisplacementY", base, new Updater<Graphic>() {
-                public void update( Graphic obj, String val ) {
-                    obj.displacementY = Double.parseDouble( val );
+                    if ( in.getLocalName().equals( "DisplacementX" ) ) {
+                        contn = updateOrContinue( in, "DisplacementX", base, new Updater<Graphic>() {
+                            public void update( Graphic obj, String val ) {
+                                obj.displacementX = Double.parseDouble( val );
+                            }
+                        }, contn );
+                    }
+                    if ( in.getLocalName().equals( "DisplacementY" ) ) {
+                        contn = updateOrContinue( in, "DisplacementY", base, new Updater<Graphic>() {
+                            public void update( Graphic obj, String val ) {
+                                obj.displacementY = Double.parseDouble( val );
+                            }
+                        }, contn );
+                    }
                 }
-            }, contn );
+            }
         }
         in.require( END_ELEMENT, SLDNS, "Graphic" );
 
         return new Pair<Graphic, Continuation<Graphic>>( base, contn );
     }
 
+    // done and tested, same as SE
+    /**
+     * @param in
+     * @return a new symbolizer
+     * @throws XMLStreamException
+     */
     public static Symbolizer<PointStyling> parsePointSymbolizer( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, SLDNS, "PointSymbolizer" );
 
         QName geometry = null;
+        String name = null;
         PointStyling baseOrEvaluated = new PointStyling();
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "PointSymbolizer" ) ) ) {
             in.nextTag();
 
+            if ( in.getLocalName().equals( "Name" ) ) {
+                in.next();
+                name = in.getText();
+                in.nextTag();
+                in.require( END_ELEMENT, SLDNS, "Name" );
+            }
             if ( in.getLocalName().equals( "Geometry" ) ) {
                 in.next();
                 geometry = asQName( in, in.getText() );
-                in.next();
                 in.nextTag();
+                in.require( END_ELEMENT, SLDNS, "Geometry" );
             }
             if ( in.getLocalName().equals( "Graphic" ) ) {
                 final Pair<Graphic, Continuation<Graphic>> pair = parseGraphic( in );
 
                 if ( pair == null ) {
-                    return new Symbolizer<PointStyling>( baseOrEvaluated, geometry, null );
+                    return new Symbolizer<PointStyling>( baseOrEvaluated, geometry, name );
                 }
 
                 baseOrEvaluated.graphic = pair.first;
@@ -494,7 +527,7 @@ public class SLD100Parser {
         }
 
         in.require( END_ELEMENT, SLDNS, "PointSymbolizer" );
-        return new Symbolizer<PointStyling>( baseOrEvaluated, geometry, null );
+        return new Symbolizer<PointStyling>( baseOrEvaluated, geometry, name );
     }
 
     private static <T> Continuation<T> updateOrContinue( XMLStreamReader in, String name, T obj,
