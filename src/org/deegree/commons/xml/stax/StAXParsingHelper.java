@@ -154,28 +154,29 @@ public class StAXParsingHelper {
     }
 
     /**
-     * @param in
-     * @param val
+     * @param xmlStream
+     * @param s
+     *            may not be null
      * @return a parsed qname
      */
-    public static QName asQName( XMLStreamReader in, String val ) {
-        int idx = val.indexOf( ":" );
-        if ( idx == -1 ) {
-            return new QName( val );
+    public static QName asQName( XMLStreamReader xmlStream, String s ) {
+        QName result = null;
+        int colonIdx = s.indexOf( ':' );
+        if ( colonIdx < 0 ) {
+            result = new QName( s );
+        } else if ( colonIdx == s.length() - 1 ) {
+            throw new XMLParsingException( xmlStream, "Invalid QName '" + s + "': no local name." );
+        } else {
+            String prefix = s.substring( 0, colonIdx );
+            String localPart = s.substring( colonIdx + 1 );
+            String nsUri = xmlStream.getNamespaceURI( prefix );
+            if ( nsUri == null ) {
+                throw new XMLParsingException( xmlStream, "Invalid QName '" + s + "': prefix '" + prefix
+                                                          + "' is unbound." );
+            }
+            result = new QName( nsUri, localPart, prefix );
         }
-
-        String pre = val.substring( 0, idx );
-        String loc = val.substring( 0, idx + 1 );
-        String ns = in.getNamespaceURI( pre );
-
-        if ( loc == null || loc.isEmpty() ) {
-            throw new XMLParsingException( in, "Invalid QName '" + val + "': no local name." );
-        }
-        if ( ns == null ) {
-            throw new XMLParsingException( in, "Invalid QName '" + val + "': prefix '" + pre + "' is unbound." );
-        }
-
-        return new QName( ns, loc, pre );
+        return result;
     }
 
     public static void skipStartDocument( XMLStreamReader xmlStream )
@@ -211,22 +212,7 @@ public class StAXParsingHelper {
         if ( s == null ) {
             throw new XMLParsingException( xmlStream, "No attribute with name {" + namespaceURI + "}" + localName + "." );
         }
-        int colonIdx = s.indexOf( ':' );
-        if ( colonIdx < 0 ) {
-            result = new QName( s );
-        } else if ( colonIdx == s.length() - 1 ) {
-            throw new XMLParsingException( xmlStream, "Invalid QName '" + s + "': no local name." );
-        } else {
-            String prefix = s.substring( 0, colonIdx );
-            String localPart = s.substring( colonIdx + 1 );
-            String nsUri = xmlStream.getNamespaceURI( prefix );
-            if ( nsUri == null ) {
-                throw new XMLParsingException( xmlStream, "Invalid QName '" + s + "': prefix '" + prefix
-                                                          + "' is unbound." );
-            }
-            result = new QName( nsUri, localPart, prefix );
-        }
-        return result;
+        return asQName( xmlStream, s );
     }
 
     public static boolean getAttributeValueAsBoolean( XMLStreamReader xmlStream, String namespaceURI, String localName,
@@ -255,22 +241,7 @@ public class StAXParsingHelper {
         if ( s == null ) {
             throw new XMLParsingException( xmlStream, "No element text, but QName expected." );
         }
-        int colonIdx = s.indexOf( ':' );
-        if ( colonIdx < 0 ) {
-            result = new QName( s );
-        } else if ( colonIdx == s.length() - 1 ) {
-            throw new XMLParsingException( xmlStream, "Invalid QName '" + s + "': no local name." );
-        } else {
-            String prefix = s.substring( 0, colonIdx );
-            String localPart = s.substring( colonIdx + 1 );
-            String nsUri = xmlStream.getNamespaceURI( prefix );
-            if ( nsUri == null ) {
-                throw new XMLParsingException( xmlStream, "Invalid QName '" + s + "': prefix '" + prefix
-                                                          + "' is unbound." );
-            }
-            result = new QName( nsUri, localPart, prefix );
-        }
-        return result;
+        return asQName( xmlStream, s );
     }
 
     public static void requireStartElement( XMLStreamReader xmlStream, Collection<QName> expectedElements )
