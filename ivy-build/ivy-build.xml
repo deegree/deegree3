@@ -23,7 +23,8 @@
         <available property="has.api-src" file="${src-api.dir}/org/deegree/" />
     </target>
 
-    <target name="download-ivy" depends="init" unless="download.ivy">
+    <target name="download-ivy" depends="init" unless="download.ivy" >
+        <echo>hiers</echo>
         <!-- try to load ivy here from home ivy dir, in case the user has not already dropped
                   it into ant's lib dir (note that the latter copy will always take precedence).
                   We will not fail as long as ivy home lib dir exists (it may be empty) and
@@ -31,11 +32,14 @@
                   download Ivy from web site so that it can be used even without any special installation
                   -->
         <get src="${ivy.repository.location}" dest="${ivy.jar.file}" usetimestamp="true" />
+        <!-- get the ssh dependency -->
+        <get src="http://sourceforge.net/projects/jsch/files/jsch/jsch-0.1.42.jar" dest="${ivy.jar.dir}/jsc-0.1.42.jar" usetimestamp="true" />
+        
     </target>
 
     <target name="load-ivy" depends="download-ivy" unless="ivy.new.revision">
         <tstamp>
-            <format property="nightly.date" pattern="yyyy-MM-dd" />
+            <format property="nightly.date" pattern="yyyyMMdd" />
         </tstamp>
         <path id="ivy.lib.path">
             <fileset dir="${ivy.jar.dir}" includes="*.jar" />
@@ -260,25 +264,31 @@
           publish targets, publishing means: make the current 'revision' available for all other modules by putting them in a (local) repository.
          ================================= -->
 
-    <target name="publish-local-build" depends="build-jar" if="compile.change" description="-> publish ${module.name}-build in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
-        <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
-        <echo message="project ${module.name}-build released with version ${build.version}" />
+    <target name="publish-local"  description="-> publish all configurations of ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
+        <!-- define the resolver for a local build -->
+        <property name="default.resolver" value="deegree-resolver"/>
+        <!-- fake a key file, else the ivysettings will not be valid -->
+        <property name="nightly.keyfile" value="${ivy.jar.file}"/>
+        <ant target="local-publish"/>
     </target>
 
-    <target name="publish-local-all" depends="build-jar" if="compile.change" description="-> publish all configurations of ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
+    <target name="local-publish" depends="build-jar" if="compile.change" >
         <ivy:publish artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
         <echo message="project ${module.name}-build released with version ${build.version}" />
     </target>
 
-    <target name="publish-nightly" depends="build-jar,tar-javadoc,tar-sources" if="compile.change" description="-> publish ${module.name}-build in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
-        <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
-        <ivy:publish conf="${module.name}-javadoc" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
-        <ivy:publish conf="${module.name}-src" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+    <target name="publish-nightly" description="-> publish ${module.name}-build in the nightly ivy  repository">
+        <!-- define the resolver for a local build -->
+        <property name="default.resolver" value="nightly-publisher"/>
+        <ant target="nightly-publish"/>
     </target>
 
-    <target name="publish" depends="publish-local-all" if="compile.change" description="-> publish ${module.name} in the global ivy repository.">
-        <!-- this method should be reconfigured to put the jars in the official repository, for now it is the same as publish-local-->
+    <target name="nightly-publish" depends="build-jar,tar-javadoc,tar-sources" if="compile.change">
+        <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="${default.resolver}" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <ivy:publish conf="${module.name}-javadoc" artifactspattern="${build.dir}/[artifact].[ext]" resolver="${default.resolver}"  pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <ivy:publish conf="${module.name}-src" artifactspattern="${build.dir}/[artifact].[ext]" resolver="${default.resolver}"  pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
     </target>
+
 
     <!-- ==================================
           target: clean

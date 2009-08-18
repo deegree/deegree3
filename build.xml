@@ -16,7 +16,7 @@
    specific language governing permissions and limitations
    under the License.    
 -->
-<project name="core" default="publish" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="core" default="publish-local" xmlns:ivy="antlib:org.apache.ivy.ant">
     <property file="build.properties" />
 
     <import file="${ivybuild.dir}/ivy-build.xml" optional="false" />
@@ -46,7 +46,7 @@
         </xjc>
     </target>
 
-    <target name="bind-commons-configuration" depends="bind, publish" description="Bind the commons configuration files and publish the result." />
+    <target name="bind-commons-configuration" depends="bind, publish-local" description="Bind the commons configuration files and publish the result." />
 
     <target name="bind-ft-definition" depends="resolve" description="Bind featuretype_definition.xsd">
         <!-- Support jaxb tasks -->
@@ -80,7 +80,7 @@
         </xjc>
     </target>
 
-    <target name="bind-datasource-configuration" depends="bind-ds, publish" description="Bind the dataaccess configuration files and publish the result." />
+    <target name="bind-datasource-configuration" depends="bind-ds, publish-local" description="Bind the dataaccess configuration files and publish the result." />
 
     <target name="create-crs-db" description="run SQL scripts that create tables for the database backend">
         <sql driver="org.apache.derby.jdbc.EmbeddedDriver" url="${crs.derby.url}" userid="" password="" >
@@ -104,7 +104,7 @@
         </sql>
     </target>
 
-    <target name="fill-crs-db-from-xml" depends="publish-local-all" description="->fill the fill the created db ATTENTION, you will need to drop and create the current db for this to work.">
+    <target name="fill-crs-db-from-xml" depends="publish-local" description="->fill the fill the created db ATTENTION, you will need to drop and create the current db for this to work.">
         <java  classname="org.deegree.crs.configuration.CRSConfiguration" fork="true" maxmemory="512M" >
             <classpath>
                 <path refid="build.path"/>
@@ -115,7 +115,7 @@
         </java>
     </target>
 
-    <target name="insert-crs-into-db-from-xml-configuration" depends="publish-local-all" description="->insert a crs defined in the deegree-crs-configuration.xml into the db.">
+    <target name="insert-crs-into-db-from-xml-configuration" depends="publish-local" description="->insert a crs defined in the deegree-crs-configuration.xml into the db.">
         <fail unless="crs.id" message="you should supply a crs.id parameter to this ant target (ant insert-crs-into-db-from-xml-configuration -Dcrs.id=your_newly_inserted_id)"/>
         <java  classname="org.deegree.crs.configuration.deegree.db.CRSDBExporter" fork="true" maxmemory="512M" >
             <classpath>
@@ -127,7 +127,7 @@
         </java>
     </target>
 
-    <target name="insert-crs-into-db-from-wkt-file" depends="publish-local-all" description="->insert a crs defined in a wkt file into the db.">
+    <target name="insert-crs-into-db-from-wkt-file" depends="publish-local" description="->insert a crs defined in a wkt file into the db.">
         <fail unless="wkt.file" message="you should supply a wkt.file parameter to this ant target (ant insert-crs-into-db-from-wkt-file -Dwkt.file=your_file)"/>
         <java  classname="org.deegree.crs.configuration.deegree.db.CRSDBExporter" fork="true" maxmemory="512M" >
             <classpath>
