@@ -54,6 +54,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
@@ -94,6 +95,35 @@ public class StAXParsingHelper {
         s += " at line " + location.getLineNumber() + ", column " + location.getColumnNumber() + " (character offset "
              + xmlStream.getLocation().getCharacterOffset() + ")";
         return s;
+    }
+
+    /**
+     * Skips all events that belong to the current element (including descendant elements), so that the
+     * <code>XMLStreamReader</code> cursor points at the corresponding <code>END_ELEMENT</code> event.
+     * 
+     * @param xmlStream
+     * @throws XMLStreamException
+     */
+    public static void skipElement( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+
+        if (xmlStream.isEndElement()) {
+            return;
+        }
+        
+        int openElements = 1;
+        while ( openElements > 0 ) {
+            // this should not be necessary, but IS
+            if ( !xmlStream.hasNext() ) {
+                throw new NoSuchElementException();
+            }
+            int event = xmlStream.next();
+            if ( event == END_ELEMENT ) {
+                openElements--;
+            } else if ( event == START_ELEMENT ) {
+                openElements++;
+            }
+        }
     }
 
     /**
