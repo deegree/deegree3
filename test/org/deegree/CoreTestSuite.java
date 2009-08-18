@@ -73,6 +73,7 @@ import org.slf4j.LoggerFactory;
                 org.deegree.crs.components.UnitTest.class,
                 org.deegree.crs.configuration.deegree.DatabaseCRSProviderTest.class,
                 org.deegree.crs.configuration.deegree.DeegreeCRSProviderTest.class,
+                org.deegree.crs.configuration.deegree.EqualityBetweenProvidersTest.class,
                 org.deegree.crs.configuration.deegree.TransformationAccuracyTest.class,
                 org.deegree.crs.configuration.gml.GMLCRSProviderTest.class,
                 org.deegree.crs.coordinatesystems.CompoundCRSTest.class,
@@ -100,7 +101,8 @@ import org.slf4j.LoggerFactory;
                 org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParserTest.class,
                 org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureTypeKVPAdapterTest.class,
                 org.deegree.protocol.wfs.getfeature.GetFeatureXMLAdapterTest.class,
-                org.deegree.rendering.r2d.Java2DRenderingTest.class })
+                org.deegree.protocol.wms.dims.ParserTest.class, org.deegree.rendering.r2d.Java2DRenderingTest.class,
+                org.deegree.rendering.r2d.se.parser.SLD100ParserTest.class })
 class CoreTestSuite {
 
     private static final int DOT_CLASS_LENGTH = ".class".length();

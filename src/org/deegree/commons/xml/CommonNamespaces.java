@@ -135,6 +135,11 @@ public class CommonNamespaces {
     public static final String SENS = "http://www.opengis.net/se";
 
     /**
+     * The SLD namespace is currently bound to "http://www.opengis.net/sld"
+     */
+    public static final String SLDNS = "http://www.opengis.net/sld";
+
+    /**
      * The WMS namespace is currently bound to: "http://www.opengis.net/wms"
      */
     public static final String WMSNS = "http://www.opengis.net/wms";
@@ -224,6 +229,11 @@ public class CommonNamespaces {
      * The SE_PREFIX is currently assigned to: "se"
      */
     public static final String SE_PREFIX = "se";
+
+    /**
+     * The SLD_PREFIX is currently assigned to: "sld"
+     */
+    public static final String SLD_PREFIX = "sld";
 
     /**
      * The WMS_PREFIX is currently assigned to: "wms"

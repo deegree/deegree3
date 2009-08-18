@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<PointSymbolizer xmlns="http://www.opengis.net/sld">
+  <Geometry>someGeometryProp</Geometry>
+</PointSymbolizer>

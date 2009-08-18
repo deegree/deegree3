@@ -62,13 +62,38 @@ import org.deegree.commons.xml.XMLParsingException;
 
 /**
  * The <code></code> class TODO add class documentation here.
- * 
+ *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- * 
+ *
  * @version $Revision$, $Date$
  */
 public class StAXParsingHelper {
+
+    /**
+     * @param in
+     * @param val
+     * @return a parsed qname
+     */
+    public static QName asQName( XMLStreamReader in, String val ) {
+        int idx = val.indexOf( ":" );
+        if ( idx == -1 ) {
+            return new QName( val );
+        }
+
+        String pre = val.substring( 0, idx );
+        String loc = val.substring( 0, idx + 1 );
+        String ns = in.getNamespaceURI( pre );
+
+        if ( loc == null || loc.isEmpty() ) {
+            throw new XMLParsingException( in, "Invalid QName '" + val + "': no local name." );
+        }
+        if ( ns == null ) {
+            throw new XMLParsingException( in, "Invalid QName '" + val + "': prefix '" + pre + "' is unbound." );
+        }
+
+        return new QName( ns, loc, pre );
+    }
 
     public static void skipStartDocument( XMLStreamReader xmlStream )
                             throws XMLStreamException {

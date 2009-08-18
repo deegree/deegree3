@@ -621,7 +621,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
      * @return a pre-rendered image
      * @throws IOException
      */
-    public BufferedImage parseExternalGraphic( OMElement g )
+    private BufferedImage parseExternalGraphic( OMElement g )
                             throws IOException {
         if ( g == null ) {
             return null;
@@ -648,7 +648,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
      * @param mark
      * @return a base mark and a continuation, or an evaluated mark
      */
-    public Pair<Mark, Continuation<Mark>> parseMark( OMElement mark ) {
+    private Pair<Mark, Continuation<Mark>> parseMark( OMElement mark ) {
         if ( mark == null ) {
             return null;
         }
@@ -694,7 +694,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
      * @param root
      * @return a base fill + continuation, or evaluated fill
      */
-    public Pair<Fill, Continuation<Fill>> parseFill( OMElement root ) {
+    private Pair<Fill, Continuation<Fill>> parseFill( OMElement root ) {
         OMElement fill = getElement( root, new XPath( "se:Fill", nscontext ) );
         if ( fill == null ) {
             return null;
@@ -746,7 +746,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
      * @param root
      * @return a base stroke + contn, or evaluated stroke
      */
-    public Pair<Stroke, Continuation<Stroke>> parseStroke( OMElement root ) {
+    private Pair<Stroke, Continuation<Stroke>> parseStroke( OMElement root ) {
         OMElement stroke = getElement( root, new XPath( "se:Stroke", nscontext ) );
         if ( stroke == null ) {
             return null;
@@ -951,7 +951,6 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
      * @param name
      * @param obj
      * @param updater
-     * @param parser
      * @param contn
      * @return a continuation or null, if none was created and input
      */
