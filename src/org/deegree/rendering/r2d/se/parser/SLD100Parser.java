@@ -44,7 +44,6 @@ import static org.deegree.commons.xml.CommonNamespaces.SLDNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.asQName;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.resolve;
-import static org.deegree.filter.Filter.Type.ELSE_FILTER;
 import static org.deegree.rendering.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -1256,7 +1255,7 @@ public class SLD100Parser {
 
         @Override
         public Type getType() {
-            return ELSE_FILTER;
+            return null;
         }
     }
 

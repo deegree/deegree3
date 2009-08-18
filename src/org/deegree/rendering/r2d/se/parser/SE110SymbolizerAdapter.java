@@ -38,7 +38,6 @@ package org.deegree.rendering.r2d.se.parser;
 
 import static java.awt.Color.decode;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
-import static org.deegree.filter.Filter.Type.ELSE_FILTER;
 import static org.deegree.rendering.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -918,7 +917,7 @@ public class SE110SymbolizerAdapter extends XMLAdapter {
 
         @Override
         public Type getType() {
-            return ELSE_FILTER;
+            return null;
         }
     }
 

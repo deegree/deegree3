@@ -64,11 +64,7 @@ public interface Filter {
          * Filter that matches objects that match a certain expression. The object is an instance of
          * {@link OperatorFilter}.
          */
-        OPERATOR_FILTER,
-        /**
-         * This one actually comes from SE 1.1.0, but is useful to have here.
-         */
-        ELSE_FILTER
+        OPERATOR_FILTER
     }
 
     /**
