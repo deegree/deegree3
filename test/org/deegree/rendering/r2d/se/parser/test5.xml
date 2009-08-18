@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<LineSymbolizer xmlns="http://www.opengis.net/sld"
+                 xmlns:ogc="http://www.opengis.net/ogc"
+                 xmlns:app="http://www.deegree.org/app">
+  <Name>My Name</Name>
+  <Geometry>app:someGeometryProp</Geometry>
+  <Stroke>
+    <GraphicFill>
+      <Graphic>
+        <Mark>
+          <WellKnownName>square</WellKnownName>
+        </Mark>
+      </Graphic>
+    </GraphicFill>
+    <GraphicStroke>
+      <Graphic>
+        <Mark>
+          <WellKnownName>square</WellKnownName>
+        </Mark>
+      </Graphic>
+      <InitialGap>10</InitialGap>
+      <Gap>20</Gap>
+    </GraphicStroke>
+    <CssParameter name="stroke">#ff<ogc:Expression><ogc:PropertyName>app:someProp</ogc:PropertyName></ogc:Expression><ogc:Expression><ogc:PropertyName>app:someProp</ogc:PropertyName></ogc:Expression></CssParameter>
+    <CssParameter name="stroke-opacity">1</CssParameter>
+    <CssParameter name="stroke-width">2</CssParameter>
+    <CssParameter name="stroke-linejoin">round</CssParameter>
+    <CssParameter name="stroke-linecap">butt</CssParameter>
+    <CssParameter name="stroke-dasharray">2 4</CssParameter>
+    <CssParameter name="stroke-dashoffset">2</CssParameter>
+  </Stroke>
+  <PerpendicularOffset><ogc:Expression><ogc:PropertyName>app:someProp</ogc:PropertyName></ogc:Expression></PerpendicularOffset>
+</LineSymbolizer>

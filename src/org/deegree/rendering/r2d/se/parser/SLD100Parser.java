@@ -67,6 +67,7 @@ import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation.Updater;
+import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Graphic;
@@ -544,6 +545,88 @@ public class SLD100Parser {
 
         in.require( END_ELEMENT, SLDNS, "PointSymbolizer" );
         return new Symbolizer<PointStyling>( baseOrEvaluated, geometry, name );
+    }
+
+    /**
+     * @param in
+     * @return the symbolizer
+     * @throws XMLStreamException
+     */
+    public static Symbolizer<?> parseSymbolizer( XMLStreamReader in )
+                            throws XMLStreamException {
+        in.require( START_ELEMENT, null, null );
+        if ( in.getLocalName().equals( "PointSymbolizer" ) ) {
+            return parsePointSymbolizer( in );
+        }
+        if ( in.getLocalName().equals( "LineSymbolizer" ) ) {
+            return parseLineSymbolizer( in );
+        }
+        return null;
+    }
+
+    /**
+     * @param in
+     * @return the symbolizer
+     * @throws XMLStreamException
+     */
+    public static Symbolizer<LineStyling> parseLineSymbolizer( XMLStreamReader in )
+                            throws XMLStreamException {
+        in.require( START_ELEMENT, SLDNS, "LineSymbolizer" );
+
+        QName geom = null;
+        String name = null;
+        LineStyling baseOrEvaluated = new LineStyling();
+        Continuation<LineStyling> contn = null;
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "LineSymbolizer" ) ) ) {
+            in.nextTag();
+
+            if ( in.getLocalName().equals( "Name" ) ) {
+                in.next();
+                name = in.getText();
+                in.nextTag();
+                in.require( END_ELEMENT, SLDNS, "Name" );
+            }
+
+            if ( in.getLocalName().equals( "Stroke" ) ) {
+                final Pair<Stroke, Continuation<Stroke>> pair = parseStroke( in );
+
+                if ( pair != null ) {
+                    baseOrEvaluated.stroke = pair.first;
+
+                    if ( pair.second != null ) {
+                        contn = new Continuation<LineStyling>() {
+                            @Override
+                            public void updateStep( LineStyling base, Feature f ) {
+                                pair.second.evaluate( base.stroke, f );
+                            }
+                        };
+                    }
+                }
+            }
+
+            if ( in.getLocalName().equals( "PerpendicularOffset" ) ) {
+                contn = updateOrContinue( in, "PerpendicularOffset", baseOrEvaluated, new Updater<LineStyling>() {
+                    @Override
+                    public void update( LineStyling obj, String val ) {
+                        obj.perpendicularOffset = Double.parseDouble( val );
+                    }
+                }, contn );
+            }
+
+            if ( in.getLocalName().equals( "Geometry" ) ) {
+                in.next();
+                geom = asQName( in, in.getText() );
+                in.nextTag();
+                in.require( END_ELEMENT, SLDNS, "Geometry" );
+            }
+        }
+
+        if ( contn == null ) {
+            return new Symbolizer<LineStyling>( baseOrEvaluated, geom, name );
+        }
+
+        return new Symbolizer<LineStyling>( baseOrEvaluated, contn, geom, name );
     }
 
     private static <T> Continuation<T> updateOrContinue( XMLStreamReader in, String name, T obj,
