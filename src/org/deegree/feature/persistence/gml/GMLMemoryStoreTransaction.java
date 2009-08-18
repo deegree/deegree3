@@ -89,13 +89,13 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
     @Override
     public int performDelete( QName ftName, OperatorFilter filter, String lockId )
                             throws FeatureStoreException {
-        throw new UnsupportedOperationException();
+        return 0;
     }
 
     @Override
     public int performDelete( IdFilter filter, String lockId )
                             throws FeatureStoreException {
-        throw new UnsupportedOperationException();
+        return 0;
     }
 
     @Override
