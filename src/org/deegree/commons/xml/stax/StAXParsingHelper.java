@@ -48,7 +48,11 @@ import static javax.xml.stream.XMLStreamConstants.PROCESSING_INSTRUCTION;
 import static javax.xml.stream.XMLStreamConstants.SPACE;
 import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.slf4j.LoggerFactory.getLogger;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 
 import javax.xml.namespace.QName;
@@ -59,16 +63,46 @@ import org.deegree.commons.i18n.Messages;
 import org.deegree.commons.utils.ArrayUtils;
 import org.deegree.commons.xml.NamespaceContext;
 import org.deegree.commons.xml.XMLParsingException;
+import org.slf4j.Logger;
 
 /**
  * The <code></code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class StAXParsingHelper {
+
+    private static final Logger LOG = getLogger( StAXParsingHelper.class );
+
+    /**
+     * @param url
+     * @param in
+     * @return a resolved URL against the systemid of the reader
+     * @throws MalformedURLException
+     */
+    public static URL resolve( String url, XMLStreamReader in )
+                            throws MalformedURLException {
+        String systemId = in.getLocation().getSystemId();
+        if ( systemId == null ) {
+            LOG.warn( "SystemID was null, cannot resolve '{}', trying to use it as absolute URL.", url );
+            return new URL( url );
+        }
+
+        LOG.debug( "Resolving URL '" + url + "' against SystemID '" + systemId + "'." );
+
+        // check if url is an absolute path
+        File file = new File( url );
+        if ( file.isAbsolute() ) {
+            return file.toURI().toURL();
+        }
+
+        URL resolvedURL = new URL( new URL( systemId ), url );
+        LOG.debug( "-> resolvedURL: '" + resolvedURL + "'" );
+        return resolvedURL;
+    }
 
     /**
      * @param in

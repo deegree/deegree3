@@ -80,13 +80,13 @@ public class SLD100ParserTest extends TestCase {
         for ( File f : dir.listFiles() ) {
             if ( f.getName().endsWith( ".xml" ) ) {
                 LOG.info( "Expecting {} to parse fine.", f );
-                XMLStreamReader in = fac.createXMLStreamReader( new FileInputStream( f ) );
+                XMLStreamReader in = fac.createXMLStreamReader( f.toString(), new FileInputStream( f ) );
                 in.next();
                 assertNotNull( parsePointSymbolizer( in ) );
             }
             if ( f.getName().endsWith( ".bad" ) ) {
                 LOG.info( "Expecting {} to fail.", f );
-                XMLStreamReader in = fac.createXMLStreamReader( new FileInputStream( f ) );
+                XMLStreamReader in = fac.createXMLStreamReader( f.toString(), new FileInputStream( f ) );
                 in.next();
                 try {
                     parsePointSymbolizer( in );

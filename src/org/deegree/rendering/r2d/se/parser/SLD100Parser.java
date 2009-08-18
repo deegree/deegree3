@@ -41,15 +41,19 @@ import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.xml.CommonNamespaces.SLDNS;
+import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.asQName;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.resolve;
 import static org.deegree.rendering.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedList;
 
+import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -350,23 +354,35 @@ public class SLD100Parser {
     }
 
     private static BufferedImage parseExternalGraphic( XMLStreamReader in )
-                            throws IOException {
-
+                            throws IOException, XMLStreamException {
         // TODO inline content
         // TODO color replacement
-
         // TODO in case of svg, load/render it with batik
-        // String format = getNodeAsString( g, new XPath( "se:Format", nscontext ), null );
 
-        // String str = getNodeAsString( g, new XPath( "se:OnlineResource/@xlink:href", nscontext ), null );
-        // if ( str != null ) {
-        // URL url = resolve( str );
-        // LOG.debug( "Loading external graphic from URL {}", url );
-        // return ImageIO.read( url );
+        in.require( START_ELEMENT, SLDNS, "ExternalGraphic" );
 
-        // }
+        String format = null;
+        BufferedImage img = null;
 
-        return null;
+        while ( !( in.isEndElement() && in.getLocalName().equals( "ExternalGraphic" ) ) ) {
+            in.nextTag();
+
+            if ( in.getLocalName().equals( "Format" ) ) {
+                in.next();
+                format = in.getText();
+                in.nextTag();
+                in.require( END_ELEMENT, SLDNS, "Format" );
+            }
+            if ( in.getLocalName().equals( "OnlineResource" ) ) {
+                String str = in.getAttributeValue( XLNNS, "href" );
+                URL url = resolve( str, in );
+                LOG.debug( "Loading external graphic from URL '{}'", url );
+                img = ImageIO.read( url );
+                in.nextTag();
+            }
+        }
+
+        return img;
     }
 
     // done and tested, same as SE

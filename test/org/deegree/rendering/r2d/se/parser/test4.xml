@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<PointSymbolizer xmlns="http://www.opengis.net/sld"
+                 xmlns:ogc="http://www.opengis.net/ogc"
+                 xmlns:app="http://www.deegree.org/app">
+  <Name>My Name</Name>
+  <Geometry>app:someGeometryProp</Geometry>
+  <Graphic>
+    <ExternalGraphic>
+      <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="image.png" xlink:type="simple" />
+      <Format>image/png</Format>
+    </ExternalGraphic>
+  </Graphic>
+</PointSymbolizer>
