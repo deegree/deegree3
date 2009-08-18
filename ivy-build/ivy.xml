@@ -2,6 +2,9 @@
   # found in the ${basedir}/ivy-build/ivy.properties
   module.organisation = org.deegree
   module.name = ${ant.project.name}
+    jar.name=deegree-${module.name}-${module.version.prefix}
+    javadoc.name=${jar.name}-javadoc
+    src.name=${jar.name}-src
 -->
 <ivy-module version="1.0">
   <info organisation="${module.organisation}" module="${module.name}" />
@@ -10,11 +13,10 @@
     <conf name="${module.name}-javadoc" description="The source" visibility="private" />
     <conf name="${module.name}-src" description="The source" visibility="private" />
   </configurations>
-
-  <publications defaultconf="${module.name}-build">
-    <artifact name="deegree-${module.name}" type="jar" conf="${module.name}-build" ext="jar" />
-    <artifact name="deegree-${module.name}-src" type="zip" conf="${module.name}-src" />
-    <artifact name="deegree-${module.name}-javadoc" type="zip" conf="${module.name}-javadoc" />
+    <publications>
+      <artifact name="${jar.name}" type="jar" conf="${module.name}-build" ext="jar"/>
+      <artifact name="${javadoc.name}" type="zip" conf="${module.name}-javadoc" />      
+      <artifact name="${src.name}" type="zip" conf="${module.name}-src" />
   </publications>
   <dependencies defaultconfmapping="${module.name}-build->default">
     <dependency org="commons" name="commons-httpclient" rev="3.1" transitive="false" conf="${module.name}-build" />

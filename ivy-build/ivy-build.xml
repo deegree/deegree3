@@ -96,7 +96,7 @@
     <target name="version" depends="resolve" unless="ivy.new.revision">
         <!--asks to ivy an available version number-->
         <ivy:info file="${dependencies.file}" />
-        <ivy:buildnumber organisation="${ivy.organisation}" module="${ivy.module}" revision="${module.version.prefix}" defaultBuildNumber="1" revSep="" />
+        <ivy:buildnumber organisation="${ivy.organisation}" module="${ivy.module}" revision="${module.version.post}" defaultBuildNumber="1" revSep="-" />
 
         <!-- create moduleinfo file (version) in classpath for later inclusion in jar -->
         <propertyfile file="${classes.dir}/${module.name}_moduleinfo.properties">
@@ -200,7 +200,7 @@
          ================================= -->
 
     <target name="zip-sources-api" if="has.api-src">
-        <zip destfile="${build.dir}/deegree-${module.name}-src.zip" update="true">
+        <zip destfile="${src.file}.zip" update="true">
             <zipfileset dir="${src-api.dir}" prefix="${src-api.dir}">
                 <include name="**/*.java" />
                 <include name="**/*.properties" />
@@ -209,7 +209,7 @@
     </target>
 
     <target name="zip-sources" depends="load-ivy, zip-sources-api" description="-> zip all *java files in the ${src.dir}" >
-        <zip destfile="${build.dir}/deegree-${module.name}-src.zip" update="true">
+        <zip destfile="${src.file}.zip" update="true">
             <zipfileset dir="${src.dir}" prefix="${src.dir}">
                 <include name="**/*.java" />
                 <include name="**/*.properties" />
@@ -261,7 +261,7 @@
     </target>
 
     <target name="zip-javadoc" depends="javadoc" description="-> create a zip from JavaDoc">
-        <zip destfile="${build.dir}/deegree-${module.name}-javadoc.zip" update="true">
+        <zip destfile="${javadoc.file}.zip" update="true">
             <zipfileset dir="${javadoc.dir}">
                 <include name="**" />
             </zipfileset>
