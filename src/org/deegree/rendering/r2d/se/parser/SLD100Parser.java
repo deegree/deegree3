@@ -564,6 +564,7 @@ public class SLD100Parser {
         return null;
     }
 
+    // done and tested, same as SE
     /**
      * @param in
      * @return the symbolizer
