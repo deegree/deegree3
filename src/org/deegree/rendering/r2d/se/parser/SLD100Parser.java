@@ -69,6 +69,7 @@ import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation.Updater;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
+import org.deegree.rendering.r2d.styling.PolygonStyling;
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Graphic;
 import org.deegree.rendering.r2d.styling.components.Mark;
@@ -561,6 +562,9 @@ public class SLD100Parser {
         if ( in.getLocalName().equals( "LineSymbolizer" ) ) {
             return parseLineSymbolizer( in );
         }
+        if ( in.getLocalName().equals( "PolygonSymbolizer" ) ) {
+            return parsePolygonSymbolizer( in );
+        }
         return null;
     }
 
@@ -628,6 +632,112 @@ public class SLD100Parser {
         }
 
         return new Symbolizer<LineStyling>( baseOrEvaluated, contn, geom, name );
+    }
+
+    /**
+     * @param in
+     * @return the symbolizer
+     * @throws XMLStreamException
+     */
+    public static Symbolizer<PolygonStyling> parsePolygonSymbolizer( XMLStreamReader in )
+                            throws XMLStreamException {
+        in.require( START_ELEMENT, SLDNS, "PolygonSymbolizer" );
+
+        QName geom = null;
+        String name = null;
+        PolygonStyling baseOrEvaluated = new PolygonStyling();
+        Continuation<PolygonStyling> contn = null;
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "PolygonSymbolizer" ) ) ) {
+            in.nextTag();
+
+            if ( in.getLocalName().equals( "Name" ) ) {
+                in.next();
+                name = in.getText();
+                in.nextTag();
+                in.require( END_ELEMENT, SLDNS, "Name" );
+            }
+
+            if ( in.getLocalName().equals( "Geometry" ) ) {
+                in.next();
+                geom = asQName( in, in.getText() );
+                in.nextTag();
+                in.require( END_ELEMENT, SLDNS, "Geometry" );
+            }
+
+            if ( in.getLocalName().equals( "Stroke" ) ) {
+                final Pair<Stroke, Continuation<Stroke>> pair = parseStroke( in );
+
+                if ( pair != null ) {
+                    baseOrEvaluated.stroke = pair.first;
+
+                    if ( pair.second != null ) {
+                        contn = new Continuation<PolygonStyling>() {
+                            @Override
+                            public void updateStep( PolygonStyling base, Feature f ) {
+                                pair.second.evaluate( base.stroke, f );
+                            }
+                        };
+                    }
+                }
+            }
+
+            if ( in.getLocalName().equals( "Fill" ) ) {
+                final Pair<Fill, Continuation<Fill>> fillPair = parseFill( in );
+
+                if ( fillPair != null ) {
+                    baseOrEvaluated.fill = fillPair.first;
+
+                    if ( fillPair.second != null ) {
+                        contn = new Continuation<PolygonStyling>() {
+                            @Override
+                            public void updateStep( PolygonStyling base, Feature f ) {
+                                fillPair.second.evaluate( base.fill, f );
+                            }
+                        };
+                    }
+                }
+            }
+
+            if ( in.getLocalName().equals( "PerpendicularOffset" ) ) {
+                contn = updateOrContinue( in, "PerpendicularOffset", baseOrEvaluated, new Updater<PolygonStyling>() {
+                    @Override
+                    public void update( PolygonStyling obj, String val ) {
+                        obj.perpendicularOffset = Double.parseDouble( val );
+                    }
+                }, contn );
+            }
+
+            if ( in.getLocalName().equals( "Displacement" ) ) {
+                while ( !( in.isEndElement() && in.getLocalName().equals( "Displacement" ) ) ) {
+                    in.nextTag();
+
+                    if ( in.getLocalName().equals( "DisplacementX" ) ) {
+                        contn = updateOrContinue( in, "DisplacementX", baseOrEvaluated, new Updater<PolygonStyling>() {
+                            @Override
+                            public void update( PolygonStyling obj, String val ) {
+                                obj.displacementX = Double.parseDouble( val );
+                            }
+                        }, contn );
+                    }
+
+                    if ( in.getLocalName().equals( "DisplacementY" ) ) {
+                        contn = updateOrContinue( in, "DisplacementY", baseOrEvaluated, new Updater<PolygonStyling>() {
+                            @Override
+                            public void update( PolygonStyling obj, String val ) {
+                                obj.displacementY = Double.parseDouble( val );
+                            }
+                        }, contn );
+                    }
+                }
+            }
+        }
+
+        if ( contn == null ) {
+            return new Symbolizer<PolygonStyling>( baseOrEvaluated, geom, name );
+        }
+
+        return new Symbolizer<PolygonStyling>( baseOrEvaluated, contn, geom, name );
     }
 
     private static <T> Continuation<T> updateOrContinue( XMLStreamReader in, String name, T obj,
