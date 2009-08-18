@@ -240,9 +240,6 @@ public class Filter110XMLDecoder {
                             throws XMLParsingException, XMLStreamException {
 
         Filter filter = null;
-        System.out.println ("HUHU: " + xmlStream.isStartElement());
-        System.out.println ("HUHU: " + xmlStream.getName().getNamespaceURI().equals( OGC_NS ));
-        System.out.println ("HUHU: " + xmlStream.getName().getLocalPart().equals( "Filter" ));
         xmlStream.require( START_ELEMENT, OGC_NS, "Filter" );
         xmlStream.nextTag();
         if ( xmlStream.getEventType() != START_ELEMENT ) {
