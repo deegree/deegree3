@@ -280,6 +280,7 @@
 
     <target name="local-publish" depends="build-jar" if="compile.change" >
         <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        <echo message="project ${module.name}-build released with version ${build.version}" />
     </target>
 
     <target name="publish-nightly" description="-> publish ${module.name}-build in the nightly ivy  repository">
@@ -287,7 +288,11 @@
         <ant target="nightly-publish"/>
     </target>
 
-    <target name="nightly-publish" depends="publish-local,zip-javadoc,zip-sources" if="compile.change">
+    <target name="nightly-publish" depends="build-jar,zip-javadoc,zip-sources" if="compile.change">
+        <!--create a local build as well, it is needed for the other dependent libs -->
+        <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="local-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
+        
+        <!-- put the result on the deployment server -->        
         <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
         <ivy:publish conf="${module.name}-javadoc" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher"  pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
         <ivy:publish conf="${module.name}-src" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher"  pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
