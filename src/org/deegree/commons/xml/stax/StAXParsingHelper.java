@@ -107,10 +107,10 @@ public class StAXParsingHelper {
     public static void skipElement( XMLStreamReader xmlStream )
                             throws XMLStreamException {
 
-        if (xmlStream.isEndElement()) {
+        if ( xmlStream.isEndElement() ) {
             return;
         }
-        
+
         int openElements = 1;
         while ( openElements > 0 ) {
             // this should not be necessary, but IS
@@ -244,6 +244,31 @@ public class StAXParsingHelper {
                 String msg = Messages.getMessage( "XML_SYNTAX_ERROR_BOOLEAN", s );
                 throw new XMLParsingException( xmlStream, msg );
             }
+        }
+        return result;
+    }
+
+    public static QName getElementTextAsQName( XMLStreamReader xmlStream )
+                            throws XMLParsingException, XMLStreamException {
+        QName result = null;
+        String s = xmlStream.getElementText();
+        if ( s == null ) {
+            throw new XMLParsingException( xmlStream, "No element text, but QName expected." );
+        }
+        int colonIdx = s.indexOf( ':' );
+        if ( colonIdx < 0 ) {
+            result = new QName( s );
+        } else if ( colonIdx == s.length() - 1 ) {
+            throw new XMLParsingException( xmlStream, "Invalid QName '" + s + "': no local name." );
+        } else {
+            String prefix = s.substring( 0, colonIdx );
+            String localPart = s.substring( colonIdx + 1 );
+            String nsUri = xmlStream.getNamespaceURI( prefix );
+            if ( nsUri == null ) {
+                throw new XMLParsingException( xmlStream, "Invalid QName '" + s + "': prefix '" + prefix
+                                                          + "' is unbound." );
+            }
+            result = new QName( nsUri, localPart, prefix );
         }
         return result;
     }

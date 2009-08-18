@@ -72,8 +72,6 @@ class LazyOperationsIterable implements Iterable<TransactionOperation> {
      * @param xmlStream
      */
     LazyOperationsIterable( Version version, XMLStreamReader xmlStream ) {
-        System.out.println (xmlStream.getEventType() == XMLStreamConstants.START_ELEMENT);
-        System.out.println (xmlStream.getName());
         this.version = version;
         this.xmlStream = xmlStream;
     }

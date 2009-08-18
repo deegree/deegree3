@@ -36,13 +36,24 @@
 
 package org.deegree.protocol.wfs.transaction;
 
-import java.util.Map;
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.protocol.wfs.WFSConstants.WFS_NS;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.feature.Feature;
+import org.deegree.commons.types.ows.Version;
+import org.deegree.commons.xml.CommonNamespaces;
+import org.deegree.commons.xml.XMLParsingException;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.filter.Filter;
-import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.xml.Filter110XMLDecoder;
+import org.deegree.protocol.wfs.WFSConstants;
 
 /**
  * Represents a WFS <code>Update</code> operation (part of a {@link Transaction} request).
@@ -56,20 +67,43 @@ import org.deegree.filter.expression.PropertyName;
  */
 public class Update extends TransactionOperation {
 
-    private String inputFormat;
+    private final Version version;
 
-    private String srsName;
-    
-    private QName typeName;
+    private final QName ftName;
 
-    private Feature replacementFeature;
+    private final String inputFormat;
 
-    private Map<PropertyName, Object> replacementProps;
+    private final String srsName;
 
-    private Filter filter;    
+    private final XMLStreamReader xmlStream;
 
-    public Update( String handle ) {
+    private boolean createdIterator;
+
+    /**
+     * Creates a new {@link Update} instance for a stream-based access strategy.
+     * 
+     * @param handle
+     *            identifier for the operation, may be null
+     * @param version
+     *            protocol version, must not be null
+     * @param ftName
+     *            name of the targeted feature type, must not be null
+     * @param inputFormat
+     *            the format of encoded property values, may be null (unspecified)
+     * @param srsName
+     *            the coordinate references system used for the geometries, may be null (unspecified)
+     * @param xmlStream
+     *            provides access to the XML encoded replacement properties and the filter, must point at the
+     *            <code>START_ELEMENT</code> event of the first "wfs:Property"
+     */
+    public Update( String handle, Version version, QName ftName, String inputFormat, String srsName,
+                   XMLStreamReader xmlStream ) {
         super( handle );
+        this.version = version;
+        this.ftName = ftName;
+        this.inputFormat = inputFormat;
+        this.srsName = srsName;
+        this.xmlStream = xmlStream;
     }
 
     /**
@@ -80,23 +114,97 @@ public class Update extends TransactionOperation {
     @Override
     public Type getType() {
         return Type.UPDATE;
-    }     
-    
+    }
+
     /**
-     * Returns the format of encoded property values.
+     * Returns the name of the targeted feature type.
      * 
-     * @return the format of encoded property values, may be null (unspecified)
+     * @return the name of the targeted feature type, never null
+     */
+    public QName getTypeName() {
+        return this.ftName;
+    }
+
+    /**
+     * Returns the format of the encoded property values.
+     * 
+     * @return the format of the encoded property values, may be null (unspecified)
      */
     public String getInputFormat() {
         return inputFormat;
     }
 
     /**
-     * Returns the specified coordinate system for the geometries to be inserted.
+     * Returns the specified coordinate reference system for geometries to be updated.
      * 
-     * @return the specified coordinate system, can be null (unspecified)
+     * @return the specified coordinate reference system, can be null (unspecified)
      */
     public String getSRSName() {
         return srsName;
-    }    
+    }
+
+    public Iterator<PropertyReplacement> getReplacementProps() {
+        if ( createdIterator ) {
+            throw new RuntimeException( "Iteration over the transaction operations can only be done once." );
+        }
+        createdIterator = true;
+        return new Iterator<PropertyReplacement>() {
+
+            @Override
+            public boolean hasNext() {
+                return xmlStream.isStartElement() && new QName( WFS_NS, "Property" ).equals( xmlStream.getName() );
+            }
+
+            @Override
+            public PropertyReplacement next() {
+                if ( !hasNext() ) {
+                    throw new NoSuchElementException();
+                }
+                PropertyReplacement replacement = null;
+                if ( version == WFSConstants.VERSION_110 ) {
+                    try {
+                        replacement = TransactionXMLAdapter.parseProperty110( xmlStream );
+                    } catch ( XMLStreamException e ) {
+                        throw new XMLParsingException( xmlStream, "Error parsing transaction operation: "
+                                                                  + e.getMessage() );
+                    }
+                } else {
+                    throw new UnsupportedOperationException(
+                                                             "Only WFS 1.1.0 transaction are implemented at the moment." );
+                }
+                return replacement;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    /**
+     * Returns the filter that selects the feature instances to be updated.
+     * <p>
+     * NOTE: Due to streaming acccess strategy, there are some rules for using this method:
+     * <ul>
+     * <li>#getReplacementProps() must have been called before</li>
+     * <li>the client must have iterated over all returned properties</li>
+     * <li>the method must be called exactly once</li>
+     * </ul>
+     * </p>
+     * 
+     * @return Filter that selects the feature instances to be updated, can be <code>null</code>
+     * @throws XMLStreamException
+     */
+    public Filter getFilter()
+                            throws XMLStreamException {
+        // optional: 'ogc:Filter'
+        Filter filter = null;
+        if ( xmlStream.isStartElement() ) {
+            xmlStream.require( START_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
+            filter = Filter110XMLDecoder.parse( xmlStream );
+            xmlStream.require( END_ELEMENT, CommonNamespaces.OGCNS, "Filter" );
+        }
+        return filter;
+    }
 }

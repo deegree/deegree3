@@ -42,6 +42,9 @@ import org.deegree.feature.persistence.IDGenMode;
 
 /**
  * Represents a WFS <code>Insert</code> operation (part of a {@link Transaction} request).
+ * <p>
+ * NOTE: Due to the possible size of <code>Insert</code> operations, this...
+ * </p>
  * 
  * @see Transaction
  * 
@@ -66,7 +69,7 @@ public class Insert extends TransactionOperation {
      * @param handle
      *            identifier for the operation, can be null
      * @param idGenMode
-     *            control how identifiers for newly inserted feature instances are generated, can be null (unspecified)
+     *            controls how identifiers for newly inserted feature instances are generated, can be null (unspecified)
      * @param inputFormat
      *            the format of encoded feature instances, may be null (unspecified)
      * @param srsName
@@ -92,8 +95,8 @@ public class Insert extends TransactionOperation {
     @Override
     public Type getType() {
         return Type.INSERT;
-    }    
-    
+    }
+
     /**
      * Returns the mode for the generation of feature identifiers.
      * 
@@ -124,7 +127,8 @@ public class Insert extends TransactionOperation {
     /**
      * Returns an <code>XMLStreamReader</code> that provides access to the encoded features to be inserted.
      * <p>
-     * Note: It is only safe to get and read the stream once.
+     * NOTE: The client <b>must</b> read this stream exactly once and exactly up to the next tag event after the closing
+     * element of the feature/feature collection, i.e. the END_ELEMENT of the surrounding <code>Insert</code> element.
      * </p>
      * 
      * @return <code>XMLStreamReader</code> that provides access to the XML encoded features, cursor must point at the

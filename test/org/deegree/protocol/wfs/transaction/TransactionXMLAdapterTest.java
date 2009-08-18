@@ -40,7 +40,9 @@ package org.deegree.protocol.wfs.transaction;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Iterator;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -48,6 +50,9 @@ import javax.xml.stream.XMLStreamReader;
 
 import junit.framework.TestCase;
 
+import org.deegree.commons.xml.stax.StAXParsingHelper;
+import org.deegree.feature.persistence.IDGenMode;
+import org.deegree.filter.Filter;
 import org.deegree.protocol.wfs.WFSConstants;
 import org.junit.Test;
 
@@ -63,6 +68,10 @@ public class TransactionXMLAdapterTest extends TestCase {
 
     private final String DELETE_110 = "examples_xml/v110/delete.xml";
 
+    private final String INSERT_110 = "examples_xml/v110/insert.xml";
+
+    private final String UPDATE_110 = "examples_xml/v110/update.xml";
+
     @Test
     public void testDelete110()
                             throws Exception {
@@ -72,9 +81,74 @@ public class TransactionXMLAdapterTest extends TestCase {
         assertEquals( "TA_1", ta.getHandle() );
         assertEquals( null, ta.getReleaseAction() );
 
-        for ( TransactionOperation operation : ta.getOperations()) {
-            System.out.println (operation);
-        }
+        Iterator<TransactionOperation> iter = ta.getOperations().iterator();
+        TransactionOperation operation = iter.next();
+        assertEquals( TransactionOperation.Type.DELETE, operation.getType() );
+        Delete delete = (Delete) operation;
+        assertEquals( "delete1", delete.getHandle() );
+        assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), delete.getTypeName() );
+        assertEquals( Filter.Type.OPERATOR_FILTER, delete.getFilter().getType() );
+        assertFalse( iter.hasNext() );
+    }
+
+    @Test
+    public void testInsert110()
+                            throws Exception {
+
+        Transaction ta = parse( INSERT_110 );
+        assertEquals( WFSConstants.VERSION_110, ta.getVersion() );
+        assertEquals( null, ta.getHandle() );
+        assertEquals( null, ta.getReleaseAction() );
+
+        Iterator<TransactionOperation> iter = ta.getOperations().iterator();
+        TransactionOperation operation = iter.next();
+        assertEquals( TransactionOperation.Type.INSERT, operation.getType() );
+        Insert insert = (Insert) operation;
+        assertEquals( "insert", insert.getHandle() );
+        assertEquals( IDGenMode.GENERATE_NEW, insert.getIdGen() );
+        assertEquals( null, insert.getInputFormat() );
+        assertEquals( null, insert.getSRSName() );
+        XMLStreamReader xmlStream = insert.getFeatures();
+        StAXParsingHelper.skipElement( xmlStream );
+        xmlStream.nextTag();
+        assertFalse( iter.hasNext() );
+    }
+
+    @Test
+    public void testUpdate110()
+                            throws Exception {
+
+        Transaction ta = parse( UPDATE_110 );
+        assertEquals( WFSConstants.VERSION_110, ta.getVersion() );
+        assertEquals( null, ta.getHandle() );
+        assertEquals( null, ta.getReleaseAction() );
+
+        Iterator<TransactionOperation> iter = ta.getOperations().iterator();
+        TransactionOperation operation = iter.next();
+        assertEquals( TransactionOperation.Type.UPDATE, operation.getType() );
+        Update update = (Update) operation;
+        assertEquals( "update1", update.getHandle() );
+        assertEquals( new QName( "http://www.deegree.org/app", "Philosopher" ), update.getTypeName() );
+        assertEquals( null, update.getInputFormat() );
+        assertEquals( null, update.getSRSName() );
+
+        Iterator<PropertyReplacement> iter2 = update.getReplacementProps();
+        PropertyReplacement replacementProp1 = iter2.next();
+        assertEquals( new QName( "http://www.deegree.org/app", "name" ), replacementProp1.getPropertyName() );
+        XMLStreamReader prop1ValueStream = replacementProp1.getReplacementValue();
+        assertEquals( "Albert Camus", prop1ValueStream.getElementText() );
+        prop1ValueStream.nextTag();
+        prop1ValueStream.nextTag();
+        PropertyReplacement replacementProp2 = iter2.next();
+        assertEquals( new QName( "http://www.deegree.org/app", "subject" ), replacementProp2.getPropertyName() );
+        XMLStreamReader prop2ValueStream = replacementProp2.getReplacementValue();
+        assertEquals( "existentialism", prop1ValueStream.getElementText() );
+        prop2ValueStream.nextTag();
+        prop2ValueStream.nextTag();
+
+        Filter filter = update.getFilter();
+        assertEquals( Filter.Type.OPERATOR_FILTER, filter.getType() );
+        assertFalse( iter.hasNext() );
     }
 
     private Transaction parse( String resourceName )
