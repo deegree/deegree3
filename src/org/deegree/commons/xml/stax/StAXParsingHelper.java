@@ -96,36 +96,6 @@ public class StAXParsingHelper {
         return s;
     }
 
-    private final String getEventTypeString( XMLStreamReader xmlStream, int eventType ) {
-        switch ( eventType ) {
-        case START_ELEMENT:
-            return "START_ELEMENT";
-        case END_ELEMENT:
-            return "END_ELEMENT";
-        case PROCESSING_INSTRUCTION:
-            return "PROCESSING_INSTRUCTION";
-        case CHARACTERS:
-            return "CHARACTERS";
-        case COMMENT:
-            return "COMMENT";
-        case START_DOCUMENT:
-            return "START_DOCUMENT";
-        case END_DOCUMENT:
-            return "END_DOCUMENT";
-        case ENTITY_REFERENCE:
-            return "ENTITY_REFERENCE";
-        case ATTRIBUTE:
-            return "ATTRIBUTE";
-        case DTD:
-            return "DTD";
-        case CDATA:
-            return "CDATA";
-        case SPACE:
-            return "SPACE";
-        }
-        return "UNKNOWN_EVENT_TYPE , " + eventType;
-    }
-
     /**
      * @param url
      * @param in
