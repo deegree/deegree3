@@ -70,10 +70,15 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation.Updater;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.PolygonStyling;
+import org.deegree.rendering.r2d.styling.TextStyling;
 import org.deegree.rendering.r2d.styling.components.Fill;
+import org.deegree.rendering.r2d.styling.components.Font;
 import org.deegree.rendering.r2d.styling.components.Graphic;
+import org.deegree.rendering.r2d.styling.components.Halo;
+import org.deegree.rendering.r2d.styling.components.LinePlacement;
 import org.deegree.rendering.r2d.styling.components.Mark;
 import org.deegree.rendering.r2d.styling.components.Stroke;
+import org.deegree.rendering.r2d.styling.components.Font.Style;
 import org.deegree.rendering.r2d.styling.components.Mark.SimpleMark;
 import org.deegree.rendering.r2d.styling.components.Stroke.LineCap;
 import org.deegree.rendering.r2d.styling.components.Stroke.LineJoin;
@@ -553,17 +558,20 @@ public class SLD100Parser {
      * @return the symbolizer
      * @throws XMLStreamException
      */
-    public static Symbolizer<?> parseSymbolizer( XMLStreamReader in )
+    public static Pair<Symbolizer<?>, Continuation<StringBuffer>> parseSymbolizer( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, null );
         if ( in.getLocalName().equals( "PointSymbolizer" ) ) {
-            return parsePointSymbolizer( in );
+            return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parsePointSymbolizer( in ), null );
         }
         if ( in.getLocalName().equals( "LineSymbolizer" ) ) {
-            return parseLineSymbolizer( in );
+            return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parseLineSymbolizer( in ), null );
         }
         if ( in.getLocalName().equals( "PolygonSymbolizer" ) ) {
-            return parsePolygonSymbolizer( in );
+            return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parsePolygonSymbolizer( in ), null );
+        }
+        if ( in.getLocalName().equals( "TextSymbolizer" ) ) {
+            return (Pair) parseTextSymbolizer( in );
         }
         return null;
     }
@@ -808,6 +816,356 @@ public class SLD100Parser {
         }
 
         return contn;
+    }
+
+    /**
+     * @param in
+     * @return the symbolizer
+     * @throws XMLStreamException
+     */
+    public static Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>> parseTextSymbolizer( XMLStreamReader in )
+                            throws XMLStreamException {
+        in.require( START_ELEMENT, SLDNS, "TextSymbolizer" );
+
+        QName geom = null;
+        String name = null;
+        TextStyling baseOrEvaluated = new TextStyling();
+        Continuation<TextStyling> contn = null;
+        Continuation<StringBuffer> label = null;
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "TextSymbolizer" ) ) ) {
+            in.nextTag();
+            if ( in.getLocalName().equals( "Name" ) ) {
+                in.next();
+                name = in.getText();
+                in.nextTag();
+                in.require( END_ELEMENT, SLDNS, "Name" );
+            }
+
+            if ( in.getLocalName().equals( "Geometry" ) ) {
+                in.next();
+                geom = asQName( in, in.getText() );
+                in.nextTag();
+                in.require( END_ELEMENT, SLDNS, "Geometry" );
+            }
+
+            if ( in.getLocalName().equals( "Label" ) ) {
+                label = updateOrContinue( in, "Label", new StringBuffer(), new Updater<StringBuffer>() {
+                    @Override
+                    public void update( StringBuffer obj, String val ) {
+                        obj.append( val );
+                    }
+                }, null );
+
+            }
+
+            if ( in.getLocalName().equals( "LabelPlacement" ) ) {
+                while ( !( in.isEndElement() && in.getLocalName().equalsIgnoreCase( "LabelPlacement" ) ) ) {
+                    in.nextTag();
+
+                    if ( in.getLocalName().equalsIgnoreCase( "PointPlacement" ) ) {
+                        while ( !( in.isEndElement() && in.getLocalName().equals( "PointPlacement" ) ) ) {
+                            in.nextTag();
+                            if ( in.getLocalName().equals( "AnchorPoint" ) ) {
+                                while ( !( in.isEndElement() && in.getLocalName().equals( "AnchorPoint" ) ) ) {
+                                    in.nextTag();
+                                    if ( in.getLocalName().equals( "AnchorPointX" ) ) {
+                                        contn = updateOrContinue( in, "AnchorPointX", baseOrEvaluated,
+                                                                  new Updater<TextStyling>() {
+                                                                      @Override
+                                                                      public void update( TextStyling obj, String val ) {
+                                                                          obj.anchorPointX = Double.parseDouble( val );
+                                                                      }
+                                                                  }, contn );
+                                    }
+                                    if ( in.getLocalName().equals( "AnchorPointY" ) ) {
+                                        contn = updateOrContinue( in, "AnchorPointY", baseOrEvaluated,
+                                                                  new Updater<TextStyling>() {
+                                                                      @Override
+                                                                      public void update( TextStyling obj, String val ) {
+                                                                          obj.anchorPointY = Double.parseDouble( val );
+                                                                      }
+                                                                  }, contn );
+                                    }
+                                }
+                            }
+
+                            if ( in.getLocalName().equals( "Displacement" ) ) {
+                                while ( !( in.isEndElement() && in.getLocalName().equals( "Displacement" ) ) ) {
+                                    in.nextTag();
+                                    if ( in.getLocalName().equals( "DisplacementX" ) ) {
+                                        contn = updateOrContinue( in, "DisplacementX", baseOrEvaluated,
+                                                                  new Updater<TextStyling>() {
+                                                                      @Override
+                                                                      public void update( TextStyling obj, String val ) {
+                                                                          obj.displacementX = Double.parseDouble( val );
+                                                                      }
+                                                                  }, contn );
+                                    }
+                                    if ( in.getLocalName().equals( "DisplacementY" ) ) {
+                                        contn = updateOrContinue( in, "DisplacementY", baseOrEvaluated,
+                                                                  new Updater<TextStyling>() {
+                                                                      @Override
+                                                                      public void update( TextStyling obj, String val ) {
+                                                                          obj.displacementY = Double.parseDouble( val );
+                                                                      }
+                                                                  }, contn );
+                                    }
+                                }
+                            }
+
+                            if ( in.getLocalName().equals( "Rotation" ) ) {
+                                contn = updateOrContinue( in, "Rotation", baseOrEvaluated, new Updater<TextStyling>() {
+                                    @Override
+                                    public void update( TextStyling obj, String val ) {
+                                        obj.rotation = Double.parseDouble( val );
+                                    }
+                                }, contn );
+                            }
+
+                        }
+                    }
+
+                    if ( in.getLocalName().equals( "LinePlacement" ) ) {
+                        final Pair<LinePlacement, Continuation<LinePlacement>> pair = parseLinePlacement( in );
+                        if ( pair != null ) {
+                            baseOrEvaluated.linePlacement = pair.first;
+
+                            if ( pair.second != null ) {
+                                contn = new Continuation<TextStyling>() {
+                                    @Override
+                                    public void updateStep( TextStyling base, Feature f ) {
+                                        pair.second.evaluate( base.linePlacement, f );
+                                    }
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+
+            if ( in.getLocalName().equals( "Halo" ) ) {
+                final Pair<Halo, Continuation<Halo>> haloPair = parseHalo( in );
+                if ( haloPair != null ) {
+                    baseOrEvaluated.halo = haloPair.first;
+
+                    if ( haloPair.second != null ) {
+                        contn = new Continuation<TextStyling>() {
+                            @Override
+                            public void updateStep( TextStyling base, Feature f ) {
+                                haloPair.second.evaluate( base.halo, f );
+                            }
+                        };
+                    }
+                }
+            }
+
+            if ( in.getLocalName().equals( "Font" ) ) {
+                final Pair<Font, Continuation<Font>> fontPair = parseFont( in );
+                if ( fontPair != null ) {
+                    baseOrEvaluated.font = fontPair.first;
+
+                    if ( fontPair.second != null ) {
+                        contn = new Continuation<TextStyling>() {
+                            @Override
+                            public void updateStep( TextStyling base, Feature f ) {
+                                fontPair.second.evaluate( base.font, f );
+                            }
+                        };
+                    }
+                }
+            }
+
+            if ( in.getLocalName().equals( "Fill" ) ) {
+                final Pair<Fill, Continuation<Fill>> fillPair = parseFill( in );
+                if ( fillPair != null ) {
+                    baseOrEvaluated.fill = fillPair.first;
+
+                    if ( fillPair.second != null ) {
+                        contn = new Continuation<TextStyling>() {
+                            @Override
+                            public void updateStep( TextStyling base, Feature f ) {
+                                fillPair.second.evaluate( base.fill, f );
+                            }
+                        };
+                    }
+                }
+            }
+        }
+
+        if ( contn == null ) {
+            Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, geom, name );
+            return new Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>>( sym, label );
+        }
+
+        Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, contn, geom, name );
+        return new Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>>( sym, label );
+    }
+
+    private static Pair<Font, Continuation<Font>> parseFont( XMLStreamReader in )
+                            throws XMLStreamException {
+        in.require( START_ELEMENT, SLDNS, "Font" );
+
+        Font baseOrEvaluated = new Font();
+        Continuation<Font> contn = null;
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "Font" ) ) ) {
+            in.nextTag();
+
+            if ( in.getLocalName().endsWith( "Parameter" ) ) {
+                String name = in.getAttributeValue( null, "name" );
+                if ( name.equals( "font-family" ) ) {
+                    contn = updateOrContinue( in, "Parameter", baseOrEvaluated, new Updater<Font>() {
+                        @Override
+                        public void update( Font obj, String val ) {
+                            obj.fontFamily.add( val );
+                        }
+                    }, contn );
+                }
+                if ( name.equals( "font-style" ) ) {
+                    contn = updateOrContinue( in, "Parameter", baseOrEvaluated, new Updater<Font>() {
+                        @Override
+                        public void update( Font obj, String val ) {
+                            obj.fontStyle = Style.valueOf( val.toUpperCase() );
+                        }
+                    }, contn );
+                }
+                if ( name.equals( "font-weight" ) ) {
+                    contn = updateOrContinue( in, "Parameter", baseOrEvaluated, new Updater<Font>() {
+                        @Override
+                        public void update( Font obj, String val ) {
+                            obj.bold = val.equalsIgnoreCase( "bold" );
+                        }
+                    }, contn );
+                }
+                if ( name.equals( "font-size" ) ) {
+                    contn = updateOrContinue( in, "Parameter", baseOrEvaluated, new Updater<Font>() {
+                        @Override
+                        public void update( Font obj, String val ) {
+                            obj.fontSize = Integer.parseInt( val );
+                        }
+                    }, contn );
+                }
+            }
+        }
+
+        return new Pair<Font, Continuation<Font>>( baseOrEvaluated, contn );
+
+    }
+
+    private static Pair<Halo, Continuation<Halo>> parseHalo( XMLStreamReader in )
+                            throws XMLStreamException {
+        in.require( START_ELEMENT, SLDNS, "Halo" );
+
+        Halo baseOrEvaluated = new Halo();
+        Continuation<Halo> contn = null;
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "Halo" ) ) ) {
+            in.nextTag();
+
+            if ( in.getLocalName().equals( "Radius" ) ) {
+                contn = updateOrContinue( in, "Radius", baseOrEvaluated, new Updater<Halo>() {
+                    @Override
+                    public void update( Halo obj, String val ) {
+                        obj.radius = Double.parseDouble( val );
+
+                    }
+                }, contn );
+            }
+
+            if ( in.getLocalName().equals( "Fill" ) ) {
+                final Pair<Fill, Continuation<Fill>> fillPair = parseFill( in );
+
+                if ( fillPair != null ) {
+                    baseOrEvaluated.fill = fillPair.first;
+
+                    if ( fillPair.second != null ) {
+                        contn = new Continuation<Halo>() {
+                            @Override
+                            public void updateStep( Halo base, Feature f ) {
+                                fillPair.second.evaluate( base.fill, f );
+                            }
+                        };
+                    }
+                }
+            }
+        }
+
+        return new Pair<Halo, Continuation<Halo>>( baseOrEvaluated, contn );
+    }
+
+    private static Pair<LinePlacement, Continuation<LinePlacement>> parseLinePlacement( XMLStreamReader in )
+                            throws XMLStreamException {
+        in.require( START_ELEMENT, SLDNS, "LinePlacement" );
+
+        LinePlacement baseOrEvaluated = new LinePlacement();
+        Continuation<LinePlacement> contn = null;
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "LinePlacement" ) ) ) {
+            in.nextTag();
+
+            if ( in.getLocalName().equals( "PerpendicularOffset" ) ) {
+                contn = updateOrContinue( in, "PerpendicularOffset", baseOrEvaluated, new Updater<LinePlacement>() {
+                    @Override
+                    public void update( LinePlacement obj, String val ) {
+                        obj.perpendicularOffset = Double.parseDouble( val );
+
+                    }
+                }, contn );
+            }
+
+            if ( in.getLocalName().equals( "InitialGap" ) ) {
+                contn = updateOrContinue( in, "InitialGap", baseOrEvaluated, new Updater<LinePlacement>() {
+                    @Override
+                    public void update( LinePlacement obj, String val ) {
+                        obj.initialGap = Double.parseDouble( val );
+
+                    }
+                }, contn );
+            }
+
+            if ( in.getLocalName().equals( "Gap" ) ) {
+                contn = updateOrContinue( in, "Gap", baseOrEvaluated, new Updater<LinePlacement>() {
+                    @Override
+                    public void update( LinePlacement obj, String val ) {
+                        obj.gap = Double.parseDouble( val );
+
+                    }
+                }, contn );
+            }
+
+            if ( in.getLocalName().equals( "GeneralizeLine" ) ) {
+                contn = updateOrContinue( in, "GeneralizeLine", baseOrEvaluated, new Updater<LinePlacement>() {
+                    @Override
+                    public void update( LinePlacement obj, String val ) {
+                        obj.generalizeLine = Boolean.parseBoolean( val );
+
+                    }
+                }, contn );
+            }
+
+            if ( in.getLocalName().equals( "IsAligned" ) ) {
+                contn = updateOrContinue( in, "IsAligned", baseOrEvaluated, new Updater<LinePlacement>() {
+                    @Override
+                    public void update( LinePlacement obj, String val ) {
+                        obj.isAligned = Boolean.parseBoolean( val );
+
+                    }
+                }, contn );
+            }
+
+            if ( in.getLocalName().equals( "IsRepeated" ) ) {
+                contn = updateOrContinue( in, "IsRepeated", baseOrEvaluated, new Updater<LinePlacement>() {
+                    @Override
+                    public void update( LinePlacement obj, String val ) {
+                        obj.repeat = Boolean.parseBoolean( val );
+
+                    }
+                }, contn );
+            }
+        }
+
+        return new Pair<LinePlacement, Continuation<LinePlacement>>( baseOrEvaluated, contn );
     }
 
 }
