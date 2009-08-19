@@ -7,7 +7,7 @@
       <filesystem name="scm-libs" local="true">
         <artifact pattern="${basedir}/lib/[organisation]/[artifact](-[revision]).[ext]" />
       </filesystem>
-      <filesystem name="local-publisher" checksums="md5">
+      <filesystem name="local-publisher" local="true" checksums="md5">
         <ivy pattern="${repository.dir}/[organisation]/[module]/ivy-[revision].xml" />
         <artifact pattern="${repository.dir}/[organisation]/[module]/[artifact]-${module.version.post}.[ext]" />
       </filesystem>

@@ -309,8 +309,11 @@
         <delete dir="${build.dir}" failonerror="false" />
     </target>
 
-    <target name="clean-cache" depends="clean" description="-> cleans this projects created build directory, the ivy cache and the .ivy/local/org.deegree/[module]">
+    <target name="clean-local-repository" depends="clean" description="-> cleans this projects created build directory, the ivy cache and the .ivy/local/org.deegree/[module]">
         <delete dir="${repository.dir}/${module.organisation}/${module.name}" failonerror="false" />
+    </target>
+
+    <target name="clean-cache" depends="clean-local-repository" description="-> cleans this projects created build directory, the ivy cache and the .ivy/local/org.deegree/[module]">
         <delete dir="${ivy.home.dir}/cache" failonerror="false" />
     </target>
 
