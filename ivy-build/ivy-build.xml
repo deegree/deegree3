@@ -296,7 +296,7 @@
         <ivy:publish conf="${module.name}-build" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher" pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
         <ivy:publish conf="${module.name}-javadoc" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher"  pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
         <ivy:publish conf="${module.name}-src" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher"  pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />
-        <ivy:report todir="${build.dir}" outputpattern="${report.name}.html" conf="${module.name}-build" graph="false"/>
+        <ivy:report todir="${build.dir}" outputpattern="${report.name}.[ext]" conf="${module.name}-build" xml="false" dot="true" graph="false"/>
         <ivy:publish conf="${module.name}-report" artifactspattern="${build.dir}/[artifact].[ext]" resolver="nightly-publisher"  pubrevision="${build.version}" status="integration" forcedeliver="true" overwrite="true" />        
     </target>
 
