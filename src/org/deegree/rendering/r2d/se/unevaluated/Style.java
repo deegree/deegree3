@@ -62,25 +62,31 @@ public class Style {
 
     private HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
 
+    private String name;
+
     /**
      * @param rules
      * @param labels
+     * @param name
      */
     public Style( Collection<Continuation<LinkedList<Symbolizer<?>>>> rules,
-                  Map<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels ) {
+                  Map<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels, String name ) {
         this.rules.addAll( rules );
         this.labels.putAll( labels );
+        this.name = name;
     }
 
     /**
      * @param symbolizer
      * @param label
+     * @param name
      */
-    public Style( Symbolizer<?> symbolizer, Continuation<StringBuffer> label ) {
+    public Style( Symbolizer<?> symbolizer, Continuation<StringBuffer> label, String name ) {
         rules.add( new InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>>( symbolizer ) );
         if ( label != null ) {
             labels.put( (Symbolizer) symbolizer, label );
         }
+        this.name = name;
     }
 
     /**
@@ -109,6 +115,13 @@ public class Style {
         }
 
         return (LinkedList) res;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
     }
 
     class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {

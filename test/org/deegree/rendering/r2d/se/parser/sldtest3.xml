@@ -2,33 +2,25 @@
 <PointSymbolizer xmlns="http://www.opengis.net/sld"
                  xmlns:ogc="http://www.opengis.net/ogc"
                  xmlns:app="http://www.deegree.org/app">
-  <Name>My Name</Name>
-  <Geometry>app:someGeometryProp</Geometry>
+  <Geometry>
+    <ogc:PropertyName>app:someGeometryProp</ogc:PropertyName>
+  </Geometry>
   <Graphic>
     <Mark>
       <WellKnownName>circle</WellKnownName>
       <Fill>
-        <CssParameter name="fill">#ff<ogc:Expression><ogc:PropertyName>app:someProp</ogc:PropertyName></ogc:Expression>ff</CssParameter>
+        <CssParameter name="fill">#ff<ogc:PropertyName>app:someProp</ogc:PropertyName>ff</CssParameter>
         <CssParameter name="fill-opacity">0.6</CssParameter>
       </Fill>
       <Stroke>
-        <GraphicFill>
-          <Graphic>
-            <Mark>
-              <WellKnownName>square</WellKnownName>
-            </Mark>
-          </Graphic>
-        </GraphicFill>
         <GraphicStroke>
           <Graphic>
             <Mark>
               <WellKnownName>square</WellKnownName>
             </Mark>
           </Graphic>
-          <InitialGap>10</InitialGap>
-          <Gap>20</Gap>
         </GraphicStroke>
-        <CssParameter name="stroke">#ff<ogc:Expression><ogc:PropertyName>app:someProp</ogc:PropertyName></ogc:Expression><ogc:Expression><ogc:PropertyName>app:someProp</ogc:PropertyName></ogc:Expression></CssParameter>
+        <CssParameter name="stroke">#ff<ogc:PropertyName>app:someProp</ogc:PropertyName><ogc:PropertyName>app:someProp</ogc:PropertyName></CssParameter>
         <CssParameter name="stroke-opacity">1</CssParameter>
         <CssParameter name="stroke-width">2</CssParameter>
         <CssParameter name="stroke-linejoin">round</CssParameter>
@@ -40,13 +32,5 @@
     <Opacity>1</Opacity>
     <Size>20</Size>
     <Rotation>45</Rotation>
-    <AnchorPoint>
-      <AnchorPointX>7</AnchorPointX>
-      <AnchorPointY>8</AnchorPointY>
-    </AnchorPoint>
-    <Displacement>
-      <DisplacementX>86</DisplacementX>
-      <DisplacementY>82</DisplacementY>
-    </Displacement>
   </Graphic>
 </PointSymbolizer>

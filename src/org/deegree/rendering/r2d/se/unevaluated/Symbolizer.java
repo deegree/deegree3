@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r2d.se.unevaluated;
 
@@ -40,21 +40,21 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.HashMap;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.commons.utils.Pair;
 import org.deegree.feature.Feature;
 import org.deegree.feature.Property;
+import org.deegree.filter.Expression;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Geometry;
 import org.deegree.rendering.r2d.styling.Copyable;
 import org.slf4j.Logger;
 
 /**
  * <code>Symbolizer</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  * @param <T>
  */
@@ -71,7 +71,7 @@ public class Symbolizer<T extends Copyable<T>> {
 
     private Continuation<T> next;
 
-    private QName geometry;
+    private Expression geometry;
 
     private String name;
 
@@ -80,7 +80,7 @@ public class Symbolizer<T extends Copyable<T>> {
      * @param geometry
      * @param name
      */
-    public Symbolizer( T evaluated, QName geometry, String name ) {
+    public Symbolizer( T evaluated, Expression geometry, String name ) {
         this.evaluated = evaluated;
         this.geometry = geometry;
         this.name = name;
@@ -92,7 +92,7 @@ public class Symbolizer<T extends Copyable<T>> {
      * @param geometry
      * @param name
      */
-    public Symbolizer( T base, Continuation<T> next, QName geometry, String name ) {
+    public Symbolizer( T base, Continuation<T> next, Expression geometry, String name ) {
         this.base = base;
         this.next = next;
         this.geometry = geometry;
@@ -116,19 +116,25 @@ public class Symbolizer<T extends Copyable<T>> {
         }
 
         Geometry geom = null;
-
-        Property<Geometry>[] geoms = f.getGeometryProperties();
-        if ( geometry == null ) {
+        if ( geometry != null ) {
+            try {
+                Object[] os = geometry.evaluate( f );
+                if ( os[0] instanceof Geometry ) {
+                    geom = (Geometry) os[0];
+                } else {
+                    // TODO proper error messages -> SLD/SE line/col
+                    LOG.warn( "A geometry expression evaluated to something other than a geometry." );
+                }
+            } catch ( FilterEvaluationException e ) {
+                LOG.warn( "Could not evaluate a geometry expression." );
+            }
+        } else {
+            Property<Geometry>[] geoms = f.getGeometryProperties();
             if ( geoms.length > 0 ) {
                 geom = geoms[0].getValue();
             }
-        } else {
-            for ( Property<Geometry> p : geoms ) {
-                if ( p.getName().equals( geometry ) ) {
-                    geom = p.getValue();
-                }
-            }
         }
+
         String id = f.getId();
         if ( cache.containsKey( id ) ) {
             return new Pair<T, Geometry>( cache.get( id ), geom );

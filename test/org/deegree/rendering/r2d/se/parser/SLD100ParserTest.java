@@ -36,7 +36,7 @@
 
 package org.deegree.rendering.r2d.se.parser;
 
-import static org.deegree.rendering.r2d.se.parser.SLD100Parser.parse;
+import static org.deegree.rendering.r2d.se.parser.SymbologyParser.parse;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
@@ -91,7 +91,7 @@ public class SLD100ParserTest extends TestCase {
                 try {
                     parse( in );
                     assertEquals( true, false );
-                } catch ( XMLParsingException e ) {
+                } catch ( XMLStreamException e ) {
                     assertNotNull( e );
                 }
             }

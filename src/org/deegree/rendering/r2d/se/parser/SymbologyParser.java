@@ -38,11 +38,10 @@ package org.deegree.rendering.r2d.se.parser;
 
 import static java.awt.Color.decode;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
+import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
-import static org.deegree.commons.xml.CommonNamespaces.SLDNS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
-import static org.deegree.commons.xml.stax.StAXParsingHelper.asQName;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.resolve;
 import static org.deegree.rendering.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -55,12 +54,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
-import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
@@ -95,16 +92,16 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class SLD100Parser {
+public class SymbologyParser {
 
-    static final Logger LOG = getLogger( SLD100Parser.class );
+    static final Logger LOG = getLogger( SymbologyParser.class );
 
     static final ElseFilter ELSEFILTER = new ElseFilter();
 
     // done and tested, same as SE
     private static Pair<Fill, Continuation<Fill>> parseFill( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, SLDNS, "Fill" );
+        in.require( START_ELEMENT, null, "Fill" );
 
         Fill base = new Fill();
         Continuation<Fill> contn = null;
@@ -155,7 +152,7 @@ public class SLD100Parser {
             }
         }
 
-        in.require( END_ELEMENT, SLDNS, "Fill" );
+        in.require( END_ELEMENT, null, "Fill" );
 
         return new Pair<Fill, Continuation<Fill>>( base, contn );
     }
@@ -163,7 +160,7 @@ public class SLD100Parser {
     // done and tested, same as SE
     private static Pair<Stroke, Continuation<Stroke>> parseStroke( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, SLDNS, "Stroke" );
+        in.require( START_ELEMENT, null, "Stroke" );
 
         Stroke base = new Stroke();
         Continuation<Stroke> contn = null;
@@ -243,7 +240,7 @@ public class SLD100Parser {
                     }, contn );
                 }
 
-                in.require( END_ELEMENT, SLDNS, null );
+                in.require( END_ELEMENT, null, null );
             }
 
             if ( in.getLocalName().equals( "GraphicFill" ) ) {
@@ -260,9 +257,9 @@ public class SLD100Parser {
                         };
                     }
                 }
-                in.require( END_ELEMENT, SLDNS, "Graphic" );
+                in.require( END_ELEMENT, null, "Graphic" );
                 in.nextTag();
-                in.require( END_ELEMENT, SLDNS, "GraphicFill" );
+                in.require( END_ELEMENT, null, "GraphicFill" );
             }
 
             if ( in.getLocalName().equals( "GraphicStroke" ) ) {
@@ -284,7 +281,7 @@ public class SLD100Parser {
                             }
                         }
 
-                        in.require( END_ELEMENT, SLDNS, "Graphic" );
+                        in.require( END_ELEMENT, null, "Graphic" );
                     }
 
                     if ( in.getLocalName().equals( "InitialGap" ) ) {
@@ -294,7 +291,7 @@ public class SLD100Parser {
                                 obj.strokeInitialGap = Double.parseDouble( val );
                             }
                         }, contn );
-                        in.require( END_ELEMENT, SLDNS, "InitialGap" );
+                        in.require( END_ELEMENT, null, "InitialGap" );
                     }
 
                     if ( in.getLocalName().equals( "Gap" ) ) {
@@ -304,14 +301,14 @@ public class SLD100Parser {
                                 obj.strokeGap = Double.parseDouble( val );
                             }
                         }, contn );
-                        in.require( END_ELEMENT, SLDNS, "Gap" );
+                        in.require( END_ELEMENT, null, "Gap" );
                     }
 
                 }
             }
         }
 
-        in.require( END_ELEMENT, SLDNS, "Stroke" );
+        in.require( END_ELEMENT, null, "Stroke" );
 
         return new Pair<Stroke, Continuation<Stroke>>( base, contn );
     }
@@ -319,7 +316,7 @@ public class SLD100Parser {
     // done and tested, same as SE
     private static Pair<Mark, Continuation<Mark>> parseMark( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, SLDNS, "Mark" );
+        in.require( START_ELEMENT, null, "Mark" );
 
         Mark base = new Mark();
         Continuation<Mark> contn = null;
@@ -360,7 +357,7 @@ public class SLD100Parser {
             }
         }
 
-        in.require( END_ELEMENT, SLDNS, "Mark" );
+        in.require( END_ELEMENT, null, "Mark" );
 
         return new Pair<Mark, Continuation<Mark>>( base, contn );
     }
@@ -371,7 +368,7 @@ public class SLD100Parser {
         // TODO color replacement
         // TODO in case of svg, load/render it with batik
 
-        in.require( START_ELEMENT, SLDNS, "ExternalGraphic" );
+        in.require( START_ELEMENT, null, "ExternalGraphic" );
 
         String format = null;
         BufferedImage img = null;
@@ -383,7 +380,7 @@ public class SLD100Parser {
                 in.next();
                 format = in.getText();
                 in.nextTag();
-                in.require( END_ELEMENT, SLDNS, "Format" );
+                in.require( END_ELEMENT, null, "Format" );
             }
             if ( in.getLocalName().equals( "OnlineResource" ) ) {
                 String str = in.getAttributeValue( XLNNS, "href" );
@@ -400,7 +397,7 @@ public class SLD100Parser {
     // done and tested, same as SE
     private static Pair<Graphic, Continuation<Graphic>> parseGraphic( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, SLDNS, "Graphic" );
+        in.require( START_ELEMENT, null, "Graphic" );
 
         Graphic base = new Graphic();
         Continuation<Graphic> contn = null;
@@ -500,7 +497,7 @@ public class SLD100Parser {
                 }
             }
         }
-        in.require( END_ELEMENT, SLDNS, "Graphic" );
+        in.require( END_ELEMENT, null, "Graphic" );
 
         return new Pair<Graphic, Continuation<Graphic>>( base, contn );
     }
@@ -513,9 +510,9 @@ public class SLD100Parser {
      */
     public static Symbolizer<PointStyling> parsePointSymbolizer( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, SLDNS, "PointSymbolizer" );
+        in.require( START_ELEMENT, null, "PointSymbolizer" );
 
-        QName geometry = null;
+        Expression geometry = null;
         String name = null;
         PointStyling baseOrEvaluated = new PointStyling();
 
@@ -526,13 +523,10 @@ public class SLD100Parser {
                 in.next();
                 name = in.getText();
                 in.nextTag();
-                in.require( END_ELEMENT, SLDNS, "Name" );
+                in.require( END_ELEMENT, null, "Name" );
             }
             if ( in.getLocalName().equals( "Geometry" ) ) {
-                in.next();
-                geometry = asQName( in, in.getText() );
-                in.nextTag();
-                in.require( END_ELEMENT, SLDNS, "Geometry" );
+                geometry = parseGeometry( in );
             }
             if ( in.getLocalName().equals( "Graphic" ) ) {
                 final Pair<Graphic, Continuation<Graphic>> pair = parseGraphic( in );
@@ -554,7 +548,7 @@ public class SLD100Parser {
             }
         }
 
-        in.require( END_ELEMENT, SLDNS, "PointSymbolizer" );
+        in.require( END_ELEMENT, null, "PointSymbolizer" );
         return new Symbolizer<PointStyling>( baseOrEvaluated, geometry, name );
     }
 
@@ -589,9 +583,9 @@ public class SLD100Parser {
      */
     public static Symbolizer<LineStyling> parseLineSymbolizer( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, SLDNS, "LineSymbolizer" );
+        in.require( START_ELEMENT, null, "LineSymbolizer" );
 
-        QName geom = null;
+        Expression geom = null;
         String name = null;
         LineStyling baseOrEvaluated = new LineStyling();
         Continuation<LineStyling> contn = null;
@@ -603,7 +597,7 @@ public class SLD100Parser {
                 in.next();
                 name = in.getText();
                 in.nextTag();
-                in.require( END_ELEMENT, SLDNS, "Name" );
+                in.require( END_ELEMENT, null, "Name" );
             }
 
             if ( in.getLocalName().equals( "Stroke" ) ) {
@@ -633,10 +627,7 @@ public class SLD100Parser {
             }
 
             if ( in.getLocalName().equals( "Geometry" ) ) {
-                in.next();
-                geom = asQName( in, in.getText() );
-                in.nextTag();
-                in.require( END_ELEMENT, SLDNS, "Geometry" );
+                geom = parseGeometry( in );
             }
         }
 
@@ -647,6 +638,15 @@ public class SLD100Parser {
         return new Symbolizer<LineStyling>( baseOrEvaluated, contn, geom, name );
     }
 
+    private static Expression parseGeometry( XMLStreamReader in )
+                            throws XMLStreamException {
+        in.nextTag();
+        Expression geom = Filter110XMLDecoder.parseExpression( in );
+        in.nextTag();
+        in.require( END_ELEMENT, null, "Geometry" );
+        return geom;
+    }
+
     /**
      * @param in
      * @return the symbolizer
@@ -654,9 +654,9 @@ public class SLD100Parser {
      */
     public static Symbolizer<PolygonStyling> parsePolygonSymbolizer( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, SLDNS, "PolygonSymbolizer" );
+        in.require( START_ELEMENT, null, "PolygonSymbolizer" );
 
-        QName geom = null;
+        Expression geom = null;
         String name = null;
         PolygonStyling baseOrEvaluated = new PolygonStyling();
         Continuation<PolygonStyling> contn = null;
@@ -668,14 +668,11 @@ public class SLD100Parser {
                 in.next();
                 name = in.getText();
                 in.nextTag();
-                in.require( END_ELEMENT, SLDNS, "Name" );
+                in.require( END_ELEMENT, null, "Name" );
             }
 
             if ( in.getLocalName().equals( "Geometry" ) ) {
-                in.next();
-                geom = asQName( in, in.getText() );
-                in.nextTag();
-                in.require( END_ELEMENT, SLDNS, "Geometry" );
+                geom = parseGeometry( in );
             }
 
             if ( in.getLocalName().equals( "Stroke" ) ) {
@@ -763,13 +760,7 @@ public class SLD100Parser {
             while ( !( in.isEndElement() && in.getLocalName().endsWith( name ) ) ) {
                 in.next();
                 if ( in.isStartElement() ) {
-                    Expression expr = null;
-                    try {
-                        in.nextTag();
-                        expr = Filter110XMLDecoder.parseExpression( in );
-                    } catch ( XMLStreamException e ) {
-                        throw new XMLParsingException( in, e.getMessage() );
-                    }
+                    Expression expr = Filter110XMLDecoder.parseExpression( in );
                     Pair<Expression, String> second;
                     second = new Pair<Expression, String>( expr, get( "R2D.LINE", in.getLocation().getLineNumber(),
                                                                       in.getLocation().getColumnNumber(),
@@ -787,7 +778,7 @@ public class SLD100Parser {
                     }
                 }
             }
-            in.require( END_ELEMENT, SLDNS, null );
+            in.require( END_ELEMENT, null, null );
 
             if ( textOnly ) {
                 updater.update( obj, text.getFirst().first );
@@ -830,9 +821,9 @@ public class SLD100Parser {
      */
     public static Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>> parseTextSymbolizer( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, SLDNS, "TextSymbolizer" );
+        in.require( START_ELEMENT, null, "TextSymbolizer" );
 
-        QName geom = null;
+        Expression geom = null;
         String name = null;
         TextStyling baseOrEvaluated = new TextStyling();
         Continuation<TextStyling> contn = null;
@@ -844,14 +835,11 @@ public class SLD100Parser {
                 in.next();
                 name = in.getText();
                 in.nextTag();
-                in.require( END_ELEMENT, SLDNS, "Name" );
+                in.require( END_ELEMENT, null, "Name" );
             }
 
             if ( in.getLocalName().equals( "Geometry" ) ) {
-                in.next();
-                geom = asQName( in, in.getText() );
-                in.nextTag();
-                in.require( END_ELEMENT, SLDNS, "Geometry" );
+                geom = parseGeometry( in );
             }
 
             if ( in.getLocalName().equals( "Label" ) ) {
@@ -1009,7 +997,7 @@ public class SLD100Parser {
 
     private static Pair<Font, Continuation<Font>> parseFont( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, SLDNS, "Font" );
+        in.require( START_ELEMENT, null, "Font" );
 
         Font baseOrEvaluated = new Font();
         Continuation<Font> contn = null;
@@ -1060,7 +1048,7 @@ public class SLD100Parser {
 
     private static Pair<Halo, Continuation<Halo>> parseHalo( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, SLDNS, "Halo" );
+        in.require( START_ELEMENT, null, "Halo" );
 
         Halo baseOrEvaluated = new Halo();
         Continuation<Halo> contn = null;
@@ -1101,7 +1089,7 @@ public class SLD100Parser {
 
     private static Pair<LinePlacement, Continuation<LinePlacement>> parseLinePlacement( XMLStreamReader in )
                             throws XMLStreamException {
-        in.require( START_ELEMENT, SLDNS, "LinePlacement" );
+        in.require( START_ELEMENT, null, "LinePlacement" );
 
         LinePlacement baseOrEvaluated = new LinePlacement();
         Continuation<LinePlacement> contn = null;
@@ -1180,9 +1168,12 @@ public class SLD100Parser {
      */
     public static org.deegree.rendering.r2d.se.unevaluated.Style parse( XMLStreamReader in )
                             throws XMLStreamException {
+        if ( in.getEventType() == START_DOCUMENT ) {
+            in.nextTag();
+        }
         if ( in.getLocalName().endsWith( "Symbolizer" ) ) {
             Pair<Symbolizer<?>, Continuation<StringBuffer>> pair = parseSymbolizer( in );
-            return new org.deegree.rendering.r2d.se.unevaluated.Style( pair.first, pair.second );
+            return new org.deegree.rendering.r2d.se.unevaluated.Style( pair.first, pair.second, pair.first.getName() );
         }
         if ( in.getLocalName().equals( "FeatureTypeStyle" ) ) {
             return parseFeatureTypeStyle( in );
@@ -1199,9 +1190,10 @@ public class SLD100Parser {
                             throws XMLStreamException {
         LinkedList<Continuation<LinkedList<Symbolizer<?>>>> result = new LinkedList<Continuation<LinkedList<Symbolizer<?>>>>();
         HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
-        // TODO name, description, ftname, semantictypeidentifier, online resource
+        String name = null;
+        // TODO description, ftname, semantictypeidentifier, online resource
 
-        in.require( START_ELEMENT, SLDNS, "FeatureTypeStyle" );
+        in.require( START_ELEMENT, null, "FeatureTypeStyle" );
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "FeatureTypeStyle" ) ) ) {
             in.nextTag();
@@ -1215,9 +1207,9 @@ public class SLD100Parser {
 
                     if ( in.getLocalName().equals( "Name" ) ) {
                         in.next();
-                        // name = in.getText();
+                        name = in.getText();
                         in.nextTag();
-                        in.require( END_ELEMENT, SLDNS, "Name" );
+                        in.require( END_ELEMENT, null, "Name" );
                     }
 
                     if ( in.getLocalName().equals( "Filter" ) ) {
@@ -1243,7 +1235,7 @@ public class SLD100Parser {
             }
         }
 
-        return new org.deegree.rendering.r2d.se.unevaluated.Style( result, labels );
+        return new org.deegree.rendering.r2d.se.unevaluated.Style( result, labels, name );
     }
 
     static class ElseFilter implements Filter {

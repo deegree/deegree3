@@ -2,8 +2,9 @@
 <TextSymbolizer xmlns="http://www.opengis.net/sld"
                  xmlns:ogc="http://www.opengis.net/ogc"
                  xmlns:app="http://www.deegree.org/app">
-  <Name>My Name</Name>
-  <Geometry>app:someGeometryProp</Geometry>
+  <Geometry>
+    <ogc:PropertyName>app:someGeometryProp</ogc:PropertyName>
+  </Geometry>
   <Label>sometext</Label>
   <Font>
     <CssParameter name="font-family">times</CssParameter>
@@ -23,13 +24,5 @@
       </Displacement>
       <Rotation>78</Rotation>
     </PointPlacement>
-    <LinePlacement>
-      <PerpendicularOffset>786</PerpendicularOffset>
-      <IsRepeated>true</IsRepeated>
-      <InitialGap>8</InitialGap>
-      <Gap>7.3</Gap>
-      <IsAligned>false</IsAligned>
-      <GeneralizeLine>true</GeneralizeLine>
-    </LinePlacement>
   </LabelPlacement>
 </TextSymbolizer>
