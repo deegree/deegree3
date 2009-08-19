@@ -42,6 +42,7 @@ import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsQName;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.resolve;
 import static org.deegree.rendering.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -84,8 +85,6 @@ import org.deegree.rendering.r2d.styling.components.Mark.SimpleMark;
 import org.deegree.rendering.r2d.styling.components.Stroke.LineCap;
 import org.deegree.rendering.r2d.styling.components.Stroke.LineJoin;
 import org.slf4j.Logger;
-
-import com.sun.xml.txw2.output.StaxSerializer;
 
 /**
  * <code>SLD100Parser</code>
@@ -1166,12 +1165,16 @@ public class SymbologyParser {
         LinkedList<Continuation<LinkedList<Symbolizer<?>>>> result = new LinkedList<Continuation<LinkedList<Symbolizer<?>>>>();
         HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
         Common common = new Common();
-        // TODO ftname, semantictypeidentifier, online resource
+        // TODO name, semantictypeidentifier, online resource
 
         in.require( START_ELEMENT, null, "FeatureTypeStyle" );
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "FeatureTypeStyle" ) ) ) {
             in.nextTag();
+
+            if ( in.getLocalName().equals( "FeatureTypeName" ) ) {
+                getElementTextAsQName( in ); // AndThrowItAwayImmediately
+            }
 
             if ( in.getLocalName().equals( "Rule" ) ) {
                 Filter filter = null;
