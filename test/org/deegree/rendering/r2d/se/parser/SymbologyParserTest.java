@@ -75,7 +75,7 @@ public class SymbologyParserTest extends TestCase {
                             throws XMLStreamException, FactoryConfigurationError, FileNotFoundException {
         final XMLInputFactory fac = XMLInputFactory.newInstance();
         final Class<SymbologyParserTest> cls = SymbologyParserTest.class;
-        File dir = new File( cls.getResource( "SLD100ParserTest.class" ).getFile() ).getParentFile();
+        File dir = new File( cls.getResource( "SymbologyParserTest.class" ).getFile() ).getParentFile();
         for ( File f : dir.listFiles() ) {
             if ( f.getName().endsWith( ".xml" ) ) {
                 LOG.info( "Expecting {} to parse fine.", f );

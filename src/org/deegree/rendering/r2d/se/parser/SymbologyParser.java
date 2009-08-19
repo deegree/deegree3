@@ -58,6 +58,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
@@ -84,6 +85,8 @@ import org.deegree.rendering.r2d.styling.components.Stroke.LineCap;
 import org.deegree.rendering.r2d.styling.components.Stroke.LineJoin;
 import org.slf4j.Logger;
 
+import com.sun.xml.txw2.output.StaxSerializer;
+
 /**
  * <code>SLD100Parser</code>
  * 
@@ -98,7 +101,30 @@ public class SymbologyParser {
 
     static final ElseFilter ELSEFILTER = new ElseFilter();
 
-    // done and tested, same as SE
+    private static void checkCommon( Common common, XMLStreamReader in )
+                            throws XMLStreamException {
+        if ( in.getLocalName().equals( "Name" ) ) {
+            common.name = in.getElementText();
+        }
+        if ( in.getLocalName().equals( "Geometry" ) ) {
+            in.nextTag();
+            common.geometry = Filter110XMLDecoder.parseExpression( in );
+            in.nextTag();
+            in.require( END_ELEMENT, null, "Geometry" );
+        }
+        if ( in.getLocalName().equals( "Description" ) ) {
+            while ( !( in.isEndElement() && in.getLocalName().equals( "Description" ) ) ) {
+                in.nextTag();
+                if ( in.getLocalName().equals( "Title" ) ) {
+                    common.title = in.getElementText();
+                }
+                if ( in.getLocalName().equals( "Abstract" ) ) {
+                    common.abstract_ = in.getElementText();
+                }
+            }
+        }
+    }
+
     private static Pair<Fill, Continuation<Fill>> parseFill( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "Fill" );
@@ -325,9 +351,7 @@ public class SymbologyParser {
             in.nextTag();
 
             if ( in.getLocalName().equals( "WellKnownName" ) ) {
-                in.next();
-                base.wellKnown = SimpleMark.valueOf( in.getText().toUpperCase() );
-                in.nextTag();
+                base.wellKnown = SimpleMark.valueOf( in.getElementText().toUpperCase() );
             }
 
             if ( in.getLocalName().equals( "Fill" ) ) {
@@ -377,10 +401,7 @@ public class SymbologyParser {
             in.nextTag();
 
             if ( in.getLocalName().equals( "Format" ) ) {
-                in.next();
-                format = in.getText();
-                in.nextTag();
-                in.require( END_ELEMENT, null, "Format" );
+                format = in.getElementText();
             }
             if ( in.getLocalName().equals( "OnlineResource" ) ) {
                 String str = in.getAttributeValue( XLNNS, "href" );
@@ -512,27 +533,19 @@ public class SymbologyParser {
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "PointSymbolizer" );
 
-        Expression geometry = null;
-        String name = null;
+        Common common = new Common();
         PointStyling baseOrEvaluated = new PointStyling();
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "PointSymbolizer" ) ) ) {
             in.nextTag();
 
-            if ( in.getLocalName().equals( "Name" ) ) {
-                in.next();
-                name = in.getText();
-                in.nextTag();
-                in.require( END_ELEMENT, null, "Name" );
-            }
-            if ( in.getLocalName().equals( "Geometry" ) ) {
-                geometry = parseGeometry( in );
-            }
+            checkCommon( common, in );
+
             if ( in.getLocalName().equals( "Graphic" ) ) {
                 final Pair<Graphic, Continuation<Graphic>> pair = parseGraphic( in );
 
                 if ( pair == null ) {
-                    return new Symbolizer<PointStyling>( baseOrEvaluated, geometry, name );
+                    return new Symbolizer<PointStyling>( baseOrEvaluated, common.geometry, common.name );
                 }
 
                 baseOrEvaluated.graphic = pair.first;
@@ -543,13 +556,13 @@ public class SymbologyParser {
                         public void updateStep( PointStyling base, Feature f ) {
                             pair.second.evaluate( base.graphic, f );
                         }
-                    }, geometry, null );
+                    }, common.geometry, null );
                 }
             }
         }
 
         in.require( END_ELEMENT, null, "PointSymbolizer" );
-        return new Symbolizer<PointStyling>( baseOrEvaluated, geometry, name );
+        return new Symbolizer<PointStyling>( baseOrEvaluated, common.geometry, common.name );
     }
 
     /**
@@ -585,20 +598,14 @@ public class SymbologyParser {
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "LineSymbolizer" );
 
-        Expression geom = null;
-        String name = null;
+        Common common = new Common();
         LineStyling baseOrEvaluated = new LineStyling();
         Continuation<LineStyling> contn = null;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "LineSymbolizer" ) ) ) {
             in.nextTag();
 
-            if ( in.getLocalName().equals( "Name" ) ) {
-                in.next();
-                name = in.getText();
-                in.nextTag();
-                in.require( END_ELEMENT, null, "Name" );
-            }
+            checkCommon( common, in );
 
             if ( in.getLocalName().equals( "Stroke" ) ) {
                 final Pair<Stroke, Continuation<Stroke>> pair = parseStroke( in );
@@ -625,26 +632,13 @@ public class SymbologyParser {
                     }
                 }, contn );
             }
-
-            if ( in.getLocalName().equals( "Geometry" ) ) {
-                geom = parseGeometry( in );
-            }
         }
 
         if ( contn == null ) {
-            return new Symbolizer<LineStyling>( baseOrEvaluated, geom, name );
+            return new Symbolizer<LineStyling>( baseOrEvaluated, common.geometry, common.name );
         }
 
-        return new Symbolizer<LineStyling>( baseOrEvaluated, contn, geom, name );
-    }
-
-    private static Expression parseGeometry( XMLStreamReader in )
-                            throws XMLStreamException {
-        in.nextTag();
-        Expression geom = Filter110XMLDecoder.parseExpression( in );
-        in.nextTag();
-        in.require( END_ELEMENT, null, "Geometry" );
-        return geom;
+        return new Symbolizer<LineStyling>( baseOrEvaluated, contn, common.geometry, common.name );
     }
 
     /**
@@ -656,24 +650,14 @@ public class SymbologyParser {
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "PolygonSymbolizer" );
 
-        Expression geom = null;
-        String name = null;
+        Common common = new Common();
         PolygonStyling baseOrEvaluated = new PolygonStyling();
         Continuation<PolygonStyling> contn = null;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "PolygonSymbolizer" ) ) ) {
             in.nextTag();
 
-            if ( in.getLocalName().equals( "Name" ) ) {
-                in.next();
-                name = in.getText();
-                in.nextTag();
-                in.require( END_ELEMENT, null, "Name" );
-            }
-
-            if ( in.getLocalName().equals( "Geometry" ) ) {
-                geom = parseGeometry( in );
-            }
+            checkCommon( common, in );
 
             if ( in.getLocalName().equals( "Stroke" ) ) {
                 final Pair<Stroke, Continuation<Stroke>> pair = parseStroke( in );
@@ -744,10 +728,10 @@ public class SymbologyParser {
         }
 
         if ( contn == null ) {
-            return new Symbolizer<PolygonStyling>( baseOrEvaluated, geom, name );
+            return new Symbolizer<PolygonStyling>( baseOrEvaluated, common.geometry, common.name );
         }
 
-        return new Symbolizer<PolygonStyling>( baseOrEvaluated, contn, geom, name );
+        return new Symbolizer<PolygonStyling>( baseOrEvaluated, contn, common.geometry, common.name );
     }
 
     private static <T> Continuation<T> updateOrContinue( XMLStreamReader in, String name, T obj,
@@ -823,24 +807,15 @@ public class SymbologyParser {
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "TextSymbolizer" );
 
-        Expression geom = null;
-        String name = null;
+        Common common = new Common();
         TextStyling baseOrEvaluated = new TextStyling();
         Continuation<TextStyling> contn = null;
         Continuation<StringBuffer> label = null;
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "TextSymbolizer" ) ) ) {
             in.nextTag();
-            if ( in.getLocalName().equals( "Name" ) ) {
-                in.next();
-                name = in.getText();
-                in.nextTag();
-                in.require( END_ELEMENT, null, "Name" );
-            }
 
-            if ( in.getLocalName().equals( "Geometry" ) ) {
-                geom = parseGeometry( in );
-            }
+            checkCommon( common, in );
 
             if ( in.getLocalName().equals( "Label" ) ) {
                 label = updateOrContinue( in, "Label", new StringBuffer(), new Updater<StringBuffer>() {
@@ -987,11 +962,11 @@ public class SymbologyParser {
         }
 
         if ( contn == null ) {
-            Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, geom, name );
+            Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, common.geometry, common.name );
             return new Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>>( sym, label );
         }
 
-        Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, contn, geom, name );
+        Symbolizer<TextStyling> sym = new Symbolizer<TextStyling>( baseOrEvaluated, contn, common.geometry, common.name );
         return new Pair<Symbolizer<TextStyling>, Continuation<StringBuffer>>( sym, label );
     }
 
@@ -1190,8 +1165,8 @@ public class SymbologyParser {
                             throws XMLStreamException {
         LinkedList<Continuation<LinkedList<Symbolizer<?>>>> result = new LinkedList<Continuation<LinkedList<Symbolizer<?>>>>();
         HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
-        String name = null;
-        // TODO description, ftname, semantictypeidentifier, online resource
+        Common common = new Common();
+        // TODO ftname, semantictypeidentifier, online resource
 
         in.require( START_ELEMENT, null, "FeatureTypeStyle" );
 
@@ -1205,12 +1180,7 @@ public class SymbologyParser {
                 while ( !( in.isEndElement() && in.getLocalName().equals( "Rule" ) ) ) {
                     in.nextTag();
 
-                    if ( in.getLocalName().equals( "Name" ) ) {
-                        in.next();
-                        name = in.getText();
-                        in.nextTag();
-                        in.require( END_ELEMENT, null, "Name" );
-                    }
+                    checkCommon( common, in );
 
                     if ( in.getLocalName().equals( "Filter" ) ) {
                         filter = Filter110XMLDecoder.parse( in );
@@ -1235,7 +1205,7 @@ public class SymbologyParser {
             }
         }
 
-        return new org.deegree.rendering.r2d.se.unevaluated.Style( result, labels, name );
+        return new org.deegree.rendering.r2d.se.unevaluated.Style( result, labels, common.name );
     }
 
     static class ElseFilter implements Filter {
@@ -1272,6 +1242,12 @@ public class SymbologyParser {
             }
         }
 
+    }
+
+    static class Common {
+        String name, title, abstract_;
+
+        Expression geometry;
     }
 
 }
