@@ -50,7 +50,6 @@ import javax.xml.stream.XMLStreamReader;
 
 import junit.framework.TestCase;
 
-import org.deegree.commons.xml.XMLParsingException;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -62,9 +61,9 @@ import org.slf4j.Logger;
  * 
  * @version $Revision$, $Date$
  */
-public class SLD100ParserTest extends TestCase {
+public class SymbologyParserTest extends TestCase {
 
-    private static final Logger LOG = getLogger( SLD100ParserTest.class );
+    private static final Logger LOG = getLogger( SymbologyParserTest.class );
 
     /**
      * @throws FactoryConfigurationError
@@ -75,7 +74,7 @@ public class SLD100ParserTest extends TestCase {
     public void testAll()
                             throws XMLStreamException, FactoryConfigurationError, FileNotFoundException {
         final XMLInputFactory fac = XMLInputFactory.newInstance();
-        final Class<SLD100ParserTest> cls = SLD100ParserTest.class;
+        final Class<SymbologyParserTest> cls = SymbologyParserTest.class;
         File dir = new File( cls.getResource( "SLD100ParserTest.class" ).getFile() ).getParentFile();
         for ( File f : dir.listFiles() ) {
             if ( f.getName().endsWith( ".xml" ) ) {
