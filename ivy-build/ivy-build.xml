@@ -227,8 +227,13 @@
     <!-- =================================================================== -->
     <!-- creates API JavaDoc                                                  -->
     <!-- =================================================================== -->
+    
+    <target name="javadoc-headers">
+        <property name="doc.header" value="deegree - ${module.name} - ${version} (${build.date} build-${build.number}-${build.by}"/>
+        <property name="doc.footer" value="${doc.header}"/>
+    </target>
 
-    <target name="javadoc-src-api" if="has.api-src">
+    <target name="javadoc-src-api" depends="javadoc-headers" if="has.api-src">
         <javadoc source="${source.version}" packagenames="org.deegree.*" destdir="${javadoc.dir}" overview="${src.dir}/overview.html" author="true" version="true" verbose="${debug}" use="true" package="true" windowtitle="${doc.window}" maxmemory="512m" encoding="utf-8" failonerror="0">
             <doctitle>${doc.title}</doctitle>
             <header>${doc.header}</header>
