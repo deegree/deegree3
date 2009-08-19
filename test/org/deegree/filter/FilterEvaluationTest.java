@@ -148,6 +148,15 @@ public class FilterEvaluationTest {
         assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1" );
     }
 
+    @Test
+    public void filterCollection8()
+                            throws FilterEvaluationException, XMLStreamException, FactoryConfigurationError,
+                            JaxenException {
+        Filter filter = parseFilter( "testfilter8.xml" );
+        assertResultSet( fc.getMembers( filter ), "PHILOSOPHER_1" );
+    }
+    
+    
     private void assertResultSet( FeatureCollection fc, String... expectedIds ) {
         Assert.assertEquals( expectedIds.length, fc.size() );
         Set<String> ids = new HashSet<String>();
