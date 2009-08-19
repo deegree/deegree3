@@ -229,7 +229,7 @@
     <!-- =================================================================== -->
     
     <target name="javadoc-headers">
-        <property name="doc.header" value="deegree - ${module.name} - ${version} (${build.date} build-${build.number}-${build.by}"/>
+        <property name="doc.header" value="${jar.name}-${module.version.post} (${build.date}) - ${build.by}"/>
         <property name="doc.footer" value="${doc.header}"/>
     </target>
 
