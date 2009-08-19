@@ -114,7 +114,7 @@ public class GMLMemoryStore implements FeatureStore {
     public GMLMemoryStore( URL docURL, ApplicationSchema schema ) throws XMLStreamException, XMLParsingException,
                             UnknownCRSException, FactoryConfigurationError, IOException {
 
-        this (schema);
+        this( schema );
         GMLIdContext idContext = new GMLIdContext();
         GMLFeatureDecoder parser = new GMLFeatureDecoder( schema, idContext );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
@@ -280,5 +280,26 @@ public class GMLMemoryStore implements FeatureStore {
         this.activeTransaction = null;
         this.transactionHolder = null;
         // notifyAll();
+    }
+
+    FeatureCollection getCollection( FeatureType ft ) {
+        return ftToFeatures.get( ft );
+    }
+
+    void setCollection( FeatureType ft, FeatureCollection fc ) {
+        ftToFeatures.put( ft, fc );
+    }
+
+    void removeObject( String id )
+                            throws FeatureStoreException {
+        Object o = idToObject.remove( id );
+        if ( o == null ) {
+            throw new FeatureStoreException( "Cannot remove feature/geometry with id '" + id + "': no such object." );
+        }
+        if ( o instanceof Feature ) {
+            Feature feature = (Feature) o;
+            FeatureCollection fc = ftToFeatures.get( feature );
+            fc.remove( feature );
+        }
     }
 }

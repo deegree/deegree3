@@ -36,6 +36,7 @@
 
 package org.deegree.feature.persistence.gml;
 
+import static org.deegree.feature.i18n.Messages.getMessage;
 import static org.deegree.feature.persistence.IDGenMode.USE_EXISTING;
 
 import java.util.ArrayList;
@@ -53,11 +54,16 @@ import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.IDGenMode;
+import org.deegree.feature.types.FeatureType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
+import org.deegree.filter.logical.Not;
 import org.deegree.geometry.Geometry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The <code></code> class TODO add class documentation here.
@@ -68,6 +74,8 @@ import org.deegree.geometry.Geometry;
  * @version $Revision$, $Date$
  */
 class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
+
+    private static final Logger LOG = LoggerFactory.getLogger( GMLMemoryStoreTransaction.class );
 
     private GMLMemoryStore store;
 
@@ -89,13 +97,35 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
     @Override
     public int performDelete( QName ftName, OperatorFilter filter, String lockId )
                             throws FeatureStoreException {
-        return 0;
+
+        FeatureType ft = store.getSchema().getFeatureType( ftName );
+        if ( ft == null ) {
+            throw new FeatureStoreException( getMessage( "TA_OPERATION_FT_NOT_SERVED", ftName ) );
+        }
+        FeatureCollection fc = store.getCollection( ft );
+        int deleted = 0;
+        if ( fc != null ) {
+            try {
+                Filter notFilter = new OperatorFilter( new Not( filter.getOperator() ) );
+                int old = fc.size();
+                fc = fc.getMembers( notFilter );
+                deleted = old - fc.size();
+                store.setCollection( ft, fc );
+            } catch ( FilterEvaluationException e ) {
+                throw new FeatureStoreException( e.getMessage(), e );
+            }
+        }
+        return deleted;
     }
 
     @Override
     public int performDelete( IdFilter filter, String lockId )
                             throws FeatureStoreException {
-        return 0;
+
+        for (String id : filter.getMatchingIds()) {
+            store.removeObject( id );
+        }
+        return filter.getMatchingIds().size();
     }
 
     @Override
@@ -110,7 +140,7 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
         Set<Feature> features = new HashSet<Feature>();
 
         findFeaturesAndGeometries( fc, geometries, features );
-        
+
         store.addFeatures( features );
         store.addGeometriesWithId( geometries );
 
