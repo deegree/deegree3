@@ -69,9 +69,10 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
  * <p>
  * Currently, the following {@link CurveSegment} variants are handled correctly:
  * <ul>
- * <li>{@link LineStringSegment} (trivial)</li>
  * <li>{@link Arc}</li>
  * <li>{@link Circle}</li>
+ * <li>{@link CubicSpline}</li>
+ * <li>{@link LineStringSegment} (trivial)</li>
  * </ul>
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
