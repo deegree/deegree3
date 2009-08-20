@@ -74,6 +74,7 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
  * <li>{@link Circle}</li>
  * </ul>
  * 
+ * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: elmasri$
  * 
