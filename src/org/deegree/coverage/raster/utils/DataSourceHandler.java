@@ -35,10 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.utils;
 
+import static org.deegree.coverage.raster.io.RasterFactory.loadRasterFromFile;
 import static org.deegree.coverage.raster.utils.RasterBuilder.buildTiledRaster;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 
 import javax.xml.bind.JAXBElement;
@@ -47,6 +49,7 @@ import org.deegree.commons.datasource.configuration.AbstractGeospatialDataSource
 import org.deegree.commons.datasource.configuration.MultiResolutionDataSource;
 import org.deegree.commons.datasource.configuration.RasterDataSource;
 import org.deegree.commons.datasource.configuration.RasterFileSetType;
+import org.deegree.commons.datasource.configuration.RasterFileType;
 import org.deegree.commons.datasource.configuration.MultiResolutionDataSource.Resolution;
 import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.coverage.raster.AbstractRaster;
@@ -102,11 +105,27 @@ public class DataSourceHandler {
     public static AbstractRaster fromDatasource( RasterDataSource datasource, XMLAdapter adapter ) {
         CRS crs = new CRS( datasource.getCrs() );
         RasterFileSetType directory = datasource.getRasterDirectory();
+        RasterFileType file = datasource.getRasterFile();
         try {
-            File rasterFiles = new File( adapter.resolve( directory.getValue() ).getFile() );
-            return buildTiledRaster( rasterFiles, directory.getFilePattern(), directory.isRecursive(), crs );
+            if ( directory != null ) {
+                File rasterFiles = new File( adapter.resolve( directory.getValue() ).getFile() );
+                return buildTiledRaster( rasterFiles, directory.getFilePattern(), directory.isRecursive(), crs );
+            }
+            if ( file != null ) {
+                final File loc = new File( adapter.resolve( file.getValue() ).getFile() );
+                AbstractRaster raster = loadRasterFromFile( loc );
+                raster.setCoordinateSystem( crs );
+                return raster;
+            }
         } catch ( MalformedURLException e ) {
-            LOG.warn( "Could not resolve the file {}, corresponding data will not be available.", directory.getValue() );
+            if ( directory != null ) {
+                LOG.warn( "Could not resolve the file {}, corresponding data will not be available.",
+                          directory.getValue() );
+            } else {
+                LOG.warn( "Could not resolve the file {}, corresponding data will not be available.", file.getValue() );
+            }
+        } catch ( IOException e ) {
+            LOG.warn( "Could not load the file {}, corresponding data will not be available.", file.getValue() );
         }
         return null;
     }
