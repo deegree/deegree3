@@ -43,9 +43,16 @@ import java.util.List;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
+import org.apache.commons.math.linear.Array2DRowRealMatrix;
+import org.apache.commons.math.linear.ArrayRealVector;
+import org.apache.commons.math.linear.DecompositionSolver;
+import org.apache.commons.math.linear.LUDecompositionImpl;
+import org.apache.commons.math.linear.RealMatrix;
+import org.apache.commons.math.linear.RealVector;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.points.Points;
+import org.deegree.geometry.precision.PrecisionModel;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.Ring;
@@ -216,6 +223,16 @@ public class CurveLinearizer {
 
     /**
      * Returns a linearized version (i.e. a {@link LineStringSegment}) of the given {@link CubicSpline}.
+     * <p>
+     * A cubic spline consists of n polynomials of degree 3: S<sub>j</sub>(x) = a<sub>j</sub> +
+     * b<sub>j</sub>*(x-x<sub>j</sub>) + c<sub>j</sub>*(x-x<sub>j</sub>)<sup>2</sup> +
+     * d<sub>j</sub>*(x-x<sub>j</sub>)<sup>3</sup>; that acts upon the interval [x<sub>j</sub>,x<sub>j+1</sub>], 0 <=j<
+     * n.
+     * <p>
+     * The algorithm for generating points on a spline defined with only control points and starting/ending tangents can
+     * be found at <a
+     * href="http://persson.berkeley.edu/128A/lec14-2x3.pdf">http://persson.berkeley.edu/128A/lec14-2x3.pdf</a> (last
+     * visited 19/08/09)
      * 
      * @param spline
      *            curve segment to be linearized
@@ -229,7 +246,171 @@ public class CurveLinearizer {
             String msg = "Handling of criterion '" + crit.getClass().getName() + "' is not implemented yet.";
             throw new IllegalArgumentException( msg );
         }
-        throw new UnsupportedOperationException( "Not implemented yet." );
+
+        if ( spline.getCoordinateDimension() != 2 ) {
+            throw new UnsupportedOperationException(
+                                                     "Linearization of the cubic spline is only suported for a spline in 2D." );
+        }
+
+        Points controlPts = spline.getControlPoints();
+        // build an array of Point in order to sort it in ascending order
+        Point[] pts = new Point[controlPts.size()];
+        // n denotes the # of polynomials, that is one less than the # of control pts
+        int n = controlPts.size() - 1;
+        for ( int i = 0; i <= n; i++ ) {
+            pts[i] = controlPts.get( i );
+        }
+
+        double startTan = Math.atan2( spline.getVectorAtStart().get1(), spline.getVectorAtStart().get0() );
+        double endTan = Math.atan2( spline.getVectorAtEnd().get1(), spline.getVectorAtEnd().get0() );
+
+        boolean ascending = true;
+        if ( pts[0].get0() > pts[1].get0() ) {
+            ascending = false;
+        }
+
+        for ( int i = 0; i <= n - 1; i++ ) {
+            if ( ascending ) {
+                if ( pts[i].get0() > pts[i + 1].get0() ) {
+                    throw new UnsupportedOperationException(
+                                                             "It is expected that the control points are order on the X-axis either ascending or descending." );
+                }
+            } else {
+                if ( pts[i].get0() < pts[i + 1].get0() ) {
+                    throw new UnsupportedOperationException(
+                                                             "It is expected that the control points are order on the X-axis either ascending or descending." );
+                }
+            }
+        }
+
+        if ( !ascending ) {
+            // interchange the elements so that they are ordered ascendingly (on the X-axis)
+            for ( int i = 0; i <= ( n / 2 ); i++ ) {
+                Point aux = pts[i];
+                pts[i] = pts[n - i];
+                pts[n - i] = aux;
+            }
+            // also reverse the starting and ending tangents
+            startTan = Math.atan2( -spline.getVectorAtEnd().get1(), -spline.getVectorAtEnd().get0() );
+            endTan = Math.atan2( -spline.getVectorAtStart().get1(), -spline.getVectorAtStart().get0() );
+        }
+
+        // break-up the pts into xcoor in ycoor
+        double xcoor[] = new double[n + 1];
+        double ycoor[] = new double[n + 1];
+        for ( int i = 0; i <= n; i++ ) {
+            xcoor[i] = pts[i].get0();
+            ycoor[i] = pts[i].get1();
+        }
+
+        double[] h = new double[n];
+        for ( int i = 0; i <= n - 1; i++ ) {
+            h[i] = xcoor[i + 1] - xcoor[i];
+        }
+
+        double[][] matrixA = constructMatrixA( h, n );
+
+        double[] vectorb = constructVectorB( n, ycoor, h, startTan, endTan );
+
+        double[] vectorx = solveLinearEquation( matrixA, vectorb );
+
+        int numPoints = ( (NumPointsCriterion) crit ).getNumberOfPoints();
+
+        double[] interpolated = interpolateSpline( n, h, xcoor, ycoor, vectorx, numPoints );
+
+        // populate a list of points, so that later a LineStringSegment can be build from it
+        List<Point> iPoints = new ArrayList<Point>();
+        CRS crs = spline.getControlPoints().get( 0 ).getCoordinateSystem();
+        PrecisionModel pm = spline.getControlPoints().get( 0 ).getPrecision();
+        for ( int i = 0; i < numPoints; i++ ) {
+            iPoints.add( new DefaultPoint( null, crs, pm, new double[] { interpolated[2 * i], interpolated[2 * i + 1] } ) );
+        }
+
+        LineStringSegment lineSegment = geomFac.createLineStringSegment( new PointsList( iPoints ) );
+
+        return lineSegment;
+    }
+
+    private double[] constructVectorB( int n, double[] ycoor, double[] h, double startTan, double endTan ) {
+        double[] vectorb = new double[n + 1];
+        vectorb[0] = 3 * ( ycoor[1] - ycoor[0] ) / h[0] - 3 * startTan;
+        for ( int i = 1; i <= n - 1; i++ ) {
+            vectorb[i] = 3 * ( ycoor[i + 1] - ycoor[i] ) / h[i] - 3 * ( ycoor[i] - ycoor[i - 1] ) / h[i - 1];
+        }
+        vectorb[n] = 3 * endTan - 3 * ( ycoor[n] - ycoor[n - 1] ) / h[n - 1];
+
+        return vectorb;
+    }
+
+    private double[] solveLinearEquation( double[][] matrixA, double[] vectorb ) {
+        RealMatrix coefficients = new Array2DRowRealMatrix( matrixA, false );
+        DecompositionSolver solver = new LUDecompositionImpl( coefficients ).getSolver();
+        RealVector constants = new ArrayRealVector( vectorb, false );
+        RealVector solution = solver.solve( constants );
+
+        return solution.getData();
+    }
+
+    private double[] interpolateSpline( int n, double[] h, double[] xcoor, double[] ycoor, double[] vectorx,
+                                        int numPoints ) {
+        double[] interpolated = new double[2 * numPoints];
+
+        // compute coefficients of spline
+        double[] a = new double[n + 1];
+        double[] c = new double[n + 1];
+        for ( int i = 0; i <= n; i++ ) {
+            a[i] = ycoor[i];
+            c[i] = vectorx[i];
+        }
+
+        double[] b = new double[n];
+        double[] d = new double[n];
+        for ( int i = 0; i < n; i++ ) {
+            b[i] = ( a[i + 1] - a[i] ) / h[i] - h[i] * ( 2 * c[i] + c[i + 1] ) / 3;
+            d[i] = ( c[i + 1] - c[i] ) / ( 3 * h[i] );
+        }
+
+        // compute the spacing between points
+        double spacing = ( xcoor[n] - xcoor[0] ) / ( numPoints - 1 );
+
+        // current segment of polynomial
+        int seg = 0;
+        for ( int i = 0; i <= numPoints - 1; i++ ) {
+            double x = xcoor[0] + i * spacing;
+            if ( x > xcoor[seg + 1] ) {
+                seg++;
+            }
+
+            double y = a[seg] + b[seg] * ( x - xcoor[seg] ) + c[seg] * Math.pow( x - xcoor[seg], 2 ) + d[seg]
+                       * Math.pow( x - xcoor[seg], 3 );
+
+            interpolated[2 * i] = x;
+            interpolated[2 * i + 1] = y;
+        }
+
+        return interpolated;
+    }
+
+    private double[][] constructMatrixA( double[] h, int n ) {
+        // first line
+        double[][] matrixA = new double[n + 1][n + 1];
+        Arrays.fill( matrixA[0], 0 );
+        matrixA[0][0] = 2 * h[0];
+        matrixA[0][1] = h[0];
+
+        // middle lines
+        for ( int i = 1; i <= n - 1; i++ ) {
+            Arrays.fill( matrixA[i], 0 );
+            matrixA[i][0] = h[i - 1];
+            matrixA[i][1] = 2 * ( h[i - 1] + h[i] );
+            matrixA[i][2] = h[i];
+        }
+
+        Arrays.fill( matrixA[n], 0 );
+        matrixA[n][n - 1] = h[n - 1];
+        matrixA[n][n] = 2 * h[n - 1];
+
+        return matrixA;
     }
 
     private double createAngleStep( double startAngle, double endAngle, int numPoints, boolean isClockwise ) {

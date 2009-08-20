@@ -45,6 +45,8 @@ import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Point;
 import org.deegree.geometry.primitive.segments.Arc;
 import org.deegree.geometry.primitive.segments.Circle;
+import org.deegree.geometry.primitive.segments.CubicSpline;
+import org.deegree.geometry.standard.curvesegments.DefaultCubicSpline;
 import org.deegree.geometry.standard.points.PointsList;
 import org.junit.Before;
 import org.junit.Test;
@@ -143,8 +145,8 @@ public class CurveLinearizerTest {
     }
 
     /**
-     * Tests if {@link LinearizationUtil#linearizeCircle(Point, Point, Point, int)} produces sequences of positions that
-     * coincide with the circle arc.
+     * Tests if {@link CurveLinearizer#interpolate(Point, Point, Point, int, boolean)} produces sequences of positions
+     * that coincide with the circle arc.
      */
     @Test
     public void testLinearizeCircle() {
@@ -160,6 +162,35 @@ public class CurveLinearizerTest {
         testLinearization( geomFac.createPoint( null, new double[] { 8, -1 }, null ),
                            geomFac.createPoint( null, new double[] { 3, 1.6 }, null ),
                            geomFac.createPoint( null, new double[] { -110, 16.77777 }, null ), 10 );
+    }
+
+    /**
+     * Tests if {@link CurveLinearizer#linearizeCubicSpline(CubicSpline, LinearizationCriterion)} produces positions
+     * that coincide with the real values.
+     */
+    @Test
+    public void testLinearizeCubicSpline() {
+        List<Point> pList = new ArrayList<Point>();
+        pList.add( geomFac.createPoint( null, new double[] { -2, 0 }, null ) );
+        pList.add( geomFac.createPoint( null, new double[] { -4, 0 }, null ) );
+        pList.add( geomFac.createPoint( null, new double[] { -6, 1 }, null ) );
+        CubicSpline spline = new DefaultCubicSpline( new PointsList( pList ),
+                                                     geomFac.createPoint( null, new double[] { 0, -1 }, null ),
+                                                     geomFac.createPoint( null, new double[] { -1, 1 }, null ) );
+
+        int numOfPoints = 10000;
+
+        Points pts = linearizer.linearize( spline, new NumPointsCriterion( numOfPoints ) ).getControlPoints();
+
+        for ( int i = 0; i < numOfPoints; i++ ) {
+            if ( Math.abs( pts.get( i ).get0() - -3 ) < 1E-3 ) {
+                Assert.assertEquals( pts.get( i ).get1(), -0.535536466911, 1E-3 );
+            }
+            if ( Math.abs( pts.get( i ).get0() - -5 ) < 1E-3 ) {
+                Assert.assertEquals( pts.get( i ).get1(), 0.4464878443629, 1E-3 );
+            }
+        }
+
     }
 
     /**
