@@ -76,9 +76,9 @@ import org.deegree.geometry.standard.primitive.DefaultPoint;
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
- * @author last edited by: $Author: elmasri$
+ * @author last edited by: $Author$
  * 
- * @version $Revision$, $Date: 9 May 2008 13:09:29$
+ * @version $Revision$, $Date$
  */
 public class CurveLinearizer {
 
