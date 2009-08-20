@@ -91,6 +91,16 @@ Origin of files: http://commons.apache.org/downloads/download_dbcp.cgi
 License: The Apache Software License, Version 2.0
 Responsible: mschneider
 
+=== commons math ===
+Files: commons-math-2.0.jar
+URL: http://commons.apache.org/math/
+Version: 2.0
+Description: Apache Commons Math
+Used for: solving equations of linear systems (org.deegree.geometry.linearization.CurveLinearizer)
+Origin of files: http://commons.apache.org/downloads/download_math.cgi
+License: The Apache Software License, Version 2.0
+Responsible: aionita
+
 === jaxb ===
 Files: jaxb-impl-2.1.10.jar,jaxb-xjc-2.1.10.jar
 URL: https://jaxb.dev.java.net/
