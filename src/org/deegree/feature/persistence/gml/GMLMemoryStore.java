@@ -270,11 +270,11 @@ public class GMLMemoryStore implements FeatureStore {
     void releaseTransaction( GMLMemoryStoreTransaction ta )
                             throws FeatureStoreException {
         if ( ta.getStore() != this ) {
-            String msg = Messages.getMessage( "DATASTORE_TA_NOT_OWNER" );
+            String msg = Messages.getMessage( "TA_NOT_OWNER" );
             throw new FeatureStoreException( msg );
         }
         if ( ta != this.activeTransaction ) {
-            String msg = Messages.getMessage( "DATASTORE_TA_NOT_ACTIVE" );
+            String msg = Messages.getMessage( "TA_NOT_ACTIVE" );
             throw new FeatureStoreException( msg );
         }
         this.activeTransaction = null;
@@ -298,7 +298,7 @@ public class GMLMemoryStore implements FeatureStore {
         }
         if ( o instanceof Feature ) {
             Feature feature = (Feature) o;
-            FeatureCollection fc = ftToFeatures.get( feature );
+            FeatureCollection fc = ftToFeatures.get( feature.getType() );
             fc.remove( feature );
         }
     }

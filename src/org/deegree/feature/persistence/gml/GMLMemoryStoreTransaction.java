@@ -37,13 +37,14 @@
 package org.deegree.feature.persistence.gml;
 
 import static org.deegree.feature.i18n.Messages.getMessage;
-import static org.deegree.feature.persistence.IDGenMode.USE_EXISTING;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.namespace.QName;
 
@@ -60,7 +61,6 @@ import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
-import org.deegree.filter.logical.Not;
 import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,11 +106,11 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
         int deleted = 0;
         if ( fc != null ) {
             try {
-                Filter notFilter = new OperatorFilter( new Not( filter.getOperator() ) );
-                int old = fc.size();
-                fc = fc.getMembers( notFilter );
-                deleted = old - fc.size();
-                store.setCollection( ft, fc );
+                FeatureCollection newFc = fc.getMembers( filter );
+                deleted = newFc.size();
+                for ( Feature feature : newFc ) {
+                    store.removeObject( feature.getId() );
+                }
             } catch ( FilterEvaluationException e ) {
                 throw new FeatureStoreException( e.getMessage(), e );
             }
@@ -122,7 +122,7 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
     public int performDelete( IdFilter filter, String lockId )
                             throws FeatureStoreException {
 
-        for (String id : filter.getMatchingIds()) {
+        for ( String id : filter.getMatchingIds() ) {
             store.removeObject( id );
         }
         return filter.getMatchingIds().size();
@@ -132,45 +132,103 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
     public List<String> performInsert( FeatureCollection fc, IDGenMode mode )
                             throws FeatureStoreException {
 
-        if ( mode != USE_EXISTING ) {
-            throw new FeatureStoreException( "Only USE_EXISTING is currently implemented." );
-        }
-
         Set<Geometry> geometries = new HashSet<Geometry>();
         Set<Feature> features = new HashSet<Feature>();
+        Set<String> fids = new LinkedHashSet<String>();
+        Set<String> gids = new LinkedHashSet<String>();
+        findFeaturesAndGeometries( fc, geometries, features, fids, gids );
 
-        findFeaturesAndGeometries( fc, geometries, features );
+        switch ( mode ) {
+        case GENERATE_NEW: {
+            // TODO don't change incoming features / geometries
+            for ( Feature feature : features ) {
+                String newFid = "FEATURE_" + generateNewId();
+                String oldFid = feature.getId();
+                if ( oldFid != null ) {
+                    fids.remove( oldFid );                    
+                }
+                fids.add( newFid );
+                feature.setId( newFid );
+            }
+
+            for ( Geometry geometry : geometries ) {
+                String newGid = "GEOMETRY_" + generateNewId();
+                String oldGid = geometry.getId();
+                if ( oldGid != null ) {
+                    gids.remove( oldGid );                    
+                }
+                gids.add( newGid );
+                geometry.setId( newGid );
+            }
+            break;
+        }
+        case REPLACE_DUPLICATE: {
+            throw new FeatureStoreException( "REPLACE_DUPLICATE is not available yet." );
+        }
+        case USE_EXISTING: {
+            // check if any of the features / geometries to be inserted already exists in the store
+            for ( String fid : fids ) {
+                if ( store.getObjectById( fid ) != null ) {
+                    String msg = "Cannot insert feature '" + fid
+                                 + "'. This feature already exists in the feature store.";
+                    throw new FeatureStoreException( msg );
+                }
+            }
+            for ( String gid : gids ) {
+                if ( store.getObjectById( gid ) != null ) {
+                    String msg = "Cannot insert geometry '" + gid
+                                 + "'. This geometry already exists in the feature store.";
+                    throw new FeatureStoreException( msg );
+                }
+            }
+            break;
+        }
+        }
 
         store.addFeatures( features );
         store.addGeometriesWithId( geometries );
 
-        return new ArrayList<String>();
+        return new ArrayList<String>( fids );
     }
 
-    private void findFeaturesAndGeometries( Feature feature, Set<Geometry> geometries, Set<Feature> features ) {
+    private String generateNewId() {
+        return UUID.randomUUID().toString();
+    }
+
+    private void findFeaturesAndGeometries( Feature feature, Set<Geometry> geometries, Set<Feature> features,
+                                            Set<String> fids, Set<String> gids ) {
 
         if ( !features.contains( feature ) ) {
             if ( feature instanceof FeatureCollection ) {
                 for ( Feature member : (FeatureCollection) feature ) {
-                    findFeaturesAndGeometries( member, geometries, features );
+                    findFeaturesAndGeometries( member, geometries, features, fids, gids );
                 }
             } else {
-                features.add( feature );
+                if ( feature.getId() == null || !( fids.contains( feature.getId() ) ) ) {
+                    features.add( feature );
+                    if ( feature.getId() != null ) {
+                        fids.add( feature.getId() );
+                    }
+                }
                 for ( Property<?> property : feature.getProperties() ) {
                     Object propertyValue = property.getValue();
                     if ( propertyValue instanceof Feature ) {
-                        findFeaturesAndGeometries( (Feature) propertyValue, geometries, features );
+                        findFeaturesAndGeometries( (Feature) propertyValue, geometries, features, fids, gids );
                     } else if ( propertyValue instanceof Geometry ) {
-                        findGeometries( (Geometry) propertyValue, geometries );
+                        findGeometries( (Geometry) propertyValue, geometries, gids );
                     }
                 }
             }
         }
     }
 
-    private void findGeometries( Geometry geometry, Set<Geometry> geometries ) {
-        geometries.add( geometry );
-        // TODO traverse further
+    private void findGeometries( Geometry geometry, Set<Geometry> geometries, Set<String> gids ) {
+        if ( geometry.getId() == null || !( gids.contains( geometry.getId() ) ) ) {
+            geometries.add( geometry );
+            if ( geometry.getId() != null ) {
+                gids.add( geometry.getId() );
+            }
+        }
     }
 
     @Override
@@ -182,6 +240,8 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
     @Override
     public void rollback()
                             throws FeatureStoreException {
-        throw new UnsupportedOperationException();
+        store.releaseTransaction( this );
+        String msg = "Cannot recover pre-transaction state (not supported by this feature store). Feature store may be inconsistent!";
+        throw new FeatureStoreException( msg );
     }
 }
