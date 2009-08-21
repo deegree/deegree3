@@ -145,7 +145,7 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
                 String newFid = "FEATURE_" + generateNewId();
                 String oldFid = feature.getId();
                 if ( oldFid != null ) {
-                    fids.remove( oldFid );                    
+                    fids.remove( oldFid );
                 }
                 fids.add( newFid );
                 feature.setId( newFid );
@@ -155,7 +155,7 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
                 String newGid = "GEOMETRY_" + generateNewId();
                 String oldGid = geometry.getId();
                 if ( oldGid != null ) {
-                    gids.remove( oldGid );                    
+                    gids.remove( oldGid );
                 }
                 gids.add( newGid );
                 geometry.setId( newGid );
@@ -166,23 +166,38 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
             throw new FeatureStoreException( "REPLACE_DUPLICATE is not available yet." );
         }
         case USE_EXISTING: {
-            // check if any of the features / geometries to be inserted already exists in the store
-            for ( String fid : fids ) {
-                if ( store.getObjectById( fid ) != null ) {
-                    String msg = "Cannot insert feature '" + fid
-                                 + "'. This feature already exists in the feature store.";
-                    throw new FeatureStoreException( msg );
+            // TODO don't change incoming features / geometries
+            for ( Feature feature : features ) {
+                if ( feature.getId() == null ) {
+                    String newFid = "FEATURE_" + generateNewId();
+                    feature.setId( newFid );
+                    fids.add( newFid );
                 }
             }
-            for ( String gid : gids ) {
-                if ( store.getObjectById( gid ) != null ) {
-                    String msg = "Cannot insert geometry '" + gid
-                                 + "'. This geometry already exists in the feature store.";
-                    throw new FeatureStoreException( msg );
+
+            for ( Geometry geometry : geometries ) {
+                if ( geometry.getId() == null ) {
+                    String newGid = "GEOMETRY_" + generateNewId();
+                    geometry.setId( newGid );
+                    gids.add( newGid );
                 }
             }
             break;
         }
+        }
+
+        // check if any of the features / geometries to be inserted already exists in the store
+        for ( String fid : fids ) {
+            if ( store.getObjectById( fid ) != null ) {
+                String msg = "Cannot insert feature '" + fid + "'. This feature already exists in the feature store.";
+                throw new FeatureStoreException( msg );
+            }
+        }
+        for ( String gid : gids ) {
+            if ( store.getObjectById( gid ) != null ) {
+                String msg = "Cannot insert geometry '" + gid + "'. This geometry already exists in the feature store.";
+                throw new FeatureStoreException( msg );
+            }
         }
 
         store.addFeatures( features );
