@@ -44,6 +44,7 @@ import javax.media.jai.WarpPolynomial;
 import javax.vecmath.Point3d;
 
 import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.geom.RasterRect;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.interpolation.Interpolation;
 import org.deegree.coverage.raster.interpolation.InterpolationFactory;
@@ -143,7 +144,8 @@ public class RasterTransformer extends Transformer {
         AbstractRaster source = createSourceRaster( sourceRaster, dstEnvelope );
         RasterData srcRaster = source.getAsSimpleRaster().getReadOnlyRasterData();
 
-        RasterData dstRaster = srcRaster.createCompatibleRasterData( dstWidth, dstHeight );
+        RasterRect rr = new RasterRect( 0, 0, dstWidth, dstHeight );
+        RasterData dstRaster = srcRaster.createCompatibleWritableRasterData( rr, srcRaster.getBandTypes() );
 
         RasterReference srcREnv = source.getRasterReference();
         RasterReference dstREnv = new RasterReference( dstEnvelope, dstWidth, dstHeight );
@@ -182,8 +184,9 @@ public class RasterTransformer extends Transformer {
         // the envelope from which we need data
         Envelope workEnv = (Envelope) srcTransf.transform( dstEnvelope, getTargetCRS() );
 
+        Envelope dataEnvelope = sourceRaster.getEnvelope();
         // the envelope from which we have data
-        Geometry dataEnvGeom = workEnv.getIntersection( sourceRaster.getEnvelope() );
+        Geometry dataEnvGeom = workEnv.getIntersection( dataEnvelope );
         if ( dataEnvGeom == null ) {
             LOG.debug( "no intersection for " + sourceRaster + " and " + dstEnvelope );
             // todo create subclass of TransformationException
