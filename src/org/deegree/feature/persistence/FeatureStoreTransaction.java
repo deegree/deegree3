@@ -37,12 +37,11 @@
 package org.deegree.feature.persistence;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.types.property.PropertyType;
+import org.deegree.feature.Property;
 import org.deegree.filter.Filter;
 import org.deegree.filter.IdFilter;
 import org.deegree.filter.OperatorFilter;
@@ -117,7 +116,7 @@ public interface FeatureStoreTransaction {
      * @throws FeatureStoreException
      *             if the update fails
      */
-    public int performUpdate( QName ftName, Map<PropertyType, Object> replacementProps, Filter filter, String lockId )
+    public int performUpdate( QName ftName, List<Property> replacementProps, Filter filter, String lockId )
                             throws FeatureStoreException;
 
     /**

@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -56,7 +55,6 @@ import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
 import org.deegree.feature.persistence.IDGenMode;
 import org.deegree.feature.types.FeatureType;
-import org.deegree.feature.types.property.PropertyType;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.IdFilter;
@@ -247,9 +245,29 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public int performUpdate( QName ftName, Map<PropertyType, Object> replacementProps, Filter filter, String lockId )
+    public int performUpdate( QName ftName, List<Property> replacementProps, Filter filter, String lockId )
                             throws FeatureStoreException {
-        throw new UnsupportedOperationException();
+        FeatureType ft = store.getSchema().getFeatureType( ftName );
+        if ( ft == null ) {
+            throw new FeatureStoreException( getMessage( "TA_OPERATION_FT_NOT_SERVED", ftName ) );
+        }
+        FeatureCollection fc = store.getCollection( ft );
+        int updated = 0;
+        if ( fc != null ) {
+            try {
+                FeatureCollection newFc = fc.getMembers( filter );
+                updated = newFc.size();
+                for ( Feature feature : newFc ) {
+                    for ( Property prop : replacementProps ) {
+                        // TODO what about multi properties
+                        feature.setPropertyValue( prop.getType().getName(), 0, prop.getValue() );
+                    }
+                }
+            } catch ( FilterEvaluationException e ) {
+                throw new FeatureStoreException( e.getMessage(), e );
+            }
+        }
+        return updated;
     }
 
     @Override
