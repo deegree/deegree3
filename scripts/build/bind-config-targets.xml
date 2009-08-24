@@ -1,0 +1,56 @@
+<project name="configuration-binding" basedir="../..">
+    <import file="${basedir}/build.xml" optional="false" />
+
+    <target name="bind" depends="resolve">
+        <!-- Support jaxb tasks -->
+        <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+            <classpath refid="build.path" />
+        </taskdef>
+        <property name="schema.file" value="commons.xsd" />
+        <property name="schema.name" value="commons" />
+
+        <property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
+        <property name="src.output.dir" value="${src.dir}/org/deegree/${schema.name}/configuration" />
+
+        <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
+            <produces dir="${src.output.dir}" includes="**/*.java" />
+        </xjc>
+    </target>
+
+    <target name="bind-commons-configuration" depends="bind, publish-local" description="Bind the commons configuration files and publish the result." />
+
+    <target name="bind-ft-definition" depends="resolve" description="Bind featuretype_definition.xsd">
+        <!-- Support jaxb tasks -->
+        <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+            <classpath refid="build.path" />
+        </taskdef>
+        <property name="schema.file" value="featuretype_definition.xsd" />
+        <property name="schema.name" value="feature" />
+        <property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
+        <property name="src.output.dir" value="${src.dir}/org/deegree/feature/types/jaxb" />
+
+        <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
+            <depends dir="${schema.dir}" includes="**/*.xsd" />
+            <produces dir="${src.output.dir}" includes="**/*.java" />
+        </xjc>
+    </target>
+
+    <target name="bind-ds" depends="resolve">
+        <!-- Support jaxb tasks -->
+        <taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+            <classpath refid="build.path" />
+        </taskdef>
+        <property name="schema.file" value="all_datasources.xsd" />
+        <property name="schema.name" value="datasource" />
+        <property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.1.0/" />
+        <property name="src.output.dir" value="${src.dir}/org/deegree/commons/${schema.name}/configuration" />
+
+        <xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
+            <depends dir="${schema.dir}" includes="**/*.xsd" />
+            <produces dir="${src.output.dir}" includes="**/*.java" />
+        </xjc>
+    </target>
+
+    <target name="bind-datasource-configuration" depends="bind-ds, publish-local" description="Bind the dataaccess configuration files and publish the result." />
+
+</project>

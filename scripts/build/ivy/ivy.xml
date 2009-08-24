@@ -1,5 +1,5 @@
 <!--
-  # found in the ${basedir}/ivy-build/ivy.properties
+    found in the ${basedir}/scripts/build/ivy/ivy.properties
   module.organisation = org.deegree
   module.name = ${ant.project.name}
     jar.name=deegree-${module.name}-${module.version.prefix}

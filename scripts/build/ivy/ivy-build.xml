@@ -59,7 +59,7 @@
     <!-- prints the environment                                              -->
     <!-- =================================================================== -->
 
-    <target name="env" depends="load-ivy" description="prints the environment">
+    <target name="env" depends="load-ivy" description="-> prints the environment">
         <echo>Environment:</echo>
         <echo>------------</echo>
         <echo message="java.home = ${java.home}" />
@@ -87,7 +87,8 @@
     <!-- =================================
           target: resolve
          ================================= -->
-    <target name="resolve" depends="load-ivy" description="-> resolve and retrieve dependencies with ivy">
+    <target name="resolve" depends="load-ivy">
+        <!--description="-> resolve and retrieve dependencies with ivy"-->
         <ivy:retrieve conf="${module.name}-build" pattern="${lib.dir}/[artifact](-[revision]).[ext]" file="${dependencies.file}" log="${ivy.resolve.verbose}" sync="true" />
         <!--ivy:deliver deliverpattern="${build.dir}/ivy.xml"/-->
         <!-- ivy:resolve file="${dependencies.file}"/-->
@@ -113,7 +114,7 @@
     <!-- =================================
           target: compile
          ================================= -->
-    <target name="compile" depends="version" description="-> compile ${module.name}">
+    <target name="compile" depends="version" >
         <!-- if any of the dependend jars was updated, delete the previously compiled classes. This way the api-dependency is garanteed.
 
              For clarification, consider you removed a public method in a dependend d3 module. By calling publish-all you will get these changes in the
@@ -179,7 +180,7 @@
     <target name="compile-and-copy" depends="compile, copy-resources" />
 
     <!-- ================================= 
-          target: impl-jar              
+          target: build-jar
          ================================= -->
     <target name="build-jar" depends="compile-and-copy" if="compile.change" description="-> create a jar file in ${classed.dir}/${jar.file}.jar">
         <pathconvert property="lib-path" pathsep=" " refid="build.path">
@@ -220,7 +221,8 @@
     <!-- ====================================
          Generate a nice report of dependencies
          ==================================== -->
-    <target name="report" depends="resolve" description="-> generates a report of dependencies">
+    <target name="report" depends="resolve" >
+        <!--description="-> generates a report of dependencies"-->
         <ivy:report todir="${report.dir}" conf="${module.name}-build" dot="true" />
     </target>
 
@@ -265,7 +267,7 @@
         </javadoc>
     </target>
 
-    <target name="zip-javadoc" depends="javadoc" description="-> create a zip from JavaDoc">
+    <target name="zip-javadoc" depends="javadoc">
         <zip destfile="${javadoc.file}.zip" update="true">
             <zipfileset dir="${javadoc.dir}">
                 <include name="**" />
@@ -279,7 +281,8 @@
           publish targets, publishing means: make the current 'revision' available for all other modules by putting them in a (local) repository.
          ================================= -->
 
-    <target name="publish-local"  description="-> publish all configurations of ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository">
+    <target name="publish-local">
+        <!--description="-> publish all configurations of ${module.name} in the local-ivy (${ivy.home.dir}/local/${module.organisation}/${module.name}) repository"-->        
         <ant target="local-publish"/>
     </target>
 
@@ -288,7 +291,8 @@
         <echo message="project ${module.name}-build released with version ${build.version}" />
     </target>
 
-    <target name="publish-nightly" description="-> publish ${module.name}-build in the nightly ivy  repository">
+    <target name="publish-nightly" >
+        <!--description="-> publish ${module.name}-build in the nightly ivy repository"-->
         <!-- define the resolver for a local build -->
         <ant target="nightly-publish"/>
     </target>
@@ -314,11 +318,13 @@
         <delete dir="${build.dir}" failonerror="false" />
     </target>
 
-    <target name="clean-local-repository" depends="clean" description="-> cleans this projects created build directory, the ivy cache and the .ivy/local/org.deegree/[module]">
+    <target name="clean-local-repository" depends="clean">
+        <!--description="-> cleans this projects created build directory, the ivy cache and the .ivy/local/org.deegree/[module]"-->
         <delete dir="${repository.dir}/${module.organisation}/${module.name}" failonerror="false" />
     </target>
 
-    <target name="clean-cache" depends="clean-local-repository" description="-> cleans this projects created build directory, the ivy cache and the .ivy/local/org.deegree/[module]">
+    <target name="clean-cache" depends="clean-local-repository" >
+        <!--description="-> cleans this projects created build directory, the ivy cache and the .ivy/local/org.deegree/[module]"-->        
         <delete dir="${ivy.home.dir}/cache" failonerror="false" />
     </target>
 
