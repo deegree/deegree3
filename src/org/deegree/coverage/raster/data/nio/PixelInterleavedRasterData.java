@@ -94,6 +94,7 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
 
     @Override
     public PixelInterleavedRasterData createCompatibleRasterData( RasterRect sampleDomain, BandType[] bands ) {
+        Thread.dumpStack();
         return new PixelInterleavedRasterData( sampleDomain, rasterWidth, rasterHeight, bands, this.dataType, false );
     }
 
@@ -159,10 +160,14 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
         // clamp to maximum possible size
         // int wx0 = this.rasterWidth - x0;
         // int hy0 = this.rasterHeight - y0;
+        // the actual width and height of this raster
         int wx0 = this.getWidth() - x0;
         int hy0 = this.getHeight() - y0;
+
+        // the width and height of the raster from which the data will be copied
         int srcw = srcRaster.getWidth() - xOffset;
         int srch = srcRaster.getHeight() - yOffset;
+
         int subWidth = min( wx0, width, srcw );
         int subHeight = min( hy0, height, srch );
 

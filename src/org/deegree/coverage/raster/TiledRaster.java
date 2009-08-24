@@ -181,7 +181,8 @@ public class TiledRaster extends AbstractRaster {
         if ( tiles == null || tiles.isEmpty() ) {
             throw new NullPointerException( "The given tile container does not contain any tiles. " );
         }
-        SimpleRaster result = tiles.get( 0 ).getAsSimpleRaster().createCompatibleSimpleRaster( getRasterReference(),
+        SimpleRaster originalSimpleRaster = tiles.get( 0 ).getAsSimpleRaster();
+        SimpleRaster result = originalSimpleRaster.createCompatibleSimpleRaster( getRasterReference(),
                                                                                                env );
 
         for ( AbstractRaster r : tiles ) {
