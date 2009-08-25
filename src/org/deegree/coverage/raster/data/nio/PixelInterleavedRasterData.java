@@ -94,7 +94,6 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
 
     @Override
     public PixelInterleavedRasterData createCompatibleRasterData( RasterRect sampleDomain, BandType[] bands ) {
-        Thread.dumpStack();
         return new PixelInterleavedRasterData( sampleDomain, rasterWidth, rasterHeight, bands, this.dataType, false );
     }
 
