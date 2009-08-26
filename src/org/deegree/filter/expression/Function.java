@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.expression;
 
 import java.util.List;
@@ -43,10 +43,10 @@ import org.deegree.filter.MatchableObject;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Function implements Expression {
@@ -68,23 +68,25 @@ public class Function implements Expression {
         return params;
     }
 
-    @Override    
+    @Override
     public Type getType() {
         return Type.FUNCTION;
     }
 
-    @Override    
+    @Override
     public Object[] evaluate( MatchableObject object )
                             throws FilterEvaluationException {
         throw new FilterEvaluationException( "Evaluation of the '" + getType().name()
                                              + "' expression is not implemented yet." );
     }
 
-    @Override    
+    @Override
     public String toString( String indent ) {
         String s = indent + "-Function (" + name + ")\n";
-        for ( Expression param : params ) {
-            s += param.toString( indent + "  " );
+        if ( params != null ) {
+            for ( Expression param : params ) {
+                s += param.toString( indent + "  " );
+            }
         }
         return s;
     }

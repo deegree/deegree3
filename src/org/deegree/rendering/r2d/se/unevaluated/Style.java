@@ -44,6 +44,7 @@ import java.util.Map;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
+import org.deegree.filter.MatchableObject;
 import org.deegree.geometry.Geometry;
 import org.deegree.rendering.r2d.styling.Styling;
 import org.deegree.rendering.r2d.styling.TextStyling;
@@ -132,7 +133,7 @@ public class Style {
         }
 
         @Override
-        public void updateStep( T base, Feature f ) {
+        public void updateStep( T base, MatchableObject f ) {
             base.add( value );
         }
     }

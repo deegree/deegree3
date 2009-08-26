@@ -59,8 +59,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.stax.StAXParsingHelper;
-import org.deegree.feature.Feature;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -141,7 +139,7 @@ public class SymbologyParser {
                     if ( pair.second != null ) {
                         contn = new Continuation<Fill>() {
                             @Override
-                            public void updateStep( Fill base, Feature f ) {
+                            public void updateStep( Fill base, MatchableObject f ) {
                                 pair.second.evaluate( base.graphic, f );
                             }
                         };
@@ -276,7 +274,7 @@ public class SymbologyParser {
                     if ( pair.second != null ) {
                         contn = new Continuation<Stroke>() {
                             @Override
-                            public void updateStep( Stroke base, Feature f ) {
+                            public void updateStep( Stroke base, MatchableObject f ) {
                                 pair.second.evaluate( base.fill, f );
                             }
                         };
@@ -299,7 +297,7 @@ public class SymbologyParser {
                             if ( pair.second != null ) {
                                 contn = new Continuation<Stroke>() {
                                     @Override
-                                    public void updateStep( Stroke base, Feature f ) {
+                                    public void updateStep( Stroke base, MatchableObject f ) {
                                         pair.second.evaluate( base.stroke, f );
                                     }
                                 };
@@ -359,7 +357,7 @@ public class SymbologyParser {
                 if ( fill.second != null ) {
                     contn = new Continuation<Mark>() {
                         @Override
-                        public void updateStep( Mark base, Feature f ) {
+                        public void updateStep( Mark base, MatchableObject f ) {
                             fill.second.evaluate( base.fill, f );
                         }
                     };
@@ -372,7 +370,7 @@ public class SymbologyParser {
                 if ( stroke.second != null ) {
                     contn = new Continuation<Mark>() {
                         @Override
-                        public void updateStep( Mark base, Feature f ) {
+                        public void updateStep( Mark base, MatchableObject f ) {
                             stroke.second.evaluate( base.stroke, f );
                         }
                     };
@@ -433,7 +431,7 @@ public class SymbologyParser {
                     if ( pair.second != null ) {
                         contn = new Continuation<Graphic>() {
                             @Override
-                            public void updateStep( Graphic base, Feature f ) {
+                            public void updateStep( Graphic base, MatchableObject f ) {
                                 pair.second.evaluate( base.mark, f );
                             }
                         };
@@ -552,7 +550,7 @@ public class SymbologyParser {
                 if ( pair.second != null ) {
                     return new Symbolizer<PointStyling>( baseOrEvaluated, new Continuation<PointStyling>() {
                         @Override
-                        public void updateStep( PointStyling base, Feature f ) {
+                        public void updateStep( PointStyling base, MatchableObject f ) {
                             pair.second.evaluate( base.graphic, f );
                         }
                     }, common.geometry, null );
@@ -615,7 +613,7 @@ public class SymbologyParser {
                     if ( pair.second != null ) {
                         contn = new Continuation<LineStyling>() {
                             @Override
-                            public void updateStep( LineStyling base, Feature f ) {
+                            public void updateStep( LineStyling base, MatchableObject f ) {
                                 pair.second.evaluate( base.stroke, f );
                             }
                         };
@@ -667,7 +665,7 @@ public class SymbologyParser {
                     if ( pair.second != null ) {
                         contn = new Continuation<PolygonStyling>() {
                             @Override
-                            public void updateStep( PolygonStyling base, Feature f ) {
+                            public void updateStep( PolygonStyling base, MatchableObject f ) {
                                 pair.second.evaluate( base.stroke, f );
                             }
                         };
@@ -684,7 +682,7 @@ public class SymbologyParser {
                     if ( fillPair.second != null ) {
                         contn = new Continuation<PolygonStyling>() {
                             @Override
-                            public void updateStep( PolygonStyling base, Feature f ) {
+                            public void updateStep( PolygonStyling base, MatchableObject f ) {
                                 fillPair.second.evaluate( base.fill, f );
                             }
                         };
@@ -733,8 +731,18 @@ public class SymbologyParser {
         return new Symbolizer<PolygonStyling>( baseOrEvaluated, contn, common.geometry, common.name );
     }
 
-    private static <T> Continuation<T> updateOrContinue( XMLStreamReader in, String name, T obj,
-                                                         final Updater<T> updater, Continuation<T> contn )
+    /**
+     * @param <T>
+     * @param in
+     * @param name
+     * @param obj
+     * @param updater
+     * @param contn
+     * @return either contn, or a new continuation which updates obj
+     * @throws XMLStreamException
+     */
+    public static <T> Continuation<T> updateOrContinue( XMLStreamReader in, String name, T obj,
+                                                        final Updater<T> updater, Continuation<T> contn )
                             throws XMLStreamException {
         if ( in.getLocalName().endsWith( name ) ) {
             final LinkedList<Pair<String, Pair<Expression, String>>> text = new LinkedList<Pair<String, Pair<Expression, String>>>(); // no
@@ -768,7 +776,7 @@ public class SymbologyParser {
             } else {
                 contn = new Continuation<T>( contn ) {
                     @Override
-                    public void updateStep( T base, Feature f ) {
+                    public void updateStep( T base, MatchableObject f ) {
                         String tmp = "";
                         for ( Pair<String, Pair<Expression, String>> p : text ) {
                             if ( p.first != null ) {
@@ -901,7 +909,7 @@ public class SymbologyParser {
                             if ( pair.second != null ) {
                                 contn = new Continuation<TextStyling>() {
                                     @Override
-                                    public void updateStep( TextStyling base, Feature f ) {
+                                    public void updateStep( TextStyling base, MatchableObject f ) {
                                         pair.second.evaluate( base.linePlacement, f );
                                     }
                                 };
@@ -919,7 +927,7 @@ public class SymbologyParser {
                     if ( haloPair.second != null ) {
                         contn = new Continuation<TextStyling>() {
                             @Override
-                            public void updateStep( TextStyling base, Feature f ) {
+                            public void updateStep( TextStyling base, MatchableObject f ) {
                                 haloPair.second.evaluate( base.halo, f );
                             }
                         };
@@ -935,7 +943,7 @@ public class SymbologyParser {
                     if ( fontPair.second != null ) {
                         contn = new Continuation<TextStyling>() {
                             @Override
-                            public void updateStep( TextStyling base, Feature f ) {
+                            public void updateStep( TextStyling base, MatchableObject f ) {
                                 fontPair.second.evaluate( base.font, f );
                             }
                         };
@@ -951,7 +959,7 @@ public class SymbologyParser {
                     if ( fillPair.second != null ) {
                         contn = new Continuation<TextStyling>() {
                             @Override
-                            public void updateStep( TextStyling base, Feature f ) {
+                            public void updateStep( TextStyling base, MatchableObject f ) {
                                 fillPair.second.evaluate( base.fill, f );
                             }
                         };
@@ -1049,7 +1057,7 @@ public class SymbologyParser {
                     if ( fillPair.second != null ) {
                         contn = new Continuation<Halo>() {
                             @Override
-                            public void updateStep( Halo base, Feature f ) {
+                            public void updateStep( Halo base, MatchableObject f ) {
                                 fillPair.second.evaluate( base.fill, f );
                             }
                         };
@@ -1137,7 +1145,7 @@ public class SymbologyParser {
 
     /**
      * @param in
-     * @return null, if no symbolizer and no feature type style was found
+     * @return null, if no symbolizer and no MatchableObject type style was found
      * @throws XMLStreamException
      */
     public static org.deegree.rendering.r2d.se.unevaluated.Style parse( XMLStreamReader in )
@@ -1235,7 +1243,7 @@ public class SymbologyParser {
         }
 
         @Override
-        public void updateStep( LinkedList<Symbolizer<?>> base, Feature f ) {
+        public void updateStep( LinkedList<Symbolizer<?>> base, MatchableObject f ) {
             try {
                 if ( filter == null || filter.evaluate( f ) || ( base.isEmpty() && filter == ELSEFILTER ) ) {
                     base.addAll( syms );

@@ -37,6 +37,7 @@ package org.deegree.filter.xml;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getAttributeValueAsBoolean;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getRequiredAttributeValue;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.require;
@@ -82,6 +83,7 @@ import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.function.FormatNumber;
 import org.deegree.filter.i18n.Messages;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
@@ -157,6 +159,8 @@ public class Filter110XMLDecoder {
         addElementToExpressionMapping( new QName( OGC_NS, "PropertyName" ), Expression.Type.PROPERTY_NAME );
         addElementToExpressionMapping( new QName( OGC_NS, "Function" ), Expression.Type.FUNCTION );
         addElementToExpressionMapping( new QName( OGC_NS, "Literal" ), Expression.Type.LITERAL );
+        // SE functions
+        addElementToExpressionMapping( new QName( SENS, "FormatNumber" ), Expression.Type.FUNCTION );
 
         // element name <-> spatial operator type
         addElementToSpatialOperatorMapping( new QName( OGC_NS, "BBOX" ), SpatialOperator.SubType.BBOX );
@@ -347,14 +351,7 @@ public class Filter110XMLDecoder {
             break;
         }
         case FUNCTION: {
-            xmlStream.nextTag();
-            String name = StAXParsingHelper.getRequiredAttributeValue( xmlStream, null, "name" );
-            List<Expression> params = new ArrayList<Expression>();
-            while ( xmlStream.getEventType() == START_ELEMENT ) {
-                params.add( parseExpression( xmlStream ) );
-                xmlStream.nextTag();
-            }
-            expression = new Function( name, params );
+            expression = parseFunction( xmlStream );
             break;
         }
         }
@@ -390,9 +387,15 @@ public class Filter110XMLDecoder {
      * @throws XMLParsingException
      *             if the element is not a valid "ogc:expression" element
      * @throws XMLStreamException
-     */    
+     */
     public static Function parseFunction( XMLStreamReader xmlStream )
                             throws XMLStreamException {
+
+        if ( xmlStream.getLocalName().equals( "FormatNumber" ) ) {
+            FormatNumber fun = new FormatNumber();
+            fun.parse( xmlStream );
+            return fun;
+        }
 
         xmlStream.require( START_ELEMENT, OGC_NS, "Function" );
         xmlStream.nextTag();
