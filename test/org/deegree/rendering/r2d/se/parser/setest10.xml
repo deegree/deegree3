@@ -18,18 +18,22 @@
       <Label>
         <Concatenate fallbackValue="0">
           <StringValue>
-            <Substring fallbackValue="0">
+            <Trim fallbackValue="0">
               <StringValue>
-                <FormatNumber fallbackValue="0">
-                  <NumericValue>
-                    <ogc:PropertyName>AREA</ogc:PropertyName>
-                  </NumericValue>
-                  <Pattern>########.#</Pattern>
-                </FormatNumber>
+                <Substring fallbackValue="0">
+                  <StringValue>
+                    <FormatNumber fallbackValue="0">
+                      <NumericValue>
+                        <ogc:PropertyName>AREA</ogc:PropertyName>
+                      </NumericValue>
+                      <Pattern>########.#</Pattern>
+                    </FormatNumber>
+                  </StringValue>
+                  <Position>1</Position>
+                  <Length>2</Length>
+                </Substring>
               </StringValue>
-              <Position>1</Position>
-              <Length>2</Length>
-            </Substring>
+            </Trim>
           </StringValue>
           <StringValue>
             some text here and there
