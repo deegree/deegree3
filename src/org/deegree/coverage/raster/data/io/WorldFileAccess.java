@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,8 +32,8 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster;
+ ----------------------------------------------------------------------------*/
+package org.deegree.coverage.raster.data.io;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,11 +51,11 @@ import org.slf4j.LoggerFactory;
  * Class representation of a ESRI world file. A world file may defines bounding coordinates centered on the outer pixel
  * (e.g. ESRI software) or outside the bounding pixels (e.g.Oracle spatial). Reading a worldfile this must be considered
  * so the type of a worldfile must be passed. For this a <code>enum</code> named <code>TYPE</code> ist defined.
- *
- *
+ * 
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author last edited by: $Author:otonnhofer $
- *
+ * 
  * @version Modified from Revision: 7587 $ Date: 2007-06-19 11:29:12 +0200 (Tue, 19 Jun 2007) $
  * @version $Revision:10872 $, $Date:2008-04-01 15:41:48 +0200 (Tue, 01 Apr 2008) $
  */
@@ -63,34 +63,12 @@ public class WorldFileAccess {
 
     private static Logger log = LoggerFactory.getLogger( WorldFileAccess.class );
 
-    /**
-     * <code>TYPE</code> enumerates the world file types.
-     *
-     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
-     * @author last edited by: $Author:otonnhofer $
-     *
-     * @version $Revision:10872 $, $Date:2008-04-01 15:41:48 +0200 (Tue, 01 Apr 2008) $
-     */
-    public enum TYPE {
-
-        /**
-         * Coordinates denote pixel centers.
-         */
-        CENTER,
-
-        /**
-         * Coordinates denote outer edges.
-         */
-        OUTER
-
-    }
-
     private static final String[] WORLD_FILE_EXT = new String[] { "wld", "tfw", "tifw", "jgw", "jpgw", "gfw", "gifw",
                                                                  "pgw", "pngw" };
 
     /**
      * Returns the world file for given file.
-     *
+     * 
      * @param rasterFile
      *            the raster file
      * @return the world file or null if not found.
@@ -116,7 +94,7 @@ public class WorldFileAccess {
      * @return a RasterReference
      * @throws IOException
      */
-    public static RasterReference readWorldFile( File filename, TYPE type )
+    public static RasterReference readWorldFile( File filename, RasterReference.Type type )
                             throws IOException {
 
         File worldFile = getWorldFile( filename );
@@ -154,19 +132,19 @@ public class WorldFileAccess {
         // double xmax = xmin + ( ( width - 1 ) * resx );
         // double ymin = ymax + ( ( height - 1 ) * resy );
 
-        if ( type == TYPE.OUTER ) {
+        if ( type == RasterReference.Type.OUTER ) {
             xmin = xmin + resx / 2.0;
             // ymin = ymin - resy / 2.0;
             // xmax = xmax - resx / 2.0;
             ymax = ymax + resy / 2.0;
         }
 
-        return new RasterReference( xmin, ymax, resx, resy );
+        return new RasterReference( type, xmin, ymax, resx, resy );
     }
 
     /**
      * writes a RasterReference into a world file (with .wld extension).
-     *
+     * 
      * @param renv
      *            the envelope
      * @param file
@@ -180,7 +158,7 @@ public class WorldFileAccess {
 
     /**
      * writes a RasterReference into a world file.
-     *
+     * 
      * @param renv
      *            the envelope
      * @param file
