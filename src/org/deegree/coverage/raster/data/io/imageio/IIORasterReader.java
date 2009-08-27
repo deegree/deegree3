@@ -45,9 +45,9 @@ import javax.imageio.ImageIO;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.WorldFileAccess;
 import org.deegree.coverage.raster.data.container.RasterDataContainer;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
+import org.deegree.coverage.raster.data.io.WorldFileAccess;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
@@ -142,7 +142,7 @@ public class IIORasterReader implements RasterReader {
                 if ( options.readWorldFile() ) {
                     try {
                         if ( file != null ) {
-                            rasterReference = WorldFileAccess.readWorldFile( file, WorldFileAccess.TYPE.CENTER );
+                            rasterReference = WorldFileAccess.readWorldFile( file, RasterReference.Type.CENTER );
                         }
                     } catch ( IOException e ) {
                         //

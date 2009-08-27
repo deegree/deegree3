@@ -42,7 +42,7 @@ import java.util.Set;
 
 import org.deegree.commons.utils.FileUtils;
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.WorldFileAccess;
+import org.deegree.coverage.raster.data.io.WorldFileAccess;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterWriter;
