@@ -36,7 +36,14 @@
             </Trim>
           </StringValue>
           <StringValue>
-            some text here and there
+            <StringPosition fallbackValue="0">
+              <LookupString>
+                text
+              </LookupString>
+              <StringValue>
+                some text here and there
+              </StringValue>
+            </StringPosition>
           </StringValue>
           <StringValue>
             <ogc:Literal> even with spaces at beginning and end </ogc:Literal>
