@@ -83,6 +83,7 @@ import org.deegree.filter.expression.Add;
 import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
+import org.deegree.filter.function.Categorize;
 import org.deegree.filter.function.ChangeCase;
 import org.deegree.filter.function.Concatenate;
 import org.deegree.filter.function.FormatDate;
@@ -175,6 +176,7 @@ public class Filter110XMLDecoder {
         addElementToExpressionMapping( new QName( SENS, "Trim" ), Expression.Type.FUNCTION );
         addElementToExpressionMapping( new QName( SENS, "StringPosition" ), Expression.Type.FUNCTION );
         addElementToExpressionMapping( new QName( SENS, "StringLength" ), Expression.Type.FUNCTION );
+        addElementToExpressionMapping( new QName( SENS, "Categorize" ), Expression.Type.FUNCTION );
 
         // element name <-> spatial operator type
         addElementToSpatialOperatorMapping( new QName( OGC_NS, "BBOX" ), SpatialOperator.SubType.BBOX );
@@ -442,6 +444,11 @@ public class Filter110XMLDecoder {
         }
         if ( xmlStream.getLocalName().equals( "StringLength" ) ) {
             StringLength fun = new StringLength();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "Categorize" ) ) {
+            Categorize fun = new Categorize();
             fun.parse( xmlStream );
             return fun;
         }
