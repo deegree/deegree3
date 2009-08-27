@@ -85,6 +85,7 @@ import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.function.ChangeCase;
 import org.deegree.filter.function.Concatenate;
+import org.deegree.filter.function.FormatDate;
 import org.deegree.filter.function.FormatNumber;
 import org.deegree.filter.function.StringLength;
 import org.deegree.filter.function.StringPosition;
@@ -167,6 +168,7 @@ public class Filter110XMLDecoder {
         addElementToExpressionMapping( new QName( OGC_NS, "Literal" ), Expression.Type.LITERAL );
         // SE functions
         addElementToExpressionMapping( new QName( SENS, "FormatNumber" ), Expression.Type.FUNCTION );
+        addElementToExpressionMapping( new QName( SENS, "FormatDate" ), Expression.Type.FUNCTION );
         addElementToExpressionMapping( new QName( SENS, "Substring" ), Expression.Type.FUNCTION );
         addElementToExpressionMapping( new QName( SENS, "Concatenate" ), Expression.Type.FUNCTION );
         addElementToExpressionMapping( new QName( SENS, "ChangeCase" ), Expression.Type.FUNCTION );
@@ -405,6 +407,11 @@ public class Filter110XMLDecoder {
 
         if ( xmlStream.getLocalName().equals( "FormatNumber" ) ) {
             FormatNumber fun = new FormatNumber();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "FormatDate" ) ) {
+            FormatDate fun = new FormatDate();
             fun.parse( xmlStream );
             return fun;
         }
