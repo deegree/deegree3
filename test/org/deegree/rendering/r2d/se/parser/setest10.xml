@@ -37,6 +37,13 @@
           <StringValue>
             <ogc:Literal> even with spaces at beginning and end </ogc:Literal>
           </StringValue>
+          <StringValue>
+            <ChangeCase fallbackValue="0">
+              <StringValue>
+                <ogc:PropertyName>SOME_PROP</ogc:PropertyName>
+              </StringValue>
+            </ChangeCase>
+          </StringValue>
         </Concatenate>
       </Label>
       <Font>
