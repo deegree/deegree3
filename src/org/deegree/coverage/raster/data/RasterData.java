@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data;
 
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
@@ -45,23 +45,23 @@ import org.deegree.coverage.raster.geom.RasterRect;
  * corner (width-1, height-1). A raster can contain multiple bands. A pixel stores one sample for every band. The sample
  * arrangement is determined by the interleaving type ({@link InterleaveType}). The size of each sample is dertermined
  * by the data type ({@link DataType}).
- *
+ * 
  * <p>
  * Most get-methods accept an array as a parameter for performance reasons. This parameter is used to store the result.
  * The same array will be returned by the method, filled with requested values. A new array will be created, filled and
  * returned if this parameter is <code>null</code>.
- *
+ * 
  * <p>
  * TODO: Only defines interface to byte, short and float data at the moment. Copy float methods for other data types.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  * @see DataType
  * @see InterleaveType
- *
+ * 
  */
 public interface RasterData {
 
@@ -77,49 +77,49 @@ public interface RasterData {
 
     /**
      * Returns the data type of the raster.
-     *
+     * 
      * @return data type of the raster
      */
     public DataType getDataType();
 
     /**
      * Returns the sample interleaving typ of the raster.
-     *
+     * 
      * @return interleaving type of the raster
      */
     public InterleaveType getInterleaveType();
 
     /**
      * Returns the number of bands of the raster
-     *
+     * 
      * @return the bands
      */
     public int getBands();
 
     /**
      * Returns the band types of the raster
-     *
+     * 
      * @return the band types
      */
     public BandType[] getBandTypes();
 
     /**
      * Returns the height of the raster
-     *
+     * 
      * @return the height
      */
     public int getHeight();
 
     /**
      * Returns the width of the raster
-     *
+     * 
      * @return the width
      */
     public int getWidth();
 
     /**
      * Returns the no data values for this raster
-     *
+     * 
      * @param result
      *            an array to put the values into or <code>null</code>
      * @return the <code>result</code> array or a new array, if the <code>result</code> array is <code>null</code>
@@ -128,7 +128,7 @@ public interface RasterData {
 
     /**
      * Sets the no data values for this raster
-     *
+     * 
      * @param values
      *            an array with the null values
      */
@@ -136,7 +136,7 @@ public interface RasterData {
 
     /**
      * Returns a new RasterData with the same DataType and InterleaveType
-     *
+     * 
      * @param sampleDomain
      *            the raster rectangle defining the sample domain of this raster data.
      * @param bands
@@ -147,7 +147,7 @@ public interface RasterData {
 
     /**
      * Create a writable compatible raster with the height and width of the given sample domain.
-     *
+     * 
      * @param sampleDomain
      *            the raster rectangle defining the sample domain of this raster data.
      * @param bands
@@ -158,17 +158,17 @@ public interface RasterData {
 
     /**
      * Returns a view as a new RasterData with the same DataType and InterleaveType but valid only for the given rect.
-     *
+     * 
      * @param sampleDomain
      *            the raster rectangle defining the sample domain of this raster data.
-     *
+     * 
      * @return new raster backed by the readonly data of original raster.
      */
     public ByteBufferRasterData createCompatibleRasterData( RasterRect sampleDomain );
 
     /**
      * Returns a new RasterData with the same DataType and InterleaveType and all bands
-     *
+     * 
      * @param width
      *            width of the new raster
      * @param height
@@ -179,7 +179,7 @@ public interface RasterData {
 
     /**
      * Returns a new RasterData with the same size, DataType and InterleaveType
-     *
+     * 
      * @param bands
      *            definitions of the new rasterdata.
      * @return new empty raster
@@ -188,21 +188,21 @@ public interface RasterData {
 
     /**
      * Returns a new RasterData with the same size, bands, DataType and InterleaveType
-     *
+     * 
      * @return new empty raster
      */
     public RasterData createCompatibleRasterData();
 
     /**
      * Return a read-only version of this RasterData. The result shares the same data as the original.
-     *
+     * 
      * @return a read-only RasterData
      */
     public RasterData asReadOnly();
 
     /**
      * Returns a sample as byte array, regardless of the DataType. i.e. a FLOAT DataType results in a four byte array
-     *
+     * 
      * @param x
      * @param y
      * @param band
@@ -216,7 +216,7 @@ public interface RasterData {
     /**
      * Sets a sample with data from a byte array, regardless of the DataType. i.e. a float must be packed as a four byte
      * array
-     *
+     * 
      * @param x
      * @param y
      * @param band
@@ -228,7 +228,7 @@ public interface RasterData {
 
     /**
      * Returns a pixel as byte array, regardless of the DataType. i.e. a FLOAT DataType results in a four byte array.
-     *
+     * 
      * @param x
      * @param y
      * @param result
@@ -240,7 +240,7 @@ public interface RasterData {
     /**
      * Sets a pixel with data from a byte array, regardless of the DataType. i.e. a float sample must be packed as a
      * four byte array.
-     *
+     * 
      * @param x
      * @param y
      * @param pixel
@@ -252,9 +252,9 @@ public interface RasterData {
      ******************************************************************************************************************/
 
     /**
-     * Returns a byte array with all sample values from coordinate x/y. The lenght of the array is equal to the number
+     * Returns a byte array with all sample values from coordinate x/y. The length of the array is equal to the number
      * of bands.
-     *
+     * 
      * @param x
      * @param y
      * @param result
@@ -264,9 +264,9 @@ public interface RasterData {
     public byte[] getBytePixel( int x, int y, byte[] result );
 
     /**
-     * Returns a short array with all sample values from coordinate x/y. The lenght of the array is equal to the number
+     * Returns a short array with all sample values from coordinate x/y. The length of the array is equal to the number
      * of bands.
-     *
+     * 
      * @param x
      * @param y
      * @param result
@@ -276,9 +276,9 @@ public interface RasterData {
     public short[] getShortPixel( int x, int y, short[] result );
 
     /**
-     * Returns a float array with all sample values from coordinate x/y. The lenght of the array is equal to the number
+     * Returns a float array with all sample values from coordinate x/y. The length of the array is equal to the number
      * of bands.
-     *
+     * 
      * @param x
      * @param y
      * @param result
@@ -288,9 +288,9 @@ public interface RasterData {
     public float[] getFloatPixel( int x, int y, float[] result );
 
     /**
-     * Sets a single pixel with byte values for each sample. The lenght of pixel array must be equal to the number of
+     * Sets a single pixel with byte values for each sample. The length of pixel array must be equal to the number of
      * bands.
-     *
+     * 
      * @param x
      * @param y
      * @param pixel
@@ -299,9 +299,9 @@ public interface RasterData {
     public void setBytePixel( int x, int y, byte[] pixel );
 
     /**
-     * Sets a single pixel with short values for each sample. The lenght of pixel array must be equal to the number of
+     * Sets a single pixel with short values for each sample. The length of pixel array must be equal to the number of
      * bands.
-     *
+     * 
      * @param x
      * @param y
      * @param pixel
@@ -310,9 +310,9 @@ public interface RasterData {
     public void setShortPixel( int x, int y, short[] pixel );
 
     /**
-     * Sets a single pixel with float values for each sample. The lenght of pixel array must be equal to the number of
+     * Sets a single pixel with float values for each sample. The length of pixel array must be equal to the number of
      * bands.
-     *
+     * 
      * @param x
      * @param y
      * @param pixel
@@ -326,7 +326,7 @@ public interface RasterData {
 
     /**
      * Returns a byte sample from coordinate x/y and selected band.
-     *
+     * 
      * @param x
      * @param y
      * @param band
@@ -337,7 +337,7 @@ public interface RasterData {
 
     /**
      * Returns a short sample from coordinate x/y and selected band.
-     *
+     * 
      * @param x
      * @param y
      * @param band
@@ -348,7 +348,7 @@ public interface RasterData {
 
     /**
      * Returns a float sample from coordinate x/y and selected band.
-     *
+     * 
      * @param x
      * @param y
      * @param band
@@ -359,7 +359,7 @@ public interface RasterData {
 
     /**
      * Sets a single byte sample on coordinate x/y and selected band.
-     *
+     * 
      * @param x
      * @param y
      * @param band
@@ -371,7 +371,7 @@ public interface RasterData {
 
     /**
      * Sets a single short sample on coordinate x/y and selected band.
-     *
+     * 
      * @param x
      * @param y
      * @param band
@@ -383,7 +383,7 @@ public interface RasterData {
 
     /**
      * Sets a single float sample on coordinate x/y and selected band.
-     *
+     * 
      * @param x
      * @param y
      * @param band
@@ -400,7 +400,7 @@ public interface RasterData {
     /**
      * Gets values from the specified rectangle and band. The result is stored row-ordered in a single array (e.g.
      * {x0y0, x1y0, x2y0,...,x0y1...})
-     *
+     * 
      * @param x
      * @param y
      * @param width
@@ -415,7 +415,7 @@ public interface RasterData {
     /**
      * Gets values from the specified rectangle and band. The result is stored row-ordered in a single array (e.g.
      * {x0y0, x1y0, x2y0,...,x0y1...})
-     *
+     * 
      * @param x
      * @param y
      * @param width
@@ -430,7 +430,7 @@ public interface RasterData {
     /**
      * Gets values from the specified rectangle and band. The result is stored row-ordered in a single array (e.g.
      * {x0y0, x1y0, x2y0,...,x0y1...})
-     *
+     * 
      * @param x
      * @param y
      * @param width
@@ -445,7 +445,7 @@ public interface RasterData {
     /**
      * Sets values from the array to the specified rectangle and band. The values must be stored row-ordered in a single
      * array (e.g. {x0y0, x1y0, x2y0,...,x0y1...})
-     *
+     * 
      * @param x
      * @param y
      * @param width
@@ -459,7 +459,7 @@ public interface RasterData {
     /**
      * Sets values from the array to the specified rectangle and band. The values must be stored row-ordered in a single
      * array (e.g. {x0y0, x1y0, x2y0,...,x0y1...})
-     *
+     * 
      * @param x
      * @param y
      * @param width
@@ -473,7 +473,7 @@ public interface RasterData {
     /**
      * Sets values from the array to the specified rectangle and band. The values must be stored row-ordered in a single
      * array (e.g. {x0y0, x1y0, x2y0,...,x0y1...})
-     *
+     * 
      * @param x
      * @param y
      * @param width
@@ -490,7 +490,7 @@ public interface RasterData {
 
     /**
      * Returns new RasterData object for the specified rectangle.
-     *
+     * 
      * @param x
      * @param y
      * @param width
@@ -501,7 +501,7 @@ public interface RasterData {
 
     /**
      * Returns new RasterData object for the specified rectangle.
-     *
+     * 
      * @param rasterRect
      *            rectangle for subset
      * @return selected subset
@@ -510,7 +510,7 @@ public interface RasterData {
 
     /**
      * Returns new single-band RasterData object for the specified rectangle.
-     *
+     * 
      * @param x
      * @param y
      * @param width
@@ -523,7 +523,7 @@ public interface RasterData {
 
     /**
      * Sets the raster with values from sourceRaster.
-     *
+     * 
      * @param x
      *            insert position
      * @param y
@@ -539,7 +539,7 @@ public interface RasterData {
 
     /**
      * Sets the raster with values from sourceRaster.
-     *
+     * 
      * @param x
      *            insert position
      * @param y
@@ -559,7 +559,7 @@ public interface RasterData {
 
     /**
      * Sets a single band of the raster with values from one band of the sourceRaster.
-     *
+     * 
      * @param x
      *            insert position
      * @param y
@@ -579,7 +579,7 @@ public interface RasterData {
 
     /**
      * Sets a single band of the raster with values from one band of the sourceRaster.
-     *
+     * 
      * @param x
      *            insert position
      * @param y

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,48 +32,48 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data;
 
 import java.awt.image.DataBuffer;
 
 /**
  * Enumeration for all supported data types.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author:rbezema $
- *
+ * 
  * @version $Revision:11404 $, $Date:2008-04-23 15:38:27 +0200 (Mi, 23 Apr 2008) $
- *
+ * 
  */
 public enum DataType {
 
     /**
-     *
+     * 
      */
     BYTE( Byte.SIZE / 8 ),
     /**
-     *
+     * 
      */
     INT( Integer.SIZE / 8 ),
     /**
-     *
+     * 
      */
     USHORT( Short.SIZE / 8 ),
     /**
-     *
+     * 
      */
     SHORT( Short.SIZE / 8 ),
     /**
-     *
+     * 
      */
     FLOAT( Float.SIZE / 8 ),
     /**
-     *
+     * 
      */
     DOUBLE( Double.SIZE / 8 ),
     /**
-     *
+     * 
      */
     UNDEFINED( 0 );
 
@@ -92,7 +92,7 @@ public enum DataType {
 
     /**
      * Convert from {@link DataBuffer}-Types to {@link DataType}s.
-     *
+     * 
      * @param type
      *            The {@link DataBuffer}-Type (eg. TYPE_BYTE, etc.)
      * @return The according DataType
@@ -118,7 +118,7 @@ public enum DataType {
 
     /**
      * Convert from {@link DataType}s to {@link DataBuffer}-Types.
-     *
+     * 
      * @param type
      *            The DataType.
      * @return The according {@link DataBuffer}-Type (eg. TYPE_BYTE, etc.)
@@ -138,4 +138,5 @@ public enum DataType {
             return DataBuffer.TYPE_DOUBLE;
         return DataBuffer.TYPE_UNDEFINED;
     }
+
 }
