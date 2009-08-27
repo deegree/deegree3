@@ -16,46 +16,50 @@
     </PolygonSymbolizer>
     <TextSymbolizer>
       <Label>
-        <Concatenate fallbackValue="0">
+        <StringLength fallbackValue="0">
           <StringValue>
-            <Trim fallbackValue="0">
+            <Concatenate fallbackValue="0">
               <StringValue>
-                <Substring fallbackValue="0">
+                <Trim fallbackValue="0">
                   <StringValue>
-                    <FormatNumber fallbackValue="0">
-                      <NumericValue>
-                        <ogc:PropertyName>AREA</ogc:PropertyName>
-                      </NumericValue>
-                      <Pattern>########.#</Pattern>
-                    </FormatNumber>
+                    <Substring fallbackValue="0">
+                      <StringValue>
+                        <FormatNumber fallbackValue="0">
+                          <NumericValue>
+                            <ogc:PropertyName>AREA</ogc:PropertyName>
+                          </NumericValue>
+                          <Pattern>########.#</Pattern>
+                        </FormatNumber>
+                      </StringValue>
+                      <Position>1</Position>
+                      <Length>2</Length>
+                    </Substring>
                   </StringValue>
-                  <Position>1</Position>
-                  <Length>2</Length>
-                </Substring>
+                </Trim>
               </StringValue>
-            </Trim>
-          </StringValue>
-          <StringValue>
-            <StringPosition fallbackValue="0">
-              <LookupString>
-                text
-              </LookupString>
               <StringValue>
-                some text here and there
+                <StringPosition fallbackValue="0">
+                  <LookupString>
+                    text
+                  </LookupString>
+                  <StringValue>
+                    some text here and there
+                  </StringValue>
+                </StringPosition>
               </StringValue>
-            </StringPosition>
-          </StringValue>
-          <StringValue>
-            <ogc:Literal> even with spaces at beginning and end </ogc:Literal>
-          </StringValue>
-          <StringValue>
-            <ChangeCase fallbackValue="0">
               <StringValue>
-                <ogc:PropertyName>SOME_PROP</ogc:PropertyName>
+                <ogc:Literal> even with spaces at beginning and end </ogc:Literal>
               </StringValue>
-            </ChangeCase>
+              <StringValue>
+                <ChangeCase fallbackValue="0">
+                  <StringValue>
+                    <ogc:PropertyName>SOME_PROP</ogc:PropertyName>
+                  </StringValue>
+                </ChangeCase>
+              </StringValue>
+            </Concatenate>
           </StringValue>
-        </Concatenate>
+        </StringLength>
       </Label>
       <Font>
         <SvgParameter name="font-size">20</SvgParameter>
