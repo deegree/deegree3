@@ -99,4 +99,13 @@ public abstract class Continuation<T> {
         void update( T obj, String val );
     }
 
+    /**
+     * Updater for a string buffer.
+     */
+    public static final Updater<StringBuffer> SBUPDATER = new Updater<StringBuffer>() {
+        public void update( StringBuffer obj, String val ) {
+            obj.append( val );
+        }
+    };
+
 }

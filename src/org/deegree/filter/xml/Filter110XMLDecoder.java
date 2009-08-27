@@ -84,6 +84,7 @@ import org.deegree.filter.expression.Function;
 import org.deegree.filter.expression.Literal;
 import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.function.FormatNumber;
+import org.deegree.filter.function.Substring;
 import org.deegree.filter.i18n.Messages;
 import org.deegree.filter.logical.And;
 import org.deegree.filter.logical.LogicalOperator;
@@ -161,6 +162,7 @@ public class Filter110XMLDecoder {
         addElementToExpressionMapping( new QName( OGC_NS, "Literal" ), Expression.Type.LITERAL );
         // SE functions
         addElementToExpressionMapping( new QName( SENS, "FormatNumber" ), Expression.Type.FUNCTION );
+        addElementToExpressionMapping( new QName( SENS, "Substring" ), Expression.Type.FUNCTION );
 
         // element name <-> spatial operator type
         addElementToSpatialOperatorMapping( new QName( OGC_NS, "BBOX" ), SpatialOperator.SubType.BBOX );
@@ -393,6 +395,11 @@ public class Filter110XMLDecoder {
 
         if ( xmlStream.getLocalName().equals( "FormatNumber" ) ) {
             FormatNumber fun = new FormatNumber();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "Substring" ) ) {
+            Substring fun = new Substring();
             fun.parse( xmlStream );
             return fun;
         }
