@@ -72,6 +72,8 @@ public class SOSConstants {
         /** Retrieve the capabilities of the service. */
         GetCapabilities,
         /** Retrieve an observation. */
-        GetObservation
+        GetObservation,
+        /** Retrieve a featureOfInterest that was advertised in the observation offerings. */
+        GetFeatureOfInterest
     }
 }
