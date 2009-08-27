@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.coverage.raster.data;
 
@@ -41,72 +41,72 @@ import java.awt.image.DataBuffer;
 
 /**
  * The <code>BandType</code> defines band information of a rasterdata object
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- *
+ * 
  */
 public enum BandType {
 
     /**
-     *
+     * 
      */
     BAND_0( "The first band of this raster image which has no meta 'information' associated with it." ),
     /**
-     *
+     * 
      */
     BAND_1( "The second band of this raster image which has no meta 'information' associated with it." ),
     /**
-     *
+     * 
      */
     BAND_2( "The third band of this raster image which has no meta 'information' associated with it." ),
     /**
-     *
+     * 
      */
     BAND_3( "The fourth band of this raster image which has no meta 'information' associated with it." ),
     /**
-     *
+     * 
      */
     BAND_4( "The fifth band of this raster image which has no meta 'information' associated with it." ),
     /**
-     *
+     * 
      */
     BAND_5( "The sixth band of this raster image which has no meta 'information' associated with it." ),
     /**
-     *
+     * 
      */
     BAND_6( "The seventh band of this raster image which has no meta 'information' associated with it." ),
     /**
-     *
+     * 
      */
     BAND_7( "The eighth band of this raster image which has no meta 'information' associated with it." ),
     /**
-     *
+     * 
      */
     BAND_8( "The ninth band of this raster image which has no meta 'information' associated with it." ),
     /**
-     *
+     * 
      */
     BAND_9( "The tenth band of this raster image which has no meta 'information' associated with it." ),
     /**
-     *
+     * 
      */
     RED( "The band of this raster image which is associated with the color red." ),
     /**
-     *
+     * 
      */
     GREEN( "The band of this raster image which is associated with the color green." ),
     /**
-     *
+     * 
      */
     BLUE( "The band of this raster image which is associated with the color blue." ),
     /**
-     *
+     * 
      */
     ALPHA( "The band of this raster image which is associated with an alpha value." ),
     /**
-     *
+     * 
      */
     UNDEFINED( "No information about the band of this raster image." );
 
@@ -136,7 +136,7 @@ public enum BandType {
     /**
      * Convert from {@link BufferedImage}-Types to {@link BandType}s. The size of the types are irrelevant.
      * (INT_ARGB==3BYTE_ARGB)
-     *
+     * 
      * @param type
      *            The {@link DataBuffer}-Type (eg. TYPE_BYTE, etc.)
      * @param expectedSize
@@ -169,5 +169,10 @@ public enum BandType {
             }
             return result;
         }
+    }
+
+    @Override
+    public String toString() {
+        return name().toLowerCase();
     }
 }
