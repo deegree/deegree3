@@ -763,9 +763,9 @@ public class SymbologyParser {
                     if ( textOnly && !text.isEmpty() ) { // concat text in case of multiple text nodes from
                         // beginning
                         String txt = text.removeLast().first;
-                        text.add( new Pair<String, Pair<Expression, String>>( txt + in.getText(), null ) );
+                        text.add( new Pair<String, Pair<Expression, String>>( txt + in.getText().trim(), null ) );
                     } else {
-                        text.add( new Pair<String, Pair<Expression, String>>( in.getText(), null ) );
+                        text.add( new Pair<String, Pair<Expression, String>>( in.getText().trim(), null ) );
                     }
                 }
             }
