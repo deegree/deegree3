@@ -1122,6 +1122,7 @@ public class XMLAdapter {
      *            the text value of the element
      * @param attrNS
      *            the namespace of the attribute, <code>null</null> if the local namespace of the element should be used
+     * @param attribPRE to use for the namespace binding
      * @param attrName
      *            the attribute name
      * @param attrValue
@@ -1129,14 +1130,18 @@ public class XMLAdapter {
      * @throws XMLStreamException
      */
     public static void writeElement( XMLStreamWriter writer, String namespace, String elemName, String value,
-                                     String attrNS, String attrName, String attrValue )
+                                     String attrNS, String attribPRE, String attrName, String attrValue )
                             throws XMLStreamException {
         writer.writeStartElement( namespace, elemName );
         if ( attrValue != null ) {
             if ( attrNS == null ) {
                 writer.writeAttribute( attrName, attrValue );
             } else {
-                writer.writeAttribute( attrNS, attrName, attrValue );
+                if ( attribPRE == null ) {
+                    writer.writeAttribute( attrNS, attrName, attrValue );
+                } else {
+                    writer.writeAttribute( attribPRE, attrNS, attrName, attrValue );
+                }
             }
         }
         if ( value != null ) {
