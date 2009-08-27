@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage;
 
 import org.deegree.crs.CRS;
@@ -41,10 +41,10 @@ import org.deegree.geometry.GeometryFactory;
 
 /**
  * This class represents an abstract coverage.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public abstract class AbstractCoverage {
@@ -55,21 +55,40 @@ public abstract class AbstractCoverage {
 
     private Envelope envelope;
 
+    private SupplementProperties supplementProperties;
+
     /**
-     * Instantiate an AbstractCoverage with no envelope.
+     * Instantiate an AbstractCoverage with no envelope and no rangeset.
      */
     public AbstractCoverage() {
-        this( null );
+        this( null, null );
     }
 
     /**
      * Instantiate an AbstractCoverage with given envelope.
-     *
+     * 
      * @param envelope
      *            The envelope of the coverage.
      */
     public AbstractCoverage( Envelope envelope ) {
+        this( envelope, null );
+    }
+
+    /**
+     * Instantiate an AbstractCoverage with given envelope, rangeset and {@link SupplementProperties}.
+     * 
+     * @param envelope
+     *            The envelope of the coverage.
+     * @param supplementProperties
+     *            allows the possibility to add general objects to this Coverage.
+     */
+    public AbstractCoverage( Envelope envelope, SupplementProperties supplementProperties ) {
         setEnvelope( envelope );
+        this.supplementProperties = supplementProperties;
+        if ( this.supplementProperties == null ) {
+            this.supplementProperties = new SupplementProperties();
+        }
+
     }
 
     /**
@@ -99,9 +118,9 @@ public abstract class AbstractCoverage {
 
     /**
      * Extend the envelope of the coverage.
-     *
+     * 
      * The new envelope of the coverage will contain the old and the given envelope.
-     *
+     * 
      * @param envelope
      *            Envelope to add.
      */
@@ -127,7 +146,56 @@ public abstract class AbstractCoverage {
         this.crs = crs;
         if ( envelope != null ) {
             // rb: this is not correct, the values of the envelope should be converted to the given crs, shouldn't they.
-            this.envelope = geomFactory.createEnvelope( envelope.getMin().getAsArray(), envelope.getMax().getAsArray(), crs );
+            this.envelope = geomFactory.createEnvelope( envelope.getMin().getAsArray(), envelope.getMax().getAsArray(),
+                                                        crs );
+        }
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return supplementProperties.getName();
+    }
+
+    /**
+     * @param name
+     *            the name to set
+     */
+    public void setName( String name ) {
+        supplementProperties.setName( name );
+    }
+
+    /**
+     * @return the label
+     */
+    public String getLabel() {
+        return supplementProperties.getLabel();
+    }
+
+    /**
+     * @param label
+     *            the label to set
+     */
+    public void setLabel( String label ) {
+        supplementProperties.setLabel( label );
+    }
+
+    /**
+     * @return the supplementProperties
+     */
+    public final SupplementProperties getSupplementProperties() {
+        return supplementProperties;
+    }
+
+    /**
+     * @param supplementProperties
+     *            the supplementProperties to set
+     */
+    public final void setSupplementProperties( SupplementProperties supplementProperties ) {
+        this.supplementProperties.clear();
+        if ( supplementProperties != null ) {
+            this.supplementProperties.putAll( supplementProperties );
         }
     }
 }
