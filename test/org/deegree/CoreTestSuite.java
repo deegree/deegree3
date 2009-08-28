@@ -99,8 +99,12 @@ import org.slf4j.LoggerFactory;
                 org.deegree.geometry.linearization.CurveLinearizerTest.class,
                 org.deegree.geometry.validation.GeometryValidatorTest.class,
                 org.deegree.protocol.ows.capabilities.GetCapabilitiesXMLParserTest.class,
+                org.deegree.protocol.sos.ParseDescribeSensorRequestTest.class,
+                org.deegree.protocol.sos.ParseGetCapabilitiesRequest.class,
+                org.deegree.protocol.sos.ParseGetObservationRequestTest.class,
                 org.deegree.protocol.wfs.describefeaturetype.DescribeFeatureTypeKVPAdapterTest.class,
                 org.deegree.protocol.wfs.getfeature.GetFeatureXMLAdapterTest.class,
+                org.deegree.protocol.wfs.transaction.TransactionXMLAdapterTest.class,
                 org.deegree.protocol.wms.dims.ParserTest.class, org.deegree.rendering.r2d.Java2DRenderingTest.class,
                 org.deegree.rendering.r2d.se.parser.SymbologyParserTest.class })
 class CoreTestSuite {
