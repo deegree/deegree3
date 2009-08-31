@@ -104,7 +104,11 @@ public class Interpolate extends Function {
         }
 
         while ( !( in.isEndElement() && in.getLocalName().equals( "Interpolate" ) ) ) {
+            try{
             in.nextTag();
+            }catch(Exception e){
+                System.out.println(in.getText());
+            }
 
             if ( in.getLocalName().equals( "LookupValue" ) ) {
                 value = new StringBuffer();

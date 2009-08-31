@@ -76,6 +76,7 @@ public class Recode extends Function{
 
     @Override
     public Object[] evaluate( MatchableObject f ) {
+        
         return null;
     }
 
@@ -95,8 +96,8 @@ public class Recode extends Function{
                 contn = updateOrContinue( in, "LookupValue", value, SBUPDATER, null );
             }
 
-            if ( in.getLocalName().equals( "InterpolationPoint" ) ) {
-                while ( !( in.isEndElement() && in.getLocalName().equals( "InterpolationPoint" ) ) ) {
+            if ( in.getLocalName().equals( "MapItem" ) ) {
+                while ( !( in.isEndElement() && in.getLocalName().equals( "MapItem" ) ) ) {
                     in.nextTag();
 
                     if ( in.getLocalName().equals( "Data" ) ) {
