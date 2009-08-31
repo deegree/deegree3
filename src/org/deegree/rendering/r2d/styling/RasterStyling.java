@@ -40,6 +40,8 @@ import static org.deegree.rendering.r2d.styling.RasterStyling.Overlap.RANDOM;
 
 import java.util.HashMap;
 
+import org.deegree.filter.function.Categorize;
+import org.deegree.filter.function.Interpolate;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
 
 /**
@@ -73,7 +75,11 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
     /** Default is RANDOM. */
     public Overlap overlap = RANDOM;
 
-    // TODO colormap, function stuff
+    /***/
+    public Categorize categorize;
+
+    /***/
+    public Interpolate interpolate;
 
     /** Default is no contrast enhancement. */
     public ContrastEnhancement contrastEnhancement;
@@ -175,6 +181,9 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
         copy.shaded = shaded == null ? null : shaded.copy();
         // should be able to share the symbolizers:
         copy.imageOutline = imageOutline;
+        // ... and the functions
+        copy.categorize = categorize;
+        copy.interpolate = interpolate;
 
         return copy;
     }
