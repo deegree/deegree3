@@ -89,6 +89,7 @@ import org.deegree.filter.function.Concatenate;
 import org.deegree.filter.function.FormatDate;
 import org.deegree.filter.function.FormatNumber;
 import org.deegree.filter.function.Interpolate;
+import org.deegree.filter.function.Recode;
 import org.deegree.filter.function.StringLength;
 import org.deegree.filter.function.StringPosition;
 import org.deegree.filter.function.Substring;
@@ -457,6 +458,11 @@ public class Filter110XMLDecoder {
         }
         if ( xmlStream.getLocalName().equals( "Interpolate" ) ) {
             Interpolate fun = new Interpolate();
+            fun.parse( xmlStream );
+            return fun;
+        }
+        if ( xmlStream.getLocalName().equals( "Recode" ) ) {
+            Recode fun = new Recode();
             fun.parse( xmlStream );
             return fun;
         }
