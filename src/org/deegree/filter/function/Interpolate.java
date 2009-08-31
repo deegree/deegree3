@@ -35,8 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function;
 
+import static java.lang.Double.parseDouble;
+import static java.lang.Integer.toHexString;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
+import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
@@ -130,6 +133,33 @@ public class Interpolate extends Function {
         }
 
         in.require( END_ELEMENT, null, "Interpolate" );
+    }
+
+    /**
+     * @param in
+     * @throws XMLStreamException
+     */
+    public void parseSLD100( XMLStreamReader in )
+                            throws XMLStreamException {
+        color = true;
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "ColorMap" ) ) ) {
+            in.nextTag();
+
+            if ( in.getLocalName().equals( "ColorMapEntry" ) ) {
+                String color = in.getAttributeValue( null, "color" );
+                String opacity = in.getAttributeValue( null, "opacity" );
+                String quantity = in.getAttributeValue( null, "quantity" );
+                datas.add( quantity != null ? Double.valueOf( quantity ) : 0 );
+                if ( opacity != null ) {
+                    color = "#" + toHexString( round( parseDouble( opacity ) * 255 ) ) + color.substring( 1 );
+                }
+                values.add( new StringBuffer( color ) );
+                // for legend generation, later on?
+                // String label= in.getAttributeValue(null, "label" );
+                in.nextTag();
+            }
+        }
     }
 
 }

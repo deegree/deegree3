@@ -62,7 +62,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.utils.Pair;
-import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -674,19 +673,24 @@ public class SymbologyParser {
             }
 
             if ( in.getLocalName().equals( "ColorMap" ) ) {
-                in.nextTag();
+                if ( in.getNamespaceURI().equals( SENS ) ) {
+                    in.nextTag();
 
-                if ( in.getLocalName().equals( "Categorize" ) ) {
-                    baseOrEvaluated.categorize = new Categorize();
-                    baseOrEvaluated.categorize.parse( in );
-                }
+                    if ( in.getLocalName().equals( "Categorize" ) ) {
+                        baseOrEvaluated.categorize = new Categorize();
+                        baseOrEvaluated.categorize.parse( in );
+                    }
 
-                if ( in.getLocalName().equals( "Interpolate" ) ) {
+                    if ( in.getLocalName().equals( "Interpolate" ) ) {
+                        baseOrEvaluated.interpolate = new Interpolate();
+                        baseOrEvaluated.interpolate.parse( in );
+                    }
+
+                    in.nextTag();
+                } else {
                     baseOrEvaluated.interpolate = new Interpolate();
-                    baseOrEvaluated.interpolate.parse( in );
+                    baseOrEvaluated.interpolate.parseSLD100( in );
                 }
-
-                in.nextTag();
             }
 
             if ( in.getLocalName().equals( "ContrastEnhancement" ) ) {
