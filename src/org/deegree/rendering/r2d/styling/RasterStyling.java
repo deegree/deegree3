@@ -70,7 +70,7 @@ public class RasterStyling implements Copyable<RasterStyling>, Styling {
     public String grayChannel;
 
     /***/
-    public HashMap<String, ContrastEnhancement> channelContrastEnhancements;
+    public HashMap<String, ContrastEnhancement> channelContrastEnhancements = new HashMap<String, ContrastEnhancement>();
 
     /** Default is RANDOM. */
     public Overlap overlap = RANDOM;

@@ -215,6 +215,27 @@ public class StAXParsingHelper {
         return asQName( xmlStream, s );
     }
 
+    private static boolean parseAsBoolean( XMLStreamReader xmlStream, String s ) {
+        if ( "true".equals( s ) || "1".equals( s ) ) {
+            return true;
+        } else if ( "false".equals( s ) || "0".equals( s ) ) {
+            return false;
+        } else {
+            String msg = Messages.getMessage( "XML_SYNTAX_ERROR_BOOLEAN", s );
+            throw new XMLParsingException( xmlStream, msg );
+        }
+    }
+
+    /**
+     * @param xmlStream
+     * @return the element text as boolean
+     * @throws XMLStreamException
+     */
+    public static boolean getElementTextAsBoolean( XMLStreamReader xmlStream )
+                            throws XMLStreamException {
+        return parseAsBoolean( xmlStream, xmlStream.getElementText() );
+    }
+
     public static boolean getAttributeValueAsBoolean( XMLStreamReader xmlStream, String namespaceURI, String localName,
                                                       boolean defaultValue )
                             throws XMLParsingException {
@@ -222,14 +243,7 @@ public class StAXParsingHelper {
         boolean result = defaultValue;
         String s = xmlStream.getAttributeValue( namespaceURI, localName );
         if ( s != null ) {
-            if ( "true".equals( s ) || "1".equals( s ) ) {
-                result = true;
-            } else if ( "false".equals( s ) || "0".equals( s ) ) {
-                result = false;
-            } else {
-                String msg = Messages.getMessage( "XML_SYNTAX_ERROR_BOOLEAN", s );
-                throw new XMLParsingException( xmlStream, msg );
-            }
+            result = parseAsBoolean( xmlStream, s );
         }
         return result;
     }

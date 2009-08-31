@@ -37,11 +37,14 @@
 package org.deegree.rendering.r2d.se.parser;
 
 import static java.awt.Color.decode;
+import static java.lang.Double.parseDouble;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.commons.utils.ArrayUtils.splitAsDoubles;
+import static org.deegree.commons.xml.CommonNamespaces.SENS;
 import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
+import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsBoolean;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsQName;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.resolve;
 import static org.deegree.rendering.i18n.Messages.get;
@@ -59,10 +62,13 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.CommonNamespaces;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
 import org.deegree.filter.MatchableObject;
+import org.deegree.filter.function.Categorize;
+import org.deegree.filter.function.Interpolate;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.rendering.r2d.se.unevaluated.Continuation;
 import org.deegree.rendering.r2d.se.unevaluated.Symbolizer;
@@ -70,7 +76,11 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation.Updater;
 import org.deegree.rendering.r2d.styling.LineStyling;
 import org.deegree.rendering.r2d.styling.PointStyling;
 import org.deegree.rendering.r2d.styling.PolygonStyling;
+import org.deegree.rendering.r2d.styling.RasterStyling;
 import org.deegree.rendering.r2d.styling.TextStyling;
+import org.deegree.rendering.r2d.styling.RasterStyling.ContrastEnhancement;
+import org.deegree.rendering.r2d.styling.RasterStyling.Overlap;
+import org.deegree.rendering.r2d.styling.RasterStyling.ShadedRelief;
 import org.deegree.rendering.r2d.styling.components.Fill;
 import org.deegree.rendering.r2d.styling.components.Font;
 import org.deegree.rendering.r2d.styling.components.Graphic;
@@ -180,7 +190,6 @@ public class SymbologyParser {
         return new Pair<Fill, Continuation<Fill>>( base, contn );
     }
 
-    // done and tested, same as SE
     private static Pair<Stroke, Continuation<Stroke>> parseStroke( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "Stroke" );
@@ -336,7 +345,6 @@ public class SymbologyParser {
         return new Pair<Stroke, Continuation<Stroke>>( base, contn );
     }
 
-    // done and tested, same as SE
     private static Pair<Mark, Continuation<Mark>> parseMark( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "Mark" );
@@ -412,7 +420,6 @@ public class SymbologyParser {
         return img;
     }
 
-    // done and tested, same as SE
     private static Pair<Graphic, Continuation<Graphic>> parseGraphic( XMLStreamReader in )
                             throws XMLStreamException {
         in.require( START_ELEMENT, null, "Graphic" );
@@ -520,7 +527,6 @@ public class SymbologyParser {
         return new Pair<Graphic, Continuation<Graphic>>( base, contn );
     }
 
-    // done and tested, same as SE
     /**
      * @param in
      * @return a new symbolizer
@@ -579,13 +585,172 @@ public class SymbologyParser {
         if ( in.getLocalName().equals( "PolygonSymbolizer" ) ) {
             return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parsePolygonSymbolizer( in ), null );
         }
+        if ( in.getLocalName().equals( "RasterSymbolizer" ) ) {
+            return new Pair<Symbolizer<?>, Continuation<StringBuffer>>( parseRasterSymbolizer( in ), null );
+        }
         if ( in.getLocalName().equals( "TextSymbolizer" ) ) {
             return (Pair) parseTextSymbolizer( in );
         }
         return null;
     }
 
-    // done and tested, same as SE
+    /**
+     * @param in
+     * @return the symbolizer
+     * @throws XMLStreamException
+     */
+    public static Symbolizer<RasterStyling> parseRasterSymbolizer( XMLStreamReader in )
+                            throws XMLStreamException {
+        in.require( START_ELEMENT, null, "RasterSymbolizer" );
+
+        Common common = new Common();
+        RasterStyling baseOrEvaluated = new RasterStyling();
+        Continuation<RasterStyling> contn = null;
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "RasterSymbolizer" ) ) ) {
+            in.nextTag();
+
+            checkCommon( common, in );
+
+            if ( in.getLocalName().equals( "Opacity" ) ) {
+                contn = updateOrContinue( in, "Opacity", baseOrEvaluated, new Updater<RasterStyling>() {
+                    @Override
+                    public void update( RasterStyling obj, String val ) {
+                        obj.opacity = Double.parseDouble( val );
+                    }
+                }, contn );
+            }
+
+            if ( in.getLocalName().equals( "ChannelSelection" ) ) {
+                while ( !( in.isEndElement() && in.getLocalName().equals( "ChannelSelection" ) ) ) {
+                    in.nextTag();
+
+                    if ( in.getLocalName().equals( "RedChannel" ) ) {
+                        in.nextTag();
+                        in.require( START_ELEMENT, null, "SourceChannelName" );
+                        baseOrEvaluated.redChannel = in.getElementText();
+                        in.nextTag();
+                        ContrastEnhancement enh = parseContrastEnhancement( in );
+                        if ( enh != null ) {
+                            baseOrEvaluated.channelContrastEnhancements.put( "red", enh );
+                        }
+                        in.nextTag();
+                    }
+                    if ( in.getLocalName().equals( "GreenChannel" ) ) {
+                        in.nextTag();
+                        in.require( START_ELEMENT, null, "SourceChannelName" );
+                        baseOrEvaluated.greenChannel = in.getElementText();
+                        in.nextTag();
+                        ContrastEnhancement enh = parseContrastEnhancement( in );
+                        if ( enh != null ) {
+                            baseOrEvaluated.channelContrastEnhancements.put( "green", enh );
+                        }
+                        in.nextTag();
+                    }
+                    if ( in.getLocalName().equals( "BlueChannel" ) ) {
+                        in.nextTag();
+                        in.require( START_ELEMENT, null, "SourceChannelName" );
+                        baseOrEvaluated.blueChannel = in.getElementText();
+                        in.nextTag();
+                        ContrastEnhancement enh = parseContrastEnhancement( in );
+                        if ( enh != null ) {
+                            baseOrEvaluated.channelContrastEnhancements.put( "blue", enh );
+                        }
+                        in.nextTag();
+                    }
+                }
+            }
+
+            if ( in.getLocalName().equals( "OverlapBehavior" ) ) {
+                // actual difference between SLD 1.0.0/SE 1.1.0
+                if ( in.getNamespaceURI().equals( SENS ) ) {
+                    baseOrEvaluated.overlap = Overlap.valueOf( in.getElementText() );
+                } else {
+                    in.nextTag();
+                    baseOrEvaluated.overlap = Overlap.valueOf( in.getLocalName() );
+                    in.nextTag();
+                    in.nextTag();
+                }
+            }
+
+            if ( in.getLocalName().equals( "ColorMap" ) ) {
+                in.nextTag();
+
+                if ( in.getLocalName().equals( "Categorize" ) ) {
+                    baseOrEvaluated.categorize = new Categorize();
+                    baseOrEvaluated.categorize.parse( in );
+                }
+
+                if ( in.getLocalName().equals( "Interpolate" ) ) {
+                    baseOrEvaluated.interpolate = new Interpolate();
+                    baseOrEvaluated.interpolate.parse( in );
+                }
+
+                in.nextTag();
+            }
+
+            if ( in.getLocalName().equals( "ContrastEnhancement" ) ) {
+                baseOrEvaluated.contrastEnhancement = parseContrastEnhancement( in );
+            }
+
+            if ( in.getLocalName().equals( "ShadedRelief" ) ) {
+                baseOrEvaluated.shaded = new ShadedRelief();
+                while ( !( in.isEndElement() && in.getLocalName().equals( "ShadedRelief" ) ) ) {
+                    in.nextTag();
+
+                    if ( in.getLocalName().equals( "BrightnessOnly" ) ) {
+                        baseOrEvaluated.shaded.brightnessOnly = getElementTextAsBoolean( in );
+                    }
+                    if ( in.getLocalName().equals( "ReliefFactor" ) ) {
+                        baseOrEvaluated.shaded.reliefFactor = parseDouble( in.getElementText() );
+                    }
+                }
+            }
+
+            if ( in.getLocalName().equals( "ImageOutline" ) ) {
+                in.nextTag();
+                if ( in.getLocalName().equals( "LineSymbolizer" ) ) {
+                    baseOrEvaluated.imageOutline = parseLineSymbolizer( in );
+                }
+                if ( in.getLocalName().equals( "PolygonSymbolizer" ) ) {
+                    baseOrEvaluated.imageOutline = parsePolygonSymbolizer( in );
+                }
+                in.nextTag();
+            }
+        }
+
+        in.require( END_ELEMENT, null, "RasterSymbolizer" );
+        return new Symbolizer<RasterStyling>( baseOrEvaluated, contn, common.geometry, common.name );
+    }
+
+    private static ContrastEnhancement parseContrastEnhancement( XMLStreamReader in )
+                            throws XMLStreamException {
+        if ( !in.getLocalName().equals( "ContrastEnhancement" ) ) {
+            return null;
+        }
+
+        ContrastEnhancement base = new ContrastEnhancement();
+
+        while ( !( in.isEndElement() && in.getLocalName().equals( "ContrastEnhancement" ) ) ) {
+            in.nextTag();
+
+            if ( in.getLocalName().equals( "Normalize" ) ) {
+                in.nextTag();
+                base.normalize = true;
+            }
+
+            if ( in.getLocalName().equals( "Histogram" ) ) {
+                base.histogram = true;
+            }
+
+            if ( in.getLocalName().equals( "GammaValue" ) ) {
+                base.gamma = parseDouble( in.getElementText() );
+            }
+        }
+
+        return base;
+    }
+
     /**
      * @param in
      * @return the symbolizer
