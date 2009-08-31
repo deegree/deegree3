@@ -179,6 +179,7 @@ public class Filter110XMLDecoder {
         addElementToExpressionMapping( new QName( SENS, "StringLength" ), Expression.Type.FUNCTION );
         addElementToExpressionMapping( new QName( SENS, "Categorize" ), Expression.Type.FUNCTION );
         addElementToExpressionMapping( new QName( SENS, "Interpolate" ), Expression.Type.FUNCTION );
+        addElementToExpressionMapping( new QName( SENS, "Recode" ), Expression.Type.FUNCTION );
 
         // element name <-> spatial operator type
         addElementToSpatialOperatorMapping( new QName( OGC_NS, "BBOX" ), SpatialOperator.SubType.BBOX );
