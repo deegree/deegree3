@@ -40,6 +40,7 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.xml.stream.XMLStreamException;
@@ -78,9 +79,37 @@ public class Categorize extends Function {
         super( "Categorize", null );
     }
 
+    private static final String eval( StringBuffer initial, Continuation<StringBuffer> contn, MatchableObject f ) {
+        StringBuffer sb = new StringBuffer( initial.toString().trim() );
+        if ( contn != null ) {
+            contn.evaluate( sb, f );
+        }
+        return sb.toString();
+    }
+
     @Override
     public Object[] evaluate( MatchableObject f ) {
-        return null;
+        String val = eval( value, contn, f );
+
+        Iterator<StringBuffer> vals = values.iterator();
+        Iterator<StringBuffer> barriers = thresholds.iterator();
+        Iterator<Continuation<StringBuffer>> valContns = valueContns.iterator();
+        Iterator<Continuation<StringBuffer>> barrierContns = thresholdContns.iterator();
+
+        String curVal = eval( vals.next(), valContns.next(), f );
+        while ( barriers.hasNext() ) {
+            String cur = eval( barriers.next(), barrierContns.next(), f );
+            String nextVal = eval( vals.next(), valContns.next(), f );
+            if ( cur.equals( val ) ) {
+                return new Object[] { precedingBelongs ? curVal : nextVal };
+            }
+            if ( val.compareTo( cur ) == -1 ) {
+                return new Object[] { curVal };
+            }
+            curVal = nextVal;
+        }
+
+        return new Object[] { curVal };
     }
 
     /**
