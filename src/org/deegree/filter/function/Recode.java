@@ -32,14 +32,16 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.function;
 
+import static java.lang.Double.parseDouble;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.xml.stream.XMLStreamException;
@@ -57,7 +59,7 @@ import org.deegree.rendering.r2d.se.unevaluated.Continuation;
  * 
  * @version $Revision$, $Date$
  */
-public class Recode extends Function{
+public class Recode extends Function {
 
     private StringBuffer value;
 
@@ -76,8 +78,27 @@ public class Recode extends Function{
 
     @Override
     public Object[] evaluate( MatchableObject f ) {
-        
-        return null;
+        StringBuffer sb = new StringBuffer( value.toString().trim() );
+        if ( contn != null ) {
+            contn.evaluate( sb, f );
+        }
+
+        double val = parseDouble( sb.toString() );
+
+        Iterator<Double> data = datas.iterator();
+        Iterator<StringBuffer> vals = values.iterator();
+        Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
+        while ( data.hasNext() ) {
+            StringBuffer target = vals.next();
+            Continuation<StringBuffer> contn = contns.next();
+
+            if ( data.next().doubleValue() == val ) {
+                contn.evaluate( target, f );
+                return new Object[] { target.toString() };
+            }
+        }
+
+        return new Object[] { "" + val };
     }
 
     /**
@@ -118,4 +139,3 @@ public class Recode extends Function{
     }
 
 }
-
