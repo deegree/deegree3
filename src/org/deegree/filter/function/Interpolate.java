@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function;
 
+import static java.awt.Color.decode;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.toHexString;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
@@ -43,6 +44,8 @@ import static org.deegree.commons.utils.math.MathUtils.round;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
+import java.awt.Color;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.xml.stream.XMLStreamException;
@@ -81,9 +84,70 @@ public class Interpolate extends Function {
         super( "Interpolate", null );
     }
 
+    private static final Color interpolateColor( final Color fst, final Color snd, final double f ) {
+        final double f1m = 1 - f;
+        int red = (int) ( fst.getRed() * f1m + snd.getRed() * f );
+        int green = (int) ( fst.getGreen() * f1m + snd.getGreen() * f );
+        int blue = (int) ( fst.getBlue() * f1m + snd.getBlue() * f );
+        int alpha = (int) ( fst.getAlpha() * f1m + snd.getAlpha() * f );
+        return new Color( red, green, blue, alpha );
+    }
+
+    private static final double interpolate( final double fst, final double snd, final double f ) {
+        return fst * ( 1 - f ) + snd * f;
+    }
+
     @Override
     public Object[] evaluate( MatchableObject f ) {
-        return null;
+        StringBuffer sb = new StringBuffer( value.toString().trim() );
+        if ( contn != null ) {
+            contn.evaluate( sb, f );
+        }
+
+        double val = parseDouble( sb.toString() );
+
+        Iterator<Double> data = datas.iterator();
+        Iterator<StringBuffer> vals = values.iterator();
+        Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
+
+        double cur = data.next();
+        StringBuffer intVal = vals.next();
+        Continuation<StringBuffer> contn = contns.next();
+
+        while ( val > cur && data.hasNext() ) {
+            cur = data.next();
+            intVal = vals.next();
+            contn = contns.next();
+        }
+
+        StringBuffer buf = new StringBuffer( intVal.toString().trim() );
+        if ( contn != null ) {
+            contn.evaluate( sb, f );
+        }
+        String fstString = buf.toString();
+
+        if ( !data.hasNext() ) {
+            return new Object[] { fstString };
+        }
+
+        buf = new StringBuffer( vals.next().toString().trim() );
+        contn = contns.next();
+        if ( contn != null ) {
+            contn.evaluate( sb, f );
+        }
+        String sndString = buf.toString();
+
+        double next = data.next();
+        double fac = ( val - cur ) / ( next - cur );
+
+        if ( color ) {
+            Color fst = decode( sndString );
+            Color snd = decode( sndString );
+            Color res = interpolateColor( fst, snd, fac );
+            return new Object[] { "#" + toHexString( res.getRGB() ) };
+        }
+
+        return new Object[] { "" + interpolate( parseDouble( fstString ), parseDouble( sndString ), fac ) };
     }
 
     /**

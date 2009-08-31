@@ -89,7 +89,7 @@ public class Recode extends Function {
         Iterator<StringBuffer> vals = values.iterator();
         Iterator<Continuation<StringBuffer>> contns = valueContns.iterator();
         while ( data.hasNext() ) {
-            StringBuffer target = vals.next();
+            StringBuffer target = new StringBuffer( vals.next().toString().trim() );
             Continuation<StringBuffer> contn = contns.next();
 
             if ( data.next().doubleValue() == val ) {
