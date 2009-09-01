@@ -49,13 +49,13 @@ import org.deegree.protocol.sos.filter.TimeFilter;
  */
 public class GetFeatureOfInterest {
 
-    private String foiID;
+    private String[] foiID;
 
     private SpatialFilter location;
 
     private TimeFilter eventTime;
 
-    GetFeatureOfInterest( String foiID, SpatialFilter location, TimeFilter eventTime ) {
+    GetFeatureOfInterest( String[] foiID, SpatialFilter location, TimeFilter eventTime ) {
         this.foiID = foiID;
         this.location = location;
         this.eventTime = eventTime;
@@ -64,7 +64,7 @@ public class GetFeatureOfInterest {
     /**
      * @return the featureOfInterestID
      */
-    public String getFoiID() {
+    public String[] getFoiID() {
         return foiID;
     }
 

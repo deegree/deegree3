@@ -63,7 +63,7 @@ public class GetFeatureOfInterest100XMLAdapter extends SOSRequest100XMLAdapter {
      * @return the {@link GetFeatureOfInterest} object that was parsed from the request
      */
     public GetFeatureOfInterest parse() {
-        String foi = getFeatureOfInterest();
+        String[] foi = getFeatureOfInterest();
 
         SpatialFilter location = null;
         // TODO spatilFilter
@@ -82,8 +82,8 @@ public class GetFeatureOfInterest100XMLAdapter extends SOSRequest100XMLAdapter {
         return (TimeFilter) getNode( rootElement, new XPath( "/sos:GetFeatureOfInterest/sos:eventTime", nsContext ) );
     }
 
-    private String getFeatureOfInterest() {
-        return getNodeAsString( rootElement,
-                                new XPath( "/sos:GetFeatureOfInterest/sos:FeatureOfInterestId", nsContext ), null );
+    private String[] getFeatureOfInterest() {
+        return getNodesAsStrings( rootElement, new XPath( "/sos:GetFeatureOfInterest/sos:FeatureOfInterestId",
+                                                          nsContext ) );
     }
 }
