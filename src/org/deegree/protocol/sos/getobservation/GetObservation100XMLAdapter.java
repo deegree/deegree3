@@ -36,6 +36,7 @@
 package org.deegree.protocol.sos.getobservation;
 
 import static java.util.Arrays.asList;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -46,6 +47,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.crs.CRS;
@@ -60,6 +62,7 @@ import org.deegree.protocol.sos.filter.ResultFilter;
 import org.deegree.protocol.sos.filter.SpatialBBOXFilter;
 import org.deegree.protocol.sos.filter.SpatialFilter;
 import org.deegree.protocol.sos.filter.TimeFilter;
+import org.slf4j.Logger;
 
 /**
  * This is an xml adapter for SOS 1.0.0 GetObservation requests.
@@ -76,6 +79,8 @@ import org.deegree.protocol.sos.filter.TimeFilter;
  */
 public class GetObservation100XMLAdapter extends SOSRequest100XMLAdapter {
 
+    private static final Logger LOG = getLogger( GetObservation100XMLAdapter.class );
+
     /**
      * @param rootElement
      */
@@ -85,8 +90,6 @@ public class GetObservation100XMLAdapter extends SOSRequest100XMLAdapter {
 
     /**
      * @return the parsed request
-     * @throws OWSException
-     *             if the observed properties weren't found
      */
     public GetObservation parse() {
         List<TimeFilter> eventTime = null;
@@ -140,7 +143,11 @@ public class GetObservation100XMLAdapter extends SOSRequest100XMLAdapter {
                 ComparisonOperator op = Filter110XMLDecoder.parseComparisonOperator( xmlStream );
                 result.add( new ResultFilter( op ) );
             } catch ( XMLStreamException e ) {
-                throw new XMLParsingException( this, procElem, e.getMessage() );
+                LOG.debug( "Stack trace", e );
+                throw new ResultFilterException( this, procElem, e.getMessage() );
+            } catch ( XMLParsingException e ) {
+                LOG.debug( "Stack trace", e );
+                throw new ResultFilterException( this, procElem, e.getMessage() );
             }
         }
         return result;
@@ -225,6 +232,27 @@ public class GetObservation100XMLAdapter extends SOSRequest100XMLAdapter {
         OMElement observation = getElement( rootElement, new XPath( "/sos:GetObservation", nsContext ) );
         EventTime100XMLAdapter adapter = new EventTime100XMLAdapter( observation, getSystemId() );
         return adapter.parseTimeFilter();
+    }
+
+    /**
+     * <code>ResultFilterException</code> is a hack to work around missing OWSException in core.
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public static class ResultFilterException extends XMLParsingException {
+        private static final long serialVersionUID = 7363995988367835730L;
+
+        /**
+         * @param adapter
+         * @param elem
+         * @param msg
+         */
+        public ResultFilterException( XMLAdapter adapter, OMElement elem, String msg ) {
+            super( adapter, elem, msg );
+        }
     }
 
 }
