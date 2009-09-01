@@ -51,7 +51,7 @@ import java.util.List;
  */
 public class AxisSubset {
 
-    private final List<Interval<?>> intervals;
+    private final List<Interval<?, ?>> intervals;
 
     private final List<SingleValue<?>> singleValues;
 
@@ -66,7 +66,7 @@ public class AxisSubset {
      * @param intervals
      * @param singleValues
      */
-    public AxisSubset( String name, String label, List<Interval<?>> intervals, List<SingleValue<?>> singleValues ) {
+    public AxisSubset( String name, String label, List<Interval<?, ?>> intervals, List<SingleValue<?>> singleValues ) {
         this.name = name;
         this.label = label;
         this.intervals = intervals;
@@ -77,7 +77,7 @@ public class AxisSubset {
     /**
      * @return the intervals
      */
-    public final List<Interval<?>> getIntervals() {
+    public final List<Interval<?, ?>> getIntervals() {
         return intervals;
     }
 
@@ -101,39 +101,50 @@ public class AxisSubset {
      *         values have matching parameters in the given one.
      */
     public boolean match( AxisSubset other ) {
-        boolean result = other.getName().equals( name );
+        boolean result = other.getName().equalsIgnoreCase( name );
         if ( result ) {
             boolean ic = checkIntervals( other.getIntervals() );
             boolean sc = checkSingles( other.getSingleValues() );
-            result = ic | sc;
+            result = ic && sc;
         }
         return result;
     }
 
     /**
      * @param otherValues
-     * @return true if the given singleValues match these of the given single values, the types are not considered.
+     * @return true if the given singleValues match these of the given single values, the types are considered.
      */
     private boolean checkSingles( List<SingleValue<?>> otherValues ) {
         boolean result = false;
         if ( singleValues == null || singleValues.isEmpty() ) {
+            // if this axissubset has no singlevalues, than they match
             return true;
         }
-        for ( SingleValue<?> sv : singleValues ) {
-            if ( sv != null ) {
-                // if the value == null, the default value must be taken into account, therefore no validity check can
-                // be done.
-                if ( sv.value != null ) {
-                    Iterator<SingleValue<?>> iterator = otherValues.iterator();
-                    while ( iterator.hasNext() && !result ) {
-                        SingleValue<?> ov = iterator.next();
-                        result = sv.equals( ov );
+
+        if ( otherValues != null && !otherValues.isEmpty() ) {
+            for ( SingleValue<?> sv : singleValues ) {
+                // rb: iterate over all values, if one of them mismatches this method will return false.
+                if ( sv != null ) {
+                    // if the value == null, the default value must be taken into account, therefore no validity check
+                    // can
+                    // be done.
+                    if ( sv.value != null ) {
+                        Iterator<SingleValue<?>> iterator = otherValues.iterator();
+                        while ( iterator.hasNext() && !result ) {
+                            SingleValue<?> ov = iterator.next();
+                            result = sv.equals( ov );
+                        }
+
+                        if ( !result ) {
+                            // could not find a single value matching.
+                            break;
+                        }
+
                     }
-                    if ( !result ) {
-                        // could not find a single value matching.
-                        break;
-                    }
+                } else {
+                    result = true;
                 }
+
             }
         }
 
@@ -144,16 +155,17 @@ public class AxisSubset {
      * @param otherIntervals
      * @return true if the given intervals match this intervals.
      */
-    private boolean checkIntervals( List<Interval<?>> otherIntervals ) {
+    private boolean checkIntervals( List<Interval<?, ?>> otherIntervals ) {
         boolean result = false;
         if ( intervals == null || intervals.isEmpty() ) {
+            // if this axissubset has no intervals, than they match
             return true;
         }
-        for ( Interval<?> inter : intervals ) {
+        for ( Interval<?, ?> inter : intervals ) {
             if ( inter != null ) {
-                Iterator<Interval<?>> iterator = otherIntervals.iterator();
+                Iterator<Interval<?, ?>> iterator = otherIntervals.iterator();
                 while ( iterator.hasNext() && !result ) {
-                    Interval<?> oi = iterator.next();
+                    Interval<?, ?> oi = iterator.next();
                     result = oi.isInBounds( inter );
                 }
                 if ( !result ) {
@@ -173,4 +185,39 @@ public class AxisSubset {
         return label == null ? name : label;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "[" ).append( name );
+        if ( label != null && !"".equals( label ) ) {
+            sb.append( " {'" ).append( label ).append( "'}" );
+        }
+        sb.append( ": " );
+        if ( intervals != null && !intervals.isEmpty() ) {
+            Iterator<Interval<?, ?>> it = intervals.iterator();
+            while ( it.hasNext() ) {
+                Interval<?, ?> in = it.next();
+                if ( in != null ) {
+                    sb.append( "[" ).append( in.toString() ).append( "]" );
+                }
+                if ( it.hasNext() ) {
+                    sb.append( "," );
+                }
+            }
+        }
+        if ( singleValues != null && !singleValues.isEmpty() ) {
+            Iterator<SingleValue<?>> it = singleValues.iterator();
+            while ( it.hasNext() ) {
+                SingleValue<?> sv = it.next();
+                if ( sv != null ) {
+                    sb.append( "[" ).append( sv.toString() ).append( "]" );
+                }
+                if ( it.hasNext() ) {
+                    sb.append( "," );
+                }
+            }
+        }
+        sb.append( "]" );
+        return sb.toString();
+    }
 }

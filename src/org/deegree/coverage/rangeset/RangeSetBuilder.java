@@ -85,7 +85,8 @@ public class RangeSetBuilder {
         AbstractRaster subRaster = raster.getSubRaster( tEnv );
         SimpleRaster simpleRaster = subRaster.getAsSimpleRaster();
         BandType[] bandTypes = simpleRaster.getBandTypes();
-        List<AxisSubset> axisDesriptions = createAxisDescriptions( bandTypes );
+        List<AxisSubset> axisDesriptions = createAxisDescriptions( bandTypes,
+                                                                   simpleRaster.getRasterData().getDataType() );
 
         SingleValue<String> nullValue = createNullValue( simpleRaster );
         if ( name == null ) {
@@ -139,24 +140,62 @@ public class RangeSetBuilder {
                 sb.append( "," );
             }
         }
-        return new SingleValue<String>( SingleValue.ValueType.String, sb.toString() );
+        return new SingleValue<String>( ValueType.String, sb.toString() );
     }
 
     /**
      * @param bandTypes
      * @return
      */
-    private static List<AxisSubset> createAxisDescriptions( BandType[] bandTypes ) {
+    private static List<AxisSubset> createAxisDescriptions( BandType[] bandTypes, DataType dataType ) {
         List<AxisSubset> axis = new ArrayList<AxisSubset>( bandTypes.length );
         for ( int i = 0; i < bandTypes.length; ++i ) {
             BandType b = bandTypes[i];
             if ( b != null ) {
                 String label = b.getInfo();
                 String name = b.toString();
-                SingleValue<Integer> intValue = new SingleValue<Integer>( SingleValue.ValueType.Integer, i );
-                ArrayList<SingleValue<?>> val = new ArrayList<SingleValue<?>>( 1 );
-                val.add( intValue );
-                axis.add( new AxisSubset( name, label, null, val ) );
+                Interval<?, String> interval = null;
+                String semantic = "Min and max values were generated automatically.";
+                switch ( dataType ) {
+                case BYTE:
+                    interval = new Interval<Byte, String>( new SingleValue<Byte>( ValueType.Byte, Byte.MIN_VALUE ),
+                                                           new SingleValue<Byte>( ValueType.Byte, Byte.MAX_VALUE ),
+                                                           Interval.Closure.open, semantic, false, null );
+                    break;
+                case SHORT:
+                case USHORT:
+                    interval = new Interval<Short, String>( new SingleValue<Short>( ValueType.Short, Short.MIN_VALUE ),
+                                                            new SingleValue<Short>( ValueType.Short, Short.MAX_VALUE ),
+                                                            Interval.Closure.open, semantic, false, null );
+                    break;
+                case INT:
+                    interval = new Interval<Integer, String>( new SingleValue<Integer>( ValueType.Integer,
+                                                                                        Integer.MIN_VALUE ),
+                                                              new SingleValue<Integer>( ValueType.Integer,
+                                                                                        Integer.MAX_VALUE ),
+                                                              Interval.Closure.open, semantic, false, null );
+                    break;
+                case FLOAT:
+                    interval = new Interval<Float, String>( new SingleValue<Float>( ValueType.Float, Float.MIN_VALUE ),
+                                                            new SingleValue<Float>( ValueType.Float, Float.MAX_VALUE ),
+                                                            Interval.Closure.open, semantic, false, null );
+                    break;
+                case DOUBLE:
+                    interval = new Interval<Double, String>( new SingleValue<Double>( ValueType.Double,
+                                                                                      Double.MIN_VALUE ),
+                                                             new SingleValue<Double>( ValueType.Double,
+                                                                                      Double.MAX_VALUE ),
+                                                             Interval.Closure.open, semantic, false, null );
+                    break;
+                case UNDEFINED:
+                    interval = new Interval<String, String>( new SingleValue<String>( ValueType.String, "min" ),
+                                                             new SingleValue<String>( ValueType.String, "max" ),
+                                                             Interval.Closure.open, semantic, false, null );
+                    break;
+                }
+                ArrayList<Interval<?, ?>> val = new ArrayList<Interval<?, ?>>( 1 );
+                val.add( interval );
+                axis.add( new AxisSubset( name, label, val, null ) );
             }
         }
         return axis;
