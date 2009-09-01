@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.sos.describesensor;
 
+import javax.xml.namespace.QName;
+
 import org.apache.axiom.om.OMElement;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.sos.SOSRequest100XMLAdapter;
@@ -59,11 +61,10 @@ public class DescribeSensor100XMLAdapter extends SOSRequest100XMLAdapter {
 
     /**
      * @return the parsed request
-     * @throws OWSException
      */
     public DescribeSensor parse() {
-        String format = getRequiredStringNode( rootElement, new XPath( "@outputFormat", nsContext ) );
-        String procedure = getRequiredStringNode( rootElement, new XPath( "sos:procedure", nsContext ) );
+        String format = rootElement.getAttributeValue( new QName( "outputFormat" ) );
+        String procedure = getNodeAsString( rootElement, new XPath( "sos:procedure", nsContext ), null );
 
         return new DescribeSensor( procedure, format );
     }

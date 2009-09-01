@@ -74,8 +74,6 @@ public class EventTime100XMLAdapter extends XMLAdapter {
 
     private static final String OGC_NS = "http://www.opengis.net/ogc";
 
-    private static final String OM_NS = "http://www.opengis.net/om/1.0";
-
     private static final String SOS_PREFIX = "sos";
 
     private static final String SOS_NS = "http://www.opengis.net/sos/1.0";
@@ -222,15 +220,35 @@ public class EventTime100XMLAdapter extends XMLAdapter {
             try {
                 return DateUtils.parseISO8601Date( tpos.getText() );
             } catch ( ParseException e ) {
-                throw new XMLParsingException( this, tpos, "unable to parse time instant" );
+                throw new EventTimeXMLParsingException( this, tpos );
             }
         }
         String indeterminate = tpos.getAttributeValue( new QName( "indeterminatePosition" ) );
         if ( indeterminate != null && indeterminate.equals( "now" ) ) {
             return new Date();
         }
-        throw new XMLParsingException( this, tpos, "unable to parse time instant" );
+        throw new EventTimeXMLParsingException( this, tpos );
 
+    }
+
+    /**
+     * <code>EventTimeXMLParsingException</code> is a hack to get correct OWSException codes.
+     * 
+     * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
+     * @author last edited by: $Author$
+     * 
+     * @version $Revision$, $Date$
+     */
+    public static class EventTimeXMLParsingException extends XMLParsingException {
+        private static final long serialVersionUID = -1778773749005062747L;
+
+        /**
+         * @param adapter
+         * @param tpos
+         */
+        public EventTimeXMLParsingException( XMLAdapter adapter, OMElement tpos ) {
+            super( adapter, tpos, "Unable to parse event time parameter." );
+        }
     }
 
 }
