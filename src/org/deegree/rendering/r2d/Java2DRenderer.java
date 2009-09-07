@@ -245,8 +245,7 @@ public class Java2DRenderer implements Renderer {
         TextLayout layout = new TextLayout( text, font, graphics.getFontRenderContext() );
         double width = layout.getBounds().getWidth();
         double height = layout.getBounds().getHeight();
-        double px = x - styling.anchorPointX * width; // width/height already include the scale through the font
-        // render context
+        double px = x - styling.anchorPointX * width;
         double py = y + styling.anchorPointY * height;
 
         if ( styling.halo != null ) {
