@@ -36,6 +36,8 @@
 package org.deegree.coverage.raster.data.nio;
 
 import java.nio.ByteBuffer;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.deegree.coverage.raster.data.DataView;
 import org.deegree.coverage.raster.data.RasterData;
@@ -815,6 +817,21 @@ public abstract class ByteBufferRasterData implements RasterData {
             return dataInfo;
         }
         byte[] noPD = dataInfo.getNoDataPixel( bands );
-        return new RasterDataInfo( noPD, bands, dataInfo.dataType, dataInfo.interleaveType );
+
+        // sort the bands according to their first definition.
+        SortedMap<Integer, BandType> nb = new TreeMap<Integer, BandType>();
+        for ( int i = 0; i < dataInfo.bands; ++i ) {
+            for ( int j = 0; j < bands.length; ++j ) {
+                if ( bands[j] == dataInfo.bandInfo[i] ) {
+                    nb.put( i, bands[j] );
+                }
+            }
+        }
+        int index = 0;
+        BandType[] newBands = new BandType[bands.length];
+        for ( int i : nb.keySet() ) {
+            newBands[index++] = nb.get( i );
+        }
+        return new RasterDataInfo( noPD, newBands, dataInfo.dataType, dataInfo.interleaveType );
     }
 }

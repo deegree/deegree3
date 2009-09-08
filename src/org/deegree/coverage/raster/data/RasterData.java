@@ -115,7 +115,7 @@ public interface RasterData {
     public int getWidth();
 
     /**
-     * Returns the no data values for this raster
+     * Returns the no data values for this raster, or the view of this rasters bands.
      * 
      * @param result
      *            an array to put the values into or <code>null</code>
