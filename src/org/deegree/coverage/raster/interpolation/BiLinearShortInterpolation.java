@@ -38,8 +38,8 @@ package org.deegree.coverage.raster.interpolation;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import org.deegree.coverage.raster.data.DataType;
 import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.data.info.DataType;
 
 /**
  * This class implements a bilinear interpolation for short raster.

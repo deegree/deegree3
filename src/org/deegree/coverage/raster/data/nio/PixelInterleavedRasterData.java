@@ -37,10 +37,10 @@ package org.deegree.coverage.raster.data.nio;
 
 import java.nio.ByteBuffer;
 
-import org.deegree.coverage.raster.data.BandType;
-import org.deegree.coverage.raster.data.DataType;
-import org.deegree.coverage.raster.data.InterleaveType;
+import org.deegree.coverage.raster.data.DataView;
 import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.data.info.BandType;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterRect;
 
 /**
@@ -62,55 +62,54 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
      *            width of the underlying raster data.
      * @param rasterHeight
      *            height of the underlying raster data.
-     * @param bands
-     *            number of bands
-     * @param dataType
-     *            DataType of raster samples
+     * @param dataInfo
+     *            containing information about the underlying raster.
      */
-    public PixelInterleavedRasterData( RasterRect sampleDomain, int rasterWidth, int rasterHeight, BandType[] bands,
-                                       DataType dataType ) {
-        super( sampleDomain, rasterWidth, rasterHeight, bands, dataType );
+    public PixelInterleavedRasterData( RasterRect sampleDomain, int rasterWidth, int rasterHeight,
+                                       RasterDataInfo dataInfo ) {
+        this( new DataView( sampleDomain, dataInfo ), rasterWidth, rasterHeight, dataInfo, true );
     }
 
     /**
      * 
-     * @param sampleDomain
-     *            the raster rectangle defining the sample domain of this raster data.
+     * @param view
+     *            the raster rectangle defining the sample domain of this raster data as well as the data info of the
+     *            view.
      * @param rasterWidth
      *            width of the underlying raster data.
      * @param rasterHeight
      *            height of the underlying raster data.
-     * @param bands
-     *            number of bands
-     * @param dataType
-     *            DataType of raster samples
+     * @param dataInfo
+     *            containing information about the underlying raster.
      * @param init
      *            true if a new buffer should be initialized
      */
-    protected PixelInterleavedRasterData( RasterRect sampleDomain, int rasterWidth, int rasterHeight, BandType[] bands,
-                                          DataType dataType, boolean init ) {
-        super( sampleDomain, rasterWidth, rasterHeight, bands, dataType, init );
+    protected PixelInterleavedRasterData( DataView view, int rasterWidth, int rasterHeight, RasterDataInfo dataInfo,
+                                          boolean init ) {
+        super( view, rasterWidth, rasterHeight, dataInfo, init );
     }
 
     @Override
-    public PixelInterleavedRasterData createCompatibleRasterData( RasterRect sampleDomain, BandType[] bands ) {
-        return new PixelInterleavedRasterData( sampleDomain, rasterWidth, rasterHeight, bands, this.dataType, false );
+    public PixelInterleavedRasterData createCompatibleRasterData( DataView view ) {
+        return new PixelInterleavedRasterData( view, rasterWidth, rasterHeight, dataInfo, false );
     }
 
     @Override
     public RasterData createCompatibleWritableRasterData( RasterRect sampleDomain, BandType[] bands ) {
-        return new PixelInterleavedRasterData( sampleDomain, sampleDomain.width, sampleDomain.height, bands,
-                                               this.dataType, true );
+        // a new raster will be created, the old information should be discarded.
+        RasterDataInfo newRasterInfo = createRasterDataInfo( bands );
+        return new PixelInterleavedRasterData( new DataView( sampleDomain, newRasterInfo ), sampleDomain.width,
+                                               sampleDomain.height, newRasterInfo, true );
     }
 
     @Override
     protected ByteBufferRasterData createCompatibleEmptyRasterData() {
-        return new PixelInterleavedRasterData( view, rasterWidth, rasterHeight, bandsTypes, this.dataType, false );
+        return new PixelInterleavedRasterData( view, rasterWidth, rasterHeight, this.dataInfo, false );
     }
 
     @Override
     public final int getBandStride() {
-        return 1 * dataType.getSize();
+        return dataInfo.dataSize;
     }
 
     @Override
@@ -120,80 +119,80 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
 
     @Override
     public final int getPixelStride() {
-        return bands * dataType.getSize();
-    }
-
-    @Override
-    public final InterleaveType getInterleaveType() {
-        return InterleaveType.PIXEL;
+        return dataInfo.bands * dataInfo.dataSize;
     }
 
     @Override
     public byte[] getPixel( int x, int y, byte[] result ) {
+        if ( view.dataInfo.bands != dataInfo.bands ) {
+            return super.getPixel( x, y, result );
+        }
         if ( result == null ) {
-            result = new byte[getBands() * bands];
+            result = new byte[dataInfo.noDataPixel.length];
         }
         if ( 0 > x || x >= rasterWidth || 0 > y || y >= rasterHeight ) {
-            System.arraycopy( nodata, 0, result, 0, result.length );
+            System.arraycopy( dataInfo.noDataPixel, 0, result, 0, result.length );
             return result;
         }
         data.position( calculatePos( x, y ) );
-        data.get( result );
+        data.get( result, 0, dataInfo.noDataPixel.length );
         return result;
     }
 
     @Override
     public void setPixel( int x, int y, byte[] result ) {
-        if ( data == null ) {
-            initByteBuffer();
-        }
-        data.position( calculatePos( x, y ) );
-        data.put( result );
-    }
-
-    @Override
-    public void setSubset( int x0, int y0, int width, int height, RasterData srcRaster, int xOffset, int yOffset ) {
-        if ( data == null ) {
-            initByteBuffer();
-        }
-        // clamp to maximum possible size
-        // int wx0 = this.rasterWidth - x0;
-        // int hy0 = this.rasterHeight - y0;
-        // the actual width and height of this raster
-        int wx0 = this.getWidth() - x0;
-        int hy0 = this.getHeight() - y0;
-
-        // the width and height of the raster from which the data will be copied
-        int srcw = srcRaster.getWidth() - xOffset;
-        int srch = srcRaster.getHeight() - yOffset;
-
-        int subWidth = min( wx0, width, srcw );
-        int subHeight = min( hy0, height, srch );
-
-        if ( subHeight <= 0 || subWidth <= 0 ) {
+        if ( view.dataInfo.bands != dataInfo.bands ) {
+            // Is this a view on less bands?
+            super.setPixel( x, y, result );
             return;
         }
 
+        data.position( calculatePos( x, y ) );
+        data.put( result, 0, dataInfo.noDataPixel.length );
+    }
+
+    @Override
+    public void setSubset( int dstX, int dstY, int width, int height, RasterData srcRaster, int srcX, int srcY ) {
+
+        // // the actual width and height of this raster
+        // int wx0 = this.getWidth() - dstX;
+        // int hy0 = this.getHeight() - dstY;
+        //
+        // // the width and height of the raster from which the data will be copied
+        // int srcw = srcRaster.getWidth() - srcX;
+        // int srch = srcRaster.getHeight() - srcY;
+        //
+        // // clamp to maximum possible size
+        // int subWidth = min( wx0, width, srcw );
+        // int subHeight = min( hy0, height, srch );
+
         // copy data direct if interleaving type is identical
-        if ( srcRaster instanceof PixelInterleavedRasterData ) {
+        if ( srcRaster instanceof PixelInterleavedRasterData && view.dataInfo.bands == dataInfo.bands ) {
+            int subWidth = clampSize( getWidth(), dstX, srcRaster.getWidth(), srcX, width );
+            int subHeight = clampSize( getHeight(), dstY, srcRaster.getHeight(), srcY, height );
+
+            if ( subHeight <= 0 || subWidth <= 0 ) {
+                return;
+            }
+
             PixelInterleavedRasterData raster = (PixelInterleavedRasterData) srcRaster;
             ByteBuffer srcData = raster.getByteBuffer().asReadOnlyBuffer();
             // byte[] tmp = new byte[subWidth * getPixelStride()];
             int length = subWidth * getPixelStride();
             for ( int i = 0; i < subHeight; i++ ) {
                 // order of .position and .get calls is significant, if bytebuffer is identical
-                int pos = raster.calculatePos( xOffset, i + yOffset );
+                int pos = raster.calculatePos( srcX, i + srcY );
                 srcData.limit( pos + length );
                 srcData.position( pos );
                 // srcData.get( tmp );
-                pos = calculatePos( x0, y0 + i );
+                pos = calculatePos( dstX, dstY + i );
                 data.position( pos );
                 data.put( srcData.slice() );
                 // data.put( tmp );
             }
         } else {
             // else use generic setSubset method
-            super.setSubset( x0, y0, width, height, srcRaster, xOffset, yOffset );
+            super.setSubset( dstX, dstY, width, height, srcRaster, srcX, srcY );
         }
     }
 }

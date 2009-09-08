@@ -33,21 +33,14 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.data.io.imageio;
+package org.deegree.coverage.raster.io.imageio;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.PixelInterleavedSampleModel;
-import java.awt.image.Raster;
+import static org.deegree.coverage.raster.utils.RasterFactory.rasterDataFromImage;
+
 import java.awt.image.RenderedImage;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
@@ -55,13 +48,8 @@ import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.stream.ImageInputStream;
 
-import org.deegree.coverage.raster.data.BandType;
-import org.deegree.coverage.raster.data.DataType;
-import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.coverage.raster.data.io.RasterDataReader;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
-import org.deegree.coverage.raster.data.nio.PixelInterleavedRasterData;
-import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.io.RasterDataReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +122,7 @@ public class IIORasterDataReader implements RasterDataReader {
 
         RenderedImage img = this.img;
         this.img = null; // remove reference to img
-        return IIORasterDataReader.rasterDataFromImage( img );
+        return rasterDataFromImage( img );
     }
 
     /**
@@ -231,93 +219,6 @@ public class IIORasterDataReader implements RasterDataReader {
             LOG.error( "couldn't open image:" + e.getMessage() );
         }
 
-    }
-
-    /**
-     * @param img
-     * @return the rasterdata object from the image or <code>null</code> if the given img is <code>null</code>
-     */
-    public static ByteBufferRasterData rasterDataFromImage( RenderedImage img ) {
-        ByteBufferRasterData result = null;
-        if ( img != null ) {
-
-            Raster raster = img.getData();
-
-            int x = 0, y = 0;
-            int width = raster.getWidth();
-            int height = raster.getHeight();
-
-            BandType[] bandTypes = determineBandTypes( img );
-
-            DataType type = DataType.fromDataBufferType( raster.getSampleModel().getDataType() );
-
-            result = new PixelInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, bandTypes,
-                                                     type );
-
-            if ( type == DataType.BYTE ) {
-                result.getByteBuffer().put( (byte[]) raster.getDataElements( x, y, width, height, null ) );
-            } else if ( type == DataType.FLOAT ) {
-                FloatBuffer buf = result.getByteBuffer().asFloatBuffer();
-                buf.put( (float[]) raster.getDataElements( x, y, width, height, null ) );
-            } else if ( type == DataType.USHORT ) {
-                ShortBuffer buf = result.getByteBuffer().asShortBuffer();
-                buf.put( (short[]) raster.getDataElements( x, y, width, height, null ) );
-            } else {
-                throw new UnsupportedOperationException( "DataType not supported (" + type + ")" );
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * @param img
-     *            to get the bands for.
-     * @return
-     */
-    private static BandType[] determineBandTypes( RenderedImage img ) {
-
-        Hashtable<String, Object> properties = new Hashtable<String, Object>();
-        String[] keys = img.getPropertyNames();
-        if ( keys != null ) {
-            for ( int i = 0; i < keys.length; i++ ) {
-                properties.put( keys[i], img.getProperty( keys[i] ) );
-            }
-        }
-        ColorModel cm = img.getColorModel();
-        WritableRaster raster = cm.createCompatibleWritableRaster( (byte) 1, (byte) 1 );
-        int imageType = new BufferedImage( cm, raster, cm.isAlphaPremultiplied(), properties ).getType();
-
-        if ( imageType == BufferedImage.TYPE_CUSTOM ) {
-            int numBands = raster.getNumBands();
-            // try a little more
-            if ( ( cm instanceof ComponentColorModel )
-                 && ( raster.getSampleModel() instanceof PixelInterleavedSampleModel ) ) {
-                PixelInterleavedSampleModel csm = (PixelInterleavedSampleModel) raster.getSampleModel();
-                int[] nBits = ( (ComponentColorModel) cm ).getComponentSize();
-                boolean is8bit = true;
-                for ( int i = 0; i < numBands; i++ ) {
-                    if ( nBits[i] != 8 ) {
-                        is8bit = false;
-                        break;
-                    }
-                }
-                if ( is8bit ) {
-                    int[] offs = csm.getBandOffsets();
-                    if ( numBands == 3 ) {
-                        if ( offs[0] == numBands - 3 && offs[1] == numBands - 2 && offs[2] == numBands - 1 ) {
-                            imageType = RasterData.TYPE_BYTE_RGB;
-                        }
-                    } else if ( numBands == 4 ) {
-                        if ( offs[0] == numBands - 4 && offs[1] == numBands - 3 && offs[2] == numBands - 2
-                             && offs[3] == numBands - 1 ) {
-                            imageType = RasterData.TYPE_BYTE_RGBA;
-                        }
-                    }
-                }
-            }
-        }
-        return BandType.fromBufferedImageType( imageType, raster.getNumBands() );
     }
 
     // /**

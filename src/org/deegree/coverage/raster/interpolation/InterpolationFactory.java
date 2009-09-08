@@ -38,8 +38,8 @@ package org.deegree.coverage.raster.interpolation;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.BILINEAR;
 import static org.deegree.coverage.raster.interpolation.InterpolationType.NEAREST_NEIGHBOR;
 
-import org.deegree.coverage.raster.data.DataType;
 import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.data.info.DataType;
 
 /**
  * Factory for {@link Interpolation}s.

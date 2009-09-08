@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.data.io;
+package org.deegree.coverage.raster.io;
 
 import java.io.BufferedReader;
 import java.io.File;

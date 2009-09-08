@@ -50,7 +50,6 @@ import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.container.IndexedMemoryTileContainer;
 import org.deegree.coverage.raster.geom.RasterReference;
-import org.deegree.coverage.raster.io.RasterFactory;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
 

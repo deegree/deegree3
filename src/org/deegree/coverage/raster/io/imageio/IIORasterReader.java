@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.data.io.imageio;
+package org.deegree.coverage.raster.io.imageio;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,10 +47,10 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.container.RasterDataContainer;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory;
-import org.deegree.coverage.raster.data.io.WorldFileAccess;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.io.RasterIOOptions;
 import org.deegree.coverage.raster.io.RasterReader;
+import org.deegree.coverage.raster.io.WorldFileAccess;
 import org.deegree.crs.CRS;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.geometry.Envelope;

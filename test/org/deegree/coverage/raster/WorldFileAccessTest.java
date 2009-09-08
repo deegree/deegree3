@@ -41,8 +41,8 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.FileWriter;
 
-import org.deegree.coverage.raster.data.io.WorldFileAccess;
 import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.io.WorldFileAccess;
 import org.deegree.geometry.Envelope;
 import org.junit.BeforeClass;
 import org.junit.Test;

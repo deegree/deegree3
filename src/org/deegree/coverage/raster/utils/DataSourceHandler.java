@@ -35,8 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.utils;
 
-import static org.deegree.coverage.raster.io.RasterFactory.loadRasterFromFile;
 import static org.deegree.coverage.raster.utils.RasterBuilder.buildTiledRaster;
+import static org.deegree.coverage.raster.utils.RasterFactory.loadRasterFromFile;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;

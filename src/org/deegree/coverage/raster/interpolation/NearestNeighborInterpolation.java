@@ -37,8 +37,8 @@ package org.deegree.coverage.raster.interpolation;
 
 import java.nio.BufferUnderflowException;
 
-import org.deegree.coverage.raster.data.DataType;
 import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.data.info.DataType;
 
 /**
  * This class implements a simple nearest neighbor interpolation. It works with all {@link DataType}s.

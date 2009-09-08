@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,23 +32,25 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.deegree.coverage.raster.data.BandType;
+import org.deegree.coverage.raster.data.info.BandType;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.geometry.Envelope;
 
 /**
  * This class represents an AbstractRaster with multiple ranges.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class MultiRangedRaster extends AbstractRaster {
 
@@ -73,7 +75,7 @@ public class MultiRangedRaster extends AbstractRaster {
 
     /**
      * Adds an AbstractRaster to the MultiRangedRaster
-     *
+     * 
      * @param raster
      */
     public void addRaster( AbstractRaster raster ) {
@@ -84,7 +86,7 @@ public class MultiRangedRaster extends AbstractRaster {
 
     /**
      * Returns a single range with given index
-     *
+     * 
      * @param index
      *            index of range
      * @return selected range as AbstractRaster
@@ -95,7 +97,7 @@ public class MultiRangedRaster extends AbstractRaster {
 
     /**
      * Returns a new MultiRangedRaster with selected indices.
-     *
+     * 
      * @param indices
      *            selected ranges
      * @return new MultiRangeRaster
@@ -110,10 +112,18 @@ public class MultiRangedRaster extends AbstractRaster {
 
     @Override
     public MultiRangedRaster getSubRaster( Envelope env ) {
+        return getSubRaster( env, null );
+    }
+
+    @Override
+    public MultiRangedRaster getSubRaster( Envelope env, BandType[] bands ) {
+        if ( getEnvelope().equals( env ) && ( bands == null || Arrays.equals( bands, getRasterDataInfo().bandInfo ) ) ) {
+            return this;
+        }
         checkBounds( env );
         MultiRangedRaster result = new MultiRangedRaster();
         for ( AbstractRaster raster : multiRange ) {
-            result.addRaster( raster.getSubRaster( env ) );
+            result.addRaster( raster.getSubRaster( env, bands ) );
         }
         return result;
     }
@@ -127,9 +137,9 @@ public class MultiRangedRaster extends AbstractRaster {
 
     /**
      * Sets the MultiRangedRaster with data from source.
-     *
+     * 
      * The number of ranges and the number of bands in source must be equal.
-     *
+     * 
      * @param x
      *            left boundary
      * @param y
@@ -153,7 +163,7 @@ public class MultiRangedRaster extends AbstractRaster {
 
     /**
      * Sets a range with data from source.
-     *
+     * 
      * @param x
      *            left boundary
      * @param y
@@ -176,9 +186,9 @@ public class MultiRangedRaster extends AbstractRaster {
 
     /**
      * Sets the MultiRangedRaster with data from source.
-     *
+     * 
      * The number of ranges must be equal.
-     *
+     * 
      * @param x
      *            left boundary
      * @param y
@@ -229,11 +239,19 @@ public class MultiRangedRaster extends AbstractRaster {
 
     /**
      * Returns the number of ranges
-     *
+     * 
      * @return number of ranges
      */
     public int getNumberOfRanges() {
         return multiRange.size();
     }
 
+    @Override
+    public RasterDataInfo getRasterDataInfo() {
+        SimpleRaster raster = multiRange.get( 0 ).getAsSimpleRaster();
+        if ( raster != null ) {
+            return raster.getRasterDataInfo();
+        }
+        return null;
+    }
 }

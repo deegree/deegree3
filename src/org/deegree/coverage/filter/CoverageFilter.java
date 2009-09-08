@@ -43,7 +43,7 @@ import org.deegree.coverage.rangeset.RangeSet;
 import org.deegree.geometry.Envelope;
 
 /**
- * The <code>CoverageFilter</code> class TODO add class documentation here.
+ * The <code>CoverageFilter</code> applies a rangeset (a coverage range definition) to a coverage.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -51,6 +51,7 @@ import org.deegree.geometry.Envelope;
  * 
  */
 public abstract class CoverageFilter {
+    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( CoverageFilter.class );
 
     /** the coverage to operate upon */
     protected AbstractCoverage coverage;

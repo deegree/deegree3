@@ -50,10 +50,10 @@ import java.util.Map;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.data.BandType;
-import org.deegree.coverage.raster.data.DataType;
-import org.deegree.coverage.raster.data.InterleaveType;
 import org.deegree.coverage.raster.data.RasterDataFactory;
+import org.deegree.coverage.raster.data.info.BandType;
+import org.deegree.coverage.raster.data.info.DataType;
+import org.deegree.coverage.raster.data.info.InterleaveType;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;

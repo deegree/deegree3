@@ -37,7 +37,7 @@ package org.deegree.coverage.raster.data.container;
 
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
-import org.deegree.coverage.raster.data.io.RasterDataReader;
+import org.deegree.coverage.raster.io.RasterDataReader;
 
 /**
  * This class implements a RasterDataContainer that keeps RasterData in memory.

@@ -37,7 +37,7 @@ package org.deegree.coverage.raster.data.container;
 
 import java.util.ServiceLoader;
 
-import org.deegree.coverage.raster.data.io.RasterDataReader;
+import org.deegree.coverage.raster.io.RasterDataReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

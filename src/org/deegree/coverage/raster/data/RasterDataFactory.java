@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,9 +32,13 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data;
 
+import org.deegree.coverage.raster.data.info.BandType;
+import org.deegree.coverage.raster.data.info.DataType;
+import org.deegree.coverage.raster.data.info.InterleaveType;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.data.nio.BandInterleavedRasterData;
 import org.deegree.coverage.raster.data.nio.ByteBufferRasterData;
 import org.deegree.coverage.raster.data.nio.LineInterleavedRasterData;
@@ -43,19 +47,19 @@ import org.deegree.coverage.raster.geom.RasterRect;
 
 /**
  * This class creates RasterData objects with a given interleaving type.
- *
+ * 
  * This factory creates RasterData objects based on ByteBufferRasterData.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author:rbezema $
- *
+ * 
  * @version $Revision:11404 $, $Date:2008-04-23 15:38:27 +0200 (Mi, 23 Apr 2008) $
  */
 public class RasterDataFactory {
 
     /**
      * Creates a pixel-interleaved RasterData object with given size and data type
-     *
+     * 
      * @param width
      *            width of the raster
      * @param height
@@ -70,7 +74,7 @@ public class RasterDataFactory {
 
     /**
      * Creates a RasterData object object with given size, number of bands, data type and interleaving
-     *
+     * 
      * @param width
      *            width of the raster
      * @param height
@@ -87,17 +91,18 @@ public class RasterDataFactory {
                                                          InterleaveType interleaveType ) {
 
         ByteBufferRasterData result;
-
-        if ( interleaveType == InterleaveType.PIXEL ) {
-            result = new PixelInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, bands,
-                                                     dataType );
-        } else if ( interleaveType == InterleaveType.LINE ) {
-            result = new LineInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, bands,
-                                                    dataType );
-        } else if ( interleaveType == InterleaveType.BAND ) {
-            result = new BandInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, bands,
-                                                    dataType );
-        } else {
+        RasterDataInfo dataInfo = new RasterDataInfo( null, bands, dataType, interleaveType );
+        switch ( interleaveType ) {
+        case PIXEL:
+            result = new PixelInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, dataInfo );
+            break;
+        case LINE:
+            result = new LineInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, dataInfo );
+            break;
+        case BAND:
+            result = new BandInterleavedRasterData( new RasterRect( 0, 0, width, height ), width, height, dataInfo );
+            break;
+        default:
             throw new UnsupportedOperationException( "Interleaving type " + interleaveType + " not supported!" );
         }
         return result;

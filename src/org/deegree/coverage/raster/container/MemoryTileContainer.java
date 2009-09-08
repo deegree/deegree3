@@ -40,7 +40,7 @@ import java.util.List;
 
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.geom.RasterReference;
-import org.deegree.coverage.raster.io.RasterFactory;
+import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.geometry.Envelope;
 
 /**

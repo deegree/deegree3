@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.data.io.jai;
+package org.deegree.coverage.raster.io.jai;
 
 import java.util.HashMap;
 import java.util.HashSet;

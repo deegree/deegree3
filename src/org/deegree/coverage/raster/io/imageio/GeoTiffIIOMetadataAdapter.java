@@ -51,7 +51,7 @@
  *
  */
 
-package org.deegree.coverage.raster.data.io.imageio;
+package org.deegree.coverage.raster.io.imageio;
 
 import java.util.StringTokenizer;
 import javax.imageio.metadata.IIOMetadata;

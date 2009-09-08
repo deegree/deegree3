@@ -194,27 +194,28 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
     /**
      * @param inter
      *            to check against
+     * @param convert
+     *            if true and the given interval is of type void, it will be replaced with the given type it matches
+     *            this interval.
      * @return true if this interval is in the bounds of the given interval.
      */
     @SuppressWarnings("unchecked")
-    public boolean isInBounds( Interval<?, ?> inter ) {
+    public boolean isInBounds( Interval<?, ?> inter, boolean convert ) {
         // unchecked is suppressed because it is actually checked.
         boolean result = false;
         if ( inter != null ) {
             Interval<?, ?> testInter = inter;
             result = inter.min.type == min.type;
+            boolean wasVoid = false;
             if ( !result ) {
                 if ( inter.min.type == ValueType.Void ) {
                     // try to convert the values to the given type and then compare.
                     try {
-                        SingleValue<?> nMin = SingleValue.createFromString( min.type.toString(),
-                                                                            inter.min.value.toString() );
-                        SingleValue<?> nMax = SingleValue.createFromString( max.type.toString(),
-                                                                            inter.max.value.toString() );
-                        // create a new test interval with the converted values.
-                        testInter = new Interval( nMin, nMax, inter.closure, inter.semantic, inter.atomic,
-                                                  inter.spacing );
+                        testInter = createFromStrings( min.type.toString(), inter.min.value.toString(),
+                                                       inter.min.value.toString(), inter.closure, inter.semantic,
+                                                       inter.atomic, inter.spacing );
                         result = true;
+                        wasVoid = true;
                     } catch ( NumberFormatException e ) {
                         // could not convert to the type, so result will be false;
                     }
@@ -234,6 +235,9 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
                         // so min values match, lets check the max value against max (assuming min > max )
                         comp = max.value.compareTo( (T) testInter.max.value );
                         result = match( comp, true );
+                        if ( convert && wasVoid ) {
+                            inter = testInter;
+                        }
                     }
                 }
             }
@@ -242,7 +246,7 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
     }
 
     private boolean match( int comparedValue, boolean compareWithMin ) {
-        int test = comparedValue * ( compareWithMin ? 1 : -1 );
+        int test = comparedValue * ( compareWithMin ? -1 : 1 );
 
         boolean closed = ( closure == Closure.closed )
                          || ( compareWithMin ? closure == Closure.closed_open : closure == Closure.open_closed );
@@ -336,5 +340,13 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
             sb.append( "/" ).append( spacing.toString() );
         }
         return sb.toString();
+    }
+
+    /**
+     * @param value
+     * @return true if the given value lies within the bounds of this interval.
+     */
+    public boolean liesWithin( T value ) {
+        return match( min.value.compareTo( value ), true ) && match( max.value.compareTo( value ), false );
     }
 }

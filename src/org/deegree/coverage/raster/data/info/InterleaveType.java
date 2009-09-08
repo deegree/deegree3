@@ -1,10 +1,10 @@
-//$HeadURL$
+//$HeadURL:svn+ssh://rbezema@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/coverage/raster/data/InterleaveType.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+   Department of Geography, University of Bonn
  and
- lat/lon GmbH
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,42 +32,29 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.data.io;
-
-import org.deegree.coverage.raster.data.RasterData;
+----------------------------------------------------------------------------*/
+package org.deegree.coverage.raster.data.info;
 
 /**
- * Simple interface to read RasterData.
- * 
+ * Enumeration for all supported sample interleaving types.
+ *
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author$
- * 
- * @version $Revision$, $Date$
- * 
+ * @author last edited by: $Author:rbezema $
+ *
+ * @version $Revision:11404 $, $Date:2008-04-23 15:38:27 +0200 (Mi, 23 Apr 2008) $
+ *
  */
-public interface RasterDataReader {
-
+public enum InterleaveType {
     /**
-     * Read the raster data.
-     * 
-     * @return Return the underlying raster data.
+     * pixel-interleaving.
      */
-    public RasterData read();
-
+    PIXEL,
     /**
-     * @return The width in pixel of the raster data.
+     * line-interleaving
      */
-    public int getWidth();
-
+    LINE,
     /**
-     * @return The height in pixel of the raster data.
+     * band-interleaving
      */
-    public int getHeight();
-
-    /**
-     * Clean up all memory references to the loaded image file.
-     */
-    public void close();
-
+    BAND;
 }

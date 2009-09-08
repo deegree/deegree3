@@ -35,15 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.deegree.coverage.raster.container.MemoryTileContainer;
 import org.deegree.coverage.raster.container.TileContainer;
 import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.data.info.BandType;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
-import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Point;
 
 /**
@@ -60,6 +63,8 @@ import org.deegree.geometry.primitive.Point;
 public class TiledRaster extends AbstractRaster {
 
     private TileContainer tileContainer;
+
+    private RasterDataInfo rasterDataInfo;
 
     /**
      * Creates a new TiledRaster with tiles from the given TileContainer
@@ -103,34 +108,28 @@ public class TiledRaster extends AbstractRaster {
     }
 
     @Override
-    public AbstractRaster getSubRaster( Envelope env ) {
-        // checkBounds( env );
+    public TiledRaster getSubRaster( Envelope env ) {
+        return getSubRaster( env, null );
+    }
 
+    @Override
+    public TiledRaster getSubRaster( Envelope env, BandType[] bands ) {
+        if ( getEnvelope().equals( env ) && ( bands == null || Arrays.equals( bands, getRasterDataInfo().bandInfo ) ) ) {
+            return this;
+        }
+        // use the default tile container.
         MemoryTileContainer resultTC = new MemoryTileContainer();
         TiledRaster result = new TiledRaster( resultTC );
 
-        for ( AbstractRaster r : tileContainer.getTiles( env ) ) {
-            try {
-                Geometry intersection = r.getEnvelope().getIntersection( env );
+        for ( AbstractRaster r : getTileContainer().getTiles( env ) ) {
+            Geometry intersection = r.getEnvelope().getIntersection( env );
 
-                // rb: is this actually needed, because the tilecontainer checks this as well?
-                if ( intersection == null ) {
-                    continue;
-                }
-                // ignore if it only touches a tile
-                if ( intersection instanceof Point ) {
-                    continue;
-                }
-                if ( intersection instanceof Curve ) {
-                    continue;
-                }
+            if ( intersection != null ) {
                 Envelope subsetEnv = intersection.getEnvelope();
-
-                resultTC.addTile( r.getSubRaster( subsetEnv ) );
-            } catch ( IndexOutOfBoundsException e ) {
-                // TODO remove after touches-bug is fixed
+                resultTC.addTile( r.getSubRaster( subsetEnv, bands ) );
             }
         }
+
         if ( resultTC.getRasterReference() == null ) {
             throw new IndexOutOfBoundsException( "no intersection between TiledRaster and requested subset" );
         }
@@ -140,13 +139,16 @@ public class TiledRaster extends AbstractRaster {
 
     @Override
     public void setSubRaster( Envelope envelope, AbstractRaster source ) {
-        for ( AbstractRaster r : getTileContainer().getTiles( envelope ) ) {
-            if ( r instanceof SimpleRaster ) {
-                SimpleRaster sr = (SimpleRaster) r;
-                Envelope subsetEnv = sr.getEnvelope().getIntersection( envelope ).getEnvelope();
-                sr.setSubRaster( subsetEnv, source );
-            } else {
-                throw new UnsupportedOperationException();
+        List<AbstractRaster> interSectingTiles = getTileContainer().getTiles( envelope );
+        if ( !interSectingTiles.isEmpty() ) {
+            for ( AbstractRaster r : interSectingTiles ) {
+                if ( r != null ) {
+                    Geometry intersection = r.getEnvelope().getIntersection( envelope );
+                    if ( intersection != null ) {
+                        Envelope subsetEnv = intersection.getEnvelope();
+                        r.setSubRaster( subsetEnv, source );
+                    }
+                }
             }
         }
     }
@@ -182,8 +184,7 @@ public class TiledRaster extends AbstractRaster {
             throw new NullPointerException( "The given tile container does not contain any tiles. " );
         }
         SimpleRaster originalSimpleRaster = tiles.get( 0 ).getAsSimpleRaster();
-        SimpleRaster result = originalSimpleRaster.createCompatibleSimpleRaster( getRasterReference(),
-                                                                                               env );
+        SimpleRaster result = originalSimpleRaster.createCompatibleSimpleRaster( getRasterReference(), env );
 
         for ( AbstractRaster r : tiles ) {
             Geometry intersec = r.getEnvelope().getIntersection( env );
@@ -206,6 +207,28 @@ public class TiledRaster extends AbstractRaster {
         result.append( "\n\t" );
         result.append( getTileContainer().toString() );
         return result.toString();
+    }
+
+    @Override
+    public RasterDataInfo getRasterDataInfo() {
+        if ( rasterDataInfo == null ) {
+            Envelope env = getEnvelope();
+            double[] min = env.getMin().getAsArray();
+            double[] max = new double[min.length];
+
+            for ( int i = 0; i < min.length; ++i ) {
+                max[i] = min[i] + 0.01;
+            }
+
+            Envelope tEnv = new GeometryFactory().createEnvelope( min, max, env.getCoordinateSystem() );
+
+            List<AbstractRaster> tiles = getTileContainer().getTiles( tEnv );
+            if ( !tiles.isEmpty() ) {
+                SimpleRaster originalSimpleRaster = tiles.get( 0 ).getAsSimpleRaster();
+                rasterDataInfo = originalSimpleRaster.getRasterDataInfo();
+            }
+        }
+        return rasterDataInfo;
     }
 
 }

@@ -96,15 +96,25 @@ public class AxisSubset {
     }
 
     /**
+     * @return true if the given axis has interval or singlevalues defined.
+     */
+    public boolean hasAxisConstraints() {
+        return ( intervals != null && !intervals.isEmpty() ) || ( singleValues != null && !singleValues.isEmpty() );
+    }
+
+    /**
      * @param other
+     * @param convert
+     *            if true the intervals and singlevalues will be converted to the types they match if they were of type
+     *            unknown (void).
      * @return true if this {@link AxisSubset} matches the given AxisSubset, e.g. if the names are equal and the axis
      *         values have matching parameters in the given one.
      */
-    public boolean match( AxisSubset other ) {
+    public boolean match( AxisSubset other, boolean convert ) {
         boolean result = other.getName().equalsIgnoreCase( name );
         if ( result ) {
-            boolean ic = checkIntervals( other.getIntervals() );
-            boolean sc = checkSingles( other.getSingleValues() );
+            boolean ic = checkIntervals( other.getIntervals(), convert );
+            boolean sc = checkSingles( other.getSingleValues(), other.getIntervals(), convert );
             result = ic && sc;
         }
         return result;
@@ -112,9 +122,11 @@ public class AxisSubset {
 
     /**
      * @param otherValues
+     * @param convert
+     *            if true the given intervals will be converted to the type they match if they were of type void.
      * @return true if the given singleValues match these of the given single values, the types are considered.
      */
-    private boolean checkSingles( List<SingleValue<?>> otherValues ) {
+    private boolean checkSingles( List<SingleValue<?>> otherValues, List<Interval<?, ?>> otherIntervals, boolean convert ) {
         boolean result = false;
         if ( singleValues == null || singleValues.isEmpty() ) {
             // if this axissubset has no singlevalues, than they match
@@ -132,7 +144,54 @@ public class AxisSubset {
                         Iterator<SingleValue<?>> iterator = otherValues.iterator();
                         while ( iterator.hasNext() && !result ) {
                             SingleValue<?> ov = iterator.next();
-                            result = sv.equals( ov );
+                            result = sv.equals( ov, convert );
+                        }
+
+                        if ( !result ) {
+                            // could not find a single value matching.
+                            break;
+                        }
+
+                    }
+                } else {
+                    result = true;
+                }
+
+            }
+        } else if ( otherIntervals != null && !otherIntervals.isEmpty() ) {
+            // if the other has intervals, does these single values fit in the intervals?
+            for ( SingleValue<?> sv : singleValues ) {
+                // rb: iterate over all values, if one of them mismatches this method will return false.
+                if ( sv != null ) {
+                    // if the value == null, the default value must be taken into account, therefore no validity check
+                    // can
+                    // be done.
+                    if ( sv.value != null ) {
+                        Iterator<Interval<?, ?>> iterator = otherIntervals.iterator();
+                        while ( iterator.hasNext() && !result ) {
+                            // rb: type checking is done, but the compiler can not resolve it.
+                            Interval tmpInter = iterator.next();
+                            if ( tmpInter != null ) {
+                                SingleValue<?> min = tmpInter.getMin();
+                                if ( min.type != sv.type ) {
+                                    if ( min.type == ValueType.Void ) {
+                                        tmpInter = Interval.createFromStrings( sv.type.toString(),
+                                                                               tmpInter.getMin().value.toString(),
+                                                                               tmpInter.getMax().value.toString(),
+                                                                               tmpInter.getClosure(),
+                                                                               tmpInter.getSemantic(),
+                                                                               tmpInter.isAtomic(),
+                                                                               tmpInter.getSpacing() );
+                                    } else if ( sv.type == ValueType.Void ) {
+                                        sv = SingleValue.createFromString( min.type.toString(), sv.value.toString() );
+                                    } else {
+                                        continue;
+                                    }
+
+                                }
+                                result = tmpInter.liesWithin( sv.value );
+                            }
+
                         }
 
                         if ( !result ) {
@@ -153,9 +212,11 @@ public class AxisSubset {
 
     /**
      * @param otherIntervals
+     * @param convert
+     *            if true the given intervals will be converted to the type they match if they were of type void.
      * @return true if the given intervals match this intervals.
      */
-    private boolean checkIntervals( List<Interval<?, ?>> otherIntervals ) {
+    private boolean checkIntervals( List<Interval<?, ?>> otherIntervals, boolean convert ) {
         boolean result = false;
         if ( intervals == null || intervals.isEmpty() ) {
             // if this axissubset has no intervals, than they match
@@ -166,7 +227,7 @@ public class AxisSubset {
                 Iterator<Interval<?, ?>> iterator = otherIntervals.iterator();
                 while ( iterator.hasNext() && !result ) {
                     Interval<?, ?> oi = iterator.next();
-                    result = oi.isInBounds( inter );
+                    result = oi.isInBounds( inter, convert );
                 }
                 if ( !result ) {
                     // could not find a single value matching.

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,23 +32,26 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
-import org.deegree.coverage.raster.data.BandType;
+import java.util.Arrays;
+
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.container.MemoryRasterDataContainer;
 import org.deegree.coverage.raster.data.container.RasterDataContainer;
-import org.deegree.coverage.raster.geom.RasterReference;
+import org.deegree.coverage.raster.data.info.BandType;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterRect;
+import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;
 
 /**
  * This class represents a single raster with multiple bands.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class SimpleRaster extends AbstractRaster {
@@ -57,7 +60,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Create a SimpleRaster with no raster data but with an envelope and raster envelope.
-     *
+     * 
      * @param envelope
      *            The envelope of the new raster.
      * @param rasterEnv
@@ -69,7 +72,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Creates a new SimpleRaster with given RasterData and Envelope
-     *
+     * 
      * @param raster
      *            content for the SimpleRaster
      * @param envelope
@@ -85,7 +88,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Creates a new SimpleRaster with given RasterDataContainer and Envelope
-     *
+     * 
      * @param rasterDataContainer
      *            data source for the SimpleRaster
      * @param envelope
@@ -100,31 +103,36 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Creates a SimpleRaster with same size, DataType and InterleaveType
-     *
+     * 
      * @param bands
      *            number of bands
      * @return new empty SimpleRaster
      */
     public SimpleRaster createCompatibleSimpleRaster( BandType[] bands ) {
-        RasterData newRaster = getRasterData().createCompatibleRasterData( bands );
+        RasterData data = this.getRasterData();
+        RasterData newRaster = data.createCompatibleWritableRasterData(
+                                                                        new RasterRect( 0, 0, getColumns(), getRows() ),
+                                                                        bands );
         return new SimpleRaster( newRaster, getEnvelope(), getRasterReference() );
     }
 
     /**
      * Creates a new empty SimpleRaster with same size, DataType and InterleaveType.
-     *
+     * 
      * @return new empty SimpleRaster
      */
     public SimpleRaster createCompatibleSimpleRaster() {
         int height = this.getRows();
         int width = this.getColumns();
-        RasterData newRaster = this.getRasterData().createCompatibleRasterData( width, height );
+        RasterData data = this.getRasterData();
+        BandType[] bands = data.getDataInfo().bandInfo;
+        RasterData newRaster = data.createCompatibleWritableRasterData( new RasterRect( 0, 0, width, height ), bands );
         return new SimpleRaster( newRaster, this.getEnvelope(), this.getRasterReference() );
     }
 
     /**
      * Creates a new empty SimpleRaster with same DataType and InterleaveType. Size is determined by the given envelope.
-     *
+     * 
      * @param rEnv
      *            The raster envelope of the new SimpleRaster.
      * @param env
@@ -133,10 +141,10 @@ public class SimpleRaster extends AbstractRaster {
      */
     public SimpleRaster createCompatibleSimpleRaster( RasterReference rEnv, Envelope env ) {
         int[] size = rEnv.getSize( env );
-        RasterData newRaster = this.getRasterData().createCompatibleWritableRasterData(
-                                                                                        new RasterRect( 0, 0, size[0],
-                                                                                                        size[1] ),
-                                                                                        this.getRasterData().getBandTypes() );
+        RasterRect rasterRect = new RasterRect( 0, 0, size[0], size[1] );
+        RasterData data = this.getRasterData();
+        BandType[] bands = data.getDataInfo().bandInfo;
+        RasterData newRaster = data.createCompatibleWritableRasterData( rasterRect, bands );
         return new SimpleRaster( newRaster, env, rEnv );
     }
 
@@ -149,7 +157,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Returns the RasterData of this SimpleRaster
-     *
+     * 
      * @return The raster data of this SimpleRaster.
      */
     public RasterData getRasterData() {
@@ -158,7 +166,7 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Returns a read-only copy of the RasterData of this SimpleRaster
-     *
+     * 
      * @return The raster data of this SimpleRaster (read-only).
      */
     public RasterData getReadOnlyRasterData() {
@@ -167,13 +175,18 @@ public class SimpleRaster extends AbstractRaster {
 
     @Override
     public SimpleRaster getSubRaster( Envelope envelope ) {
-        if ( getEnvelope().equals( envelope ) ) {
+        return getSubRaster( envelope, null );
+    }
+
+    public SimpleRaster getSubRaster( Envelope envelope, BandType[] bands ) {
+        if ( getEnvelope().equals( envelope )
+             && ( bands == null || Arrays.equals( bands, getRasterDataInfo().bandInfo ) ) ) {
             return this;
         }
         RasterRect rasterRect = getRasterReference().convertEnvelopeToRasterCRS( envelope );
         RasterReference rasterEnv = getRasterReference().createSubEnvelope( envelope );
-        RasterData subset = getReadOnlyRasterData().getSubset( rasterRect );
-        return new SimpleRaster( subset, envelope, rasterEnv );
+        RasterData view = getReadOnlyRasterData().getSubset( rasterRect, bands );
+        return new SimpleRaster( view, envelope, rasterEnv );
     }
 
     @Override
@@ -185,14 +198,14 @@ public class SimpleRaster extends AbstractRaster {
 
     /**
      * Returns a single band of the raster.
-     *
+     * 
      * @param band
      *            Number of the selected band.
      * @return A copy of the selected band.
      */
     public SimpleRaster getBand( int band ) {
-        return new SimpleRaster( getRasterData().getSubset( 0, 0, getColumns(), getRows(), band ), getEnvelope(),
-                                 getRasterReference() );
+        return new SimpleRaster( getRasterData().getSubset( new RasterRect( 0, 0, getColumns(), getRows() ),
+                                                            new BandType[] {} ), getEnvelope(), getRasterReference() );
     }
 
     @Override
@@ -247,7 +260,12 @@ public class SimpleRaster extends AbstractRaster {
      * @return the number of bands in this raster.
      */
     public BandType[] getBandTypes() {
-        return getRasterData().getBandTypes();
+        return getRasterData().getDataInfo().bandInfo;
+    }
+
+    @Override
+    public RasterDataInfo getRasterDataInfo() {
+        return getRasterData().getDataInfo();
     }
 
     @Override

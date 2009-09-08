@@ -47,7 +47,7 @@ import junit.framework.Assert;
 
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.geom.RasterReference.Type;
-import org.deegree.coverage.raster.io.RasterFactory;
+import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.crs.CRS;
 import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;

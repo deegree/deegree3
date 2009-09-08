@@ -43,7 +43,7 @@ import net.sf.ehcache.Element;
 
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.container.RasterDataContainerFactory.LoadingPolicy;
-import org.deegree.coverage.raster.data.io.RasterDataReader;
+import org.deegree.coverage.raster.io.RasterDataReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

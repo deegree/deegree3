@@ -37,13 +37,12 @@ package org.deegree.coverage.raster.data.nio;
 
 import java.nio.ByteBuffer;
 
-import org.deegree.coverage.raster.data.BandType;
-import org.deegree.coverage.raster.data.DataType;
-import org.deegree.coverage.raster.data.InterleaveType;
+import org.deegree.coverage.raster.data.DataView;
 import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.data.info.BandType;
+import org.deegree.coverage.raster.data.info.DataType;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterRect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This abstract class implements the RasterData interface for ByteBuffer based raster.
@@ -76,12 +75,10 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ByteBufferRasterData implements RasterData {
 
-    private static Logger LOG = LoggerFactory.getLogger( ByteBufferRasterData.class );
-
     /**
-     * Offset in samples to a sub data raster.
+     * The view of this data
      */
-    protected RasterRect view;
+    protected DataView view;
 
     /**
      * the width of the raster
@@ -94,164 +91,33 @@ public abstract class ByteBufferRasterData implements RasterData {
     protected int rasterHeight;
 
     /**
-     * The number of bands in this raster.
+     * the raster data info of the original data, not the view.
      */
-    protected int bands;
-
-    /**
-     * The {@link DataType} of this raster.
-     */
-    protected DataType dataType;
-
-    /**
-     * The {@link BandType} of this raster.
-     */
-    protected BandType[] bandsTypes;
-
-    /**
-     * The NODATA value.
-     */
-    protected byte[] nodata;
+    protected RasterDataInfo dataInfo;
 
     /**
      * The raster data itself.
      */
     protected ByteBuffer data;
 
-    // private int view.x;
-
-    // private int view.y;
-
     /**
-     * Creates a new ByteBufferRasterData instance.
-     * 
-     * @param env
-     *            the raster rectangle defining the sample domain of this raster data.
-     * @param rasterWidth
-     *            width of the raster data
-     * @param rasterHeight
-     *            height of the raster data
-     * @param dataType
-     *            sample data type
-     * @param bands
-     *            number of bands
+     * ==================== Abstract method declarations ====================
      */
-    protected ByteBufferRasterData( RasterRect env, int rasterWidth, int rasterHeight, BandType[] bands,
-                                    DataType dataType ) {
-        this( env, rasterWidth, rasterHeight, bands, dataType, true );
-    }
-
-    /**
-     * Creates a new ByteBufferRasterData instance.
-     * 
-     * @param env
-     *            the raster rectangle defining the sample domain of this raster data.
-     * @param rasterWidth
-     *            width of the raster data
-     * @param rasterHeight
-     *            height of the raster data
-     * @param dataType
-     *            sample data type
-     * @param bands
-     *            number of bands
-     * @param init
-     *            true if the ByteBuffer should be initialized
-     */
-    protected ByteBufferRasterData( RasterRect env, int rasterWidth, int rasterHeight, BandType[] bands,
-                                    DataType dataType, boolean init ) {
-        view = env;
-        this.rasterWidth = rasterWidth;
-        this.rasterHeight = rasterHeight;
-
-        this.bandsTypes = bands;
-        this.bands = bandsTypes.length;
-        this.dataType = dataType;
-
-        this.nodata = new byte[dataType.getSize() * this.bands];
-        if ( init ) {
-            initByteBuffer();
-        }
-    }
-
-    /**
-     * Initialize the internal ByteBuffer
-     */
-    protected void initByteBuffer() {
-        this.data = createByteBuffer();
-    }
-
-    private ByteBuffer createByteBuffer() {
-        return ByteBuffer.allocate( getBufferSize() );
-        // return ByteBuffer.allocateDirect( getBufferSize() );
-    }
 
     /**
      * Implementation should create a view of this raster data.
      * 
-     * @param env
-     * @param bands
+     * @param view
+     *            the new view on this data
+     * 
      * @return a view or new raster data object, backed by a {@link java.nio.ByteBuffer}
      */
-    public abstract ByteBufferRasterData createCompatibleRasterData( RasterRect env, BandType[] bands );
+    protected abstract ByteBufferRasterData createCompatibleRasterData( DataView view );
 
     /**
      * @return ByteBufferRasterData with unset data
      */
     protected abstract ByteBufferRasterData createCompatibleEmptyRasterData();
-
-    public ByteBufferRasterData createCompatibleRasterData( int width, int height ) {
-        return createCompatibleRasterData( new RasterRect( view.x, view.y, width, height ), bandsTypes );
-    }
-
-    public ByteBufferRasterData createCompatibleRasterData( RasterRect env ) {
-        return createCompatibleRasterData( env, bandsTypes );
-    }
-
-    public ByteBufferRasterData createCompatibleRasterData( BandType[] bands ) {
-        return createCompatibleRasterData( new RasterRect( view.x, view.y, rasterWidth, rasterHeight ), bands );
-    }
-
-    public ByteBufferRasterData createCompatibleRasterData() {
-        return createCompatibleRasterData( new RasterRect( view.x, view.y, rasterWidth, rasterHeight ), bandsTypes );
-    }
-
-    @Override
-    public RasterData asReadOnly() {
-        ByteBufferRasterData copy = createCompatibleEmptyRasterData();
-        copy.data = this.getByteBuffer().asReadOnlyBuffer();
-        return copy;
-    }
-
-    public final int getBands() {
-        return bands;
-    }
-
-    public final BandType[] getBandTypes() {
-        return bandsTypes;
-    }
-
-    public final int getWidth() {
-        return view.width;
-    }
-
-    public final int getHeight() {
-        return view.height;
-    }
-
-    public final DataType getDataType() {
-        return dataType;
-    }
-
-    /**
-     * Returns the size of the ByteBuffer in bytes.
-     * 
-     * @return size of the buffer
-     */
-    public final int getBufferSize() {
-        return rasterWidth * rasterHeight * bands * dataType.getSize();
-    }
-
-    public abstract InterleaveType getInterleaveType();
 
     /**
      * Retruns the byte offset to the next pixel.
@@ -273,6 +139,135 @@ public abstract class ByteBufferRasterData implements RasterData {
      * @return byte offset to next row (same column, same sample)
      */
     public abstract int getLineStride();
+
+    /**
+     * ==================== Implementation ====================
+     */
+
+    /**
+     * Creates a new ByteBufferRasterData instance.
+     * 
+     * @param view
+     *            the raster rectangle defining the sample domain of this raster data.
+     * @param rasterWidth
+     *            width of the raster data
+     * @param rasterHeight
+     *            height of the raster data
+     * @param originalDataInfo
+     *            containing information about this raster data object
+     * @param init
+     *            true if the ByteBuffer should be initialized
+     */
+    protected ByteBufferRasterData( DataView view, int rasterWidth, int rasterHeight, RasterDataInfo originalDataInfo,
+                                    boolean init ) {
+        this.view = view;
+        this.rasterWidth = rasterWidth;
+        this.rasterHeight = rasterHeight;
+
+        this.dataInfo = originalDataInfo;
+        if ( init ) {
+            initByteBuffer();
+        }
+    }
+
+    /**
+     * Creates a new ByteBufferRasterData instance.
+     * 
+     * @param view
+     *            the raster rectangle defining the sample domain of this raster data.
+     * @param rasterWidth
+     *            width of the raster data
+     * @param rasterHeight
+     *            height of the raster data
+     * @param originalDataInfo
+     *            containing information about this raster data object
+     */
+    protected ByteBufferRasterData( DataView view, int rasterWidth, int rasterHeight, RasterDataInfo originalDataInfo ) {
+        this( view, rasterWidth, rasterHeight, originalDataInfo, true );
+    }
+
+    /**
+     * Initialize the internal ByteBuffer
+     */
+    protected void initByteBuffer() {
+        this.data = createByteBuffer();
+    }
+
+    private ByteBuffer createByteBuffer() {
+        return ByteBuffer.allocate( getRequiredBufferSize() );
+        // return ByteBuffer.allocateDirect( getBufferSize() );
+    }
+
+    /**
+     * Returns the needed size of the ByteBuffer in bytes.
+     * 
+     * @return size of the buffer
+     */
+    public final int getRequiredBufferSize() {
+        // data.capacity() can not be used if the ByteBuffer was not yet instantiated.
+        return rasterWidth * rasterHeight * dataInfo.bands * dataInfo.dataSize;
+    }
+
+    public ByteBufferRasterData createCompatibleRasterData( int width, int height ) {
+        // use the offset from the view and the new width and height (shouldn't they be checked for size?)
+        return createCompatibleRasterData( new DataView( view.x, view.y, width, height, dataInfo ) );
+    }
+
+    public ByteBufferRasterData createCompatibleRasterData( RasterRect env ) {
+        // create a new view using the given rectangle, the info will be the same.
+        return createCompatibleRasterData( new DataView( env, dataInfo ) );
+    }
+
+    @Override
+    public RasterData createCompatibleRasterData( RasterRect sampleDomain, BandType[] bands ) {
+        // create a view taken using the given rectangle and the given bands
+        return createCompatibleRasterData( new DataView( sampleDomain, createRasterDataInfo( bands ), dataInfo ) );
+    }
+
+    public ByteBufferRasterData createCompatibleRasterData( BandType[] bands ) {
+        // create a new view from the given bands
+        return createCompatibleRasterData( new DataView( view, createRasterDataInfo( bands ), dataInfo ) );
+    }
+
+    public ByteBufferRasterData createCompatibleRasterData() {
+        // just use the view on the data
+        return createCompatibleRasterData( view );
+    }
+
+    @Override
+    public RasterData asReadOnly() {
+        ByteBufferRasterData copy = createCompatibleEmptyRasterData();
+        copy.data = this.getByteBuffer().asReadOnlyBuffer();
+        return copy;
+    }
+
+    public DataType getDataType() {
+        return view.dataInfo.dataType;
+    }
+
+    public int getBands() {
+        return view.dataInfo.bands;
+    }
+
+    public RasterDataInfo getDataInfo() {
+        return view.dataInfo;
+    }
+
+    public byte[] getNullPixel( byte[] result ) {
+        return view.dataInfo.getNoDataPixel( result );
+    }
+
+    public void setNullPixel( byte[] values ) {
+        view.dataInfo.setNoDataPixel( values );
+    }
+
+    public final int getWidth() {
+        return view.width;
+    }
+
+    public final int getHeight() {
+        return view.height;
+    }
 
     /**
      * @return The internal ByteBuffer.
@@ -349,18 +344,19 @@ public abstract class ByteBufferRasterData implements RasterData {
      *            x coordinate
      * @param y
      *            y coordinate
-     * @param band
+     * @param bandOfView
      *            band index of the sample
      * @return byte offset to the sample with the specified coordinate
      */
-    public final int calculatePos( int x, int y, int band ) {
-        return ( ( view.y + y ) * getLineStride() ) + ( ( view.x + x ) * getPixelStride() ) + ( band * getBandStride() );
+    public final int calculatePos( int x, int y, int bandOfView ) {
+        return ( ( view.y + y ) * getLineStride() ) + ( ( view.x + x ) * getPixelStride() )
+               + ( view.getBandOffset( bandOfView ) * getBandStride() );
     }
 
     /**
      * Calculates the position of a pixel in a view (FloatBuffer, etc.) of the ByteBuffer.
      * 
-     * This method considers different sample sizes (eg. byte, float) and returns the position in sample stides (not
+     * This method considers different sample sizes (eg. byte, float) and returns the position in sample strides (not
      * byte strides). Use this method to get proper positions for ByteBuffer views like FloatBuffer, ShortBuffer, etc..
      * 
      * @param x
@@ -370,7 +366,7 @@ public abstract class ByteBufferRasterData implements RasterData {
      * @return offset to the pixel with the specified coordinates
      */
     public final int calculateViewPos( int x, int y ) {
-        return calculatePos( x, y ) / dataType.getSize();// TODO
+        return calculatePos( x, y ) / dataInfo.dataSize;// TODO
     }
 
     /**
@@ -388,89 +384,133 @@ public abstract class ByteBufferRasterData implements RasterData {
      * @return offset to the sample with the specified coordinates
      */
     public final int calculateViewPos( int x, int y, int band ) {
-        return calculatePos( x, y, band ) / dataType.getSize();// TODO
+        return calculatePos( x, y, band ) / dataInfo.dataSize;// TODO
     }
 
-    public byte[] getNullPixel( byte[] result ) {
-        if ( result == null ) {
-            result = new byte[nodata.length];
+    public byte[] getBytes( int x, int y, int width, int height, int band, byte[] result ) {
+        checkBoundsEx( x, y, width, height );
+        if ( result == null || result.length < ( width * height ) ) {
+            result = new byte[width * height];
         }
-        System.arraycopy( nodata, 0, result, 0, result.length );
-        return result;
-    }
-
-    public void setNullPixel( byte[] values ) {
-        if ( values.length % getDataType().getSize() != 0 ) {
-            LOG.error( "invalid null pixel values" );
-            return;
-        }
-        if ( values.length == nodata.length ) {
-            System.arraycopy( values, 0, nodata, 0, nodata.length );
-        } else {
-            for ( int b = 0; b < getBands(); b++ ) {
-                System.arraycopy( values, 0, nodata, getDataType().getSize() * b, getDataType().getSize() );
+        for ( int h = 0; h < height; h++ ) {
+            for ( int w = 0; w < width; w++ ) {
+                result[( 2 * h ) + w] = data.get( calculatePos( x + w, y + h, band ) );
             }
         }
-    }
-
-    public byte[] getSample( int x, int y, int band, byte[] result ) {
-        if ( result == null ) {
-            result = new byte[dataType.getSize()];
-        }
-        int pos = calculatePos( x, y, band );
-
-        data.position( pos );
-        data.get( result );
         return result;
     }
 
-    public void setSample( int x, int y, int band, byte[] value ) {
-        data.position( calculatePos( x, y, band ) );
-        data.put( value );
+    public byte[] getBytePixel( int x, int y, byte[] result ) {
+        if ( result == null || result.length < view.dataInfo.bands ) {
+            result = new byte[view.dataInfo.bands];
+        }
+        for ( int band = 0; band < view.dataInfo.bands; band++ ) {
+            result[band] = getByteSample( x, y, band );
+        }
+        return result;
     }
 
     public byte getByteSample( int x, int y, int band ) {
         return data.get( calculatePos( x, y, band ) );
     }
 
-    public short getShortSample( int x, int y, int band ) {
-        return data.getShort( calculatePos( x, y, band ) );
+    public double[] getDoubles( int x, int y, int width, int height, int band, double[] result ) {
+        checkBoundsEx( x, y, width, height );
+        if ( result == null || result.length < ( width * height ) ) {
+            result = new double[width * height];
+        }
+        for ( int h = 0; h < height; h++ ) {
+            for ( int w = 0; w < width; w++ ) {
+                result[( 2 * h ) + w] = data.getDouble( calculatePos( x + w, y + h, band ) );
+            }
+        }
+        return result;
+    }
+
+    public double[] getDoublePixel( int x, int y, double[] result ) {
+        if ( result == null || result.length < view.dataInfo.bands ) {
+            result = new double[view.dataInfo.bands];
+        }
+        for ( int band = 0; band < view.dataInfo.bands; band++ ) {
+            result[band] = getDoubleSample( x, y, band );
+        }
+        return result;
+    }
+
+    public double getDoubleSample( int x, int y, int band ) {
+        return data.getDouble( calculatePos( x, y, band ) );
+    }
+
+    public float[] getFloats( int x, int y, int width, int height, int band, float[] result ) {
+        checkBoundsEx( x, y, width, height );
+        if ( result == null || result.length < ( width * height ) ) {
+            result = new float[width * height];
+        }
+        for ( int h = 0; h < height; h++ ) {
+            for ( int w = 0; w < width; w++ ) {
+                result[( 2 * h ) + w] = data.getFloat( calculatePos( x + w, y + h, band ) );
+            }
+        }
+        return result;
+    }
+
+    public float[] getFloatPixel( int x, int y, float[] result ) {
+        if ( result == null || result.length < view.dataInfo.bands ) {
+            result = new float[view.dataInfo.bands];
+        }
+        for ( int band = 0; band < view.dataInfo.bands; band++ ) {
+            result[band] = getFloatSample( x, y, band );
+        }
+        return result;
     }
 
     public float getFloatSample( int x, int y, int band ) {
         return data.getFloat( calculatePos( x, y, band ) );
     }
 
-    public void setByteSample( int x, int y, int band, byte value ) {
-        data.put( calculatePos( x, y, band ), value );
-    }
-
-    public void setShortSample( int x, int y, int band, short value ) {
-        data.putShort( calculatePos( x, y, band ), value );
-    }
-
-    public void setFloatSample( int x, int y, int band, float value ) {
-        data.putFloat( calculatePos( x, y, band ), value );
-    }
-
-    public void setPixel( int x, int y, byte[] result ) {
-        int sampleSize = getDataType().getSize();
-        for ( int b = 0; b < getBands(); b++ ) {
-            data.position( calculatePos( x, y, b ) );
-            data.put( result, b * sampleSize, sampleSize );
+    public int[] getInts( int x, int y, int width, int height, int band, int[] result ) {
+        checkBoundsEx( x, y, width, height );
+        if ( result == null || result.length < ( width * height ) ) {
+            result = new int[width * height];
         }
+        for ( int h = 0; h < height; h++ ) {
+            for ( int w = 0; w < width; w++ ) {
+                result[( 2 * h ) + w] = data.getInt( calculatePos( x + w, y + h, band ) );
+            }
+        }
+        return result;
+    }
+
+    public int[] getIntPixel( int x, int y, int[] result ) {
+        if ( result == null || result.length < view.dataInfo.bands ) {
+            result = new int[view.dataInfo.bands];
+        }
+        for ( int band = 0; band < view.dataInfo.bands; band++ ) {
+            result[band] = getIntSample( x, y, band );
+        }
+        return result;
+    }
+
+    public int getIntSample( int x, int y, int band ) {
+        return data.getInt( calculatePos( x, y, band ) );
     }
 
     public byte[] getPixel( int x, int y, byte[] result ) {
-        int numBands = getBands();
-        int sampleSize = getDataType().getSize();
-        if ( result == null ) {
+        // operates on the view.
+        int numBands = view.dataInfo.bands;
+        // datasize should be equal between original data and the view
+        int sampleSize = view.dataInfo.dataSize;
+        if ( result == null || result.length < ( numBands * sampleSize ) ) {
             result = new byte[numBands * sampleSize];
         }
+
+        // null pixel
         if ( 0 > x || x >= rasterWidth || 0 > y || y >= rasterWidth ) {
-            System.arraycopy( nodata, 0, result, 0, result.length );
+            System.arraycopy( view.dataInfo.noDataPixel, 0, result, 0, result.length );
             return result;
         }
+
+        // copy per band on the view.
         for ( int b = 0; b < numBands; b++ ) {
             data.position( calculatePos( x, y, b ) );
             data.get( result, b * sampleSize, sampleSize );
@@ -479,146 +519,190 @@ public abstract class ByteBufferRasterData implements RasterData {
         return result;
     }
 
-    public byte[] getBytePixel( int x, int y, byte[] result ) {
-        if ( result == null ) {
-            result = new byte[getBands()];
+    public byte[] getSample( int x, int y, int band, byte[] result ) {
+        if ( result == null || result.length < dataInfo.dataSize ) {
+            result = new byte[dataInfo.dataSize];
         }
-        for ( int band = 0; band < getBands(); band++ ) {
-            result[band] = getByteSample( x, y, band );
-        }
-        return result;
-    }
+        int pos = calculatePos( x, y, band );
 
-    public short[] getShortPixel( int x, int y, short[] result ) {
-        if ( result == null ) {
-            result = new short[getBands()];
-        }
-        for ( int band = 0; band < getBands(); band++ ) {
-            result[band] = getShortSample( x, y, band );
-        }
-        return result;
-    }
-
-    public float[] getFloatPixel( int x, int y, float[] result ) {
-        if ( result == null ) {
-            result = new float[getBands()];
-        }
-        for ( int band = 0; band < getBands(); band++ ) {
-            result[band] = getFloatSample( x, y, band );
-        }
-        return result;
-    }
-
-    public void setBytePixel( int x, int y, byte[] pixel ) {
-        for ( int band = 0; band < bands; band++ ) {
-            data.put( calculatePos( x, y, band ), pixel[band] );
-        }
-    }
-
-    public void setShortPixel( int x, int y, short[] pixel ) {
-        for ( int band = 0; band < bands; band++ ) {
-            data.putShort( calculatePos( x, y, band ), pixel[band] );
-        }
-    }
-
-    public void setFloatPixel( int x, int y, float[] pixel ) {
-        for ( int band = 0; band < bands; band++ ) {
-            data.putFloat( calculatePos( x, y, band ), pixel[band] );
-        }
-    }
-
-    public byte[] getBytes( int x, int y, int width, int height, int band, byte[] result ) {
-        checkBoundsEx( x, y, width, height );
-        if ( result == null ) {
-            result = new byte[width * height];
-        }
-        for ( int i = 0; i < height; i++ ) {
-            for ( int j = 0; j < width; j++ ) {
-                result[( 2 * i ) + j] = data.get( calculatePos( x + j, y + i, band ) );
-            }
-        }
+        data.position( pos );
+        data.get( result, 0, dataInfo.dataSize );
         return result;
     }
 
     public short[] getShorts( int x, int y, int width, int height, int band, short[] result ) {
         checkBoundsEx( x, y, width, height );
-        if ( result == null ) {
+        if ( result == null || result.length < ( width * height ) ) {
             result = new short[width * height];
         }
-        for ( int i = 0; i < height; i++ ) {
-            for ( int j = 0; j < width; j++ ) {
-                result[( 2 * i ) + j] = data.getShort( calculatePos( x + j, y + i, band ) );
+        for ( int h = 0; h < height; h++ ) {
+            for ( int w = 0; w < width; w++ ) {
+                result[( 2 * h ) + w] = data.getShort( calculatePos( x + w, y + h, band ) );
             }
         }
         return result;
     }
 
-    public float[] getFloats( int x, int y, int width, int height, int band, float[] result ) {
-        checkBoundsEx( x, y, width, height );
-        if ( result == null ) {
-            result = new float[width * height];
+    public short[] getShortPixel( int x, int y, short[] result ) {
+        if ( result == null || result.length < view.dataInfo.bands ) {
+            result = new short[view.dataInfo.bands];
         }
-        for ( int i = 0; i < height; i++ ) {
-            for ( int j = 0; j < width; j++ ) {
-                result[( 2 * i ) + j] = data.getFloat( calculatePos( x + j, y + i, band ) );
-            }
+        for ( int band = 0; band < view.dataInfo.bands; band++ ) {
+            result[band] = getShortSample( x, y, band );
         }
         return result;
     }
 
-    public void setBytes( int x, int y, int width, int height, int band, byte[] values ) {
-        for ( int i = 0; i < height; i++ ) {
-            for ( int j = 0; j < width; j++ ) {
-                data.put( calculatePos( x + j, y + i, band ), values[( 2 * i ) + j] );
-            }
-        }
-    }
-
-    public void setShorts( int x, int y, int width, int height, int band, short[] values ) {
-        for ( int i = 0; i < height; i++ ) {
-            for ( int j = 0; j < width; j++ ) {
-                data.putShort( calculatePos( x + j, y + i, band ), values[( 2 * i ) + j] );
-            }
-        }
-    }
-
-    public void setFloats( int x, int y, int width, int height, int band, float[] values ) {
-        for ( int i = 0; i < height; i++ ) {
-            for ( int j = 0; j < width; j++ ) {
-                data.putFloat( calculatePos( x + j, y + i, band ), values[( 2 * i ) + j] );
-            }
-        }
-    }
-
-    public ByteBufferRasterData getSubset( int x0, int y0, int width, int height ) {
-        ByteBufferRasterData result = createCompatibleRasterData( width, height );
-        // result.setSubset( 0, 0, width, height, this, x0, y0 );
-        return result;
+    public short getShortSample( int x, int y, int band ) {
+        return data.getShort( calculatePos( x, y, band ) );
     }
 
     public ByteBufferRasterData getSubset( RasterRect sampleDomain ) {
         // return this.getSubset( env.x, env.y, env.width, env.height );
         // return createCompatibleRasterData( sampleDomain );
-        ByteBufferRasterData result = createCompatibleRasterData( new RasterRect( view.x + sampleDomain.x,
-                                                                                  view.y + sampleDomain.y,
-                                                                                  sampleDomain.width,
-                                                                                  sampleDomain.height ) );
+        ByteBufferRasterData result = createCompatibleRasterData( new DataView( view.x + sampleDomain.x,
+                                                                                view.y + sampleDomain.y,
+                                                                                sampleDomain.width,
+                                                                                sampleDomain.height, dataInfo ) );
         result.data = this.data.asReadOnlyBuffer();
         return result;
 
     }
 
-    public ByteBufferRasterData getSubset( int x0, int y0, int width, int height, int band ) {
-        ByteBufferRasterData result = (ByteBufferRasterData) createCompatibleWritableRasterData(
-                                                                                                 new RasterRect(
-                                                                                                                 view.x,
-                                                                                                                 view.y,
-                                                                                                                 width,
-                                                                                                                 height ),
-                                                                                                 new BandType[] { bandsTypes[band] } );
-        // result.data = this.data.asReadOnlyBuffer();
-        result.setSubset( 0, 0, width, height, 0, this, band, x0, y0 );
+    public ByteBufferRasterData getSubset( RasterRect sampleDomain, BandType[] bands ) {
+        ByteBufferRasterData result = createCompatibleRasterData( new DataView( view.x + sampleDomain.x,
+                                                                                view.y + sampleDomain.y,
+                                                                                sampleDomain.width,
+                                                                                sampleDomain.height,
+                                                                                createRasterDataInfo( bands ), dataInfo ) );
+        result.data = this.data.asReadOnlyBuffer();
+
+        // RASTERRECT viewRect = new RasterRect( ( view.x + rasterRect.x ), ( view.y + rasterRect.y ), rasterRect.width,
+        // rasterRect.height );
+        // ByteBufferRasterData result = (ByteBufferRasterData) createCompatibleWritableRasterData( viewRect, bands );
+        // // result.data = this.data.asReadOnlyBuffer();
+        // result.setSubset( 0, 0, rasterRect.width, rasterRect.height, 0, this, bands, view.x + rasterRect.x,
+        // view.y + rasterRect.y );
         return result;
+    }
+
+    public void setBytes( int x, int y, int width, int height, int band, byte[] values ) {
+        if ( values != null && values.length >= ( width * height ) ) {
+            for ( int h = 0; h < height; h++ ) {
+                for ( int w = 0; w < width; w++ ) {
+                    data.put( calculatePos( x + w, y + h, band ), values[( 2 * h ) + w] );
+                }
+            }
+        }
+    }
+
+    public void setBytePixel( int x, int y, byte[] pixel ) {
+        for ( int band = 0; band < view.dataInfo.bands; band++ ) {
+            data.put( calculatePos( x, y, band ), pixel[band] );
+        }
+    }
+
+    public void setByteSample( int x, int y, int band, byte value ) {
+        data.put( calculatePos( x, y, band ), value );
+    }
+
+    public void setDoubles( int x, int y, int width, int height, int band, double[] values ) {
+        if ( values != null && values.length >= ( width * height ) ) {
+            for ( int h = 0; h < height; h++ ) {
+                for ( int w = 0; w < width; w++ ) {
+                    data.putDouble( calculatePos( x + w, y + h, band ), values[( 2 * h ) + w] );
+                }
+            }
+        }
+    }
+
+    public void setDoublePixel( int x, int y, double[] pixel ) {
+        for ( int band = 0; band < view.dataInfo.bands; band++ ) {
+            data.putDouble( calculatePos( x, y, band ), pixel[band] );
+        }
+    }
+
+    public void setDoubleSample( int x, int y, int band, double value ) {
+        data.putDouble( calculatePos( x, y, band ), value );
+    }
+
+    public void setFloats( int x, int y, int width, int height, int band, float[] values ) {
+        if ( values != null && values.length >= ( width * height ) ) {
+            for ( int h = 0; h < height; h++ ) {
+                for ( int w = 0; w < width; w++ ) {
+                    data.putFloat( calculatePos( x + w, y + h, band ), values[( 2 * h ) + w] );
+                }
+            }
+        }
+    }
+
+    public void setFloatPixel( int x, int y, float[] pixel ) {
+        for ( int band = 0; band < view.dataInfo.bands; band++ ) {
+            data.putFloat( calculatePos( x, y, band ), pixel[band] );
+        }
+    }
+
+    public void setFloatSample( int x, int y, int band, float value ) {
+        data.putFloat( calculatePos( x, y, band ), value );
+    }
+
+    public void setPixel( int x, int y, byte[] result ) {
+        // operates on the view
+        if ( result != null && result.length == ( view.dataInfo.dataSize * view.dataInfo.bands ) ) {
+            int sampleSize = view.dataInfo.dataSize;
+            for ( int b = 0; b < view.dataInfo.bands; b++ ) {
+                data.position( calculatePos( x, y, b ) );
+                data.put( result, b * sampleSize, sampleSize );
+            }
+        }
+    }
+
+    public void setInts( int x, int y, int width, int height, int band, int[] values ) {
+        if ( values != null && values.length >= ( width * height ) ) {
+            for ( int h = 0; h < height; h++ ) {
+                for ( int w = 0; w < width; w++ ) {
+                    data.putInt( calculatePos( x + w, y + h, band ), values[( 2 * h ) + w] );
+                }
+            }
+        }
+    }
+
+    public void setIntPixel( int x, int y, int[] pixel ) {
+        for ( int band = 0; band < view.dataInfo.bands; band++ ) {
+            data.putInt( calculatePos( x, y, band ), pixel[band] );
+        }
+    }
+
+    public void setIntSample( int x, int y, int band, int value ) {
+        data.putInt( calculatePos( x, y, band ), value );
+    }
+
+    public void setShorts( int x, int y, int width, int height, int band, short[] values ) {
+        if ( values != null && values.length >= ( width * height ) ) {
+            for ( int h = 0; h < height; h++ ) {
+                for ( int w = 0; w < width; w++ ) {
+                    data.putShort( calculatePos( x + w, y + h, band ), values[( 2 * h ) + w] );
+                }
+            }
+        }
+    }
+
+    public void setShortPixel( int x, int y, short[] pixel ) {
+        for ( int band = 0; band < view.dataInfo.bands; band++ ) {
+            data.putShort( calculatePos( x, y, band ), pixel[band] );
+        }
+    }
+
+    public void setShortSample( int x, int y, int band, short value ) {
+        data.putShort( calculatePos( x, y, band ), value );
+    }
+
+    public void setSample( int x, int y, int band, byte[] value ) {
+        if ( value == null || value.length < view.dataInfo.dataSize ) {
+            return;
+        }
+        data.position( calculatePos( x, y, band ) );
+        data.put( value, 0, view.dataInfo.dataSize );
     }
 
     public void setSubset( int x0, int y0, int width, int height, RasterData sourceRaster ) {
@@ -629,43 +713,76 @@ public abstract class ByteBufferRasterData implements RasterData {
         setSubset( x0, y0, width, height, dstBand, sourceRaster, srcBand, 0, 0 );
     }
 
-    public void setSubset( int x0, int y0, int width, int height, RasterData sourceRaster, int xOffset, int yOffset ) {
-        // clamp to maximum possible size
-        int subWidth = min( this.rasterWidth - x0, width, sourceRaster.getWidth() );
-        int subHeight = min( this.rasterHeight - y0, height, sourceRaster.getHeight() );
+    public void setSubset( int dstX, int dstY, int width, int height, RasterData srcRaster, int srcX, int srcY ) {
 
-        byte[] tmp = new byte[getDataType().getSize()];
-        for ( int y = 0; y < subHeight; y++ ) {
-            for ( int x = 0; x < subWidth; x++ ) {
-                for ( int band = 0; band < this.bands; band++ ) {
-                    tmp = sourceRaster.getSample( x + xOffset, y + yOffset, band, tmp );
-                    setSample( x0 + x, y0 + y, band, tmp );
+        // clamp to maximum possible size
+        // int subWidth = min( this.rasterWidth - dstX, width, srcRaster.getWidth() );
+        // int subHeight = min( this.rasterHeight - dstY, height, srcRaster.getHeight() );
+
+        int subWidth = clampSize( getWidth(), dstX, srcRaster.getWidth(), srcX, width );
+        int subHeight = clampSize( getHeight(), dstY, srcRaster.getHeight(), srcY, height );
+
+        if ( subHeight <= 0 || subWidth <= 0 ) {
+            return;
+        }
+
+        byte[] tmp = new byte[dataInfo.dataSize];
+        for ( int y = 0; y < subHeight; ++y ) {
+            for ( int x = 0; x < subWidth; ++x ) {
+                for ( int band = 0; band < this.view.dataInfo.bands; band++ ) {
+                    srcRaster.getSample( x + srcX, y + srcY, band, tmp );
+                    setSample( dstX + x, dstY + y, band, tmp );
                 }
             }
         }
     }
 
-    public void setSubset( int x0, int y0, int width, int height, int dstBand, RasterData sourceRaster, int srcBand,
-                           int xOffset, int yOffset ) {
+    public void setSubset( int dstX, int dstY, int width, int height, int dstBand, RasterData srcRaster, int srcBand,
+                           int srcX, int srcY ) {
         // clamp to maximum possible size
-        int subWidth = min( this.rasterWidth - x0, width, sourceRaster.getWidth() );
-        int subHeight = min( this.rasterHeight - y0, height, sourceRaster.getHeight() );
+        // int subWidth = min( this.rasterWidth - dstX, width, srcRaster.getWidth() );
+        // int subHeight = min( this.rasterHeight - dstY, height, srcRaster.getHeight() );
+        int subWidth = clampSize( getWidth(), dstX, srcRaster.getWidth(), srcX, width );
+        int subHeight = clampSize( getHeight(), dstY, srcRaster.getHeight(), srcY, height );
 
-        byte[] tmp = new byte[getDataType().getSize()];
+        if ( subHeight <= 0 || subWidth <= 0 ) {
+            return;
+        }
+
+        byte[] tmp = new byte[dataInfo.dataSize];
         for ( int y = 0; y < subHeight; y++ ) {
             for ( int x = 0; x < subWidth; x++ ) {
-                tmp = sourceRaster.getSample( x + xOffset, y + yOffset, srcBand, tmp );
-                setSample( x0 + x, y0 + y, dstBand, tmp );
+                srcRaster.getSample( x + srcX, y + srcY, srcBand, tmp );
+                setSample( dstX + x, dstY + y, dstBand, tmp );
             }
         }
+    }
+
+    /**
+     * Clamp to the minimal size of the given values.
+     * 
+     * @param dstSize
+     *            e.g. getWidth() or getHeight() of the destination raster.
+     * @param dstOrdinate
+     *            e.g srcX, srcY, the location to put the data in destination raster.
+     * @param srcSize
+     *            e.g. getWidth() or getHeight() of the source raster. *
+     * @param srcOrdinate
+     *            e.g dstX, dstY, the location to read the data from the source raster.
+     * @param copySize
+     *            e.g. width/height of rectangle to put data in this raster.
+     * @return the minimal value
+     */
+    protected static final int clampSize( int dstSize, int dstOrdinate, int srcSize, int srcOrdinate, int copySize ) {
+        return min( dstSize - dstOrdinate, srcSize - srcOrdinate, copySize );
     }
 
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        result.append( "RasterData: type " + dataType + ", " );
+        result.append( "RasterData: type " + dataInfo.dataType + ", " );
         result.append( "size " + rasterWidth + "x" + rasterHeight + "(" + rasterWidth + "x" + rasterHeight + ")" );
-        result.append( ", interleaving " + getInterleaveType() );
+        result.append( ", interleaving " + dataInfo.interleaveType );
 
         return result.toString();
     }
@@ -674,9 +791,9 @@ public abstract class ByteBufferRasterData implements RasterData {
      * Returns the smallest value of all <code>int</code>s.
      * 
      * @param sizes
-     * @return the smalles value
+     * @return the smallest value
      */
-    protected final int min( int... sizes ) {
+    protected static final int min( int... sizes ) {
         int result = Math.min( sizes[0], sizes[1] );
         int i = 2;
         while ( i < sizes.length ) {
@@ -684,5 +801,20 @@ public abstract class ByteBufferRasterData implements RasterData {
             i++;
         }
         return result;
+    }
+
+    /**
+     * Create the raster data info object for the given bands, if empty or
+     * <code>null<code> the current dataInfo will be used.
+     * 
+     * @param bands
+     * @return a new raster data info object with for the given bands.
+     */
+    protected RasterDataInfo createRasterDataInfo( BandType[] bands ) {
+        if ( bands == null || bands.length == 0 ) {
+            return dataInfo;
+        }
+        byte[] noPD = dataInfo.getNoDataPixel( bands );
+        return new RasterDataInfo( noPD, bands, dataInfo.dataType, dataInfo.interleaveType );
     }
 }

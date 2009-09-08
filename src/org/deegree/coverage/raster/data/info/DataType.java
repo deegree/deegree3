@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.data;
+package org.deegree.coverage.raster.data.info;
 
 import java.awt.image.DataBuffer;
 

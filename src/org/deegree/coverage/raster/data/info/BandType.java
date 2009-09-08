@@ -34,10 +34,12 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.coverage.raster.data;
+package org.deegree.coverage.raster.data.info;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
+
+import org.deegree.coverage.raster.data.RasterData;
 
 /**
  * The <code>BandType</code> defines band information of a rasterdata object
@@ -169,6 +171,26 @@ public enum BandType {
             }
             return result;
         }
+    }
+
+    /**
+     * Get Bandtype for the given string. This method is case insensitive, words can be separated with a whitespace,
+     * minus or underscore.
+     * 
+     * @param band
+     * @return the given BandType or <code>null</code> if the band type was not known.
+     */
+    public static BandType fromString( String band ) {
+        String key = band.toUpperCase();
+        key = key.replaceAll( "-", "_" );
+        key = key.replaceAll( "\\s", "_" );
+        BandType bt = null;
+        try {
+            bt = BandType.valueOf( key );
+        } catch ( Exception e ) {
+            // just let null be our guest
+        }
+        return bt;
     }
 
     @Override

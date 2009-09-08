@@ -36,6 +36,8 @@
 package org.deegree.coverage.raster;
 
 import org.deegree.coverage.AbstractCoverage;
+import org.deegree.coverage.raster.data.info.BandType;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;
 
@@ -138,13 +140,24 @@ public abstract class AbstractRaster extends AbstractCoverage {
     public abstract AbstractRaster copy();
 
     /**
-     * Returns a subset of the raster.
+     * Returns a subset of the raster, note this is a view on the given raster.
      * 
      * @param env
      *            envelope of the subset
      * @return subset of the raster
      */
     public abstract AbstractRaster getSubRaster( Envelope env );
+
+    /**
+     * Returns a subset of the raster, note this is a view on the given raster.
+     * 
+     * @param env
+     *            envelope of the subset
+     * @param bands
+     *            to use for the given subset.
+     * @return subset of the raster
+     */
+    public abstract AbstractRaster getSubRaster( Envelope env, BandType[] bands );
 
     /**
      * Returns a subset of the raster.
@@ -248,5 +261,13 @@ public abstract class AbstractRaster extends AbstractCoverage {
     public RasterReference getRasterReference() {
         return rasterEnv;
     }
+
+    /**
+     * Returns available information on the raster data. This method should be called with care, it may under
+     * circumstances, cause massive loading of raster data.
+     * 
+     * @return available information on the raster data.
+     */
+    public abstract RasterDataInfo getRasterDataInfo();
 
 }

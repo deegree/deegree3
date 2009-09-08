@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,78 +32,77 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.data.nio;
 
-import org.deegree.coverage.raster.data.BandType;
-import org.deegree.coverage.raster.data.DataType;
-import org.deegree.coverage.raster.data.InterleaveType;
+import org.deegree.coverage.raster.data.DataView;
 import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.data.info.BandType;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 import org.deegree.coverage.raster.geom.RasterRect;
 
 /**
  * This class implements a line-interleaved, ByteBuffer-based RasterData.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class LineInterleavedRasterData extends ByteBufferRasterData {
 
     /**
      * Creates a new LineInterleavedRasterData with given size, number of bands and data type
-     *
+     * 
      * @param sampleDomain
      *            the raster rectangle defining the sample domain of this raster data.
      * @param rasterWidth
      *            width of the underlying raster data.
      * @param rasterHeight
      *            height of the underlying raster data.
-     * @param bands
-     *            number of bands
-     * @param type
-     *            DataType of raster samples
+     * @param dataInfo
+     *            containing information about the underlying raster.
      */
-    public LineInterleavedRasterData( RasterRect sampleDomain, int rasterWidth, int rasterHeight, BandType[] bands,
-                                      DataType type ) {
-        super( sampleDomain, rasterWidth, rasterHeight, bands, type );
+    public LineInterleavedRasterData( RasterRect sampleDomain, int rasterWidth, int rasterHeight,
+                                      RasterDataInfo dataInfo ) {
+        this( new DataView( sampleDomain, dataInfo ), rasterWidth, rasterHeight, dataInfo, true );
     }
 
     /**
      * Creates a new LineInterleavedRasterData with given size, number of bands and data type and initializes a new
      * bytebuffer if init is set to true.
-     *
-     * @param sampleDomain
-     *            the raster rectangle defining the sample domain of this raster data.
+     * 
+     * @param view
+     *            the raster rectangle defining the sample domain of this raster data and the info on the raster of the
+     *            view.
      * @param rasterWidth
      *            width of the underlying raster data.
      * @param rasterHeight
      *            height of the underlying raster data.
-     * @param bands
-     *            number of bands
-     * @param type
-     *            DataType of raster samples
+     * @param dataInfo
+     *            containing information about the underlying raster.
      */
-    private LineInterleavedRasterData( RasterRect sampleDomain, int rasterWidth, int rasterHeight, BandType[] bands,
-                                       DataType type, boolean init ) {
-        super( sampleDomain, rasterWidth, rasterHeight, bands, type, init );
+    private LineInterleavedRasterData( DataView view, int rasterWidth, int rasterHeight, RasterDataInfo dataInfo,
+                                       boolean init ) {
+        super( view, rasterWidth, rasterHeight, dataInfo, init );
     }
 
     @Override
-    public LineInterleavedRasterData createCompatibleRasterData( RasterRect env, BandType[] bands ) {
-        return new LineInterleavedRasterData( env, rasterWidth, rasterHeight, bands, this.dataType, false );
+    public LineInterleavedRasterData createCompatibleRasterData( DataView view ) {
+        return new LineInterleavedRasterData( view, rasterWidth, rasterHeight, dataInfo, false );
     }
 
     @Override
     public RasterData createCompatibleWritableRasterData( RasterRect sampleDomain, BandType[] bands ) {
-        return new LineInterleavedRasterData( sampleDomain, sampleDomain.width, sampleDomain.height, bands,
-                                              this.dataType, true );
+        // a new raster will be created, the old information should be discarded.
+        RasterDataInfo newRasterInfo = createRasterDataInfo( bands );
+        return new LineInterleavedRasterData( new DataView( sampleDomain, newRasterInfo ), sampleDomain.width,
+                                              sampleDomain.height, newRasterInfo, true );
     }
 
     @Override
     protected ByteBufferRasterData createCompatibleEmptyRasterData() {
-        return new LineInterleavedRasterData( view, rasterWidth, rasterHeight, bandsTypes, this.dataType, false );
+        return new LineInterleavedRasterData( view, rasterWidth, rasterHeight, dataInfo, false );
     }
 
     @Override
@@ -113,17 +112,12 @@ public class LineInterleavedRasterData extends ByteBufferRasterData {
 
     @Override
     public final int getLineStride() {
-        return rasterWidth * getPixelStride() * bands;
+        return rasterWidth * getPixelStride() * dataInfo.bands;
     }
 
     @Override
     public final int getPixelStride() {
-        return dataType.getSize();
-    }
-
-    @Override
-    public final InterleaveType getInterleaveType() {
-        return InterleaveType.LINE;
+        return dataInfo.dataSize;
     }
 
 }

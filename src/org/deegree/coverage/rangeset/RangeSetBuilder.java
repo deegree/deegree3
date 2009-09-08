@@ -43,12 +43,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.coverage.raster.AbstractRaster;
-import org.deegree.coverage.raster.SimpleRaster;
-import org.deegree.coverage.raster.data.BandType;
-import org.deegree.coverage.raster.data.DataType;
-import org.deegree.coverage.raster.data.RasterData;
-import org.deegree.geometry.Envelope;
-import org.deegree.geometry.GeometryFactory;
+import org.deegree.coverage.raster.data.info.BandType;
+import org.deegree.coverage.raster.data.info.RasterDataInfo;
 
 /**
  * The <code>RangeSetBuilder</code> class supplies methods for building rangeset definitions for coverages.
@@ -60,6 +56,8 @@ import org.deegree.geometry.GeometryFactory;
  */
 public class RangeSetBuilder {
 
+    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( RangeSetBuilder.class );
+
     /**
      * creates a Rangeset for a given raster by looking at the band info.
      * 
@@ -69,26 +67,21 @@ public class RangeSetBuilder {
      *            of the rangeset
      * 
      * @param raster
-     * @return a Rangeset describing the bands of the given raster.
+     * @return a Rangeset describing the bands of the given raster or <code>null</code> if the raster is null or it
+     *         has no rasterdata info..
      */
     public static RangeSet createBandRangeSetFromRaster( String name, String label, AbstractRaster raster ) {
-        Envelope env = raster.getEnvelope();
-        double[] min = env.getMin().getAsArray();
-        double[] max = new double[min.length];
-
-        for ( int i = 0; i < min.length; ++i ) {
-            max[i] = min[i] + 0.01;
+        if ( raster == null ) {
+            throw new NullPointerException( "Could not create a range set, because the given raster is null" );
         }
+        RasterDataInfo rasterDataInfo = raster.getRasterDataInfo();
+        if ( rasterDataInfo == null ) {
+            LOG.warn( "No raster data information available, so no automated Rangesets will be available." );
+            return null;
+        }
+        List<AxisSubset> axisDesriptions = createAxisDescriptions( rasterDataInfo );
 
-        Envelope tEnv = new GeometryFactory().createEnvelope( min, max, env.getCoordinateSystem() );
-
-        AbstractRaster subRaster = raster.getSubRaster( tEnv );
-        SimpleRaster simpleRaster = subRaster.getAsSimpleRaster();
-        BandType[] bandTypes = simpleRaster.getBandTypes();
-        List<AxisSubset> axisDesriptions = createAxisDescriptions( bandTypes,
-                                                                   simpleRaster.getRasterData().getDataType() );
-
-        SingleValue<String> nullValue = createNullValue( simpleRaster );
+        SingleValue<String> nullValue = createNullValue( rasterDataInfo );
         if ( name == null ) {
             name = raster.getName() == null ? "unknown" : raster.getName();
         }
@@ -103,19 +96,17 @@ public class RangeSetBuilder {
      * @param simpleRaster
      * @return
      */
-    private static SingleValue<String> createNullValue( SimpleRaster simpleRaster ) {
-        RasterData rasterData = simpleRaster.getRasterData();
-        DataType dataType = rasterData.getDataType();
-        byte[] noData = rasterData.getNullPixel( null );
-        int size = dataType.getSize();
-        int bands = rasterData.getBands();
+    private static SingleValue<String> createNullValue( RasterDataInfo dataInfo ) {
+        byte[] noData = dataInfo.getNoDataPixel( (byte[]) null );
+        int size = dataInfo.dataSize;
+        int bands = dataInfo.bands;
         StringBuilder sb = new StringBuilder();
 
         for ( int i = 0; i < bands; ++i ) {
             byte[] oneBand = new byte[size];
             System.arraycopy( noData, i * size, oneBand, 0, oneBand.length );
             ByteBuffer buffer = ByteBuffer.wrap( oneBand );
-            switch ( dataType ) {
+            switch ( dataInfo.dataType ) {
             case BYTE:
                 sb.append( buffer.get() );
                 break;
@@ -147,16 +138,16 @@ public class RangeSetBuilder {
      * @param bandTypes
      * @return
      */
-    private static List<AxisSubset> createAxisDescriptions( BandType[] bandTypes, DataType dataType ) {
-        List<AxisSubset> axis = new ArrayList<AxisSubset>( bandTypes.length );
-        for ( int i = 0; i < bandTypes.length; ++i ) {
-            BandType b = bandTypes[i];
+    private static List<AxisSubset> createAxisDescriptions( RasterDataInfo rasterDataInfo ) {
+        List<AxisSubset> axis = new ArrayList<AxisSubset>( rasterDataInfo.bands );
+        for ( int i = 0; i < rasterDataInfo.bands; ++i ) {
+            BandType b = rasterDataInfo.bandInfo[i];
             if ( b != null ) {
                 String label = b.getInfo();
                 String name = b.toString();
                 Interval<?, String> interval = null;
                 String semantic = "Min and max values were generated automatically.";
-                switch ( dataType ) {
+                switch ( rasterDataInfo.dataType ) {
                 case BYTE:
                     interval = new Interval<Byte, String>( new SingleValue<Byte>( ValueType.Byte, Byte.MIN_VALUE ),
                                                            new SingleValue<Byte>( ValueType.Byte, Byte.MAX_VALUE ),

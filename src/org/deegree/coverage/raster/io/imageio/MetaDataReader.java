@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
 ----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.data.io.imageio;
+package org.deegree.coverage.raster.io.imageio;
 
 import javax.imageio.metadata.IIOMetadata;
 

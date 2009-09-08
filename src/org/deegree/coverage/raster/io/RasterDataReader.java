@@ -1,10 +1,10 @@
-//$HeadURL:svn+ssh://rbezema@svn.wald.intevation.org/deegree/deegree3/commons/trunk/src/org/deegree/model/coverage/raster/data/InterleaveType.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,29 +32,42 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
-package org.deegree.coverage.raster.data;
+ ----------------------------------------------------------------------------*/
+package org.deegree.coverage.raster.io;
+
+import org.deegree.coverage.raster.data.RasterData;
 
 /**
- * Enumeration for all supported sample interleaving types.
- *
+ * Simple interface to read RasterData.
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
- * @author last edited by: $Author:rbezema $
- *
- * @version $Revision:11404 $, $Date:2008-04-23 15:38:27 +0200 (Mi, 23 Apr 2008) $
- *
+ * @author last edited by: $Author$
+ * 
+ * @version $Revision$, $Date$
+ * 
  */
-public enum InterleaveType {
+public interface RasterDataReader {
+
     /**
-     * pixel-interleaving.
+     * Read the raster data.
+     * 
+     * @return Return the underlying raster data.
      */
-    PIXEL,
+    public RasterData read();
+
     /**
-     * line-interleaving
+     * @return The width in pixel of the raster data.
      */
-    LINE,
+    public int getWidth();
+
     /**
-     * band-interleaving
+     * @return The height in pixel of the raster data.
      */
-    BAND;
+    public int getHeight();
+
+    /**
+     * Clean up all memory references to the loaded image file.
+     */
+    public void close();
+
 }

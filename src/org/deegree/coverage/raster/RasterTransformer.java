@@ -49,7 +49,7 @@ import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.interpolation.Interpolation;
 import org.deegree.coverage.raster.interpolation.InterpolationFactory;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
-import org.deegree.coverage.raster.io.RasterFactory;
+import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.crs.Transformer;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
@@ -80,11 +80,7 @@ public class RasterTransformer extends Transformer {
 
     private byte[] backgroundValue;
 
-    private int dstWidth;
-
-    private int dstHeight;
-
-    private CoordinateSystem srcCRS;
+    // private CoordinateSystem srcCRS;
 
     /**
      * Creates a new RasterTransformer with the given target CRS.
@@ -137,20 +133,19 @@ public class RasterTransformer extends Transformer {
     public SimpleRaster transform( AbstractRaster sourceRaster, Envelope dstEnvelope, int dstWidth, int dstHeight,
                                    InterpolationType interpolationType )
                             throws TransformationException, UnknownCRSException {
-        this.dstWidth = dstWidth;
-        this.dstHeight = dstHeight;
-        this.srcCRS = sourceRaster.getCoordinateSystem().getWrappedCRS();
 
-        AbstractRaster source = createSourceRaster( sourceRaster, dstEnvelope );
+        CoordinateSystem srcCRS = sourceRaster.getCoordinateSystem().getWrappedCRS();
+
+        AbstractRaster source = createSourceRaster( srcCRS, sourceRaster, dstEnvelope );
         RasterData srcRaster = source.getAsSimpleRaster().getReadOnlyRasterData();
 
         RasterRect rr = new RasterRect( 0, 0, dstWidth, dstHeight );
-        RasterData dstRaster = srcRaster.createCompatibleWritableRasterData( rr, srcRaster.getBandTypes() );
+        RasterData dstRaster = srcRaster.createCompatibleWritableRasterData( rr, null );
 
         RasterReference srcREnv = source.getRasterReference();
         RasterReference dstREnv = new RasterReference( dstEnvelope, dstWidth, dstHeight );
 
-        WarpPolynomial warp = createWarp( srcREnv, dstREnv );
+        WarpPolynomial warp = createWarp( dstWidth, dstHeight, srcCRS, srcREnv, dstREnv );
 
         Interpolation interpolation = InterpolationFactory.getInterpolation( interpolationType, srcRaster );
 
@@ -176,9 +171,13 @@ public class RasterTransformer extends Transformer {
 
     /**
      * Create a new raster that contains all data we need for the transformation.
+     * 
+     * @throws UnknownCRSException
+     * @throws IllegalArgumentException
      */
-    private AbstractRaster createSourceRaster( AbstractRaster sourceRaster, Envelope dstEnvelope )
-                            throws TransformationException {
+    private AbstractRaster createSourceRaster( CoordinateSystem srcCRS, AbstractRaster sourceRaster,
+                                               Envelope dstEnvelope )
+                            throws TransformationException, IllegalArgumentException {
         GeometryTransformer srcTransf = new GeometryTransformer( srcCRS );
 
         // the envelope from which we need data
@@ -208,7 +207,8 @@ public class RasterTransformer extends Transformer {
         return source;
     }
 
-    private WarpPolynomial createWarp( RasterReference srcREnv, RasterReference dstREnv )
+    private WarpPolynomial createWarp( int dstWidth, int dstHeight, CoordinateSystem srcCRS, RasterReference srcREnv,
+                                       RasterReference dstREnv )
                             throws TransformationException {
         int k = 0;
         // create/calculate reference points
@@ -226,7 +226,7 @@ public class RasterTransformer extends Transformer {
                 k += 2;
             }
         }
-        List<Point3d> resultList = transformDstToSrc( points );
+        List<Point3d> resultList = transformDstToSrc( srcCRS, points );
 
         k = 0;
         for ( Point3d point : resultList ) {
@@ -242,7 +242,7 @@ public class RasterTransformer extends Transformer {
         return warp;
     }
 
-    private List<Point3d> transformDstToSrc( List<Point3d> points )
+    private List<Point3d> transformDstToSrc( CoordinateSystem srcCRS, List<Point3d> points )
                             throws TransformationException {
         // transform all grid points
         Transformation transform = createCRSTransformation( srcCRS );
