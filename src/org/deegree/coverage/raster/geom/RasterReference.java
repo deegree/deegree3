@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.geom;
 
 import static java.lang.Math.abs;
@@ -56,10 +56,10 @@ import org.deegree.geometry.GeometryFactory;
  * cover. This interpretation is image-oriented and used by the WMS specification.</li>
  * </ul>
  * </p>
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class RasterReference {
@@ -73,6 +73,8 @@ public class RasterReference {
     private double yRes;
 
     private double delta;
+
+    private Type type;
 
     private static final double DELTA_SCALE = 10e-6;
 
@@ -94,7 +96,7 @@ public class RasterReference {
 
     /**
      * Creates a new RasterReference with origin and resolution
-     *
+     * 
      * @param x0
      *            x world coordinate of the upper-left pixel (center)
      * @param y0
@@ -110,7 +112,7 @@ public class RasterReference {
 
     /**
      * Creates a new RasterReference with origin and resolution
-     *
+     * 
      * @param type
      *            type where the x, y coordinates lies
      * @param x0
@@ -130,6 +132,7 @@ public class RasterReference {
             this.x0 = x0;
             this.y0 = y0;
         }
+        this.type = type;
         this.xRes = xRes;
         this.yRes = yRes;
         this.delta = Math.abs( xRes * DELTA_SCALE );
@@ -137,23 +140,19 @@ public class RasterReference {
 
     /**
      * Creates a new RasterReference for given Envelope and size (yRes is negative)
-     *
+     * 
      * @param env
      * @param width
      * @param height
      */
     public RasterReference( Envelope env, int width, int height ) {
-        this.x0 = env.getMin().get0();
-        this.y0 = env.getMax().get1();
-
-        this.xRes = env.getWidth() / width;
-        this.yRes = -1 * env.getHeight() / height;
-        this.delta = Math.abs( xRes * DELTA_SCALE );
+        this( Type.OUTER, env.getMin().get0(), env.getMax().get1(), env.getWidth() / width,
+              ( env.getHeight() / ( -1d * height ) ) );
     }
 
     /**
      * Returns a new RasterReference with new raster size (resolution)
-     *
+     * 
      * @param env
      *            envelope for the RasterReference (origin and world size)
      * @param width
@@ -175,7 +174,7 @@ public class RasterReference {
 
     /**
      * Returns a new scaled RasterReference.
-     *
+     * 
      * @param env
      *            new Envelope for the RasterReference (origin)
      * @param xRes
@@ -191,7 +190,7 @@ public class RasterReference {
 
     /**
      * Returns new RasterReference for calculations within envelope.
-     *
+     * 
      * @param envelope
      * @return new RasterReference
      */
@@ -202,7 +201,7 @@ public class RasterReference {
 
     /**
      * Returns the new origin of a RasterReference with given Envelope.
-     *
+     * 
      * @param envelope
      * @return array with origin (x0, y0)
      */
@@ -217,7 +216,7 @@ public class RasterReference {
 
     /**
      * Converts raster coordinates to world coordinates (outer bound of pixel).
-     *
+     * 
      * @param x
      *            x coordinate
      * @param y
@@ -230,7 +229,7 @@ public class RasterReference {
 
     /**
      * Converts world coordinates to raster coordinates
-     *
+     * 
      * @param x
      *            x coordinate
      * @param y
@@ -247,7 +246,7 @@ public class RasterReference {
 
     /**
      * Converts world coordinates to raster coordinates.
-     *
+     * 
      * @param x
      *            x coordinate
      * @param y
@@ -260,7 +259,7 @@ public class RasterReference {
 
     /**
      * Converts envelope in world coordinates to raster coordinates
-     *
+     * 
      * @param envelope
      *            envelope in world coordinates
      * @return RasterRect
@@ -283,12 +282,12 @@ public class RasterReference {
 
     /**
      * Returns an Envelope for a raster with given size.
-     *
+     * 
      * The calculation considers the origin and resolution of the raster.
-     *
+     * 
      * @param width
      * @param height
-     *
+     * 
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height ) {
@@ -297,14 +296,14 @@ public class RasterReference {
 
     /**
      * Returns an Envelope for a raster with given size.
-     *
+     * 
      * The calculation considers the origin and resolution of the raster.
-     *
+     * 
      * @param width
      * @param height
      * @param crs
      *            the coordinate system for the envelope
-     *
+     * 
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height, CRS crs ) {
@@ -313,16 +312,16 @@ public class RasterReference {
 
     /**
      * Returns an Envelope for a raster with given size.
-     *
+     * 
      * The calculation considers the origin and resolution of the raster.
-     *
+     * 
      * @param width
      * @param height
      * @param crs
      *            the coordinate system for the envelope
      * @param type
      *            if the result envelope should span from pixel center or the outer pixel edge
-     *
+     * 
      * @return the calculated envelope
      */
     public Envelope getEnvelope( int width, int height, CRS crs, RasterReference.Type type ) {
@@ -353,7 +352,7 @@ public class RasterReference {
 
     /**
      * Returns the size in pixel of a raster that extends within given Envelope.
-     *
+     * 
      * @param env
      *            Envelope for the
      * @return array with width and height of the raster
@@ -378,7 +377,7 @@ public class RasterReference {
 
     /**
      * Returns the x-coordinate of the upper-left pixel.
-     *
+     * 
      * @param type
      *            Return the center or outer pixel coordinate.
      * @return x coordinate
@@ -392,7 +391,7 @@ public class RasterReference {
 
     /**
      * Returns the y-coordinate of the upper-left pixel.
-     *
+     * 
      * @param type
      *            Return the center or outer pixel coordinate.
      * @return y coordinate
@@ -446,7 +445,7 @@ public class RasterReference {
      * Merge two RasterEnvelopes. Returns a new RasterReference where the upper-left corner is set to the values of the
      * furthest upper and furthest left corner. The resolution is set to the minimum value (i.e. the highest resolution
      * [unit/pixel])
-     *
+     * 
      * @param rasterEnv
      *            RasterReference to merge
      * @return new RasterReference
@@ -472,4 +471,14 @@ public class RasterReference {
         return result;
     }
 
+    @Override
+    public boolean equals( Object other ) {
+        if ( other != null && other instanceof RasterReference ) {
+            final RasterReference that = (RasterReference) other;
+            return this.type == that.type && ( Math.abs( this.xRes - that.xRes ) < 1E-10 )
+                   && ( Math.abs( this.yRes - that.yRes ) < 1E-10 ) && ( Math.abs( this.x0 - that.x0 ) < 1E-10 )
+                   && ( Math.abs( this.y0 - that.y0 ) < 1E-10 );
+        }
+        return false;
+    }
 }
