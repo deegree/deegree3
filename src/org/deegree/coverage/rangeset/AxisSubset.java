@@ -227,7 +227,7 @@ public class AxisSubset {
                 Iterator<Interval<?, ?>> iterator = otherIntervals.iterator();
                 while ( iterator.hasNext() && !result ) {
                     Interval<?, ?> oi = iterator.next();
-                    result = oi.isInBounds( inter, convert );
+                    result = inter.isInBounds( oi, convert );
                 }
                 if ( !result ) {
                     // could not find a single value matching.

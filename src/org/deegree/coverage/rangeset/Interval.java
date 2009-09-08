@@ -205,7 +205,7 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
         boolean result = false;
         if ( inter != null ) {
             Interval<?, ?> testInter = inter;
-            result = inter.min.type == min.type;
+            result = inter.min.type.isCompatible( min.type );
             boolean wasVoid = false;
             if ( !result ) {
                 if ( inter.min.type == ValueType.Void ) {
@@ -234,7 +234,7 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
                     if ( result ) {
                         // so min values match, lets check the max value against max (assuming min > max )
                         comp = max.value.compareTo( (T) testInter.max.value );
-                        result = match( comp, true );
+                        result = match( comp, false );
                         if ( convert && wasVoid ) {
                             inter = testInter;
                         }
@@ -246,7 +246,7 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
     }
 
     private boolean match( int comparedValue, boolean compareWithMin ) {
-        int test = comparedValue * ( compareWithMin ? -1 : 1 );
+        int test = comparedValue * ( compareWithMin ? 1 : -1 );
 
         boolean closed = ( closure == Closure.closed )
                          || ( compareWithMin ? closure == Closure.closed_open : closure == Closure.open_closed );
@@ -281,12 +281,6 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
         Interval<?, RS> result = null;
         switch ( determined ) {
         case Byte:
-            byte bmin = Byte.valueOf( min );
-            byte bmax = Byte.valueOf( max );
-            result = new Interval<Byte, RS>( new SingleValue<Byte>( determined, bmin ),
-                                             new SingleValue<Byte>( determined, bmax ), closure, semantic, atomic,
-                                             resolution );
-            break;
         case Short:
             short smin = Short.valueOf( min );
             short smax = Short.valueOf( max );
@@ -347,6 +341,7 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
      * @return true if the given value lies within the bounds of this interval.
      */
     public boolean liesWithin( T value ) {
-        return match( min.value.compareTo( value ), true ) && match( max.value.compareTo( value ), false );
+        return match( -1 * ( min.value.compareTo( value ) ), true )
+               && match( -1 * ( max.value.compareTo( value ) ), false );
     }
 }

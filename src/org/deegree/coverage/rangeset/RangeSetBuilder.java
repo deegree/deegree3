@@ -108,7 +108,7 @@ public class RangeSetBuilder {
             ByteBuffer buffer = ByteBuffer.wrap( oneBand );
             switch ( dataInfo.dataType ) {
             case BYTE:
-                sb.append( buffer.get() );
+                sb.append( Short.valueOf( buffer.get() ) );
                 break;
             case SHORT:
             case USHORT:
@@ -149,9 +149,9 @@ public class RangeSetBuilder {
                 String semantic = "Min and max values were generated automatically.";
                 switch ( rasterDataInfo.dataType ) {
                 case BYTE:
-                    interval = new Interval<Byte, String>( new SingleValue<Byte>( ValueType.Byte, Byte.MIN_VALUE ),
-                                                           new SingleValue<Byte>( ValueType.Byte, Byte.MAX_VALUE ),
-                                                           Interval.Closure.open, semantic, false, null );
+                    interval = new Interval<Short, String>( new SingleValue<Short>( ValueType.Byte, (short) 0 ),
+                                                            new SingleValue<Short>( ValueType.Byte, (short) 255 ),
+                                                            Interval.Closure.open, semantic, false, null );
                     break;
                 case SHORT:
                 case USHORT:

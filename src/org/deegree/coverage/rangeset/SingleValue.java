@@ -62,7 +62,7 @@ public class SingleValue<T extends Comparable<T>> {
      * @param value
      *            the actual value
      */
-    public SingleValue( ValueType type, T value ) {
+    protected SingleValue( ValueType type, T value ) {
         this.value = value;
         this.type = type;
     }
@@ -79,7 +79,7 @@ public class SingleValue<T extends Comparable<T>> {
         if ( other != null ) {
             SingleValue<?> that = other;
             boolean wasVoid = false;
-            if ( this.type != that.type ) {
+            if ( !this.type.isCompatible( that.type ) ) {
                 if ( that.type != ValueType.Void ) {
                     // types do not match
                     return false;
@@ -109,15 +109,45 @@ public class SingleValue<T extends Comparable<T>> {
      * @return the typed SingleValue.
      * @throws NumberFormatException
      */
+    public static SingleValue<?> createFromValue( String type, Number value )
+                            throws NumberFormatException {
+        ValueType determined = ValueType.fromString( type );
+        SingleValue<?> result = null;
+        switch ( determined ) {
+        case Byte:
+        case Short:
+            result = new SingleValue<Short>( determined, value.shortValue() );
+            break;
+        case Integer:
+            result = new SingleValue<Integer>( determined, value.intValue() );
+            break;
+        case Long:
+            result = new SingleValue<Long>( determined, value.longValue() );
+            break;
+        case Double:
+            result = new SingleValue<Double>( determined, value.doubleValue() );
+            break;
+        case Float:
+            result = new SingleValue<Float>( determined, value.floatValue() );
+            break;
+        default:
+            result = new SingleValue<String>( determined, value.toString() );
+        }
+        return result;
+    }
+
+    /**
+     * @param type
+     * @param value
+     * @return the typed SingleValue.
+     * @throws NumberFormatException
+     */
     public static SingleValue<?> createFromString( String type, String value )
                             throws NumberFormatException {
         ValueType determined = ValueType.fromString( type );
         SingleValue<?> result = null;
         switch ( determined ) {
         case Byte:
-            byte b = Byte.valueOf( value );
-            result = new SingleValue<Byte>( determined, b );
-            break;
         case Short:
             short s = Short.valueOf( value );
             result = new SingleValue<Short>( determined, s );

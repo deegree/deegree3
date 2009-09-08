@@ -60,4 +60,12 @@ public enum ValueType {
         return name().toLowerCase();
     }
 
+    /**
+     * @param type
+     * @return true if the given types are compatible, e.g. if they are substitutable, byte and short are equals.
+     */
+    public boolean isCompatible( ValueType type ) {
+        return this == type || ( ( this == Short || this == Byte ) && ( type == Short || type == Byte ) );
+    }
+
 }
