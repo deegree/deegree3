@@ -38,6 +38,7 @@
 
 package org.deegree.coverage.filter.raster;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,7 +57,8 @@ import org.deegree.coverage.raster.data.info.BandType;
 import org.deegree.geometry.Envelope;
 
 /**
- * The <code>RasterFilter</code> class TODO add class documentation here.
+ * The <code>RasterFilter</code> enables a the evaluation of bands in a raster by their values, as well as the
+ * selection of specific bands in a raster.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -64,8 +66,6 @@ import org.deegree.geometry.Envelope;
  * 
  */
 public class RasterFilter extends CoverageFilter {
-
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( RasterFilter.class );
 
     /**
      * @param raster
@@ -87,14 +87,23 @@ public class RasterFilter extends CoverageFilter {
                 BandType[] bands = null;
                 if ( referencedBands != null ) {
                     bands = referencedBands.keySet().toArray( new BandType[referencedBands.keySet().size()] );
+                    result = raster().getSubRaster( env, bands );
+                    boolean applyData = false;
+                    for ( AxisSubset ass : referencedBands.values() ) {
+                        applyData = ass.hasAxisConstraints();
+                        if ( applyData ) {
+                            break;
+                        }
+                    }
+                    if ( applyData ) {
+                        result = applyDataFilter( result, requestedAxis, referencedBands );
+                    }
                 }
-                result = raster().getSubRaster( env, bands );
-
-                // check if other value range sets were requested.
-                result = applyDataFilter( result, requestedAxis, referencedBands );
             }
 
-        } else {
+        }
+        if ( result == null ) {
+            // simply do a simple getSubset without filtering.
             result = raster().getSubRaster( env );
         }
         return result;
@@ -110,22 +119,23 @@ public class RasterFilter extends CoverageFilter {
         SimpleRaster simpleRaster = subsetRaster.getAsSimpleRaster();
         SimpleRaster result = simpleRaster.createCompatibleSimpleRaster();
         RasterData output = result.getRasterData();
+        RasterData oldData = simpleRaster.getRasterData();
         switch ( output.getDataInfo().dataType ) {
         case BYTE:
-            applyByteFilter( output, simpleRaster.getRasterData(), axisFilter, bands );
+            applyByteFilter( output, oldData, axisFilter, bands );
             break;
         case DOUBLE:
-            applyDoubleFilter( output, axisFilter, bands );
+            applyDoubleFilter( output, oldData, axisFilter, bands );
             break;
         case FLOAT:
-            applyFloatFilter( output, axisFilter, bands );
+            applyFloatFilter( output, oldData, axisFilter, bands );
             break;
         case INT:
-            applyIntFilter( output, axisFilter, bands );
+            applyIntFilter( output, oldData, axisFilter, bands );
             break;
         case SHORT:
         case USHORT:
-            applyShortFilter( output, axisFilter, bands );
+            applyShortFilter( output, oldData, axisFilter, bands );
             break;
         default:
             break;
@@ -136,41 +146,150 @@ public class RasterFilter extends CoverageFilter {
 
     /**
      * @param data
+     * @param oldData
      * @param axisFilter
      * @param bands
      */
-    private void applyShortFilter( RasterData data, List<AxisSubset> axisFilter, Map<BandType, AxisSubset> bands ) {
-        // TODO Auto-generated method stub
+    private void applyShortFilter( RasterData data, RasterData oldData, List<AxisSubset> axisFilter,
+                                   Map<BandType, AxisSubset> bands ) {
+        short[] result = new short[data.getBands()];
+        byte[] nullPixel = data.getNullPixel( null );
+        ByteBuffer bb = ByteBuffer.wrap( nullPixel );
+        short[] nullVals = new short[result.length];
+        for ( int i = 0; i < nullVals.length; ++i ) {
+            nullVals[i] = bb.getShort();
+        }
 
+        BandType[] dataBands = data.getDataInfo().getBandInfo();
+        Map<BandType, Integer> bandsWithConstraints = mapBandsToConstraints( dataBands, bands );
+
+        for ( int y = 0; y < oldData.getHeight(); ++y ) {
+            for ( int x = 0; x < oldData.getWidth(); ++x ) {
+                oldData.getShortPixel( x, y, result );
+                // apply band filters
+                if ( !bandsWithConstraints.isEmpty() ) {
+                    for ( BandType b : bandsWithConstraints.keySet() ) {
+                        int bnr = bandsWithConstraints.get( b );
+                        short value = result[bnr];
+                        if ( !isValid( value, bands.get( b ) ) ) {
+                            result[bnr] = nullVals[bnr];
+                        }
+                    }
+                }
+                data.setShortPixel( x, y, result );
+            }
+        }
     }
 
     /**
      * @param data
+     * @param oldData
      * @param axisFilter
      * @param bands
      */
-    private void applyIntFilter( RasterData data, List<AxisSubset> axisFilter, Map<BandType, AxisSubset> bands ) {
-        // TODO Auto-generated method stub
+    private void applyIntFilter( RasterData data, RasterData oldData, List<AxisSubset> axisFilter,
+                                 Map<BandType, AxisSubset> bands ) {
+        int[] result = new int[data.getBands()];
+        byte[] nullPixel = data.getNullPixel( null );
+        ByteBuffer bb = ByteBuffer.wrap( nullPixel );
+        int[] nullVals = new int[result.length];
+        for ( int i = 0; i < nullVals.length; ++i ) {
+            nullVals[i] = bb.getInt();
+        }
 
+        BandType[] dataBands = data.getDataInfo().getBandInfo();
+        Map<BandType, Integer> bandsWithConstraints = mapBandsToConstraints( dataBands, bands );
+
+        for ( int y = 0; y < oldData.getHeight(); ++y ) {
+            for ( int x = 0; x < oldData.getWidth(); ++x ) {
+                oldData.getIntPixel( x, y, result );
+                // apply band filters
+                if ( !bandsWithConstraints.isEmpty() ) {
+                    for ( BandType b : bandsWithConstraints.keySet() ) {
+                        int bnr = bandsWithConstraints.get( b );
+                        int value = result[bnr];
+                        if ( !isValid( value, bands.get( b ) ) ) {
+                            result[bnr] = nullVals[bnr];
+                        }
+                    }
+                }
+                data.setIntPixel( x, y, result );
+            }
+        }
     }
 
     /**
      * @param data
+     * @param oldData
      * @param axisFilter
      * @param bands
      */
-    private void applyFloatFilter( RasterData data, List<AxisSubset> axisFilter, Map<BandType, AxisSubset> bands ) {
-        // TODO Auto-generated method stub
+    private void applyFloatFilter( RasterData data, RasterData oldData, List<AxisSubset> axisFilter,
+                                   Map<BandType, AxisSubset> bands ) {
+        float[] result = new float[data.getBands()];
+        byte[] nullPixel = data.getNullPixel( null );
+        ByteBuffer bb = ByteBuffer.wrap( nullPixel );
+        float[] nullVals = new float[result.length];
+        for ( int i = 0; i < nullVals.length; ++i ) {
+            nullVals[i] = bb.getFloat();
+        }
 
+        BandType[] dataBands = data.getDataInfo().getBandInfo();
+        Map<BandType, Integer> bandsWithConstraints = mapBandsToConstraints( dataBands, bands );
+
+        for ( int y = 0; y < oldData.getHeight(); ++y ) {
+            for ( int x = 0; x < oldData.getWidth(); ++x ) {
+                oldData.getFloatPixel( x, y, result );
+                // apply band filters
+                if ( !bandsWithConstraints.isEmpty() ) {
+                    for ( BandType b : bandsWithConstraints.keySet() ) {
+                        int bnr = bandsWithConstraints.get( b );
+                        float value = result[bnr];
+                        if ( !isValid( value, bands.get( b ) ) ) {
+                            result[bnr] = nullVals[bnr];
+                        }
+                    }
+                }
+                data.setFloatPixel( x, y, result );
+            }
+        }
     }
 
     /**
      * @param data
+     * @param oldData
      * @param axisFilter
      * @param bands
      */
-    private void applyDoubleFilter( RasterData data, List<AxisSubset> axisFilter, Map<BandType, AxisSubset> bands ) {
-        // TODO Auto-generated method stub
+    private void applyDoubleFilter( RasterData data, RasterData oldData, List<AxisSubset> axisFilter,
+                                    Map<BandType, AxisSubset> bands ) {
+        double[] result = new double[data.getBands()];
+        byte[] nullPixel = data.getNullPixel( null );
+        ByteBuffer bb = ByteBuffer.wrap( nullPixel );
+        double[] nullVals = new double[result.length];
+        for ( int i = 0; i < nullVals.length; ++i ) {
+            nullVals[i] = bb.getFloat();
+        }
+
+        BandType[] dataBands = data.getDataInfo().getBandInfo();
+        Map<BandType, Integer> bandsWithConstraints = mapBandsToConstraints( dataBands, bands );
+
+        for ( int y = 0; y < oldData.getHeight(); ++y ) {
+            for ( int x = 0; x < oldData.getWidth(); ++x ) {
+                oldData.getDoublePixel( x, y, result );
+                // apply band filters
+                if ( !bandsWithConstraints.isEmpty() ) {
+                    for ( BandType b : bandsWithConstraints.keySet() ) {
+                        int bnr = bandsWithConstraints.get( b );
+                        double value = result[bnr];
+                        if ( !isValid( value, bands.get( b ) ) ) {
+                            result[bnr] = nullVals[bnr];
+                        }
+                    }
+                }
+                data.setDoublePixel( x, y, result );
+            }
+        }
 
     }
 
@@ -185,16 +304,8 @@ public class RasterFilter extends CoverageFilter {
         byte[] result = new byte[data.getBands()];
         byte[] nullVal = data.getNullPixel( null );
         BandType[] dataBands = data.getDataInfo().getBandInfo();
-        Map<BandType, Integer> bandsWithConstraints = new HashMap<BandType, Integer>( dataBands.length );
-        for ( int b = 0; b < dataBands.length; ++b ) {
-            AxisSubset axisSubset = bands.get( dataBands[b] );
-            if ( axisSubset != null ) {
-                if ( axisSubset.hasAxisConstraints() ) {
-                    bandsWithConstraints.put( dataBands[b], b );
-                }
-            }
+        Map<BandType, Integer> bandsWithConstraints = mapBandsToConstraints( dataBands, bands );
 
-        }
         for ( int y = 0; y < oldData.getHeight(); ++y ) {
             for ( int x = 0; x < oldData.getWidth(); ++x ) {
                 oldData.getBytePixel( x, y, result );
@@ -202,7 +313,7 @@ public class RasterFilter extends CoverageFilter {
                 if ( !bandsWithConstraints.isEmpty() ) {
                     for ( BandType b : bandsWithConstraints.keySet() ) {
                         int bnr = bandsWithConstraints.get( b );
-                        byte value = result[bnr];
+                        short value = (short) ( result[bnr] & 0xFF );
                         if ( !isValid( value, bands.get( b ) ) ) {
                             result[bnr] = nullVal[bnr];
                         }
@@ -301,6 +412,19 @@ public class RasterFilter extends CoverageFilter {
             }
         }
         return checked.isEmpty();
+    }
+
+    private Map<BandType, Integer> mapBandsToConstraints( BandType[] dataBands, Map<BandType, AxisSubset> requestedBands ) {
+        Map<BandType, Integer> bandsWithConstraints = new HashMap<BandType, Integer>( dataBands.length );
+        for ( int b = 0; b < dataBands.length; ++b ) {
+            AxisSubset axisSubset = requestedBands.get( dataBands[b] );
+            if ( axisSubset != null ) {
+                if ( axisSubset.hasAxisConstraints() ) {
+                    bandsWithConstraints.put( dataBands[b], b );
+                }
+            }
+        }
+        return bandsWithConstraints;
     }
 
 }
