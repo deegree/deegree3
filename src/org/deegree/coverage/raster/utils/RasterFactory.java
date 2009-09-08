@@ -285,6 +285,23 @@ public class RasterFactory {
     }
 
     /**
+     * Creates a buffered image from a given {@link AbstractRaster}, note creating an image might result in a incorrect
+     * view of the raster.
+     * 
+     * @param raster
+     *            to create the image from
+     * 
+     * @return a {@link BufferedImage} created from the given raster.
+     */
+    public static BufferedImage imageFromRaster( AbstractRaster raster ) {
+        if ( raster != null ) {
+            SimpleRaster sr = raster.getAsSimpleRaster();
+            return rasterDataToImage( sr.getRasterData() );
+        }
+        return null;
+    }
+
+    /**
      * Convert RasterData into a BufferedImage
      * 
      * @param sourceRaster
@@ -378,7 +395,7 @@ public class RasterFactory {
                 for ( int y = 0; y < height; y++ ) {
                     for ( int x = 0; x < width; x++ ) {
                         raster.getPixel( x, y, buf );
-                        outputRaster.setDataElements( x, y, mapToBGR( output, buf, view.bandInfo ) );
+                        outputRaster.setDataElements( x, y, mapToRGB( output, buf, view.bandInfo ) );
                     }
                 }
             }
@@ -445,27 +462,30 @@ public class RasterFactory {
      * @param bandInfo
      * @return
      */
-    private static byte[] mapToBGR( byte[] outputBands, byte[] bandsFromRaster, BandType[] bandInfo ) {
-
-        int add = outputBands.length == 4 ? 1 : 0;
-        // ABGR
-        for ( int i = 0; i < bandInfo.length; ++i ) {
-            byte value = bandsFromRaster[i];
-            switch ( bandInfo[i] ) {
-            case ALPHA:
-                outputBands[0] = value;
-                break;
-            case RED:
-                outputBands[add] = value;
-                break;
-            case GREEN:
-                outputBands[1 + add] = value;
-                break;
-            case BLUE:
-                outputBands[2 + add] = value;
-                break;
-            default:
-                outputBands[i] = value;
+    private static byte[] mapToRGB( byte[] outputBands, byte[] bandsFromRaster, BandType[] bandInfo ) {
+        if ( bandInfo.length == 1 ) {
+            outputBands[0] = bandsFromRaster[0];
+        } else {
+            int add = outputBands.length == 4 ? 1 : 0;
+            // ABGR
+            for ( int i = 0; i < bandInfo.length; ++i ) {
+                byte value = bandsFromRaster[i];
+                switch ( bandInfo[i] ) {
+                case ALPHA:
+                    outputBands[0] = value;
+                    break;
+                case RED:
+                    outputBands[add] = value;
+                    break;
+                case GREEN:
+                    outputBands[1 + add] = value;
+                    break;
+                case BLUE:
+                    outputBands[2 + add] = value;
+                    break;
+                default:
+                    outputBands[i] = value;
+                }
             }
         }
         return outputBands;
@@ -493,7 +513,7 @@ public class RasterFactory {
             if ( img instanceof BufferedImage ) {
                 // buffered images pack the pixels into the given datatype, so if datatype is int, the
                 // org.deegree.coverage.raster.data datatype is still Byte (4 bytes in an int value).
-                if ( type != DataType.FLOAT && type != DataType.DOUBLE ) {
+                if ( type != DataType.FLOAT && type != DataType.DOUBLE && type != DataType.BYTE ) {
                     type = DataType.BYTE;
                     boolean alphaLast = ( bandTypes.length == 4 ) && ( bandTypes[3] == BandType.ALPHA );
 
