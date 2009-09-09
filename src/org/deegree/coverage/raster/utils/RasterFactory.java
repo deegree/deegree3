@@ -513,7 +513,7 @@ public class RasterFactory {
             if ( img instanceof BufferedImage ) {
                 // buffered images pack the pixels into the given datatype, so if datatype is int, the
                 // org.deegree.coverage.raster.data datatype is still Byte (4 bytes in an int value).
-                if ( type != DataType.FLOAT && type != DataType.DOUBLE && type != DataType.BYTE ) {
+                if ( type != DataType.FLOAT && type != DataType.DOUBLE && type != DataType.BYTE && bandTypes.length > 1 ) {
                     type = DataType.BYTE;
                     boolean alphaLast = ( bandTypes.length == 4 ) && ( bandTypes[3] == BandType.ALPHA );
 
