@@ -47,21 +47,26 @@ import static org.deegree.commons.xml.CommonNamespaces.XLNNS;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsBoolean;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.getElementTextAsQName;
 import static org.deegree.commons.xml.stax.StAXParsingHelper.resolve;
+import static org.deegree.filter.xml.Filter110XMLDecoder.parseExpression;
 import static org.deegree.rendering.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.deegree.commons.utils.Pair;
+import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.filter.Expression;
 import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
@@ -107,6 +112,22 @@ public class SymbologyParser {
 
     static final ElseFilter ELSEFILTER = new ElseFilter();
 
+    /**
+     * @param in
+     * @return the resolved href attribute
+     * @throws XMLStreamException
+     * @throws MalformedURLException
+     */
+    public static URL parseOnlineResource( XMLStreamReader in )
+                            throws XMLStreamException, MalformedURLException {
+        in.require( START_ELEMENT, null, "OnlineResource" );
+        String url = in.getAttributeValue( null, "href" );
+        URL resolved = StAXParsingHelper.resolve( url, in );
+        in.nextTag();
+        in.require( END_ELEMENT, null, "OnlineResource" );
+        return resolved;
+    }
+
     private static void checkCommon( Common common, XMLStreamReader in )
                             throws XMLStreamException {
         if ( in.getLocalName().equals( "Name" ) ) {
@@ -114,7 +135,7 @@ public class SymbologyParser {
         }
         if ( in.getLocalName().equals( "Geometry" ) ) {
             in.nextTag();
-            common.geometry = Filter110XMLDecoder.parseExpression( in );
+            common.geometry = parseExpression( in );
             in.nextTag();
             in.require( END_ELEMENT, null, "Geometry" );
         }
@@ -920,7 +941,7 @@ public class SymbologyParser {
             while ( !( in.isEndElement() && in.getLocalName().endsWith( name ) ) ) {
                 in.next();
                 if ( in.isStartElement() ) {
-                    Expression expr = Filter110XMLDecoder.parseExpression( in );
+                    Expression expr = parseExpression( in );
                     Pair<Expression, String> second;
                     second = new Pair<Expression, String>( expr, get( "R2D.LINE", in.getLocation().getLineNumber(),
                                                                       in.getLocation().getColumnNumber(),
@@ -1327,7 +1348,7 @@ public class SymbologyParser {
             return new org.deegree.rendering.r2d.se.unevaluated.Style( pair.first, pair.second, pair.first.getName() );
         }
         if ( in.getLocalName().equals( "FeatureTypeStyle" ) ) {
-            return parseFeatureTypeStyle( in );
+            return parseFeatureTypeOrCoverageStyle( in );
         }
         return null;
     }
@@ -1337,43 +1358,87 @@ public class SymbologyParser {
      * @return a new style
      * @throws XMLStreamException
      */
-    public static org.deegree.rendering.r2d.se.unevaluated.Style parseFeatureTypeStyle( XMLStreamReader in )
+    public static org.deegree.rendering.r2d.se.unevaluated.Style parseFeatureTypeOrCoverageStyle( XMLStreamReader in )
                             throws XMLStreamException {
+        if ( in.getLocalName().equals( "OnlineResource" ) ) {
+            try {
+                URL url = SymbologyParser.parseOnlineResource( in );
+                XMLStreamReader newReader = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
+                                                                                                 url.openStream() );
+                return parseFeatureTypeOrCoverageStyle( newReader );
+            } catch ( MalformedURLException e ) {
+                LOG.warn( "An URL referencing a FeatureType or CoverageStyle could not be resolved." );
+                LOG.debug( "Stack trace:", e );
+            } catch ( FactoryConfigurationError e ) {
+                LOG.warn( "An URL referencing a FeatureType or CoverageStyle could not be read." );
+                LOG.debug( "Stack trace:", e );
+            } catch ( IOException e ) {
+                LOG.warn( "An URL referencing a FeatureType or CoverageStyle could not be read." );
+                LOG.debug( "Stack trace:", e );
+            }
+        }
+
         LinkedList<Continuation<LinkedList<Symbolizer<?>>>> result = new LinkedList<Continuation<LinkedList<Symbolizer<?>>>>();
         HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
         Common common = new Common();
-        // TODO name, semantictypeidentifier, online resource
 
-        in.require( START_ELEMENT, null, "FeatureTypeStyle" );
-
-        while ( !( in.isEndElement() && in.getLocalName().equals( "FeatureTypeStyle" ) ) ) {
+        while ( !( in.isEndElement() && ( in.getLocalName().equals( "FeatureTypeStyle" ) || in.getLocalName().equals(
+                                                                                                                      "CoverageStyle" ) ) ) ) {
             in.nextTag();
 
+            checkCommon(common, in);
+            
+            // TODO unused
+            if ( in.getLocalName().equals( "SemanticTypeIdentifier" ) ) {
+                in.getElementText(); // AndThrowItAwayImmediately
+            }
+
+            // TODO unused
             if ( in.getLocalName().equals( "FeatureTypeName" ) ) {
                 getElementTextAsQName( in ); // AndThrowItAwayImmediately
             }
 
-            if ( in.getLocalName().equals( "Rule" ) ) {
+            // TODO unused
+            if ( in.getLocalName().equals( "CoverageName" ) ) {
+                in.getElementText(); // AndThrowItAwayImmediately
+            }
+
+            if ( in.getLocalName().equals( "Rule" ) || in.getLocalName().equals( "OnlineResource" ) ) {
+                XMLStreamReader localReader = in;
+                if ( in.getLocalName().equals( "OnlineResource" ) ) {
+                    try {
+                        URL url = parseOnlineResource( in );
+                        localReader = XMLInputFactory.newInstance().createXMLStreamReader( url.toString(),
+                                                                                           url.openStream() );
+                    } catch ( IOException e ) {
+                        LOG.warn( "Error '{}' while resolving/accessing remote Rule document.", e.getLocalizedMessage() );
+                        LOG.debug( "Stack trace:", e );
+                    }
+                }
+
+                Common ruleCommon = new Common();
+                
                 Filter filter = null;
                 LinkedList<Symbolizer<?>> syms = new LinkedList<Symbolizer<?>>();
 
-                while ( !( in.isEndElement() && in.getLocalName().equals( "Rule" ) ) ) {
-                    in.nextTag();
+                while ( !( localReader.isEndElement() && localReader.getLocalName().equals( "Rule" ) ) ) {
+                    localReader.nextTag();
 
-                    checkCommon( common, in );
+                    checkCommon( ruleCommon, localReader );
 
-                    if ( in.getLocalName().equals( "Filter" ) ) {
-                        filter = Filter110XMLDecoder.parse( in );
+                    if ( localReader.getLocalName().equals( "Filter" ) ) {
+                        filter = Filter110XMLDecoder.parse( localReader );
                     }
 
-                    if ( in.getLocalName().equals( "ElseFilter" ) ) {
+                    if ( localReader.getLocalName().equals( "ElseFilter" ) ) {
                         filter = ELSEFILTER;
-                        in.nextTag();
+                        localReader.nextTag();
                     }
 
-                    // TODO description, legendgraphic, scales
-                    if ( in.getLocalName().endsWith( "Symbolizer" ) ) {
-                        Pair<Symbolizer<?>, Continuation<StringBuffer>> parsedSym = parseSymbolizer( in );
+                    // TODO legendgraphic, scales
+                    if ( localReader.getLocalName().endsWith( "Symbolizer" ) ) {
+                        
+                        Pair<Symbolizer<?>, Continuation<StringBuffer>> parsedSym = parseSymbolizer( localReader );
                         if ( parsedSym.second != null ) {
                             labels.put( (Symbolizer) parsedSym.first, parsedSym.second );
                         }
