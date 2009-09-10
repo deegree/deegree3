@@ -50,6 +50,7 @@ import org.deegree.coverage.raster.interpolation.Interpolation;
 import org.deegree.coverage.raster.interpolation.InterpolationFactory;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
 import org.deegree.coverage.raster.utils.RasterFactory;
+import org.deegree.crs.CRS;
 import org.deegree.crs.Transformer;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
 import org.deegree.crs.exceptions.TransformationException;
@@ -115,11 +116,18 @@ public class RasterTransformer extends Transformer {
      * This method transforms the requested envelope and returns a new raster with the requested size. The source raster
      * can be larger than the requested envelope (like a large tiled raster), or smaller (the source raster nodata value
      * will be used outside the source raster).
+     * </p>
+     * <p>
+     * If the dstEnvelope does not contain a CRS or the CRS is the same as the
+     * {@link AbstractRaster#getCoordinateSystem()} only interpolation will be applied. If the requested size is the
+     * same as the number of rows/columns of the source raster, only the subset of the given raster will be returned,
+     * without interpolation being applied.
+     * </p>
      * 
      * @param sourceRaster
      *            the source raster
      * @param dstEnvelope
-     *            the requested envelope (allready in the target crs)
+     *            the requested envelope (already in the target crs)
      * @param dstWidth
      *            the requested raster size
      * @param dstHeight
@@ -130,43 +138,62 @@ public class RasterTransformer extends Transformer {
      * @throws TransformationException
      * @throws UnknownCRSException
      */
-    public SimpleRaster transform( AbstractRaster sourceRaster, Envelope dstEnvelope, int dstWidth, int dstHeight,
-                                   InterpolationType interpolationType )
+    public AbstractRaster transform( AbstractRaster sourceRaster, Envelope dstEnvelope, int dstWidth, int dstHeight,
+                                     InterpolationType interpolationType )
                             throws TransformationException, UnknownCRSException {
 
         CoordinateSystem srcCRS = sourceRaster.getCoordinateSystem().getWrappedCRS();
 
-        AbstractRaster source = createSourceRaster( srcCRS, sourceRaster, dstEnvelope );
-        RasterData srcRaster = source.getAsSimpleRaster().getReadOnlyRasterData();
-
-        RasterRect rr = new RasterRect( 0, 0, dstWidth, dstHeight );
-        RasterData dstRaster = srcRaster.createCompatibleWritableRasterData( rr, null );
-
-        RasterReference srcREnv = source.getRasterReference();
-        RasterReference dstREnv = new RasterReference( dstEnvelope, dstWidth, dstHeight );
-
-        WarpPolynomial warp = createWarp( dstWidth, dstHeight, srcCRS, srcREnv, dstREnv );
-
-        Interpolation interpolation = InterpolationFactory.getInterpolation( interpolationType, srcRaster );
+        // get the (transformed) subraster which intersects with the given envelope.
+        AbstractRaster source = getSubRaster( srcCRS, sourceRaster, dstEnvelope );
+        if ( source.getColumns() == dstHeight && source.getRows() == dstWidth ) {
+            // no need to interpolate.
+            return source;
+        }
+        SimpleRaster simpleSourceRaster = source.getAsSimpleRaster();
+        RasterData srcData = simpleSourceRaster.getReadOnlyRasterData();
+        RasterReference srcREnv = simpleSourceRaster.getRasterReference();
 
         if ( backgroundValue != null ) {
-            srcRaster.setNullPixel( backgroundValue );
+            srcData.setNullPixel( backgroundValue );
         }
 
-        // build the new result raster
-        byte[] pixel = new byte[dstRaster.getBands() * dstRaster.getDataType().getSize()];
-        float[] srcCoords = new float[dstRaster.getWidth() * 2];
-        for ( int y = 0; y < dstRaster.getHeight(); y++ ) {
-            // look-up the pixel positions in the source raster for every pixel in this row
-            warp.warpRect( 0, y, dstRaster.getWidth(), 1, srcCoords );
-            for ( int x = 0; x < dstRaster.getWidth(); x++ ) {
+        // interpolation is needed.
+        Interpolation interpolation = InterpolationFactory.getInterpolation( interpolationType, srcData );
+
+        RasterRect rr = new RasterRect( 0, 0, dstWidth, dstHeight );
+        RasterData dstData = srcData.createCompatibleWritableRasterData( rr, null );
+
+        RasterReference dstREnv = new RasterReference( dstEnvelope, dstWidth, dstHeight );
+
+        // use warp to calculate the correct sample positions in the source raster.
+        // the warp is a cubic polynomial function created of 100 points in the dstEnvelope. This function will map
+        // points from the source crs to the target crs very accurate.
+        WarpPolynomial warp = createWarp( dstWidth, dstHeight, srcCRS, srcREnv, dstREnv );
+        warpTransform( warp, interpolation, dstData );
+
+        return new SimpleRaster( dstData, dstEnvelope, dstREnv );
+    }
+
+    /**
+     * @param warp
+     * @param interpolation
+     * @param dstData
+     */
+    private void warpTransform( WarpPolynomial warp, Interpolation interpolation, RasterData dstData ) {
+        byte[] pixel = new byte[dstData.getBands() * dstData.getDataType().getSize()];
+        float[] srcCoords = new float[dstData.getWidth() * 2];
+        for ( int y = 0; y < dstData.getHeight(); y++ ) {
+            // look-up the pixel positions in the source raster for every pixel in this row, the srcCoords will contain
+            // the x,y ([2n],[2n+1]) values in the source raster (defined in the native CRS) for this row of pixels.
+            warp.warpRect( 0, y, dstData.getWidth(), 1, srcCoords );
+            for ( int x = 0; x < dstData.getWidth(); x++ ) {
                 // get the interpolated pixel and set the value into the result raster
                 interpolation.getPixel( srcCoords[x * 2], srcCoords[x * 2 + 1], pixel );
-                dstRaster.setPixel( x, y, pixel );
+                dstData.setPixel( x, y, pixel );
             }
         }
 
-        return new SimpleRaster( dstRaster, dstEnvelope, dstREnv );
     }
 
     /**
@@ -175,35 +202,37 @@ public class RasterTransformer extends Transformer {
      * @throws UnknownCRSException
      * @throws IllegalArgumentException
      */
-    private AbstractRaster createSourceRaster( CoordinateSystem srcCRS, AbstractRaster sourceRaster,
-                                               Envelope dstEnvelope )
+    private AbstractRaster getSubRaster( CoordinateSystem srcCRS, AbstractRaster sourceRaster, Envelope dstEnvelope )
                             throws TransformationException, IllegalArgumentException {
-        GeometryTransformer srcTransf = new GeometryTransformer( srcCRS );
+        Envelope dataEnv = dstEnvelope;
+        if ( srcCRS != null && !srcCRS.equals( getTargetCRS() ) ) {
 
-        // the envelope from which we need data
-        Envelope workEnv = (Envelope) srcTransf.transform( dstEnvelope, getTargetCRS() );
+            GeometryTransformer srcTransf = new GeometryTransformer( srcCRS );
 
-        Envelope dataEnvelope = sourceRaster.getEnvelope();
-        // the envelope from which we have data
-        Geometry dataEnvGeom = workEnv.getIntersection( dataEnvelope );
-        if ( dataEnvGeom == null ) {
-            LOG.debug( "no intersection for " + sourceRaster + " and " + dstEnvelope );
-            // todo create subclass of TransformationException
-            throw new TransformationException( "no source data found" );
+            // the envelope from which we need data
+            Envelope workEnv = (Envelope) srcTransf.transform( dstEnvelope, getTargetCRS() );
 
+            Envelope dataEnvelope = sourceRaster.getEnvelope();
+            // the envelope from which we have data
+            Geometry dataEnvGeom = workEnv.getIntersection( dataEnvelope );
+            if ( dataEnvGeom == null ) {
+                LOG.debug( "no intersection for " + sourceRaster + " and " + dstEnvelope );
+                // todo create subclass of TransformationException
+                throw new TransformationException( "no source data found" );
+
+            }
+            dataEnv = dataEnvGeom.getEnvelope();
         }
-        Envelope dataEnv = dataEnvGeom.getEnvelope();
 
-        // get the data we need as a simple raster (can be a part of a large tiled raster)
         AbstractRaster source;
         try {
             source = sourceRaster.getSubRaster( dataEnv );
         } catch ( IndexOutOfBoundsException ex ) {
             throw new TransformationException( "no source data found" );
         }
-        if ( LOG.isDebugEnabled() ) {
-            debugRasterFile( source );
-        }
+        // if ( LOG.isDebugEnabled() ) {
+        debugRasterFile( source );
+        // }
         return source;
     }
 
@@ -256,6 +285,12 @@ public class RasterTransformer extends Transformer {
      * <p>
      * This method transforms the whole raster into the target CRS of this RasterTransformer. The size of the output
      * raster will be calculated, so that the pixels keep the aspect ratio (i.e. keep square pixels).
+     * </p>
+     * <p>
+     * If the coordinate system of the source raster is <code>null</code> or equals the target crs, the source raster
+     * will be returned unaltered.
+     * </p>
+     * 
      * 
      * @param sourceRaster
      *            the raster to be transformed
@@ -265,11 +300,16 @@ public class RasterTransformer extends Transformer {
      * @throws TransformationException
      * @throws UnknownCRSException
      */
-    public SimpleRaster transform( AbstractRaster sourceRaster, InterpolationType interpolationType )
+    public AbstractRaster transform( AbstractRaster sourceRaster, InterpolationType interpolationType )
                             throws IllegalArgumentException, TransformationException, UnknownCRSException {
+
+        CRS srcCRS = sourceRaster.getCoordinateSystem();
+        if ( srcCRS == null || srcCRS.equals( getTargetCRS() ) ) {
+            return sourceRaster;
+        }
+
         GeometryTransformer gt = new GeometryTransformer( getTargetCRS() );
-        Envelope dstEnvelope = gt.transform( sourceRaster.getEnvelope(),
-                                             sourceRaster.getCoordinateSystem().getWrappedCRS() ).getEnvelope();
+        Envelope dstEnvelope = gt.transform( sourceRaster.getEnvelope(), srcCRS.getWrappedCRS() ).getEnvelope();
 
         int srcWidth = sourceRaster.getColumns();
         int srcHeight = sourceRaster.getRows();
