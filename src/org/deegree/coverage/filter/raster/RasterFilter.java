@@ -54,11 +54,10 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.SimpleRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.data.info.BandType;
-import org.deegree.geometry.Envelope;
 
 /**
- * The <code>RasterFilter</code> enables a the evaluation of bands in a raster by their values, as well as the
- * selection of specific bands in a raster.
+ * The <code>RasterFilter</code> enables a the evaluation of bands in a raster by their values, as well as the selection
+ * of specific bands in a raster.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
@@ -76,8 +75,8 @@ public class RasterFilter extends CoverageFilter {
     }
 
     @Override
-    public AbstractRaster getSubset( RangeSet sourceRangeSet, RangeSet targetRangeset, Envelope env ) {
-        AbstractRaster result = null;
+    public AbstractRaster apply( RangeSet sourceRangeSet, RangeSet targetRangeset ) {
+        AbstractRaster result = raster();
         if ( rangeSetsAreApplicable( sourceRangeSet, targetRangeset ) ) {
             List<AxisSubset> requestedAxis = targetRangeset.getAxisDescriptions();
             if ( requestedAxis != null && !requestedAxis.isEmpty() ) {
@@ -87,7 +86,8 @@ public class RasterFilter extends CoverageFilter {
                 BandType[] bands = null;
                 if ( referencedBands != null ) {
                     bands = referencedBands.keySet().toArray( new BandType[referencedBands.keySet().size()] );
-                    result = raster().getSubRaster( env, bands );
+                    // filter the bands.
+                    result = raster().getSubRaster( raster().getEnvelope(), bands );
                     boolean applyData = false;
                     for ( AxisSubset ass : referencedBands.values() ) {
                         applyData = ass.hasAxisConstraints();
@@ -101,10 +101,6 @@ public class RasterFilter extends CoverageFilter {
                 }
             }
 
-        }
-        if ( result == null ) {
-            // simply do a simple getSubset without filtering.
-            result = raster().getSubRaster( env );
         }
         return result;
     }

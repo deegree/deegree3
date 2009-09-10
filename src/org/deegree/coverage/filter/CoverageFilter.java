@@ -40,7 +40,6 @@ package org.deegree.coverage.filter;
 
 import org.deegree.coverage.AbstractCoverage;
 import org.deegree.coverage.rangeset.RangeSet;
-import org.deegree.geometry.Envelope;
 
 /**
  * The <code>CoverageFilter</code> applies a rangeset (a coverage range definition) to a coverage.
@@ -51,7 +50,6 @@ import org.deegree.geometry.Envelope;
  * 
  */
 public abstract class CoverageFilter {
-    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( CoverageFilter.class );
 
     /** the coverage to operate upon */
     protected AbstractCoverage coverage;
@@ -66,15 +64,15 @@ public abstract class CoverageFilter {
     }
 
     /**
+     * Applies the given {@link RangeSet} to the coverage. If the coverage has no {@link RangeSet} this method will
+     * return the coverage.
      * 
      * @param rasterRangeSet
      *            describing the values of the given coverage
      * @param targetRangeset
      *            describing the ranges of the target coverage
-     * @param env
-     *            to get
      * @return a raster using the given RangeSet for selection
      */
-    public abstract AbstractCoverage getSubset( RangeSet rasterRangeSet, RangeSet targetRangeset, Envelope env );
+    public abstract AbstractCoverage apply( RangeSet rasterRangeSet, RangeSet targetRangeset );
 
 }
