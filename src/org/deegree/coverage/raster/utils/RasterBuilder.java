@@ -49,6 +49,7 @@ import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.MultiResolutionRaster;
 import org.deegree.coverage.raster.TiledRaster;
 import org.deegree.coverage.raster.container.IndexedMemoryTileContainer;
+import org.deegree.coverage.raster.container.MemoryTileContainer;
 import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.crs.CRS;
 import org.deegree.geometry.Envelope;
@@ -169,8 +170,8 @@ public class RasterBuilder {
      *            if true sub directories will be scanned as well.
      * @param crs
      *            in which the files are supposed to be defined
-     * @return a new {@link TiledRaster} or <code>null</code> if no raster files were found at the given location,
-     *         with the given extension.
+     * @return a new {@link TiledRaster} or <code>null</code> if no raster files were found at the given location, with
+     *         the given extension.
      */
     public static AbstractRaster buildTiledRaster( File directory, String extension, boolean recursive, CRS crs ) {
         LOG.info( "Scanning for files in directory: {}", directory.getAbsolutePath() );
@@ -181,11 +182,12 @@ public class RasterBuilder {
             QTreeInfo inf = buildTiledRaster( crs, coverageFiles, rasters );
             Envelope domain = inf.envelope;
             RasterReference rasterDomain = inf.rasterGeoReference;
-            IndexedMemoryTileContainer container = new IndexedMemoryTileContainer( domain, rasterDomain,
-                                                                                   inf.numberOfObjects );
+            // IndexedMemoryTileContainer container = new IndexedMemoryTileContainer( domain, rasterDomain,
+            // inf.numberOfObjects );
+            MemoryTileContainer container = new MemoryTileContainer( rasters );
             raster = new TiledRaster( container );
             raster.setCoordinateSystem( domain.getCoordinateSystem() );
-            container.addRasterTiles( rasters );
+            // container.addRasterTiles( rasters );
         }
         return raster;
     }
