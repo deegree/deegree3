@@ -70,35 +70,15 @@ public class SingleValue<T extends Comparable<T>> {
     /**
      * @param other
      *            to test against
-     * @param convert
-     *            if true, the given singlevalue will be replaced with the this type if it was of type void and their
-     *            values match.
      * @return true if the given singlevalue matches this one, e.g. the value and types are equal.
      */
-    public boolean equals( SingleValue<?> other, boolean convert ) {
-        if ( other != null ) {
-            SingleValue<?> that = other;
-            boolean wasVoid = false;
-            if ( !this.type.isCompatible( that.type ) ) {
-                if ( that.type != ValueType.Void ) {
-                    // types do not match
-                    return false;
-                }
-                // the type was not known, try to convert it to the given type.
-                try {
-                    that = createFromString( this.type.name(), that.value.toString() );
-                    wasVoid = true;
-                } catch ( NumberFormatException nfe ) {
-                    // the value is not of this type, hence it cannot be equal.
-                    return false;
-                }
+    @Override
+    public boolean equals( Object other ) {
+        if ( other != null && other instanceof SingleValue<?> ) {
+            SingleValue<?> that = (SingleValue<?>) other;
+            if ( this.type.isCompatible( that.type ) ) {
+                return ( value == null ) ? that.value == null : value.equals( that.value );
             }
-            boolean result = ( value == null ) ? that.value == null : value.equals( that.value );
-            if ( result && convert && wasVoid ) {
-                // set new reference
-                other = that;
-            }
-            return result;
         }
         return false;
     }

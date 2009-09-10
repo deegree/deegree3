@@ -194,50 +194,25 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
     /**
      * @param inter
      *            to check against
-     * @param convert
-     *            if true and the given interval is of type void, it will be replaced with the given type it matches
-     *            this interval.
      * @return true if this interval is in the bounds of the given interval.
      */
     @SuppressWarnings("unchecked")
-    public boolean isInBounds( Interval<?, ?> inter, boolean convert ) {
+    public boolean isInBounds( Interval<?, ?> inter ) {
         // unchecked is suppressed because it is actually checked.
         boolean result = false;
         if ( inter != null ) {
-            Interval<?, ?> testInter = inter;
-            result = inter.min.type.isCompatible( min.type );
-            boolean wasVoid = false;
-            if ( !result ) {
-                if ( inter.min.type == ValueType.Void ) {
-                    // try to convert the values to the given type and then compare.
-                    try {
-                        testInter = createFromStrings( min.type.toString(), inter.min.value.toString(),
-                                                       inter.min.value.toString(), inter.closure, inter.semantic,
-                                                       inter.atomic, inter.spacing );
-                        result = true;
-                        wasVoid = true;
-                    } catch ( NumberFormatException e ) {
-                        // could not convert to the type, so result will be false;
-                    }
-                }
-            }
-            // maybe converted, but the interval have equal types.
-            if ( result ) {
-                int comp = min.value.compareTo( (T) testInter.min.value );
+            if ( inter.min.type.isCompatible( min.type ) ) {
+                int comp = min.value.compareTo( (T) inter.min.value );
                 // min fit true if this min value > given min value
-                result = match( comp, true );
+                result = match( comp, inter.closure, true );
                 if ( result ) {
                     // min is in the interval if the this min value < max value
-                    comp = min.value.compareTo( (T) testInter.max.value );
-                    result = match( comp, false );
-
+                    comp = min.value.compareTo( (T) inter.max.value );
+                    result = match( comp, inter.closure, false );
                     if ( result ) {
                         // so min values match, lets check the max value against max (assuming min > max )
-                        comp = max.value.compareTo( (T) testInter.max.value );
-                        result = match( comp, false );
-                        if ( convert && wasVoid ) {
-                            inter = testInter;
-                        }
+                        comp = max.value.compareTo( (T) inter.max.value );
+                        result = match( comp, inter.closure, false );
                     }
                 }
             }
@@ -245,7 +220,7 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
         return result;
     }
 
-    private boolean match( int comparedValue, boolean compareWithMin ) {
+    private boolean match( int comparedValue, Closure closure, boolean compareWithMin ) {
         int test = comparedValue * ( compareWithMin ? 1 : -1 );
 
         boolean closed = ( closure == Closure.closed )
@@ -341,7 +316,7 @@ public class Interval<T extends Comparable<T>, R extends Comparable<R>> {
      * @return true if the given value lies within the bounds of this interval.
      */
     public boolean liesWithin( T value ) {
-        return match( -1 * ( min.value.compareTo( value ) ), true )
-               && match( -1 * ( max.value.compareTo( value ) ), false );
+        return match( -1 * ( min.value.compareTo( value ) ), closure, true )
+               && match( -1 * ( max.value.compareTo( value ) ), closure, false );
     }
 }

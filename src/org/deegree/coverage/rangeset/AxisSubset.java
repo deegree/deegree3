@@ -38,6 +38,7 @@
 
 package org.deegree.coverage.rangeset;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -59,6 +60,8 @@ public class AxisSubset {
 
     private final String label;
 
+    private ValueType type;
+
     /**
      * @param name
      * @param label
@@ -71,6 +74,11 @@ public class AxisSubset {
         this.label = label;
         this.intervals = intervals;
         this.singleValues = singleValues;
+        ValueType tmpType = determineType( intervals );
+        if ( tmpType == null ) {
+            tmpType = determineTypeFromSingles( singleValues );
+        }
+        this.type = tmpType == null ? ValueType.Void : tmpType;
 
     }
 
@@ -105,16 +113,19 @@ public class AxisSubset {
     /**
      * @param other
      * @param convert
-     *            if true the intervals and singlevalues will be converted to the types they match if they were of type
-     *            unknown (void).
+     *            if true the intervals and singlevalues of this instance will be converted to the type of the given
+     *            axis subset if their names match and if this type is unknown (void).
      * @return true if this {@link AxisSubset} matches the given AxisSubset, e.g. if the names are equal and the axis
      *         values have matching parameters in the given one.
      */
     public boolean match( AxisSubset other, boolean convert ) {
         boolean result = other.getName().equalsIgnoreCase( name );
         if ( result ) {
-            boolean ic = checkIntervals( other.getIntervals(), convert );
-            boolean sc = checkSingles( other.getSingleValues(), other.getIntervals(), convert );
+            if ( this.type == ValueType.Void && convert ) {
+                convertTypes( other.getType() );
+            }
+            boolean ic = checkIntervals( other.getIntervals() );
+            boolean sc = checkSingles( other.getSingleValues(), other.getIntervals() );
             result = ic && sc;
         }
         return result;
@@ -126,7 +137,7 @@ public class AxisSubset {
      *            if true the given intervals will be converted to the type they match if they were of type void.
      * @return true if the given singleValues match these of the given single values, the types are considered.
      */
-    private boolean checkSingles( List<SingleValue<?>> otherValues, List<Interval<?, ?>> otherIntervals, boolean convert ) {
+    private boolean checkSingles( List<SingleValue<?>> otherValues, List<Interval<?, ?>> otherIntervals ) {
         boolean result = false;
         if ( singleValues == null || singleValues.isEmpty() ) {
             // if this axissubset has no singlevalues, than they match
@@ -138,13 +149,12 @@ public class AxisSubset {
                 // rb: iterate over all values, if one of them mismatches this method will return false.
                 if ( sv != null ) {
                     // if the value == null, the default value must be taken into account, therefore no validity check
-                    // can
-                    // be done.
+                    // can be done.
                     if ( sv.value != null ) {
                         Iterator<SingleValue<?>> iterator = otherValues.iterator();
                         while ( iterator.hasNext() && !result ) {
                             SingleValue<?> ov = iterator.next();
-                            result = sv.equals( ov, convert );
+                            result = sv.equals( ov );
                         }
 
                         if ( !result ) {
@@ -216,7 +226,7 @@ public class AxisSubset {
      *            if true the given intervals will be converted to the type they match if they were of type void.
      * @return true if the given intervals match this intervals.
      */
-    private boolean checkIntervals( List<Interval<?, ?>> otherIntervals, boolean convert ) {
+    private boolean checkIntervals( List<Interval<?, ?>> otherIntervals ) {
         boolean result = false;
         if ( intervals == null || intervals.isEmpty() ) {
             // if this axissubset has no intervals, than they match
@@ -227,7 +237,7 @@ public class AxisSubset {
                 Iterator<Interval<?, ?>> iterator = otherIntervals.iterator();
                 while ( iterator.hasNext() && !result ) {
                     Interval<?, ?> oi = iterator.next();
-                    result = inter.isInBounds( oi, convert );
+                    result = inter.isInBounds( oi );
                 }
                 if ( !result ) {
                     // could not find a single value matching.
@@ -281,4 +291,111 @@ public class AxisSubset {
         sb.append( "]" );
         return sb.toString();
     }
+
+    /**
+     * Convert the types of the intervals and single values of this axis subset to the given type, if and only if the
+     * type of this axis is {@link ValueType#Void}, if the conversion fails, the old types will not be changed.
+     * 
+     * @param newType
+     *            to convert the types of this axis to.
+     */
+    public void convertTypes( ValueType newType ) {
+        if ( newType != null && newType != ValueType.Void && type == ValueType.Void ) {
+            // my type is void, fix it.
+            String type = newType.name();
+            if ( intervals != null && !intervals.isEmpty() ) {
+                this.type = newType;
+
+                List<Interval<?, ?>> convertedIntervals = new ArrayList<Interval<?, ?>>( intervals.size() );
+                Iterator<Interval<?, ?>> it = intervals.iterator();
+                while ( it.hasNext() ) {
+                    Interval<?, ?> origInter = it.next();
+                    if ( origInter != null ) {
+                        Interval<?, ?> converted = Interval.createFromStrings( type,
+                                                                               origInter.getMin().value.toString(),
+                                                                               origInter.getMax().value.toString(),
+                                                                               origInter.getClosure(),
+                                                                               origInter.getSemantic(),
+                                                                               origInter.isAtomic(),
+                                                                               origInter.getSpacing() );
+                        if ( converted != null ) {
+                            convertedIntervals.add( converted );
+                        }
+                    }
+                    if ( this.intervals.size() == convertedIntervals.size() ) {
+                        this.intervals.clear();
+                        this.intervals.addAll( convertedIntervals );
+                    }
+
+                }
+
+            }
+            if ( singleValues != null && !singleValues.isEmpty() ) {
+                List<SingleValue<?>> convertedSingles = new ArrayList<SingleValue<?>>( singleValues.size() );
+                Iterator<SingleValue<?>> it = singleValues.iterator();
+                while ( it.hasNext() ) {
+                    SingleValue<?> origSingle = it.next();
+                    if ( origSingle != null ) {
+                        SingleValue<?> converted = SingleValue.createFromString( type, origSingle.value.toString() );
+
+                        if ( converted != null ) {
+                            convertedSingles.add( converted );
+                        }
+                    }
+                }
+                if ( this.singleValues.size() == convertedSingles.size() ) {
+                    this.singleValues.clear();
+                    this.singleValues.addAll( convertedSingles );
+                }
+            }
+        }
+
+    }
+
+    /**
+     * @param singles
+     * @return
+     */
+    private ValueType determineTypeFromSingles( List<SingleValue<?>> singles ) {
+        ValueType result = null;
+        if ( singles != null && !singles.isEmpty() ) {
+            Iterator<SingleValue<?>> it = singleValues.iterator();
+            while ( it.hasNext() && result == null ) {
+                SingleValue<?> sv = it.next();
+                if ( sv != null ) {
+                    result = sv.type;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @param inters
+     * @return
+     */
+    private ValueType determineType( List<Interval<?, ?>> inters ) {
+        ValueType result = null;
+        if ( inters != null && !inters.isEmpty() ) {
+            Iterator<Interval<?, ?>> it = intervals.iterator();
+            while ( it.hasNext() && result == null ) {
+                Interval<?, ?> interval = it.next();
+                if ( interval != null ) {
+                    result = interval.getMin().type;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the type of this axis ranges.
+     * 
+     * @return the determined type of this axis ranges, if the type could not be determined it will be
+     *         {@link ValueType#Void}
+     */
+    public ValueType getType() {
+        return type;
+    }
+
 }
