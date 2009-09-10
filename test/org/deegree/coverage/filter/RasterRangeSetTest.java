@@ -156,7 +156,7 @@ public class RasterRangeSetTest {
         target.add( green );
         RangeSet rs = new RangeSet( "target", "target", target, null );
 
-        AbstractRaster subset = filter.getSubset( bandRaster, rs, env );
+        AbstractRaster subset = filter.apply( bandRaster, rs );
         byte[] nullPixel = subset.getAsSimpleRaster().getRasterData().getNullPixel( null );
         Assert.assertEquals( 3, nullPixel.length );
         int[] nullValues = new int[3];
@@ -192,7 +192,7 @@ public class RasterRangeSetTest {
         target.add( blue );
         RangeSet rs = new RangeSet( "target", "target", target, null );
 
-        AbstractRaster subset = filter.getSubset( bandRaster, rs, env );
+        AbstractRaster subset = filter.apply( bandRaster, rs );
         byte[] nullPixel = subset.getAsSimpleRaster().getRasterData().getNullPixel( null );
         Assert.assertEquals( 2, nullPixel.length );
         int[] nullValues = new int[3];
@@ -226,7 +226,7 @@ public class RasterRangeSetTest {
         target.add( green );
         RangeSet rs = new RangeSet( "target", "target", target, null );
 
-        AbstractRaster subset = filter.getSubset( bandRaster, rs, env );
+        AbstractRaster subset = filter.apply( bandRaster, rs );
         byte[] nullPixel = subset.getAsSimpleRaster().getRasterData().getNullPixel( null );
         Assert.assertEquals( 1, nullPixel.length );
         int nullValue = nullPixel[0] & 0xFF;
@@ -262,7 +262,7 @@ public class RasterRangeSetTest {
 
         RangeSet rs = new RangeSet( "target", "target", target, null );
 
-        AbstractRaster subset = filter.getSubset( bandRaster, rs, env );
+        AbstractRaster subset = filter.apply( bandRaster, rs );
         byte[] nullPixel = subset.getAsSimpleRaster().getRasterData().getNullPixel( null );
         Assert.assertEquals( 1, nullPixel.length );
         int nullValue = nullPixel[0] & 0xFF;
@@ -307,7 +307,7 @@ public class RasterRangeSetTest {
 
         RangeSet rs = new RangeSet( "target", "target", target, null );
 
-        AbstractRaster subset = filter.getSubset( bandRaster, rs, env );
+        AbstractRaster subset = filter.apply( bandRaster, rs );
         byte[] nullPixel = subset.getAsSimpleRaster().getRasterData().getNullPixel( null );
         Assert.assertEquals( 1, nullPixel.length );
         int nullValue = nullPixel[0] & 0xFF;
@@ -357,7 +357,7 @@ public class RasterRangeSetTest {
 
         RangeSet rs = new RangeSet( "target", "target", target, null );
 
-        AbstractRaster subset = filter.getSubset( bandRaster, rs, env );
+        AbstractRaster subset = filter.apply( bandRaster, rs );
         byte[] nullPixel = subset.getAsSimpleRaster().getRasterData().getNullPixel( null );
         Assert.assertEquals( 1, nullPixel.length );
         int nullValue = nullPixel[0] & 0xFF;
@@ -411,7 +411,7 @@ public class RasterRangeSetTest {
 
         RangeSet rs = new RangeSet( "target", "target", target, null );
 
-        AbstractRaster subset = filter.getSubset( bandRaster, rs, env );
+        AbstractRaster subset = filter.apply( bandRaster, rs );
         byte[] nullPixel = subset.getAsSimpleRaster().getRasterData().getNullPixel( null );
         Assert.assertEquals( 2, nullPixel.length );
         int[] nullValues = new int[3];
