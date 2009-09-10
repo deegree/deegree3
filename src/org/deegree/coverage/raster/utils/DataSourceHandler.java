@@ -109,7 +109,8 @@ public class DataSourceHandler {
         try {
             if ( directory != null ) {
                 File rasterFiles = new File( adapter.resolve( directory.getValue() ).getFile() );
-                return buildTiledRaster( rasterFiles, directory.getFilePattern(), directory.isRecursive(), crs );
+                boolean recursive = directory.isRecursive() == null ? false : directory.isRecursive();
+                return buildTiledRaster( rasterFiles, directory.getFilePattern(), recursive, crs );
             }
             if ( file != null ) {
                 final File loc = new File( adapter.resolve( file.getValue() ).getFile() );
