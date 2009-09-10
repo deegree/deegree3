@@ -40,6 +40,8 @@ package org.deegree.coverage;
 
 import java.util.HashMap;
 
+import org.deegree.coverage.rangeset.RangeSet;
+
 /**
  * The <code>SupplementProperties</code> class can be used to add supplement data (like name, label or any kind of
  * object) to a coverage.
@@ -60,6 +62,11 @@ public class SupplementProperties extends HashMap<String, Object> {
      * the label key
      */
     public final static String LABEL = "label";
+
+    /**
+     * the rangeset key
+     */
+    public final static String RANGESET = "rangeset";
 
     /**
      * 
@@ -99,6 +106,13 @@ public class SupplementProperties extends HashMap<String, Object> {
     }
 
     /**
+     * @return the {@link RangeSet} associated with the given raster.
+     */
+    public RangeSet getRangeset() {
+        return (RangeSet) super.get( RANGESET );
+    }
+
+    /**
      * Overridden, because of the keys which are assumed to have special objects assigned to them.
      */
     @Override
@@ -106,6 +120,10 @@ public class SupplementProperties extends HashMap<String, Object> {
         if ( LABEL.equals( key ) || NAME.equals( key ) ) {
             if ( !( value instanceof String ) ) {
                 return super.put( key, value.toString() );
+            }
+        } else if ( RANGESET.equals( key ) ) {
+            if ( !( value instanceof RangeSet ) ) {
+                return null;
             }
         }
         return super.put( key, value );
