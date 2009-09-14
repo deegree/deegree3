@@ -125,6 +125,13 @@ public class Style {
         return name;
     }
 
+    /**
+     * @param name
+     */
+    public void setName( String name ) {
+        this.name = name;
+    }
+
     class InsertContinuation<T extends Collection<U>, U> extends Continuation<T> {
         U value;
 

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,20 +32,22 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 
 /**
  * <code>CollectionUtils</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class CollectionUtils {
@@ -68,6 +70,22 @@ public class CollectionUtils {
         }
 
         return list;
+    }
+
+    /**
+     * @param <T>
+     * @param <U>
+     * @param col
+     * @return two separate lists
+     */
+    public static <T, U> Pair<ArrayList<T>, ArrayList<U>> unzip( Collection<Pair<T, U>> col ) {
+        ArrayList<T> list1 = new ArrayList<T>( col.size() );
+        ArrayList<U> list2 = new ArrayList<U>( col.size() );
+        for ( Pair<T, U> pair : col ) {
+            list1.add( pair.first );
+            list2.add( pair.second );
+        }
+        return new Pair<ArrayList<T>, ArrayList<U>>( list1, list2 );
     }
 
 }
