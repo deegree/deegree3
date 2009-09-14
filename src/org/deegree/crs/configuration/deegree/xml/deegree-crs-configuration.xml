@@ -2275,6 +2275,37 @@
   </crs:projection>
  </crs:projectedCRS> 
  <crs:projectedCRS>
+ <!--rb: This crs is defined with the swiss oblique mercator, in deegree it uses the transverse mercator projection is this correct?-->
+  <crs:id>EPSG:21780</crs:id>
+  <crs:id>URN:OGC:DEF:CRS:EPSG::21780</crs:id>
+  <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#21780</crs:id>
+  <crs:id>URN:OPENGIS:DEF:CRS:EPSG::21780</crs:id>
+  <crs:name>Bern 1898 (Bern) / LV03C </crs:name>
+  <crs:version>2008-1-16T9:49</crs:version>
+  <crs:Axis>
+   <crs:name>x</crs:name>
+   <crs:units>metre</crs:units>
+   <crs:axisOrientation>east</crs:axisOrientation>
+  </crs:Axis>
+  <crs:Axis>
+   <crs:name>y</crs:name>
+   <crs:units>metre</crs:units>
+   <crs:axisOrientation>north</crs:axisOrientation>
+  </crs:Axis>
+  <crs:axisOrder>x, y</crs:axisOrder>
+  <crs:usedGeographicCRS>EPSG:4801</crs:usedGeographicCRS>
+  <crs:projection>
+   <crs:transverseMercator>
+    <crs:latitudeOfNaturalOrigin inDegrees="true">46.95240555555556</crs:latitudeOfNaturalOrigin>
+    <crs:longitudeOfNaturalOrigin inDegrees="true">0</crs:longitudeOfNaturalOrigin>
+    <crs:scaleFactor>1.0</crs:scaleFactor>
+    <crs:falseEasting>0</crs:falseEasting>
+    <crs:falseNorthing>0</crs:falseNorthing>
+    <crs:northernHemisphere>true</crs:northernHemisphere>
+   </crs:transverseMercator>
+  </crs:projection>
+ </crs:projectedCRS>  
+ <crs:projectedCRS>
   <crs:id>EPSG:21781</crs:id>
   <crs:id>URN:OGC:DEF:CRS:EPSG::21781</crs:id>
   <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#21781</crs:id>
@@ -18002,6 +18033,36 @@
     <crs:falseEasting>5.25E7</crs:falseEasting>
     <crs:falseNorthing>0.0</crs:falseNorthing>
     <crs:northernHemisphere>true</crs:northernHemisphere>
+   </crs:transverseMercator>
+  </crs:projection>
+ </crs:projectedCRS>
+ <crs:projectedCRS>
+  <crs:id>EPSG:27200</crs:id>
+  <crs:id>URN:OGC:DEF:CRS:EPSG::27200</crs:id>
+  <crs:id>HTTP://WWW.OPENGIS.NET/GML/SRS/EPSG.XML#27200</crs:id>
+  <crs:id>URN:OPENGIS:DEF:CRS:EPSG::27200</crs:id>
+  <crs:name>NZGD49 / New Zealand Map Grid </crs:name>
+  <crs:version>2008-1-16T9:49</crs:version>
+  <crs:Axis>
+   <crs:name>x</crs:name>
+   <crs:units>metre</crs:units>
+   <crs:axisOrientation>east</crs:axisOrientation>
+  </crs:Axis>
+  <crs:Axis>
+   <crs:name>y</crs:name>
+   <crs:units>metre</crs:units>
+   <crs:axisOrientation>north</crs:axisOrientation>
+  </crs:Axis>
+  <crs:axisOrder>x, y</crs:axisOrder>
+  <crs:usedGeographicCRS>EPSG:4272</crs:usedGeographicCRS>
+  <crs:projection>
+   <crs:transverseMercator>
+    <crs:latitudeOfNaturalOrigin inDegrees="true">-41.0</crs:latitudeOfNaturalOrigin>
+    <crs:longitudeOfNaturalOrigin inDegrees="true">173.0</crs:longitudeOfNaturalOrigin>
+    <crs:scaleFactor>1.0</crs:scaleFactor>
+    <crs:falseEasting>2510000</crs:falseEasting>
+    <crs:falseNorthing>6023150.0</crs:falseNorthing>
+    <crs:northernHemisphere>false</crs:northernHemisphere>
    </crs:transverseMercator>
   </crs:projection>
  </crs:projectedCRS>
