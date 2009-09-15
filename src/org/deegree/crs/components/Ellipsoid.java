@@ -42,8 +42,8 @@ import org.deegree.crs.CRSCodeType;
 import org.deegree.crs.CRSIdentifiable;
 
 /**
- * The <code>Ellipsoid</code> class hold all parameters which are necessary to define an Ellipsoid. Every Ellipsoid
- * has a semi-major-axis and one of inverse_flattening, eccentricity or semi-minor-axis.
+ * The <code>Ellipsoid</code> class hold all parameters which are necessary to define an Ellipsoid. Every Ellipsoid has
+ * a semi-major-axis and one of inverse_flattening, eccentricity or semi-minor-axis.
  * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * 
@@ -436,7 +436,7 @@ public class Ellipsoid extends CRSIdentifiable {
      * distribution and is relatively fast. It is created from field <b>f</b> as follows:
      * <ul>
      * <li>boolean -- code = (f ? 0 : 1)</li>
-     * <li>byte, char, short, int -- code = (int)f </li>
+     * <li>byte, char, short, int -- code = (int)f</li>
      * <li>long -- code = (int)(f ^ (f &gt;&gt;&gt;32))</li>
      * <li>float -- code = Float.floatToIntBits(f);</li>
      * <li>double -- long l = Double.doubleToLongBits(f); code = (int)(l ^ (l &gt;&gt;&gt; 32))</li>
@@ -465,5 +465,12 @@ public class Ellipsoid extends CRSIdentifiable {
         code = code * 37 + (int) ( tmp ^ ( tmp >>> 32 ) );
 
         return (int) ( code >>> 32 ) ^ (int) code;
+    }
+
+    /**
+     * @return true if this ellipsoid has no eccentricity.
+     */
+    public boolean isSphere() {
+        return eccentricity == 0;
     }
 }
