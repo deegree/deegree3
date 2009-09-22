@@ -245,7 +245,7 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
     }
 
     @Override
-    public int performUpdate( QName ftName, List<Property> replacementProps, Filter filter, String lockId )
+    public int performUpdate( QName ftName, List<Property<?>> replacementProps, Filter filter, String lockId )
                             throws FeatureStoreException {
         FeatureType ft = store.getSchema().getFeatureType( ftName );
         if ( ft == null ) {
@@ -258,7 +258,7 @@ class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
                 FeatureCollection newFc = fc.getMembers( filter );
                 updated = newFc.size();
                 for ( Feature feature : newFc ) {
-                    for ( Property prop : replacementProps ) {
+                    for ( Property<?> prop : replacementProps ) {
                         // TODO what about multi properties
                         feature.setPropertyValue( prop.getType().getName(), 0, prop.getValue() );
                     }

@@ -54,9 +54,9 @@ import org.slf4j.LoggerFactory;
  * <p>
  * Some notes:
  * <ul>
- * <li>There is no default head for the feature type substitution relation as in GML (prior to 3.2: gml:_Feature, since
- * 3.2: gml:AbstractFeature). This is not necessary, as each {@link FeatureType} object is already identified as a
- * feature type by its class.</li>
+ * <li>There is no default head for the feature type substitution relation as in GML (prior to GML 3.2: element
+ * <code>gml:_Feature</code>, since 3.2: <code>gml:AbstractFeature</code>). This is not necessary, as each
+ * {@link FeatureType} object is already identified being a feature type by its class.</li>
  * </ul>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
@@ -96,7 +96,7 @@ public class ApplicationSchema {
 
         for ( FeatureType ft : fts ) {
             ftNameToFt.put( ft.getName(), ft );
-            ft.setSchema (this);
+            ft.setSchema( this );
         }
 
         // build substitution group lookup maps
@@ -204,7 +204,7 @@ public class ApplicationSchema {
      */
     public boolean isValidSubstitution( FeatureType ft, FeatureType substitution ) {
         if ( substitution == null || ft == null ) {
-            LOG.warn( "Testing substitutability against null feature type." );
+            LOG.debug( "Testing substitutability against null feature type." );
             return true;
         }
         LOG.debug( "ft: " + ft.getName() + ", substitution: " + substitution.getName() );

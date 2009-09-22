@@ -1,4 +1,4 @@
-//$HeadURL: svn+ssh://mschneider@svn.wald.intevation.org/deegree/base/trunk/resources/eclipse/files_template.xml $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -34,7 +34,7 @@
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
 
-package org.deegree.protocol.wfs.getfeature;
+package org.deegree.protocol.wfs.getfeaturewithlock;
 
 import static org.deegree.commons.xml.CommonNamespaces.OGCNS;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
@@ -60,22 +60,27 @@ import org.deegree.filter.expression.PropertyName;
 import org.deegree.filter.sort.SortProperty;
 import org.deegree.filter.xml.Filter110XMLDecoder;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
+import org.deegree.protocol.wfs.getfeature.FilterQuery;
+import org.deegree.protocol.wfs.getfeature.Query;
+import org.deegree.protocol.wfs.getfeature.ResultType;
+import org.deegree.protocol.wfs.getfeature.TypeName;
+import org.deegree.protocol.wfs.getfeature.XLinkPropertyName;
 
 /**
- * Adapter between XML <code>GetFeature</code> requests and {@link GetFeature} objects.
+ * Adapter between XML <code>GetFeatureWithLock</code> requests and {@link GetFeatureWithLock} objects.
  * <p>
  * TODO code for exporting to XML
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
- * @author last edited by: $Author: schneider $
+ * @author last edited by: $Author$
  * 
- * @version $Revision: $, $Date: $
+ * @version $Revision$, $Date$
  */
-public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
+public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
     /**
-     * Parses a WFS <code>GetFeature</code> document into a {@link GetFeature} object.
+     * Parses a WFS <code>GetFeatureWithLock</code> document into a {@link GetFeatureWithLock} object.
      * <p>
      * Supported versions:
      * <ul>
@@ -83,7 +88,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * <li>WFS 1.1.0</li>
      * </ul>
      * 
-     * @return parsed {@link GetFeature} request
+     * @return parsed {@link GetFeatureWithLock} request
      * @throws Exception
      * @throws XMLParsingException
      *             if a syntax error occurs in the XML
@@ -92,11 +97,11 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
      * @throws InvalidParameterValueException
      *             if a parameter contains a syntax error
      */
-    public GetFeature parse()
+    public GetFeatureWithLock parse()
                             throws Exception {
         Version version = Version.parseVersion( getNodeAsString( rootElement, new XPath( "@version", nsContext ), null ) );
 
-        GetFeature result = null;
+        GetFeatureWithLock result = null;
 
         if ( VERSION_110.equals( version ) )
             result = parse110();
@@ -108,90 +113,16 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         return result;
     }
 
-    // /**
-    // *
-    // * @return
-    // */
-    // public GetFeature parse100() {
-    // GetFeature result = null;
-    //
-    // String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
-    //
-    // String outputFormat = getNodeAsString( rootElement, new XPath( "@outputFormat", nsContext ), null );
-    //
-    // String maxFeaturesStr = getNodeAsString( rootElement, new XPath( "@maxFeatures", nsContext ), null );
-    // Integer maxFeatures = null;
-    // if ( maxFeaturesStr != null )
-    // maxFeatures = Integer.parseInt( maxFeaturesStr );
-    //
-    // List<OMElement> queries = getRequiredElements( rootElement, new XPath( "Query", nsContext ) );
-    //
-    // List<Query> filterQueries = new ArrayList<Query>();
-    //
-    // for ( OMElement query : queries ) {
-    // List<PropertyName> propNames = new ArrayList<PropertyName>();
-    // Filter filter = null;
-    //
-    // // get the child elements
-    // Iterator<OMElement> iterator = query.getChildElements();
-    // while ( iterator.hasNext() ) {
-    // OMElement el = iterator.next();
-    // if ( el.getQName().getLocalPart().equals( "PropertyName" ) ) {
-    // NamespaceContext nsContext = getNamespaceContext( el );
-    // PropertyName propName = new PropertyName( el.getQName().getLocalPart(), nsContext );
-    // propNames.add( propName );
-    // }
-    // if ( el.getQName().getLocalPart().equals( "Filter" ) ) {
-    // Filter110XMLAdapter filterAdapter = new Filter110XMLAdapter();
-    // filter = filterAdapter.parse();
-    // }
-    // }
-    //
-    // // get the attributes
-    // String queryHandle = null;
-    // TypeName[] typeName = new TypeName[1];
-    // String featureVersion = null;
-    //
-    // Iterator<OMAttribute> attributes = query.getAllAttributes();
-    // while ( attributes.hasNext() ) {
-    // OMAttribute att = attributes.next();
-    // if ( att.getLocalName().equals( "handle" ) )
-    // queryHandle = att.getAttributeValue();
-    // if ( att.getLocalName().equals( "typeName" ) ) {
-    // String typeNameStr = att.getAttributeValue();
-    // QName typeNameAsQ = query.resolveQName( typeNameStr );
-    // typeName[0] = new TypeName( typeNameAsQ, null );
-    // }
-    // if ( att.getLocalName().equals( "featureVersion" ) )
-    // featureVersion = att.getAttributeValue();
-    // }
-    //
-    // // convert some lists to arrays to conform the FilterQuery constructor signature
-    // PropertyName[] propNamesArray = new PropertyName[ propNames.size() ];
-    //
-    // Query filterQuery = new FilterQuery( queryHandle, null, featureVersion, null,
-    // propNamesArray, null, null,
-    // null, filter );
-    // filterQueries.add( filterQuery );
-    // }
-    // Query[] queryArray = new FilterQuery[ filterQueries.size() ];
-    // filterQueries.toArray( queryArray );
-    //
-    // result = new GetFeature( VERSION_100, handle, null, outputFormat, maxFeatures, null,
-    // null, queryArray );
-    //
-    // return result;
-    // }
-
     /**
-     * Parses a WFS 1.1.0 <code>GetFeature</code> document into a {@link GetFeature} object.
+     * Parses a WFS 1.1.0 <code>GetFeatureWithLock</code> document into a {@link GetFeatureWithLock} object.
      * 
-     * @return a GetFeature instance
+     * @return a GetFeatureWithLock instance
      */
-    public GetFeature parse110() {
+    public GetFeatureWithLock parse110() {
 
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
-
+        int expiry = getNodeAsInt( rootElement, new XPath( "@expiry", nsContext ), -1 );
+        
         String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ), null );
         ResultType resultType = null;
         if ( resultTypeStr != null ) {
@@ -332,7 +263,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
         Query[] queryArray = new FilterQuery[queries.size()];
         queries.toArray( queryArray );
 
-        return new GetFeature( VERSION_110, handle, resultType, outputFormat, maxFeatures, traverseXlinkDepth,
-                               traverseXlinkExpiry, queryArray );
+        return new GetFeatureWithLock( VERSION_110, handle, resultType, outputFormat, maxFeatures, traverseXlinkDepth,
+                               traverseXlinkExpiry, queryArray, expiry );
     }
 }

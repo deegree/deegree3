@@ -51,6 +51,8 @@ import org.deegree.filter.OperatorFilter;
  * <p>
  * Please note that a transaction must always be ended by calling either {@link #commit()} or {@link #rollback()}.
  * </p>
+ *
+ * @see FeatureStore#acquireTransaction()
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
@@ -60,9 +62,9 @@ import org.deegree.filter.OperatorFilter;
 public interface FeatureStoreTransaction {
 
     /**
-     * Returns the associated {@link FeatureStore} instance.
+     * Returns the underlying {@link FeatureStore} instance.
      * 
-     * @return the associated {@link FeatureStore} instance
+     * @return the underlying {@link FeatureStore} instance
      */
     public FeatureStore getStore();
 
@@ -78,7 +80,7 @@ public interface FeatureStoreTransaction {
 
     /**
      * Aborts the changes that have been performed in this transaction and releases the transaction instance so other
-     * clients may acquire a transaction on the {@link FeatureStore}
+     * clients may acquire a transaction on the {@link FeatureStore}.
      * 
      * @throws FeatureStoreException
      *             if the rollback fails
@@ -116,7 +118,7 @@ public interface FeatureStoreTransaction {
      * @throws FeatureStoreException
      *             if the update fails
      */
-    public int performUpdate( QName ftName, List<Property> replacementProps, Filter filter, String lockId )
+    public int performUpdate( QName ftName, List<Property<?>> replacementProps, Filter filter, String lockId )
                             throws FeatureStoreException;
 
     /**

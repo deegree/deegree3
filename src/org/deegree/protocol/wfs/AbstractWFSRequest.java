@@ -38,7 +38,7 @@ package org.deegree.protocol.wfs;
 import org.deegree.commons.types.ows.Version;
 
 /**
- * Represents a <code>DescribeFeatureType</code> request to a WFS.
+ * Abstract base class for WFS request beans.
  *
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $

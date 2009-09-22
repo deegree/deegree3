@@ -55,8 +55,14 @@ import org.deegree.protocol.wfs.getfeature.Query;
  */
 public interface FeatureStore {
 
+    /**
+     * Called by the container to indicate that this {@link FeatureStore} instance is being placed into service.
+     */
     public void init();
 
+    /**
+     * Called by the container to indicate that this {@link FeatureStore} instance is being taken out of service.
+     */
     public void destroy();
 
     /**
