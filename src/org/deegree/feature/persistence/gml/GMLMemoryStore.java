@@ -60,6 +60,7 @@ import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
 import org.deegree.filter.FilterEvaluationException;
@@ -301,5 +302,11 @@ public class GMLMemoryStore implements FeatureStore {
             FeatureCollection fc = ftToFeatures.get( feature.getType() );
             fc.remove( feature );
         }
+    }
+
+    @Override
+    public LockManager getLockManager()
+                            throws FeatureStoreException {
+        throw new FeatureStoreException( "Locking is not supported." );
     }
 }

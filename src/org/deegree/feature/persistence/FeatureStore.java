@@ -38,6 +38,7 @@ package org.deegree.feature.persistence;
 
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.geometry.Geometry;
 import org.deegree.protocol.wfs.getfeature.Query;
@@ -93,7 +94,7 @@ public interface FeatureStore {
     /**
      * Retrieves the stored object with a certain id.
      * 
-     * TODO check if common interface for returned objects can be used here
+     * TODO check if a common interface for returned objects should be used here (instead of <code>Object</code>)
      * 
      * @param id
      *            identifier of the object to be retrieved
@@ -105,10 +106,20 @@ public interface FeatureStore {
     /**
      * Acquires transactional access to the feature store.
      * 
-     * @return transaction object that allows to perform transactions operations on the datastore
+     * @return transaction object that allows to perform transactions operations on the datastore, never null
      * @throws FeatureStoreException
-     *             if the transactional access could not be acquired
+     *             if the transactional access could not be acquired or is not implemented for this {@link FeatureStore}
      */
     public FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException;
+    
+    /**
+     * Returns the associated {@link LockManager}.
+     * 
+     * @return the associated {@link LockManager} instance, never null
+     * @throws FeatureStoreException
+     *             if the {@link FeatureStore} does not implement locking 
+     */
+    public LockManager getLockManager()
+                            throws FeatureStoreException;    
 }
