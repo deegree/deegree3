@@ -36,6 +36,9 @@
 
 package org.deegree.rendering.r2d.se.unevaluated;
 
+import static java.awt.Color.black;
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -46,8 +49,22 @@ import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
 import org.deegree.filter.MatchableObject;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.multi.MultiCurve;
+import org.deegree.geometry.multi.MultiLineString;
+import org.deegree.geometry.multi.MultiPoint;
+import org.deegree.geometry.multi.MultiPolygon;
+import org.deegree.geometry.multi.MultiSurface;
+import org.deegree.geometry.primitive.Curve;
+import org.deegree.geometry.primitive.Point;
+import org.deegree.geometry.primitive.Surface;
+import org.deegree.rendering.r2d.styling.LineStyling;
+import org.deegree.rendering.r2d.styling.PointStyling;
+import org.deegree.rendering.r2d.styling.PolygonStyling;
 import org.deegree.rendering.r2d.styling.Styling;
 import org.deegree.rendering.r2d.styling.TextStyling;
+import org.deegree.rendering.r2d.styling.components.Fill;
+import org.deegree.rendering.r2d.styling.components.Stroke;
+import org.slf4j.Logger;
 
 /**
  * <code>Style</code>
@@ -59,11 +76,21 @@ import org.deegree.rendering.r2d.styling.TextStyling;
  */
 public class Style {
 
+    private static final Logger LOG = getLogger( Style.class );
+
     private LinkedList<Continuation<LinkedList<Symbolizer<?>>>> rules = new LinkedList<Continuation<LinkedList<Symbolizer<?>>>>();
 
     private HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
 
     private String name;
+
+    private boolean useDefault;
+
+    private PointStyling defaultPointStyle;
+
+    private LineStyling defaultLineStyle;
+
+    private PolygonStyling defaultPolygonStyle;
 
     /**
      * @param rules
@@ -91,10 +118,40 @@ public class Style {
     }
 
     /**
+     * Uses first geometry and default style.
+     */
+    public Style() {
+        useDefault = true;
+        defaultPointStyle = new PointStyling();
+        defaultLineStyle = new LineStyling();
+        defaultPolygonStyle = new PolygonStyling();
+
+        defaultPolygonStyle.fill = new Fill();
+        defaultPolygonStyle.stroke = new Stroke();
+        defaultPolygonStyle.stroke.color = black;
+    }
+
+    /**
      * @param f
      * @return a pair suitable for rendering
      */
     public LinkedList<Triple<Styling, Geometry, String>> evaluate( Feature f ) {
+        if ( useDefault ) {
+            LinkedList<Triple<Styling, Geometry, String>> list = new LinkedList<Triple<Styling, Geometry, String>>();
+
+            Geometry geom = f.getGeometryProperties()[0].getValue();
+            if ( geom instanceof Point || geom instanceof MultiPoint ) {
+                list.add( new Triple<Styling, Geometry, String>( defaultPointStyle, geom, null ) );
+            } else if ( geom instanceof Curve || geom instanceof MultiCurve || geom instanceof MultiLineString ) {
+                list.add( new Triple<Styling, Geometry, String>( defaultLineStyle, geom, null ) );
+            } else if ( geom instanceof Surface || geom instanceof MultiSurface || geom instanceof MultiPolygon ) {
+                list.add( new Triple<Styling, Geometry, String>( defaultPolygonStyle, geom, null ) );
+            } else {
+                LOG.error( "Geometries of type '{}' are not supported/known. Please report!", geom.getClass() );
+            }
+
+            return list;
+        }
         StringBuffer sb = new StringBuffer();
         LinkedList<Object> res = new LinkedList<Object>();
 
