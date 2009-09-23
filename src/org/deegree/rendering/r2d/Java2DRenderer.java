@@ -64,8 +64,11 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.Path2D.Double;
 import java.awt.image.BufferedImage;
 
+import org.deegree.crs.exceptions.TransformationException;
+import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
+import org.deegree.geometry.GeometryTransformer;
 import org.deegree.geometry.multi.MultiGeometry;
 import org.deegree.geometry.points.Points;
 import org.deegree.geometry.primitive.Curve;
@@ -102,6 +105,8 @@ public class Java2DRenderer implements Renderer {
 
     private AffineTransform worldToScreen = new AffineTransform();
 
+    private GeometryTransformer transformer;
+
     /**
      * @param graphics
      * @param width
@@ -118,6 +123,18 @@ public class Java2DRenderer implements Renderer {
             // we have to flip horizontally, so invert y scale and add the screen height
             worldToScreen.translate( -bbox.getMin().get0() * scalex, bbox.getMin().get1() * scaley + height );
             worldToScreen.scale( scalex, -scaley );
+
+            try {
+                if ( bbox.getCoordinateSystem() != null ) {
+                    transformer = new GeometryTransformer( bbox.getCoordinateSystem().getWrappedCRS() );
+                }
+            } catch ( IllegalArgumentException e ) {
+                LOG.debug( "Stack trace:", e );
+                LOG.warn( "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems." );
+            } catch ( UnknownCRSException e ) {
+                LOG.debug( "Stack trace:", e );
+                LOG.warn( "Setting up the renderer yielded an exception when setting up internal transformer. This may lead to problems." );
+            }
 
             LOG.debug( "For coordinate transformations, scaling by x = {} and y = {}", scalex, -scaley );
             LOG.trace( "Final transformation was {}", worldToScreen );
@@ -235,7 +252,27 @@ public class Java2DRenderer implements Renderer {
         graphics.setStroke( bs );
     }
 
+    private <T> T transform( T g ) {
+        if ( transformer != null ) {
+            try {
+                return (T) transformer.transform( (Geometry) g );
+            } catch ( IllegalArgumentException e ) {
+                LOG.debug( "Stack trace:", e );
+                LOG.warn( "Could not transform geometry before rendering, this may lead to problems." );
+            } catch ( TransformationException e ) {
+                LOG.debug( "Stack trace:", e );
+                LOG.warn( "Could not transform geometry before rendering, this may lead to problems." );
+            } catch ( UnknownCRSException e ) {
+                LOG.debug( "Stack trace:", e );
+                LOG.warn( "Could not transform geometry before rendering, this may lead to problems." );
+            }
+        }
+        return g;
+    }
+
     private void render( TextStyling styling, Font font, String text, Point p ) {
+        p = transform( p );
+
         Point2D.Double pt = (Point2D.Double) worldToScreen.transform( new Point2D.Double( p.get0(), p.get1() ), null );
         double x = pt.x + styling.displacementX;
         double y = pt.y + styling.displacementY;
@@ -282,6 +319,8 @@ public class Java2DRenderer implements Renderer {
             LOG.debug( "Trying to render null geometry." );
             return;
         }
+
+        geom = transform( geom );
 
         int style = styling.font.bold ? BOLD : PLAIN;
         switch ( styling.font.fontStyle ) {
@@ -359,6 +398,7 @@ public class Java2DRenderer implements Renderer {
             LOG.debug( "Trying to render null geometry." );
             return;
         }
+        geom = transform( geom );
 
         if ( LOG.isTraceEnabled() ) {
             LOG.trace( "Drawing " + geom + " with " + styling );
@@ -425,6 +465,8 @@ public class Java2DRenderer implements Renderer {
             LOG.debug( "Trying to render null geometry." );
             return;
         }
+
+        geom = transform( geom );
 
         LOG.trace( "Drawing {} with {}", geom, styling );
 
@@ -494,6 +536,9 @@ public class Java2DRenderer implements Renderer {
             LOG.debug( "Trying to render null geometry." );
             return;
         }
+
+        geom = transform( geom );
+
         if ( geom instanceof Point ) {
             LOG.warn( "Trying to render point with polygon styling." );
         }
