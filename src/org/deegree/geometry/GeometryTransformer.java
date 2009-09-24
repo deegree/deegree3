@@ -349,9 +349,10 @@ public class GeometryTransformer extends Transformer {
             if ( Double.isNaN( point.get2() ) ) {
                 result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y },
                                                      new CRS( trans.getTargetCRS() ) ) );
+            } else {
+                result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y, tmp.z },
+                                                     new CRS( trans.getTargetCRS() ) ) );
             }
-            result.add( geomFactory.createPoint( point.getId(), new double[] { tmp.x, tmp.y, tmp.z },
-                                                 new CRS( trans.getTargetCRS() ) ) );
         }
         return new PointsList( result );
     }
