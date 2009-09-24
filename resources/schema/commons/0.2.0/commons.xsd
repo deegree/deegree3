@@ -10,7 +10,7 @@
   </xs:annotation>
   <xs:simpleType name="currentVersionType">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="0.1.0" />
+      <xs:enumeration value="0.2.0" />
     </xs:restriction>
   </xs:simpleType>
   <!-- ========================================================== -->

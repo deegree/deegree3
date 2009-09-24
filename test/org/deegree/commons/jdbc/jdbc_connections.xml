@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <JDBCConnections xmlns="http://www.deegree.org/commons"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.deegree.org/commons ../../../../../resources/schema/commons/0.1.0/commons.xsd">
+  xsi:schemaLocation="http://www.deegree.org/commons ../../../../../resources/schema/commons/0.2.0/commons.xsd">
   <PooledConnection id="conn1">
     <Driver>org.postgresql.Driver</Driver>
     <Url>jdbc:postgresql://hurricane:5432/bonn_3doptimierung</Url>

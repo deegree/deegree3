@@ -3,7 +3,7 @@
 
     <import file="${ivybuild.dir}/ivy-build.xml" optional="false" />
 
-    <target name="build" depends="publish-local" description="-> compile and build the jar, and making it available for dependend modules."/>
+    <target name="build" depends="publish-local" description="-> compile and build the jar, and making it available for dependent modules."/>
 
     <target name="nightly-build" depends="clean-cache,publish-nightly">
         <echo message="A nightly build has been created"/>

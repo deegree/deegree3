@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<crs:definitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="0.1.0" xsi:schemaLocation="http://www.deegree.org/crs ..\..\..\..\..\..\..\resources\schema\crsdefinition.xsd">
+<crs:definitions xmlns:crs="http://www.deegree.org/crs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="0.2.0" xsi:schemaLocation="http://www.deegree.org/crs http://schemas.deegree.org/crs/0.2.0/crsdefinition.xsd">
  <crs:ellipsoid>
   <crs:id>GOOGLE_MAPS_SPHERE</crs:id>
   <crs:name>Spherical google_maps definition of WGS84_Ellipsoid</crs:name>

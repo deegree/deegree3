@@ -189,7 +189,7 @@ public class CRSExporter {
             xmlWriter.writeNamespace( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS );
             xmlWriter.writeAttribute( CommonNamespaces.XSI_PREFIX, CommonNamespaces.XSINS, "schemaLocation",
                                       "http://www.deegree.org/crs /home/ionita/workspace/d3_core/resources/schema/crsdefinition.xsd" );
-            xmlWriter.writeAttribute( "version", "0.1.0" );
+            xmlWriter.writeAttribute( "version", "0.2.0" );
         } catch ( XMLStreamException e ) {
             e.printStackTrace();
         }

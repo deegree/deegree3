@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns:ds="http://www.deegree.org/datasource" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:cm="http://www.deegree.org/commons"
   targetNamespace="http://www.deegree.org/datasource" elementFormDefault="qualified">
-  <import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.1.0/commons.xsd" />
+  <import namespace="http://www.deegree.org/commons" schemaLocation="../../commons/0.2.0/commons.xsd" />
   <annotation>
     <documentation>A datasource defines a location which supplies data.</documentation>
   </annotation>

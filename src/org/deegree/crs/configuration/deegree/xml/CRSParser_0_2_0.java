@@ -1,10 +1,10 @@
-//$HeadURL: https://svn.wald.intevation.org/svn/deegree/deegree3/commons/trunk/src/org/deegree/model/crs/configuration/deegree/CRSExporter_0_1_0.java $
+//$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
- Department of Geography, University of Bonn
+   Department of Geography, University of Bonn
  and
- lat/lon GmbH
+   lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,29 +32,51 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
- ----------------------------------------------------------------------------*/
+----------------------------------------------------------------------------*/
 
 package org.deegree.crs.configuration.deegree.xml;
 
+
 import java.util.Properties;
 
+import org.apache.axiom.om.OMElement;
+import org.deegree.commons.xml.CommonNamespaces;
+
 /**
- * 
- * The <code>CRSExporter_0_1_0</code> will export to the 0_1_0 xml format (the default)
- * 
+ * The <code>CRSParser_0_2_0</code> class TODO add class documentation here.
+ *
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- * @author last edited by: $Author: rbezema $
- * @version $Revision: $, $Date: $
- * 
+ * @author last edited by: $Author$
+ *
+ * @version $Revision$, $Date$
  */
-public class CRSExporter_0_1_0 extends CRSExporter {
+public class CRSParser_0_2_0 extends CRSParser {
 
     /**
-     * 
-     * @param properties
-     *            which can be used to read configuration parameters from.
+     *
      */
-    public CRSExporter_0_1_0( Properties properties ) {
-        super( properties );
+    private static final long serialVersionUID = 5619333696132594126L;
+
+    /**
+     * Another constructor, which is used for the automatic loading of the crs definitions file 0_1_0.
+     *
+     * @param provider
+     *            to be used for callback.
+     * @param properties
+     * @param rootElement
+     *            to be used as configuration backend.
+     */
+    public CRSParser_0_2_0( DeegreeCRSProvider provider, Properties properties, OMElement rootElement ) {
+        super( provider, rootElement );
     }
+
+    /**
+     * @param provider
+     * @param properties
+     */
+    public CRSParser_0_2_0( DeegreeCRSProvider provider, Properties properties ) {
+        super( provider, properties, "definitions", CommonNamespaces.CRSNS );
+        // TODO Auto-generated constructor stub
+    }
+
 }

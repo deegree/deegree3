@@ -29,7 +29,7 @@
 					type="crs:WGS84TransformationType" minOccurs="0"
 					maxOccurs="unbounded" />
 			</xs:sequence>
-			<xs:attribute name="version" fixed="0.1.0"/>			
+			<xs:attribute name="version" fixed="0.2.0"/>			
 		</xs:complexType>
 	</xs:element>
 	<!-- ######################
