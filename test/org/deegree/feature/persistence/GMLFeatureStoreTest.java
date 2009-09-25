@@ -85,7 +85,7 @@ public class GMLFeatureStoreTest {
     @Before
     public void setUp()
                             throws XMLParsingException, XMLStreamException, UnknownCRSException,
-                            FactoryConfigurationError, IOException, JAXBException {
+                            FactoryConfigurationError, IOException, JAXBException, FeatureStoreException {
         URL url = GMLFeatureStoreTest.class.getResource( "example.xml" );
         JAXBAdapter adapter = new JAXBAdapter( url );
         ApplicationSchema schema = adapter.getApplicationSchema();
@@ -164,5 +164,5 @@ public class GMLFeatureStoreTest {
         writer.setDefaultNamespace( "http://www.opengis.net/gml" );
         GML311GeometryEncoder exporter = new GML311GeometryEncoder(writer );
         exporter.exportRing( (Ring) o);
-    }
+    }        
 }

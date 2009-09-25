@@ -36,13 +36,16 @@
 
 package org.deegree.commons.utils;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * An <code>Iterator</code> that can (and must) be closed after it's not needed anymore.
  * <p>
- * This class is needed for <code>Iterator</code>s that generate the entries lazily, e.g. from SQL
- * <code>ResultSet</code>s.
+ * This class is used for <code>Iterator</code>s that generate their elements lazily, e.g. from SQL
+ * <code>ResultSet</code>s. In order to be able to release the underlying resources (such as JDBC
+ * <code>Connection</code>s), an explicit notification is necessary which is provided by the {@link #close()} method.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -59,4 +62,14 @@ public interface CloseableIterator<T> extends Iterator<T> {
      * Frees all underlying resources, no other method calls are permitted after calling this.
      */
     public void close();
+    
+    /**
+     * @return
+     */
+    public List<T> getAsListAndClose();
+    
+    /**
+     * @param collection
+     */
+    public Collection<T> getAsCollectionAndClose(Collection<T> collection);
 }

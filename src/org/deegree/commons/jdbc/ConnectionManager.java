@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.jdbc;
 
@@ -59,10 +59,10 @@ import org.slf4j.LoggerFactory;
  * Configuration of JDBC connections used in deegree is based on simple string identifiers: each configured JDBC
  * connection has a unique identifier. This class allows the retrieval of connections based on their identifier.
  * </p>
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class ConnectionManager {
@@ -71,9 +71,14 @@ public class ConnectionManager {
 
     private static Map<String, ConnectionPool> idToPools = new HashMap<String, ConnectionPool>();
 
+    static {
+        // TODO make this configurable
+        addConnection( "LOCK_DB", DatabaseType.UNDEFINED, "jdbc:derby:/tmp/lockdb;create=true", null, null, 0, 10 );
+    }
+
     /**
      * Returns a connection from the connection pool with the given id.
-     *
+     * 
      * @param id
      *            id of the connection pool
      * @return connection from the corresponding connection pool
@@ -91,7 +96,7 @@ public class ConnectionManager {
 
     /**
      * Returns the database type for the connection pool with the given id.
-     *
+     * 
      * @param id
      *            id of the connection pool
      * @return corresponding database type
@@ -109,7 +114,7 @@ public class ConnectionManager {
 
     /**
      * Adds the connection pools defined in the given file.
-     *
+     * 
      * @param jdbcConfigUrl
      * @throws JAXBException
      */
@@ -124,7 +129,7 @@ public class ConnectionManager {
 
     /**
      * Adds connection pools for the given pool definitions.
-     *
+     * 
      * @param jaxbConns
      */
     public static void addConnections( JDBCConnections jaxbConns ) {
@@ -137,7 +142,7 @@ public class ConnectionManager {
 
     /**
      * Adds a connection pool from the given pool definition.
-     *
+     * 
      * @param jaxbConn
      */
     public static void addConnection( PooledConnection jaxbConn ) {
@@ -163,7 +168,7 @@ public class ConnectionManager {
 
     /**
      * Adds a connection pool as specified in the parameters.
-     *
+     * 
      * @param id
      * @param type
      * @param url

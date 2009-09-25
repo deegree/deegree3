@@ -60,6 +60,7 @@ import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
@@ -84,6 +85,8 @@ public class GMLMemoryStore implements FeatureStore {
 
     private final Map<FeatureType, FeatureCollection> ftToFeatures = new HashMap<FeatureType, FeatureCollection>();
 
+    private final DefaultLockManager lockManager;
+
     private GMLMemoryStoreTransaction activeTransaction;
 
     private Thread transactionHolder;
@@ -93,12 +96,14 @@ public class GMLMemoryStore implements FeatureStore {
      * 
      * @param schema
      *            application schema, must not be null
+     * @throws FeatureStoreException
      */
-    public GMLMemoryStore( ApplicationSchema schema ) {
+    public GMLMemoryStore( ApplicationSchema schema ) throws FeatureStoreException {
         this.schema = schema;
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             ftToFeatures.put( ft, new GenericFeatureCollection() );
         }
+        lockManager = new DefaultLockManager( this, "LOCK_DB" );
     }
 
     /**
@@ -111,9 +116,10 @@ public class GMLMemoryStore implements FeatureStore {
      * @throws UnknownCRSException
      * @throws FactoryConfigurationError
      * @throws IOException
+     * @throws FeatureStoreException
      */
     public GMLMemoryStore( URL docURL, ApplicationSchema schema ) throws XMLStreamException, XMLParsingException,
-                            UnknownCRSException, FactoryConfigurationError, IOException {
+                            UnknownCRSException, FactoryConfigurationError, IOException, FeatureStoreException {
 
         this( schema );
         GMLIdContext idContext = new GMLIdContext();
@@ -307,6 +313,6 @@ public class GMLMemoryStore implements FeatureStore {
     @Override
     public LockManager getLockManager()
                             throws FeatureStoreException {
-        throw new FeatureStoreException( "Locking is not supported." );
+        return lockManager;
     }
 }
