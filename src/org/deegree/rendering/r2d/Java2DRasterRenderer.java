@@ -1,0 +1,143 @@
+//$HeadURL: http://wald.intevation.org/svn/deegree/deegree3/core/trunk/src/org/deegree/rendering/r2d/Java2DRasterRenderer.java $
+/*----------------------------------------------------------------------------
+ This file is part of deegree, http://deegree.org/
+ Copyright (C) 2001-2009 by:
+ Department of Geography, University of Bonn
+ and
+ lat/lon GmbH
+
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation; either version 2.1 of the License, or (at your option)
+ any later version.
+ This library is distributed in the hope that it will be useful, but WITHOUT
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ details.
+ You should have received a copy of the GNU Lesser General Public License
+ along with this library; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+ Contact information:
+
+ lat/lon GmbH
+ Aennchenstr. 19, 53177 Bonn
+ Germany
+ http://lat-lon.de/
+
+ Department of Geography, University of Bonn
+ Prof. Dr. Klaus Greve
+ Postfach 1147, 53001 Bonn
+ Germany
+ http://www.geographie.uni-bonn.de/deegree/
+
+ e-mail: info@deegree.org
+ ----------------------------------------------------------------------------*/
+
+package org.deegree.rendering.r2d;
+
+import java.awt.AlphaComposite;
+import org.deegree.filter.function.Categorize;
+import static org.slf4j.LoggerFactory.getLogger;
+
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+
+import org.deegree.coverage.raster.AbstractRaster;
+import org.deegree.coverage.raster.data.RasterData;
+import org.deegree.coverage.raster.utils.RasterFactory;
+import org.deegree.rendering.r2d.styling.RasterStyling;
+import org.slf4j.Logger;
+
+/**
+ * <code>Java2DRasterRenderer</code>
+ * 
+ * @author <a href="mailto:andrei6200@gmail.com">Andrei Aiordachioaie</a>
+ * @author last edited by: $Author: aaiordachioaie $
+ * 
+ * @version $Revision: 19497 $, $Date: 2009-09-11 $
+ */
+public class Java2DRasterRenderer implements RasterRenderer {
+
+    private static final Logger LOG = getLogger( Java2DRenderer.class );
+
+    private Graphics2D graphics;
+
+    private AffineTransform worldToScreen = new AffineTransform();
+
+    /**
+     * @param graphics
+     * @param width
+     * @param height
+     * @param bbox
+     */
+    /*
+    public Java2DRasterRenderer( Graphics2D graphics, int width, int height, Envelope bbox ) {
+        this.graphics = graphics;
+
+        if ( bbox != null ) {
+            double scalex = width / bbox.getWidth();
+            double scaley = height / bbox.getHeight();
+
+            // we have to flip horizontally, so invert y scale and add the screen height
+            worldToScreen.translate( -bbox.getMin().get0() * scalex, bbox.getMin().get1() * scaley + height );
+            worldToScreen.scale( scalex, -scaley );
+
+            LOG.debug( "For coordinate transformations, scaling by x = {} and y = {}", scalex, -scaley );
+            LOG.trace( "Final transformation was {}", worldToScreen );
+        } else {
+            LOG.warn( "No envelope given, proceeding with a scale of 1." );
+        }
+    }   */
+
+    /**
+     * @param graphics
+     */
+    public Java2DRasterRenderer( Graphics2D graphics ) {
+        this.graphics = graphics;
+    }
+
+    public void render(RasterStyling styling, AbstractRaster raster) {
+        LOG.info("Rendering raster with style...");
+        if (raster == null)
+        {
+            LOG.debug( "Trying to render null raster." );
+            return;
+        }
+        if (styling == null)
+        {
+            LOG.warn("Raster style is null, rendering without style");
+            render(raster);
+            return;
+        }
+        if (styling.categorize != null)
+        {
+//            LOG.info("Rendering coverage with categories...");
+//            raster = styling.categorize.evaluateRaster(raster);
+        }
+
+        if (styling.opacity != 1)
+        {
+            LOG.info("Using opacity: " + styling.opacity);
+            graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)styling.opacity));
+        }
+        
+        render(raster);
+        LOG.info("Done rendering raster.");
+    }
+
+    private void render(AbstractRaster raster)
+    {
+        RasterData data = raster.getAsSimpleRaster().getRasterData();
+        graphics.drawImage( RasterFactory.rasterDataToImage(data), 10, 10, null );
+    }
+
+    private void render(Categorize categorize, AbstractRaster raster)
+    {
+        LOG.info("Evaluating Categories on raster...");
+//        AbstractRaster newRaster = categorize.evaluateRaster(raster);
+//        render(newRaster);
+        LOG.info("Done rendering raster with Categories ...");
+    }
+
+}
