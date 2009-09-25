@@ -36,7 +36,11 @@
 
 package org.deegree.feature.persistence.lock;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.commons.utils.CloseableIterator;
+import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.filter.Filter;
 
 /**
  * Represents a lock of a {@link LockManager}.
@@ -56,13 +60,48 @@ public interface Lock {
     public String getId();
 
     /**
-     * Provides sequential access to the ids of all locked features.
+     * Returns the ids of all locked features.
      * <p>
      * NOTE: The caller <b>must</b> invoke {@link CloseableIterator#close()} after it's not needed anymore -- otherwise,
      * backing resources (such as database connections) may not be freed.
      * </p>
      * 
-     * @return an iterator over all locked feature ids
+     * @return an iterator for all locked feature ids
+     * @throws FeatureStoreException 
      */
-    public CloseableIterator<String> getLockedFeatures();
+    public CloseableIterator<String> getLockedFeatures() throws FeatureStoreException;
+
+    /**
+     * Returns whether this {@link Lock} involves the specified feature.
+     * 
+     * @param fid
+     *            id of the feature
+     * @return true, if the feature is involved, false otherwise
+     * @throws FeatureStoreException 
+     */
+    public boolean isLocked( String fid ) throws FeatureStoreException;
+
+    /**
+     * Releases all locked features (invalidates the lock).
+     * @throws FeatureStoreException 
+     */
+    public void release() throws FeatureStoreException;
+
+    /**
+     * Releases the specified feature from the lock.
+     * 
+     * @param fid
+     *            id of the feature
+     * @throws FeatureStoreException 
+     */
+    public void release( String fid ) throws FeatureStoreException;
+
+    /**
+     * Releases the specified features from the lock.
+     * 
+     * @param ftName
+     * @param filter
+     * @throws FeatureStoreException 
+     */
+    public void release( QName ftName, Filter filter ) throws FeatureStoreException;
 }

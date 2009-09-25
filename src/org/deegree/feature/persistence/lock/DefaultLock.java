@@ -37,14 +37,19 @@
 package org.deegree.feature.persistence.lock;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
-import java.util.NoSuchElementException;
+
+import javax.xml.namespace.QName;
 
 import org.deegree.commons.jdbc.ConnectionManager;
+import org.deegree.commons.jdbc.ResultSetIterator;
 import org.deegree.commons.utils.CloseableIterator;
+import org.deegree.feature.persistence.FeatureStoreException;
+import org.deegree.filter.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,93 +94,76 @@ public class DefaultLock implements Lock {
     }
 
     @Override
-    public CloseableIterator<String> getLockedFeatures() {
-
-        final Connection conn;
-        final Statement stmt;
-        final ResultSet rs;
-
+    public CloseableIterator<String> getLockedFeatures()
+                            throws FeatureStoreException {
+        CloseableIterator<String> fidIter = null;
         try {
-            conn = ConnectionManager.getConnection( jdbcConnId );
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery( "SELECT FID FROM LOCKED_FIDS WHERE LOCK_ID=" + id + "" );
+            Connection conn = ConnectionManager.getConnection( jdbcConnId );
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery( "SELECT FID FROM LOCKED_FIDS WHERE LOCK_ID=" + id + "" );
+
+            fidIter = new ResultSetIterator<String>( rs, conn, stmt ) {
+                @Override
+                protected String createElement( ResultSet rs )
+                                        throws SQLException {
+                    return rs.getString( 1 );
+                }
+            };
         } catch ( SQLException e ) {
             String msg = "Could not retrieve ids of locked features: " + e.getMessage();
             LOG.debug( msg, e );
-            throw new RuntimeException( msg, e );
+            throw new FeatureStoreException( msg, e );
         }
-
-        CloseableIterator<String> iter = new CloseableIterator<String>() {
-
-            private boolean currentRowRead = true;
-
-            @SuppressWarnings("synthetic-access")
-            @Override
-            public void close() {
-                try {
-                    rs.close();
-                } catch ( SQLException e ) {
-                    LOG.warn( "Error closing ResultSet: " + e.getMessage(), e );
-                }
-                try {
-                    stmt.close();
-                } catch ( SQLException e ) {
-                    LOG.warn( "Error closing Statement: " + e.getMessage(), e );
-                }
-                try {
-                    conn.close();
-                } catch ( SQLException e ) {
-                    LOG.warn( "Error closing Connection: " + e.getMessage(), e );
-                }
-            }
-
-            @Override
-            public boolean hasNext() {
-                if ( !currentRowRead ) {
-                    return true;
-                }
-                try {
-                    if ( rs.next() ) {
-                        currentRowRead = false;
-                        return true;
-                    }
-                } catch ( SQLException e ) {
-                    // try to close everything
-                    close();
-                    // wrap as unchecked exception
-                    throw new RuntimeException( e.getMessage(), e );
-                }
-                return false;
-            }
-
-            @Override
-            public String next() {
-                if ( !hasNext() ) {
-                    throw new NoSuchElementException();
-                }
-                currentRowRead = true;
-                String fid;
-                try {
-                    fid = rs.getString( 1 );
-                } catch ( SQLException e ) {
-                    // try to close everything
-                    close();
-                    // wrap as unchecked exception
-                    throw new RuntimeException( e.getMessage(), e );
-                }
-                return fid;
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
-        return iter;
+        return fidIter;
     }
 
     @Override
     public String toString() {
         return "{id=" + id + ",acquired=" + acquired + ",expires=" + expires + "}";
+    }
+
+    @Override
+    public boolean isLocked( String fid )
+                            throws FeatureStoreException {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public void release()
+                            throws FeatureStoreException {
+        try {
+            // delete entries from LOCK_FIDS table
+            Connection conn = ConnectionManager.getConnection( jdbcConnId );
+            PreparedStatement stmt = conn.prepareStatement( "DELETE FROM LOCKED_FIDS WHERE LOCK_ID=?" );
+            stmt.setString( 1, id );
+            stmt.execute();
+            stmt.close();
+
+            // delete entry from LOCK table
+            stmt = conn.prepareStatement( "DELETE FROM LOCKS WHERE ID=?" );
+            stmt.setString( 1, id );
+            stmt.execute();
+            stmt.close();
+
+            conn.commit();
+            conn.close();
+        } catch ( SQLException e ) {
+            throw new FeatureStoreException( e.getMessage(), e );
+        }
+    }
+
+    @Override
+    public void release( String fid )
+                            throws FeatureStoreException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void release( QName ftName, Filter filter )
+                            throws FeatureStoreException {
+        // TODO Auto-generated method stub
+
     }
 }
