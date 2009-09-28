@@ -67,9 +67,10 @@ public interface Lock {
      * </p>
      * 
      * @return an iterator for all locked feature ids
-     * @throws FeatureStoreException 
+     * @throws FeatureStoreException
      */
-    public CloseableIterator<String> getLockedFeatures() throws FeatureStoreException;
+    public CloseableIterator<String> getLockedFeatures()
+                            throws FeatureStoreException;
 
     /**
      * Returns whether this {@link Lock} involves the specified feature.
@@ -77,31 +78,36 @@ public interface Lock {
      * @param fid
      *            id of the feature
      * @return true, if the feature is involved, false otherwise
-     * @throws FeatureStoreException 
+     * @throws FeatureStoreException
      */
-    public boolean isLocked( String fid ) throws FeatureStoreException;
+    public boolean isLocked( String fid )
+                            throws FeatureStoreException;
 
     /**
      * Releases all locked features (invalidates the lock).
-     * @throws FeatureStoreException 
+     * 
+     * @throws FeatureStoreException
      */
-    public void release() throws FeatureStoreException;
+    public void release()
+                            throws FeatureStoreException;
 
     /**
      * Releases the specified feature from the lock.
      * 
      * @param fid
      *            id of the feature
-     * @throws FeatureStoreException 
+     * @throws FeatureStoreException
      */
-    public void release( String fid ) throws FeatureStoreException;
+    public void release( String fid )
+                            throws FeatureStoreException;
 
     /**
      * Releases the specified features from the lock.
      * 
      * @param ftName
      * @param filter
-     * @throws FeatureStoreException 
+     * @throws FeatureStoreException
      */
-    public void release( QName ftName, Filter filter ) throws FeatureStoreException;
+    public void release( QName ftName, Filter filter )
+                            throws FeatureStoreException;
 }

@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.deegree.commons.utils.CloseableIterator;
+import org.deegree.commons.utils.JDBCUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,21 +80,7 @@ public abstract class ResultSetIterator<T> implements CloseableIterator<T> {
 
     @Override
     public void close() {
-        try {
-            rs.close();
-        } catch ( SQLException e ) {
-            LOG.warn( "Error closing ResultSet: " + e.getMessage(), e );
-        }
-        try {
-            stmt.close();
-        } catch ( SQLException e ) {
-            LOG.warn( "Error closing Statement: " + e.getMessage(), e );
-        }
-        try {
-            conn.close();
-        } catch ( SQLException e ) {
-            LOG.warn( "Error closing Connection: " + e.getMessage(), e );
-        }
+        JDBCUtils.close( rs, stmt, conn, LOG );
     }
 
     @Override
@@ -138,7 +125,14 @@ public abstract class ResultSetIterator<T> implements CloseableIterator<T> {
 
     @Override
     public void remove() {
-        throw new UnsupportedOperationException();
+        try {
+            rs.deleteRow();
+        } catch ( SQLException e ) {
+            // try to close everything
+            close();
+            // wrap as unchecked exception
+            throw new RuntimeException( e.getMessage(), e );
+        }
     }
 
     @Override

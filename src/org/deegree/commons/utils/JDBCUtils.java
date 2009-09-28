@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,28 +32,30 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.commons.utils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+
+import org.slf4j.Logger;
 
 /**
  * This class contains static utility methods for working with JDBC.
- *
+ * 
  * @author <a href="mailto:tonnhofer@lat-lon.de">Oliver Tonnhofer</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
  */
 public final class JDBCUtils {
 
     /**
      * Close the object, suppress all errors/exceptions. Useful for finally clauses.
-     *
+     * 
      * @param conn
      */
     public static void close( Connection conn ) {
@@ -66,7 +68,7 @@ public final class JDBCUtils {
 
     /**
      * Close the object, suppress all errors/exceptions. Useful for finally clauses.
-     *
+     * 
      * @param resultSet
      */
     public static void close( ResultSet resultSet ) {
@@ -79,7 +81,7 @@ public final class JDBCUtils {
 
     /**
      * Close the object, suppress all errors/exceptions. Useful for finally clauses.
-     *
+     * 
      * @param stmt
      */
     public static void close( Statement stmt ) {
@@ -92,7 +94,7 @@ public final class JDBCUtils {
 
     /**
      * Close the object, suppress all errors/exceptions. Useful for finally clauses.
-     *
+     * 
      * @param stmt
      */
     public static void close( PreparedStatement stmt ) {
@@ -103,4 +105,46 @@ public final class JDBCUtils {
         }
     }
 
+    /**
+     * Tries to close each object from a <code>ResultSet</code>, <code>Statement</code>, <code>Connection</code> triple.
+     * Useful for cleaning up in <code>finally</code> clauses.
+     * 
+     * @param rs
+     *            <code>ResultSet</code> to be closed
+     * @param stmt
+     *            <code>Statement</code> to be closed
+     * @param conn
+     *            <code>Connection</code> to be closed
+     * @param log
+     *            used to log error messages, may be null
+     */
+    public static void close( ResultSet rs, Statement stmt, Connection conn, Logger log ) {
+        if ( rs != null ) {
+            try {
+                rs.close();
+            } catch ( SQLException e ) {
+                if ( log != null ) {
+                    log.error( "Unable to close ResultSet: " + e.getMessage() );
+                }
+            }
+        }
+        if ( stmt != null ) {
+            try {
+                stmt.close();
+            } catch ( SQLException e ) {
+                if ( log != null ) {
+                    log.error( "Unable to close Statement: " + e.getMessage() );
+                }
+            }
+        }
+        if ( conn != null ) {
+            try {
+                conn.close();
+            } catch ( SQLException e ) {
+                if ( log != null ) {
+                    log.error( "Unable to close Connection: " + e.getMessage() );
+                }
+            }
+        }
+    }
 }

@@ -83,16 +83,6 @@ public interface LockManager {
                             throws FeatureStoreException;
 
     /**
-     * Releases the given lock completely (all associated features are unlocked).
-     * 
-     * @param lock
-     *            lock to be released
-     * @throws FeatureStoreException
-     */
-    public void releaseLock( Lock lock )
-                            throws FeatureStoreException;
-
-    /**
      * Returns the active lock with the given id.
      * 
      * @param lockId

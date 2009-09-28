@@ -49,8 +49,6 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
-import junit.framework.Assert;
-
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStore;
@@ -92,21 +90,28 @@ public class DefaultLockManagerTest {
     public void testLockAllAndRelease()
                             throws FeatureStoreException {
 
-        QName ftName = new QName( "http://www.deegree.org/app", "Philosopher" );
-        Lock lock = lockManager.acquireLock( ftName, null, true, 60 * 1000 );
-
+        // acquire lock on all Philosopher features
+        QName ftName = new QName( "http://www.deegree.org/app", "Philosopher" );        
+        Lock lock = lockManager.acquireLock( ftName, null, true, 600 * 1000 );
+        
+        // check that all seven instances are locked
         List<String> lockedFids = lock.getLockedFeatures().getAsListAndClose();
-        assertEquals( 7, lockedFids.size() );        
+        assertEquals( 7, lockedFids.size() );
         for ( String fid : lockedFids ) {
             assertTrue( lock.isLocked( fid ) );
-            assertTrue( lockManager.isFeatureLocked( fid ) );            
+            assertTrue( lockManager.isFeatureLocked( fid ) );
+            assertTrue( lockManager.isFeatureModifiable( fid, lock.getId() ) );
+            // must not be modifiable when specifying any other lock id
+            assertFalse( lockManager.isFeatureModifiable( fid, lock.getId()  + "42") );
         }
-        
+
+        // unlock all features
         lock.release();
         for ( String fid : lockedFids ) {
-            assertFalse( lockManager.isFeatureLocked( fid ) );            
-        }        
-        
+            assertFalse( lockManager.isFeatureLocked( fid ) );
+        }
+
+        // now zero features must be locked
         assertEquals( 0, lock.getLockedFeatures().getAsListAndClose().size() );
     }
 }
