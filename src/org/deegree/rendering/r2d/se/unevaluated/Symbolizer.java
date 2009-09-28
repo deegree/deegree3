@@ -159,4 +159,9 @@ public class Symbolizer<T extends Copyable<T>> {
         return pair;
     }
 
+    /* Convenience method for debugging */
+    public T getBase()
+    {
+        return base;
+    }
 }
