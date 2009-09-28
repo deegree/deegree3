@@ -63,7 +63,7 @@ public class RasterRendererTestPanel
     public void setUp()
     {
         panel.init();
-        panel.setSize(500, 500);
+        panel.setSize(700, 700);
         panel.setVisible(true);
     }
 

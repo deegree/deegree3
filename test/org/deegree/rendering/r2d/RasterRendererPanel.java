@@ -38,10 +38,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.LookupOp;
-import java.awt.image.LookupTable;
-import java.awt.image.ShortLookupTable;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,7 +46,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -106,55 +101,28 @@ public class RasterRendererPanel extends JPanel
     {
         g.drawString("Hello World", 10, 10);
         renderTwoTransparentRasters();
-//        renderCategorizedRaster();
-//        invertImageColors();
+        applyCategorizeOnImage();
         renderTextWithStyle();
     }
 
-    public void renderCategorizedRaster()
+    public void applyCategorizeOnImage()
     {
         Graphics2D g2d = (Graphics2D) this.getGraphics();
         URI uri;
         try {
+            System.out.println("Using categorize: " + cat);
             Java2DRasterRenderer renderer = new Java2DRasterRenderer(g2d);
             RasterStyling style = new RasterStyling();
-            style.categorize = this.cat;
-            uri = Java2DRenderingTest.class.getResource("small_car.jpg").toURI();
+            style.categorize = cat;
+            uri = Java2DRenderingTest.class.getResource("car.jpg").toURI();
             AbstractRaster raster = RasterFactory.loadRasterFromFile(new File(uri));
+            BufferedImage img = RasterFactory.imageFromRaster(raster);
+            g2d.drawImage(img, null, 220, 50);
             renderer.render(style, raster);
-
         } catch (IOException ex)
         {
             ex.printStackTrace();
         } catch (URISyntaxException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
-    public void invertImageColors()
-    {
-        short[] inv = new short[256], norm = new short[256];
-        for (int i = 0; i < 256; i++)
-        {
-            norm[i] = (short)i;
-            inv[i] = (short) (255 - i);
-        }
-//        short[][] f = {norm, norm, inv};
-        LookupTable table = new ShortLookupTable(0, inv);
-        BufferedImageOp categ = new LookupOp(table, null);
-        try
-        {
-            LOG.info("Rendering image with inverted colors...");
-            URI uri = Java2DRenderingTest.class.getResource("small_car.jpg").toURI();
-            BufferedImage img = ImageIO.read(uri.toURL());
-            BufferedImage img2 = categ.filter(img, null);
-            Graphics2D g2d = (Graphics2D) this.getGraphics();
-            Java2DRasterRenderer renderer = new Java2DRasterRenderer(g2d);
-            g2d.drawImage(img2, null, 200, 200);
-            LOG.info("Done rendering inverted image !");
-        }
-        catch (Exception e)
         {
             e.printStackTrace();
         }
@@ -233,7 +201,7 @@ public class RasterRendererPanel extends JPanel
     public Categorize loadCategorizeFromXml() throws URISyntaxException, XMLStreamException, FileNotFoundException
     {
         final Class<RasterRendererTestPanel> cls = RasterRendererTestPanel.class;
-        URI uri = SymbologyParserTest.class.getResource("setest15.xml").toURI();
+        URI uri = SymbologyParserTest.class.getResource("setest17.xml").toURI();
         System.out.println("Loading resource: " + uri);
         File f = new File(uri);
         final XMLInputFactory fac = XMLInputFactory.newInstance();
