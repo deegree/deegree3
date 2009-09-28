@@ -87,6 +87,9 @@ public class FilterQuery extends Query {
                         PropertyName[] propertyNames, XLinkPropertyName[] xLinkPropertyNames, Function[] functions,
                         SortProperty[] sortBy, Filter filter ) {
         super( handle, typeNames, featureVersion, srsName, propertyNames, xLinkPropertyNames, functions, sortBy );
+        if ( typeNames == null || typeNames.length == 0 ) {
+            throw new IllegalArgumentException();
+        }
         this.filter = filter;
     }
 

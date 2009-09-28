@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
 import org.deegree.crs.CRS;
@@ -42,12 +42,12 @@ import org.deegree.filter.sort.SortProperty;
 
 /**
  * Represents a <code>Query</code> operation as a part of a {@link GetFeature} request.
- *
+ * 
  * @see GetFeature
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public abstract class Query {
@@ -70,12 +70,11 @@ public abstract class Query {
 
     /**
      * Creates a new {@link Query} instance.
-     *
+     * 
      * @param handle
      *            client-generated query identifier, may be null
      * @param typeNames
-     *            requested feature types (with optional aliases), must not be null and must always contain at least one
-     *            entry
+     *            requested feature types (with optional aliases), can be null
      * @param featureVersion
      *            version of the feature instances to be retrieved, may be null
      * @param srsName
@@ -95,9 +94,6 @@ public abstract class Query {
                   PropertyName[] propertyNames, XLinkPropertyName[] xLinkPropertyNames, Function[] functions,
                   SortProperty[] sortBy ) {
         this.handle = handle;
-        if ( typeNames == null || typeNames.length == 0 ) {
-            throw new IllegalArgumentException();
-        }
         this.typeNames = typeNames;
         this.featureVersion = featureVersion;
         this.srsName = srsName;
@@ -109,7 +105,7 @@ public abstract class Query {
 
     /**
      * Returns the client-generated identifier supplied with the query.
-     *
+     * 
      * @return the client-generated identifier, may be null
      */
     public String getHandle() {
@@ -118,7 +114,7 @@ public abstract class Query {
 
     /**
      * Returns the requested feature types (with optional aliases).
-     *
+     * 
      * @return the requested feature types, never null and contains always one entry
      */
     public TypeName[] getTypeNames() {
@@ -127,7 +123,7 @@ public abstract class Query {
 
     /**
      * Returns the version of the feature instances to be retrieved.
-     *
+     * 
      * @return the version of the feature instances to be retrieved, may be null
      */
     public String getFeatureVersion() {
@@ -136,7 +132,7 @@ public abstract class Query {
 
     /**
      * Returns the SRS that should be used for returned feature geometries.
-     *
+     * 
      * @return the SRS that should be used for returned feature geometries, may be null
      */
     public CRS getSrsName() {
@@ -153,7 +149,7 @@ public abstract class Query {
      * they are not, a Web Feature Service may add them automatically to the Query before processing it. Thus a client
      * application should, in general, be prepared to receive more properties than it requested.</i>
      * </p>
-     *
+     * 
      * @return the properties of the features that should be retrieved, may be null
      */
     public PropertyName[] getPropertyNames() {
@@ -162,7 +158,7 @@ public abstract class Query {
 
     /**
      * Returns the properties for which the the traversal of nested XLinks is selectively requested.
-     *
+     * 
      * @return the properties for which the the traversal of nested XLinks is selectively requested, may be null
      */
     public XLinkPropertyName[] getXLinkPropertyNames() {
@@ -171,7 +167,7 @@ public abstract class Query {
 
     /**
      * Returns the functions that should be fetched instead of the original property values.
-     *
+     * 
      * @return the functions that should be fetched instead of the original property values, may be null
      */
     public Function[] getFunctions() {
@@ -180,7 +176,7 @@ public abstract class Query {
 
     /**
      * Returns the properties whose values should be used to order the set of feature instances that satisfy the query.
-     *
+     * 
      * @return sort criteria, may be null
      */
     public SortProperty[] getSortBy() {

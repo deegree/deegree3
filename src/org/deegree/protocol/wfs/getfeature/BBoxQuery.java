@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.getfeature;
 
 import org.deegree.crs.CRS;
@@ -45,10 +45,10 @@ import org.deegree.geometry.Envelope;
  * A {@link Query} that selects features using an {@link Envelope}.
  * <p>
  * NOTE: Only KVP-based queries can be of this type. For XML-requests its only possible to use a filter constraint.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class BBoxQuery extends Query {
@@ -56,8 +56,8 @@ public class BBoxQuery extends Query {
     private final Envelope bbox;
 
     /**
-     * Creates a new {@link FilterQuery} instance.
-     *
+     * Creates a new {@link BBoxQuery} instance.
+     * 
      * @param handle
      *            client-generated query identifier, may be null
      * @param typeNames
@@ -84,7 +84,7 @@ public class BBoxQuery extends Query {
                       PropertyName[] propertyNames, XLinkPropertyName[] xLinkPropertyNames, Function[] functions,
                       SortProperty[] sortBy, Envelope bbox ) {
         super( handle, typeNames, featureVersion, srsName, propertyNames, xLinkPropertyNames, functions, sortBy );
-        if (bbox == null) {
+        if ( bbox == null ) {
             throw new IllegalArgumentException();
         }
         this.bbox = bbox;
@@ -92,7 +92,7 @@ public class BBoxQuery extends Query {
 
     /**
      * Returns the bounding box constraint.
-     *
+     * 
      * @return the bounding box constraint, never null
      */
     public Envelope getBBox() {
