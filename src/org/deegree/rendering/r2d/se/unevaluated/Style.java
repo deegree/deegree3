@@ -37,6 +37,8 @@
 package org.deegree.rendering.r2d.se.unevaluated;
 
 import static java.awt.Color.black;
+import static java.lang.Double.MAX_VALUE;
+import static java.lang.Double.MIN_VALUE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.util.Collection;
@@ -44,6 +46,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.utils.Triple;
 import org.deegree.feature.Feature;
@@ -78,7 +81,7 @@ public class Style {
 
     private static final Logger LOG = getLogger( Style.class );
 
-    private LinkedList<Continuation<LinkedList<Symbolizer<?>>>> rules = new LinkedList<Continuation<LinkedList<Symbolizer<?>>>>();
+    private LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>();
 
     private HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
 
@@ -97,7 +100,7 @@ public class Style {
      * @param labels
      * @param name
      */
-    public Style( Collection<Continuation<LinkedList<Symbolizer<?>>>> rules,
+    public Style( Collection<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules,
                   Map<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels, String name ) {
         this.rules.addAll( rules );
         this.labels.putAll( labels );
@@ -110,7 +113,10 @@ public class Style {
      * @param name
      */
     public Style( Symbolizer<?> symbolizer, Continuation<StringBuffer> label, String name ) {
-        rules.add( new InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>>( symbolizer ) );
+        InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>> contn = new InsertContinuation<LinkedList<Symbolizer<?>>, Symbolizer<?>>(
+                                                                                                                                               symbolizer );
+        rules.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn, new DoublePair( MIN_VALUE,
+                                                                                                         MAX_VALUE ) ) );
         if ( label != null ) {
             labels.put( (Symbolizer) symbolizer, label );
         }
@@ -129,6 +135,27 @@ public class Style {
         defaultPolygonStyle.fill = new Fill();
         defaultPolygonStyle.stroke = new Stroke();
         defaultPolygonStyle.stroke.color = black;
+    }
+
+    /**
+     * @param scale
+     * @return a filtered list of symbolizers
+     */
+    public Style filter( double scale ) {
+        if ( useDefault ) {
+            return this;
+        }
+
+        LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>();
+        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> p : this.rules ) {
+            System.out.println(p + "/" + scale);
+            if ( p.second.first <= scale && p.second.second >= scale ) {
+                rules.add( p );
+            } else {
+                LOG.debug( "Not using rule because of scale constraints, in style with name '{}'.", name );
+            }
+        }
+        return new Style( rules, labels, name );
     }
 
     /**
@@ -156,8 +183,8 @@ public class Style {
         LinkedList<Object> res = new LinkedList<Object>();
 
         LinkedList<Symbolizer<?>> list = new LinkedList<Symbolizer<?>>();
-        for ( Continuation<LinkedList<Symbolizer<?>>> rule : rules ) {
-            rule.evaluate( list, f );
+        for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> pair : rules ) {
+            pair.first.evaluate( list, f );
         }
 
         String text = null;

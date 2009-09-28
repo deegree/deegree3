@@ -37,6 +37,8 @@
 package org.deegree.rendering.r2d.se.parser;
 
 import static java.awt.Color.decode;
+import static java.lang.Double.MAX_VALUE;
+import static java.lang.Double.MIN_VALUE;
 import static java.lang.Double.parseDouble;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_DOCUMENT;
@@ -65,6 +67,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
 import org.deegree.filter.Expression;
@@ -1378,7 +1381,7 @@ public class SymbologyParser {
             }
         }
 
-        LinkedList<Continuation<LinkedList<Symbolizer<?>>>> result = new LinkedList<Continuation<LinkedList<Symbolizer<?>>>>();
+        LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> result = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>();
         HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>> labels = new HashMap<Symbolizer<TextStyling>, Continuation<StringBuffer>>();
         Common common = new Common();
 
@@ -1386,8 +1389,8 @@ public class SymbologyParser {
                                                                                                                       "CoverageStyle" ) ) ) ) {
             in.nextTag();
 
-            checkCommon(common, in);
-            
+            checkCommon( common, in );
+
             // TODO unused
             if ( in.getLocalName().equals( "SemanticTypeIdentifier" ) ) {
                 in.getElementText(); // AndThrowItAwayImmediately
@@ -1417,7 +1420,9 @@ public class SymbologyParser {
                 }
 
                 Common ruleCommon = new Common();
-                
+                double minScale = MIN_VALUE;
+                double maxScale = MAX_VALUE;
+
                 Filter filter = null;
                 LinkedList<Symbolizer<?>> syms = new LinkedList<Symbolizer<?>>();
 
@@ -1435,9 +1440,16 @@ public class SymbologyParser {
                         localReader.nextTag();
                     }
 
-                    // TODO legendgraphic, scales
+                    if ( localReader.getLocalName().equals( "MinScaleDenominator" ) ) {
+                        minScale = parseDouble( localReader.getElementText() );
+                    }
+                    if ( localReader.getLocalName().equals( "MaxScaleDenominator" ) ) {
+                        maxScale = parseDouble( localReader.getElementText() );
+                    }
+
+                    // TODO legendgraphic
                     if ( localReader.getLocalName().endsWith( "Symbolizer" ) ) {
-                        
+
                         Pair<Symbolizer<?>, Continuation<StringBuffer>> parsedSym = parseSymbolizer( localReader );
                         if ( parsedSym.second != null ) {
                             labels.put( (Symbolizer) parsedSym.first, parsedSym.second );
@@ -1446,7 +1458,9 @@ public class SymbologyParser {
                     }
                 }
 
-                result.add( new FilterContinuation( filter, syms ) );
+                FilterContinuation contn = new FilterContinuation( filter, syms );
+                DoublePair scales = new DoublePair( minScale, maxScale );
+                result.add( new Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>( contn, scales ) );
             }
         }
 
