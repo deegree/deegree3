@@ -1,4 +1,3 @@
-//$HeadURL: http://wald.intevation.org/svn/deegree/deegree3/core/trunk/src/org/deegree/rendering/r2d/Java2DRasterRenderer.java $
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
@@ -43,10 +42,13 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
+import java.awt.image.BufferedImage;
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.utils.RasterFactory;
+import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r2d.styling.RasterStyling;
+import org.deegree.rendering.r2d.utils.SimpleImage2RawData;
 import org.slf4j.Logger;
 
 /**
@@ -71,7 +73,6 @@ public class Java2DRasterRenderer implements RasterRenderer {
      * @param height
      * @param bbox
      */
-    /*
     public Java2DRasterRenderer( Graphics2D graphics, int width, int height, Envelope bbox ) {
         this.graphics = graphics;
 
@@ -88,7 +89,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
         } else {
             LOG.warn( "No envelope given, proceeding with a scale of 1." );
         }
-    }   */
+    }
 
     /**
      * @param graphics
@@ -99,6 +100,7 @@ public class Java2DRasterRenderer implements RasterRenderer {
 
     public void render(RasterStyling styling, AbstractRaster raster) {
         LOG.info("Rendering raster with style...");
+        BufferedImage img = null;
         if (raster == null)
         {
             LOG.debug( "Trying to render null raster." );
@@ -110,10 +112,17 @@ public class Java2DRasterRenderer implements RasterRenderer {
             render(raster);
             return;
         }
+        
         if (styling.categorize != null)
         {
-//            LOG.info("Rendering coverage with categories...");
-//            raster = styling.categorize.evaluateRaster(raster);
+            LOG.info("Applying categories on raster...");
+            BufferedImage img2 = RasterFactory.imageFromRaster(raster);
+            SimpleImage2RawData converter = new SimpleImage2RawData(img2);
+            LOG.debug("We have image with H={}, L={}", img2.getHeight(), img2.getWidth());
+            Integer[][] mat = converter.parse();
+//            if (mat == null)
+//                return null;
+            img = styling.categorize.buildImage(mat);
         }
 
         if (styling.opacity != 1)
@@ -121,21 +130,30 @@ public class Java2DRasterRenderer implements RasterRenderer {
             LOG.info("Using opacity: " + styling.opacity);
             graphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)styling.opacity));
         }
-        
-        render(raster);
+
+        LOG.info("Rendering ...");
+        if (img != null)
+            render(img);
+        else
+            render(raster);
         LOG.info("Done rendering raster.");
     }
 
     private void render(AbstractRaster raster)
     {
         RasterData data = raster.getAsSimpleRaster().getRasterData();
-        graphics.drawImage( RasterFactory.rasterDataToImage(data), 10, 10, null );
+        render(RasterFactory.imageFromRaster(raster));
+    }
+
+    private void render(BufferedImage img)
+    {
+        graphics.drawImage(img, worldToScreen, null);
     }
 
     private void render(Categorize categorize, AbstractRaster raster)
     {
         LOG.info("Evaluating Categories on raster...");
-//        AbstractRaster newRaster = categorize.evaluateRaster(raster);
+//        AbstractRaster newRaster = categorize.evaluateRaster1(raster);
 //        render(newRaster);
         LOG.info("Done rendering raster with Categories ...");
     }
