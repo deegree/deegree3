@@ -238,21 +238,16 @@ public class KVPUtils {
      * Example contents:
      * 
      * <pre>
-     * http://www.someserver.com/wfs.cgi?
-     * SERVICE=WFS&amp;
-     * VERSION=1.1.0&amp;
-     * REQUEST=DescribeFeatureType&amp;
+     * SERVICE=WFS
+     * VERSION=1.1.0
+     * REQUEST=DescribeFeatureType
      * TYPENAME=TreesA_1M
      * </pre>
      * 
      * What this method does:
      * <ul>
-     * <li>Only lines that contain a <code>'='</code> character are taken into account, so for the example the first
-     * line is discarded.</li>
-     * <li>Every line that contains a <code>'='</code> character is taken into account, so the first line of the example
-     * is discarded.</li>
-     * <li>Every line is split around the '=' character, the first part is used as the key, the second part as the
-     * value.</li>
+     * <li>Every line is split around the '=' character, the first part is used as the key, the second part as the value
+     * (if the line doesn't contain a '=', it is ignored).</li>
      * <li>Keys are uppercased.</li>
      * <li>Values are URL decoded.</li>
      * </ul>
