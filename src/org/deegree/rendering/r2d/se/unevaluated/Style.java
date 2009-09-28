@@ -148,7 +148,6 @@ public class Style {
 
         LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>> rules = new LinkedList<Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair>>();
         for ( Pair<Continuation<LinkedList<Symbolizer<?>>>, DoublePair> p : this.rules ) {
-            System.out.println(p + "/" + scale);
             if ( p.second.first <= scale && p.second.second >= scale ) {
                 rules.add( p );
             } else {
