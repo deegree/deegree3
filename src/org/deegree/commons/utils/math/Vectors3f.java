@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,31 +32,31 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils.math;
 
 /**
- * The <code>Vectors3f</code> class supplies convenience methods for 3 dimensional vector (represented as a float
- * array with length 3 ) calculations. No checking what so ever is done, so the callee has to make sure the arrays are
+ * The <code>Vectors3f</code> class supplies convenience methods for 3 dimensional vector (represented as a float array
+ * with length 3 ) calculations. No checking what so ever is done, so the callee has to make sure the arrays are
  * initialized and have a length of 3.
  * <p>
  * Two different methods of almost all functions exist, one which creates a new allocated array and one which puts the
  * result in a supplied array. Again, the callee has to make sure the supplied array is initialized and has a length of
  * at least 3.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class Vectors3f {
 
     /**
      * Returns the distance between the two given vectors.
-     *
+     * 
      * @param a
      *            array with length 3
      * @param b
@@ -69,8 +69,26 @@ public class Vectors3f {
     }
 
     /**
+     * Returns the distance between the two given vectors.
+     * 
+     * @param a
+     *            array with arbitrary length
+     * @param ia
+     *            index of vector in a array
+     * @param b
+     *            array with arbitrary length
+     * @param ib
+     *            index of vector in b array
+     * @return the distance between a and b.
+     */
+    public static float distance( float[] a, int ia, float[] b, int ib ) {
+        return (float) Math.sqrt( ( a[ia] - b[ib] ) * ( a[ia] - b[ib] ) + ( a[ia + 1] - b[ib + 1] )
+                                  * ( a[ia + 1] - b[ib + 1] ) + ( a[ia + 2] - b[ib + 2] ) * ( a[ia + 2] - b[ib + 2] ) );
+    }
+
+    /**
      * Subtract b from a and store the result in result.
-     *
+     * 
      * @param a
      *            array with length 3
      * @param b
@@ -86,7 +104,7 @@ public class Vectors3f {
 
     /**
      * Subtract b from a and store the result in a new allocated float[3] array.
-     *
+     * 
      * @param a
      *            array with length 3
      * @param b
@@ -143,7 +161,7 @@ public class Vectors3f {
      * Calculate the normal vector for vectors starting at index by using the vectors a=(index, index+1, index+2),
      * b=(index+3, index+4, index+5) and c=(index+6, index+7, index+8) by calculating the cross product from ab x ac and
      * store the result in a new allocated array with length 3.
-     *
+     * 
      * @param a
      *            array with length > index + 9
      * @param index
@@ -158,7 +176,7 @@ public class Vectors3f {
      * Calculate the normal vector for vectors starting at index by using the vectors a=(ia, ia+1, ia+2), b=(ib, ib+1,
      * ib+3) and c=(ic, ic+1, ic+2) by calculating the cross product from ab x ac and store the result in a new
      * allocated array with length 3.
-     *
+     * 
      * @param a
      *            array containing the ordinates of the vectors
      * @param ia
@@ -179,7 +197,7 @@ public class Vectors3f {
      * Calculate the normal vector for vectors starting at given indizes a=(ia, ia+1, ia+2), b=(ib, ib+1, ib+2) and
      * c=(ic, ic+1, ic+2) by calculating the cross product from ab x ac and store the result in given array with length
      * 3.
-     *
+     * 
      * @param a
      *            array containing the ordinates of the vectors
      * @param ia
@@ -220,7 +238,7 @@ public class Vectors3f {
      * Calculate the normal vector for vectors starting at index by using the vectors a=(index, index+1, index+2),
      * b=(index+3, index+4, index+5) and c=(index+6, index+7, index+8) by calculating the cross product from ab x ac and
      * store the result in given array with length 3.
-     *
+     * 
      * @param a
      *            an array containing the ordinates of the vectors with length > index + 9
      * @param index
@@ -239,7 +257,7 @@ public class Vectors3f {
      * b=(index+3, index+4, index+5) and c=(index+6, index+7, index+8) by calculating the cross product from ab x ac and
      * store the result in a new allocated array with length 3. If the resulting normal has length 0, the (unnormalized)
      * vector will be returned .
-     *
+     * 
      * @param a
      *            array containing the ordinates of the vectors with length > index + 9
      * @param index
@@ -254,7 +272,7 @@ public class Vectors3f {
      * Calculate the normal vector for vectors starting at index by using the vectors a=(ia, ia+1, ia+2), b=(ib, ib+1,
      * ib+2) and c=(ic, ic+1, ic+2) by calculating the cross product from ab x ac and store the result in a new
      * allocated array with length 3. If the resulting normal has length 0, the (unnormalized) vector will be returned .
-     *
+     * 
      * @param a
      *            array containing the ordinates of the vectors
      * @param ia
@@ -276,7 +294,7 @@ public class Vectors3f {
      * index+4, index+5) and c=(index+6, index+7, index+8) by calculating the cross product from ab x ac and normalize
      * the result which will be stored in the given result array with length 3. If the resulting normal has length 0,
      * the (unnormalized) vector will be returned .
-     *
+     * 
      * @param a
      *            array containing the ordinates of the vectors with length > index + 9
      * @param index
@@ -293,7 +311,7 @@ public class Vectors3f {
      * and c=(ic, ic+1, ic+2) by calculating the cross product from ab x ac and normalize the result which will be
      * stored in the given result array with length 3. If the resulting normal has length 0, the (unnormalized) vector
      * will be returned .
-     *
+     * 
      * @param a
      *            array containing the ordinates of the vectors
      * @param ia
@@ -313,7 +331,7 @@ public class Vectors3f {
     /**
      * Calculate the normal vector for given vectors a, b, c by calculating the cross product from ab x ac and store the
      * result in a new allocated array with length 3.
-     *
+     * 
      * @param a
      *            array with length 3
      * @param b
@@ -331,7 +349,7 @@ public class Vectors3f {
     /**
      * Calculate the normal vector for given vectors a, b, c by calculating the cross product from ab x ac and store the
      * result in given result vector.
-     *
+     * 
      * @param a
      *            array with length 3
      * @param b
@@ -351,7 +369,7 @@ public class Vectors3f {
      * Calculate the normalized normal vector for given triangle with vertices a, b, c by calculating the cross product
      * from ab x ac and normalize the result which will be stored in a new allocated array of length 3. If the resulting
      * normal has length 0, the (unnormalized) vector will be returned .
-     *
+     * 
      * @param a
      *            array with length 3
      * @param b
@@ -370,7 +388,7 @@ public class Vectors3f {
      * Calculate the normalized normal vector for given triangle with vertices a, b, c by calculating the cross product
      * from ab x ac and normalize the result which will be stored in the given result array with length 3. If the
      * resulting normal has length 0, the (unnormalized) vector will be returned .
-     *
+     * 
      * @param a
      *            array with length 3
      * @param b
@@ -387,7 +405,7 @@ public class Vectors3f {
 
     /**
      * Calculate the cross product of given vectors and store the result in a new allocated array of length 3.
-     *
+     * 
      * @param a
      *            array with length 3
      * @param b
@@ -402,14 +420,14 @@ public class Vectors3f {
 
     /**
      * Calculate the cross product of given vectors and store the result in given result vector with length 3
-     *
+     * 
      * @param a
      *            array with length 3
      * @param b
      *            array with length 3
      * @param result
      *            array with length 3
-     *
+     * 
      */
     public final static void cross( float[] a, float[] b, float[] result ) {
         result[0] = a[1] * b[2] - b[1] * a[2];
@@ -419,13 +437,13 @@ public class Vectors3f {
 
     /**
      * Calculate the dot product of given vectors (with length 3).
-     *
+     * 
      * @param a
      *            array with length 3
      * @param b
      *            array with length 3
      * @return the dot product of given vectors.
-     *
+     * 
      */
     public final static float dot( float[] a, float[] b ) {
         return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -443,7 +461,7 @@ public class Vectors3f {
     /**
      * Normalize the given vector (of length 3) in place. If the length of the vector is 0, the vector will not be
      * modified.
-     *
+     * 
      * @param a
      *            array with length 3
      */
@@ -459,7 +477,7 @@ public class Vectors3f {
     /**
      * Normalize the given vector (of length 3) and store the result in a new allocated array of length 3. If the length
      * of the vector is 0, the result vector will contain the same values as the given vector.
-     *
+     * 
      * @param a
      *            array with length 3
      * @return the normalized vector
@@ -483,7 +501,7 @@ public class Vectors3f {
 
     /**
      * Apply the given scale to all scalars in the vector
-     *
+     * 
      * @param scale
      *            to be applied
      * @param vector

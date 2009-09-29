@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
@@ -47,13 +47,13 @@ import org.deegree.rendering.r3d.opengl.rendering.model.prototype.PrototypeRefer
 /**
  * The <code>RenderableQualityModel</code> defines the basis for a QualityModel of a Renderable object. It holds a set
  * of geometries or a reference to a prototype, never both.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class RenderableQualityModel extends QualityModel<RenderableQualityModelPart> implements JOGLRenderable {
 
@@ -64,7 +64,7 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
 
     /**
      * Creates a GeometryQualityModel with an empty list of geometry patches
-     *
+     * 
      */
     public RenderableQualityModel() {
         super();
@@ -72,7 +72,7 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
 
     /**
      * Creates a GeometryQualityModel with the given geometry patches
-     *
+     * 
      * @param qualityModelParts
      */
     public RenderableQualityModel( ArrayList<RenderableQualityModelPart> qualityModelParts ) {
@@ -81,7 +81,7 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
 
     /**
      * Creates a GeometryQualityModel with the given geometry patch
-     *
+     * 
      * @param geometryPatch
      */
     public RenderableQualityModel( RenderableQualityModelPart geometryPatch ) {
@@ -167,5 +167,4 @@ public class RenderableQualityModel extends QualityModel<RenderableQualityModelP
             }
         }
     }
-
 }

@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
 
@@ -55,13 +55,13 @@ import com.sun.opengl.util.BufferUtil;
 /**
  * The <code>BillBoard</code> class represents a billboard an object always facing the viewer, with the z-axis as it's
  * rotation axis.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class BillBoard extends RenderableQualityModel implements PositionableModel {
 
@@ -110,11 +110,11 @@ public class BillBoard extends RenderableQualityModel implements PositionableMod
                                                                                                                 0.001f,
                                                                                                                 0.001f } ) );
 
-    private transient float[][] bbox;
+    private transient float[] bbox;
 
     /**
      * Constructs a billboard data structure with the given texture id.
-     *
+     * 
      * @param texture
      * @param location
      *            of the billboard
@@ -177,7 +177,7 @@ public class BillBoard extends RenderableQualityModel implements PositionableMod
      * cross product vector will have the same direction as the up vector if the angle is positive. For negative angles
      * the up vector's direction will opposed to the up vector, effectively reversing the rotation. from
      * http://www.lighthouse3d.com/opengl/billboarding/index.php?billCyl
-     *
+     * 
      * @param context
      *            to set the translation to
      * @param eye
@@ -213,7 +213,7 @@ public class BillBoard extends RenderableQualityModel implements PositionableMod
 
     /**
      * Method called while serializing this object
-     *
+     * 
      * @param out
      *            to write to.
      * @throws IOException
@@ -229,7 +229,7 @@ public class BillBoard extends RenderableQualityModel implements PositionableMod
 
     /**
      * Method called while de-serializing (instancing) this object.
-     *
+     * 
      * @param in
      *            to create the methods from.
      * @throws IOException
@@ -281,7 +281,7 @@ public class BillBoard extends RenderableQualityModel implements PositionableMod
     }
 
     /**
-     *
+     * 
      * @return the location of this billboard (it's center axis)
      */
     public final float[] getLocation() {
@@ -336,17 +336,17 @@ public class BillBoard extends RenderableQualityModel implements PositionableMod
     }
 
     @Override
-    public float[][] getModelBBox() {
+    public float[] getModelBBox() {
         if ( bbox == null ) {
-            bbox = new float[2][3];
+            bbox = new float[6];
             float half = width * 0.5f;
-            bbox[0][0] = location[0] - half;
-            bbox[0][1] = location[1] - half;
-            bbox[0][2] = location[2];
+            bbox[0] = location[0] - half;
+            bbox[1] = location[1] - half;
+            bbox[2] = location[2];
 
-            bbox[1][0] = location[0] + ( half );
-            bbox[1][1] = location[1] + half;
-            bbox[1][2] = location[2] + height;
+            bbox[3] = location[0] + ( half );
+            bbox[4] = location[1] + half;
+            bbox[5] = location[2] + height;
         }
         return bbox;
     }

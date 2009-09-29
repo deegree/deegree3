@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
@@ -41,9 +41,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.deegree.commons.utils.GraphvizDot;
 import org.deegree.geometry.Envelope;
@@ -52,13 +52,13 @@ import org.deegree.rendering.r3d.ViewParams;
 /**
  * The <code>RenderableManager</code> is a collection based on a quadtree which can hold {@link PositionableModel}
  * objects and cull them according to a given {@link ViewParams} view frustum.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
  * @param <T>
  *            type of this manager
- *
+ * 
  */
 public class RenderableManager<T extends PositionableModel> implements Collection<T> {
 
@@ -91,17 +91,18 @@ public class RenderableManager<T extends PositionableModel> implements Collectio
 
     @Override
     public boolean add( T renderable ) {
-        boolean result = root.add( renderable );
+        boolean result = root.insert( renderable );
         if ( result ) {
             size++;
         }
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean remove( Object o ) {
         if ( o instanceof PositionableModel ) {
-            boolean result = root.remove( (PositionableModel) o );
+            boolean result = root.remove( (T) o );
             if ( result ) {
                 size--;
             }
@@ -115,48 +116,22 @@ public class RenderableManager<T extends PositionableModel> implements Collectio
      * @return the list of objects this manager manages.
      */
     public List<T> getObjects( Envelope env ) {
-        return root.getObjects( env );
-    }
-
-    /**
-     * @param env
-     * @param comparator
-     * @return the list of objects this manager manages.
-     */
-    public List<T> getObjects( Envelope env, Comparator<T> comparator ) {
-        return root.getObjects( env, comparator );
-    }
-
-    /**
-     * @param viewParams
-     * @param comparator
-     * @return the list of objects this manager manages.
-     */
-    public List<T> getObjects( ViewParams viewParams, Comparator<T> comparator ) {
-        return root.getObjects( viewParams, comparator );
+        return root.query( env );
     }
 
     /**
      * @param viewParams
      * @return the list of objects this manager manages.
      */
-    public List<T> getObjects( ViewParams viewParams ) {
-        return getObjects( viewParams, null );
-    }
-
-    /**
-     * @param comparator
-     * @return All objects this manager manages, sorted by using the given comparator.
-     */
-    public List<T> getObjects( Comparator<T> comparator ) {
-        return root.getObjects( validDomain, comparator );
+    public Set<T> getObjects( ViewParams viewParams ) {
+        return root.getObjects( viewParams );
     }
 
     /**
      * @return All objects this manager manages
      */
     public List<T> getObjects() {
-        return getObjects( validDomain, null );
+        return root.query( validDomain );
     }
 
     @Override
@@ -176,7 +151,7 @@ public class RenderableManager<T extends PositionableModel> implements Collectio
             if ( !result ) {
                 break;
             }
-            result = root.add( p );
+            result = root.insert( p );
         }
         return result;
     }
@@ -232,7 +207,7 @@ public class RenderableManager<T extends PositionableModel> implements Collectio
             if ( !result ) {
                 break;
             }
-            result = root.add( (T) o );
+            result = root.insert( (T) o );
         }
         return result;
     }
@@ -263,7 +238,7 @@ public class RenderableManager<T extends PositionableModel> implements Collectio
 
     /**
      * Create a graphviz dot representation of this manager.
-     *
+     * 
      * @param filename
      *            to be written to
      * @throws IOException

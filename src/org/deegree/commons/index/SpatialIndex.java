@@ -150,7 +150,7 @@ public abstract class SpatialIndex<T> {
      * @param validDomain
      * @return a float[] representation of the given envelope
      */
-    protected static final float[] createEnvelope( Envelope validDomain ) {
+    public static final float[] createEnvelope( Envelope validDomain ) {
         int dim = validDomain.getCoordinateDimension();
         double[] env = validDomain.getMin().getAsArray();
 

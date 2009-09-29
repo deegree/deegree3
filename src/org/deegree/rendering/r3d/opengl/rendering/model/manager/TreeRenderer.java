@@ -37,10 +37,12 @@
 package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.media.opengl.GL;
 import javax.vecmath.Point3d;
@@ -122,16 +124,6 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
         super( validDomain, numberOfObjectsInLeaf, maxPixelError );
     }
 
-    /**
-     * 
-     * @param params
-     * @return an ordered List of trees.
-     */
-    public List<BillBoard> getTreesForViewParameters( ViewParams params ) {
-        TreeComparator a = new TreeComparator( params.getViewFrustum().getEyePos() );
-        return getObjects( params, a );
-    }
-
     @Override
     public void render( RenderContext glRenderContext ) {
         ViewParams params = glRenderContext.getViewParams();
@@ -139,9 +131,12 @@ public class TreeRenderer extends RenderableManager<BillBoard> implements JOGLRe
         long begin = System.currentTimeMillis();
         Point3d eye = params.getViewFrustum().getEyePos();
         float[] eye2 = new float[] { (float) eye.x, (float) eye.y, (float) eye.z };
-        List<BillBoard> allBillBoards = getTreesForViewParameters( params );
-        if ( !allBillBoards.isEmpty() ) {
+        Set<BillBoard> boards = getObjects( params );
+        // TreeComparator a = new TreeComparator( params.getViewFrustum().getEyePos() );
+        // Collections.sort( allBillBoards, a );
+        if ( !boards.isEmpty() ) {
             // back to front
+            List<BillBoard> allBillBoards = new ArrayList<BillBoard>( boards );
             Collections.sort( allBillBoards, new DistComparator( eye ) );
             if ( LOG.isDebugEnabled() ) {
                 LOG.debug( "Number of trees from viewparams: " + allBillBoards.size() );

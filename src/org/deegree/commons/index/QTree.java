@@ -63,29 +63,58 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.PositionableMode
  */
 public class QTree<T> extends SpatialIndex<T> {
 
-    private final float[] envelope;
+    /** the envelope of this tree */
+    protected final float[] envelope;
 
-    private QTree<T>[] children;
+    /** the children of this node */
+    protected QTree<T>[] children;
 
-    private ArrayList<Entry<T>> leafObjects = null;
+    /** Objects partially (or totally) contained in this node (if this node is a leaf). */
+    protected ArrayList<Entry<T>> leafObjects = null;
 
-    private List<Entry<T>> objectsCoveringEnv = null;
+    /** The objects which totally cover this qtree node */
+    protected List<Entry<T>> objectsCoveringEnv = null;
 
     private final static float SPLIT_CRITERIA_EPSILON = 1E-4f;
 
-    private final int numberOfObjects;
+    /** the number of object this tree can hold in a leaf */
+    protected final int numberOfObjects;
 
-    private final byte currentDepth;
+    /** the current depth of this node */
+    protected final byte currentDepth;
 
     private final static byte MAX_DEPTH = 25;
 
-    private QTree( int numberOfObjects, float[] envelope, byte depth ) {
+    /** denoting lower left son */
+    protected final static byte LOWER_LEFT = 0;
+
+    /** denoting lower right son */
+    protected final static byte LOWER_RIGHT = 1;
+
+    /** denoting upper left son */
+    protected final static byte UP_LEFT = 2;
+
+    /** denoting upper right son */
+    protected final static byte UP_RIGHT = 3;
+
+    private final int maxOffset;
+
+    /**
+     * Create son node.
+     * 
+     * @param numberOfObjects
+     * @param envelope
+     * @param depth
+     */
+    protected QTree( int numberOfObjects, float[] envelope, byte depth ) {
         if ( numberOfObjects < 1 ) {
             throw new IllegalArgumentException( "The number of objects per leaf may not be smaller than 1." );
         }
         this.numberOfObjects = numberOfObjects;
         this.envelope = envelope;
         this.currentDepth = depth;
+        // if the dimension == 3, the max point will start at position 3;
+        maxOffset = envelope.length % 2;
     }
 
     /**
@@ -101,17 +130,31 @@ public class QTree<T> extends SpatialIndex<T> {
     }
 
     /**
+     * @return the envelope
+     */
+    public final float[] getEnvelope() {
+        return envelope;
+    }
+
+    /**
+     * @return the maxOffset
+     */
+    public final int getMaxOffset() {
+        return maxOffset;
+    }
+
+    /**
      * @return the half of the width added to min x
      */
-    private final float getHalfWidth() {
-        return ( this.envelope[0] + ( ( this.envelope[2] - this.envelope[0] ) * 0.5f ) );
+    protected final float getHalfWidth() {
+        return ( this.envelope[0] + ( ( this.envelope[maxOffset] - this.envelope[0] ) * 0.5f ) );
     }
 
     /**
      * @return the half of the height added to the min y
      */
-    private final float getHalfHeight() {
-        return ( this.envelope[1] + ( ( this.envelope[3] - this.envelope[1] ) * 0.5f ) );
+    protected final float getHalfHeight() {
+        return ( this.envelope[1] + ( ( this.envelope[maxOffset + 1] - this.envelope[1] ) * 0.5f ) );
     }
 
     /**
@@ -123,11 +166,23 @@ public class QTree<T> extends SpatialIndex<T> {
      */
     @Override
     public boolean insert( Envelope envelope, T object ) {
+        if ( envelope == null || object == null ) {
+            return false;
+        }
+        return insert( createEnvelope( envelope ), object );
+    }
 
+    /**
+     * @param envelope
+     *            of the object
+     * @param object
+     *            to insert
+     * @return true if the object was inserted, false otherwise.
+     */
+    protected boolean insert( float[] envelope, T object ) {
         if ( object != null ) {
-            float[] env = createEnvelope( envelope );
-            if ( intersects( this.envelope, env ) ) {
-                Entry<T> obj = new Entry<T>( env, object );
+            if ( intersects( this.envelope, envelope ) ) {
+                Entry<T> obj = new Entry<T>( envelope, object );
                 if ( isLeaf() ) {
                     addObject( obj );
                 } else {
@@ -352,8 +407,8 @@ public class QTree<T> extends SpatialIndex<T> {
 
                 for ( int j = i + 1; j < objectList.size(); ++j ) {
                     float[] second = objectList.get( j ).entryEnv;
-                    double minD = calcDist( first, second, 0 );
-                    double maxD = calcDist( first, second, 2 );
+                    double minD = calcDist( first, second, 0, maxOffset );
+                    double maxD = calcDist( first, second, maxOffset, maxOffset );
 
                     // if min and max have distance 0, then just count as one because they are equals, this might
                     // prevent a stack overflow
@@ -426,15 +481,18 @@ public class QTree<T> extends SpatialIndex<T> {
     }
 
     /**
-     * Distance between the two 2d points starting at index (0 == min, 2 == max )
+     * Distance between the two 2d points starting at index (0 == min, maxOffset == max )
      * 
      * @param first
      * @param second
      * @return
      */
-    private final static double calcDist( float[] first, float[] second, int index ) {
-        return Math.sqrt( ( ( first[index] - second[index] ) * ( first[index] - second[index] ) )
-                          + ( ( first[index + 1] - second[index + 1] ) * ( first[index + 1] - second[index + 1] ) ) );
+    private final static double calcDist( float[] first, float[] second, int index, int dim ) {
+        double d = 0;
+        for ( int i = 0; i < dim; ++i ) {
+            d += ( first[index + i] - second[index + i] ) * ( first[index + i] - second[index + i] );
+        }
+        return Math.sqrt( d );
     }
 
     /**
@@ -443,7 +501,7 @@ public class QTree<T> extends SpatialIndex<T> {
      */
     private final boolean objectCoversEnvelope( float[] entryEnv ) {
         return ( entryEnv[0] <= this.envelope[0] && entryEnv[1] <= this.envelope[1] )
-               && ( entryEnv[2] >= this.envelope[2] && entryEnv[3] >= this.envelope[3] );
+               && ( entryEnv[maxOffset] >= this.envelope[maxOffset] && entryEnv[maxOffset + 1] >= this.envelope[maxOffset + 1] );
     }
 
     /**
@@ -451,7 +509,7 @@ public class QTree<T> extends SpatialIndex<T> {
      * @param position
      */
     @SuppressWarnings("unchecked")
-    private void split() {
+    private final void split() {
         children = new QTree[4];
         for ( Entry<T> e : leafObjects ) {
             List<QTree<T>> treeNodes = getObjectNodes( e.entryEnv );
@@ -464,9 +522,9 @@ public class QTree<T> extends SpatialIndex<T> {
 
     /**
      * @param entryEnv
-     * @return
+     * @return the nodes the given envelope will intersect.
      */
-    private List<QTree<T>> getObjectNodes( float[] entryEnv ) {
+    final protected List<QTree<T>> getObjectNodes( float[] entryEnv ) {
         List<QTree<T>> list = new LinkedList<QTree<T>>();
         // if the object covers the whole of this node
         if ( objectCoversEnvelope( entryEnv ) ) {
@@ -496,35 +554,47 @@ public class QTree<T> extends SpatialIndex<T> {
     /**
      * @return true if this is a leaf node
      */
-    private final boolean isLeaf() {
+    protected final boolean isLeaf() {
         return children == null;
     }
 
     /**
-     * @param position
-     * @return
+     * @param son
+     *            one of {@link QTree#LOWER_LEFT},{@link QTree#LOWER_RIGHT},{@link QTree#UP_LEFT},{@link QTree#UP_RIGHT}
+     * @return a new QTree created from the given index.
      */
-    private QTree<T> createNode( int index ) {
+    protected QTree<T> createNode( int son ) {
+        float[] newEnv = bboxForSon( son );
+        return new QTree<T>( numberOfObjects, newEnv, (byte) ( currentDepth + 1 ) );
+    }
+
+    /**
+     * 
+     * @param son
+     *            one of {@link QTree#LOWER_LEFT},{@link QTree#LOWER_RIGHT},{@link QTree#UP_LEFT},{@link QTree#UP_RIGHT}
+     * @return the new envelope for the given son.
+     */
+    protected final float[] bboxForSon( int son ) {
         float[] newEnv = Arrays.copyOf( this.envelope, this.envelope.length );
-        switch ( index ) {
-        case 0:// ll
-            newEnv[2] = getHalfWidth();
-            newEnv[3] = getHalfHeight();
+        switch ( son ) {
+        case LOWER_LEFT:// ll
+            newEnv[maxOffset] = getHalfWidth();
+            newEnv[maxOffset + 1] = getHalfHeight();
             break;
-        case 1:// lr
+        case LOWER_RIGHT:// lr
             newEnv[0] = getHalfWidth();
-            newEnv[3] = getHalfHeight();
+            newEnv[maxOffset + 1] = getHalfHeight();
             break;
-        case 2:// ul
+        case UP_LEFT:// ul
             newEnv[1] = getHalfHeight();
-            newEnv[2] = getHalfWidth();
+            newEnv[maxOffset] = getHalfWidth();
             break;
-        case 3:// ur
+        case UP_RIGHT:// ur
             newEnv[0] = getHalfWidth();
             newEnv[1] = getHalfHeight();
             break;
         }
-        return new QTree<T>( numberOfObjects, newEnv, (byte) ( currentDepth + 1 ) );
+        return newEnv;
     }
 
     /**
@@ -535,7 +605,7 @@ public class QTree<T> extends SpatialIndex<T> {
      */
     private final int[] getIndizes( float[] envelope ) {
         int min = getIndex( envelope, 0 );
-        int max = getIndex( envelope, 2 );
+        int max = getIndex( envelope, maxOffset );
         return analyzeIndizes( envelope, min, max );
     }
 
@@ -572,7 +642,7 @@ public class QTree<T> extends SpatialIndex<T> {
 
     private final void getObjects( float[] envelope, Set<Entry<T>> result ) {
         if ( intersects( this.envelope, envelope ) ) {
-            if ( objectsCoveringEnv != null ) {
+            if ( hasCoveringObjects() ) {
                 result.addAll( objectsCoveringEnv );
             }
             if ( isLeaf() ) {
@@ -593,6 +663,13 @@ public class QTree<T> extends SpatialIndex<T> {
         }
     }
 
+    /**
+     * @return true if this node has objects fitting the total region of space.
+     */
+    protected final boolean hasCoveringObjects() {
+        return objectsCoveringEnv != null;
+    }
+
     private final List<T> getEntrySetAsResult( Set<Entry<T>> set ) {
         List<T> result = new ArrayList<T>( set.size() );
         for ( Entry<T> e : set ) {
@@ -610,6 +687,18 @@ public class QTree<T> extends SpatialIndex<T> {
     public List<T> query( Envelope env ) {
         Set<Entry<T>> r = new HashSet<Entry<T>>();
         getObjects( createEnvelope( env ), r );
+        return getEntrySetAsResult( r );
+    }
+
+    /**
+     * Convenience method to retrieve the objects intersecting with the given envelope.
+     * 
+     * @param envelope
+     * @return a List with all objects intersecting with the given envelope.
+     */
+    protected List<T> getObjects( float[] envelope ) {
+        Set<Entry<T>> r = new HashSet<Entry<T>>();
+        getObjects( envelope, r );
         return getEntrySetAsResult( r );
     }
 
@@ -649,12 +738,16 @@ public class QTree<T> extends SpatialIndex<T> {
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
      * @author last edited by: $Author$
      * @version $Revision$, $Date$
+     * @param <T>
      * 
      */
-    private final class Entry<T> {
-        final float[] entryEnv;
+    protected final class Entry<T> {
 
-        final T entryValue;
+        /** the envelope of the object */
+        public final float[] entryEnv;
+
+        /** the actual object */
+        public final T entryValue;
 
         /**
          * 
@@ -690,8 +783,23 @@ public class QTree<T> extends SpatialIndex<T> {
 
         @Override
         public String toString() {
-            return "{min(" + entryEnv[0] + "," + entryEnv[1] + "), max(" + entryEnv[2] + "," + entryEnv[3]
-                   + "), value:" + entryValue + "}";
+            StringBuilder sb = new StringBuilder( "{min(" );
+            for ( int i = 0; i < getMaxOffset(); ++i ) {
+                sb.append( entryEnv[i] );
+                if ( ( i + 1 ) < getMaxOffset() ) {
+                    sb.append( "," );
+                }
+            }
+            sb.append( "), max(" );
+            for ( int i = 0; i < getMaxOffset(); ++i ) {
+                sb.append( entryEnv[getMaxOffset() + i] );
+                if ( ( i + 1 ) < getMaxOffset() ) {
+                    sb.append( "," );
+                }
+            }
+            sb.append( "), value:" + entryValue + "}" );
+
+            return sb.toString();
         }
     }
 

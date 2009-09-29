@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,16 +32,18 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.media.opengl.GL;
 import javax.vecmath.Point3d;
@@ -56,11 +58,11 @@ import org.deegree.rendering.r3d.opengl.rendering.model.geometry.WorldRenderable
 
 /**
  * The <code>BuildingRenderer</code> organizes buildings in a scene by using a quadtree.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
  * @author last edited by: $Author$
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class BuildingRenderer extends RenderableManager<WorldRenderableObject> implements JOGLRenderable {
 
@@ -84,16 +86,6 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
         super( validDomain, numberOfObjectsInLeaf, maxPixelError );
         this.geometryBuffer = geometryBuffer;
         this.switchLevels = levels;
-    }
-
-    /**
-     *
-     * @param params
-     *            to be used for view frustum culling.
-     * @return an ordered List of trees.
-     */
-    public List<WorldRenderableObject> getBuildingsForViewParameters( ViewParams params ) {
-        return getObjects( params, null );
     }
 
     @Override
@@ -120,18 +112,19 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
         ViewParams params = glRenderContext.getViewParams();
         GL context = glRenderContext.getContext();
         Point3d eye = params.getViewFrustum().getEyePos();
-        List<WorldRenderableObject> allBillBoards = getBuildingsForViewParameters( params );
-        if ( !allBillBoards.isEmpty() ) {
+        Set<WorldRenderableObject> buildings = getObjects( params );
+        if ( !buildings.isEmpty() ) {
+            List<WorldRenderableObject> allBuildings = new ArrayList<WorldRenderableObject>( buildings );
             // back to front
-            Collections.sort( allBillBoards, new DistComparator( eye ) );
+            Collections.sort( allBuildings, new DistComparator( eye ) );
             // LOG.debug( "Sorting of " + allBillBoards.size() + " buildings took: "
             // + ( System.currentTimeMillis() - begin ) + " ms" );
             if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "Number of buildings from viewparams: " + allBillBoards.size() );
+                LOG.debug( "Number of buildings from viewparams: " + allBuildings.size() );
                 LOG.debug( "Total number of buildings : " + size() );
             }
             context.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
-            Iterator<WorldRenderableObject> it = allBillBoards.iterator();
+            Iterator<WorldRenderableObject> it = allBuildings.iterator();
             while ( it.hasNext() ) {
                 WorldRenderableObject b = it.next();
                 context.glPushMatrix();
@@ -139,7 +132,7 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
                 context.glPopMatrix();
             }
             context.glPopAttrib();
-            LOG.debug( "Rendering of " + allBillBoards.size() + " buildings took: "
+            LOG.debug( "Rendering of " + allBuildings.size() + " buildings took: "
                        + ( System.currentTimeMillis() - begin ) + " ms" );
         } else {
             LOG.debug( "Not rendering any buildings." );
@@ -148,14 +141,14 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
     }
 
     /**
-     *
-     * The <code>DistComparator</code> class compares two renderable objects' positions and sorts them to their
-     * negative distance to the given viewer location.
-     *
+     * 
+     * The <code>DistComparator</code> class compares two renderable objects' positions and sorts them to their negative
+     * distance to the given viewer location.
+     * 
      * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
      * @author last edited by: $Author$
      * @version $Revision$, $Date$
-     *
+     * 
      */
     private class DistComparator implements Comparator<WorldRenderableObject> {
         private float[] eye;
@@ -163,7 +156,7 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
         /**
          * @param eye
          *            to compare this billboard to.
-         *
+         * 
          */
         public DistComparator( Point3d eye ) {
             this.eye = new float[] { (float) eye.x, (float) eye.y, (float) eye.z };

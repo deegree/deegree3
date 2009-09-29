@@ -88,7 +88,7 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
 
     private transient Envelope bbox;
 
-    private transient float[][] modelBBox;
+    private transient float[] modelBBox;
 
     /**
      * the position of this world object.
@@ -135,7 +135,7 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
             max = new double[] { max[0], max[1], 0 };
         }
         error = (float) Vectors3d.length( Vectors3d.sub( max, min ) );
-        this.height = (float) bbox.getHeight();
+        this.height = (float) ( max[2] - min[2] );
         this.groundLevel = (float) min[2];
         this.qualityLevels = qualityLevels;
     }
@@ -393,18 +393,18 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
     }
 
     @Override
-    public float[][] getModelBBox() {
+    public float[] getModelBBox() {
         if ( modelBBox == null ) {
-            modelBBox = new float[2][3];
+            modelBBox = new float[6];
             double[] min = bbox.getMin().getAsArray();
             double[] max = bbox.getMax().getAsArray();
-            modelBBox[0][0] = (float) min[0];
-            modelBBox[0][1] = (float) min[1];
-            modelBBox[0][2] = (float) min[2];
+            modelBBox[0] = (float) min[0];
+            modelBBox[1] = (float) min[1];
+            modelBBox[2] = (float) min[2];
 
-            modelBBox[1][0] = (float) max[0];
-            modelBBox[1][1] = (float) max[1];
-            modelBBox[1][2] = (float) max[2];
+            modelBBox[3] = (float) max[0];
+            modelBBox[4] = (float) max[1];
+            modelBBox[5] = (float) max[2];
         }
         return modelBBox;
     }

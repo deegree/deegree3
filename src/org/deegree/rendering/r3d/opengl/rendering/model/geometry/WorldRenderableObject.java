@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,9 +32,11 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.model.geometry;
+
+import javax.media.opengl.GL;
 
 import org.deegree.geometry.Envelope;
 import org.deegree.rendering.r3d.model.WorldObject;
@@ -42,31 +44,35 @@ import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.LODSwitcher;
 
+import com.sun.opengl.util.GLUT;
+
 /**
  * The <code>WorldRenderableObject</code> defines a number of renderable quality levels, where each level may be a
  * PrototypeReference or a RenderableGeometry model. Which LOD is should be rendered is deterimined by applying the
  * {@link LODSwitcher} to the position and the error scalar.
- *
+ * 
  * @author <a href="mailto:bezema@lat-lon.de">Rutger Bezema</a>
- *
+ * 
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
- *
+ * 
  */
 public class WorldRenderableObject extends WorldObject<RenderableQualityModelPart, RenderableQualityModel> implements
                                                                                                           JOGLRenderable {
     private static final long serialVersionUID = 2998719476993351372L;
 
+    GLUT glut = new GLUT();
+
     private LODSwitcher switchLevels;
 
     /**
      * Creates a new WorldRenderableObject with given number of data quality levels (LOD)
-     *
+     * 
      * @param id
      * @param time
      * @param bbox
-     *
+     * 
      * @param levels
      */
     public WorldRenderableObject( String id, String time, Envelope bbox, int levels ) {
@@ -89,7 +95,7 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
 
     /**
      * Renders the model at the given quality level or the lesser quality level if the requested one is not available.
-     *
+     * 
      * @param context
      * @param params
      * @param level
@@ -110,6 +116,7 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
                 }
             }
         }
+        debug( glRenderContext );
     }
 
     @Override
@@ -119,7 +126,7 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
 
     /**
      * This method assumes the coordinates and normals are located in the given {@link DirectGeometryBuffer}.
-     *
+     * 
      * @param glRenderContext
      * @param geomBuffer
      *            to be get the coordinates from.
@@ -142,7 +149,7 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
     }
 
     /**
-     * @return the number of ordinates in all qualitylevels, needed for the initalization of the direct buffer.
+     * @return the number of ordinates in all qualitylevels, needed for the initialization of the direct buffer.
      */
     public int getOrdinateCount() {
         int result = 0;
@@ -157,7 +164,7 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
     }
 
     /**
-     * @return the number of ordinates in all qualitylevels, needed for the initalization of the direct buffer.
+     * @return the number of ordinates in all qualitylevels, needed for the initialization of the direct buffer.
      */
     public int getTextureOrdinateCount() {
         int result = 0;
@@ -178,4 +185,14 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
         this.switchLevels = switchLevels;
     }
 
+    private void debug( RenderContext context ) {
+        GL gl = context.getContext();
+        float[] pos = getPosition();
+        gl.glTranslatef( pos[0], pos[1], pos[2] );
+        gl.glMaterialfv( GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[] { 1, 0, 0 }, 0 );
+        gl.glMaterialfv( GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE, new float[] { 1, 0, 0 }, 0 );
+        glut.glutSolidSphere( 15, 3, 3 );
+        gl.glTranslatef( -pos[0], -pos[1], -pos[2] );
+
+    }
 }

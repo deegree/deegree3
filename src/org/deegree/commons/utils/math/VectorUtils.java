@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,23 +32,90 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.commons.utils.math;
 
 /**
  * The <code></code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class VectorUtils {
 
     /**
      * Returns the minimum distance between a bounding box and a point.
-     *
+     * 
+     * @param bbox
+     * @param p
+     * @return minimum distance between <code>bbox</code> and the given point
+     *         <p>
+     */
+    public static float getDistance( float[] bbox, float[] p ) {
+
+        if ( p[0] >= bbox[0] && p[0] <= bbox[3] && p[1] >= bbox[1] && p[1] <= bbox[4] && p[2] >= bbox[2]
+             && p[2] <= bbox[5] ) {
+            return 0.0f;
+        }
+
+        float[] currentPos = new float[3];
+        front( bbox, p, currentPos );
+        float dist = Math.min( 0, Vectors3f.distance( currentPos, p ) );
+        back( bbox, p, currentPos );
+        dist = Math.min( dist, Vectors3f.distance( currentPos, p ) );
+        top( bbox, p, currentPos );
+        dist = Math.min( dist, Vectors3f.distance( currentPos, p ) );
+        bottom( bbox, p, currentPos );
+        dist = Math.min( dist, Vectors3f.distance( currentPos, p ) );
+        left( bbox, p, currentPos );
+        dist = Math.min( dist, Vectors3f.distance( currentPos, p ) );
+        right( bbox, p, currentPos );
+        dist = Math.min( dist, Vectors3f.distance( currentPos, p ) );
+        return dist;
+    }
+
+    private static void front( float[] bbox, float[] p, float[] result ) {
+        result[0] = getClipped( p[0], bbox[0], bbox[3] );
+        result[1] = getClipped( p[1], bbox[1], bbox[4] );
+        result[2] = bbox[5];
+    }
+
+    private static void back( float[] bbox, float[] p, float[] result ) {
+        result[0] = getClipped( p[0], bbox[0], bbox[3] );
+        result[1] = getClipped( p[1], bbox[1], bbox[4] );
+        result[2] = bbox[2];
+    }
+
+    private static void top( float[] bbox, float[] p, float[] result ) {
+        result[0] = getClipped( p[0], bbox[0], bbox[3] );
+        result[1] = bbox[4];
+        result[2] = getClipped( p[2], bbox[2], bbox[5] );
+    }
+
+    private static void bottom( float[] bbox, float[] p, float[] result ) {
+        result[0] = getClipped( p[0], bbox[0], bbox[3] );
+        result[1] = bbox[1];
+        result[2] = getClipped( p[2], bbox[2], bbox[5] );
+    }
+
+    private static void left( float[] bbox, float[] p, float[] result ) {
+        result[0] = bbox[0];
+        result[1] = getClipped( p[1], bbox[1], bbox[4] );
+        result[2] = getClipped( p[2], bbox[2], bbox[5] );
+    }
+
+    private static void right( float[] bbox, float[] p, float[] result ) {
+        result[0] = bbox[3];
+        result[1] = getClipped( p[1], bbox[1], bbox[4] );
+        result[2] = getClipped( p[2], bbox[2], bbox[5] );
+    }
+
+    /**
+     * Returns the minimum distance between a bounding box and a point.
+     * 
      * @param bbox
      * @param p
      * @return minimum distance between <code>bbox</code> and
@@ -143,7 +210,7 @@ public class VectorUtils {
      */
     /**
      * Returns the minimum distance between a bounding box and a point.
-     *
+     * 
      * @param bbox
      * @param p
      * @return minimum distance between <code>bbox</code> and
