@@ -256,9 +256,9 @@ public class RasterBuilder {
      * @return
      */
     private static int calcBalancedLeafObjectSize( Envelope rasterEnvelope, Envelope resultEnvelope, int treeDepth ) {
-        double tw = resultEnvelope.getWidth();
+        double tw = resultEnvelope.getSpan0();
 
-        double rw = rasterEnvelope.getWidth();
+        double rw = rasterEnvelope.getSpan0();
 
         double widthScale = Math.pow( 0.5, treeDepth-- );
 

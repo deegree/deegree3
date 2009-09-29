@@ -88,8 +88,8 @@ public class MapUtils {
              * this method to calculate a maps scale as defined in OGC WMS and SLD specification is not required for
              * maps having a projected reference system. Direct calculation of scale avoids uncertainties
              */
-            double dx = bbox.getWidth() / mapWidth;
-            double dy = bbox.getHeight() / mapHeight;
+            double dx = bbox.getSpan0() / mapWidth;
+            double dy = bbox.getSpan1() / mapHeight;
             scale = sqrt( dx * dx + dy * dy );
         } else {
 
@@ -104,8 +104,8 @@ public class MapUtils {
                     LOG.error( "Unknown error", e );
                 }
             }
-            double dx = bbox.getWidth() / mapWidth;
-            double dy = bbox.getHeight() / mapHeight;
+            double dx = bbox.getSpan0() / mapWidth;
+            double dy = bbox.getSpan1() / mapHeight;
             double minx = bbox.getMin().get0() + dx * ( mapWidth / 2d - 1 );
             double miny = bbox.getMin().get1() + dy * ( mapHeight / 2d - 1 );
             double maxx = bbox.getMin().get0() + dx * ( mapWidth / 2d );
@@ -143,7 +143,7 @@ public class MapUtils {
              * this method to calculate a maps scale as defined in OGC WMS and SLD specification is not required for
              * maps having a projected reference system. Direct calculation of scale avoids uncertainties
              */
-            double dx = bbox.getWidth() / mapWidth;
+            double dx = bbox.getSpan0() / mapWidth;
             scale = dx / DEFAULT_PIXEL_SIZE;
         } else {
 
@@ -158,8 +158,8 @@ public class MapUtils {
                     LOG.error( "Unknown error", e );
                 }
             }
-            double dx = bbox.getWidth() / mapWidth;
-            double dy = bbox.getHeight() / mapHeight;
+            double dx = bbox.getSpan0() / mapWidth;
+            double dy = bbox.getSpan1() / mapHeight;
 
             double minx = bbox.getMin().get0() + dx * ( mapWidth / 2d - 1 );
             double miny = bbox.getMin().get1() + dy * ( mapHeight / 2d - 1 );

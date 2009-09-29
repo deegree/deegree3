@@ -232,8 +232,8 @@ public class GeometryTransformer extends Transformer {
         double x2 = envelope.getMax().get0();
         double y2 = envelope.getMax().get1();
 
-        double width = envelope.getWidth();
-        double height = envelope.getHeight();
+        double width = envelope.getSpan0();
+        double height = envelope.getSpan1();
 
         double xStep = width / ( pointsPerSide + 1 );
         double yStep = height / ( pointsPerSide + 1 );

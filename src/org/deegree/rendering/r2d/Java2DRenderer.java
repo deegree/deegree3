@@ -117,8 +117,8 @@ public class Java2DRenderer implements Renderer {
         this.graphics = graphics;
 
         if ( bbox != null ) {
-            double scalex = width / bbox.getWidth();
-            double scaley = height / bbox.getHeight();
+            double scalex = width / bbox.getSpan0();
+            double scaley = height / bbox.getSpan1();
 
             // we have to flip horizontally, so invert y scale and add the screen height
             worldToScreen.translate( -bbox.getMin().get0() * scalex, bbox.getMin().get1() * scaley + height );

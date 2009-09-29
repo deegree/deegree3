@@ -100,11 +100,6 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
     }
 
     @Override
-    public double getHeight() {
-        return max.get1() - min.get1();
-    }
-
-    @Override
     public Point getMax() {
         return max;
     }
@@ -115,8 +110,18 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
     }
 
     @Override
-    public double getWidth() {
+    public double getSpan0() {
         return max.get0() - min.get0();
+    }
+
+    @Override
+    public double getSpan1() {
+        return max.get1() - min.get1();
+    }
+
+    @Override
+    public double getSpan( int dim ) {
+        return max.get( dim ) - min.get( dim );
     }
 
     @Override
@@ -146,11 +151,7 @@ public class DefaultEnvelope extends AbstractDefaultGeometry implements Envelope
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.geometry.Envelope#getCentroid()
-     */
+    @Override
     public Point getCentroid() {
         if ( centroid == null ) {
             double[] coordinates = new double[max.getAsArray().length];

@@ -315,8 +315,8 @@ public class RasterTransformer extends Transformer {
         int srcHeight = sourceRaster.getRows();
 
         // calculate the new size, consider the aspect ratio to get square pixels
-        double deltaX = dstEnvelope.getWidth();
-        double deltaY = dstEnvelope.getHeight();
+        double deltaX = dstEnvelope.getSpan0();
+        double deltaY = dstEnvelope.getSpan1();
         double diagSize = Math.sqrt( deltaX * deltaX + deltaY * deltaY );
         // pixelSize for calculation of the new image size
         double pixelSize = diagSize / Math.sqrt( Math.pow( srcWidth, 2 ) + Math.pow( srcHeight, 2 ) );

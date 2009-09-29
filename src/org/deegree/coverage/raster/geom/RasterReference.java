@@ -146,8 +146,8 @@ public class RasterReference {
      * @param height
      */
     public RasterReference( Envelope env, int width, int height ) {
-        this( Type.OUTER, env.getMin().get0(), env.getMax().get1(), env.getWidth() / width,
-              ( env.getHeight() / ( -1d * height ) ) );
+        this( Type.OUTER, env.getMin().get0(), env.getMax().get1(), env.getSpan0() / width,
+              ( env.getSpan1() / ( -1d * height ) ) );
     }
 
     /**
@@ -163,8 +163,8 @@ public class RasterReference {
      */
     public RasterReference createResizedEnvelope( Envelope env, int width, int height ) {
         RasterReference result = new RasterReference();
-        result.xRes = env.getWidth() / width * signum( this.xRes );
-        result.yRes = env.getHeight() / height * signum( this.yRes );
+        result.xRes = env.getSpan0() / width * signum( this.xRes );
+        result.yRes = env.getSpan1() / height * signum( this.yRes );
         // move origin to scaled center
         result.x0 = this.x0; // - this.xRes/2 + result.xRes/2;
         result.y0 = this.y0; // - this.yRes/2 + result.yRes/2;
@@ -359,8 +359,8 @@ public class RasterReference {
      */
     public int[] getSize( Envelope env ) {
         int[] result = new int[2];
-        double width = env.getWidth() - delta;
-        double height = env.getHeight() - delta;
+        double width = env.getSpan0() - delta;
+        double height = env.getSpan1() - delta;
 
         result[0] = (int) ( abs( width / getXRes() ) ) + 1;
         result[1] = (int) ( abs( height / getYRes() ) ) + 1;

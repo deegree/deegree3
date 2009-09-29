@@ -276,7 +276,7 @@ public class WorldObject<G extends QualityModelPart, QM extends QualityModel<G>>
             max = new double[] { max[0], max[1], 0 };
         }
         this.error = (float) Vectors3d.length( Vectors3d.sub( max, min ) );
-        this.height = (float) bbox.getHeight();
+        this.height = (float) bbox.getSpan1();
         this.groundLevel = (float) min[2];
     }
 

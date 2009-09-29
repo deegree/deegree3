@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,70 +32,71 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.geometry;
 
 import org.deegree.geometry.primitive.Point;
 
-
 /**
- *
- *
- *
+ * Axis-parallel bounding box.
+ * 
  * @author <a href="mailto:poth@lat-lon.de">Andreas Poth</a>
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version. $Revision$, $Date$
  */
 public interface Envelope extends Geometry {
 
     /**
      * Must always return {@link Geometry.GeometryType#ENVELOPE}.
-     *
+     * 
      * @return {@link Geometry.GeometryType#ENVELOPE}.
      */
-    @Override
     public GeometryType getGeometryType();
 
     /**
-     * Returns the minimum coordinate of the envelope.
+     * Returns the envelope's minimum coordinate.
      * 
      * @return minimum coordinate
      */
     public Point getMin();
 
     /**
-     * Returns the maximum coordinate of the envelope.
+     * Returns the envelope's maximum coordinate
      * 
      * @return maximum coordinate
      */
     public Point getMax();
 
     /**
-     * merges two envelopes into one
-     *
+     * Merges this envelope with another envelope into a new one.
+     * 
      * @param other
      * @return merged envelope
      */
-    public Envelope merge(Envelope other);
+    public Envelope merge( Envelope other );
 
     /**
-     * returns the width of an envelope
-     * @return width of an envelope
+     * Returns the envelope's span of the first dimension (in units of the associated coordinate system).
+     * 
+     * @return span of the first dimension
      */
-    public double getWidth();
+    public double getSpan0();
 
     /**
-     * returns the height of an envelope
-     * @return height of an envelope
+     * Returns the envelope's span of the second dimension (in units of the associated coordinate system).
+     * 
+     * @return span of the second dimension
      */
-    public double getHeight();
+    public double getSpan1();
 
     /**
-     * returns centroid of an envelope
-     * @return centroid of an envelope
+     * Returns the envelope's span of the second dimension (in units of the associated coordinate system).
+     * 
+     * @param dim
+     *            index of the span to be returned
+     * @return span of the specified dimension
      */
-    public Point getCentroid();
-
+    public double getSpan( int dim );
 }

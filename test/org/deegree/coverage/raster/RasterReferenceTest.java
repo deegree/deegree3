@@ -233,8 +233,8 @@ public class RasterReferenceTest {
         assertEquals( 2.0, scaled.getXRes(), DELTA );
         assertEquals( -8.0, scaled.getYRes(), DELTA );
         envelope = scaled.getEnvelope( 50, 25 );
-        assertEquals( 100.0, envelope.getWidth(), DELTA );
-        assertEquals( 200.0, envelope.getHeight(), DELTA );
+        assertEquals( 100.0, envelope.getSpan0(), DELTA );
+        assertEquals( 200.0, envelope.getSpan1(), DELTA );
         int[] size = scaled.getSize( envelope );
         assertEquals( 50, size[0] );
         assertEquals( 25, size[1] );

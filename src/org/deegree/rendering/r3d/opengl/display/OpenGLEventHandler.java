@@ -144,7 +144,7 @@ public class OpenGLEventHandler implements GLEventListener {
         centroid = new float[] { (float) bbox.getCentroid().get0(), (float) bbox.getCentroid().get1(),
                                 (float) bbox.getCentroid().get2() };
         lookAt = new float[] { centroid[0], centroid[1], centroid[2] };
-        farClippingPlane = 20 * (float) Math.max( bbox.getWidth(), bbox.getHeight() );
+        farClippingPlane = 20 * (float) Math.max( bbox.getSpan0(), bbox.getSpan1() );
         eye = new float[] { centroid[0], centroid[1] + ( farClippingPlane * .5f ),
                            centroid[2] + ( farClippingPlane * .5f ) };
         trackBall.reset();
@@ -208,8 +208,8 @@ public class OpenGLEventHandler implements GLEventListener {
 
     private boolean isDefaultBBox() {
         Envelope env = getDefaultBBox();
-        return ( Math.abs( bbox.getWidth() - env.getWidth() ) < 1E-11 )
-               && ( Math.abs( bbox.getHeight() - env.getHeight() ) < 1E-11 )
+        return ( Math.abs( bbox.getSpan0() - env.getSpan0() ) < 1E-11 )
+               && ( Math.abs( bbox.getSpan1() - env.getSpan1() ) < 1E-11 )
                && ( Math.abs( bbox.getMin().get0() - env.getMin().get0() ) < 1E-11 )
                && ( Math.abs( bbox.getMin().get1() - env.getMin().get1() ) < 1E-11 )
                && ( Math.abs( bbox.getMin().get2() - env.getMin().get2() ) < 1E-11 );
