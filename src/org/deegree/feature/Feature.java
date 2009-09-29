@@ -49,7 +49,7 @@ import org.deegree.geometry.Geometry;
  * A feature is a structured object with named properties and an identifier. Properties may have geometric and
  * non-geometric values and may be (nested) features.
  * <p>
- * The feature subsystem is designed to be compatible with the concepts from the following standards:
+ * The {@link Feature} interface and related types are designed to be compatible with the following specifications:
  * <p>
  * <ul>
  * <li><a href="http://www.opengeospatial.org/standards/as">Abstract Feature specification</a></li>
