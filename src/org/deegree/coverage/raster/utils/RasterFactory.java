@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster.utils;
 
+import static java.awt.image.BufferedImage.TYPE_USHORT_GRAY;
+
 import java.awt.image.BandedSampleModel;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -437,6 +439,7 @@ public class RasterFactory {
             break;
         case SHORT:
         case USHORT:
+            outputType = TYPE_USHORT_GRAY;
             sm = new BandedSampleModel( DataBuffer.TYPE_SHORT, width, height, bands );
             outputRaster = Raster.createWritableRaster( sm, null );
             short[] sbuf = new short[pixelStride];
@@ -458,9 +461,7 @@ public class RasterFactory {
 
     /**
      * @param bandsFromRaster
-     * @param buf
      * @param bandInfo
-     * @return
      */
     private static byte[] mapToRGB( byte[] outputBands, byte[] bandsFromRaster, BandType[] bandInfo ) {
         if ( bandInfo.length == 1 ) {
@@ -621,7 +622,6 @@ public class RasterFactory {
     /**
      * @param img
      *            to get the bands for.
-     * @return
      */
     private static BandType[] determineBandTypes( RenderedImage img ) {
 
