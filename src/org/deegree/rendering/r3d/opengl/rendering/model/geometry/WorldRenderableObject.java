@@ -44,8 +44,6 @@ import org.deegree.rendering.r3d.opengl.rendering.JOGLRenderable;
 import org.deegree.rendering.r3d.opengl.rendering.RenderContext;
 import org.deegree.rendering.r3d.opengl.rendering.model.manager.LODSwitcher;
 
-import com.sun.opengl.util.GLUT;
-
 /**
  * The <code>WorldRenderableObject</code> defines a number of renderable quality levels, where each level may be a
  * PrototypeReference or a RenderableGeometry model. Which LOD is should be rendered is deterimined by applying the
@@ -62,7 +60,7 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
                                                                                                           JOGLRenderable {
     private static final long serialVersionUID = 2998719476993351372L;
 
-    GLUT glut = new GLUT();
+    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( WorldRenderableObject.class );
 
     private LODSwitcher switchLevels;
 
@@ -116,7 +114,9 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
                 }
             }
         }
-        debug( glRenderContext );
+        if ( LOG.isDebugEnabled() ) {
+            debug( glRenderContext );
+        }
     }
 
     @Override
@@ -187,12 +187,19 @@ public class WorldRenderableObject extends WorldObject<RenderableQualityModelPar
 
     private void debug( RenderContext context ) {
         GL gl = context.getContext();
-        float[] pos = getPosition();
-        gl.glTranslatef( pos[0], pos[1], pos[2] );
+        gl.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
         gl.glMaterialfv( GL.GL_FRONT_AND_BACK, GL.GL_AMBIENT, new float[] { 1, 0, 0 }, 0 );
         gl.glMaterialfv( GL.GL_FRONT_AND_BACK, GL.GL_DIFFUSE, new float[] { 1, 0, 0 }, 0 );
-        glut.glutSolidSphere( 15, 3, 3 );
-        gl.glTranslatef( -pos[0], -pos[1], -pos[2] );
+        float[] bbox = getModelBBox();
+        gl.glBegin( GL.GL_QUADS );
+        // Front face
+        gl.glNormal3f( 0, 0, 1 );
+        gl.glVertex3f( bbox[0], bbox[1], bbox[2] );
+        gl.glVertex3f( bbox[3], bbox[4], bbox[2] );
+        gl.glVertex3f( bbox[3], bbox[4], bbox[5] );
+        gl.glVertex3f( bbox[0], bbox[1], bbox[5] );
+        gl.glEnd();
+        gl.glPopAttrib();
 
     }
 }

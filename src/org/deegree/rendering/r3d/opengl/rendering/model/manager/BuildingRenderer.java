@@ -37,12 +37,9 @@
 package org.deegree.rendering.r3d.opengl.rendering.model.manager;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import javax.media.opengl.GL;
@@ -114,17 +111,17 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
         Point3d eye = params.getViewFrustum().getEyePos();
         Set<WorldRenderableObject> buildings = getObjects( params );
         if ( !buildings.isEmpty() ) {
-            List<WorldRenderableObject> allBuildings = new ArrayList<WorldRenderableObject>( buildings );
+            // List<WorldRenderableObject> allBuildings = new ArrayList<WorldRenderableObject>( buildings );
             // back to front
-            Collections.sort( allBuildings, new DistComparator( eye ) );
+            // Collections.sort( allBuildings, new DistComparator( eye ) );
             // LOG.debug( "Sorting of " + allBillBoards.size() + " buildings took: "
             // + ( System.currentTimeMillis() - begin ) + " ms" );
             if ( LOG.isDebugEnabled() ) {
-                LOG.debug( "Number of buildings from viewparams: " + allBuildings.size() );
+                LOG.debug( "Number of buildings from viewparams: " + buildings.size() );
                 LOG.debug( "Total number of buildings : " + size() );
             }
             context.glPushAttrib( GL.GL_CURRENT_BIT | GL.GL_LIGHTING_BIT );
-            Iterator<WorldRenderableObject> it = allBuildings.iterator();
+            Iterator<WorldRenderableObject> it = buildings.iterator();
             while ( it.hasNext() ) {
                 WorldRenderableObject b = it.next();
                 context.glPushMatrix();
@@ -132,8 +129,10 @@ public class BuildingRenderer extends RenderableManager<WorldRenderableObject> i
                 context.glPopMatrix();
             }
             context.glPopAttrib();
-            LOG.debug( "Rendering of " + allBuildings.size() + " buildings took: "
-                       + ( System.currentTimeMillis() - begin ) + " ms" );
+            if ( LOG.isDebugEnabled() ) {
+                LOG.debug( "Rendering of " + buildings.size() + " buildings took: "
+                           + ( System.currentTimeMillis() - begin ) + " ms" );
+            }
         } else {
             LOG.debug( "Not rendering any buildings." );
         }

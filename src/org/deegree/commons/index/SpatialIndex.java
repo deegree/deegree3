@@ -107,12 +107,14 @@ public abstract class SpatialIndex<T> {
      * Tests whether one point lies in the given bbox
      * 
      * @param box
+     * @param maxOffset
+     *            the offset within the bbox where the max point starts.
      * @param x
      * @param y
      * @return
      */
-    private static final boolean contains( final float[] box, final float x, final float y ) {
-        return box[0] <= x && x <= box[2] && box[1] <= y && y <= box[3];
+    private static final boolean contains( final float[] box, final int maxOffset, final float x, final float y ) {
+        return box[0] <= x && x <= box[maxOffset] && box[1] <= y && y <= box[maxOffset + 1];
     }
 
     /**
@@ -120,10 +122,13 @@ public abstract class SpatialIndex<T> {
      * 
      * @param box1
      * @param box2
+     * @param maxOffset
+     *            the offset within the bbox where the max point starts.
      * @return
      */
-    private static final boolean noEdgeOverlap( final float[] box1, final float[] box2 ) {
-        return box1[0] <= box2[0] && box2[2] <= box1[2] && box2[1] <= box1[1] && box1[3] <= box2[3];
+    private static final boolean noEdgeOverlap( final float[] box1, final float[] box2, final int maxOffset ) {
+        return box1[0] <= box2[0] && box2[1] <= box1[1] && box2[maxOffset] <= box1[maxOffset]
+               && box1[maxOffset + 1] <= box2[maxOffset + 1];
     }
 
     /**
@@ -133,14 +138,20 @@ public abstract class SpatialIndex<T> {
      *            the first envelope
      * @param box2
      *            the second envelope
-     * @return true if the given boxes intersects with eachother.
+     * @param maxOffset
+     *            the offset within the bbox where the max point starts.
+     * @return true if the given boxes intersects with each other.
      */
-    protected boolean intersects( final float[] box1, final float[] box2 ) {
-        return contains( box2, box1[0], box1[3] ) || contains( box2, box1[0], box1[1] )
-               || contains( box2, box1[2], box1[3] ) || contains( box2, box1[2], box1[1] )
-               || contains( box1, box2[0], box2[3] ) || contains( box1, box2[0], box2[1] )
-               || contains( box1, box2[2], box2[3] ) || contains( box1, box2[2], box2[1] )
-               || noEdgeOverlap( box1, box2 ) || noEdgeOverlap( box2, box1 );
+    protected boolean intersects( final float[] box1, final float[] box2, int maxOffset ) {
+        return contains( box2, maxOffset, box1[0], box1[maxOffset + 1] )
+               || contains( box2, maxOffset, box1[0], box1[1] )
+               || contains( box2, maxOffset, box1[maxOffset], box1[maxOffset + 1] )
+               || contains( box2, maxOffset, box1[maxOffset], box1[1] )
+               || contains( box1, maxOffset, box2[0], box2[maxOffset + 1] )
+               || contains( box1, maxOffset, box2[0], box2[1] )
+               || contains( box1, maxOffset, box2[maxOffset], box2[maxOffset + 1] )
+               || contains( box1, maxOffset, box2[maxOffset], box2[1] ) || noEdgeOverlap( box1, box2, maxOffset )
+               || noEdgeOverlap( box2, box1, maxOffset );
 
     }
 

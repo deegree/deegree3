@@ -388,13 +388,11 @@ public class ViewFrustum {
         float[] t = new float[3];
         for ( int i = 0; i < 6; i++ ) {
             // is the positive vertex outside?
-            // Point3d pVertex = pl[i].getPositiveVertex( box, t );
             pl[i].getPositiveVertex( box, t );
             if ( pl[i].distance( t ) < 0 ) {
                 return OUTSIDE;
             }
             // is the negative vertex outside?
-            // Point3d nVertex = pl[i].getNegativeVertex( box, t );
             pl[i].getNegativeVertex( box, t );
             if ( pl[i].distance( t ) < 0 ) {
                 result = INTERSECT;

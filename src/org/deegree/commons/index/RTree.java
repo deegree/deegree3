@@ -123,7 +123,7 @@ public class RTree<T> extends SpatialIndex<T> {
         LinkedList<T> list = new LinkedList<T>();
 
         for ( Entry<T> e : node ) {
-            if ( intersects( bbox, e.bbox ) ) {
+            if ( intersects( bbox, e.bbox, 2 ) ) {
                 if ( e.next == null ) {
                     list.add( e.entryValue );
                     if ( list.size() >= maxNumberOfObjects * 10 ) {
@@ -153,7 +153,7 @@ public class RTree<T> extends SpatialIndex<T> {
             final float[] bbox = new float[] { (float) env.getMin().get0(), (float) env.getMin().get1(),
                                               (float) env.getMax().get0(), (float) env.getMax().get1() };
 
-            if ( intersects( bbox, this.bbox ) ) {
+            if ( intersects( bbox, this.bbox, 2 ) ) {
                 return query( bbox, root );
             }
         }

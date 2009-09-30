@@ -179,7 +179,7 @@ public class QTModelScene<T extends PositionableModel> extends QTree<T> {
      * @return true if this tree contains the given object
      */
     public boolean contains( PositionableModel object ) {
-        if ( object != null && intersects( envelope, object.getModelBBox() ) ) {
+        if ( object != null && intersects( envelope, object.getModelBBox(), getMaxOffset() ) ) {
             List<T> r = getObjects( object.getModelBBox() );
             if ( r != null && !r.isEmpty() ) {
                 return r.contains( object );
