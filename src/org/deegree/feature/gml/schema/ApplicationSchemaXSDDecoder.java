@@ -76,12 +76,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides convenient access to the {@link FeatureType} hierarchy defined in a GML schema infoset.
+ * Provides access to the {@link FeatureType} hierarchy defined in a GML schema document.
  * <p>
  * Note that the generated {@link ApplicationSchema} contains only user-defined feature types, i.e. all types from the
- * GML namespace (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>) are ignored. This supports to
- * work with the application schemas without relying on GML (and GML-version) specific details.
+ * GML namespace (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>) are ignored. This follows the
+ * idea that working with {@link ApplicationSchema} objects should not involve GML (and GML-version) specific details
+ * (e.g. GML feature types).
  * </p>
+ * 
+ * @see ApplicationSchema
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
@@ -94,14 +97,17 @@ public class ApplicationSchemaXSDDecoder {
 
     private XSModelGMLAnalyzer analyzer;
 
-    private Map<QName, XSElementDeclaration> ftNameToftElement = new HashMap<QName, XSElementDeclaration>();
+    // key: ft name, value: element declaration
+    private Map<QName, XSElementDeclaration> ftNameToFtElement = new HashMap<QName, XSElementDeclaration>();
 
+    // key: geometry name, value: element declaration
     private Map<QName, XSElementDeclaration> geometryNameToGeometryElement = new HashMap<QName, XSElementDeclaration>();
 
-    private Map<QName, FeatureType> ftNameToft = new HashMap<QName, FeatureType>();
+    // key: name of feature type, value: feature type
+    private Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
     // key: name of ft A, value: name of ft B (A is in substitionGroup B)
-    private Map<QName, QName> ftSubstitutionGroupRelation = new HashMap<QName, QName>();
+    private Map<QName, QName> ftNameToSubstitutionGroupName = new HashMap<QName, QName>();
 
     // stores all feature property types, so the reference to the contained FeatureType can be resolved,
     // after all FeatureTypes have been created
@@ -109,18 +115,23 @@ public class ApplicationSchemaXSDDecoder {
 
     public ApplicationSchemaXSDDecoder( GMLVersion gmlVersion, String... schemaUrls ) throws ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException {
+
         analyzer = new XSModelGMLAnalyzer( gmlVersion, schemaUrls );
         List<XSElementDeclaration> featureElementDecls = analyzer.getFeatureElementDeclarations( null, false );
+
+        // feature element declarations
         for ( XSElementDeclaration elementDecl : featureElementDecls ) {
             QName ftName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
-            ftNameToftElement.put( ftName, elementDecl );
+            ftNameToFtElement.put( ftName, elementDecl );
             XSElementDeclaration substitutionElement = elementDecl.getSubstitutionGroupAffiliation();
             if ( substitutionElement != null ) {
                 QName substitutionElementName = new QName( substitutionElement.getNamespace(),
                                                            substitutionElement.getName() );
-                ftSubstitutionGroupRelation.put( ftName, substitutionElementName );
+                ftNameToSubstitutionGroupName.put( ftName, substitutionElementName );
             }
         }
+
+        // geometry element declarations
         List<XSElementDeclaration> geometryElementDecls = analyzer.getGeometryElementDeclarations( null, false );
         for ( XSElementDeclaration elementDecl : geometryElementDecls ) {
             QName ftName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
@@ -130,19 +141,26 @@ public class ApplicationSchemaXSDDecoder {
 
     public ApplicationSchema extractFeatureTypeSchema() {
 
-        for ( QName ftName : ftNameToftElement.keySet() ) {
-            FeatureType ft = buildFeatureType( ftNameToftElement.get( ftName ) );
+        for ( QName ftName : ftNameToFtElement.keySet() ) {
+            FeatureType ft = buildFeatureType( ftNameToFtElement.get( ftName ) );
             if ( !CommonNamespaces.GMLNS.equals( ft.getName().getNamespaceURI() ) ) {
-                ftNameToft.put( ftName, ft );
+                ftNameToFt.put( ftName, ft );
+            } else {
+                LOG.debug( "Skipping GML internal feature type declaration: '" + ftName + "'." );
             }
         }
         // resolveFtReferences();
 
-        FeatureType[] fts = ftNameToft.values().toArray( new FeatureType[ftNameToft.size()] );
+        FeatureType[] fts = ftNameToFt.values().toArray( new FeatureType[ftNameToFt.size()] );
         Map<FeatureType, FeatureType> ftSubstitution = new HashMap<FeatureType, FeatureType>();
-        for ( QName ftName : ftSubstitutionGroupRelation.keySet() ) {
-            QName substitutionFtName = ftSubstitutionGroupRelation.get( ftName );
-            ftSubstitution.put( ftNameToft.get( ftName ), ftNameToft.get( substitutionFtName ) );
+        for ( QName ftName : ftNameToSubstitutionGroupName.keySet() ) {
+            QName substitutionFtName = ftNameToSubstitutionGroupName.get( ftName );
+            if ( ftName.getNamespaceURI().equals( GMLNS ) || substitutionFtName.getNamespaceURI().equals( GMLNS ) ) {
+                LOG.debug( "Skipping substitution relation: '" + ftName + "' -> '" + substitutionFtName
+                           + "' (involves GML internal feature type declaration)." );
+                continue;
+            }
+            ftSubstitution.put( ftNameToFt.get( ftName ), ftNameToFt.get( substitutionFtName ) );
         }
         return new ApplicationSchema( fts, ftSubstitution, analyzer.getXSModel() );
     }
@@ -150,7 +168,7 @@ public class ApplicationSchemaXSDDecoder {
     private void resolveFtReferences() {
         for ( FeaturePropertyType pt : featurePropertyTypes ) {
             LOG.debug( "Resolving reference to feature type: '" + pt.getFTName() + "'" );
-            pt.resolve( ftNameToft.get( pt.getFTName() ) );
+            pt.resolve( ftNameToFt.get( pt.getFTName() ) );
         }
     }
 
@@ -399,15 +417,15 @@ public class ApplicationSchemaXSDDecoder {
                         int minOccurs2 = particle2.getMinOccurs();
                         int maxOccurs2 = particle2.getMaxOccursUnbounded() ? -1 : particle2.getMaxOccurs();
                         QName elementName = new QName( elementDecl2.getNamespace(), elementDecl2.getName() );
-                        if ( ftNameToftElement.get( elementName ) != null ) {
+                        if ( ftNameToFtElement.get( elementName ) != null ) {
                             LOG.debug( "Identified a feature property." );
                             FeaturePropertyType pt = null;
-                            if (GMLNS.equals( elementName.getNamespaceURI() )) {
+                            if ( GMLNS.equals( elementName.getNamespaceURI() ) ) {
                                 pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, null );
                             } else {
                                 pt = new FeaturePropertyType( ptName, minOccurs, maxOccurs, elementName );
                             }
-                            featurePropertyTypes.add( pt );                            
+                            featurePropertyTypes.add( pt );
                             return pt;
                         }
                     }

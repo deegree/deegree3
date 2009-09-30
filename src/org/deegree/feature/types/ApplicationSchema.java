@@ -37,8 +37,10 @@ package org.deegree.feature.types;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -50,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Defines a number of {@link FeatureType}s and their substitution relations.
+ * Defines a number of {@link FeatureType}s and their derivation hierarchy.
  * <p>
  * Some notes:
  * <ul>
@@ -71,28 +73,29 @@ public class ApplicationSchema {
     private final Map<QName, FeatureType> ftNameToFt = new HashMap<QName, FeatureType>();
 
     // key: feature type A, value: feature type B (A is in substitutionGroup B)
-    private final Map<FeatureType, FeatureType> ftToSubstitutionGroup = new HashMap<FeatureType, FeatureType>();
+    private final Map<FeatureType, FeatureType> ftToSuperFt = new HashMap<FeatureType, FeatureType>();
 
     // key: feature type A, value: feature types B0...Bn (A is in substitutionGroup B0,
     // B0 is in substitutionGroup B1, ..., B(n-1) is in substitutionGroup Bn)
-    private final Map<FeatureType, List<FeatureType>> ftToSubstitutionGroups = new HashMap<FeatureType, List<FeatureType>>();
+    private final Map<FeatureType, List<FeatureType>> ftToSuperFts = new HashMap<FeatureType, List<FeatureType>>();
 
     private final XSModel model;
 
     /**
-     * Creates a new <code>ApplicationSchema</code> from the given {@link FeatureType}s and their substitution group
-     * relation.
+     * Creates a new <code>ApplicationSchema</code> from the given {@link FeatureType}s and their derivation hierarchy.
      * 
      * @param fts
-     *            all feature types (abstract and non-abstract)
-     * @param ftSubstitutionGroupRelation
-     *            key: feature type A, value: feature type B (A is in substitutionGroup B)
+     *            all application feature types (abstract and non-abstract), this must not include any GML base feature
+     *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>)
+     * @param ftToSuperFt
+     *            key: feature type A, value: feature type B (A extends B), this must not include any GML base feature
+     *            types (e.g. <code>gml:_Feature</code> or <code>gml:FeatureCollection</code>)
      * @param model
      * @throws IllegalArgumentException
-     *             if a feature type cannot be resolved (i.e. it is referenced but not defined)
+     *             if a feature type cannot be resolved (i.e. it is referenced in a property type, but not defined)
      */
-    public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftSubstitutionGroupRelation,
-                              XSModel model ) throws IllegalArgumentException {
+    public ApplicationSchema( FeatureType[] fts, Map<FeatureType, FeatureType> ftToSuperFt, XSModel model )
+                            throws IllegalArgumentException {
 
         for ( FeatureType ft : fts ) {
             ftNameToFt.put( ft.getName(), ft );
@@ -100,17 +103,17 @@ public class ApplicationSchema {
         }
 
         // build substitution group lookup maps
-        for ( FeatureType ft : ftSubstitutionGroupRelation.keySet() ) {
-            this.ftToSubstitutionGroup.put( ft, ftSubstitutionGroupRelation.get( ft ) );
+        for ( FeatureType ft : ftToSuperFt.keySet() ) {
+            this.ftToSuperFt.put( ft, ftToSuperFt.get( ft ) );
         }
         for ( FeatureType ft : fts ) {
             List<FeatureType> substitutionGroups = new ArrayList<FeatureType>();
-            FeatureType substitutionGroup = ftToSubstitutionGroup.get( ft );
+            FeatureType substitutionGroup = ftToSuperFt.get( ft );
             while ( substitutionGroup != null ) {
                 substitutionGroups.add( substitutionGroup );
-                substitutionGroup = ftToSubstitutionGroup.get( substitutionGroup );
+                substitutionGroup = ftToSuperFt.get( substitutionGroup );
             }
-            ftToSubstitutionGroups.put( ft, substitutionGroups );
+            ftToSuperFts.put( ft, substitutionGroups );
         }
 
         // resolve values in feature property declarations
@@ -146,7 +149,7 @@ public class ApplicationSchema {
     /**
      * Returns all feature types that are defined in this application schema.
      * 
-     * @return all feature types that are defined in this application schema
+     * @return all feature types
      */
     public FeatureType[] getFeatureTypes() {
         FeatureType[] fts = new FeatureType[ftNameToFt.values().size()];
@@ -155,6 +158,14 @@ public class ApplicationSchema {
             fts[i++] = ft;
         }
         return fts;
+    }
+
+    public FeatureType[] getRootFeatureTypes() {
+        // start with all feature types
+        Set<FeatureType> fts = new HashSet<FeatureType>( ftNameToFt.values() );
+        // remove all that have a super type
+        fts.removeAll( ftToSuperFt.keySet() );
+        return fts.toArray( new FeatureType[fts.size()] );
     }
 
     /**
@@ -169,12 +180,28 @@ public class ApplicationSchema {
     }
 
     /**
+     * Retrieves the direct subtypes for the given feature type.
+     * 
+     * @param ft
+     * @return the direct subtypes of the given feature type (abstract and non-abstract)
+     */
+    public FeatureType[] getDirectSubtypes( FeatureType ft ) {
+        List<FeatureType> fts = new ArrayList<FeatureType>( ftNameToFt.size() );
+        for ( FeatureType ft2 : ftToSuperFt.keySet() ) {
+            if ( ftToSuperFt.get( ft2 ) == ft ) {
+                fts.add( ft2 );
+            }
+        }
+        return fts.toArray( new FeatureType[fts.size()] );
+    }
+
+    /**
      * Retrieves all substitutions (abstract and non-abstract ones) for the given feature type.
      * 
      * @param ft
      * @return all substitutions for the given feature type
      */
-    public FeatureType getSubstitutions( FeatureType ft ) {
+    public FeatureType getSubtypes( FeatureType ft ) {
         return null;
     }
 
@@ -184,25 +211,27 @@ public class ApplicationSchema {
      * @param ft
      * @return all concrete substitutions for the given feature type
      */
-    public FeatureType getConcreteSubstitutions( FeatureType ft ) {
+    public FeatureType getConcreteSubtypes( FeatureType ft ) {
         return null;
     }
 
     /**
-     * Determines whether a feature type is substitutable for another feature type according to the schema.
+     * Determines whether a feature type is substitutable for another feature type.
      * <p>
      * This is true, iff <code>substitution</code> is either:
      * <ul>
      * <li>equal to <code>ft</code></li>
-     * <li>in the substitutionGroup of <code>ft</code></li>
-     * <li>transititively substitutable for <code>ft</code></li>
+     * <li>a direct subtype of <code>ft</code></li>
+     * <li>a transititive subtype of <code>ft</code></li>
      * </ul>
      * 
      * @param ft
+     *            base feature type, must be part of this schema
      * @param substitution
+     *            feature type to be checked, must be part of this schema
      * @return true, if the first feature type is a valid substitution for the second
      */
-    public boolean isValidSubstitution( FeatureType ft, FeatureType substitution ) {
+    public boolean isSubType( FeatureType ft, FeatureType substitution ) {
         if ( substitution == null || ft == null ) {
             LOG.debug( "Testing substitutability against null feature type." );
             return true;
@@ -211,7 +240,7 @@ public class ApplicationSchema {
         if ( ft == substitution ) {
             return true;
         }
-        List<FeatureType> substitutionGroups = ftToSubstitutionGroups.get( substitution );
+        List<FeatureType> substitutionGroups = ftToSuperFts.get( substitution );
         if ( substitutionGroups != null ) {
             for ( FeatureType substitutionGroup : substitutionGroups ) {
                 if ( ft == substitutionGroup ) {

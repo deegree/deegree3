@@ -398,7 +398,7 @@ public class GMLFeatureDecoder extends XMLAdapter {
                     if ( ( (FeaturePropertyType) propDecl ).getFTName() != null ) {
                         FeatureType expectedFt = ( (FeaturePropertyType) propDecl ).getValueFt();
                         FeatureType presentFt = lookupFeatureType( xmlStream, xmlStream.getName() );
-                        if ( !schema.isValidSubstitution( expectedFt, presentFt ) ) {
+                        if ( !schema.isSubType( expectedFt, presentFt ) ) {
                             String msg = Messages.getMessage( "ERROR_PROPERTY_WRONG_FEATURE_TYPE",
                                                               expectedFt.getName(), propName, presentFt.getName() );
                             throw new XMLParsingException( xmlStream, msg );

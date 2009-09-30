@@ -127,7 +127,7 @@ public class GMLIdContext {
             }
 
             FeatureType presentFt = targetObject.getType();
-            if ( !schema.isValidSubstitution( ref.getType(), presentFt ) ) {
+            if ( !schema.isSubType( ref.getType(), presentFt ) ) {
                 String msg = "Cannot resolve reference to feature with id '" + ref.getId()
                              + "'. Property requires a feature of type '" + ref.getType().getName()
                              + "', but referenced object is of type '" + presentFt.getName() + "'.";
