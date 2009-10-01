@@ -47,6 +47,7 @@ import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
+import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
 
 /**
@@ -117,6 +118,10 @@ public class TiledRaster extends AbstractRaster {
         if ( getEnvelope().equals( env ) && ( bands == null || Arrays.equals( bands, getRasterDataInfo().bandInfo ) ) ) {
             return this;
         }
+        // min: (2576192.0,5630576.0), max: (2584384.0,5638768.0)
+        // min: (2584384.0,5635491.2), max: (2587660.8,5638768.0)
+        // ((2584384.0,5638768.0, NaN), (2584384.0,5635491.2, NaN))
+
         // use the default tile container.
         MemoryTileContainer resultTC = new MemoryTileContainer();
         TiledRaster result = new TiledRaster( resultTC );
@@ -125,6 +130,14 @@ public class TiledRaster extends AbstractRaster {
             Geometry intersection = r.getEnvelope().getIntersection( env );
 
             if ( intersection != null ) {
+                // rb: don't delete the following tests, they are crucial.
+                // ignore if it only touches a tile
+                if ( intersection instanceof Point ) {
+                    continue;
+                }
+                if ( intersection instanceof Curve ) {
+                    continue;
+                }
                 Envelope subsetEnv = intersection.getEnvelope();
                 resultTC.addTile( r.getSubRaster( subsetEnv, bands ) );
             }

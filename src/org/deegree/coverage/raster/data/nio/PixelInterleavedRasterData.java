@@ -154,22 +154,22 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
     @Override
     public void setSubset( int dstX, int dstY, int width, int height, RasterData srcRaster, int srcX, int srcY ) {
 
-        // // the actual width and height of this raster
-        int wx0 = this.getWidth() - dstX;
-        int hy0 = this.getHeight() - dstY;
-        //
-        // // the width and height of the raster from which the data will be copied
-        int srcw = srcRaster.getWidth()/* - srcX */;
-        int srch = srcRaster.getHeight()/* - srcY */;
-        //
-        // // clamp to maximum possible size
-        int subWidth = min( wx0, width, srcw );
-        int subHeight = min( hy0, height, srch );
+        // // // the actual width and height of this raster
+        // int wx0 = this.getWidth() - dstX;
+        // int hy0 = this.getHeight() - dstY;
+        // //
+        // // // the width and height of the raster from which the data will be copied
+        // int srcw = srcRaster.getWidth()/* - srcX */;
+        // int srch = srcRaster.getHeight()/* - srcY */;
+        // //
+        // // // clamp to maximum possible size
+        // int subWidth = min( wx0, width, srcw );
+        // int subHeight = min( hy0, height, srch );
 
         // copy data direct if interleaving type is identical
         if ( srcRaster instanceof PixelInterleavedRasterData && view.dataInfo.bands == dataInfo.bands ) {
-            // int subWidth = clampSize( getWidth(), dstX, srcRaster.getWidth(), srcX, width );
-            // int subHeight = clampSize( getHeight(), dstY, srcRaster.getHeight(), srcY, height );
+            int subWidth = clampSize( getWidth(), dstX, srcRaster.getWidth(), srcX, width );
+            int subHeight = clampSize( getHeight(), dstY, srcRaster.getHeight(), srcY, height );
 
             if ( subHeight <= 0 || subWidth <= 0 ) {
                 return;
@@ -180,8 +180,8 @@ public class PixelInterleavedRasterData extends ByteBufferRasterData {
             // byte[] tmp = new byte[subWidth * getPixelStride()];
             int length = subWidth * getPixelStride();
             for ( int i = 0; i < subHeight; i++ ) {
-                // order of .position and .get calls is significant, if bytebuffer is identical
                 int pos = raster.calculatePos( srcX, i + srcY );
+                // order of .position and .get calls is significant, if bytebuffer is identical
                 srcData.limit( pos + length );
                 srcData.position( pos );
                 // srcData.get( tmp );

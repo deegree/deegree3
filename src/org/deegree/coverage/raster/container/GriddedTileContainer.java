@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.coverage.raster.container;
 
@@ -49,10 +49,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Abstract base class for {@link TileContainer}s based on a rectangular grid of disjunct, equal-sized cells (raster
  * tiles).
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public abstract class GriddedTileContainer implements TileContainer {
@@ -85,7 +85,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     /**
      * Creates a new {@link GriddedTileContainer} instances.
-     *
+     * 
      * @param envelope
      *            area of the samples of the contained tiles (TODO: OUTER / INNER???)
      * @param rows
@@ -115,7 +115,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     /**
      * Returns the raster tile at the given grid position.
-     *
+     * 
      * @param rowId
      *            row id, must in the range [0 ... #rows - 1]
      * @param columnId
@@ -129,10 +129,10 @@ public abstract class GriddedTileContainer implements TileContainer {
 
         List<AbstractRaster> tiles = new ArrayList<AbstractRaster>();
 
-        int minColumnId = getColumnIdx( env.getMin().get0() );
-        int minRowId = getRowIdx( env.getMax().get1() );
-        int maxColumnId = getColumnIdx( env.getMax().get0() );
-        int maxRowId = getRowIdx( env.getMin().get1() );
+        int minColumnId = getColumnIdx( env.getMin().get0() + 0.00001 );
+        int minRowId = getRowIdx( env.getMax().get1() - 0.00001 );
+        int maxColumnId = getColumnIdx( env.getMax().get0() - 0.00001 );
+        int maxRowId = getRowIdx( env.getMin().get1() + 0.00001 );
 
         for ( int rowId = minRowId; rowId <= maxRowId; rowId++ ) {
             for ( int columnId = minColumnId; columnId <= maxColumnId; columnId++ ) {
@@ -156,7 +156,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     /**
      * Returns the number of rows of the grid.
-     *
+     * 
      * @return the number of rows
      */
     public int getRows() {
@@ -165,7 +165,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     /**
      * Returns the number of columns of the grid.
-     *
+     * 
      * @return the number of columns
      */
     public int getColumns() {
@@ -174,7 +174,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     /**
      * Calculates the id for a tile at a given position in the grid.
-     *
+     * 
      * @param columnId
      *            column id, must be in the range [0 ... #columns - 1]
      * @param rowId
@@ -188,7 +188,7 @@ public abstract class GriddedTileContainer implements TileContainer {
 
     /**
      * Calculates the envelope for a tile at a given position in the grid.
-     *
+     * 
      * @param columnId
      *            column id, must be in the range [0 ... #columns - 1]
      * @param rowId

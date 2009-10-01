@@ -148,6 +148,12 @@ public class RasterReference {
     public RasterReference( Envelope env, int width, int height ) {
         this( Type.OUTER, env.getMin().get0(), env.getMax().get1(), env.getSpan0() / width,
               ( env.getSpan1() / ( -1d * height ) ) );
+        // this.x0 = env.getMin().get0();
+        // this.y0 = env.getMax().get1();
+        //
+        // this.xRes = env.getSpan0() / width;
+        // this.yRes = -1 * env.getSpan1() / height;
+        // this.delta = Math.abs( xRes * DELTA_SCALE );
     }
 
     /**
