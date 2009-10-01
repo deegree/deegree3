@@ -389,7 +389,7 @@ public class SymbologyParser {
                 base.wellKnown = SimpleMark.valueOf( in.getElementText().toUpperCase() );
             }
 
-            if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
+            sym: if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
                 LOG.debug( "Loading mark from external file." );
                 InputStream is = getOnlineResourceOrInlineContent( in );
                 in.nextTag();
@@ -415,13 +415,13 @@ public class SymbologyParser {
                         }
                         if ( font == null ) {
                             LOG.warn( "Font was not loaded, because the format '{}' is not supported.", format );
-                            continue;
+                            break sym;
                         }
 
-                        if ( font.getNumGlyphs() <= base.markIndex ) {
+                        if ( base.markIndex >= font.getNumGlyphs() - 1 ) {
                             LOG.warn( "The font only contains {} glyphs, but the index given was {}.",
                                       font.getNumGlyphs(), base.markIndex );
-                            continue;
+                            break sym;
                         }
 
                         base.font = font;
