@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,21 +32,23 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r2d.styling.components;
 
 import static java.awt.Color.BLACK;
 import static org.deegree.rendering.r2d.styling.components.Mark.SimpleMark.SQUARE;
 
+import java.awt.Font;
+
 import org.deegree.rendering.r2d.styling.Copyable;
 
 /**
  * <code>Mark</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class Mark implements Copyable<Mark> {
@@ -55,6 +57,16 @@ public class Mark implements Copyable<Mark> {
      * Default is SQUARE.
      */
     public SimpleMark wellKnown = SQUARE;
+
+    /**
+     * Default is null. If non null, wellKnown is ignored.
+     */
+    public Font font;
+
+    /**
+     * Is used when font is set.
+     */
+    public int markIndex;
 
     /**
      * Default is null.
@@ -83,10 +95,10 @@ public class Mark implements Copyable<Mark> {
 
     /**
      * <code>SimpleMark</code>
-     *
+     * 
      * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
      * @author last edited by: $Author$
-     *
+     * 
      * @version $Revision$, $Date$
      */
     public static enum SimpleMark {

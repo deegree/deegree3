@@ -37,6 +37,9 @@
 package org.deegree.rendering.r2d.se.parser;
 
 import static java.awt.Color.decode;
+import static java.awt.Font.TRUETYPE_FONT;
+import static java.awt.Font.TYPE1_FONT;
+import static java.awt.Font.createFont;
 import static java.lang.Double.MAX_VALUE;
 import static java.lang.Double.MIN_VALUE;
 import static java.lang.Double.parseDouble;
@@ -54,8 +57,11 @@ import static org.deegree.rendering.i18n.Messages.get;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.awt.Color;
+import java.awt.FontFormatException;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -67,6 +73,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.xerces.impl.dv.util.Base64;
 import org.deegree.commons.utils.DoublePair;
 import org.deegree.commons.utils.Pair;
 import org.deegree.commons.xml.stax.StAXParsingHelper;
@@ -382,6 +389,52 @@ public class SymbologyParser {
                 base.wellKnown = SimpleMark.valueOf( in.getElementText().toUpperCase() );
             }
 
+            if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
+                LOG.debug( "Loading mark from external file." );
+                InputStream is = getOnlineResourceOrInlineContent( in );
+                in.nextTag();
+
+                in.require( START_ELEMENT, null, "Format" );
+                String format = in.getElementText();
+                in.require( END_ELEMENT, null, "Format" );
+
+                in.nextTag();
+                if ( in.getLocalName().equals( "MarkIndex" ) ) {
+                    base.markIndex = Integer.parseInt( in.getElementText() );
+                    in.nextTag();
+                }
+
+                if ( is != null ) {
+                    try {
+                        java.awt.Font font = null;
+                        if ( format.equalsIgnoreCase( "ttf" ) ) {
+                            font = createFont( TRUETYPE_FONT, is );
+                        }
+                        if ( format.equalsIgnoreCase( "type1" ) ) {
+                            font = createFont( TYPE1_FONT, is );
+                        }
+                        if ( font == null ) {
+                            LOG.warn( "Font was not loaded, because the format '{}' is not supported.", format );
+                            continue;
+                        }
+
+                        if ( font.getNumGlyphs() <= base.markIndex ) {
+                            LOG.warn( "The font only contains {} glyphs, but the index given was {}.",
+                                      font.getNumGlyphs(), base.markIndex );
+                            continue;
+                        }
+
+                        base.font = font;
+                    } catch ( FontFormatException e ) {
+                        LOG.debug( "Stack trace:", e );
+                        LOG.warn( "The font file was not a valid '{}' file: '{}'", format, e.getLocalizedMessage() );
+                    } catch ( IOException e ) {
+                        LOG.debug( "Stack trace:", e );
+                        LOG.warn( "The font file could not be read: '{}'.", e.getLocalizedMessage() );
+                    }
+                }
+            }
+
             if ( in.getLocalName().equals( "Fill" ) ) {
                 final Pair<Fill, Continuation<Fill>> fill = parseFill( in );
                 base.fill = fill.first;
@@ -414,9 +467,37 @@ public class SymbologyParser {
         return new Pair<Mark, Continuation<Mark>>( base, contn );
     }
 
+    private static InputStream getOnlineResourceOrInlineContent( XMLStreamReader in )
+                            throws XMLStreamException {
+        if ( in.getLocalName().equals( "OnlineResource" ) ) {
+            String str = in.getAttributeValue( XLNNS, "href" );
+            try {
+                URL url = resolve( str, in );
+                LOG.debug( "Loading from URL '{}'", url );
+                in.nextTag();
+                return url.openStream();
+            } catch ( IOException e ) {
+                LOG.debug( "Stack trace:", e );
+                LOG.warn( "Could not retrieve content at URL '{}'.", str );
+                return null;
+            }
+        }
+
+        if ( in.getLocalName().equals( "InlineContent" ) ) {
+            String format = in.getAttributeValue( null, "encoding" );
+            if ( format.equalsIgnoreCase( "base64" ) ) {
+                return new ByteArrayInputStream( Base64.decode( in.getElementText() ) );
+            }
+            if ( format.equalsIgnoreCase( "xml" ) ) {
+                // TODO
+            }
+        }
+
+        return null;
+    }
+
     private static BufferedImage parseExternalGraphic( XMLStreamReader in )
                             throws IOException, XMLStreamException {
-        // TODO inline content
         // TODO color replacement
         // TODO in case of svg, load/render it with batik
 
@@ -431,11 +512,11 @@ public class SymbologyParser {
             if ( in.getLocalName().equals( "Format" ) ) {
                 format = in.getElementText();
             }
-            if ( in.getLocalName().equals( "OnlineResource" ) ) {
-                String str = in.getAttributeValue( XLNNS, "href" );
-                URL url = resolve( str, in );
-                LOG.debug( "Loading external graphic from URL '{}'", url );
-                img = ImageIO.read( url );
+            if ( in.getLocalName().equals( "OnlineResource" ) || in.getLocalName().equals( "InlineContent" ) ) {
+                InputStream is = getOnlineResourceOrInlineContent( in );
+                if ( is != null ) {
+                    img = ImageIO.read( is );
+                }
                 in.nextTag();
             }
         }

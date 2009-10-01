@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r2d;
 
@@ -41,6 +41,8 @@ import static java.lang.Math.PI;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -53,10 +55,10 @@ import org.deegree.rendering.r2d.styling.components.Mark;
 
 /**
  * <code>RenderHelper</code>
- *
+ * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
- *
+ * 
  * @version $Revision$, $Date$
  */
 public class RenderHelper {
@@ -64,7 +66,7 @@ public class RenderHelper {
     /**
      * Example: calculateStarPolygon (5, 2) connects the first, third, fifth, second, fourth and again first edge in
      * that order.
-     *
+     * 
      * @param edges
      *            the number of edges
      * @param skip
@@ -144,35 +146,43 @@ public class RenderHelper {
         double sizem1 = size - 1;
 
         LinkedList<Shape> shapes = new LinkedList<Shape>();
-        switch ( mark.wellKnown ) {
-        case CIRCLE:
-            shapes.add( new Ellipse2D.Double( 0, 0, sizem1, sizem1 ) );
-            break;
-        case CROSS: {
-            double half = sizem1 / 2;
-            shapes.add( new Line2D.Double( half, 0, half, sizem1 ) );
-            shapes.add( new Line2D.Double( 0, half, sizem1, half ) );
-            break;
-        }
-        case SQUARE:
-            shapes.add( new Rectangle2D.Double( 0, 0, sizem1, sizem1 ) );
-            break;
-        case STAR: {
-            shapes.add( calculateStarPolygon( 5, 2, sizem1 ) );
-            break;
-        }
-        case TRIANGLE:
-            Path2D.Double path = new Path2D.Double();
-            path.moveTo( sizem1 / 2, 0 );
-            path.lineTo( 0, sizem1 );
-            path.lineTo( sizem1, sizem1 );
-            path.closePath();
-            shapes.add( path );
-            break;
-        case X:
-            shapes.add( new Line2D.Double( 0, 0, sizem1, sizem1 ) );
-            shapes.add( new Line2D.Double( sizem1, 0, 0, sizem1 ) );
-            break;
+        if ( mark.font != null ) {
+            FontRenderContext frc = new FontRenderContext( null, false, true );
+            GlyphVector vec = mark.font.deriveFont( (float) sizem1 ).createGlyphVector( frc,
+                                                                                        new int[] { mark.markIndex } );
+            Rectangle2D bounds = vec.getVisualBounds();
+            shapes.add( vec.getOutline( -(float) bounds.getX(), -(float) bounds.getY() ) );
+        } else {
+            switch ( mark.wellKnown ) {
+            case CIRCLE:
+                shapes.add( new Ellipse2D.Double( 0, 0, sizem1, sizem1 ) );
+                break;
+            case CROSS: {
+                double half = sizem1 / 2;
+                shapes.add( new Line2D.Double( half, 0, half, sizem1 ) );
+                shapes.add( new Line2D.Double( 0, half, sizem1, half ) );
+                break;
+            }
+            case SQUARE:
+                shapes.add( new Rectangle2D.Double( 0, 0, sizem1, sizem1 ) );
+                break;
+            case STAR: {
+                shapes.add( calculateStarPolygon( 5, 2, sizem1 ) );
+                break;
+            }
+            case TRIANGLE:
+                Path2D.Double path = new Path2D.Double();
+                path.moveTo( sizem1 / 2, 0 );
+                path.lineTo( 0, sizem1 );
+                path.lineTo( sizem1, sizem1 );
+                path.closePath();
+                shapes.add( path );
+                break;
+            case X:
+                shapes.add( new Line2D.Double( 0, 0, sizem1, sizem1 ) );
+                shapes.add( new Line2D.Double( sizem1, 0, 0, sizem1 ) );
+                break;
+            }
         }
 
         if ( mark.fill != null ) {
