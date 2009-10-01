@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 
 package org.deegree.rendering.r3d.opengl.rendering.dem.texturing;
 
@@ -52,10 +52,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The <code></code> class TODO add class documentation here.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
- *
+ * 
  * @version $Revision: $, $Date: $
  */
 public class RasterAPITextureTileProvider implements TextureTileProvider {
@@ -70,7 +70,7 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
 
     /**
      * Read a texture from a file and load it using the raster api.
-     *
+     * 
      * @param file
      * @param res
      * @throws IOException
@@ -90,8 +90,10 @@ public class RasterAPITextureTileProvider implements TextureTileProvider {
         // extract raw byte buffer (RGB, pixel interleaved)
         long begin2 = System.currentTimeMillis();
         SimpleRaster simpleRaster = subset.getAsSimpleRaster();
-        LOG.debug( "#getTextureTile(): as simple raster: " + ( System.currentTimeMillis() - begin2 ) + ", env: "
-                   + simpleRaster.getEnvelope() );
+        if ( LOG.isDebugEnabled() ) {
+            LOG.debug( "#getTextureTile(): as simple raster: " + ( System.currentTimeMillis() - begin2 ) + ", env: "
+                       + simpleRaster.getEnvelope() );
+        }
 
         PixelInterleavedRasterData rasterData = (PixelInterleavedRasterData) simpleRaster.getRasterData();
         ByteBuffer pixelBuffer = rasterData.getByteBuffer();
