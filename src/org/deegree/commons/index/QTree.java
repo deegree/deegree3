@@ -63,6 +63,8 @@ import org.deegree.rendering.r3d.opengl.rendering.model.manager.PositionableMode
  */
 public class QTree<T> extends SpatialIndex<T> {
 
+    private final static org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger( QTree.class );
+
     /** the envelope of this tree */
     protected final float[] envelope;
 
@@ -98,6 +100,10 @@ public class QTree<T> extends SpatialIndex<T> {
     protected final static byte UP_RIGHT = 3;
 
     private final int maxOffset;
+
+    private int objectsInLeaf = 0;
+
+    private int objectsInCovering = 0;
 
     /**
      * Create son node.
@@ -324,10 +330,17 @@ public class QTree<T> extends SpatialIndex<T> {
                 Entry<T> e = leafObjects.get( i );
                 if ( e != null && e.entryValue.equals( object ) ) {
                     result = leafObjects.remove( e );
+                    if ( leafObjects.isEmpty() || !hasDuplicateLocation( e.entryEnv ) ) {
+                        objectsInLeaf--;
+                    }
                 }
             }
             if ( leafObjects.isEmpty() ) {
+                if ( objectsInLeaf > 0 ) {
+                    LOG.error( "No more objects in leaf, but the counter says there should be." );
+                }
                 leafObjects = null;
+                objectsInLeaf = 0;
             }
         }
         return result;
@@ -390,47 +403,45 @@ public class QTree<T> extends SpatialIndex<T> {
      * @return the number of duplicate envelopes in the leaf objects which should be subtracted from the size();
      */
     private final int duplicateEnvelopes( List<Entry<T>> objectList ) {
-        return 0;
+        List<List<T>> equalEnvelope = new ArrayList<List<T>>( objectList.size() );
+        for ( int i = 0; i < objectList.size(); ++i ) {
+            Entry<T> firstE = objectList.get( i );
+            float[] first = firstE.entryEnv;
+            boolean checked = false;
+            for ( int listI = 0; listI < equalEnvelope.size() && !checked; ++listI ) {
+                List<T> l = equalEnvelope.get( listI );
+                if ( l != null ) {
+                    checked = l.contains( firstE.entryValue );
+                }
+            }
+            if ( !checked ) {
+                LinkedList<T> checkList = new LinkedList<T>();
 
-        // List<List<T>> equalEnvelope = new ArrayList<List<T>>( objectList.size() );
-        // for ( int i = 0; i < objectList.size(); ++i ) {
-        // Entry<T> firstE = objectList.get( i );
-        // float[] first = firstE.entryEnv;
-        // boolean checked = false;
-        // for ( int listI = 0; listI < equalEnvelope.size() && !checked; ++listI ) {
-        // List<T> l = equalEnvelope.get( listI );
-        // if ( l != null ) {
-        // checked = l.contains( firstE.entryValue );
-        // }
-        // }
-        // if ( !checked ) {
-        // LinkedList<T> checkList = new LinkedList<T>();
-        //
-        // for ( int j = i + 1; j < objectList.size(); ++j ) {
-        // float[] second = objectList.get( j ).entryEnv;
-        // double minD = calcDist( first, second, 0, maxOffset );
-        // double maxD = calcDist( first, second, maxOffset, maxOffset );
-        //
-        // // if min and max have distance 0, then just count as one because they are equals, this might
-        // // prevent a stack overflow
-        // if ( ( minD < SPLIT_CRITERIA_EPSILON && maxD < SPLIT_CRITERIA_EPSILON ) ) {
-        // checkList.add( objectList.get( j ).entryValue );
-        // }
-        // }
-        // if ( !checkList.isEmpty() ) {
-        // checkList.add( firstE.entryValue );
-        // equalEnvelope.add( checkList );
-        // }
-        // }
-        // }
-        // int result = 0;
-        // for ( List<T> l : equalEnvelope ) {
-        // if ( l != null && !l.isEmpty() ) {
-        // result += ( l.size() - 1 );
-        // }
-        // }
-        //
-        // return result;
+                for ( int j = i + 1; j < objectList.size(); ++j ) {
+                    float[] second = objectList.get( j ).entryEnv;
+                    double minD = calcDist( first, second, 0, maxOffset );
+                    double maxD = calcDist( first, second, maxOffset, maxOffset );
+
+                    // if min and max have distance 0, then just count as one because they are equals, this might
+                    // prevent a stack overflow
+                    if ( ( minD < SPLIT_CRITERIA_EPSILON && maxD < SPLIT_CRITERIA_EPSILON ) ) {
+                        checkList.add( objectList.get( j ).entryValue );
+                    }
+                }
+                if ( !checkList.isEmpty() ) {
+                    checkList.add( firstE.entryValue );
+                    equalEnvelope.add( checkList );
+                }
+            }
+        }
+        int result = 0;
+        for ( List<T> l : equalEnvelope ) {
+            if ( l != null && !l.isEmpty() ) {
+                result += ( l.size() - 1 );
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -448,7 +459,8 @@ public class QTree<T> extends SpatialIndex<T> {
      * @return
      */
     private final int size() {
-        return ( leafObjects == null ) ? 0 : ( leafObjects.size() - duplicateEnvelopes( leafObjects ) );
+        return ( leafObjects == null ) ? 0 : objectsInLeaf;// ( leafObjects.size() - duplicateEnvelopes( leafObjects )
+        // );
     }
 
     /**
@@ -465,12 +477,38 @@ public class QTree<T> extends SpatialIndex<T> {
             if ( leafObjects == null ) {
                 leafObjects = new ArrayList<Entry<T>>( numberOfObjects );
             }
+            if ( !hasDuplicateLocation( object.entryEnv ) ) {
+                objectsInLeaf++;
+            }
             leafObjects.add( object );
             if ( splitCriteria() ) {
                 split();
             }
         }
+        if ( leafObjects != null && leafObjects.size() < objectsInLeaf ) {
+            LOG.error( "leaf counter (" + objectsInLeaf + ") is larger then actual objects in leaf: "
+                       + leafObjects.size() );
+        }
 
+    }
+
+    /**
+     * @param object
+     * @return
+     */
+    private final boolean hasDuplicateLocation( final float[] objectEnvelope ) {
+        for ( Entry<T> obj : leafObjects ) {
+            float[] second = obj.entryEnv;
+            double minD = calcDist( objectEnvelope, second, 0, maxOffset );
+            double maxD = calcDist( objectEnvelope, second, maxOffset, maxOffset );
+
+            // if min and max have distance 0, then just count as one because they are equals, this might
+            // prevent a stack overflow
+            if ( ( minD < SPLIT_CRITERIA_EPSILON && maxD < SPLIT_CRITERIA_EPSILON ) ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -518,6 +556,7 @@ public class QTree<T> extends SpatialIndex<T> {
                 node.addObject( e );
             }
         }
+        objectsInLeaf = 0;
         leafObjects = null;
     }
 
