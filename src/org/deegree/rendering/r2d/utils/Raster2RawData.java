@@ -147,7 +147,7 @@ public class Raster2RawData implements Image2RawData {
             }
         } catch ( Exception e ) {
             LOG.error( "Error while parsing raster data, @ row={}, col={}", row, col );
-//            e.printStackTrace();
+            e.printStackTrace();
         }
 
         return values;
