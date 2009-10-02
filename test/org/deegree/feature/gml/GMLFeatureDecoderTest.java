@@ -125,7 +125,7 @@ public class GMLFeatureDecoderTest {
 //        writer.close();
     }
     
-    @Test
+//    @Test
     public void testParsingXPlan20()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
