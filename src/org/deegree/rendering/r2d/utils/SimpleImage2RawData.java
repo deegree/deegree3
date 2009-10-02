@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Parses coolor/grayscale images (1, 3 or 4 bits) assuming pixels are integers,
+ * Parses color/grayscale images (1, 3 or 4 bits) assuming pixels are integers,
  * and returns a long matrix containing the pixel values.
  *
  * @author <a href="mailto:a.aiordachioaie@jacobs-university.de">Andrei Aiordachioaie</a>

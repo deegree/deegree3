@@ -80,7 +80,7 @@ public class Categorize extends Function {
     private String[] valuesArray = null;
 
     private List<StringBuffer> thresholds = new ArrayList<StringBuffer>();
-    private String[] thresholdsArray =  null;
+    private Float[] thresholdsArray =  null;
 
     private LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
 
@@ -129,10 +129,11 @@ public class Categorize extends Function {
      * @param values Array of int values, that are the inputs to the categorize operation
      * @return a buffered image
      */
-    public BufferedImage buildImage(Integer[][] values)
+    public BufferedImage buildImage(Float[][] values)
     {
-        BufferedImage img;
+        BufferedImage img = null;
         long start = System.nanoTime();
+        int col=-1, row=-1;
 
         buildLookupArrays();
 
@@ -140,13 +141,18 @@ public class Categorize extends Function {
         {
             img = new BufferedImage(values[0].length, values.length, BufferedImage.TYPE_INT_RGB);
             LOG.debug("Created image with H={}, L={}", img.getHeight(), img.getWidth());
-            for (int j = 0; j < img.getHeight(); j++)
-                for (int i = 0; i < img.getWidth(); i++)
+            for (row = 0; row < img.getHeight(); row++)
+                for (col = 0; col < img.getWidth(); col++)
                 {
-                    float val = values[j][i];
-                    int rgb = lookup(val).getRGB();
-                    img.setRGB(i, j, rgb);
+                    float val = values[row][col];
+                    int rgb = lookup2(val).getRGB();
+                    img.setRGB(col, row, rgb);
                 }
+        }
+        catch (Exception e)
+        {
+            LOG.error( "Error while building image, with row={}, col={}", row, col );
+//            e.printStackTrace();
         }
         finally
         {
@@ -163,23 +169,21 @@ public class Categorize extends Function {
      */
     public Color lookup2(double value)
     {
-        // TODO: howto use this?
-        boolean preceding = precedingBelongs;
-        
-        int pos = Arrays.binarySearch(thresholdsArray, String.valueOf(value));
+        int pos = Arrays.binarySearch(thresholdsArray, new Float(value));
         if (pos >=0 )
         {
-            // found in the thresholds array
+            // found exact value in the thresholds array
+            if (precedingBelongs == false)
+                pos++;
         }
         else
         {
             pos = pos * (-1) - 1;
         }
-        String color = valuesArray[pos+1].toString();
-//        LOG.debug("Color {} : {}", (((StringBuffer[])values.toArray(new StringBuffer[20]))[pos].toString()), Color.decode(color));
+        String color = valuesArray[pos].toString();
         return Color.decode(color);
     }
-
+    
     /**
      * Looks up a value in the current categories and thresholds. Naive implementation.
      * @param input double value
@@ -190,12 +194,9 @@ public class Categorize extends Function {
         Iterator<StringBuffer> ts = thresholds.iterator();
         Iterator<StringBuffer> vs = values.iterator();
 
-        // TODO: howto use this?
-        boolean preceding = precedingBelongs;
-
         Float threshold = Float.parseFloat(ts.next().toString());
 
-        while ( ( preceding ? ( threshold < val ) : ( threshold <= val ) ) && ts.hasNext() ) {
+        while ( ( precedingBelongs ? ( threshold < val ) : ( threshold <= val ) ) && ts.hasNext() ) {
             threshold = Float.parseFloat(ts.next().toString());
             vs.next();
         }
@@ -203,8 +204,7 @@ public class Categorize extends Function {
         Color c = Color.decode(vs.next().toString());
         return c;
     }
-
-    /**
+        /**
      * @param in
      * @throws XMLStreamException
      */
@@ -260,16 +260,27 @@ public class Categorize extends Function {
         r += "\nValues: " + values.toString();
         r += "\nThresholds: " + thresholds.toString();
         if (valuesArray != null)
-            r += "\nValues Array: " + valuesArray.toString();
+            r += "\nValues Array: " + printArray(valuesArray);
         if (thresholdsArray != null)
-            r += "\nThresholds Array: " + thresholdsArray.toString();
+            r += "\nThresholds Array: " + printArray(thresholdsArray);
+        r += "\n Preceding: " + precedingBelongs;
         r += "\n ]";
         return r;
     }
+    
+    public String printArray(Object[] a)
+    {
+        String result = a[0].toString();
+        for (int i=1;i<a.length;i++)
+            result += ", " + a[i].toString();
+        result = "{" + result + "}";
+        return result;
+    }
 
     /* Create the sorted lookup arrays from the StringBuffers */
-    private void buildLookupArrays()
+    public void buildLookupArrays()
     {
+        LOG.debug( "Building look-up arrays, for binary search... ");
         if (valuesArray == null)
         {
             valuesArray = new String[values.size()];
@@ -278,18 +289,18 @@ public class Categorize extends Function {
             while (i.hasNext())
                 list.add(i.next().toString());
             valuesArray = list.toArray(valuesArray);
-            Arrays.sort(valuesArray);
+//            Arrays.sort(valuesArray);
         }
 
         if (thresholdsArray == null)
         {
-            thresholdsArray = new String[thresholds.size()];
-            List<String> list = new ArrayList<String>(thresholds.size());
+            thresholdsArray = new Float[thresholds.size()];
+            List<Float> list = new ArrayList<Float>(thresholds.size());
             Iterator<StringBuffer> i = thresholds.iterator();
             while (i.hasNext())
-                list.add(i.next().toString());
+                list.add(Float.parseFloat( i.next().toString() ));
             thresholdsArray = list.toArray(thresholdsArray);
-            Arrays.sort(thresholdsArray);
+//            Arrays.sort(thresholdsArray);
         }
     }
 }
