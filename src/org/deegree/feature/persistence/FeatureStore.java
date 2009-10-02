@@ -36,10 +36,14 @@
 
 package org.deegree.feature.persistence;
 
+import javax.xml.namespace.QName;
+
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
+import org.deegree.filter.Filter;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.protocol.wfs.getfeature.Query;
 
@@ -67,6 +71,13 @@ public interface FeatureStore {
     public void destroy();
 
     /**
+     * Returns whether the store is currently able to perform operations.
+     * 
+     * @return true, if the store is functional, false otherwise
+     */
+    public boolean isAvailable();
+
+    /**
      * Returns the application schema that this {@link FeatureStore} serves.
      * 
      * @return the served application schema
@@ -74,13 +85,53 @@ public interface FeatureStore {
     public ApplicationSchema getSchema();
 
     /**
+     * Returns metadata on the specified feature type.
+     * 
+     * @param ftName
+     *            name of the feature type, cannot be null and must be served by this store
+     * @return metadata, never null
+     */
+    public StoredFeatureTypeMetadata getMetadata( QName ftName );
+
+    /**
+     * Returns the envelope for all stored features of the given type.
+     * 
+     * @param ftName
+     *            name of the feature type, cannot be null and must be served by this store
+     * @return the envelope (using the native CRS), never null
+     */
+    public Envelope getEnvelope( QName ftName );
+
+    /**
+     * Query method that reflects the specific needs of the WMS.
+     * <p>
+     * TODO integrate properly with the other query methods
+     * 
+     * @param filter
+     * @param bbox
+     *            if the bbox filter is contained in the filter, it will be evaluated by deegree, if given here, the
+     *            backend will do it
+     * @param withGeometries
+     *            whether to return geometry properties or not
+     * @param exact
+     * @return matching features
+     * @throws FeatureStoreException
+     *             if the query could not be performed
+     */
+    public FeatureCollection query( Filter filter, Envelope bbox, boolean withGeometries, boolean exact )
+                            throws FeatureStoreException;
+
+    /**
      * Performs the given {@link Query} and returns the matching features as a {@link FeatureCollection}.
      * 
      * @param query
      *            query to be performed
      * @return matching features
+     * @throws FeatureStoreException
+     *             if the query could not be performed
      */
-    public FeatureCollection performQuery( Query query );
+    public FeatureCollection performQuery( Query query )
+                            throws FeatureStoreException;
 
     /**
      * Returns the number of features that are matched by the given {@link Query}.
@@ -88,8 +139,11 @@ public interface FeatureStore {
      * @param query
      *            query to be performed
      * @return number of matching features
+     * @throws FeatureStoreException
+     *             if the query could not be performed
      */
-    public int performHitsQuery( Query query );
+    public int performHitsQuery( Query query )
+                            throws FeatureStoreException;
 
     /**
      * Retrieves the stored object with a certain id.
@@ -100,8 +154,11 @@ public interface FeatureStore {
      *            identifier of the object to be retrieved
      * @return the stored object (either a {@link Feature} or a {@link Geometry}) or null if no object with the given id
      *         is known
+     * @throws FeatureStoreException
+     *             if the query could not be performed
      */
-    public Object getObjectById( String id );
+    public Object getObjectById( String id )
+                            throws FeatureStoreException;
 
     /**
      * Acquires transactional access to the feature store.
@@ -112,14 +169,14 @@ public interface FeatureStore {
      */
     public FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException;
-    
+
     /**
      * Returns the associated {@link LockManager}.
      * 
      * @return the associated {@link LockManager} instance, never null
      * @throws FeatureStoreException
-     *             if the {@link FeatureStore} does not implement locking 
+     *             if the {@link FeatureStore} does not implement locking
      */
     public LockManager getLockManager()
-                            throws FeatureStoreException;    
+                            throws FeatureStoreException;
 }

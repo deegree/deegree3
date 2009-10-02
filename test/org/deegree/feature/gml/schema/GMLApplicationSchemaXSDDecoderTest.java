@@ -61,6 +61,9 @@ public class GMLApplicationSchemaXSDDecoderTest {
         FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
         Assert.assertEquals( 4, fts.length );
 
+        for ( int i = 0; i < fts.length; i++ ) {
+            System.out.println (fts[i]);
+        }        
         // TODO do more thorough testing
     }
    
@@ -90,5 +93,20 @@ public class GMLApplicationSchemaXSDDecoderTest {
         }
 
         // TODO do more thorough testing
-    }    
+    }
+    
+    @Test
+    public void testParsingXPlanGML20()
+                            throws ClassCastException, ClassNotFoundException, InstantiationException,
+                            IllegalAccessException {
+
+        String schemaURL = "file:/home/schneider/workspace/lkee_xplanung2/resources/schema/XPlanGML_2_0/XPlanGml.xsd";
+        ApplicationSchemaXSDDecoder adapter = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL );
+        FeatureType[] fts = adapter.extractFeatureTypeSchema().getFeatureTypes();
+//        for ( int i = 0; i < fts.length; i++ ) {
+//            System.out.println (fts[i]);
+//        }
+
+        // TODO do more thorough testing
+    }
 }

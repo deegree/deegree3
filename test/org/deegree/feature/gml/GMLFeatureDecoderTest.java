@@ -47,6 +47,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axiom.om.util.StAXUtils;
 import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.FormattingXMLStreamWriter;
@@ -67,7 +68,7 @@ import org.junit.Test;
 public class GMLFeatureDecoderTest {
 
     private static final String BASE_DIR = "testdata/features/";
-
+   
     @Test
     public void testParsingPhilosopherFeatureCollection()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
@@ -110,7 +111,7 @@ public class GMLFeatureDecoderTest {
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "../schema/cite/dataset-sf0.xml" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
-        xmlReader.next();
+        xmlReader.nextTag();
         GMLIdContext idContext = new GMLIdContext();
         GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext );
         XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
@@ -123,4 +124,66 @@ public class GMLFeatureDecoderTest {
 //        encoder.export( fc );
 //        writer.close();
     }
+    
+    @Test
+    public void testParsingXPlan20()
+                            throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
+                            ClassNotFoundException, InstantiationException, IllegalAccessException,
+                            XMLParsingException, UnknownCRSException, JAXBException {
+
+        // BP2070
+        URL docURL = new URL ("file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/BP2070.gml" );
+        XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.nextTag();
+        GMLIdContext idContext = new GMLIdContext();
+        GMLFeatureDecoder gmlAdapter = new GMLFeatureDecoder( null, idContext );
+        XMLStreamReaderWrapper wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
+        FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+        idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
+
+        // BP2135        
+        docURL = new URL ("file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/BP2135.gml" );
+        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.nextTag();
+        idContext = new GMLIdContext();
+        gmlAdapter = new GMLFeatureDecoder( null, idContext );
+        wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
+        fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+        idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
+        
+        // PlanA
+        docURL = new URL ("file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/FPlan_2.0.gml" );
+        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.nextTag();
+        idContext = new GMLIdContext();
+        gmlAdapter = new GMLFeatureDecoder( null, idContext );
+        wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
+        fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+        idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
+        
+        // LA22
+        docURL = new URL ("file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/LA 22.gml" );
+        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.nextTag();
+        idContext = new GMLIdContext();
+        gmlAdapter = new GMLFeatureDecoder( null, idContext );
+        wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
+        fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+        idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );
+        
+        // LA67
+        docURL = new URL ("file:/home/schneider/workspace/lkee_xplanung2/resources/testdata/XPlanGML_2_0/LA67_2_0.gml" );
+        xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
+                                                                                         docURL.openStream() );
+        xmlReader.nextTag();
+        idContext = new GMLIdContext();
+        gmlAdapter = new GMLFeatureDecoder( null, idContext );
+        wrapper = new XMLStreamReaderWrapper( xmlReader, docURL.toString() );
+        fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
+        idContext.resolveXLinks( gmlAdapter.getApplicationSchema() );        
+    }    
 }

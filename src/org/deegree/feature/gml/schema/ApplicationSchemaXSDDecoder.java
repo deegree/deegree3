@@ -384,8 +384,10 @@ public class ApplicationSchemaXSDDecoder {
      */
     private FeaturePropertyType buildFeaturePropertyType( XSElementDeclaration elementDecl,
                                                           XSComplexTypeDefinition typeDef, int minOccurs, int maxOccurs ) {
-
+       
         QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
+        LOG.debug ("Checking if element declaration '" + ptName + "' defines a feature property type.");
+        
         switch ( typeDef.getContentType() ) {
         case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
             LOG.debug( "CONTENTTYPE_ELEMENT" );

@@ -79,7 +79,7 @@ public class DefaultLockManager implements LockManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( DefaultLockManager.class );
 
-    FeatureStore store;
+    private FeatureStore store;
 
     private String jdbcConnId;
 
@@ -95,6 +95,15 @@ public class DefaultLockManager implements LockManager {
         this.store = store;
         this.jdbcConnId = jdbcConnId;
         initDatabase();
+    }
+
+    /**
+     * Returns the associated {@link FeatureStore}.
+     * 
+     * @return the associated store, never null
+     */
+    FeatureStore getStore() {
+        return store;
     }
 
     private void initDatabase()
@@ -328,7 +337,7 @@ public class DefaultLockManager implements LockManager {
     @Override
     public boolean isFeatureModifiable( String fid, String lockId )
                             throws FeatureStoreException {
-        if (lockId == null) {
+        if ( lockId == null ) {
             return !isFeatureLocked( fid );
         }
         boolean isModifiable = false;
@@ -340,7 +349,8 @@ public class DefaultLockManager implements LockManager {
             try {
                 conn = ConnectionManager.getConnection( jdbcConnId );
                 stmt = conn.createStatement();
-                rs = stmt.executeQuery( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID='" + fid + "' AND LOCK_ID<>" + lockId );
+                rs = stmt.executeQuery( "SELECT COUNT(*) FROM LOCKED_FIDS WHERE FID='" + fid + "' AND LOCK_ID<>"
+                                        + lockId );
                 rs.next();
                 int count = rs.getInt( 1 );
                 isModifiable = count == 0;

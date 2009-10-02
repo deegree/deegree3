@@ -51,6 +51,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
+import org.deegree.crs.CRS;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
@@ -60,11 +61,14 @@ import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.feature.persistence.FeatureStoreTransaction;
+import org.deegree.feature.persistence.StoredFeatureTypeMetadata;
 import org.deegree.feature.persistence.lock.DefaultLockManager;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.FeatureType;
+import org.deegree.filter.Filter;
 import org.deegree.filter.FilterEvaluationException;
+import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.protocol.wfs.getfeature.FilterQuery;
 import org.deegree.protocol.wfs.getfeature.Query;
@@ -80,6 +84,8 @@ import org.deegree.protocol.wfs.getfeature.Query;
 public class GMLMemoryStore implements FeatureStore {
 
     private final ApplicationSchema schema;
+
+    private final Map<QName, StoredFeatureTypeMetadata> ftNameToMd = new HashMap<QName, StoredFeatureTypeMetadata>();
 
     private final Map<String, Object> idToObject = new HashMap<String, Object>();
 
@@ -100,8 +106,13 @@ public class GMLMemoryStore implements FeatureStore {
      */
     public GMLMemoryStore( ApplicationSchema schema ) throws FeatureStoreException {
         this.schema = schema;
+        CRS nativeCRS = new CRS( "EPSG:4326" );
         for ( FeatureType ft : schema.getFeatureTypes() ) {
             ftToFeatures.put( ft, new GenericFeatureCollection() );
+            String title = ft.getName().toString();
+            String desc = ft.getName().toString() + ", served by the GMLMemoryStore";
+            StoredFeatureTypeMetadata md = new StoredFeatureTypeMetadata( ft, this, title, desc, nativeCRS );
+            ftNameToMd.put( ft.getName(), md );
         }
         lockManager = new DefaultLockManager( this, "LOCK_DB" );
     }
@@ -220,7 +231,6 @@ public class GMLMemoryStore implements FeatureStore {
                 }
             }
         }
-
         return fc;
     }
 
@@ -314,5 +324,27 @@ public class GMLMemoryStore implements FeatureStore {
     public LockManager getLockManager()
                             throws FeatureStoreException {
         return lockManager;
+    }
+
+    @Override
+    public Envelope getEnvelope( QName ftName ) {
+        return ftToFeatures.get( schema.getFeatureType( ftName ) ).getEnvelope();
+    }
+
+    @Override
+    public boolean isAvailable() {
+        return true;
+    }
+
+    @Override
+    public FeatureCollection query( Filter filter, Envelope bbox, boolean withGeometries, boolean exact )
+                            throws FeatureStoreException {
+        throw new FeatureStoreException( "Not implemented yet." );
+    }
+
+    @Override
+    public StoredFeatureTypeMetadata getMetadata( QName ftName ) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

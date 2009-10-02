@@ -37,7 +37,7 @@
 package org.deegree.feature.persistence;
 
 /**
- * Enum type for discriminating the different object id generation policies.
+ * Enum type for discriminating the different object id generation policies for {@link FeatureStore}s.
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author$

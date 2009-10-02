@@ -226,7 +226,7 @@ class DefaultLock implements Lock {
         synchronized ( this ) {
             Query query = new FilterQuery( ftName, null, null, filter );
             // TODO don't actually fetch the feature collection, but only the fids of the features
-            FeatureCollection fc = manager.store.performQuery( query );
+            FeatureCollection fc = manager.getStore().performQuery( query );
 
             Connection conn = null;
             PreparedStatement stmt = null;
