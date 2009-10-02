@@ -35,13 +35,13 @@
 
 package org.deegree.rendering.r2d;
 
-import java.awt.AlphaComposite;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-
 import java.awt.image.BufferedImage;
+
 import org.deegree.coverage.raster.AbstractRaster;
 import org.deegree.coverage.raster.data.RasterData;
 import org.deegree.coverage.raster.utils.RasterFactory;
@@ -98,10 +98,10 @@ public class Java2DRasterRenderer implements RasterRenderer {
     }
 
     public void render( RasterStyling styling, AbstractRaster raster ) {
-        LOG.info( "Rendering raster with style..." );
+        LOG.trace( "Rendering raster with style..." );
         BufferedImage img = null;
         if ( raster == null ) {
-            LOG.debug( "Trying to render null raster." );
+            LOG.warn( "Trying to render null raster." );
             return;
         }
         if ( styling == null ) {
@@ -110,19 +110,22 @@ public class Java2DRasterRenderer implements RasterRenderer {
             return;
         }
 
-        if ( styling.categorize != null ) {
-            LOG.info( "Applying categories on raster..." );
-//            BufferedImage img2 = RasterFactory.imageFromRaster( raster );
-//            SimpleImage2RawData converter = new SimpleImage2RawData( img2 );
-//            LOG.debug( "We have image with H={}, L={}", img2.getHeight(), img2.getWidth() );
-//            Integer[][] mat = converter.parse();
+        if ( styling.categorize != null || styling.interpolate != null ) {
+            LOG.trace( "Creating raster ColorMap..." );
+            // BufferedImage img2 = RasterFactory.imageFromRaster( raster );
+            // SimpleImage2RawData converter = new SimpleImage2RawData( img2 );
+            // LOG.debug( "We have image with H={}, L={}", img2.getHeight(), img2.getWidth() );
+            // Integer[][] mat = converter.parse();
             Raster2RawData converter = new Raster2RawData( raster );
             Float[][] mat = (Float[][]) converter.parse();
-            img = styling.categorize.buildImage( mat );
+            if ( styling.categorize != null )
+                img = styling.categorize.evaluateRasterData( mat );
+            else if ( styling.interpolate != null )
+                img = styling.interpolate.evaluateRasterData( mat );
         }
 
         if ( styling.opacity != 1 ) {
-            LOG.info( "Using opacity: " + styling.opacity );
+            LOG.debug( "Using opacity: " + styling.opacity );
             graphics.setComposite( AlphaComposite.getInstance( AlphaComposite.SRC_OVER, (float) styling.opacity ) );
         }
 

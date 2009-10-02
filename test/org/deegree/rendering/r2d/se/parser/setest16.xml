@@ -23,7 +23,7 @@
 	</ChannelSelection>
 	<OverlapBehavior>LATEST_ON_TOP</OverlapBehavior>
 	<ColorMap>
-		<Interpolate fallbackValue="#dddddd">
+		<Interpolate fallbackValue="#dddddd" method="color">
 			<LookupValue>Rasterdata</LookupValue>
 			<InterpolationPoint>
 				<Data>0</Data>

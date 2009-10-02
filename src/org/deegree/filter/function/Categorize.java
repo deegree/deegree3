@@ -35,19 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.filter.function;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Arrays;
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import static org.deegree.rendering.r2d.se.parser.SymbologyParser.updateOrContinue;
 import static org.deegree.rendering.r2d.se.unevaluated.Continuation.SBUPDATER;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
-
 import java.util.List;
+
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
@@ -77,10 +77,12 @@ public class Categorize extends Function {
     private boolean precedingBelongs = false;
 
     private List<StringBuffer> values = new ArrayList<StringBuffer>();
+
     private String[] valuesArray = null;
 
     private List<StringBuffer> thresholds = new ArrayList<StringBuffer>();
-    private Float[] thresholdsArray =  null;
+
+    private Float[] thresholdsArray = null;
 
     private LinkedList<Continuation<StringBuffer>> valueContns = new LinkedList<Continuation<StringBuffer>>();
 
@@ -126,85 +128,80 @@ public class Categorize extends Function {
 
     /**
      * Construct an image map, as the result of the Categorize operation
-     * @param values Array of int values, that are the inputs to the categorize operation
+     * 
+     * @param values
+     *            Array of float values, that are the inputs to the categorize operation
      * @return a buffered image
      */
-    public BufferedImage buildImage(Float[][] values)
-    {
+    public BufferedImage evaluateRasterData( Float[][] values ) {
         BufferedImage img = null;
         long start = System.nanoTime();
-        int col=-1, row=-1;
+        int col = -1, row = -1;
 
         buildLookupArrays();
 
-        try
-        {
-            img = new BufferedImage(values[0].length, values.length, BufferedImage.TYPE_INT_RGB);
-            LOG.debug("Created image with H={}, L={}", img.getHeight(), img.getWidth());
-            for (row = 0; row < img.getHeight(); row++)
-                for (col = 0; col < img.getWidth(); col++)
-                {
+        try {
+            img = new BufferedImage( values[0].length, values.length, BufferedImage.TYPE_INT_RGB );
+            LOG.debug( "Created image with H={}, L={}", img.getHeight(), img.getWidth() );
+            for ( row = 0; row < img.getHeight(); row++ )
+                for ( col = 0; col < img.getWidth(); col++ ) {
                     float val = values[row][col];
-                    int rgb = lookup2(val).getRGB();
-                    img.setRGB(col, row, rgb);
+                    int rgb = lookup2( val ).getRGB();
+                    img.setRGB( col, row, rgb );
                 }
-        }
-        catch (Exception e)
-        {
+        } catch ( Exception e ) {
             LOG.error( "Error while building image, with row={}, col={}", row, col );
-//            e.printStackTrace();
-        }
-        finally
-        {
+            // e.printStackTrace();
+        } finally {
             long end = System.nanoTime();
-            LOG.debug("Built image with total time {} ms", (end-start)/1000000);
+            LOG.debug( "Built image with total time {} ms", ( end - start ) / 1000000 );
         }
         return img;
     }
 
     /**
      * Looks up a value in the current categories and thresholds. Uses binary search for optimization.
-     * @param input value
+     * 
+     * @param input
+     *            value
      * @return Category value
      */
-    public Color lookup2(double value)
-    {
-        int pos = Arrays.binarySearch(thresholdsArray, new Float(value));
-        if (pos >=0 )
-        {
+    public Color lookup2( double value ) {
+        int pos = Arrays.binarySearch( thresholdsArray, new Float( value ) );
+        if ( pos >= 0 ) {
             // found exact value in the thresholds array
-            if (precedingBelongs == false)
+            if ( precedingBelongs == false )
                 pos++;
-        }
-        else
-        {
-            pos = pos * (-1) - 1;
+        } else {
+            pos = pos * ( -1 ) - 1;
         }
         String color = valuesArray[pos].toString();
-        return Color.decode(color);
+        return Color.decode( color );
     }
-    
+
     /**
      * Looks up a value in the current categories and thresholds. Naive implementation.
-     * @param input double value
+     * 
+     * @param input
+     *            double value
      * @return rgb int value, for storing in a BufferedImage
      */
-    public Color lookup(double val)
-    {
+    public Color lookup( double val ) {
         Iterator<StringBuffer> ts = thresholds.iterator();
         Iterator<StringBuffer> vs = values.iterator();
 
-        Float threshold = Float.parseFloat(ts.next().toString());
+        Float threshold = Float.parseFloat( ts.next().toString() );
 
         while ( ( precedingBelongs ? ( threshold < val ) : ( threshold <= val ) ) && ts.hasNext() ) {
-            threshold = Float.parseFloat(ts.next().toString());
+            threshold = Float.parseFloat( ts.next().toString() );
             vs.next();
         }
 
-        Color c = Color.decode(vs.next().toString());
+        Color c = Color.decode( vs.next().toString() );
         return c;
     }
-        /**
+
+    /**
      * @param in
      * @throws XMLStreamException
      */
@@ -245,62 +242,55 @@ public class Categorize extends Function {
         in.require( END_ELEMENT, null, "Categorize" );
     }
 
-//    public String toString()
-//    {
-//        String r = "";
-//        if (contn != null)
-//            r += contn.toString();
-//        return r;
-//    }
+    // public String toString()
+    // {
+    // String r = "";
+    // if (contn != null)
+    // r += contn.toString();
+    // return r;
+    // }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         String r = "\nCategorize [ ";
         r += "\nValues: " + values.toString();
         r += "\nThresholds: " + thresholds.toString();
-        if (valuesArray != null)
-            r += "\nValues Array: " + printArray(valuesArray);
-        if (thresholdsArray != null)
-            r += "\nThresholds Array: " + printArray(thresholdsArray);
+        if ( valuesArray != null )
+            r += "\nValues Array: " + printArray( valuesArray );
+        if ( thresholdsArray != null )
+            r += "\nThresholds Array: " + printArray( thresholdsArray );
         r += "\n Preceding: " + precedingBelongs;
         r += "\n ]";
         return r;
     }
-    
-    public String printArray(Object[] a)
-    {
+
+    public String printArray( Object[] a ) {
         String result = a[0].toString();
-        for (int i=1;i<a.length;i++)
+        for ( int i = 1; i < a.length; i++ )
             result += ", " + a[i].toString();
         result = "{" + result + "}";
         return result;
     }
 
-    /* Create the sorted lookup arrays from the StringBuffers */
-    public void buildLookupArrays()
-    {
-        LOG.debug( "Building look-up arrays, for binary search... ");
-        if (valuesArray == null)
-        {
+    /* Create the sorted lookup arrays from the StringBuffer lists */
+    public void buildLookupArrays() {
+        LOG.debug( "Building look-up arrays, for binary search... " );
+        if ( valuesArray == null ) {
             valuesArray = new String[values.size()];
-            List<String> list = new ArrayList<String>(values.size());
+            List<String> list = new ArrayList<String>( values.size() );
             Iterator<StringBuffer> i = values.iterator();
-            while (i.hasNext())
-                list.add(i.next().toString());
-            valuesArray = list.toArray(valuesArray);
-//            Arrays.sort(valuesArray);
+            while ( i.hasNext() )
+                list.add( i.next().toString() );
+            valuesArray = list.toArray( valuesArray );
         }
 
-        if (thresholdsArray == null)
-        {
+        if ( thresholdsArray == null ) {
             thresholdsArray = new Float[thresholds.size()];
-            List<Float> list = new ArrayList<Float>(thresholds.size());
+            List<Float> list = new ArrayList<Float>( thresholds.size() );
             Iterator<StringBuffer> i = thresholds.iterator();
-            while (i.hasNext())
-                list.add(Float.parseFloat( i.next().toString() ));
-            thresholdsArray = list.toArray(thresholdsArray);
-//            Arrays.sort(thresholdsArray);
+            while ( i.hasNext() )
+                list.add( Float.parseFloat( i.next().toString() ) );
+            thresholdsArray = list.toArray( thresholdsArray );
         }
     }
 }
