@@ -86,6 +86,7 @@ public class IIORasterWriter implements RasterWriter {
         LOG.debug( "writing " + file + " with ImageIO" );
         String format = FileUtils.getFileExtension( file );
 
+        LOG.debug( "Writing raster with width: {} height: {}", raster.getColumns(), raster.getRows() );
         IIORasterDataWriter.saveRasterDataToFile( raster.getAsSimpleRaster().getRasterData(), file, format );
 
         RasterReference rasterEnv = raster.getRasterReference();
