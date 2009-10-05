@@ -254,6 +254,27 @@ public abstract class ByteBufferRasterData implements RasterData {
     public RasterDataInfo getDataInfo() {
         return view.dataInfo;
     }
+    
+    /**
+     * @return the original datainfo object.
+     */
+    public RasterDataInfo getOriginalDataInfo() {
+        return dataInfo;
+    }
+    
+    /**
+     * @return the underlying raster height.
+     */
+    public int getOriginalHeight() {
+        return rasterHeight;
+    }    
+    
+    /**
+     * @return the underlying raster width.
+     */
+    public int getOriginalWidth() {
+        return rasterWidth;
+    }
 
     public byte[] getNullPixel( byte[] result ) {
         return view.dataInfo.getNoDataPixel( result );
