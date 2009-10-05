@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,6 +51,7 @@ import org.deegree.geometry.Geometry;
 import org.deegree.geometry.GeometryFactory;
 import org.deegree.geometry.primitive.Curve;
 import org.deegree.geometry.primitive.Point;
+import org.slf4j.Logger;
 
 /**
  * This class represents a tiled AbstractRaster.
@@ -62,6 +65,8 @@ import org.deegree.geometry.primitive.Point;
  * 
  */
 public class TiledRaster extends AbstractRaster {
+
+    private static final Logger LOG = getLogger( TiledRaster.class );
 
     private TileContainer tileContainer;
 
@@ -198,6 +203,7 @@ public class TiledRaster extends AbstractRaster {
         }
         SimpleRaster originalSimpleRaster = tiles.get( 0 ).getAsSimpleRaster();
         SimpleRaster result = originalSimpleRaster.createCompatibleSimpleRaster( getRasterReference(), env );
+        LOG.debug( "Tiled to simple -> result(w,h): " + result.getColumns() + ", " + result.getRows() );
 
         for ( AbstractRaster r : tiles ) {
             Geometry intersec = r.getEnvelope().getIntersection( env );
@@ -205,7 +211,14 @@ public class TiledRaster extends AbstractRaster {
                 if ( intersec instanceof Point ) {
                     continue;
                 }
+                if ( intersec instanceof Curve ) {
+                    continue;
+                }
                 Envelope subsetEnv = intersec.getEnvelope();
+                if ( LOG.isDebugEnabled() ) {
+                    LOG.debug( "Adding raster intersection:{}, rasterInfo:{}, rasterref: {} ",
+                               new Object[] { subsetEnv, r.getRasterDataInfo(), r.getRasterReference() } );
+                }
                 result.setSubRaster( subsetEnv, r );
             }
         }
