@@ -54,7 +54,6 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.types.ApplicationSchema;
-import org.deegree.junit.XMLAssert;
 import org.deegree.junit.XMLMemoryStreamWriter;
 import org.junit.Test;
 
@@ -109,8 +108,7 @@ public class GMLFeatureEncoderTest {
         exporter.export( feature );
         writer.flush();
         writer.close();
-//        XMLAssert.assertValidity( memoryWriter.getReader() );
-        
-        System.out.println (memoryWriter);
+        // XMLAssert.assertValidity( memoryWriter.getReader() );
+
     }
 }
