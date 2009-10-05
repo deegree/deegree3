@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.filter.spatial;
 
 import org.deegree.filter.FilterEvaluationException;
@@ -42,18 +42,18 @@ import org.deegree.geometry.Geometry;
 
 /**
  * TODO add documentation here
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public class Within extends SpatialOperator {
 
     private final PropertyName param1;
 
-    private final Geometry param2;     
-    
+    private final Geometry param2;
+
     public Within( PropertyName param1, Geometry param2 ) {
         this.param1 = param1;
         this.param2 = param2;
@@ -75,6 +75,14 @@ public class Within extends SpatialOperator {
     public String toString( String indent ) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public PropertyName getParam1() {
+        return param1;
+    }
+
+    public Geometry getParam2() {
+        return param2;
     }
 
 }
