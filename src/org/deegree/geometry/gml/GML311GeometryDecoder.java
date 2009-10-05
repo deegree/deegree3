@@ -444,7 +444,7 @@ public class GML311GeometryDecoder extends GML311BaseDecoder {
             throw new XMLParsingException( xmlStream, msg );
         }
 
-        if ( "Envelope".equals( xmlStream.getName() ) ) {
+        if ( "Envelope".equals( xmlStream.getLocalName() ) ) {
             geometry = parseEnvelope( xmlStream, defaultCRS );
         } else {
             geometry = parse( xmlStream, defaultCRS );
