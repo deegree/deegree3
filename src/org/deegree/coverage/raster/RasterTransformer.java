@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.coverage.raster;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +47,6 @@ import org.deegree.coverage.raster.geom.RasterReference;
 import org.deegree.coverage.raster.interpolation.Interpolation;
 import org.deegree.coverage.raster.interpolation.InterpolationFactory;
 import org.deegree.coverage.raster.interpolation.InterpolationType;
-import org.deegree.coverage.raster.utils.RasterFactory;
 import org.deegree.crs.CRS;
 import org.deegree.crs.Transformer;
 import org.deegree.crs.coordinatesystems.CoordinateSystem;
@@ -199,7 +196,6 @@ public class RasterTransformer extends Transformer {
     /**
      * Create a new raster that contains all data we need for the transformation.
      * 
-     * @throws UnknownCRSException
      * @throws IllegalArgumentException
      */
     private AbstractRaster getSubRaster( CoordinateSystem srcCRS, AbstractRaster sourceRaster, Envelope dstEnvelope )
@@ -231,7 +227,7 @@ public class RasterTransformer extends Transformer {
             throw new TransformationException( "no source data found" );
         }
         // if ( LOG.isDebugEnabled() ) {
-        debugRasterFile( source );
+        // debugRasterFile( source );
         // }
         return source;
     }
@@ -336,15 +332,16 @@ public class RasterTransformer extends Transformer {
         this.backgroundValue = backgroundValue;
     }
 
-    private void debugRasterFile( AbstractRaster source ) {
-        File tmpFile = null;
-        try {
-            tmpFile = File.createTempFile( "transform-src", ".tiff" );
-            LOG.debug( "writing the source raster of the transformation to " + tmpFile );
-            RasterFactory.saveRasterToFile( source, tmpFile );
-        } catch ( IOException e ) {
-            LOG.error( "couldn't write debug file " + tmpFile );
-            e.printStackTrace();
-        }
-    }
+    // private void debugRasterFile( AbstractRaster source ) {
+    // File tmpFile = null;
+    // try {
+    // tmpFile = File.createTempFile( "transform-src", ".tiff" );
+    // LOG.debug( "writing the source raster of the transformation to " + tmpFile );
+    // RasterFactory.saveRasterToFile( source, tmpFile );
+    // } catch ( IOException e ) {
+    // LOG.error( "couldn't write debug file " + tmpFile );
+    // e.printStackTrace();
+    // }
+    // }
+
 }
