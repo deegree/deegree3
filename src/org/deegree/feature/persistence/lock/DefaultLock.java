@@ -54,6 +54,7 @@ import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.FeatureStoreException;
 import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.protocol.wfs.getfeature.FilterQuery;
 import org.deegree.protocol.wfs.getfeature.Query;
 import org.slf4j.Logger;
@@ -225,13 +226,14 @@ class DefaultLock implements Lock {
 
         synchronized ( this ) {
             Query query = new FilterQuery( ftName, null, null, filter );
-            // TODO don't actually fetch the feature collection, but only the fids of the features
-            FeatureCollection fc = manager.getStore().performQuery( query );
 
             Connection conn = null;
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
+                // TODO don't actually fetch the feature collection, but only the fids of the features
+                FeatureCollection fc = manager.getStore().performQuery( query );
+
                 conn = ConnectionManager.getConnection( jdbcConnId );
                 conn.setAutoCommit( false );
 
@@ -256,6 +258,9 @@ class DefaultLock implements Lock {
                     e1.printStackTrace();
                 }
                 throw new FeatureStoreException( e.getMessage(), e );
+            } catch ( FilterEvaluationException e ) {
+                LOG.debug( "Stack trace:", e );
+                throw new FeatureStoreException( e );
             } finally {
                 try {
                     conn.setAutoCommit( true );

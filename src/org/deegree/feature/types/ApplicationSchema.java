@@ -103,17 +103,18 @@ public class ApplicationSchema {
         }
 
         // build substitution group lookup maps
-        for ( FeatureType ft : ftToSuperFt.keySet() ) {
-            this.ftToSuperFt.put( ft, ftToSuperFt.get( ft ) );
-        }
-        for ( FeatureType ft : fts ) {
-            List<FeatureType> substitutionGroups = new ArrayList<FeatureType>();
-            FeatureType substitutionGroup = ftToSuperFt.get( ft );
-            while ( substitutionGroup != null ) {
-                substitutionGroups.add( substitutionGroup );
-                substitutionGroup = ftToSuperFt.get( substitutionGroup );
+        if ( ftToSuperFt != null ) {
+            ftToSuperFt.putAll( ftToSuperFt );
+
+            for ( FeatureType ft : fts ) {
+                List<FeatureType> substitutionGroups = new ArrayList<FeatureType>();
+                FeatureType substitutionGroup = ftToSuperFt.get( ft );
+                while ( substitutionGroup != null ) {
+                    substitutionGroups.add( substitutionGroup );
+                    substitutionGroup = ftToSuperFt.get( substitutionGroup );
+                }
+                ftToSuperFts.put( ft, substitutionGroups );
             }
-            ftToSuperFts.put( ft, substitutionGroups );
         }
 
         // resolve values in feature property declarations

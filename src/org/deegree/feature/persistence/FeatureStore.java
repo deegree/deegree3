@@ -43,6 +43,7 @@ import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.persistence.lock.LockManager;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.filter.Filter;
+import org.deegree.filter.FilterEvaluationException;
 import org.deegree.geometry.Envelope;
 import org.deegree.geometry.Geometry;
 import org.deegree.protocol.wfs.getfeature.Query;
@@ -117,9 +118,11 @@ public interface FeatureStore {
      * @return matching features
      * @throws FeatureStoreException
      *             if the query could not be performed
+     * @throws FilterEvaluationException
+     *             if the filter could not be evaluated
      */
     public FeatureCollection query( Filter filter, Envelope bbox, boolean withGeometries, boolean exact )
-                            throws FeatureStoreException;
+                            throws FeatureStoreException, FilterEvaluationException;
 
     /**
      * Performs the given {@link Query} and returns the matching features as a {@link FeatureCollection}.
@@ -129,9 +132,11 @@ public interface FeatureStore {
      * @return matching features
      * @throws FeatureStoreException
      *             if the query could not be performed
+     * @throws FilterEvaluationException
+     *             if the filter contained in the query could not be evaluated
      */
     public FeatureCollection performQuery( Query query )
-                            throws FeatureStoreException;
+                            throws FeatureStoreException, FilterEvaluationException;
 
     /**
      * Returns the number of features that are matched by the given {@link Query}.
@@ -141,9 +146,11 @@ public interface FeatureStore {
      * @return number of matching features
      * @throws FeatureStoreException
      *             if the query could not be performed
+     * @throws FilterEvaluationException
+     *             if the filter contained in the query could not be evaluated
      */
     public int performHitsQuery( Query query )
-                            throws FeatureStoreException;
+                            throws FeatureStoreException, FilterEvaluationException;
 
     /**
      * Retrieves the stored object with a certain id.
