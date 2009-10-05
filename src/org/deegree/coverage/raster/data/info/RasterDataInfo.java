@@ -230,4 +230,11 @@ public class RasterDataInfo {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "[Band info: " + Arrays.toString( bandInfo ) + ", data size: " + dataSize + ", interleave type: "
+               + interleaveType + "]";
+    }
+
 }
