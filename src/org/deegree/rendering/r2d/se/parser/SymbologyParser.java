@@ -517,7 +517,6 @@ public class SymbologyParser {
                 if ( is != null ) {
                     img = ImageIO.read( is );
                 }
-                in.nextTag();
             }
         }
 
