@@ -89,7 +89,9 @@ import org.deegree.protocol.wfs.getfeature.Query;
 import org.slf4j.Logger;
 
 /**
- * <code>ShapeFeatureStore</code>
+ * {@link FeatureStore} implementation that uses shape files as backend.
+ * 
+ * @see FeatureStore
  * 
  * @author <a href="mailto:schmitz@lat-lon.de">Andreas Schmitz</a>
  * @author last edited by: $Author$
