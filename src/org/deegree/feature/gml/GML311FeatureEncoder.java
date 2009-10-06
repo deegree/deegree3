@@ -172,7 +172,16 @@ public class GML311FeatureEncoder {
         } else {
             QName featureName = feature.getName();
             LOG.debug( "Exporting Feature {} with ID {}", featureName, feature.getId() );
-            writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
+
+            String namespaceURI = featureName.getNamespaceURI();
+            String localName = featureName.getLocalPart();
+            if ( namespaceURI == null || namespaceURI.length() == 0 ) {
+                writer.writeStartElement( localName );
+            } else {
+                writer.writeStartElement( "app", localName, namespaceURI );
+            }            
+            
+//            writeStartElementWithNS( featureName.getNamespaceURI(), featureName.getLocalPart() );
             if ( feature.getId() != null ) {
                 writer.writeAttribute( "gml", GMLNS, "id", feature.getId() );
             }
@@ -196,7 +205,7 @@ public class GML311FeatureEncoder {
                 writer.writeAttribute( XLNNS, "href", "#" + subFid );
             } else {
                 if ( referenceTemplate == null || subFid == null
-                     || ( traverseXlinkDepth > 0 && ( inlineLevels < traverseXlinkDepth ) ) ) {
+                     || traverseXlinkDepth == -1 || ( traverseXlinkDepth > 0 && ( inlineLevels < traverseXlinkDepth ) ) ) {
                     exportedIds.add( subFeature.getId() );
                     writeStartElementWithNS( propName.getNamespaceURI(), propName.getLocalPart() );
                     export( subFeature, inlineLevels + 1 );
