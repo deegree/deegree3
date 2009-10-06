@@ -52,10 +52,7 @@ import org.deegree.feature.types.FeatureType;
 public interface PropertyType {
 
     /**
-     * Returns the name of the declared property.
-     * <p>
-     * In a common GML representation, this corresponds to the property's element name.
-     * </p>
+     * Returns the name of the property.
      *
      * @return the name of the property
      */

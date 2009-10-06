@@ -2,9 +2,9 @@
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
  Copyright (C) 2001-2009 by:
-   Department of Geography, University of Bonn
+ Department of Geography, University of Bonn
  and
-   lat/lon GmbH
+ lat/lon GmbH
 
  This library is free software; you can redistribute it and/or modify it under
  the terms of the GNU Lesser General Public License as published by the Free
@@ -32,7 +32,7 @@
  http://www.geographie.uni-bonn.de/deegree/
 
  e-mail: info@deegree.org
-----------------------------------------------------------------------------*/
+ ----------------------------------------------------------------------------*/
 package org.deegree.feature.types;
 
 import java.util.List;
@@ -45,10 +45,10 @@ import org.deegree.feature.types.property.PropertyType;
 
 /**
  * A {@link FeatureType} describes a class of {@link Feature}s.
- *
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider </a>
  * @author last edited by: $Author:$
- *
+ * 
  * @version $Revision:$, $Date:$
  */
 public interface FeatureType {
@@ -58,14 +58,14 @@ public interface FeatureType {
      * <p>
      * In the GML representation, this corresponds to the feature's element name.
      * </p>
-     *
+     * 
      * @return the name of the feature instance
      */
     public QName getName();
 
     /**
      * Returns the declaration of the property with the given name.
-     *
+     * 
      * @param propName
      *            name of the property
      * @return the declaration of the property, or null if no such property is defined
@@ -74,23 +74,23 @@ public interface FeatureType {
 
     /**
      * Returns all property declarations of the feature type.
-     *
+     * 
      * @return the property declarations (in order)
      */
     public List<PropertyType> getPropertyDeclarations();
 
     /**
      * Returns whether this type is abstract or not.
-     *
+     * 
      * @return true, if this feature type is abstract, false otherwise
      */
     public boolean isAbstract();
 
     /**
      * Creates a new {@link Feature} instance (that is of this type).
-     *
+     * 
      * @param fid
-     *            feature id (null means feature has no id)
+     *            feature id, or null if the feature doesn't have an id
      * @param props
      *            properties
      * @return a new <code>Feature</code> instance
@@ -99,7 +99,7 @@ public interface FeatureType {
 
     /**
      * Returns the {@link ApplicationSchema} that this feature type belongs to.
-     *
+     * 
      * @return the corresponding <code>ApplicationSchema</code> or null if this feature type has none
      */
     public ApplicationSchema getSchema();
