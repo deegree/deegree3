@@ -344,7 +344,6 @@ public class GMLMemoryStore implements FeatureStore {
 
     @Override
     public StoredFeatureTypeMetadata getMetadata( QName ftName ) {
-        // TODO Auto-generated method stub
-        return null;
+        return ftNameToMd.get( ftName );
     }
 }
