@@ -62,7 +62,7 @@ public class SingleValue<T extends Comparable<T>> {
      * @param value
      *            the actual value
      */
-    protected SingleValue( ValueType type, T value ) {
+    public SingleValue( ValueType type, T value ) {
         this.value = value;
         this.type = type;
     }
