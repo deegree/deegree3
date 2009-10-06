@@ -108,7 +108,7 @@ public abstract class AbstractFeature implements Feature {
                     propBBox = geom.getEnvelope();
                 } else if ( propValue instanceof Feature ) {
                     Feature subFeature = (Feature) propValue;
-                    propBBox = subFeature.getEnvelope();
+                    propBBox = getEnvelope( subFeature, visited );
                 }
                 if ( propBBox != null ) {
                     if ( featureBBox != null ) {

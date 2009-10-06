@@ -43,6 +43,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.deegree.feature.types.FeatureCollectionType;
+import org.deegree.feature.types.property.FeaturePropertyType;
 import org.deegree.feature.types.property.PropertyType;
 import org.deegree.geometry.Geometry;
 import org.slf4j.Logger;
@@ -105,12 +106,17 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
                 featureMemberDecl = propertyDecl;
             }
         }
+        
+        if (featureMemberDecl == null) {
+            featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );
+        }
     }
 
     /**
      * Creates a new <code>GenericFeatureCollection</code> without type information and contents.
      */
     public GenericFeatureCollection() {
+        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );
     }
 
 
@@ -123,6 +129,7 @@ public class GenericFeatureCollection extends AbstractFeatureCollection {
     public GenericFeatureCollection( String fid, List<Feature> memberFeatures ) {
         this.fid = fid;
         this.memberFeatures = new ArrayList<Feature>( memberFeatures );
+        featureMemberDecl = new FeaturePropertyType( FEATURE_MEMBER, 0, -1, null );
     }
 
     @Override
