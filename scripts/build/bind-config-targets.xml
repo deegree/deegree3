@@ -9,7 +9,7 @@
 		<property name="schema.file" value="commons.xsd" />
 		<property name="schema.name" value="commons" />
 
-		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.2.0/" />
+		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.3.0/" />
 		<property name="src.output.dir" value="${src.dir}/org/deegree/${schema.name}/configuration" />
 
 		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
@@ -26,7 +26,7 @@
 		</taskdef>
 		<property name="schema.file" value="featuretype_definition.xsd" />
 		<property name="schema.name" value="feature" />
-		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.2.0/" />
+		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.3.0/" />
 		<property name="src.output.dir" value="${src.dir}/org/deegree/feature/types/jaxb" />
 
 		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
@@ -42,7 +42,7 @@
 		</taskdef>
 		<property name="schema.file" value="all_datasources.xsd" />
 		<property name="schema.name" value="datasource" />
-		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.2.0/" />
+		<property name="schema.dir" value="${basedir}/resources/schema/${schema.name}/0.3.0/" />
 		<property name="src.output.dir" value="${src.dir}/org/deegree/commons/${schema.name}/configuration" />
 
 		<xjc schema="${schema.dir}/${schema.file}" destdir="${src.dir}" extension="true" removeOldOutput="true">
