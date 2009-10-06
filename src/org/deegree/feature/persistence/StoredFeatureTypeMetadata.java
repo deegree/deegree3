@@ -42,6 +42,8 @@ import org.deegree.feature.types.FeatureType;
 /**
  * Metadata for {@link FeatureType}s that are associated with a {@link FeatureStore}.
  * 
+ * TODO missing information for wfs:FeatureTypeType elements: MetadataURL, Keywords, ...
+ * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
