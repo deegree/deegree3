@@ -122,7 +122,7 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
 
         String handle = getNodeAsString( rootElement, new XPath( "@handle", nsContext ), null );
         int expiry = getNodeAsInt( rootElement, new XPath( "@expiry", nsContext ), -1 );
-        
+
         String resultTypeStr = getNodeAsString( rootElement, new XPath( "@resultType", nsContext ), null );
         ResultType resultType = null;
         if ( resultTypeStr != null ) {
@@ -253,7 +253,7 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
             sortProps.toArray( sortPropsArray );
 
             // build Query
-            Query filterQuery = new FilterQuery( queryHandle, typeNames, featureVersion, new CRS( srsName ),
+            Query filterQuery = new FilterQuery( queryHandle, typeNames, null, featureVersion, new CRS( srsName ),
                                                  propNamesArray, xlinkPropNamesArray, functionsArray, sortPropsArray,
                                                  filter );
 
@@ -264,6 +264,6 @@ public class GetFeatureWithLockXMLAdapter extends AbstractWFSRequestXMLAdapter {
         queries.toArray( queryArray );
 
         return new GetFeatureWithLock( VERSION_110, handle, resultType, outputFormat, maxFeatures, traverseXlinkDepth,
-                               traverseXlinkExpiry, queryArray, expiry );
+                                       traverseXlinkExpiry, queryArray, expiry );
     }
 }

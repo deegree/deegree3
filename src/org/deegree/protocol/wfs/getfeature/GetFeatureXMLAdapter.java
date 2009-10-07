@@ -322,7 +322,7 @@ public class GetFeatureXMLAdapter extends AbstractWFSRequestXMLAdapter {
             sortProps.toArray( sortPropsArray );
 
             // build Query
-            Query filterQuery = new FilterQuery( queryHandle, typeNames, featureVersion, new CRS( srsName ),
+            Query filterQuery = new FilterQuery( queryHandle, typeNames, null, featureVersion, new CRS( srsName ),
                                                  propNamesArray, xlinkPropNamesArray, functionsArray, sortPropsArray,
                                                  filter );
 

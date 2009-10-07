@@ -55,6 +55,10 @@ public class BBoxQuery extends Query {
 
     private final Envelope bbox;
 
+    private final PropertyName[][] propertyNames;
+
+    private final XLinkPropertyName[][] xLinkPropertyNames;
+
     /**
      * Creates a new {@link BBoxQuery} instance.
      * 
@@ -63,6 +67,8 @@ public class BBoxQuery extends Query {
      * @param typeNames
      *            requested feature types (with optional aliases), must not be null and must always contain at least one
      *            entry
+     * @param featureIds
+     *            requested feature ids
      * @param featureVersion
      *            version of the feature instances to be retrieved, may be null
      * @param srsName
@@ -80,13 +86,15 @@ public class BBoxQuery extends Query {
      * @param bbox
      *            envelope that constraints the query, must not be null
      */
-    public BBoxQuery( String handle, TypeName[] typeNames, String featureVersion, CRS srsName,
-                      PropertyName[] propertyNames, XLinkPropertyName[] xLinkPropertyNames, Function[] functions,
+    public BBoxQuery( String handle, TypeName[] typeNames, String[] featureIds, String featureVersion, CRS srsName,
+                      PropertyName[][] propertyNames, XLinkPropertyName[][] xLinkPropertyNames, Function[] functions,
                       SortProperty[] sortBy, Envelope bbox ) {
-        super( handle, typeNames, featureVersion, srsName, propertyNames, xLinkPropertyNames, functions, sortBy );
+        super( handle, typeNames, featureIds, featureVersion, srsName, functions, sortBy );
         if ( bbox == null ) {
             throw new IllegalArgumentException();
         }
+        this.xLinkPropertyNames = xLinkPropertyNames;
+        this.propertyNames = propertyNames;
         this.bbox = bbox;
     }
 
@@ -97,5 +105,32 @@ public class BBoxQuery extends Query {
      */
     public Envelope getBBox() {
         return bbox;
+    }
+
+    /**
+     * <p>
+     * From WFS Speification V1.1, clause 14.7.3.1: <i>A list of properties may be specified for each feature type that
+     * is being queried. A "*" character can be used to indicate that all properties should be retrieved. There is a 1:1
+     * mapping between each element in a FEATUREID or TYPENAME list and the PROPERTYNAME list. The absense of a value
+     * also indicates that all properties should be fetched.</i>
+     * </p>
+     * 
+     * @return the properties of the features that should be retrieved, may be null
+     */
+    public PropertyName[][] getPropertyNames() {
+        return propertyNames;
+    }
+
+    /**
+     * <p>
+     * Contains the Depth and Expiry properties for XLinks traversal. More precisely, the nested depth to which an
+     * xlink:href should be traversed (or "*" for indefinite depth), respectively the number of minutes the WFS should
+     * wait for a response when traversing through xlinks is encountered.
+     * </p>
+     * 
+     * @return the xLinkPropertyNames. See {@link XLinkPropertyName}
+     */
+    public XLinkPropertyName[][] getxLinkPropertyNames() {
+        return xLinkPropertyNames;
     }
 }
