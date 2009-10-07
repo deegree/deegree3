@@ -268,7 +268,11 @@ public class KVPUtils {
         while ( ( line = reader.readLine() ) != null ) {
             if ( line.contains( "=" ) ) {
                 String[] parts = line.split( "=" );
-                if ( parts.length == 2 ) {
+                if ( parts[0].equalsIgnoreCase( "FILTER" ) ) {
+                    params.put( "FILTER", URLDecoder.decode( line.substring( 7 ), "UTF-8" ) );
+                } else if ( parts[0].equalsIgnoreCase( "NAMESPACE" ) ) {
+                    params.put( "NAMESPACE", line.substring( 10 ) );
+                } else if ( parts.length == 2 ) {
                     params.put( parts[0].toUpperCase(), URLDecoder.decode( parts[1], "UTF-8" ) );
                 } else {
                     throw new IllegalArgumentException();
