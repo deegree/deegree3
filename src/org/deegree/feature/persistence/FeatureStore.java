@@ -52,6 +52,8 @@ import org.deegree.protocol.wfs.getfeature.Query;
  * Base interface of the {@link Feature} persistence layer, provides access to stored {@link Feature} instances.
  * <p>
  * Note that a {@link FeatureStore} instance is always associated with exactly one {@link ApplicationSchema} instance.
+ * <h4>Implementation requirements</h4>
+ * Implementations must be thread-safe, because {@link FeatureStore} instances are usually used in multiple threads.
  * </p>
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
@@ -63,8 +65,12 @@ public interface FeatureStore {
 
     /**
      * Called by the container to indicate that this {@link FeatureStore} instance is being placed into service.
+     * 
+     * @throws FeatureStoreException
+     *             if the initialization fails
      */
-    public void init();
+    public void init()
+                            throws FeatureStoreException;
 
     /**
      * Called by the container to indicate that this {@link FeatureStore} instance is being taken out of service.

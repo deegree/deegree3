@@ -15,18 +15,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * Defines the access to a database
- * 
- * <p>Java class for DatabaseDataSourceType complex type.
+ * <p>Java class for MemoryDataStoreType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="DatabaseDataSourceType">
+ * &lt;complexType name="MemoryDataStoreType">
  *   &lt;complexContent>
- *     &lt;extension base="{http://www.deegree.org/datasource}AbstractDataSourceType">
+ *     &lt;extension base="{http://www.deegree.org/datasource}FeatureStoreType">
  *       &lt;sequence>
- *         &lt;element name="ConnectionPoolId" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="SchemaFileURL" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -36,38 +34,38 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DatabaseDataSourceType", propOrder = {
-    "connectionPoolId"
+@XmlType(name = "MemoryDataStoreType", propOrder = {
+    "schemaFileURL"
 })
-public class DatabaseDataSourceType
-    extends AbstractDataSourceType
+public class MemoryDataStoreType
+    extends FeatureStoreType
 {
 
-    @XmlElement(name = "ConnectionPoolId", required = true)
-    protected String connectionPoolId;
+    @XmlElement(name = "SchemaFileURL", required = true)
+    protected String schemaFileURL;
 
     /**
-     * Gets the value of the connectionPoolId property.
+     * Gets the value of the schemaFileURL property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getConnectionPoolId() {
-        return connectionPoolId;
+    public String getSchemaFileURL() {
+        return schemaFileURL;
     }
 
     /**
-     * Sets the value of the connectionPoolId property.
+     * Sets the value of the schemaFileURL property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setConnectionPoolId(String value) {
-        this.connectionPoolId = value;
+    public void setSchemaFileURL(String value) {
+        this.schemaFileURL = value;
     }
 
 }

@@ -15,17 +15,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * Base type of all constraints.
- * 
- * <p>Java class for AbstractConstraintType complex type.
+ * <p>Java class for FeatureStoreType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="AbstractConstraintType">
+ * &lt;complexType name="FeatureStoreType">
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *     &lt;/restriction>
+ *     &lt;extension base="{http://www.deegree.org/datasource}AbstractDataSourceType">
+ *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -33,12 +31,15 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "AbstractConstraintType")
+@XmlType(name = "FeatureStoreType")
 @XmlSeeAlso({
-    BBoxConstraint.class,
-    ScaleConstraint.class
+    ShapefileDataSourceType.class,
+    MemoryDataStoreType.class,
+    FeatureStoreReferenceType.class
 })
-public abstract class AbstractConstraintType {
+public class FeatureStoreType
+    extends AbstractDataSourceType
+{
 
 
 }

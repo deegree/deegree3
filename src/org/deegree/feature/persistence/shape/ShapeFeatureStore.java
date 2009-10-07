@@ -42,7 +42,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -128,10 +127,8 @@ public class ShapeFeatureStore implements FeatureStore {
      * @param name
      * @param crs
      * @param encoding
-     * @throws FileNotFoundException
-     * @throws IOException
      */
-    public ShapeFeatureStore( String name, CRS crs, Charset encoding ) throws FileNotFoundException, IOException {
+    public ShapeFeatureStore( String name, CRS crs, Charset encoding ) {
         this.name = name;
         this.crs = crs;
         this.encoding = encoding;

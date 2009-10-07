@@ -8,7 +8,7 @@
 
   <element name="AbstractDataSource" type="ds:AbstractDataSourceType" abstract="true">
     <annotation>
-      <documentation>Base declaration of all data sources, it can be used to define a location from which data is to be expected.</documentation>
+      <documentation>Base declaration of all elements that define a datasource, i.e. that provides access to (geospatial) data.</documentation>
     </annotation>
   </element>
 

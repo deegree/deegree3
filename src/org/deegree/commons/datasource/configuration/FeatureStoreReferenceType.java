@@ -10,24 +10,20 @@ package org.deegree.commons.datasource.configuration;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * Defines the access to a database
- * 
- * <p>Java class for DatabaseDataSourceType complex type.
+ * <p>Java class for FeatureStoreReferenceType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="DatabaseDataSourceType">
+ * &lt;complexType name="FeatureStoreReferenceType">
  *   &lt;complexContent>
- *     &lt;extension base="{http://www.deegree.org/datasource}AbstractDataSourceType">
- *       &lt;sequence>
- *         &lt;element name="ConnectionPoolId" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *       &lt;/sequence>
+ *     &lt;extension base="{http://www.deegree.org/datasource}FeatureStoreType">
+ *       &lt;attribute name="refId" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -36,38 +32,36 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "DatabaseDataSourceType", propOrder = {
-    "connectionPoolId"
-})
-public class DatabaseDataSourceType
-    extends AbstractDataSourceType
+@XmlType(name = "FeatureStoreReferenceType")
+public class FeatureStoreReferenceType
+    extends FeatureStoreType
 {
 
-    @XmlElement(name = "ConnectionPoolId", required = true)
-    protected String connectionPoolId;
+    @XmlAttribute(required = true)
+    protected String refId;
 
     /**
-     * Gets the value of the connectionPoolId property.
+     * Gets the value of the refId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getConnectionPoolId() {
-        return connectionPoolId;
+    public String getRefId() {
+        return refId;
     }
 
     /**
-     * Sets the value of the connectionPoolId property.
+     * Sets the value of the refId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setConnectionPoolId(String value) {
-        this.connectionPoolId = value;
+    public void setRefId(String value) {
+        this.refId = value;
     }
 
 }

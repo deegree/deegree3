@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+    This file is part of deegree, for copyright/license information, please visit http://www.deegree.org/license.
+  -->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ds="http://www.deegree.org/datasource"
+  xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.deegree.org/datasource"
+  elementFormDefault="qualified">
+
+  <include schemaLocation="datasource.xsd" />
+
+  <element name="FeatureStore" substitutionGroup="ds:AbstractDataSource" type="ds:FeatureStoreType" abstract="false">
+    <annotation>
+      <documentation>Substitution group head for datasources that provide access to features.</documentation>
+    </annotation>
+  </element>
+  <complexType name="FeatureStoreType">
+    <complexContent>
+      <extension base="ds:AbstractDataSourceType"/>
+    </complexContent>
+  </complexType>  
+  
+  <element name="FeatureStoreReference" substitutionGroup="ds:AbstractDataSource" type="ds:FeatureStoreReferenceType">
+    <annotation>
+      <documentation>Describes a reference to a global FeatureStore declaration.</documentation>
+    </annotation>
+  </element>
+  <complexType name="FeatureStoreReferenceType">
+    <complexContent>
+      <extension base="ds:FeatureStoreType">
+          <attribute name="refId" type="string" use="required" />
+      </extension>
+    </complexContent>
+  </complexType>  
+
+  <element name="ShapefileDataSource" substitutionGroup="ds:FeatureStore" type="ds:ShapefileDataSourceType">
+    <annotation>
+      <documentation>FeatureStore that is backed by a shape file.</documentation>
+    </annotation>
+  </element>  
+  <complexType name="ShapefileDataSourceType">
+    <complexContent>
+      <extension base="ds:FeatureStoreType">
+        <sequence>
+          <element name="File" type="string" />
+          <element name="CoordinateSystem" type="string" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>  
+  
+  <element name="MemoryDataStore" substitutionGroup="ds:FeatureStore" type="ds:MemoryDataStoreType">
+    <annotation>
+      <documentation>FeatureStore that keeps all features in memory.</documentation>
+    </annotation>
+  </element>
+  <complexType name="MemoryDataStoreType">
+    <complexContent>
+      <extension base="ds:FeatureStoreType">
+        <sequence>
+          <element name="SchemaFileURL" type="string" />
+        </sequence>
+      </extension>
+    </complexContent>
+  </complexType>  
+</schema>
