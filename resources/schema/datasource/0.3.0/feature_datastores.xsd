@@ -48,12 +48,12 @@
     </complexContent>
   </complexType>  
   
-  <element name="MemoryDataStore" substitutionGroup="ds:FeatureStore" type="ds:MemoryDataStoreType">
+  <element name="MemoryFeatureStore" substitutionGroup="ds:FeatureStore" type="ds:MemoryFeatureStoreType">
     <annotation>
       <documentation>FeatureStore that keeps all features in memory.</documentation>
     </annotation>
   </element>
-  <complexType name="MemoryDataStoreType">
+  <complexType name="MemoryFeatureStoreType">
     <complexContent>
       <extension base="ds:FeatureStoreType">
         <sequence>

@@ -43,7 +43,7 @@ import java.util.Map;
 
 import org.deegree.commons.datasource.configuration.FeatureStoreReferenceType;
 import org.deegree.commons.datasource.configuration.FeatureStoreType;
-import org.deegree.commons.datasource.configuration.MemoryDataStoreType;
+import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType;
 import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLAdapter;
@@ -109,7 +109,7 @@ public class FeatureStoreManager {
             }
         }
 
-        // any other FeatureStoreType requires the creation of a new FeatureStore
+        // any other FeatureStoreType requires the creation of a new FeatureStore instance
         FeatureStore fs = null;
         String id = config.getDataSourceName();
 
@@ -127,8 +127,8 @@ public class FeatureStoreManager {
                 throw new FeatureStoreException( msg, e );
             }
             fs = new ShapeFeatureStore( shapeFileName, crs, null );
-        } else if ( config instanceof MemoryDataStoreType ) {
-            MemoryDataStoreType memoryDsConfig = (MemoryDataStoreType) config;
+        } else if ( config instanceof MemoryFeatureStoreType ) {
+            MemoryFeatureStoreType memoryDsConfig = (MemoryFeatureStoreType) config;
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( baseURL );
             ApplicationSchemaXSDDecoder decoder = null;
