@@ -1,5 +1,4 @@
-http://www.someserver.com/wfs.cgi?
-SERVICE=WFS&
-VERSION=1.1.0&
-REQUEST=DescribeFeatureType&
+SERVICE=WFS
+VERSION=1.1.0
+REQUEST=DescribeFeatureType
 TYPENAME=TreesA_1M
