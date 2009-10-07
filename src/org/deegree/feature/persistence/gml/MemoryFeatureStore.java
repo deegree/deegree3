@@ -74,14 +74,16 @@ import org.deegree.protocol.wfs.getfeature.FilterQuery;
 import org.deegree.protocol.wfs.getfeature.Query;
 
 /**
- * {@link FeatureStore} implementation that is backed by a GML file which is kept in memory.
+ * {@link FeatureStore} implementation that keeps the feature instances in memory.
+ * 
+ * @see FeatureStore
  * 
  * @author <a href="mailto:schneider@lat-lon.de">Markus Schneider</a>
  * @author last edited by: $Author: schneider $
  * 
  * @version $Revision: $, $Date: $
  */
-public class GMLMemoryStore implements FeatureStore {
+public class MemoryFeatureStore implements FeatureStore {
 
     private final ApplicationSchema schema;
 
@@ -93,18 +95,18 @@ public class GMLMemoryStore implements FeatureStore {
 
     private final DefaultLockManager lockManager;
 
-    private GMLMemoryStoreTransaction activeTransaction;
+    private MemoryFeatureStoreTransaction activeTransaction;
 
     private Thread transactionHolder;
 
     /**
-     * Creates a new {@link GMLMemoryStore} for the given {@link ApplicationSchema}.
+     * Creates a new {@link MemoryFeatureStore} for the given {@link ApplicationSchema}.
      * 
      * @param schema
      *            application schema, must not be null
      * @throws FeatureStoreException
      */
-    public GMLMemoryStore( ApplicationSchema schema ) throws FeatureStoreException {
+    public MemoryFeatureStore( ApplicationSchema schema ) throws FeatureStoreException {
         this.schema = schema;
         CRS nativeCRS = new CRS( "EPSG:4326" );
         for ( FeatureType ft : schema.getFeatureTypes() ) {
@@ -118,7 +120,7 @@ public class GMLMemoryStore implements FeatureStore {
     }
 
     /**
-     * Creates a new {@link GMLMemoryStore} that is backed by the given GML file.
+     * Creates a new {@link MemoryFeatureStore} that is backed by the given GML file.
      * 
      * @param docURL
      * @param schema
@@ -129,7 +131,7 @@ public class GMLMemoryStore implements FeatureStore {
      * @throws IOException
      * @throws FeatureStoreException
      */
-    public GMLMemoryStore( URL docURL, ApplicationSchema schema ) throws XMLStreamException, XMLParsingException,
+    public MemoryFeatureStore( URL docURL, ApplicationSchema schema ) throws XMLStreamException, XMLParsingException,
                             UnknownCRSException, FactoryConfigurationError, IOException, FeatureStoreException {
 
         this( schema );
@@ -269,7 +271,7 @@ public class GMLMemoryStore implements FeatureStore {
             }
         }
 
-        this.activeTransaction = new GMLMemoryStoreTransaction( this );
+        this.activeTransaction = new MemoryFeatureStoreTransaction( this );
         this.transactionHolder = Thread.currentThread();
         return this.activeTransaction;
     }
@@ -284,7 +286,7 @@ public class GMLMemoryStore implements FeatureStore {
      *            the DatastoreTransaction to be returned
      * @throws FeatureStoreException
      */
-    void releaseTransaction( GMLMemoryStoreTransaction ta )
+    void releaseTransaction( MemoryFeatureStoreTransaction ta )
                             throws FeatureStoreException {
         if ( ta.getStore() != this ) {
             String msg = Messages.getMessage( "TA_NOT_OWNER" );

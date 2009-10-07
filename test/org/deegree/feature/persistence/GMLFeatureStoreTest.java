@@ -56,7 +56,7 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
 import org.deegree.feature.gml.GMLFeatureDecoderTest;
-import org.deegree.feature.persistence.gml.GMLMemoryStore;
+import org.deegree.feature.persistence.gml.MemoryFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
 import org.deegree.filter.Filter;
@@ -80,7 +80,7 @@ public class GMLFeatureStoreTest {
 
     private static final String BASE_DIR = "../gml/testdata/features/";
 
-    private GMLMemoryStore store;
+    private MemoryFeatureStore store;
 
     @Before
     public void setUp()
@@ -91,7 +91,7 @@ public class GMLFeatureStoreTest {
         ApplicationSchema schema = adapter.getApplicationSchema();
 
         URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
-        store = new GMLMemoryStore( docURL, schema );
+        store = new MemoryFeatureStore( docURL, schema );
     }
 
     @Test

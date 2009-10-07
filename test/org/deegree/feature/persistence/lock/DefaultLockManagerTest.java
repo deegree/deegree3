@@ -53,7 +53,7 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.feature.persistence.FeatureStore;
 import org.deegree.feature.persistence.FeatureStoreException;
-import org.deegree.feature.persistence.gml.GMLMemoryStore;
+import org.deegree.feature.persistence.gml.MemoryFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.deegree.feature.types.JAXBAdapter;
 import org.junit.Before;
@@ -82,7 +82,7 @@ public class DefaultLockManagerTest {
         ApplicationSchema schema = adapter.getApplicationSchema();
 
         URL docURL = DefaultLockManagerTest.class.getResource( BASE_DIR + "Philosopher_FeatureCollection.xml" );
-        FeatureStore store = new GMLMemoryStore( docURL, schema );
+        FeatureStore store = new MemoryFeatureStore( docURL, schema );
         lockManager = store.getLockManager();
     }
 

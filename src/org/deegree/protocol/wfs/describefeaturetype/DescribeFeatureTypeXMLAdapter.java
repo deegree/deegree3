@@ -49,6 +49,7 @@ import org.deegree.commons.xml.XMLParsingException;
 import org.deegree.commons.xml.XPath;
 import org.deegree.protocol.i18n.Messages;
 import org.deegree.protocol.wfs.AbstractWFSRequestXMLAdapter;
+import org.deegree.protocol.wfs.WFSConstants;
 
 /**
  * Adapter between XML <code>DescribeFeatureType</code> requests and {@link DescribeFeatureType} objects.
@@ -116,6 +117,12 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
 
         // 'wfs:TypeName' elements (minOccurs=0, maxOccurs=unbounded)
         QName[] typeNames = getNodesAsQNames( rootElement, new XPath( "wfs:TypeName", nsContext ) );
+        // TODO remove null namespace hack
+        for ( int i = 0; i < typeNames.length; i++ ) {
+            if (WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI())) {
+                typeNames[i] = new QName( typeNames[i].getLocalPart() );
+            }
+        }        
 
         return new DescribeFeatureType( VERSION_100, null, outputFormat, typeNames );
     }
@@ -139,6 +146,13 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
 
         // 'wfs:TypeName' elements (minOccurs=0, maxOccurs=unbounded)
         QName[] typeNames = getNodesAsQNames( rootElement, new XPath( "wfs:TypeName", nsContext ) );
+        
+        // TODO remove null namespace hack
+        for ( int i = 0; i < typeNames.length; i++ ) {
+            if (WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI())) {
+                typeNames[i] = new QName( typeNames[i].getLocalPart() );
+            }
+        }
 
         return new DescribeFeatureType( VERSION_110, handle, outputFormat, typeNames );
     }
@@ -162,6 +176,12 @@ public class DescribeFeatureTypeXMLAdapter extends AbstractWFSRequestXMLAdapter 
 
         // 'wfs:TypeName' elements (minOccurs=0, maxOccurs=unbounded)
         QName[] typeNames = getNodesAsQNames( rootElement, new XPath( "wfs200:TypeName", nsContext ) );
+        // TODO remove null namespace hack
+        for ( int i = 0; i < typeNames.length; i++ ) {
+            if (WFSConstants.WFS_NS.equals( typeNames[i].getNamespaceURI())) {
+                typeNames[i] = new QName( typeNames[i].getLocalPart() );
+            }
+        }        
 
         return new DescribeFeatureType( VERSION_110, handle, outputFormat, typeNames );
     }

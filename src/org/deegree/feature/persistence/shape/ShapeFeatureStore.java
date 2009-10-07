@@ -64,7 +64,6 @@ import org.deegree.crs.exceptions.UnknownCRSException;
 import org.deegree.crs.exceptions.WKTParsingException;
 import org.deegree.feature.Feature;
 import org.deegree.feature.FeatureCollection;
-import org.deegree.feature.GenericFeature;
 import org.deegree.feature.GenericFeatureCollection;
 import org.deegree.feature.GenericProperty;
 import org.deegree.feature.Property;
@@ -119,7 +118,9 @@ public class ShapeFeatureStore implements FeatureStore {
 
     private GeometryTransformer transformer;
 
-    private GenericFeatureType featureType;
+    private FeatureType ft;
+
+    private StoredFeatureTypeMetadata ftMetadata;
 
     private ApplicationSchema schema;
 
@@ -134,6 +135,7 @@ public class ShapeFeatureStore implements FeatureStore {
         this.encoding = encoding;
     }
 
+    @Override
     public void init() {
         if ( name.toLowerCase().endsWith( ".shp" ) ) {
             name = name.substring( 0, name.length() - 4 );
@@ -213,15 +215,16 @@ public class ShapeFeatureStore implements FeatureStore {
 
         try {
             dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, new QName( new File( name ).getName() ) );
-            featureType = dbf.getFeatureType();
+            ft = dbf.getFeatureType();
         } catch ( IOException e ) {
             LOG.warn( "A dbf file was not loaded (no attributes will be available): {}.dbf", name );
             GeometryPropertyType geomProp = new GeometryPropertyType( new QName( "geometry" ), 0, 1, GEOMETRY,
                                                                       DIM_2_OR_3 );
-            featureType = new GenericFeatureType( new QName( new File( name ).getName() ),
-                                                  Collections.<PropertyType> singletonList( geomProp ), false );
+            ft = new GenericFeatureType( new QName( new File( name ).getName() ),
+                                         Collections.<PropertyType> singletonList( geomProp ), false );
         }
-        schema = new ApplicationSchema( new FeatureType[] { featureType }, null, null );
+        ftMetadata = new StoredFeatureTypeMetadata( ft, this, "" + ft.getName(), "" + ft.getName(), crs );        
+        schema = new ApplicationSchema( new FeatureType[] { ft }, null, null );
     }
 
     private SHPReader getSHP( boolean forceIndexRebuild )
@@ -292,8 +295,8 @@ public class ShapeFeatureStore implements FeatureStore {
                     dbf.close();
                     LOG.debug( "Re-opening the dbf file {}", name );
                     dbf = new DBFReader( new RandomAccessFile( dbfFile, "r" ), encoding, new QName( name ) );
-                    featureType = dbf.getFeatureType();
-                    schema = new ApplicationSchema( new FeatureType[] { featureType }, null, null );
+                    ft = dbf.getFeatureType();
+                    schema = new ApplicationSchema( new FeatureType[] { ft }, null, null );
                     dbfLastModified = dbfFile.lastModified();
                 }
             }
@@ -323,6 +326,7 @@ public class ShapeFeatureStore implements FeatureStore {
         return bbox;
     }
 
+    @Override
     public FeatureCollection query( Filter filter, Envelope bbox, boolean withGeometries, boolean exact )
                             throws FilterEvaluationException, FeatureStoreException {
 
@@ -355,8 +359,8 @@ public class ShapeFeatureStore implements FeatureStore {
                 fields = dbf.getFields();
             }
         }
-        final int geomIdx = featureType.getPropertyDeclarations().size() - 1;
-        GeometryPropertyType geom = (GeometryPropertyType) featureType.getPropertyDeclarations().get( geomIdx );
+        final int geomIdx = ft.getPropertyDeclarations().size() - 1;
+        GeometryPropertyType geom = (GeometryPropertyType) ft.getPropertyDeclarations().get( geomIdx );
         if ( withGeometries ) {
             fields.add( geom );
         }
@@ -393,7 +397,7 @@ public class ShapeFeatureStore implements FeatureStore {
             if ( withGeometries ) {
                 props.add( new GenericProperty<Geometry>( geom, pair.second ) );
             }
-            GenericFeature feat = new GenericFeature( featureType, "shp_" + pair.first, props );
+            Feature feat = ft.newFeature( "shp_" + pair.first, props );
 
             if ( filter == null || filter.evaluate( feat ) ) {
                 feats.add( feat );
@@ -408,6 +412,7 @@ public class ShapeFeatureStore implements FeatureStore {
     /**
      * @return the envelope of the shape file
      */
+    @Override
     public Envelope getEnvelope( QName ftName ) {
         checkForUpdate();
         if ( shp == null ) {
@@ -416,6 +421,7 @@ public class ShapeFeatureStore implements FeatureStore {
         return shp.getEnvelope();
     }
 
+    @Override
     public void destroy() {
         try {
             shp.close();
@@ -434,45 +440,51 @@ public class ShapeFeatureStore implements FeatureStore {
     /**
      * @return whether the shape file is currently available
      */
+    @Override
     public boolean isAvailable() {
         return available;
     }
 
+    @Override
     public FeatureStoreTransaction acquireTransaction()
                             throws FeatureStoreException {
         throw new FeatureStoreException( "The shape datastore is currently not transactional." );
     }
 
+    @Override
     public LockManager getLockManager()
                             throws FeatureStoreException {
         throw new FeatureStoreException( "The shape datastore is currently not transactional." );
     }
 
+    @Override
     public StoredFeatureTypeMetadata getMetadata( QName ftName ) {
-        // TODO
-        throw new UnsupportedOperationException( "This feature is currently not implemented for the shape datastore." );
+        return ftMetadata;
     }
 
+    @Override
     public Object getObjectById( String id )
                             throws FeatureStoreException {
         // TODO
         throw new FeatureStoreException( "This feature is currently not implemented for the shape datastore." );
     }
 
+    @Override
     public ApplicationSchema getSchema() {
         return schema;
     }
 
+    @Override
     public int performHitsQuery( Query query )
                             throws FeatureStoreException {
         // TODO
         throw new FeatureStoreException( "This feature is currently not implemented for the shape datastore." );
     }
 
+    @Override
     public FeatureCollection performQuery( Query query )
                             throws FeatureStoreException {
         // TODO
         throw new FeatureStoreException( "This feature is currently not implemented for the shape datastore." );
     }
-
 }

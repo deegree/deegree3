@@ -50,7 +50,7 @@ import org.deegree.commons.xml.XMLAdapter;
 import org.deegree.crs.CRS;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.i18n.Messages;
-import org.deegree.feature.persistence.gml.GMLMemoryStore;
+import org.deegree.feature.persistence.gml.MemoryFeatureStore;
 import org.deegree.feature.persistence.shape.ShapeFeatureStore;
 import org.deegree.feature.types.ApplicationSchema;
 import org.slf4j.Logger;
@@ -141,7 +141,7 @@ public class FeatureStoreManager {
                 throw new FeatureStoreException( msg, e );
             }
             ApplicationSchema schema = decoder.extractFeatureTypeSchema();
-            fs = new GMLMemoryStore( schema );
+            fs = new MemoryFeatureStore( schema );
         } else {
             String msg = Messages.getMessage( "STORE_MANAGER_UNHANDLED_CONFIGTYPE", config.getClass() );
             throw new FeatureStoreException( msg );

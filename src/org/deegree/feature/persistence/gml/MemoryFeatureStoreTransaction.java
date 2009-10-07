@@ -71,13 +71,13 @@ import org.slf4j.LoggerFactory;
  * 
  * @version $Revision$, $Date$
  */
-class GMLMemoryStoreTransaction implements FeatureStoreTransaction {
+class MemoryFeatureStoreTransaction implements FeatureStoreTransaction {
 
-    private static final Logger LOG = LoggerFactory.getLogger( GMLMemoryStoreTransaction.class );
+    private static final Logger LOG = LoggerFactory.getLogger( MemoryFeatureStoreTransaction.class );
 
-    private GMLMemoryStore store;
+    private MemoryFeatureStore store;
 
-    GMLMemoryStoreTransaction( GMLMemoryStore store ) {
+    MemoryFeatureStoreTransaction( MemoryFeatureStore store ) {
         this.store = store;
     }
 
