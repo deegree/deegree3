@@ -132,15 +132,14 @@ public class CRS {
         if ( other != null && other instanceof CRS ) {
             final CRS that = (CRS) other;
             boolean result = this.crsName != null && ( this.crsName.equals( that.crsName ) );
-            if ( !result ) {
+            if ( result ) {
                 try {
                     CoordinateSystem thisCRS = this.getWrappedCRS();
                     CoordinateSystem thatCRS = that.getWrappedCRS();
                     return thisCRS.equals( thatCRS );
                 } catch ( UnknownCRSException e ) {
-                    return result;
+                    return false; // because something failed when comparing the CoordinateSystems...
                 }
-
             }
         }
         return false;
