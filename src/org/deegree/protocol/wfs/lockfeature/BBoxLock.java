@@ -34,8 +34,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.lockfeature;
 
+import org.deegree.geometry.Envelope;
+import org.deegree.protocol.wfs.getfeature.TypeName;
+
 /**
- * <code>Lock</code> is a marker interface, used in the {@link LockFeature} request.
+ * The <code>BBoxLock</code> class encapsulates the type of lock that is used in the {@link LockFeature} when an
+ * envelope(bbox) is given. Such a lock can appear only in KVP requests.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -44,6 +48,38 @@ package org.deegree.protocol.wfs.lockfeature;
  * @version $Revision$, $Date$
  * 
  */
-public interface Lock {
-    // marker interface
+public class BBoxLock implements Lock {
+
+    private Envelope bbox;
+
+    private TypeName[] typeNames;
+
+    /**
+     * @param bbox
+     *            an {@link Envelope}, must not be null
+     * @param typeNames
+     *            a {@link TypeName} array, must not be null
+     */
+    public BBoxLock( Envelope bbox, TypeName[] typeNames ) {
+        if ( bbox == null || typeNames == null ) {
+            throw new IllegalArgumentException();
+        }
+        this.bbox = bbox;
+        this.typeNames = typeNames;
+    }
+
+    /**
+     * @return the bbox
+     */
+    public Envelope getBbox() {
+        return bbox;
+    }
+
+    /**
+     * @return an array of {@link TypeName}s
+     */
+    public TypeName[] getTypeNames() {
+        return typeNames;
+    }
+
 }

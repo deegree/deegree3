@@ -34,8 +34,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.protocol.wfs.lockfeature;
 
+import org.deegree.protocol.wfs.getfeature.TypeName;
+
 /**
- * <code>Lock</code> is a marker interface, used in the {@link LockFeature} request.
+ * The <code>FeatureIdLock</code> class represents a lock based on a featureId. To be used with {@link LockFeature}.
  * 
  * @author <a href="mailto:ionita@lat-lon.de">Andrei Ionita</a>
  * 
@@ -44,6 +46,39 @@ package org.deegree.protocol.wfs.lockfeature;
  * @version $Revision$, $Date$
  * 
  */
-public interface Lock {
-    // marker interface
+public class FeatureIdLock implements Lock {
+
+    private final String[] featureIds;
+
+    private final TypeName[] typeNames;
+
+    /**
+     * Creates a new {@link FeatureIdLock} instance.
+     * 
+     * @param featureIds
+     *            a String array as feature ids, must not be null
+     * @param typeNames
+     *            a QName, may be null
+     */
+    public FeatureIdLock( String[] featureIds, TypeName[] typeNames ) {
+        if ( featureIds == null ) {
+            throw new IllegalArgumentException();
+        }
+        this.featureIds = featureIds;
+        this.typeNames = typeNames;
+    }
+
+    /**
+     * @return the featureIds
+     */
+    public String[] getFeatureIds() {
+        return featureIds;
+    }
+
+    /**
+     * @return the typeName
+     */
+    public TypeName[] getTypeName() {
+        return typeNames;
+    }
 }

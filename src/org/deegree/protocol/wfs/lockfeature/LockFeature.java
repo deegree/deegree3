@@ -99,7 +99,7 @@ public class LockFeature extends AbstractWFSRequest {
      * 
      * @return true, if the request should fail, can be null (unspecified)
      */
-    public Boolean lockAll() {
+    public Boolean getLockAll() {
         return lockAll;
     }
 
