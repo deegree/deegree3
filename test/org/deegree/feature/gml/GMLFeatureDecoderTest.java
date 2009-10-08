@@ -102,7 +102,7 @@ public class GMLFeatureDecoderTest {
         FeatureCollection fc = (FeatureCollection) gmlAdapter.parseFeature( wrapper, null );
     }
     
-    @Test
+//    @Test
     public void testParsingCiteSF2()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
