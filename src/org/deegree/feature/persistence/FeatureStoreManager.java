@@ -39,15 +39,20 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.deegree.commons.datasource.configuration.FeatureStoreReferenceType;
 import org.deegree.commons.datasource.configuration.FeatureStoreType;
 import org.deegree.commons.datasource.configuration.MemoryFeatureStoreType;
 import org.deegree.commons.datasource.configuration.ShapefileDataSourceType;
+import org.deegree.commons.gml.GMLIdContext;
 import org.deegree.commons.gml.GMLVersion;
 import org.deegree.commons.xml.XMLAdapter;
+import org.deegree.commons.xml.stax.XMLStreamReaderWrapper;
 import org.deegree.crs.CRS;
+import org.deegree.feature.FeatureCollection;
+import org.deegree.feature.gml.GMLFeatureDecoder;
 import org.deegree.feature.gml.schema.ApplicationSchemaXSDDecoder;
 import org.deegree.feature.i18n.Messages;
 import org.deegree.feature.persistence.gml.MemoryFeatureStore;
@@ -69,8 +74,8 @@ public class FeatureStoreManager {
 
     private static final Logger LOG = LoggerFactory.getLogger( FeatureStoreManager.class );
 
-    private static Map<String, FeatureStore> idToFs = Collections.synchronizedMap( new HashMap<String, FeatureStore>() ); 
-    
+    private static Map<String, FeatureStore> idToFs = Collections.synchronizedMap( new HashMap<String, FeatureStore>() );
+
     /**
      * Returns the global {@link FeatureStore} instance with the specified identifier.
      * 
@@ -131,17 +136,44 @@ public class FeatureStoreManager {
             MemoryFeatureStoreType memoryDsConfig = (MemoryFeatureStoreType) config;
             XMLAdapter resolver = new XMLAdapter();
             resolver.setSystemId( baseURL );
-            ApplicationSchemaXSDDecoder decoder = null;
+
+            ApplicationSchema schema = null;
             try {
-                URL schemaURL = resolver.resolve( memoryDsConfig.getSchemaFileURL().trim() );
-                decoder = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31, schemaURL.toString() );
+                URL schemaURL = resolver.resolve( memoryDsConfig.getGMLSchemaFileURL().trim() );
+                ApplicationSchemaXSDDecoder decoder = new ApplicationSchemaXSDDecoder( GMLVersion.GML_31,
+                                                                                       schemaURL.toString() );
+                schema = decoder.extractFeatureTypeSchema();
             } catch ( Exception e ) {
                 String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
                 LOG.error( msg, e );
                 throw new FeatureStoreException( msg, e );
             }
-            ApplicationSchema schema = decoder.extractFeatureTypeSchema();
+
             fs = new MemoryFeatureStore( schema );
+            fs.init();
+
+            String datasetFile = memoryDsConfig.getGMLFeatureCollectionFileURL();
+            if ( datasetFile != null ) {
+                try {
+                    GMLIdContext idContext = new GMLIdContext();
+                    GMLFeatureDecoder decoder = new GMLFeatureDecoder( schema, idContext );
+                    URL docURL = resolver.resolve( datasetFile.trim() );
+                    XMLStreamReaderWrapper xmlStream = new XMLStreamReaderWrapper( docURL );
+                    xmlStream.nextTag();
+                    LOG.info( "Populating feature store with features from file '" + docURL + "'..." );
+                    FeatureCollection fc = (FeatureCollection) decoder.parseFeature( xmlStream, null );
+                    idContext.resolveXLinks( schema );
+                    
+                    FeatureStoreTransaction ta = fs.acquireTransaction();
+                    List<String> fids = ta.performInsert( fc, IDGenMode.GENERATE_NEW );
+                    LOG.info( "Inserted " + fids.size() + " features." );
+                    ta.commit();
+                } catch ( Exception e ) {
+                    String msg = Messages.getMessage( "STORE_MANAGER_STORE_SETUP_ERROR", e.getMessage() );
+                    LOG.error( msg, e );
+                    throw new FeatureStoreException( msg, e );
+                }
+            }
         } else {
             String msg = Messages.getMessage( "STORE_MANAGER_UNHANDLED_CONFIGTYPE", config.getClass() );
             throw new FeatureStoreException( msg );
@@ -158,5 +190,5 @@ public class FeatureStoreManager {
             idToFs.put( id, fs );
         }
         return fs;
-    }         
+    }
 }

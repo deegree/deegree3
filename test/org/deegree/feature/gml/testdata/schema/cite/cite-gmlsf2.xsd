@@ -23,7 +23,7 @@
   </xsd:annotation>
   
   <xsd:include schemaLocation="./cite-gmlsf1.xsd" />
-  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="./gmlsf2.xsd"/>
+  <xsd:import namespace="http://www.opengis.net/gml" />
     
   <xsd:element name="LinkedFeature" type="sf:LinkedFeatureType" 
     substitutionGroup="gml:_Feature">

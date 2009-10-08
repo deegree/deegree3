@@ -7,8 +7,6 @@
   elementFormDefault="qualified" 
   version="2007.12">
 
-  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="./gmlsf.xsd"/>
-
   <xsd:annotation>
     <xsd:appinfo xmlns:gmlsf="http://www.opengis.net/gmlsf" 
       source="http://schemas.opengis.net/gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsfLevels.xsd">
@@ -24,7 +22,9 @@
     and Surface geometries are excluded.
     </xsd:documentation>
   </xsd:annotation>
-       
+  
+  <xsd:import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/3.1.1/profiles/gmlsfProfile/1.0.0/gmlsf2.xsd"/>
+    
   <xsd:element name="SimpleFeatureCollection" type="sf:SimpleFeatureCollectionType" 
     substitutionGroup="gml:_GML">
     <xsd:annotation>
@@ -98,7 +98,6 @@
     </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
-
   <xsd:complexType name="AggregateGeoFeatureType">
     <xsd:complexContent>
       <xsd:extension base="gml:AbstractFeatureType">

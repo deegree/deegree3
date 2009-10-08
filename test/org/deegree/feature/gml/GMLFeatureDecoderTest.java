@@ -103,12 +103,12 @@ public class GMLFeatureDecoderTest {
     }
     
     @Test
-    public void testParsingCiteSF0()
+    public void testParsingCiteSF2()
                             throws XMLStreamException, FactoryConfigurationError, IOException, ClassCastException,
                             ClassNotFoundException, InstantiationException, IllegalAccessException,
                             XMLParsingException, UnknownCRSException, JAXBException {
 
-        URL docURL = GMLFeatureDecoderTest.class.getResource( BASE_DIR + "../schema/cite/dataset-sf0.xml" );
+        URL docURL = GMLFeatureDecoderTest.class.getResource( "/home/schneider/workspace/cite_testing/wfs-1.1.0-20091008/schemas/cite-gmlsf2.xsd" );
         XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader( docURL.toString(),
                                                                                          docURL.openStream() );
         xmlReader.nextTag();
