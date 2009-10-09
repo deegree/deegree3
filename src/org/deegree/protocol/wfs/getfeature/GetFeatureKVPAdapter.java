@@ -36,6 +36,7 @@
 
 package org.deegree.protocol.wfs.getfeature;
 
+import static org.deegree.protocol.wfs.WFSConstants.VERSION_100;
 import static org.deegree.protocol.wfs.WFSConstants.VERSION_110;
 import static org.deegree.protocol.wfs.getfeature.ResultType.HITS;
 import static org.deegree.protocol.wfs.getfeature.ResultType.RESULTS;
@@ -117,6 +118,119 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
             throw new InvalidParameterValueException( msg );
         }
         return result;
+    }
+
+    private static GetFeature parse100( Map<String, String> kvpParams )
+                            throws Exception {
+        // optional: MAXFEATURES
+        Integer maxFeatures = null;
+        String maxFeatureStr = kvpParams.get( "MAXFEATURES" );
+        if ( maxFeatureStr != null ) {
+            maxFeatures = Integer.parseInt( maxFeatureStr );
+        }
+
+        // optional: 'PROPERTYNAME'
+        String propertyStr = kvpParams.get( "PROPERTYNAME" );
+        PropertyName[][] propertyNames = getPropertyNames( propertyStr, null );
+
+        // optional: FEATUREVERSION
+        String featureVersion = kvpParams.get( "FEATUREVERSION" );
+
+        // mandatory: TYPENAME, but optional if FEATUREID is specified
+        String typeStrList = kvpParams.get( "TYPENAME" );
+        TypeName[] typeNames = getTypeNamesV100( typeStrList );
+
+        // optional: FEATUREID
+        String featureIdStr = kvpParams.get( "FEATUREID" );
+        String[] featureIds = null;
+        if ( featureIdStr != null ) {
+            featureIds = featureIdStr.split( "," );
+        }
+        // optional: BBOX
+        String bboxStr = kvpParams.get( "BBOX" );
+
+        // optional: FILTER
+        String filterStr = kvpParams.get( "FILTER" );
+
+        Query[] queries = null;
+
+        if ( ( featureIdStr != null && bboxStr != null ) || ( featureIdStr != null && filterStr != null )
+             || ( bboxStr != null && filterStr != null ) ) {
+            // TODO make new exception
+            throw new Exception( "The FEATUREID, BBOX and FILTER keywords are mutually exclusive!" );
+        }
+
+        if ( featureIdStr != null ) {
+
+            queries = new Query[1];
+            queries[0] = new FeatureIdQuery( null, typeNames, featureIds, featureVersion, null, propertyNames, null,
+                                             null, null );
+            return new GetFeature( VERSION_100, null, null, null, maxFeatures, null, null, queries );
+        }
+
+        if ( bboxStr != null ) {
+            if ( typeNames == null ) {
+                // TODO make new exception
+                throw new Exception( "The TYPENAME keyword is mandatory if BBOX is present!" );
+            }
+
+            String[] coordList = bboxStr.split( "," );
+            CRS srs = null;
+            if ( coordList.length % 2 == 1 ) {
+                srs = new CRS( coordList[coordList.length - 1] );
+            }
+
+            Envelope bbox = createEnvelope( bboxStr, null );
+
+            queries = new Query[1];
+            queries[0] = new BBoxQuery( null, typeNames, featureIds, featureVersion, srs, propertyNames, null, null,
+                                        null, bbox );
+
+            return new GetFeature( VERSION_110, null, null, null, maxFeatures, null, null, queries );
+        }
+
+        if ( filterStr != null || typeNames != null ) {
+            if ( typeNames == null ) {
+                // TODO make new exception
+                throw new Exception( "The FILTER element requires the TYPENAME element" );
+            }
+
+            int length = typeNames.length;
+
+            String[] filters = getFilters( filterStr );
+
+            queries = new Query[length];
+            for ( int i = 0; i < length; i++ ) {
+                Filter filter = null;
+                if ( filters != null ) {
+
+                    StringReader sr = new StringReader( filters[i] );
+                    XMLAdapter adapter = new XMLAdapter( sr );
+                    XMLStreamReaderWrapper streamWrapper = new XMLStreamReaderWrapper(
+                                                                                       adapter.getRootElement().getXMLStreamReaderWithoutCaching(),
+                                                                                       adapter.getSystemId() );
+                    try {
+                        streamWrapper.nextTag();
+                        filter = Filter110XMLDecoder.parse( streamWrapper );
+                    } catch ( XMLParsingException e ) {
+                        e.printStackTrace();
+                        // TODO raise exception
+                    } catch ( XMLStreamException e ) {
+                        e.printStackTrace();
+                        // TODO raise exception
+                    }
+                }
+                if ( propertyNames != null ) {
+                    queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureIds, featureVersion,
+                                                  null, propertyNames[i], null, null, null, filter );
+                } else {
+                    queries[i] = new FilterQuery( null, new TypeName[] { typeNames[i] }, featureIds, featureVersion,
+                                                  null, null, null, null, null, filter );
+                }
+            }
+            return new GetFeature( VERSION_100, null, null, null, maxFeatures, null, null, queries );
+        }
+        return null;
     }
 
     @SuppressWarnings("boxing")
@@ -402,6 +516,20 @@ public class GetFeatureKVPAdapter extends AbstractWFSRequestKVPAdapter {
                 } else {
                     result[i] = new TypeName( new QName( typeParts[0] ), null );
                 }
+            }
+        }
+        return result;
+    }
+
+    private static TypeName[] getTypeNamesV100( String typeStrList ) {
+        TypeName[] result = null;
+        if ( typeStrList != null ) {
+
+            String[] typeList = typeStrList.split( "," );
+            result = new TypeName[typeList.length];
+
+            for ( int i = 0; i < typeList.length; i++ ) {
+                result[i] = new TypeName( new QName( typeList[i] ), null );
             }
         }
         return result;
