@@ -213,7 +213,9 @@ public class ApplicationSchemaXSDDecoder {
                             int minOccurs = particle.getMinOccurs();
                             int maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
                             PropertyType pt = buildPropertyType( elementDecl2, minOccurs, maxOccurs );
-                            pts.add( pt );
+                            if ( pt != null ) {
+                                pts.add( pt );
+                            }
                         }
                         case XSConstants.WILDCARD: {
                             LOG.debug( "Unhandled particle: WILDCARD" );
@@ -297,7 +299,9 @@ public class ApplicationSchemaXSDDecoder {
                     int minOccurs = particle.getMinOccurs();
                     int maxOccurs = particle.getMaxOccursUnbounded() ? -1 : particle.getMaxOccurs();
                     PropertyType pt = buildPropertyType( elementDecl, minOccurs, maxOccurs );
-                    pts.add( pt );
+                    if ( pt != null ) {
+                        pts.add( pt );
+                    }
                     break;
                 }
                 case XSConstants.WILDCARD: {
@@ -323,17 +327,21 @@ public class ApplicationSchemaXSDDecoder {
         PropertyType pt = null;
         QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
         LOG.debug( "*** Found property declaration: '" + elementDecl.getName() + "'." );
-        XSTypeDefinition typeDef = elementDecl.getTypeDefinition();
-        switch ( typeDef.getTypeCategory() ) {
-        case XSTypeDefinition.SIMPLE_TYPE: {
-            PrimitiveType type = getPrimitiveType( (XSSimpleType) typeDef );
-            pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, type );
-            break;
-        }
-        case XSTypeDefinition.COMPLEX_TYPE: {
-            pt = buildPropertyType( elementDecl, (XSComplexTypeDefinition) typeDef, minOccurs, maxOccurs );
-            break;
-        }
+        if ( GMLNS.equals( elementDecl.getNamespace() ) ) {
+            LOG.debug( "Omitting from feature type -- GML standard property." );
+        } else {
+            XSTypeDefinition typeDef = elementDecl.getTypeDefinition();
+            switch ( typeDef.getTypeCategory() ) {
+            case XSTypeDefinition.SIMPLE_TYPE: {
+                PrimitiveType type = getPrimitiveType( (XSSimpleType) typeDef );
+                pt = new SimplePropertyType( ptName, minOccurs, maxOccurs, type );
+                break;
+            }
+            case XSTypeDefinition.COMPLEX_TYPE: {
+                pt = buildPropertyType( elementDecl, (XSComplexTypeDefinition) typeDef, minOccurs, maxOccurs );
+                break;
+            }
+            }
         }
         return pt;
     }
@@ -384,10 +392,10 @@ public class ApplicationSchemaXSDDecoder {
      */
     private FeaturePropertyType buildFeaturePropertyType( XSElementDeclaration elementDecl,
                                                           XSComplexTypeDefinition typeDef, int minOccurs, int maxOccurs ) {
-       
+
         QName ptName = new QName( elementDecl.getNamespace(), elementDecl.getName() );
-        LOG.debug ("Checking if element declaration '" + ptName + "' defines a feature property type.");
-        
+        LOG.debug( "Checking if element declaration '" + ptName + "' defines a feature property type." );
+
         switch ( typeDef.getContentType() ) {
         case XSComplexTypeDefinition.CONTENTTYPE_ELEMENT: {
             LOG.debug( "CONTENTTYPE_ELEMENT" );
